@@ -12,6 +12,8 @@ export type RealtimeSubscribedFrame = {
   channelId: string;
   connectorChannelId: number;
   existing: boolean;
+  documentQuotaPolicyVersion: number;
+  maximumBlockCount: number;
   participants: RealtimePresenceParticipant[];
 };
 
@@ -34,6 +36,16 @@ export const parseRealtimeSubscribedFrame = (
     );
   }
   if (typeof frame.existing !== "boolean") {
+    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+  }
+  if (
+    typeof frame.documentQuotaPolicyVersion !== "number" ||
+    !Number.isSafeInteger(frame.documentQuotaPolicyVersion) ||
+    frame.documentQuotaPolicyVersion <= 0 ||
+    typeof frame.maximumBlockCount !== "number" ||
+    !Number.isSafeInteger(frame.maximumBlockCount) ||
+    frame.maximumBlockCount <= 0
+  ) {
     throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
   }
   if (
@@ -69,6 +81,8 @@ export const parseRealtimeSubscribedFrame = (
     channelId: frame.channelId,
     connectorChannelId: frame.connectorChannelId,
     existing: frame.existing,
+    documentQuotaPolicyVersion: frame.documentQuotaPolicyVersion,
+    maximumBlockCount: frame.maximumBlockCount,
     participants: (frame.participants as RealtimePresenceParticipant[]) ?? [],
   };
 };

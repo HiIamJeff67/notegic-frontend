@@ -15,6 +15,9 @@ export const CurrentWebBaseURL = WebDevelopmentBaseURL;
 
 export const WebURLPathDictionary = {
   home: "",
+  document: "document",
+  tutorial: "tutorial",
+  privacyPolicy: "privacy-policy",
   auth: {
     register: "register",
     login: "login",
@@ -35,31 +38,29 @@ export const WebURLPathDictionary = {
       return `https://x.com/i/oauth2/authorize?${qs}`;
     },
   },
-  root: {
+  app: {
     materialViewer: {
-      _: "material-viewer",
+      _: "app/material-viewer",
       byId: (materialId: UUID, parentSubShelfId: UUID, rootShelfId: UUID) =>
-        `material-viewer/${materialId}?parentSubShelfId=${parentSubShelfId}&rootShelfId=${rootShelfId}`,
-      notFound: "material-viewer/not-found",
+        `app/material-viewer/${materialId}?parentSubShelfId=${parentSubShelfId}&rootShelfId=${rootShelfId}`,
+      notFound: "app/material-viewer/not-found",
     },
     blockPackEditor: {
-      index: "block-pack-editor",
+      index: "app/block-pack-editor",
       _: (blockPackId: UUID, parentSubShelfId: UUID, rootShelfId: UUID) =>
-        `block-pack-editor/${blockPackId}?parentSubShelfId=${parentSubShelfId}&rootShelfId=${rootShelfId}`,
+        `app/block-pack-editor/${blockPackId}?parentSubShelfId=${parentSubShelfId}&rootShelfId=${rootShelfId}`,
     },
-    document: "document",
-    introduction: "introduction",
     dashboard: {
-      _: "dashboard",
+      _: "app/dashboard",
     },
-    trash: "trash",
+    trash: "app/trash",
     routines: {
-      _: "routines",
-      byStationId: (stationId: UUID) => `routines/${stationId}`,
+      _: "app/routines",
+      byStationId: (stationId: UUID) => `app/routines/${stationId}`,
     },
     setting: {
-      account: "setting/account",
-      preferences: "setting/preferences",
+      account: "app/setting/account",
+      preferences: "app/setting/preferences",
     },
   },
 };

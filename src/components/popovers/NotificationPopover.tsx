@@ -6,29 +6,45 @@ import {
 import type { Notification } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
+import { cn } from "@shared/util/utils";
 import {
-  CheckCheckIcon,
+  AlertCircleIcon,
+  AlertTriangleIcon,
   BellIcon,
   CircleAlertIcon,
+  InfoIcon,
   Loader2Icon,
+  NewspaperIcon,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotificationDialog } from "@/components/dialogs/NotificationDialog";
-import { NotificationItem } from "@/components/notifications/NotificationItem";
+import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
 import { Button } from "@/components/ui/button";
+import { MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 export const NotificationPopover = () => {
   const { t } = useTranslation();
   const queryClient = getQueryClient();
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [detailNotificationId, setDetailNotificationId] = useState<
+    string | null
+  >(null);
+  const manageTimerRef = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (manageTimerRef.current !== null) {
+        window.clearTimeout(manageTimerRef.current);
+      }
+    },
+    []
+  );
   const listQuery = useNotifications(open);
   const unreadQuery = useUnreadNotificationCount(true);
   const markReadMutation = useMarkNotificationsRead();
@@ -36,6 +52,23 @@ export const NotificationPopover = () => {
     listQuery.data?.pages.flatMap(page =>
       page.data.searchEdges.map(edge => edge.node)
     ) ?? [];
+  const priorityClassName: Record<Notification["priority"], string> = {
+    low: "text-muted-foreground",
+    normal: "text-primary",
+    high: "text-orange-500",
+    critical: "text-destructive",
+  };
+  const formatNotificationDate = (date: Date) =>
+    new Intl.DateTimeFormat(undefined, {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(date);
+  const payloadText = (notification: Notification, key: string) => {
+    const value = notification.payload[key];
+    return typeof value === "string" && value.trim().length > 0
+      ? value
+      : notification.templateKey;
+  };
 
   const markRead = useCallback(
     async (notification: Notification) => {
@@ -101,7 +134,17 @@ export const NotificationPopover = () => {
   return (
     <>
       <MenubarMenu>
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover
+          open={open}
+          onOpenChange={nextOpen => {
+            setOpen(nextOpen);
+            if (nextOpen && manageTimerRef.current !== null) {
+              window.clearTimeout(manageTimerRef.current);
+              manageTimerRef.current = null;
+            }
+            if (!nextOpen) setDetailNotificationId(null);
+          }}
+        >
           <PopoverTrigger asChild>
             <MenubarTrigger
               className="relative px-2 py-2 flex items-center justify-center"
@@ -126,12 +169,6 @@ export const NotificationPopover = () => {
                   {unreadCount} unread
                 </p>
               </div>
-              {unreadCount > 0 && (
-                <CheckCheckIcon
-                  className="size-4 text-primary"
-                  aria-hidden="true"
-                />
-              )}
             </div>
             <div className="max-h-[28rem] space-y-2 overflow-y-auto p-3">
               {listQuery.isPending && (
@@ -160,13 +197,83 @@ export const NotificationPopover = () => {
                     No notifications yet.
                   </div>
                 )}
-              {notifications.map(notification => (
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
-                  onClick={() => void markRead(notification)}
-                />
-              ))}
+              {notifications.map(notification => {
+                const isUnread = notification.readAt === null;
+                const title = payloadText(notification, "title");
+                const summary = payloadText(notification, "summary");
+                const content =
+                  summary !== notification.templateKey
+                    ? summary
+                    : payloadText(notification, "body");
+                const typeIcon =
+                  notification.type === "news" ? (
+                    <NewspaperIcon className="size-4" />
+                  ) : notification.type === "warning" ? (
+                    <AlertTriangleIcon className="size-4" />
+                  ) : notification.type === "important" ? (
+                    <AlertCircleIcon className="size-4" />
+                  ) : (
+                    <InfoIcon className="size-4" />
+                  );
+
+                return (
+                  <NotificationDetailPopover
+                    key={notification.id}
+                    notification={notification}
+                    open={detailNotificationId === notification.id}
+                    onOpenChange={nextOpen =>
+                      setDetailNotificationId(nextOpen ? notification.id : null)
+                    }
+                  >
+                    <button
+                      type="button"
+                      className={cn(
+                        "w-full rounded-md border p-3 text-left transition-colors",
+                        isUnread
+                          ? "border-primary/30 bg-accent/35"
+                          : "bg-background/40",
+                        "hover:bg-accent/60"
+                      )}
+                      onClick={() => {
+                        void markRead(notification);
+                      }}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span
+                          className={cn(
+                            "mt-0.5 shrink-0",
+                            priorityClassName[notification.priority]
+                          )}
+                          aria-hidden="true"
+                        >
+                          {typeIcon}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3
+                              className={cn(
+                                "line-clamp-1 text-sm",
+                                isUnread && "font-semibold"
+                              )}
+                            >
+                              {title}
+                            </h3>
+                            <time
+                              className="shrink-0 text-[10px] text-muted-foreground"
+                              dateTime={notification.createdAt.toISOString()}
+                            >
+                              {formatNotificationDate(notification.createdAt)}
+                            </time>
+                          </div>
+                          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                            {content}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  </NotificationDetailPopover>
+                );
+              })}
               {listQuery.hasNextPage && (
                 <Button
                   variant="ghost"
@@ -186,7 +293,10 @@ export const NotificationPopover = () => {
               className="w-full rounded-none border-x-0 border-b-0"
               onClick={() => {
                 setOpen(false);
-                setDialogOpen(true);
+                manageTimerRef.current = window.setTimeout(() => {
+                  manageTimerRef.current = null;
+                  setDialogOpen(true);
+                }, 250);
               }}
             >
               manage

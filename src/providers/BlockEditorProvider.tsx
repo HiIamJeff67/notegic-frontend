@@ -21,6 +21,8 @@ interface BlockEditorContextType {
   editor: BlockNoteEditor<any, any, any>;
   state: BlockEditorState;
   resync: () => Promise<void>;
+  maximumBlockCount: number | null;
+  rejectQuotaExceededEdit: () => void;
 }
 
 export const BlockEditorContext = createContext<
@@ -64,7 +66,6 @@ export const BlockEditorProvider = ({
       ),
     [blockPackMeta.id, requestedRealtimePermission, resyncBlockPackChannel]
   );
-
   const editor = useMemo(
     () =>
       NotezyBlockPackEditor.create({
@@ -85,6 +86,14 @@ export const BlockEditorProvider = ({
       }),
     [blockPackMeta.id, channel.doc, channel.provider, t, userData]
   );
+
+  const rejectQuotaExceededEdit = useCallback(() => {
+    channel.provider.setReadOnly(true);
+    editor.undo();
+    channel.provider.setReadOnly(
+      channel.permission === RealtimePermission.Read
+    );
+  }, [channel.permission, channel.provider, editor]);
 
   const state: BlockEditorState =
     channel.status === "ticketing" || channel.status === "subscribing"
@@ -139,7 +148,7 @@ export const BlockEditorProvider = ({
         },
       })
     );
-    router.replace(WebURLPathDictionary.root.blockPackEditor.index);
+    router.replace(WebURLPathDictionary.app.blockPackEditor.index);
   }, [
     blockPackMeta.id,
     blockPackMeta.rootId,
@@ -148,7 +157,15 @@ export const BlockEditorProvider = ({
   ]);
 
   return (
-    <BlockEditorContext.Provider value={{ editor, state, resync }}>
+    <BlockEditorContext.Provider
+      value={{
+        editor,
+        state,
+        resync,
+        maximumBlockCount: channel.maximumBlockCount,
+        rejectQuotaExceededEdit,
+      }}
+    >
       {children}
     </BlockEditorContext.Provider>
   );

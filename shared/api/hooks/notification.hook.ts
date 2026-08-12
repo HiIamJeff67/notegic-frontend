@@ -1,5 +1,8 @@
-import type { InfiniteData } from "@tanstack/react-query";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  getClientMutationHeaders,
+  getClientRequestHeaders,
+} from "@shared/api/clientHeaders";
+import { NotezyAPIError } from "@shared/api/exceptions";
 import type {
   DeleteNotificationsRequest,
   DeleteNotificationsResponse,
@@ -16,15 +19,12 @@ import {
   queryFnGetUnreadNotificationCount,
   queryFnListNotifications,
 } from "@shared/api/invokers/notification.invoker";
-import {
-  getClientMutationHeaders,
-  getClientRequestHeaders,
-} from "@shared/api/clientHeaders";
 import { getQueryClient } from "@shared/api/queryClient";
-import { NotezyAPIError } from "@shared/api/exceptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import type { InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 const persistCSRFToken = (response: {
   refreshableTokens?: { newCSRFToken?: string };
@@ -175,18 +175,9 @@ export const mergeRealtimeNotificationIntoCache = (
       };
     }
   );
-  if (notification.readAt === null) {
-    queryClient.setQueryData<GetUnreadNotificationCountResponse>(
-      queryKeys.notification.unreadCount(),
-      current =>
-        current
-          ? {
-              ...current,
-              data: { count: current.data.count + 1 },
-            }
-          : current
-    );
-  }
+  void queryClient.invalidateQueries({
+    queryKey: queryKeys.notification.unreadCount(),
+  });
 };
 
 export const refetchNotifications = () => {

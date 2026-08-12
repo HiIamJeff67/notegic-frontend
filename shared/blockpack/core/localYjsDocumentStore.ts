@@ -2,6 +2,8 @@ import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import {
   BlockPackYjsDocumentCache,
   BlockPackYjsDocumentCacheContent,
+  BlockPackYjsRejectedDraft,
+  BlockPackYjsRejectedDraftCache,
   IndexedDBKey,
 } from "@shared/types/indexedDB.type";
 import type { UUID } from "crypto";
@@ -104,5 +106,71 @@ export class LocalYjsDocumentStore {
       }
     );
     if (!isSaved) throw new Error("Failed to remove local Yjs document cache.");
+  }
+
+  static async saveRejectedDraft(
+    blockPackId: UUID,
+    update: Uint8Array
+  ): Promise<void> {
+    const cache = (await IndexedDBManipulator.getItemByKey(
+      IndexedDBKey.blockPackYjsRejectedDrafts
+    )) ?? { header: { totalSize: 0 }, contents: [] };
+    const draft: BlockPackYjsRejectedDraft = {
+      blockPackId,
+      update,
+      byteSize: update.byteLength,
+      createdAt: new Date(),
+    };
+    const contents = [
+      ...cache.contents.filter(item => item.blockPackId !== blockPackId),
+      draft,
+    ];
+    const nextCache: BlockPackYjsRejectedDraftCache = {
+      header: {
+        totalSize: contents.reduce((sum, item) => sum + item.byteSize, 0),
+      },
+      contents,
+    };
+    const isSaved = await IndexedDBManipulator.setItem(
+      IndexedDBKey.blockPackYjsRejectedDrafts,
+      nextCache
+    );
+    if (!isSaved) throw new Error("Failed to persist rejected Yjs draft.");
+  }
+
+  static async loadRejectedDraft(
+    blockPackId: UUID
+  ): Promise<BlockPackYjsRejectedDraft | null> {
+    const cache = await IndexedDBManipulator.getItemByKey(
+      IndexedDBKey.blockPackYjsRejectedDrafts
+    );
+    return (
+      cache?.contents.find(item => item.blockPackId === blockPackId) ?? null
+    );
+  }
+
+  static async removeRejectedDraft(blockPackId: UUID): Promise<void> {
+    const cache = await IndexedDBManipulator.getItemByKey(
+      IndexedDBKey.blockPackYjsRejectedDrafts
+    );
+    if (!cache) return;
+    const contents = cache.contents.filter(
+      item => item.blockPackId !== blockPackId
+    );
+    if (contents.length === 0) {
+      await IndexedDBManipulator.removeItem(
+        IndexedDBKey.blockPackYjsRejectedDrafts
+      );
+      return;
+    }
+    await IndexedDBManipulator.setItem(
+      IndexedDBKey.blockPackYjsRejectedDrafts,
+      {
+        header: {
+          totalSize: contents.reduce((sum, item) => sum + item.byteSize, 0),
+        },
+        contents,
+      }
+    );
   }
 }

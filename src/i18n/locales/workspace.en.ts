@@ -7,7 +7,7 @@ export const EnglishWorkspaceTranslation = {
     stations: "Stations",
     routineTags: "Routine tags",
     document: "Document",
-    introduction: "Introduction",
+    tutorial: "Tutorial",
     trash: "Trash",
     account: "Account",
     preferences: "Preferences",
@@ -572,7 +572,7 @@ export const EnglishWorkspaceTranslation = {
     materialNotFound: "Material not found.",
     materialIdNotFound: "Material {{id}} was not found.",
     documentComingSoon: "Documentation is coming soon.",
-    introductionComingSoon: "Introduction is coming soon.",
+    tutorialComingSoon: "Tutorial is coming soon.",
     downloadLocalDb: "Download local database file",
     logUsers: "Log all existing users",
     loadingTest: "Loading indicator test",
@@ -668,6 +668,63 @@ export const EnglishWorkspaceTranslation = {
     calendarDescription: "A calendar that supports marking selected days",
     scratchPad: "Scratch pad",
     scratchPadDescription: "A place to write Markdown text",
+    guideCompleted: "complete",
+    guidePreviousPage: "Previous guide page",
+    guideNextPage: "Next guide page",
+    guideHomeStep1Title: "Create a shelf",
+    guideHomeStep1Summary: "Use the create action in the sidebar.",
+    guideHomeStep1Detail:
+      "Open the create menu in the sidebar, choose Shelf, enter a name that describes the project or topic, then confirm. The new shelf becomes the top-level home for everything related to that work.",
+    guideHomeStep2Title: "Add a first item",
+    guideHomeStep2Summary: "Create a material or block pack inside it.",
+    guideHomeStep2Detail:
+      "Open the shelf and choose what you need: add a material for a file or reference, or create a block pack for editable notes. Give the item a recognizable name; you can move it into a sub shelf later.",
+    guideHomeStep3Title: "Return to the dashboard",
+    guideHomeStep3Summary: "Keep this page as your daily starting point.",
+    guideHomeStep3Detail:
+      "Open Dashboard from the main navigation after adding your first content. Arrange the widgets you use most and treat this page as the place to check context before continuing your work.",
+    guideOrganizeStep1Title: "Capture a material",
+    guideOrganizeStep1Summary:
+      "Save a note, file, or reference where it belongs.",
+    guideOrganizeStep1Detail:
+      "Open the shelf that best explains the source, create a material, and add the file or reference with a descriptive title. Keeping it beside related work makes both browsing and later search more useful.",
+    guideOrganizeStep2Title: "Group related content",
+    guideOrganizeStep2Summary:
+      "Use sub shelves and block packs to create useful boundaries.",
+    guideOrganizeStep2Detail:
+      "Create sub shelves for durable topics or projects, then use block packs for the notes developed inside them. Move related items together and keep group names specific enough to explain what belongs there.",
+    guideOrganizeStep3Title: "Search when you need it",
+    guideOrganizeStep3Summary:
+      "Use search instead of browsing through every shelf.",
+    guideOrganizeStep3Detail:
+      "Enter a distinctive word from the title or content in search, check the result path to confirm its shelf, then open the matching item. This is faster than expanding every branch once the workspace grows.",
+    guideRoutineStep1Title: "Create a routine",
+    guideRoutineStep1Summary: "Start a routine from the routines area.",
+    guideRoutineStep1Detail:
+      "Open the routines area, create a routine, and name the outcome it should produce. Add its tasks in execution order and configure each task with the workspace content or action it needs.",
+    guideRoutineStep2Title: "Choose a schedule",
+    guideRoutineStep2Summary: "Set when the routine should run.",
+    guideRoutineStep2Detail:
+      "Choose the correct timezone, cadence, and start time, then review the next scheduled run before saving. Prefer a frequency you can realistically review and maintain.",
+    guideRoutineStep3Title: "Review the result",
+    guideRoutineStep3Summary: "Check task records after the routine runs.",
+    guideRoutineStep3Detail:
+      "After a scheduled run, open its task records and inspect each status, output, and error. Correct the task configuration or schedule before retrying, and use later records to confirm the change worked.",
+    guides: "Guides",
+    guideTitle: "Getting started",
+    guideDescription: "A short path to your first useful workspace.",
+    guideFirstStepsTitle: "Create a home",
+    guideFirstStepsDescription:
+      "Start with a shelf for the work you want to keep close.",
+    guideOrganizeTitle: "Capture and organize",
+    guideOrganizeDescription:
+      "Add materials and block packs as your ideas grow.",
+    guideRoutineTitle: "Make it repeatable",
+    guideRoutineDescription:
+      "Use routines when a task or review should happen regularly.",
+    videoGuideTitle: "Walkthrough video",
+    videoGuideDescription: "A short product walkthrough will be added here.",
+    videoGuidePlaceholder: "Your walkthrough video will appear here.",
     clickToEdit: "Click to edit",
     memoPlaceholder: "Write a memo here...",
     saveChanges: "Save changes",

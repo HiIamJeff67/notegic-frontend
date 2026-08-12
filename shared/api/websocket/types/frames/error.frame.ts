@@ -24,10 +24,12 @@ export const parseRealtimeErrorFrame = (
   return {
     version: RealtimeProtocolVersion,
     type: "error",
-    requestId: typeof frame.requestId === "string" ? frame.requestId : undefined,
+    requestId:
+      typeof frame.requestId === "string" ? frame.requestId : undefined,
     code: frame.code,
     message: frame.message,
-    channelId: typeof frame.channelId === "string" ? frame.channelId : undefined,
+    channelId:
+      typeof frame.channelId === "string" ? frame.channelId : undefined,
     channelType:
       typeof frame.channelType === "string" ? frame.channelType : undefined,
     connectorChannelId:

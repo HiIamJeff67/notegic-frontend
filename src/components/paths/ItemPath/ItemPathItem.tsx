@@ -35,7 +35,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
       try {
         shelfItemManager.toggleBlockPack(current);
         router.push(
-          WebURLPathDictionary.root.blockPackEditor._(
+          WebURLPathDictionary.app.blockPackEditor._(
             current.id,
             parent.id,
             parent.rootShelfId
@@ -51,7 +51,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
   const handleMaterialOnClick = useCallback(
     (current: MaterialNode, parent: SubShelfNode) => {
       try {
-        const nextPath = WebURLPathDictionary.root.materialViewer.byId(
+        const nextPath = WebURLPathDictionary.app.materialViewer.byId(
           current.id,
           parent.id,
           parent.rootShelfId

@@ -10,10 +10,11 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CircleAlertIcon, Loader2Icon, Trash2Icon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NotificationItem } from "@/components/notifications/NotificationItem";
+import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const NotificationDialog = ({
   open,
@@ -36,6 +44,10 @@ export const NotificationDialog = ({
   const listQuery = useNotifications(open);
   const deleteMutation = useDeleteNotifications();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [detailNotificationId, setDetailNotificationId] = useState<
+    string | null
+  >(null);
+  const closeTimerRef = useRef<number | null>(null);
   const notifications =
     listQuery.data?.pages.flatMap(page =>
       page.data.searchEdges.map(edge => edge.node)
@@ -43,6 +55,35 @@ export const NotificationDialog = ({
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const allSelected =
     notifications.length > 0 && selectedIds.length === notifications.length;
+  const payloadText = (notification: Notification, key: string) => {
+    const value = notification.payload[key];
+    return typeof value === "string" && value.trim().length > 0
+      ? value
+      : notification.templateKey;
+  };
+  const truncate = (value: string, length = 80) =>
+    value.length > length ? `${value.slice(0, length - 1)}…` : value;
+  const formatNotificationDate = (date: Date) =>
+    new Intl.DateTimeFormat(undefined, {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(date);
+  const formatPayload = (payload: Notification["payload"]) => {
+    try {
+      return JSON.stringify(payload);
+    } catch {
+      return "Unable to display payload";
+    }
+  };
+
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    },
+    []
+  );
 
   const toggleSelected = (notification: Notification, selected: boolean) => {
     setSelectedIds(current =>
@@ -126,11 +167,28 @@ export const NotificationDialog = ({
     <Dialog
       open={open}
       onOpenChange={nextOpen => {
-        if (!nextOpen) setSelectedIds([]);
-        onOpenChange(nextOpen);
+        if (nextOpen) {
+          if (closeTimerRef.current !== null) {
+            window.clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+          }
+          onOpenChange(true);
+          return;
+        }
+
+        setDetailNotificationId(null);
+        setSelectedIds([]);
+        if (closeTimerRef.current !== null) {
+          window.clearTimeout(closeTimerRef.current);
+        }
+        // Let the nested modal popover finish unmounting before Dialog does.
+        closeTimerRef.current = window.setTimeout(() => {
+          closeTimerRef.current = null;
+          onOpenChange(false);
+        }, 250);
       }}
     >
-      <DialogContent className="flex max-h-[min(90vh,52rem)] flex-col sm:max-w-2xl">
+      <DialogContent className="flex max-h-[min(90vh,52rem)] flex-col sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>{t("workspace.navigation.notifications")}</DialogTitle>
           <DialogDescription>
@@ -162,7 +220,7 @@ export const NotificationDialog = ({
           </span>
         </div>
 
-        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+        <div className="min-h-0 flex-1 overflow-auto pr-1">
           {listQuery.isPending && (
             <div className="flex items-center justify-center py-10 text-muted-foreground">
               <Loader2Icon className="mr-2 size-4 animate-spin" />
@@ -189,17 +247,93 @@ export const NotificationDialog = ({
                 No notifications yet.
               </div>
             )}
-          {notifications.map(notification => (
-            <NotificationItem
-              key={notification.id}
-              notification={notification}
-              selectable
-              selected={selectedSet.has(notification.id)}
-              onSelectedChange={selected =>
-                toggleSelected(notification, selected)
-              }
-            />
-          ))}
+          {!listQuery.isPending &&
+            !listQuery.isError &&
+            notifications.length > 0 && (
+              <Table className="min-w-[58rem]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">Select</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Content</TableHead>
+                    <TableHead>Payload</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {notifications.map(notification => {
+                    const summary = payloadText(notification, "summary");
+                    const content =
+                      summary !== notification.templateKey
+                        ? summary
+                        : payloadText(notification, "body");
+                    const payload = formatPayload(notification.payload);
+
+                    return (
+                      <NotificationDetailPopover
+                        key={notification.id}
+                        notification={notification}
+                        open={detailNotificationId === notification.id}
+                        onOpenChange={nextOpen =>
+                          setDetailNotificationId(
+                            nextOpen ? notification.id : null
+                          )
+                        }
+                      >
+                        <TableRow
+                          className="cursor-pointer"
+                          data-state={
+                            selectedSet.has(notification.id)
+                              ? "selected"
+                              : undefined
+                          }
+                        >
+                          <TableCell onClick={event => event.stopPropagation()}>
+                            <Checkbox
+                              checked={selectedSet.has(notification.id)}
+                              aria-label={`Select ${payloadText(notification, "title")}`}
+                              onCheckedChange={checked =>
+                                toggleSelected(notification, checked === true)
+                              }
+                            />
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {notification.type}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {notification.priority}
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className="block max-w-[16rem] truncate"
+                              title={content}
+                            >
+                              {truncate(content)}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <code
+                              className="block max-w-[16rem] truncate text-xs"
+                              title={payload}
+                            >
+                              {truncate(payload)}
+                            </code>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap text-xs">
+                            {formatNotificationDate(notification.createdAt)}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {notification.readAt === null ? "Unread" : "Read"}
+                          </TableCell>
+                        </TableRow>
+                      </NotificationDetailPopover>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
           {listQuery.hasNextPage && (
             <Button
               variant="ghost"

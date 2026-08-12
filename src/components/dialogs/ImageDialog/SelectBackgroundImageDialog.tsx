@@ -2,6 +2,7 @@ import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { dashboardHeaderBackgroundImageOptions } from "@/assets/backgrounds";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,8 +34,9 @@ const SelectBackgroundImageDialog = ({
 
   const thumbnails = backgroundImagesManager.thumbnails?.contents || [];
 
-  const [selectedBackgroundImageId, setSelectedBackgroundImageId] =
-    useState<UUID | null>(null);
+  const [selectedBackgroundImageId, setSelectedBackgroundImageId] = useState<
+    string | null
+  >(null);
   const [croppedBackgroundImagePack, setCroppedBackgroundImagePack] = useState<{
     url: string;
     revoke: () => void;
@@ -62,13 +64,22 @@ const SelectBackgroundImageDialog = ({
       return;
     }
 
-    if (thumbnails.length === 0) {
-      setSelectedBackgroundImageId(null);
-    } else if (selectedBackgroundImageId === null) {
-      setSelectedBackgroundImageId(thumbnails[thumbnails.length - 1].id);
+    if (backgroundImagesManager.currentBackgroundImage === null) {
+      setSelectedBackgroundImageId(
+        backgroundImagesManager.defaultBackgroundImageId
+      );
+      return;
+    }
+
+    if (selectedBackgroundImageId === null) {
+      setSelectedBackgroundImageId(
+        thumbnails[thumbnails.length - 1]?.id ??
+          backgroundImagesManager.defaultBackgroundImageId
+      );
     }
   }, [
     backgroundImagesManager.currentBackgroundImage?.id,
+    backgroundImagesManager.defaultBackgroundImageId,
     thumbnails,
     selectedBackgroundImageId,
   ]);
@@ -108,7 +119,7 @@ const SelectBackgroundImageDialog = ({
           if (!selectedBackgroundImageId) return;
 
           const imagePack = await backgroundImagesManager.getFullImageURL(
-            selectedBackgroundImageId
+            selectedBackgroundImageId as UUID
           );
           setCroppedBackgroundImagePack(imagePack);
           setCropImageDialogOpen(true);
@@ -119,11 +130,18 @@ const SelectBackgroundImageDialog = ({
     [selectedBackgroundImageId, backgroundImagesManager, t]
   );
 
-  const handleThumbnailOnSelect = useCallback(
-    async (id: UUID) => {
+  const handleBackgroundOnSelect = useCallback(
+    async (id: string) => {
       setSelectedBackgroundImageId(id);
       try {
-        await backgroundImagesManager.setCurrentBackgroundImageById(id);
+        if (id.startsWith("default-")) {
+          backgroundImagesManager.setDefaultBackgroundImageById(id);
+          await backgroundImagesManager.setCurrentBackgroundImageByFile(null);
+        } else {
+          await backgroundImagesManager.setCurrentBackgroundImageById(
+            id as UUID
+          );
+        }
       } catch (error) {
         toast.error(translateError(error, t));
       }
@@ -132,7 +150,7 @@ const SelectBackgroundImageDialog = ({
   );
 
   const handleThumbnailOnRemove = useCallback(
-    async (id: UUID) => {
+    async (id: string) => {
       try {
         const remainingIds = thumbnails
           .filter(thumb => thumb.id !== id)
@@ -140,11 +158,18 @@ const SelectBackgroundImageDialog = ({
         const fallbackId =
           remainingIds.length > 0
             ? remainingIds[remainingIds.length - 1]
-            : null;
+            : backgroundImagesManager.defaultBackgroundImageId;
 
-        await backgroundImagesManager.remove([id]);
+        await backgroundImagesManager.remove([id as UUID]);
         setSelectedBackgroundImageId(fallbackId);
-        await backgroundImagesManager.setCurrentBackgroundImageById(fallbackId);
+        if (fallbackId.startsWith("default-")) {
+          backgroundImagesManager.setDefaultBackgroundImageById(fallbackId);
+          await backgroundImagesManager.setCurrentBackgroundImageByFile(null);
+        } else {
+          await backgroundImagesManager.setCurrentBackgroundImageById(
+            fallbackId as UUID
+          );
+        }
       } catch (error) {
         toast.error(translateError(error, t));
       }
@@ -208,44 +233,59 @@ const SelectBackgroundImageDialog = ({
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto max-h-[60vh] w-full mt-4 p-2">
-          {thumbnails.length === 0 ? (
-            <div className="col-span-full text-center text-muted-foreground py-8">
-              {t("workspace.dialogs.noBackgroundImages")}
-            </div>
-          ) : (
-            thumbnails.map(thumb => (
-              <div
-                key={thumb.id}
-                onClick={() => handleThumbnailOnSelect(thumb.id)}
-                className={`
+          {[
+            ...dashboardHeaderBackgroundImageOptions.map(image => ({
+              id: image.id,
+              thumbnailURL: image.src,
+              isDefault: true,
+            })),
+            ...thumbnails.map(thumb => ({
+              id: thumb.id,
+              thumbnailURL: thumb.thumbnailURL,
+              isDefault: false,
+            })),
+          ].map(image => (
+            <div
+              key={image.id}
+              onClick={() => void handleBackgroundOnSelect(image.id)}
+              className={`
                     cursor-pointer relative aspect-video rounded-lg overflow-hidden border-2 transition-all
                     ${
-                      selectedBackgroundImageId === thumb.id
+                      selectedBackgroundImageId === image.id
                         ? "border-primary shadow-lg scale-105"
                         : "border-transparent hover:border-foreground/50"
                     }
                     `}
-              >
+            >
+              {image.isDefault ? (
+                <img
+                  src={image.thumbnailURL}
+                  alt={t("workspace.dialogs.backgroundThumbnail")}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
                 <Closeable
-                  onClose={() => handleThumbnailOnRemove(thumb.id)}
+                  onClose={() => void handleThumbnailOnRemove(image.id)}
                   hasParent
                 >
-                  {/* leave the client images to use the original react img component */}
                   <img
-                    src={thumb.thumbnailURL}
+                    src={image.thumbnailURL}
                     alt={t("workspace.dialogs.backgroundThumbnail")}
                     className="w-full h-full object-cover"
                   />
                 </Closeable>
-              </div>
-            ))
-          )}
+              )}
+            </div>
+          ))}
         </div>
         <div className="w-full flex justify-end gap-2 mt-4">
           <Button
             variant="secondary"
             className="w-20"
-            disabled={selectedBackgroundImageId === null}
+            disabled={
+              selectedBackgroundImageId === null ||
+              selectedBackgroundImageId.startsWith("default-")
+            }
             onClick={handleCropImageOnSelect}
           >
             {t("workspace.dialogs.crop")}

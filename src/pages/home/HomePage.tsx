@@ -1,4 +1,3 @@
-import { localDB } from "@shared/api/local/db";
 import { WebURLPathDictionary } from "@shared/constants";
 import { BookTextIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
@@ -103,7 +102,7 @@ export const HomePage = () => {
                   displayTitle
                     ? "max-w-[400px] text-6xl"
                     : "max-w-[600px] text-4xl"
-                } 
+                }
                 font-bold pb-2 leading-tight text-center
               `}
               >
@@ -117,7 +116,7 @@ export const HomePage = () => {
                 variant="secondary"
                 className="pointer-events-auto cursor-pointer font-bold hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
                 onClick={() => {
-                  router.push(WebURLPathDictionary.root.document);
+                  router.push(WebURLPathDictionary.document);
                 }}
               >
                 <BookTextIcon size={18} />

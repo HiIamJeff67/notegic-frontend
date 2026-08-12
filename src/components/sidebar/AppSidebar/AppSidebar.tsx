@@ -1,5 +1,4 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { NotificationPopover } from "@/components/popovers/NotificationPopover";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -31,6 +30,7 @@ import {
 import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";
+import { NotificationPopover } from "@/components/popovers/NotificationPopover";
 import ResizableSidebar from "@/components/sidebar/ResizableSidebar/ResizableSidebar";
 import {
   Collapsible,
@@ -105,8 +105,8 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
 
     router.push(
       page === "account"
-        ? WebURLPathDictionary.root.setting.account
-        : WebURLPathDictionary.root.setting.preferences
+        ? WebURLPathDictionary.app.setting.account
+        : WebURLPathDictionary.app.setting.preferences
     );
   };
 
@@ -117,12 +117,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
       await shelfItemManager
         .searchRootShelves()
         .catch(error => toast.error(translateError(error, t)));
-    const initiallyLoadStationRoutineData = async () =>
-      await stationRoutineManager
-        .initializeStationRoutineData()
-        .catch(error => toast.error(translateError(error, t)));
     initiallySearchRootShelves();
-    initiallyLoadStationRoutineData();
   }, [userManager.userData?.publicId]);
 
   return (
@@ -143,7 +138,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 <SidebarMenuButton
                   className="w-19/20 bg-transparent hover:bg-primary flex justify-start items-center select-none"
                   onClick={() =>
-                    router.push(WebURLPathDictionary.root.dashboard._)
+                    router.push(WebURLPathDictionary.app.dashboard._)
                   }
                 >
                   <LayoutDashboardIcon />
@@ -164,7 +159,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                     sidebarManager.open ? "justify-start" : "justify-center"
                   } items-center select-none hover:bg-primary`}
                   onClick={() =>
-                    router.push(WebURLPathDictionary.root.routines._)
+                    router.push(WebURLPathDictionary.app.routines._)
                   }
                 >
                   <RoutineIcon />
@@ -315,7 +310,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 className={`w-full flex ${
                   sidebarManager.open ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
-                onClick={() => router.push(WebURLPathDictionary.root.document)}
+                onClick={() => router.push(WebURLPathDictionary.document)}
               >
                 <FileTextIcon />
                 {sidebarManager.open && (
@@ -330,14 +325,12 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 className={`w-full flex ${
                   sidebarManager.open ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
-                onClick={() =>
-                  router.push(WebURLPathDictionary.root.introduction)
-                }
+                onClick={() => router.push(WebURLPathDictionary.tutorial)}
               >
                 <BookOpenIcon />
                 {sidebarManager.open && (
                   <span className="truncate">
-                    {t("workspace.navigation.introduction")}
+                    {t("workspace.navigation.tutorial")}
                   </span>
                 )}
               </SidebarMenuButton>
@@ -347,7 +340,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 className={`w-full flex ${
                   sidebarManager.open ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
-                onClick={() => router.push(WebURLPathDictionary.root.trash)}
+                onClick={() => router.push(WebURLPathDictionary.app.trash)}
               >
                 <Trash2Icon />
                 {sidebarManager.open && (

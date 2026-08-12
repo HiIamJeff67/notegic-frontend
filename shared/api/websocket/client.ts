@@ -18,8 +18,8 @@ import {
   type RealtimeConnectionState,
   type RealtimeConnectionTicket,
   type RealtimeErrorFrame,
-  type RealtimePresenceFrame,
   type RealtimeNotificationFrame,
+  type RealtimePresenceFrame,
   type RealtimeRegisteredChannel,
   type RealtimeResourceEventFrame,
   type RealtimeSubscribedFrame,
@@ -43,6 +43,10 @@ type RealtimeClientOptions = {
     frame: RealtimeSubscribedFrame,
     permission: z.infer<typeof RealtimePermissionSchema>
   ) => void;
+  onChannelTicket?: (
+    blockPackId: string,
+    ticket: RealtimeBlockPackChannelTicket
+  ) => void;
   onChannelBinary?: (blockPackId: string, frame: RealtimeBinaryFrame) => void;
   onChannelError?: (blockPackId: string, frame: RealtimeErrorFrame) => void;
   onPresence?: (blockPackId: string, frame: RealtimePresenceFrame) => void;
@@ -56,6 +60,15 @@ const logRealtimeClient = (message: string, data?: Record<string, unknown>) => {
     console.debug(`[RealtimeClient] ${message}`, data ?? "");
   }
 };
+
+const serverDetachedChannelCodes = new Set<RealtimeErrorFrame["code"]>([
+  "permission_revoked",
+  "resource_unavailable",
+  "resync_required",
+  "channel_backpressure",
+  "worker_unavailable",
+  "block_pack_quota_exceeded",
+]);
 
 export class RealtimeClient {
   private socket: WebSocket | null = null;
@@ -127,7 +140,11 @@ export class RealtimeClient {
         this.registerBlockPackChannel(blockPackId, permission);
         return;
       }
-      if (existing.connectorChannelId === null) {
+      if (existing.resyncRequired) return;
+      if (
+        existing.connectorChannelId === null &&
+        existing.pendingRequestId === null
+      ) {
         void this.subscribeBlockPackChannel(existing);
       }
       return;
@@ -139,6 +156,9 @@ export class RealtimeClient {
       connectorChannelId: null,
       pendingRequestId: null,
       ticketRetryCount: 0,
+      resyncRequired: false,
+      documentQuotaPolicyVersion: null,
+      maximumBlockCount: null,
     };
     this.channels.set(blockPackId, channel);
     logRealtimeClient("register block pack channel", {
@@ -152,28 +172,57 @@ export class RealtimeClient {
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
 
-    if (channel.connectorChannelId !== null && this.isSocketOpen()) {
+    const connectorChannelId = channel.connectorChannelId;
+    const pendingRequestId = channel.pendingRequestId;
+    if (
+      connectorChannelId !== null &&
+      pendingRequestId === null &&
+      this.isSocketOpen()
+    ) {
       this.sendControlFrame(
         "unsubscribe",
         encodeRealtimeUnsubscribeFrame({
           requestId: this.createRequestId("unsubscribe"),
-          connectorChannelId: channel.connectorChannelId,
+          connectorChannelId,
         })
       );
-      this.channelByConnectorId.delete(channel.connectorChannelId);
+      this.channelByConnectorId.delete(connectorChannelId);
     }
-    if (channel.pendingRequestId) {
-      this.channelByRequestId.delete(channel.pendingRequestId);
+    if (connectorChannelId !== null) {
+      this.channelByConnectorId.delete(connectorChannelId);
     }
+    if (pendingRequestId !== null) {
+      this.channelByRequestId.delete(pendingRequestId);
+    }
+    channel.connectorChannelId = null;
+    channel.pendingRequestId = null;
+    channel.resyncRequired = false;
     this.channels.delete(blockPackId);
     this.options.onChannelStatus?.(blockPackId, "unsubscribed");
+  }
+
+  resetBlockPackChannel(blockPackId: string) {
+    const channel = this.channels.get(blockPackId);
+    if (!channel) return;
+
+    if (channel.connectorChannelId !== null) {
+      this.channelByConnectorId.delete(channel.connectorChannelId);
+    }
+    if (channel.pendingRequestId !== null) {
+      this.channelByRequestId.delete(channel.pendingRequestId);
+    }
+    channel.connectorChannelId = null;
+    channel.pendingRequestId = null;
+    channel.ticketRetryCount = 0;
+    channel.resyncRequired = false;
+    this.channels.delete(blockPackId);
   }
 
   sendBlockPackBinary(
     blockPackId: string,
     type: RealtimeBinaryFrameType,
     payload: Uint8Array
-  ) {
+  ): boolean {
     const channel = this.channels.get(blockPackId);
     if (!channel) {
       logRealtimeClient("skip binary send: channel not registered", {
@@ -181,7 +230,15 @@ export class RealtimeClient {
         type,
         byteLength: payload.byteLength,
       });
-      return;
+      return false;
+    }
+    if (channel.resyncRequired) {
+      logRealtimeClient("skip binary send: channel requires explicit resync", {
+        blockPackId,
+        type,
+        byteLength: payload.byteLength,
+      });
+      return false;
     }
     if (channel.connectorChannelId === null) {
       logRealtimeClient("skip binary send: channel not subscribed", {
@@ -189,7 +246,7 @@ export class RealtimeClient {
         type,
         byteLength: payload.byteLength,
       });
-      return;
+      return false;
     }
     if (!this.isSocketOpen()) {
       logRealtimeClient("skip binary send: socket not open", {
@@ -197,7 +254,7 @@ export class RealtimeClient {
         type,
         byteLength: payload.byteLength,
       });
-      return;
+      return false;
     }
     if (
       channel.permission === RealtimePermission.Read &&
@@ -208,7 +265,7 @@ export class RealtimeClient {
         type,
         byteLength: payload.byteLength,
       });
-      return;
+      return false;
     }
 
     logRealtimeClient("send binary frame", {
@@ -224,6 +281,7 @@ export class RealtimeClient {
         payload,
       })
     );
+    return true;
   }
 
   private async connect() {
@@ -337,7 +395,13 @@ export class RealtimeClient {
           encodeRealtimePingFrame(this.createRequestId("ping"))
         );
         if (frame.resubscribeRequired) {
-          for (const channel of this.channels.values()) {
+          this.clearConnectorState();
+        }
+        for (const channel of this.channels.values()) {
+          if (
+            !channel.resyncRequired &&
+            (frame.resubscribeRequired || channel.connectorChannelId === null)
+          ) {
             void this.subscribeBlockPackChannel(channel);
           }
         }
@@ -380,10 +444,23 @@ export class RealtimeClient {
       });
       return;
     }
+    if (channel.resyncRequired) {
+      logRealtimeClient("skip subscribe: explicit resync required", {
+        blockPackId: channel.blockPackId,
+      });
+      return;
+    }
     if (channel.pendingRequestId !== null) {
       logRealtimeClient("skip subscribe: request already pending", {
         blockPackId: channel.blockPackId,
         pendingRequestId: channel.pendingRequestId,
+      });
+      return;
+    }
+    if (channel.connectorChannelId !== null) {
+      logRealtimeClient("skip subscribe: channel already subscribed", {
+        blockPackId: channel.blockPackId,
+        connectorChannelId: channel.connectorChannelId,
       });
       return;
     }
@@ -405,6 +482,9 @@ export class RealtimeClient {
 
       const requestedPermission = channel.permission;
       channel.permission = ticket.permission;
+      channel.documentQuotaPolicyVersion = ticket.documentQuotaPolicyVersion;
+      channel.maximumBlockCount = ticket.maximumBlockCount;
+      this.options.onChannelTicket?.(channel.blockPackId, ticket);
       this.channelByRequestId.set(requestId, channel.blockPackId);
       this.options.onChannelStatus?.(channel.blockPackId, "subscribing");
       logRealtimeClient("send subscribe frame", {
@@ -433,10 +513,23 @@ export class RealtimeClient {
 
   private handleSubscribed(frame: RealtimeSubscribedFrame) {
     const blockPackId =
-      (frame.requestId && this.channelByRequestId.get(frame.requestId)) ||
-      frame.channelId;
+      frame.requestId !== undefined
+        ? this.channelByRequestId.get(frame.requestId)
+        : frame.channelId;
+    if (!blockPackId) return;
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
+    if (
+      frame.requestId !== undefined &&
+      channel.pendingRequestId !== frame.requestId
+    ) {
+      logRealtimeClient("ignore stale subscribed frame", {
+        blockPackId,
+        requestId: frame.requestId,
+        pendingRequestId: channel.pendingRequestId,
+      });
+      return;
+    }
 
     if (channel.pendingRequestId) {
       this.channelByRequestId.delete(channel.pendingRequestId);
@@ -483,6 +576,13 @@ export class RealtimeClient {
         : undefined);
 
     if (!blockPackId) {
+      if (frame.code === "channel_not_found") {
+        logRealtimeClient("ignore channel_not_found for detached channel", {
+          connectorChannelId: frame.connectorChannelId,
+          requestId: frame.requestId,
+        });
+        return;
+      }
       this.options.onError?.(frame);
       return;
     }
@@ -511,37 +611,39 @@ export class RealtimeClient {
       }
     }
 
-    if (
-      frame.code === "permission_revoked" ||
-      frame.code === "resource_unavailable" ||
-      frame.code === "resync_required" ||
-      frame.code === "channel_backpressure" ||
-      frame.code === "worker_unavailable"
-    ) {
+    if (frame.code === "channel_not_found") {
       const channel = this.channels.get(blockPackId);
-      const connectorChannelId =
-        frame.connectorChannelId ?? channel?.connectorChannelId ?? null;
-      if (connectorChannelId !== null) {
-        if (this.isSocketOpen()) {
-          this.sendControlFrame(
-            "unsubscribe",
-            encodeRealtimeUnsubscribeFrame({
-              requestId: this.createRequestId("unsubscribe"),
-              connectorChannelId,
-            })
-          );
-        }
-        this.channelByConnectorId.delete(connectorChannelId);
-      }
       if (channel) {
-        if (channel.pendingRequestId) {
+        if (channel.connectorChannelId !== null) {
+          this.channelByConnectorId.delete(channel.connectorChannelId);
+        }
+        if (channel.pendingRequestId !== null) {
+          this.channelByRequestId.delete(channel.pendingRequestId);
+        }
+        channel.connectorChannelId = null;
+        channel.pendingRequestId = null;
+      }
+      this.options.onChannelError?.(blockPackId, frame);
+      return;
+    }
+
+    if (serverDetachedChannelCodes.has(frame.code)) {
+      const channel = this.channels.get(blockPackId);
+      const connectorChannelId = frame.connectorChannelId ?? null;
+      if (connectorChannelId !== null)
+        this.channelByConnectorId.delete(connectorChannelId);
+      if (channel) {
+        if (channel.connectorChannelId !== null) {
+          this.channelByConnectorId.delete(channel.connectorChannelId);
+        }
+        if (channel.pendingRequestId !== null) {
           this.channelByRequestId.delete(channel.pendingRequestId);
         }
         channel.connectorChannelId = null;
         channel.pendingRequestId = null;
         channel.ticketRetryCount = 0;
+        channel.resyncRequired = true;
       }
-      this.channels.delete(blockPackId);
     }
 
     this.options.onChannelStatus?.(blockPackId, "error");

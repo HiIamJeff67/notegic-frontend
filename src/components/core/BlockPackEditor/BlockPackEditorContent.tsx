@@ -41,7 +41,7 @@ import toast from "@shared/lib/toast";
 import { cn } from "@shared/util/utils";
 import { ChevronDownIcon } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
   BlockPackMeta,
@@ -61,7 +61,9 @@ const BlockPackEditorContent = ({
   const shelfItemManager = useShelfItem();
   const { preferences } = useLocalPreferences();
 
-  const { editor, state, resync } = useBlockEditor();
+  const { editor, state, resync, maximumBlockCount, rejectQuotaExceededEdit } =
+    useBlockEditor();
+  const isRejectingQuotaEdit = useRef(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isResyncing, setIsResyncing] = useState(false);
   const [isImporting, startImportingTransition] = useTransition();
@@ -73,6 +75,31 @@ const BlockPackEditorContent = ({
   }[preferences.editorWidth];
   const shouldShowSideMenu =
     preferences.quickInsert || preferences.blockDragHandle;
+
+  const countBlocks = (blocks: Array<{ children?: unknown }>): number =>
+    blocks.reduce(
+      (count, block) =>
+        count +
+        1 +
+        (Array.isArray(block.children) ? countBlocks(block.children) : 0),
+      0
+    );
+
+  const handleEditorChange = () => {
+    if (
+      isRejectingQuotaEdit.current ||
+      maximumBlockCount === null ||
+      state !== "ready" ||
+      countBlocks(editor.document) <= maximumBlockCount
+    ) {
+      return;
+    }
+
+    isRejectingQuotaEdit.current = true;
+    rejectQuotaExceededEdit();
+    isRejectingQuotaEdit.current = false;
+    toast.error(t("workspace.notifications.realtimeError"));
+  };
 
   useEffect(() => {
     const editorElement = editor.domElement;
@@ -446,6 +473,7 @@ const BlockPackEditorContent = ({
             <BlockNoteView
               editor={editor}
               editable={state !== "readOnly"}
+              onChange={handleEditorChange}
               sideMenu={false}
               spellCheck={preferences.spellcheck}
               className={cn(

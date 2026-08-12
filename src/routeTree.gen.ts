@@ -9,38 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IntroductionRouteImport } from './routes/introduction'
+import { Route as TutorialRouteImport } from './routes/tutorial'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as DocumentRouteImport } from './routes/document'
-import { Route as RootRouteImport } from './routes/_root'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RootTrashRouteImport } from './routes/_root.trash'
-import { Route as RootRoutinesRouteImport } from './routes/_root.routines'
-import { Route as RootPrivacyPolicyRouteImport } from './routes/_root.privacy-policy'
-import { Route as RootPlaygroundRouteImport } from './routes/_root.playground'
-import { Route as RootMaterialViewerRouteImport } from './routes/_root.material-viewer'
-import { Route as RootDashboardRouteImport } from './routes/_root.dashboard'
-import { Route as RootBlockPackEditorRouteImport } from './routes/_root.block-pack-editor'
-import { Route as RootAdminRouteImport } from './routes/_root.admin'
+import { Route as AppTrashRouteImport } from './routes/app.trash'
+import { Route as AppRoutinesRouteImport } from './routes/app.routines'
+import { Route as AppPlaygroundRouteImport } from './routes/app.playground'
+import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppBlockPackEditorRouteImport } from './routes/app.block-pack-editor'
+import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AuthForgetPasswordRouteImport } from './routes/_auth.forgetPassword'
-import { Route as RootRoutinesIndexRouteImport } from './routes/_root.routines.index'
-import { Route as RootMaterialViewerIndexRouteImport } from './routes/_root.material-viewer.index'
-import { Route as RootDashboardIndexRouteImport } from './routes/_root.dashboard.index'
-import { Route as RootBlockPackEditorIndexRouteImport } from './routes/_root.block-pack-editor.index'
-import { Route as RootSettingPreferencesRouteImport } from './routes/_root.setting.preferences'
-import { Route as RootSettingAccountRouteImport } from './routes/_root.setting.account'
-import { Route as RootRoutinesStationIdRouteImport } from './routes/_root.routines.$stationId'
-import { Route as RootMaterialViewerMaterialIdRouteImport } from './routes/_root.material-viewer.$materialId'
-import { Route as RootBlockPackEditorBlockPackIdRouteImport } from './routes/_root.block-pack-editor.$blockPackId'
+import { Route as AppRoutinesIndexRouteImport } from './routes/app.routines.index'
+import { Route as AppMaterialViewerIndexRouteImport } from './routes/app.material-viewer.index'
+import { Route as AppDashboardIndexRouteImport } from './routes/app.dashboard.index'
+import { Route as AppBlockPackEditorIndexRouteImport } from './routes/app.block-pack-editor.index'
+import { Route as AppSettingPreferencesRouteImport } from './routes/app.setting.preferences'
+import { Route as AppSettingAccountRouteImport } from './routes/app.setting.account'
+import { Route as AppRoutinesStationIdRouteImport } from './routes/app.routines.$stationId'
+import { Route as AppMaterialViewerMaterialIdRouteImport } from './routes/app.material-viewer.$materialId'
+import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.block-pack-editor.$blockPackId'
 import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
 import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
 import { Route as AuthRedirectErrorRouteImport } from './routes/_auth.redirect.error'
 
-const IntroductionRoute = IntroductionRouteImport.update({
-  id: '/introduction',
-  path: '/introduction',
+const TutorialRoute = TutorialRouteImport.update({
+  id: '/tutorial',
+  path: '/tutorial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocumentRoute = DocumentRouteImport.update({
@@ -48,8 +53,9 @@ const DocumentRoute = DocumentRouteImport.update({
   path: '/document',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RootRoute = RootRouteImport.update({
-  id: '/_root',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -61,45 +67,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RootTrashRoute = RootTrashRouteImport.update({
+const AppTrashRoute = AppTrashRouteImport.update({
   id: '/trash',
   path: '/trash',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootRoutinesRoute = RootRoutinesRouteImport.update({
+const AppRoutinesRoute = AppRoutinesRouteImport.update({
   id: '/routines',
   path: '/routines',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootPrivacyPolicyRoute = RootPrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => RootRoute,
-} as any)
-const RootPlaygroundRoute = RootPlaygroundRouteImport.update({
+const AppPlaygroundRoute = AppPlaygroundRouteImport.update({
   id: '/playground',
   path: '/playground',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootMaterialViewerRoute = RootMaterialViewerRouteImport.update({
+const AppMaterialViewerRoute = AppMaterialViewerRouteImport.update({
   id: '/material-viewer',
   path: '/material-viewer',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootDashboardRoute = RootDashboardRouteImport.update({
+const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootBlockPackEditorRoute = RootBlockPackEditorRouteImport.update({
+const AppBlockPackEditorRoute = AppBlockPackEditorRouteImport.update({
   id: '/block-pack-editor',
   path: '/block-pack-editor',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootAdminRoute = RootAdminRouteImport.update({
+const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
@@ -116,53 +117,52 @@ const AuthForgetPasswordRoute = AuthForgetPasswordRouteImport.update({
   path: '/forgetPassword',
   getParentRoute: () => AuthRoute,
 } as any)
-const RootRoutinesIndexRoute = RootRoutinesIndexRouteImport.update({
+const AppRoutinesIndexRoute = AppRoutinesIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => RootRoutinesRoute,
+  getParentRoute: () => AppRoutinesRoute,
 } as any)
-const RootMaterialViewerIndexRoute = RootMaterialViewerIndexRouteImport.update({
+const AppMaterialViewerIndexRoute = AppMaterialViewerIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => RootMaterialViewerRoute,
+  getParentRoute: () => AppMaterialViewerRoute,
 } as any)
-const RootDashboardIndexRoute = RootDashboardIndexRouteImport.update({
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => RootDashboardRoute,
+  getParentRoute: () => AppDashboardRoute,
 } as any)
-const RootBlockPackEditorIndexRoute =
-  RootBlockPackEditorIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => RootBlockPackEditorRoute,
-  } as any)
-const RootSettingPreferencesRoute = RootSettingPreferencesRouteImport.update({
+const AppBlockPackEditorIndexRoute = AppBlockPackEditorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBlockPackEditorRoute,
+} as any)
+const AppSettingPreferencesRoute = AppSettingPreferencesRouteImport.update({
   id: '/setting/preferences',
   path: '/setting/preferences',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootSettingAccountRoute = RootSettingAccountRouteImport.update({
+const AppSettingAccountRoute = AppSettingAccountRouteImport.update({
   id: '/setting/account',
   path: '/setting/account',
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const RootRoutinesStationIdRoute = RootRoutinesStationIdRouteImport.update({
+const AppRoutinesStationIdRoute = AppRoutinesStationIdRouteImport.update({
   id: '/$stationId',
   path: '/$stationId',
-  getParentRoute: () => RootRoutinesRoute,
+  getParentRoute: () => AppRoutinesRoute,
 } as any)
-const RootMaterialViewerMaterialIdRoute =
-  RootMaterialViewerMaterialIdRouteImport.update({
+const AppMaterialViewerMaterialIdRoute =
+  AppMaterialViewerMaterialIdRouteImport.update({
     id: '/$materialId',
     path: '/$materialId',
-    getParentRoute: () => RootMaterialViewerRoute,
+    getParentRoute: () => AppMaterialViewerRoute,
   } as any)
-const RootBlockPackEditorBlockPackIdRoute =
-  RootBlockPackEditorBlockPackIdRouteImport.update({
+const AppBlockPackEditorBlockPackIdRoute =
+  AppBlockPackEditorBlockPackIdRouteImport.update({
     id: '/$blockPackId',
     path: '/$blockPackId',
-    getParentRoute: () => RootBlockPackEditorRoute,
+    getParentRoute: () => AppBlockPackEditorRoute,
   } as any)
 const AuthRedirectXRoute = AuthRedirectXRouteImport.update({
   id: '/redirect/x',
@@ -182,187 +182,199 @@ const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
-  '/introduction': typeof IntroductionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/tutorial': typeof TutorialRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/admin': typeof RootAdminRoute
-  '/block-pack-editor': typeof RootBlockPackEditorRouteWithChildren
-  '/dashboard': typeof RootDashboardRouteWithChildren
-  '/material-viewer': typeof RootMaterialViewerRouteWithChildren
-  '/playground': typeof RootPlaygroundRoute
-  '/privacy-policy': typeof RootPrivacyPolicyRoute
-  '/routines': typeof RootRoutinesRouteWithChildren
-  '/trash': typeof RootTrashRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/block-pack-editor': typeof AppBlockPackEditorRouteWithChildren
+  '/app/dashboard': typeof AppDashboardRouteWithChildren
+  '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
+  '/app/playground': typeof AppPlaygroundRoute
+  '/app/routines': typeof AppRoutinesRouteWithChildren
+  '/app/trash': typeof AppTrashRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
   '/redirect/x': typeof AuthRedirectXRoute
-  '/block-pack-editor/$blockPackId': typeof RootBlockPackEditorBlockPackIdRoute
-  '/material-viewer/$materialId': typeof RootMaterialViewerMaterialIdRoute
-  '/routines/$stationId': typeof RootRoutinesStationIdRoute
-  '/setting/account': typeof RootSettingAccountRoute
-  '/setting/preferences': typeof RootSettingPreferencesRoute
-  '/block-pack-editor/': typeof RootBlockPackEditorIndexRoute
-  '/dashboard/': typeof RootDashboardIndexRoute
-  '/material-viewer/': typeof RootMaterialViewerIndexRoute
-  '/routines/': typeof RootRoutinesIndexRoute
+  '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
+  '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
+  '/app/routines/$stationId': typeof AppRoutinesStationIdRoute
+  '/app/setting/account': typeof AppSettingAccountRoute
+  '/app/setting/preferences': typeof AppSettingPreferencesRoute
+  '/app/block-pack-editor/': typeof AppBlockPackEditorIndexRoute
+  '/app/dashboard/': typeof AppDashboardIndexRoute
+  '/app/material-viewer/': typeof AppMaterialViewerIndexRoute
+  '/app/routines/': typeof AppRoutinesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
-  '/introduction': typeof IntroductionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/tutorial': typeof TutorialRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/admin': typeof RootAdminRoute
-  '/playground': typeof RootPlaygroundRoute
-  '/privacy-policy': typeof RootPrivacyPolicyRoute
-  '/trash': typeof RootTrashRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/playground': typeof AppPlaygroundRoute
+  '/app/trash': typeof AppTrashRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
   '/redirect/x': typeof AuthRedirectXRoute
-  '/block-pack-editor/$blockPackId': typeof RootBlockPackEditorBlockPackIdRoute
-  '/material-viewer/$materialId': typeof RootMaterialViewerMaterialIdRoute
-  '/routines/$stationId': typeof RootRoutinesStationIdRoute
-  '/setting/account': typeof RootSettingAccountRoute
-  '/setting/preferences': typeof RootSettingPreferencesRoute
-  '/block-pack-editor': typeof RootBlockPackEditorIndexRoute
-  '/dashboard': typeof RootDashboardIndexRoute
-  '/material-viewer': typeof RootMaterialViewerIndexRoute
-  '/routines': typeof RootRoutinesIndexRoute
+  '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
+  '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
+  '/app/routines/$stationId': typeof AppRoutinesStationIdRoute
+  '/app/setting/account': typeof AppSettingAccountRoute
+  '/app/setting/preferences': typeof AppSettingPreferencesRoute
+  '/app/block-pack-editor': typeof AppBlockPackEditorIndexRoute
+  '/app/dashboard': typeof AppDashboardIndexRoute
+  '/app/material-viewer': typeof AppMaterialViewerIndexRoute
+  '/app/routines': typeof AppRoutinesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
-  '/_root': typeof RootRouteWithChildren
+  '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
-  '/introduction': typeof IntroductionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/tutorial': typeof TutorialRoute
   '/_auth/forgetPassword': typeof AuthForgetPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/_root/admin': typeof RootAdminRoute
-  '/_root/block-pack-editor': typeof RootBlockPackEditorRouteWithChildren
-  '/_root/dashboard': typeof RootDashboardRouteWithChildren
-  '/_root/material-viewer': typeof RootMaterialViewerRouteWithChildren
-  '/_root/playground': typeof RootPlaygroundRoute
-  '/_root/privacy-policy': typeof RootPrivacyPolicyRoute
-  '/_root/routines': typeof RootRoutinesRouteWithChildren
-  '/_root/trash': typeof RootTrashRoute
+  '/app/admin': typeof AppAdminRoute
+  '/app/block-pack-editor': typeof AppBlockPackEditorRouteWithChildren
+  '/app/dashboard': typeof AppDashboardRouteWithChildren
+  '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
+  '/app/playground': typeof AppPlaygroundRoute
+  '/app/routines': typeof AppRoutinesRouteWithChildren
+  '/app/trash': typeof AppTrashRoute
   '/_auth/redirect/error': typeof AuthRedirectErrorRoute
   '/_auth/redirect/google': typeof AuthRedirectGoogleRoute
   '/_auth/redirect/x': typeof AuthRedirectXRoute
-  '/_root/block-pack-editor/$blockPackId': typeof RootBlockPackEditorBlockPackIdRoute
-  '/_root/material-viewer/$materialId': typeof RootMaterialViewerMaterialIdRoute
-  '/_root/routines/$stationId': typeof RootRoutinesStationIdRoute
-  '/_root/setting/account': typeof RootSettingAccountRoute
-  '/_root/setting/preferences': typeof RootSettingPreferencesRoute
-  '/_root/block-pack-editor/': typeof RootBlockPackEditorIndexRoute
-  '/_root/dashboard/': typeof RootDashboardIndexRoute
-  '/_root/material-viewer/': typeof RootMaterialViewerIndexRoute
-  '/_root/routines/': typeof RootRoutinesIndexRoute
+  '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
+  '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
+  '/app/routines/$stationId': typeof AppRoutinesStationIdRoute
+  '/app/setting/account': typeof AppSettingAccountRoute
+  '/app/setting/preferences': typeof AppSettingPreferencesRoute
+  '/app/block-pack-editor/': typeof AppBlockPackEditorIndexRoute
+  '/app/dashboard/': typeof AppDashboardIndexRoute
+  '/app/material-viewer/': typeof AppMaterialViewerIndexRoute
+  '/app/routines/': typeof AppRoutinesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app'
     | '/document'
-    | '/introduction'
+    | '/privacy-policy'
+    | '/tutorial'
     | '/forgetPassword'
     | '/login'
     | '/register'
-    | '/admin'
-    | '/block-pack-editor'
-    | '/dashboard'
-    | '/material-viewer'
-    | '/playground'
-    | '/privacy-policy'
-    | '/routines'
-    | '/trash'
+    | '/app/admin'
+    | '/app/block-pack-editor'
+    | '/app/dashboard'
+    | '/app/material-viewer'
+    | '/app/playground'
+    | '/app/routines'
+    | '/app/trash'
     | '/redirect/error'
     | '/redirect/google'
     | '/redirect/x'
-    | '/block-pack-editor/$blockPackId'
-    | '/material-viewer/$materialId'
-    | '/routines/$stationId'
-    | '/setting/account'
-    | '/setting/preferences'
-    | '/block-pack-editor/'
-    | '/dashboard/'
-    | '/material-viewer/'
-    | '/routines/'
+    | '/app/block-pack-editor/$blockPackId'
+    | '/app/material-viewer/$materialId'
+    | '/app/routines/$stationId'
+    | '/app/setting/account'
+    | '/app/setting/preferences'
+    | '/app/block-pack-editor/'
+    | '/app/dashboard/'
+    | '/app/material-viewer/'
+    | '/app/routines/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app'
     | '/document'
-    | '/introduction'
+    | '/privacy-policy'
+    | '/tutorial'
     | '/forgetPassword'
     | '/login'
     | '/register'
-    | '/admin'
-    | '/playground'
-    | '/privacy-policy'
-    | '/trash'
+    | '/app/admin'
+    | '/app/playground'
+    | '/app/trash'
     | '/redirect/error'
     | '/redirect/google'
     | '/redirect/x'
-    | '/block-pack-editor/$blockPackId'
-    | '/material-viewer/$materialId'
-    | '/routines/$stationId'
-    | '/setting/account'
-    | '/setting/preferences'
-    | '/block-pack-editor'
-    | '/dashboard'
-    | '/material-viewer'
-    | '/routines'
+    | '/app/block-pack-editor/$blockPackId'
+    | '/app/material-viewer/$materialId'
+    | '/app/routines/$stationId'
+    | '/app/setting/account'
+    | '/app/setting/preferences'
+    | '/app/block-pack-editor'
+    | '/app/dashboard'
+    | '/app/material-viewer'
+    | '/app/routines'
   id:
     | '__root__'
     | '/'
     | '/_auth'
-    | '/_root'
+    | '/app'
     | '/document'
-    | '/introduction'
+    | '/privacy-policy'
+    | '/tutorial'
     | '/_auth/forgetPassword'
     | '/_auth/login'
     | '/_auth/register'
-    | '/_root/admin'
-    | '/_root/block-pack-editor'
-    | '/_root/dashboard'
-    | '/_root/material-viewer'
-    | '/_root/playground'
-    | '/_root/privacy-policy'
-    | '/_root/routines'
-    | '/_root/trash'
+    | '/app/admin'
+    | '/app/block-pack-editor'
+    | '/app/dashboard'
+    | '/app/material-viewer'
+    | '/app/playground'
+    | '/app/routines'
+    | '/app/trash'
     | '/_auth/redirect/error'
     | '/_auth/redirect/google'
     | '/_auth/redirect/x'
-    | '/_root/block-pack-editor/$blockPackId'
-    | '/_root/material-viewer/$materialId'
-    | '/_root/routines/$stationId'
-    | '/_root/setting/account'
-    | '/_root/setting/preferences'
-    | '/_root/block-pack-editor/'
-    | '/_root/dashboard/'
-    | '/_root/material-viewer/'
-    | '/_root/routines/'
+    | '/app/block-pack-editor/$blockPackId'
+    | '/app/material-viewer/$materialId'
+    | '/app/routines/$stationId'
+    | '/app/setting/account'
+    | '/app/setting/preferences'
+    | '/app/block-pack-editor/'
+    | '/app/dashboard/'
+    | '/app/material-viewer/'
+    | '/app/routines/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
-  RootRoute: typeof RootRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
   DocumentRoute: typeof DocumentRoute
-  IntroductionRoute: typeof IntroductionRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  TutorialRoute: typeof TutorialRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/introduction': {
-      id: '/introduction'
-      path: '/introduction'
-      fullPath: '/introduction'
-      preLoaderRoute: typeof IntroductionRouteImport
+    '/tutorial': {
+      id: '/tutorial'
+      path: '/tutorial'
+      fullPath: '/tutorial'
+      preLoaderRoute: typeof TutorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/document': {
@@ -372,11 +384,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocumentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_root': {
-      id: '/_root'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof RootRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -393,61 +405,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_root/trash': {
-      id: '/_root/trash'
+    '/app/trash': {
+      id: '/app/trash'
       path: '/trash'
-      fullPath: '/trash'
-      preLoaderRoute: typeof RootTrashRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/trash'
+      preLoaderRoute: typeof AppTrashRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/routines': {
-      id: '/_root/routines'
+    '/app/routines': {
+      id: '/app/routines'
       path: '/routines'
-      fullPath: '/routines'
-      preLoaderRoute: typeof RootRoutinesRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/routines'
+      preLoaderRoute: typeof AppRoutinesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/privacy-policy': {
-      id: '/_root/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof RootPrivacyPolicyRouteImport
-      parentRoute: typeof RootRoute
-    }
-    '/_root/playground': {
-      id: '/_root/playground'
+    '/app/playground': {
+      id: '/app/playground'
       path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof RootPlaygroundRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/playground'
+      preLoaderRoute: typeof AppPlaygroundRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/material-viewer': {
-      id: '/_root/material-viewer'
+    '/app/material-viewer': {
+      id: '/app/material-viewer'
       path: '/material-viewer'
-      fullPath: '/material-viewer'
-      preLoaderRoute: typeof RootMaterialViewerRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/material-viewer'
+      preLoaderRoute: typeof AppMaterialViewerRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/dashboard': {
-      id: '/_root/dashboard'
+    '/app/dashboard': {
+      id: '/app/dashboard'
       path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof RootDashboardRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/block-pack-editor': {
-      id: '/_root/block-pack-editor'
+    '/app/block-pack-editor': {
+      id: '/app/block-pack-editor'
       path: '/block-pack-editor'
-      fullPath: '/block-pack-editor'
-      preLoaderRoute: typeof RootBlockPackEditorRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/block-pack-editor'
+      preLoaderRoute: typeof AppBlockPackEditorRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/admin': {
-      id: '/_root/admin'
+    '/app/admin': {
+      id: '/app/admin'
       path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof RootAdminRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_auth/register': {
       id: '/_auth/register'
@@ -470,68 +475,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgetPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_root/routines/': {
-      id: '/_root/routines/'
+    '/app/routines/': {
+      id: '/app/routines/'
       path: '/'
-      fullPath: '/routines/'
-      preLoaderRoute: typeof RootRoutinesIndexRouteImport
-      parentRoute: typeof RootRoutinesRoute
+      fullPath: '/app/routines/'
+      preLoaderRoute: typeof AppRoutinesIndexRouteImport
+      parentRoute: typeof AppRoutinesRoute
     }
-    '/_root/material-viewer/': {
-      id: '/_root/material-viewer/'
+    '/app/material-viewer/': {
+      id: '/app/material-viewer/'
       path: '/'
-      fullPath: '/material-viewer/'
-      preLoaderRoute: typeof RootMaterialViewerIndexRouteImport
-      parentRoute: typeof RootMaterialViewerRoute
+      fullPath: '/app/material-viewer/'
+      preLoaderRoute: typeof AppMaterialViewerIndexRouteImport
+      parentRoute: typeof AppMaterialViewerRoute
     }
-    '/_root/dashboard/': {
-      id: '/_root/dashboard/'
+    '/app/dashboard/': {
+      id: '/app/dashboard/'
       path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof RootDashboardIndexRouteImport
-      parentRoute: typeof RootDashboardRoute
+      fullPath: '/app/dashboard/'
+      preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppDashboardRoute
     }
-    '/_root/block-pack-editor/': {
-      id: '/_root/block-pack-editor/'
+    '/app/block-pack-editor/': {
+      id: '/app/block-pack-editor/'
       path: '/'
-      fullPath: '/block-pack-editor/'
-      preLoaderRoute: typeof RootBlockPackEditorIndexRouteImport
-      parentRoute: typeof RootBlockPackEditorRoute
+      fullPath: '/app/block-pack-editor/'
+      preLoaderRoute: typeof AppBlockPackEditorIndexRouteImport
+      parentRoute: typeof AppBlockPackEditorRoute
     }
-    '/_root/setting/preferences': {
-      id: '/_root/setting/preferences'
+    '/app/setting/preferences': {
+      id: '/app/setting/preferences'
       path: '/setting/preferences'
-      fullPath: '/setting/preferences'
-      preLoaderRoute: typeof RootSettingPreferencesRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/setting/preferences'
+      preLoaderRoute: typeof AppSettingPreferencesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/setting/account': {
-      id: '/_root/setting/account'
+    '/app/setting/account': {
+      id: '/app/setting/account'
       path: '/setting/account'
-      fullPath: '/setting/account'
-      preLoaderRoute: typeof RootSettingAccountRouteImport
-      parentRoute: typeof RootRoute
+      fullPath: '/app/setting/account'
+      preLoaderRoute: typeof AppSettingAccountRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_root/routines/$stationId': {
-      id: '/_root/routines/$stationId'
+    '/app/routines/$stationId': {
+      id: '/app/routines/$stationId'
       path: '/$stationId'
-      fullPath: '/routines/$stationId'
-      preLoaderRoute: typeof RootRoutinesStationIdRouteImport
-      parentRoute: typeof RootRoutinesRoute
+      fullPath: '/app/routines/$stationId'
+      preLoaderRoute: typeof AppRoutinesStationIdRouteImport
+      parentRoute: typeof AppRoutinesRoute
     }
-    '/_root/material-viewer/$materialId': {
-      id: '/_root/material-viewer/$materialId'
+    '/app/material-viewer/$materialId': {
+      id: '/app/material-viewer/$materialId'
       path: '/$materialId'
-      fullPath: '/material-viewer/$materialId'
-      preLoaderRoute: typeof RootMaterialViewerMaterialIdRouteImport
-      parentRoute: typeof RootMaterialViewerRoute
+      fullPath: '/app/material-viewer/$materialId'
+      preLoaderRoute: typeof AppMaterialViewerMaterialIdRouteImport
+      parentRoute: typeof AppMaterialViewerRoute
     }
-    '/_root/block-pack-editor/$blockPackId': {
-      id: '/_root/block-pack-editor/$blockPackId'
+    '/app/block-pack-editor/$blockPackId': {
+      id: '/app/block-pack-editor/$blockPackId'
       path: '/$blockPackId'
-      fullPath: '/block-pack-editor/$blockPackId'
-      preLoaderRoute: typeof RootBlockPackEditorBlockPackIdRouteImport
-      parentRoute: typeof RootBlockPackEditorRoute
+      fullPath: '/app/block-pack-editor/$blockPackId'
+      preLoaderRoute: typeof AppBlockPackEditorBlockPackIdRouteImport
+      parentRoute: typeof AppBlockPackEditorRoute
     }
     '/_auth/redirect/x': {
       id: '/_auth/redirect/x'
@@ -577,92 +582,91 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface RootBlockPackEditorRouteChildren {
-  RootBlockPackEditorBlockPackIdRoute: typeof RootBlockPackEditorBlockPackIdRoute
-  RootBlockPackEditorIndexRoute: typeof RootBlockPackEditorIndexRoute
+interface AppBlockPackEditorRouteChildren {
+  AppBlockPackEditorBlockPackIdRoute: typeof AppBlockPackEditorBlockPackIdRoute
+  AppBlockPackEditorIndexRoute: typeof AppBlockPackEditorIndexRoute
 }
 
-const RootBlockPackEditorRouteChildren: RootBlockPackEditorRouteChildren = {
-  RootBlockPackEditorBlockPackIdRoute: RootBlockPackEditorBlockPackIdRoute,
-  RootBlockPackEditorIndexRoute: RootBlockPackEditorIndexRoute,
+const AppBlockPackEditorRouteChildren: AppBlockPackEditorRouteChildren = {
+  AppBlockPackEditorBlockPackIdRoute: AppBlockPackEditorBlockPackIdRoute,
+  AppBlockPackEditorIndexRoute: AppBlockPackEditorIndexRoute,
 }
 
-const RootBlockPackEditorRouteWithChildren =
-  RootBlockPackEditorRoute._addFileChildren(RootBlockPackEditorRouteChildren)
+const AppBlockPackEditorRouteWithChildren =
+  AppBlockPackEditorRoute._addFileChildren(AppBlockPackEditorRouteChildren)
 
-interface RootDashboardRouteChildren {
-  RootDashboardIndexRoute: typeof RootDashboardIndexRoute
+interface AppDashboardRouteChildren {
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
 }
 
-const RootDashboardRouteChildren: RootDashboardRouteChildren = {
-  RootDashboardIndexRoute: RootDashboardIndexRoute,
+const AppDashboardRouteChildren: AppDashboardRouteChildren = {
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
 }
 
-const RootDashboardRouteWithChildren = RootDashboardRoute._addFileChildren(
-  RootDashboardRouteChildren,
+const AppDashboardRouteWithChildren = AppDashboardRoute._addFileChildren(
+  AppDashboardRouteChildren,
 )
 
-interface RootMaterialViewerRouteChildren {
-  RootMaterialViewerMaterialIdRoute: typeof RootMaterialViewerMaterialIdRoute
-  RootMaterialViewerIndexRoute: typeof RootMaterialViewerIndexRoute
+interface AppMaterialViewerRouteChildren {
+  AppMaterialViewerMaterialIdRoute: typeof AppMaterialViewerMaterialIdRoute
+  AppMaterialViewerIndexRoute: typeof AppMaterialViewerIndexRoute
 }
 
-const RootMaterialViewerRouteChildren: RootMaterialViewerRouteChildren = {
-  RootMaterialViewerMaterialIdRoute: RootMaterialViewerMaterialIdRoute,
-  RootMaterialViewerIndexRoute: RootMaterialViewerIndexRoute,
+const AppMaterialViewerRouteChildren: AppMaterialViewerRouteChildren = {
+  AppMaterialViewerMaterialIdRoute: AppMaterialViewerMaterialIdRoute,
+  AppMaterialViewerIndexRoute: AppMaterialViewerIndexRoute,
 }
 
-const RootMaterialViewerRouteWithChildren =
-  RootMaterialViewerRoute._addFileChildren(RootMaterialViewerRouteChildren)
+const AppMaterialViewerRouteWithChildren =
+  AppMaterialViewerRoute._addFileChildren(AppMaterialViewerRouteChildren)
 
-interface RootRoutinesRouteChildren {
-  RootRoutinesStationIdRoute: typeof RootRoutinesStationIdRoute
-  RootRoutinesIndexRoute: typeof RootRoutinesIndexRoute
+interface AppRoutinesRouteChildren {
+  AppRoutinesStationIdRoute: typeof AppRoutinesStationIdRoute
+  AppRoutinesIndexRoute: typeof AppRoutinesIndexRoute
 }
 
-const RootRoutinesRouteChildren: RootRoutinesRouteChildren = {
-  RootRoutinesStationIdRoute: RootRoutinesStationIdRoute,
-  RootRoutinesIndexRoute: RootRoutinesIndexRoute,
+const AppRoutinesRouteChildren: AppRoutinesRouteChildren = {
+  AppRoutinesStationIdRoute: AppRoutinesStationIdRoute,
+  AppRoutinesIndexRoute: AppRoutinesIndexRoute,
 }
 
-const RootRoutinesRouteWithChildren = RootRoutinesRoute._addFileChildren(
-  RootRoutinesRouteChildren,
+const AppRoutinesRouteWithChildren = AppRoutinesRoute._addFileChildren(
+  AppRoutinesRouteChildren,
 )
 
-interface RootRouteChildren {
-  RootAdminRoute: typeof RootAdminRoute
-  RootBlockPackEditorRoute: typeof RootBlockPackEditorRouteWithChildren
-  RootDashboardRoute: typeof RootDashboardRouteWithChildren
-  RootMaterialViewerRoute: typeof RootMaterialViewerRouteWithChildren
-  RootPlaygroundRoute: typeof RootPlaygroundRoute
-  RootPrivacyPolicyRoute: typeof RootPrivacyPolicyRoute
-  RootRoutinesRoute: typeof RootRoutinesRouteWithChildren
-  RootTrashRoute: typeof RootTrashRoute
-  RootSettingAccountRoute: typeof RootSettingAccountRoute
-  RootSettingPreferencesRoute: typeof RootSettingPreferencesRoute
+interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
+  AppBlockPackEditorRoute: typeof AppBlockPackEditorRouteWithChildren
+  AppDashboardRoute: typeof AppDashboardRouteWithChildren
+  AppMaterialViewerRoute: typeof AppMaterialViewerRouteWithChildren
+  AppPlaygroundRoute: typeof AppPlaygroundRoute
+  AppRoutinesRoute: typeof AppRoutinesRouteWithChildren
+  AppTrashRoute: typeof AppTrashRoute
+  AppSettingAccountRoute: typeof AppSettingAccountRoute
+  AppSettingPreferencesRoute: typeof AppSettingPreferencesRoute
 }
 
-const RootRouteChildren: RootRouteChildren = {
-  RootAdminRoute: RootAdminRoute,
-  RootBlockPackEditorRoute: RootBlockPackEditorRouteWithChildren,
-  RootDashboardRoute: RootDashboardRouteWithChildren,
-  RootMaterialViewerRoute: RootMaterialViewerRouteWithChildren,
-  RootPlaygroundRoute: RootPlaygroundRoute,
-  RootPrivacyPolicyRoute: RootPrivacyPolicyRoute,
-  RootRoutinesRoute: RootRoutinesRouteWithChildren,
-  RootTrashRoute: RootTrashRoute,
-  RootSettingAccountRoute: RootSettingAccountRoute,
-  RootSettingPreferencesRoute: RootSettingPreferencesRoute,
+const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
+  AppBlockPackEditorRoute: AppBlockPackEditorRouteWithChildren,
+  AppDashboardRoute: AppDashboardRouteWithChildren,
+  AppMaterialViewerRoute: AppMaterialViewerRouteWithChildren,
+  AppPlaygroundRoute: AppPlaygroundRoute,
+  AppRoutinesRoute: AppRoutinesRouteWithChildren,
+  AppTrashRoute: AppTrashRoute,
+  AppSettingAccountRoute: AppSettingAccountRoute,
+  AppSettingPreferencesRoute: AppSettingPreferencesRoute,
 }
 
-const RootRouteWithChildren = RootRoute._addFileChildren(RootRouteChildren)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
-  RootRoute: RootRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
   DocumentRoute: DocumentRoute,
-  IntroductionRoute: IntroductionRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  TutorialRoute: TutorialRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

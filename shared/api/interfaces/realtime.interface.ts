@@ -66,6 +66,8 @@ export const CreateMyBlockPackChannelTicketResponseSchema =
       permission: RealtimePermissionSchema,
       channelTicket: z.string().min(1),
       expiresAt: z.coerce.date(),
+      documentQuotaPolicyVersion: z.number().int().positive(),
+      maximumBlockCount: z.number().int().positive(),
       lastUpdateSequence: z.number().int().nonnegative(),
       compactedUntilSequence: z.number().int().nonnegative(),
     }),

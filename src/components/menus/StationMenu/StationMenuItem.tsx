@@ -190,7 +190,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
               <ContextMenuItem
                 onClick={() =>
                   router.push(
-                    WebURLPathDictionary.root.routines.byStationId(station.id)
+                    WebURLPathDictionary.app.routines.byStationId(station.id)
                   )
                 }
               >

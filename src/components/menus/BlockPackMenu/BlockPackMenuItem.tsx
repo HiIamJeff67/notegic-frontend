@@ -37,7 +37,7 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
   const handleBlockPackOnClick = useCallback(() => {
     try {
       router.push(
-        WebURLPathDictionary.root.blockPackEditor._(
+        WebURLPathDictionary.app.blockPackEditor._(
           current.id,
           parent.id,
           parent.rootShelfId
@@ -110,7 +110,7 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
             onClick={async () => {
               await shelfItemManager.deleteBlockPack(parent, current);
               if (current.id === (router.params.blockPackId as string)) {
-                router.push(WebURLPathDictionary.root.materialViewer._);
+                router.push(WebURLPathDictionary.app.materialViewer._);
               }
             }}
           >

@@ -1,8 +1,13 @@
 import { useApolloClient } from "@apollo/client/react";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   SearchItemsDocument,
   SearchRootShelvesDocument,
 } from "@shared/api/graphql/generated/graphql";
+import {
+  mergeRealtimeNotificationIntoCache,
+  refetchNotifications,
+} from "@shared/api/hooks/notification.hook";
 import {
   RealtimePermission,
   RealtimePermissionSchema,
@@ -11,13 +16,8 @@ import {
   mutationFnCreateMyBlockPackChannelTicket,
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@shared/api/invokers/realtime.invoker";
-import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import {
-  mergeRealtimeNotificationIntoCache,
-  refetchNotifications,
-} from "@shared/api/hooks/notification.hook";
 import {
   RealtimeBinaryFrameType,
   type RealtimeBlockPackChannelStatus,
@@ -27,6 +27,7 @@ import {
   type RealtimeResourceEventFrame,
 } from "@shared/api/websocket";
 import { RealtimeYjsProvider } from "@shared/blockpack/core";
+import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import {
@@ -54,6 +55,9 @@ export type RealtimeBlockPackChannel = {
   provider: RealtimeYjsProvider;
   error: string | null;
   lifecycleErrorCode: RealtimeErrorCode | null;
+  documentQuotaPolicyVersion: number | null;
+  maximumBlockCount: number | null;
+  hasRejectedDraft: boolean;
 };
 
 type RealtimeChannelStore = RealtimeBlockPackChannel & {
@@ -100,6 +104,7 @@ export const RealtimeProvider = ({
   const releaseTimersRef = useRef<Map<UUID, ReturnType<typeof setTimeout>>>(
     new Map()
   );
+  const rejectedDraftBlockPackIdsRef = useRef<Set<UUID>>(new Set());
   const [rootState, setRootState] = useState<RealtimeConnectionState>("idle");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
@@ -125,6 +130,7 @@ export const RealtimeProvider = ({
       channel.provider.destroy();
       channel.doc.destroy();
       channel.connectorChannelId = null;
+      channel.hasRejectedDraft = false;
       channel.isDisposed = true;
     },
     [clearReleaseTimer]
@@ -330,14 +336,23 @@ export const RealtimeProvider = ({
         });
       },
       onChannelStatus: setChannelStatus,
+      onChannelTicket: (blockPackId, ticket) => {
+        const channel = channelsRef.current.get(blockPackId as UUID);
+        if (!channel) return;
+        channel.documentQuotaPolicyVersion = ticket.documentQuotaPolicyVersion;
+        channel.maximumBlockCount = ticket.maximumBlockCount;
+        rerender();
+      },
       onChannelSubscribed: (blockPackId, frame, permission) => {
         const channel = channelsRef.current.get(blockPackId as UUID);
         if (!channel) return;
         channel.connectorChannelId = frame.connectorChannelId;
         channel.permission = permission;
+        channel.documentQuotaPolicyVersion = frame.documentQuotaPolicyVersion;
+        channel.maximumBlockCount = frame.maximumBlockCount;
         channel.provider.setReadOnly(permission === RealtimePermission.Read);
         channel.provider.connect((type, payload) => {
-          client.sendBlockPackBinary(blockPackId, type, payload);
+          return client.sendBlockPackBinary(blockPackId, type, payload);
         });
         if (typeof window !== "undefined") {
           window.dispatchEvent(
@@ -372,7 +387,54 @@ export const RealtimeProvider = ({
       onChannelError: (blockPackId, frame) => {
         const channel = channelsRef.current.get(blockPackId as UUID);
         if (!channel) return;
+        if (frame.code === "block_pack_quota_exceeded") {
+          channel.error = frame.message;
+          channel.connectorChannelId = null;
+          channel.status = "error";
+          channel.provider.setReadOnly(true);
+          channel.provider.disconnect();
+          toast.error(i18n.t("workspace.notifications.realtimeError"));
+          rerender();
+
+          void (async () => {
+            try {
+              const rejectedUpdate =
+                await channel.provider.snapshotLocalDocument();
+              await LocalYjsDocumentStore.saveRejectedDraft(
+                channel.blockPackId,
+                rejectedUpdate
+              );
+              rejectedDraftBlockPackIdsRef.current.add(channel.blockPackId);
+              if (channelsRef.current.get(channel.blockPackId) !== channel) {
+                return;
+              }
+              await resyncBlockPackChannel(
+                channel.blockPackId,
+                channel.permission
+              );
+            } catch (error) {
+              console.error(
+                "[RealtimeProvider] failed to preserve quota-rejected draft",
+                error
+              );
+              channel.error = frame.message;
+              channel.status = "error";
+              rerender();
+              toast.error(i18n.t("workspace.notifications.realtimeError"));
+            }
+          })();
+          return;
+        }
         if (channel.lifecycleErrorCode !== null) return;
+
+        if (frame.code === "channel_not_found") {
+          channel.error = null;
+          channel.connectorChannelId = null;
+          channel.status = "idle";
+          channel.provider.disconnect();
+          rerender();
+          return;
+        }
 
         channel.error = frame.message;
         channel.connectorChannelId = null;
@@ -451,6 +513,9 @@ export const RealtimeProvider = ({
         provider,
         error: null,
         lifecycleErrorCode: null,
+        documentQuotaPolicyVersion: null,
+        maximumBlockCount: null,
+        hasRejectedDraft: rejectedDraftBlockPackIdsRef.current.has(blockPackId),
         retainCount,
         isDisposed: false,
       };
@@ -509,7 +574,6 @@ export const RealtimeProvider = ({
         if (!latestChannel || latestChannel.retainCount > 0) return;
 
         if (!latestChannel.isDisposed) {
-          latestChannel.provider.flushPendingDocumentUpdatesNow();
           latestChannel.provider.destroy();
           latestChannel.doc.destroy();
         }
@@ -537,14 +601,17 @@ export const RealtimeProvider = ({
 
       clearReleaseTimer(blockPackId);
       const previousChannel = channelsRef.current.get(blockPackId);
-      client.unregisterBlockPackChannel(blockPackId);
 
       if (previousChannel && !previousChannel.isDisposed) {
+        previousChannel.provider.setReadOnly(true);
+        previousChannel.provider.disconnect();
         await previousChannel.provider.clearLocalDocument();
         previousChannel.provider.destroy();
         previousChannel.doc.destroy();
         previousChannel.isDisposed = true;
       }
+
+      client.resetBlockPackChannel(blockPackId);
 
       const nextChannel = createBlockPackChannel(
         blockPackId,

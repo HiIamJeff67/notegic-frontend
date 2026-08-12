@@ -10,9 +10,9 @@ export const LanguageMenu = () => {
     <HomeMenuSection label={t("languages.language")}>
       <div>
         {AllLanguageData.map((language, index) => (
-          <div className="flex flex-col items-start" key={language.code}>
+          <div className="relative" key={language.code}>
             <button
-              className="flex min-w-0 w-full cursor-pointer items-start gap-3 py-1.5 text-left text-sm font-medium text-foreground transition-colors hover:text-foreground"
+              className="relative z-10 flex min-w-0 w-full cursor-pointer items-start gap-3 py-1.5 text-left text-sm font-medium text-foreground transition-colors hover:text-foreground"
               onClick={() => void i18n.changeLanguage(language.code)}
               type="button"
             >
@@ -24,7 +24,7 @@ export const LanguageMenu = () => {
             {index < AllLanguageData.length - 1 && (
               <span
                 aria-hidden="true"
-                className="ml-[5px] h-2 w-px bg-foreground/35"
+                className="absolute left-[5px] top-3 -bottom-3 w-px bg-foreground/35"
               />
             )}
           </div>

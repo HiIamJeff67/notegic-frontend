@@ -79,8 +79,7 @@ const AuthPanel = ({
               ? "panel-gradient panel-texture panel-shine shadow-[0_25px_50px_rgba(0,0,0,0.8),0_10px_25px_rgba(0,0,0,0.6),inset_0_1px_2px_rgba(255,255,255,0.1),inset_0_-1px_2px_rgba(0,0,0,0.5)]"
               : "bg-[rgba(100,100,100,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.45),0_1.5px_4px_rgba(0,0,0,0.10)]"
           }
-          transform transition-all duration-300 ease-out
-          perspective-1000 rotate-x-[5deg] translate-z-0
+          transition-all duration-300 ease-out
           ${isLoading ? "pointer-events-none opacity-75" : ""}
         `}
       >
@@ -103,7 +102,7 @@ const AuthPanel = ({
         {/* Panel Content */}
         <div className="relative z-5 select-none">
           <h2
-            className={`font-mono text-2xl font-bold ${
+            className={`font-mono text-2xl font-bold leading-normal ${
               themeManager.currentTheme.isDark
                 ? "text-green-400"
                 : "text-green-600"
@@ -118,7 +117,7 @@ const AuthPanel = ({
           </h2>
 
           <div
-            className={`font-mono text-xs ${
+            className={`font-mono text-xs leading-normal ${
               themeManager.currentTheme.isDark
                 ? "text-gray-500"
                 : "text-gray-700"
@@ -137,10 +136,10 @@ const AuthPanel = ({
             className="flex flex-col gap-6"
           >
             {inputs.map((input, index) => (
-              <div key={index} className="flex flex-col gap-2">
+              <div key={index} className="flex flex-col gap-2 leading-normal">
                 <label
                   htmlFor={`input-${index}`}
-                  className={`font-mono text-base tracking-wider font-bold select-none ${
+                  className={`font-mono text-base leading-normal tracking-wider font-bold select-none ${
                     themeManager.currentTheme.isDark
                       ? "text-green-400"
                       : "text-green-600"
@@ -158,7 +157,7 @@ const AuthPanel = ({
                     disabled={isLoading}
                     className={`
                       w-full
-                      font-semibold border rounded px-4 py-3 font-mono text-sm transition-all duration-300
+                      font-semibold border rounded px-4 py-3 font-mono text-sm leading-normal transition-all duration-300
                       shadow-[inset_0_2px_4px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.03)]
                       focus:outline-none focus:border-green-400
                       placeholder:text-gray-600 placeholder:italic placeholder:font-normal
@@ -180,7 +179,7 @@ const AuthPanel = ({
                       className={`
                         absolute right-1 top-1/2 px-3 py-1 -translate-y-1/2 rounded
                         button-gradient border border-green-400
-                        text-green-400 font-mono text-xs font-bold
+                        text-green-400 font-mono text-xs leading-normal font-bold
                         transition-all duration-300 max-w-2/5 h-4/5
                         hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] 
                         disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none
@@ -205,7 +204,7 @@ const AuthPanel = ({
               disabled={isLoading}
               className="
                 relative button-gradient border border-green-400 rounded-md px-8 py-4 
-                text-green-400 font-mono text-base font-bold tracking-wider cursor-pointer 
+                text-green-400 font-mono text-base leading-normal font-bold tracking-wider cursor-pointer 
                 transition-all duration-300 mt-4 overflow-hidden
                 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:-translate-y-0.5
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none
@@ -253,7 +252,7 @@ const AuthPanel = ({
                     className={`
                             group relative w-full flex items-center justify-center gap-4
                             px-4 py-3 rounded border
-                            font-mono text-sm tracking-wider font-bold
+                            font-mono text-sm leading-normal tracking-wider font-bold
                             transition-all duration-300
                             ${
                               themeManager.currentTheme.isDark
@@ -301,7 +300,7 @@ const AuthPanel = ({
                     onClick={switchButton.onClick}
                     className="
                       relative inline-block px-3 py-1 ml-1 mt-2
-                      font-mono text-xs font-bold tracking-wider uppercase
+                      font-mono text-xs leading-normal font-bold tracking-wider uppercase
                       text-green-400 cursor-pointer
                       border border-green-400/30 rounded
                       bg-gradient-to-r from-gray-900/50 to-gray-800/50
@@ -354,7 +353,7 @@ const AuthPanel = ({
 
           {statusDetail && statusDetail !== "" && (
             <div
-              className={`flex items-center justify-center gap-2 mt-8 font-mono text-xs ${
+              className={`flex items-center justify-center gap-2 mt-8 font-mono text-xs leading-normal ${
                 themeManager.currentTheme.isDark
                   ? "text-gray-500"
                   : "text-gray-700"

@@ -1,13 +1,16 @@
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
+import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import {
   ImageContent,
   ImageInfo,
   ImageThumbnailInfo,
 } from "@shared/types/imageInfo.type";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
+import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { generateUUID } from "@shared/types/uuidv4.type";
 import type { UUID } from "crypto";
 import { createContext, useCallback, useEffect, useState } from "react";
+import { dashboardHeaderBackgroundImageOptions } from "@/assets/backgrounds";
 
 const BackgroundImageCacheMaxBytes = 1024 * 1024 * 1024;
 
@@ -21,6 +24,8 @@ type BackgroundImageCacheEstimate = {
 interface BackgroundImagesContextType {
   thumbnails: ImageThumbnailInfo | null;
   currentBackgroundImage: ImageContent | null;
+  defaultBackgroundImageId: string;
+  setDefaultBackgroundImageById: (id: string) => void;
   setCurrentBackgroundImageById: (id: UUID | null) => Promise<void>;
   setCurrentBackgroundImageByFile: (file: File | null) => Promise<void>;
   getFullImageURL: (id: UUID) => Promise<{ url: string; revoke: () => void }>;
@@ -45,6 +50,9 @@ export const BackgroundImagesProvider = ({
   const [thumbnails, setThumbnails] = useState<ImageThumbnailInfo | null>(null);
   const [currentBackgroundImage, _setCurrentBackgroundImage] =
     useState<ImageContent | null>(null);
+  const [defaultBackgroundImageId, setDefaultBackgroundImageId] = useState(
+    dashboardHeaderBackgroundImageOptions[0].id
+  );
 
   useEffect(() => {
     const fetchCurrentItems = async () => {
@@ -54,6 +62,19 @@ export const BackgroundImagesProvider = ({
           IndexedDBKey.backgroundImageThumbnails
         ),
       ]);
+
+      const savedDefaultBackgroundImageId =
+        LocalStorageManipulator.getItemByKey(
+          LocalStorageKey.dashboardBackgroundImage
+        );
+      if (
+        savedDefaultBackgroundImageId &&
+        dashboardHeaderBackgroundImageOptions.some(
+          image => image.id === savedDefaultBackgroundImageId
+        )
+      ) {
+        setDefaultBackgroundImageId(savedDefaultBackgroundImageId);
+      }
 
       if (savedCurrentBackgroundImage) {
         _setCurrentBackgroundImage(savedCurrentBackgroundImage);
@@ -65,6 +86,17 @@ export const BackgroundImagesProvider = ({
     };
 
     fetchCurrentItems();
+  }, []);
+
+  const setDefaultBackgroundImageById = useCallback((id: string) => {
+    if (!dashboardHeaderBackgroundImageOptions.some(image => image.id === id)) {
+      return;
+    }
+    setDefaultBackgroundImageId(id);
+    LocalStorageManipulator.setItem(
+      LocalStorageKey.dashboardBackgroundImage,
+      id
+    );
   }, []);
 
   const setCurrentBackgroundImage = useCallback(
@@ -433,6 +465,8 @@ export const BackgroundImagesProvider = ({
       value={{
         thumbnails: thumbnails,
         currentBackgroundImage: currentBackgroundImage,
+        defaultBackgroundImageId,
+        setDefaultBackgroundImageById,
         setCurrentBackgroundImageById: setCurrentBackgroundImageById,
         setCurrentBackgroundImageByFile: setCurrentBackgroundImageByFile,
         getFullImageURL: getFullImageURL,

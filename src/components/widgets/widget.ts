@@ -20,6 +20,8 @@ export interface WidgetProps {
   sync: (syncWidgets?: Widget[]) => void;
 }
 
+export type WidgetLayoutMode = "grid" | "full-width";
+
 export type Widget = {
   id: UUID;
   name: string;
@@ -35,6 +37,7 @@ export type Widget = {
   setting: Record<string, any>;
   data: Record<string, any>;
   isEditable: boolean;
+  layoutMode?: WidgetLayoutMode;
 };
 
 export type PreviewWidget = {
@@ -47,7 +50,16 @@ export type PreviewWidget = {
   defaultSetting: Record<string, any>;
   defaultData: Record<string, any>;
   isEditable: boolean;
+  layoutMode?: WidgetLayoutMode;
 };
+
+export const getWidgetWidthFrameCount = (
+  widget: Pick<Widget, "layoutMode" | "size">,
+  widthTotalFrameCount: number
+) =>
+  widget.layoutMode === "full-width"
+    ? widthTotalFrameCount
+    : widget.size.widthFrameCount;
 
 export const toWidget = (
   previewWidget: PreviewWidget,

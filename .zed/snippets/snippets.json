@@ -1,0 +1,133 @@
+{
+  "Generate a Pair of Context Separators with Size of 5": {
+    "prefix": "sep5",
+    "body": ["/* ===== ${1:Title} ===== */"],
+    "description": "Create a basic comment with length of 5 as a context separator to separate code"
+  },
+  "Generate a Pair of Context Separators with Size of 10": {
+    "prefix": "sep10",
+    "body": ["/* ========== ${1:Title} ========== */"],
+    "description": "Create a basic comment with length of 10 as a context separator to separate code"
+  },
+  "Generate a Pair of Context Separators with Size of 15": {
+    "prefix": "sep15",
+    "body": ["/* =============== ${1:Title} =============== */"],
+    "description": "Create a basic comment with length of 15 as a context separator to separate code"
+  },
+  "Generate a Pair of Context Separators with Size of 20": {
+    "prefix": "sep20",
+    "body": ["/* ==================== ${1:Title} ==================== */"],
+    "description": "Create a basic comment with length of 20 as a context separator to separate code"
+  },
+  "Generate a Pair of Context Separators with Size of 25": {
+    "prefix": "sep25",
+    "body": [
+      "/* ========================= ${1:Title} ========================= */"
+    ],
+    "description": "Create a basic comment with length of 25 as a context separator to separate code"
+  },
+  "Generate a Pair of Context Separators with Size of 30": {
+    "prefix": "sep30",
+    "body": [
+      "/* ============================== ${1:Title} ============================== */"
+    ],
+    "description": "Create a basic comment with length of 30 as a context separator to separate code"
+  },
+  "Initialize a SVG icon component": {
+    "prefix": "icon",
+    "body": [
+      "import { IconProps } from \"@shared/types/iconProps.type\";",
+      "",
+      "const ${1:IconComponentName}Icon = ({ size = 24, className = \"\", ...props }: IconProps) => {",
+      "\treturn (${2:SvgComponent});",
+      "};",
+      "",
+      "export default ${1:IconComponentName}Icon;"
+    ]
+  },
+  "Generate Some Codes to Start Building API Exceptions": {
+    "prefix": "apiexception",
+    "body": [
+      "import {",
+      "\tExceptionCode,",
+      "\tExceptionPrefix,",
+      "\tExceptionReasonDictionary,",
+      "\tExceptionSubDomainCodeShiftAmount,",
+      "\tNotezyException",
+      "} from \"@shared/api/exceptions\";",
+      "import { StatusCodes } from \"http-status-codes\";",
+      "",
+      "const ${1:_DomainName_}ExceptionDomainCode: ExceptionCode = ${2:_SubDomainCode_};",
+      "const ExceptionBaseCode_${1:_DomainName_}: ExceptionCode = ${1:_DomainName_}ExceptionDomainCode * ExceptionSubDomainCodeShiftAmount;",
+      "const ExceptionPrefix_${1:_DomainName_}: ExceptionPrefix = \"${1:_DomainName_}\";",
+      "",
+      "export class ${1:_DomainName_}Exceptions {",
+      "\tstatic BaseCode: ExceptionCode = ExceptionBaseCode_${1:_DomainName_};",
+      "\tstatic Prefix: ExceptionPrefix = ExceptionPrefix_${1:_DomainName_};",
+      "}"
+    ],
+    "description": "Create a basic structure for a Notezy API exception"
+  },
+  "Generate Some Codes to Start Building Client Exceptions": {
+    "prefix": "clientexception",
+    "body": [
+      "import {",
+      "\tExceptionCode,",
+      "\tExceptionPrefix,",
+      "\tExceptionReasonDictionary,",
+      "\tExceptionSubDomainCodeShiftAmount,",
+      "\tNotezyException",
+      "} from \"@shared/api/exceptions\";",
+      "import { StatusCodes } from \"http-status-codes\";",
+      "",
+      "const ${1:_DomainName_}ClientExceptionDomainCode: ExceptionCode = ${2:_SubDomainCode_};",
+      "const ClientExceptionBaseCode_${1:_DomainName_}: ExceptionCode = ${1:_DomainName_}ClientExceptionDomainCode * ExceptionSubDomainCodeShiftAmount;",
+      "const ClientExceptionPrefix_${1:_DomainName_}: ExceptionPrefix = \"${1:_DomainName_}\";",
+      "",
+      "export class ${1:_DomainName_}ClientExceptions {",
+      "\tstatic BaseCode: ExceptionCode = ClientExceptionBaseCode_${1:_DomainName_};",
+      "\tstatic Prefix: ExceptionPrefix = ClientExceptionPrefix_${1:_DomainName_};",
+      "}"
+    ],
+    "description": "Create a basic structure for a Notezy client exception"
+  },
+  "Generate a Try Catch Scope with Error Instance Initialized": {
+    "prefix": "trycatcherror",
+    "body": ["try {} catch (error) {}"],
+    "description": "Generate a simple try-catch scope with an error instance initialized"
+  },
+  "Initialize a Provider": {
+    "prefix": "pro",
+    "body": [
+      "import { createContext } from \"react\";",
+      "",
+      "interface ${1:ProviderName}ContextType {}",
+      "",
+      "export const ${1:ProviderName}Context = createContext<${1:ProviderName}ContextType | undefined>(undefined);",
+      "",
+      "interface ${1:ProviderName}ProviderProps {children: React.ReactNode;}",
+      "",
+      "export const ${1:ProviderName}Provider = ({ children }: ${1:ProviderName}ProviderProps) => {",
+      "\treturn (<${1:ProviderName}Context.Provider value={{}}>{children}</${1:ProviderName}Context.Provider>);",
+      "};"
+    ],
+    "description": "Create the basic part of a React provider"
+  },
+  "Initialize a Context": {
+    "prefix": "ctx",
+    "body": [
+      "import { ${1:ContextName}Context } from \"@/providers/${1:ContextName}Provider\";",
+      "import { useContext } from \"react\";",
+      "",
+      "export function use${1:ContextName}() {",
+      "\tconst context = useContext(${1:ContextName}Context);",
+      "\tif (!context) {",
+      "\t\tthrow new Error(",
+      "\t\t\t\"use${1:ContextName} must be used within ${1:ContextName}Provider\"",
+      "\t\t);",
+      "\t}",
+      "\treturn context;",
+      "}"
+    ]
+  }
+}

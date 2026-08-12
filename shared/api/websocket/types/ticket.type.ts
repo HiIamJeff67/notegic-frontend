@@ -20,6 +20,8 @@ export type RealtimeBlockPackChannelTicket = {
   permission: z.infer<typeof RealtimePermissionSchema>;
   channelTicket: string;
   expiresAt: Date;
+  documentQuotaPolicyVersion: number;
+  maximumBlockCount: number;
   lastUpdateSequence: number;
   compactedUntilSequence: number;
 };

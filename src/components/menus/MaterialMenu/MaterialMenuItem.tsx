@@ -37,7 +37,7 @@ const MaterialMenuItem = ({ parent, current }: MaterialMenuItemProps) => {
   const handleMaterialOnClick = useCallback(() => {
     try {
       router.push(
-        WebURLPathDictionary.root.materialViewer.byId(
+        WebURLPathDictionary.app.materialViewer.byId(
           current.id,
           parent.id,
           parent.rootShelfId
@@ -114,7 +114,7 @@ const MaterialMenuItem = ({ parent, current }: MaterialMenuItemProps) => {
             onClick={async () => {
               await shelfItemManager.deleteMaterial(parent, current);
               if (current.id === (router.params.materialId as string)) {
-                router.push(WebURLPathDictionary.root.materialViewer._);
+                router.push(WebURLPathDictionary.app.materialViewer._);
               }
             }}
           >

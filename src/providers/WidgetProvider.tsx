@@ -4,8 +4,8 @@ import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BasicPreviewWidgets } from "@/components/widgets/basic/basic";
-import { Widget } from "@/components/widgets/widget";
+import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
+import { toWidget, Widget } from "@/components/widgets/widget";
 import { useUser } from "@/hooks";
 import { translateError } from "@/i18n/error";
 
@@ -62,14 +62,32 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
           widgetsRef.current = (
             JSON.parse(widgetsEncoded).map((widgetEncoded: any) => ({
               ...widgetEncoded,
-              component: BasicPreviewWidgets[widgetEncoded.name]?.component,
+              component: DashboardPreviewWidgets[widgetEncoded.name]?.component,
             })) as Partial<Widget>[]
           ).filter(widget => widget.component !== undefined) as Widget[];
           forceUpdate();
         } catch (error) {
           toast.error(translateError(error, t));
         }
+        return;
       }
+
+      widgetsRef.current = [
+        toWidget(DashboardPreviewWidgets.guide, {
+          leftFrameCount: 0,
+          topFrameCount: 0,
+        }),
+        toWidget(DashboardPreviewWidgets.videoGuide, {
+          leftFrameCount: 0,
+          topFrameCount: 4,
+        }),
+      ];
+      LocalStorageManipulator.setItem(
+        LocalStorageKey.dashboardWidgets,
+        JSON.stringify(widgetsRef.current),
+        userManager.userData.publicId
+      );
+      forceUpdate();
     };
 
     initializeWidgets();

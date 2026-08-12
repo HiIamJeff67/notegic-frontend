@@ -1,8 +1,8 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start";
 import { createRootRouteWithContext } from "@tanstack/react-router";
 import appCSS from "@/global/styles/globals.css?url";
-import { RootDocument } from "@/pages/root/RootDocument";
-import { RootNotFoundPage } from "@/pages/root/RootNotFoundPage";
+import { RootDocument } from "@/pages/RootDocument";
+import { RootNotFoundPage } from "@/pages/RootNotFoundPage";
 // @ts-ignore: allow side-effect import of global CSS without declaration
 import "@/global/styles/globals.css";
 

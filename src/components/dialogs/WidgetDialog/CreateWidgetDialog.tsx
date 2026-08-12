@@ -7,7 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BasicPreviewWidgets } from "@/components/widgets/basic/basic";
+import {
+  BasicPreviewWidgets,
+  GuidePreviewWidgets,
+} from "@/components/widgets/basic/basic";
 import { PreviewWidget } from "@/components/widgets/widget";
 
 interface CreateWidgetDialogProps {
@@ -42,6 +45,14 @@ const CreateWidgetDialog = ({
     scratchPad: {
       name: t("workspace.widgets.scratchPad"),
       description: t("workspace.widgets.scratchPadDescription"),
+    },
+    guide: {
+      name: t("workspace.widgets.guideTitle"),
+      description: t("workspace.widgets.guideDescription"),
+    },
+    videoGuide: {
+      name: t("workspace.widgets.videoGuideTitle"),
+      description: t("workspace.widgets.videoGuideDescription"),
     },
   };
   useEffect(() => {
@@ -106,6 +117,27 @@ const CreateWidgetDialog = ({
                       bg-card rounded-lg
                     "
                   />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="w-full font-bold mb-2">
+          {t("workspace.widgets.guides")}
+        </div>
+        <div className="w-full flex-1 flex flex-col gap-3 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
+          {Object.entries(GuidePreviewWidgets).map(([key, previewWidget]) => (
+            <div
+              key={key}
+              className="w-full flex items-center justify-between rounded-lg border border-border bg-muted hover:bg-accent transition p-4 cursor-pointer"
+              onClick={() => onCreate(previewWidget)}
+            >
+              <div className="flex-1 text-left pr-4">
+                <div className="font-bold text-lg">
+                  {previewLabels[key as keyof typeof previewLabels].name}
+                </div>
+                <div className="font-normal text-sm text-muted-foreground mt-1">
+                  {previewLabels[key as keyof typeof previewLabels].description}
                 </div>
               </div>
             </div>

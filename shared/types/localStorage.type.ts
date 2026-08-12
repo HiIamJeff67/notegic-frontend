@@ -11,6 +11,7 @@ export enum LocalStorageKey {
   routineOverviewCharts = "routine_overview_charts",
   localPreferences = "local_preferences",
   settingsDisplayMode = "settings_display_mode",
+  dashboardBackgroundImage = "dashboard_background_image",
 }
 
 export type SettingsDisplayMode = "page" | "sheet";
@@ -26,4 +27,5 @@ export interface LocalStorageItem {
   [LocalStorageKey.routineOverviewCharts]: string[] | null;
   [LocalStorageKey.localPreferences]: unknown | null;
   [LocalStorageKey.settingsDisplayMode]: SettingsDisplayMode | null;
+  [LocalStorageKey.dashboardBackgroundImage]: string | null;
 }

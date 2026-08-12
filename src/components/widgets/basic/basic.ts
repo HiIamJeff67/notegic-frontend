@@ -3,6 +3,8 @@ import ClockWidget from "@widgets/basic/ClockWidget/ClockWidget";
 import TodoWidget from "@widgets/basic/TodoWidget/TodoWidget";
 import { PreviewWidget } from "@widgets/widget";
 import { getDefaultClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
+import GuideWidget from "../guide/GuideWidget";
+import VideoGuideWidget from "../guide/VideoGuideWidget";
 import { getDefaultScratchPadData } from "./ScratchPadWidget/data/scratchPadData";
 import ScratchPadWidget from "./ScratchPadWidget/ScratchPadWidget";
 import { getDefaultScratchPadSetting } from "./ScratchPadWidget/setting/scratchPadSetting";
@@ -115,7 +117,7 @@ export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
       { widthFrameCount: 3, heightFrameCount: 4 },
     ],
     defaultSetting: {},
-    defaultData: {},
+    defaultData: { completedSteps: {} },
     isEditable: false,
   },
   scratchPad: {
@@ -151,4 +153,48 @@ export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
     defaultData: getDefaultScratchPadData(),
     isEditable: true,
   },
+};
+
+export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
+  guide: {
+    name: "guide",
+    component: GuideWidget,
+    layoutMode: "full-width",
+    size: { widthFrameCount: 3, heightFrameCount: 4 },
+    minSize: { widthFrameCount: 2, heightFrameCount: 2 },
+    maxSize: { widthFrameCount: 4, heightFrameCount: 5 },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 2 },
+      { widthFrameCount: 3, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 4 },
+      { widthFrameCount: 4, heightFrameCount: 4 },
+      { widthFrameCount: 4, heightFrameCount: 5 },
+    ],
+    defaultSetting: {},
+    defaultData: { completedSteps: {} },
+    isEditable: false,
+  },
+  videoGuide: {
+    name: "videoGuide",
+    component: VideoGuideWidget,
+    layoutMode: "full-width",
+    size: { widthFrameCount: 3, heightFrameCount: 3 },
+    minSize: { widthFrameCount: 2, heightFrameCount: 2 },
+    maxSize: { widthFrameCount: 4, heightFrameCount: 4 },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 2 },
+      { widthFrameCount: 3, heightFrameCount: 2 },
+      { widthFrameCount: 3, heightFrameCount: 3 },
+      { widthFrameCount: 4, heightFrameCount: 3 },
+      { widthFrameCount: 4, heightFrameCount: 4 },
+    ],
+    defaultSetting: {},
+    defaultData: { videoURL: "" },
+    isEditable: false,
+  },
+};
+
+export const DashboardPreviewWidgets: Record<string, PreviewWidget> = {
+  ...BasicPreviewWidgets,
+  ...GuidePreviewWidgets,
 };

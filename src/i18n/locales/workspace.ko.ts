@@ -9,7 +9,7 @@ export const KoreanWorkspaceTranslation = {
     stations: "스테이션",
     routineTags: "루틴 태그",
     document: "문서",
-    introduction: "소개",
+    tutorial: "튜토리얼",
     trash: "휴지통",
     account: "계정",
     preferences: "환경 설정",
@@ -570,7 +570,7 @@ export const KoreanWorkspaceTranslation = {
     materialNotFound: "자료를 찾을 수 없습니다.",
     materialIdNotFound: "자료 {{id}}을(를) 찾을 수 없습니다.",
     documentComingSoon: "문서는 곧 제공될 예정입니다.",
-    introductionComingSoon: "소개 페이지는 곧 제공될 예정입니다.",
+    tutorialComingSoon: "튜토리얼 페이지는 곧 제공될 예정입니다.",
     downloadLocalDb: "로컬 데이터베이스 파일 다운로드",
     logUsers: "기존 사용자 모두 로그 출력",
     loadingTest: "로딩 표시기 테스트",
@@ -663,6 +663,63 @@ export const KoreanWorkspaceTranslation = {
     calendarDescription: "선택한 날짜를 표시할 수 있는 달력",
     scratchPad: "메모장",
     scratchPadDescription: "Markdown으로 자유롭게 작성하는 공간",
+    guideCompleted: "개 완료",
+    guidePreviousPage: "이전 가이드 페이지",
+    guideNextPage: "다음 가이드 페이지",
+    guideHomeStep1Title: "선반 만들기",
+    guideHomeStep1Summary: "사이드바의 만들기 기능을 사용하세요.",
+    guideHomeStep1Detail:
+      "사이드바의 만들기 메뉴를 열고 선반을 선택한 뒤 프로젝트나 주제를 설명하는 이름을 입력해 확인하세요. 이 선반이 관련된 모든 콘텐츠의 최상위 시작점이 됩니다.",
+    guideHomeStep2Title: "첫 항목 추가하기",
+    guideHomeStep2Summary: "선반 안에 자료나 블록 팩을 만드세요.",
+    guideHomeStep2Detail:
+      "방금 만든 선반을 열고 파일이나 참고 자료는 자료로, 계속 편집할 노트는 블록 팩으로 추가하세요. 알아보기 쉬운 이름을 지정하면 나중에 하위 선반으로 옮겨 다시 정리할 수 있습니다.",
+    guideHomeStep3Title: "대시보드로 돌아가기",
+    guideHomeStep3Summary: "매일의 작업 시작점으로 사용하세요.",
+    guideHomeStep3Detail:
+      "첫 콘텐츠를 추가한 뒤 기본 탐색 메뉴에서 대시보드로 돌아오세요. 자주 쓰는 위젯을 배치하고 매일 작업을 시작하기 전에 진행 상황과 맥락을 확인하는 곳으로 활용하세요.",
+    guideOrganizeStep1Title: "자료 기록하기",
+    guideOrganizeStep1Summary:
+      "메모, 파일, 참고 자료를 알맞은 위치에 저장하세요.",
+    guideOrganizeStep1Detail:
+      "출처의 맥락을 가장 잘 설명하는 선반을 열고 자료를 만든 뒤 파일이나 참고 자료와 명확한 제목을 추가하세요. 관련 작업 옆에 두면 탐색하거나 나중에 검색할 때 이해하기 쉽습니다.",
+    guideOrganizeStep2Title: "관련 내용 묶기",
+    guideOrganizeStep2Summary:
+      "하위 선반과 블록 팩으로 명확한 경계를 만드세요.",
+    guideOrganizeStep2Detail:
+      "지속되는 주제나 프로젝트는 하위 선반으로 나누고 그 안에서 발전하는 노트는 블록 팩으로 관리하세요. 관련 항목을 함께 옮기고 무엇이 속하는지 알 수 있도록 구체적인 그룹 이름을 사용하세요.",
+    guideOrganizeStep3Title: "필요할 때 검색하기",
+    guideOrganizeStep3Summary:
+      "모든 선반을 하나씩 찾는 대신 검색을 사용하세요.",
+    guideOrganizeStep3Detail:
+      "검색창에 제목이나 내용의 특징적인 단어를 입력하고 결과 경로에서 소속 선반을 확인한 다음 항목을 여세요. 작업 공간이 커지면 모든 선반을 펼치는 것보다 훨씬 빠릅니다.",
+    guideRoutineStep1Title: "루틴 만들기",
+    guideRoutineStep1Summary: "루틴 영역에서 만들기를 시작하세요.",
+    guideRoutineStep1Detail:
+      "루틴 영역을 열어 루틴을 만들고 기대하는 결과가 드러나는 이름을 지정하세요. 실행 순서대로 작업을 추가하고 각 작업에 필요한 작업 공간 콘텐츠나 동작을 설정하세요.",
+    guideRoutineStep2Title: "일정 선택하기",
+    guideRoutineStep2Summary: "루틴이 실행될 시간을 설정하세요.",
+    guideRoutineStep2Detail:
+      "올바른 시간대, 실행 주기, 시작 시간을 선택하고 저장하기 전에 다음 실행 예정 시간을 확인하세요. 실제로 검토하고 유지할 수 있는 빈도를 선택하는 것이 좋습니다.",
+    guideRoutineStep3Title: "결과 확인하기",
+    guideRoutineStep3Summary: "실행 후 작업 기록을 확인하세요.",
+    guideRoutineStep3Detail:
+      "실행 후 작업 기록을 열어 각 상태, 출력, 오류를 확인하세요. 다시 실행하기 전에 작업 설정이나 일정을 수정하고 이후 기록에서 변경 사항이 제대로 동작했는지 확인하세요.",
+    guides: "가이드",
+    guideTitle: "시작하기",
+    guideDescription: "첫 번째 유용한 작업 공간을 만드는 짧은 안내입니다.",
+    guideFirstStepsTitle: "시작점 만들기",
+    guideFirstStepsDescription:
+      "가까이 두고 싶은 내용을 담을 선반부터 만들어 보세요.",
+    guideOrganizeTitle: "기록하고 정리하기",
+    guideOrganizeDescription:
+      "아이디어가 늘어나면 자료와 블록 팩으로 정리할 수 있습니다.",
+    guideRoutineTitle: "반복 가능한 작업 만들기",
+    guideRoutineDescription:
+      "정기적으로 해야 할 작업이나 검토에는 루틴을 사용하세요.",
+    videoGuideTitle: "사용 안내 영상",
+    videoGuideDescription: "짧은 제품 사용 안내 영상이 여기에 추가됩니다.",
+    videoGuidePlaceholder: "사용 안내 영상이 여기에 표시됩니다.",
     clickToEdit: "클릭하여 편집",
     memoPlaceholder: "여기에 메모를 작성하세요…",
     saveChanges: "변경 사항 저장",

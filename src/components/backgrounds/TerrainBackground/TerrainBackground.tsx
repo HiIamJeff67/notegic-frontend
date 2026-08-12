@@ -7,6 +7,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import * as THREE from "three";
@@ -56,8 +57,9 @@ export const TerrainBackground = ({
 }) => {
   const { capability, isCapabilityDetected } = usePerformance();
   const { breakpoint } = useScreen();
+  const initialBreakpoint = useRef(breakpoint).current;
   const camera = useMemo(() => {
-    switch (breakpoint) {
+    switch (initialBreakpoint) {
       case "base":
         return {
           position: [30, 104, 80] as const,
@@ -80,7 +82,7 @@ export const TerrainBackground = ({
           target: [0, 6, -20] as const,
         };
     }
-  }, [breakpoint]);
+  }, [initialBreakpoint]);
   const [terrain, setTerrain] = useState<{
     pointCount: number;
     pointSize: number;

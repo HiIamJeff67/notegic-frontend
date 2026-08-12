@@ -94,12 +94,12 @@ export const defaultLocalPreferences: LocalPreferences = {
 
 export const getPreferredStartPath = (preferences: LocalPreferences) => {
   if (preferences.startSurface === "dashboard") {
-    return WebURLPathDictionary.root.dashboard._;
+    return WebURLPathDictionary.app.dashboard._;
   }
   if (preferences.startSurface === "routines") {
-    return WebURLPathDictionary.root.routines._;
+    return WebURLPathDictionary.app.routines._;
   }
-  return WebURLPathDictionary.root.dashboard._;
+  return WebURLPathDictionary.app.dashboard._;
 };
 
 const normalizeLocalPreferences = (

@@ -60,7 +60,7 @@ const RegisterPage = () => {
       setPassword("");
       setConfirmPassword("");
       userManager.setUserData(responseOfGettingUserData.data);
-      router.push(WebURLPathDictionary.root.dashboard._);
+      router.push(WebURLPathDictionary.app.dashboard._);
     };
 
     startRegisterTransition(

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_auth/login")({
     try {
       const response = await fetchGetUserData({}); // try to get the user on SSR
       if (response && response.success) {
-        throw redirect({ to: "/dashboard", replace: true });
+        throw redirect({ to: "/app/dashboard", replace: true });
       }
       return {};
     } catch (error) {

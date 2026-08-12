@@ -1,6 +1,7 @@
 export type RealtimeErrorCode =
   | "authentication_managed_by_upgrade"
   | "binary_channel_not_ready"
+  | "block_pack_quota_exceeded"
   | "channel_backpressure"
   | "channel_limit_exceeded"
   | "channel_not_found"

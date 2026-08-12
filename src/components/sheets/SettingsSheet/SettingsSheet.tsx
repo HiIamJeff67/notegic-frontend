@@ -7,8 +7,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useSettingsDisplay } from "@/hooks";
-import AccountSettingsPage from "@/pages/root/setting/account/AccountSettingsPage";
-import PreferencesPage from "@/pages/root/setting/preferences/PreferencesPage";
+import AccountSettingsPage from "@/pages/app/setting/account/AccountSettingsPage";
+import PreferencesPage from "@/pages/app/setting/preferences/PreferencesPage";
 
 const SettingsSheet = () => {
   const { t } = useTranslation();

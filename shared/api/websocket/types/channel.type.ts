@@ -7,4 +7,7 @@ export type RealtimeRegisteredChannel = {
   connectorChannelId: number | null;
   pendingRequestId: string | null;
   ticketRetryCount: number;
+  resyncRequired: boolean;
+  documentQuotaPolicyVersion: number | null;
+  maximumBlockCount: number | null;
 };

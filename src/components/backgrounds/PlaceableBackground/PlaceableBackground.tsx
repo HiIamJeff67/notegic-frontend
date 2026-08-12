@@ -20,6 +20,7 @@ interface PlaceableBackgroundProps {
   zIndex?: number;
   children?: React.ReactNode;
   frameSizeSource?: "horizontal" | "vertical" | "none";
+  rightInset?: number;
   frameSize: number;
   setFrameSize: (newBaseSize: number) => void;
   widthTotalFrameCount: number;
@@ -55,6 +56,7 @@ const PlaceableBackground = ({
   zIndex = 50,
   children,
   frameSizeSource = "none",
+  rightInset = 0,
   frameSize,
   setFrameSize,
   widthTotalFrameCount,
@@ -81,7 +83,7 @@ const PlaceableBackground = ({
 
     const handleResize = () => {
       const width = backgroundRef.current
-        ? backgroundRef.current.offsetWidth
+        ? backgroundRef.current.clientWidth - rightInset
         : window.innerWidth;
       const height = backgroundRef.current
         ? backgroundRef.current.offsetHeight
@@ -140,6 +142,7 @@ const PlaceableBackground = ({
     // except for listening the changed of backgroundRef to avoid UI zooming while user adding new widgets
     widthTotalFrameCount,
     heightTotalFrameCount,
+    rightInset,
   ]);
 
   const surfaceHeight = heightTotalFrameCount * frameSize;
@@ -199,11 +202,14 @@ const PlaceableBackground = ({
               ...frameProps.droppableProps,
               hover: (draggedItem: Widget, monitor: DropTargetMonitor) => {
                 if (frameProps.droppableProps.hover === undefined) return;
-                setHoveredFrameCord([x, y]);
                 const newSize = frameProps.droppableProps.hover(
                   draggedItem,
                   monitor
                 );
+                setHoveredFrameCord([
+                  newSize.widthFrameCount >= widthTotalFrameCount ? 0 : x,
+                  y,
+                ]);
                 setDropPlaceholderSize(newSize);
               },
               canDrop: (

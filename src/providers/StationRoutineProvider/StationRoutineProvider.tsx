@@ -121,6 +121,7 @@ export const StationRoutineProvider = ({
   const knownStationIdsRef = useRef<Set<UUID>>(new Set());
   const knownRoutineTagIdsRef = useRef<Set<UUID>>(new Set());
   const initializedUserPublicIdRef = useRef<string | null>(null);
+  const failedUserPublicIdRef = useRef<string | null>(null);
   const initializationPromiseRef = useRef<Promise<void> | null>(null);
   const presenceRef = useRef<{
     stationIds: UUID[];
@@ -184,8 +185,13 @@ export const StationRoutineProvider = ({
   });
   const initializeStationRoutineData = useCallback(async (): Promise<void> => {
     const userData = userManager.userData;
-    if (!userData) return;
+    if (!userData) {
+      initializedUserPublicIdRef.current = null;
+      failedUserPublicIdRef.current = null;
+      return;
+    }
     if (initializedUserPublicIdRef.current === userData.publicId) return;
+    if (failedUserPublicIdRef.current === userData.publicId) return;
     if (initializationPromiseRef.current) {
       await initializationPromiseRef.current;
       return;
@@ -201,6 +207,7 @@ export const StationRoutineProvider = ({
       })
       .catch(error => {
         initializedUserPublicIdRef.current = null;
+        failedUserPublicIdRef.current = userData.publicId;
         console.error("failed to search station routine data", error);
         throw error;
       })
@@ -260,6 +267,11 @@ export const StationRoutineProvider = ({
   }, [forceUpdate, routineTagIdsSignature, stationIdsSignature]);
 
   const refresh = useCallback(async () => {
+    const userPublicId = userManager.userData?.publicId;
+    if (!userPublicId) return;
+
+    initializedUserPublicIdRef.current = null;
+    failedUserPublicIdRef.current = null;
     setState("syncing");
     try {
       stationsRef.current.clear();
@@ -277,6 +289,10 @@ export const StationRoutineProvider = ({
         stationLogic.searchStations(""),
         routineTagLogic.searchRoutineTags(),
       ]);
+      initializedUserPublicIdRef.current = userPublicId;
+    } catch (error) {
+      failedUserPublicIdRef.current = userPublicId;
+      throw error;
     } finally {
       setState("idle");
     }
@@ -284,6 +300,7 @@ export const StationRoutineProvider = ({
     forceUpdate,
     routineTagLogic.searchRoutineTags,
     stationLogic.searchStations,
+    userManager.userData?.publicId,
   ]);
 
   const setPresenceQuery = useCallback(

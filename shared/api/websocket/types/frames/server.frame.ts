@@ -10,15 +10,15 @@ import {
   parseRealtimeHeartbeatFrame,
   type RealtimeHeartbeatFrame,
 } from "./heartbeat.frame";
+import {
+  parseRealtimeNotificationFrame,
+  type RealtimeNotificationFrame,
+} from "./notification.frame";
 import { parseRealtimePongFrame, type RealtimePongFrame } from "./pong.frame";
 import {
   parseRealtimePresenceFrame,
   type RealtimePresenceFrame,
 } from "./presence.frame";
-import {
-  parseRealtimeNotificationFrame,
-  type RealtimeNotificationFrame,
-} from "./notification.frame";
 import {
   parseRealtimeReadyFrame,
   type RealtimeReadyFrame,
