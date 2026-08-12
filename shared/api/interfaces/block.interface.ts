@@ -25,7 +25,7 @@ export const GetMyBlockByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -52,7 +52,7 @@ export const GetMyBlocksByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -82,7 +82,7 @@ export const GetMyBlocksByBlockPackIdRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({

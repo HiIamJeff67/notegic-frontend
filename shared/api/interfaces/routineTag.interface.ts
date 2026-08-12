@@ -11,7 +11,7 @@ export const GetMyRoutineTagByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -46,7 +46,7 @@ export const GetAllMyRoutineTagsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z
@@ -85,7 +85,7 @@ export const CreateRoutineTagRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -118,7 +118,7 @@ export const CreateRoutineTagsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -155,7 +155,7 @@ export const UpdateMyRoutineTagByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -195,7 +195,7 @@ export const UpdateMyRoutineTagsByIdsRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -239,7 +239,7 @@ export const HardDeleteMyRoutineTagByIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -270,7 +270,7 @@ export const HardDeleteMyRoutineTagsByIdsRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({

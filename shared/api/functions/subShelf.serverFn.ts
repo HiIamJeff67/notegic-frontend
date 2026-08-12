@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -56,8 +55,8 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -75,9 +74,6 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -103,8 +99,8 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -122,9 +118,6 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -151,8 +144,8 @@ export const GetAllMySubShelvesByRootShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -170,9 +163,6 @@ export const GetAllMySubShelvesByRootShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -201,8 +191,8 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -220,9 +210,6 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -246,8 +233,8 @@ export const CreateSubShelfByRootShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -267,9 +254,6 @@ export const CreateSubShelfByRootShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -295,8 +279,8 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -316,9 +300,6 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -337,8 +318,8 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -358,9 +339,6 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -383,8 +361,8 @@ export const UpdateMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -404,9 +382,6 @@ export const UpdateMySubShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -425,8 +400,8 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -447,9 +422,6 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -472,8 +444,8 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -493,9 +465,6 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -519,8 +488,8 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -540,9 +509,6 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -564,8 +530,8 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -585,9 +551,6 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -611,8 +574,8 @@ export const RestoreMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -632,9 +595,6 @@ export const RestoreMySubShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -653,8 +613,8 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -674,9 +634,6 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -699,8 +656,8 @@ export const DeleteMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -720,9 +677,6 @@ export const DeleteMySubShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }

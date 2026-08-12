@@ -1,11 +1,9 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyRoutineById } from "@shared/api/hooks/routine.hook";
 import { RoutinePeriod, RoutineStatus } from "@shared/api/interfaces/enums";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -113,15 +111,9 @@ const RoutineInspector = ({
     setMonthlyDayRange({ start: 1, end: 1 });
 
     setIsLoadingRoutineDetail(true);
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
     getRoutineQuerier
       .fetch({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           routineId,
         },

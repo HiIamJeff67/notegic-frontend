@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useApolloClient } from "@apollo/client/react";
 import {
   type SearchItemInput,
@@ -18,13 +19,10 @@ import {
 import { MaxSearchLimit } from "@shared/constants";
 import { AnalysisStatus } from "@shared/enums";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -163,15 +161,9 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const responseOfCreatingMaterial =
         await createMaterialMutator.mutateAsync({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
           body: {
             parentSubShelfId: parentSubShelfNode.id,
             name: name,
@@ -227,14 +219,8 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await updateMaterialMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           materialId: editingItemNode.id,
           values: {
@@ -283,14 +269,8 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await deleteMaterialMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           materialId: materialNode.id,
         },
@@ -338,15 +318,9 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const responseOfCreatingBlockPack =
         await createBlockPackMutator.mutateAsync({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
           body: {
             parentSubShelfId: parentSubShelfNode.id,
             name: name,
@@ -403,14 +377,8 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await updateBlockPackMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           blockPackId: editingItemNode.id,
           values: {
@@ -513,14 +481,8 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await deleteBlockPackMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           blockPackId: blockPackNode.id,
         },

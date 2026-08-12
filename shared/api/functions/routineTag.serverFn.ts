@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -63,8 +62,8 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -82,9 +81,6 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -111,8 +107,8 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -130,9 +126,6 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -154,8 +147,8 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -174,9 +167,6 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -198,8 +188,8 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -218,9 +208,6 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -247,8 +234,8 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -267,9 +254,6 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -295,8 +279,8 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -315,9 +299,6 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -345,8 +326,8 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -365,9 +346,6 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -395,8 +373,8 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -415,9 +393,6 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }

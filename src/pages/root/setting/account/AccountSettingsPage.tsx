@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useSendAuthCode } from "@shared/api/hooks/auth.hook";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
@@ -114,7 +115,7 @@ const AccountSettingsPage = ({
           }
 
           const response = await sendAuthCodeMutator.mutateAsync({
-            header: { userAgent: navigator.userAgent },
+            header: getClientRequestHeaders(navigator.userAgent),
             body: { email: userManager.userData.email },
           });
           const blockTime = Math.floor(

@@ -1,3 +1,4 @@
+import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
@@ -17,18 +18,31 @@ import { type TerrainAlgorithm, terrainSeeds } from "./terrain.data";
 const TerrainCamera = ({
   position,
   target,
+  rotation,
 }: {
   position: readonly [number, number, number];
   target: readonly [number, number, number];
+  rotation?: readonly [number, number, number];
 }) => {
   const camera = useThree(state => state.camera);
 
   useLayoutEffect(() => {
     camera.position.set(...position);
     camera.up.set(0, 1, 0);
-    camera.lookAt(...target);
+    if (rotation) camera.rotation.set(...rotation);
+    else camera.lookAt(...target);
     camera.updateProjectionMatrix();
-  }, [camera, position, target]);
+  }, [camera, position, rotation, target]);
+
+  return null;
+};
+
+const TerrainRendererSettings = ({ isDark }: { isDark: boolean }) => {
+  const gl = useThree(state => state.gl);
+
+  useEffect(() => {
+    gl.setClearColor(isDark ? "#000000" : "#ffffff", 1);
+  }, [gl, isDark]);
 
   return null;
 };
@@ -46,23 +60,24 @@ export const TerrainBackground = ({
     switch (breakpoint) {
       case "base":
         return {
-          position: [34, 96, 92] as const,
-          target: [0, -10, -20] as const,
+          position: [30, 104, 80] as const,
+          target: [0, -14, -20] as const,
         };
       case "sm":
         return {
-          position: [30, 86, 84] as const,
-          target: [0, -10, -20] as const,
+          position: [28, 94, 72] as const,
+          target: [0, -14, -20] as const,
         };
       case "md":
         return {
-          position: [26, 76, 72] as const,
-          target: [0, -10, -20] as const,
+          position: [24, 84, 58] as const,
+          target: [0, -14, -20] as const,
         };
       default:
         return {
-          position: [22, 66, 60] as const,
-          target: [0, -10, -20] as const,
+          position: [83.54, 24.783, -95.23] as const,
+          rotation: [-2.897, 0.823, 2.961] as const,
+          target: [0, 6, -20] as const,
         };
     }
   }, [breakpoint]);
@@ -133,37 +148,51 @@ export const TerrainBackground = ({
       style={{ backgroundColor: isDark ? "#000000" : "#ffffff" }}
     >
       {terrain && (
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <Canvas
-            camera={{
-              far: 280,
-              fov: 34,
-              near: 0.1,
-              position: camera.position,
-            }}
-            className="size-full"
-            dpr={1}
-            frameloop="demand"
-            gl={{
-              alpha: true,
-              antialias: false,
-              powerPreference: "high-performance",
-            }}
-            onCreated={({ gl }) => {
-              gl.outputColorSpace = THREE.SRGBColorSpace;
-            }}
-          >
-            <TerrainCamera position={camera.position} target={camera.target} />
-            <TerrainGridFloor isDark={isDark} />
-            <TerrainPointCloud
-              color={isDark ? "#ffffff" : "#000000"}
-              pointCount={terrain.pointCount}
-              pointSize={terrain.pointSize}
-              seed={terrain.seed}
-              algorithm={terrain.algorithm}
-            />
-          </Canvas>
-        </div>
+        <>
+          <div className="pointer-events-auto absolute inset-0 z-0">
+            <Canvas
+              camera={{
+                far: 280,
+                fov: 34,
+                near: 0.1,
+                position: camera.position,
+              }}
+              className="size-full"
+              dpr={1}
+              frameloop="always"
+              gl={{
+                alpha: false,
+                antialias: false,
+                powerPreference: "high-performance",
+              }}
+              onCreated={({ gl }) => {
+                gl.outputColorSpace = THREE.SRGBColorSpace;
+              }}
+            >
+              <TerrainRendererSettings isDark={isDark} />
+              <TerrainCamera
+                position={camera.position}
+                rotation={camera.rotation}
+                target={camera.target}
+              />
+              <OrbitControls
+                autoRotate
+                autoRotateSpeed={-1}
+                enableDamping={false}
+                makeDefault
+                target={camera.target}
+              />
+              <TerrainGridFloor isDark={isDark} />
+              <TerrainPointCloud
+                color={isDark ? "#ffffff" : "#111111"}
+                pointCount={terrain.pointCount}
+                pointSize={isDark ? terrain.pointSize : terrain.pointSize * 3.5}
+                seed={terrain.seed}
+                algorithm={terrain.algorithm}
+              />
+            </Canvas>
+          </div>
+        </>
       )}
       <div
         className="pointer-events-none absolute inset-0 z-[1]"

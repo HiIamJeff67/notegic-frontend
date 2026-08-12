@@ -11,7 +11,7 @@ export const CreateMyRealtimeConnectionTicketRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({}).optional(),
@@ -40,7 +40,7 @@ export const CreateMyBlockPackChannelTicketRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -59,8 +59,10 @@ export const CreateMyBlockPackChannelTicketResponseSchema =
       channelType: z.literal("BlockPack"),
       channelId: z.uuidv4(),
       roomName: z.string().min(1),
+      fragmentName: z.string().min(1),
       schemaId: z.literal("notezy.blocknote"),
       schemaVersion: z.literal(1),
+      realtimeProtocolVersion: z.literal(RealtimeProtocolVersion),
       permission: RealtimePermissionSchema,
       channelTicket: z.string().min(1),
       expiresAt: z.coerce.date(),
@@ -78,7 +80,7 @@ export const GetBlockPackParticipantsRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({

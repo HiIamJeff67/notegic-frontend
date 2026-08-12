@@ -1,13 +1,11 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyStationById } from "@shared/api/hooks/station.hook";
 import type {
   AccessControlPermission,
   SupportedIcon,
 } from "@shared/api/interfaces/enums";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -68,15 +66,9 @@ const StationInspector = ({
     });
 
     setIsLoadingStationDetail(true);
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
     getStationQuerier
       .fetch({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           stationId,
         },

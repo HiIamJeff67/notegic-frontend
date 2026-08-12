@@ -11,7 +11,7 @@ export const GetMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -53,7 +53,7 @@ export const GetMyMaterialAndItsParentByIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -103,7 +103,7 @@ export const GetMyMaterialsByParentSubShelfIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -148,7 +148,7 @@ export const GetAllMyMaterialsByRootShelfIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -192,7 +192,7 @@ export const CreateMyMaterialRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -229,7 +229,7 @@ export const UpdateMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -270,7 +270,7 @@ export const SaveMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -305,7 +305,7 @@ export const MoveMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -341,7 +341,7 @@ export const MoveMyMaterialsByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -377,7 +377,7 @@ export const RestoreMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -421,7 +421,7 @@ export const RestoreMyMaterialsByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -468,7 +468,7 @@ export const DeleteMyMaterialByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -503,7 +503,7 @@ export const DeleteMyMaterialsByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({

@@ -1,33 +1,39 @@
 import { NotezyAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import { parseRealtimeAckFrame, type RealtimeAckFrame } from "./ack.frame";
 import {
-  type RealtimeAckFrame,
-  parseRealtimeAckFrame,
-} from "./ack.frame";
-import {
-  type RealtimeErrorFrame,
   parseRealtimeErrorFrame,
+  type RealtimeErrorFrame,
 } from "./error.frame";
 import {
-  type RealtimeHeartbeatFrame,
   parseRealtimeHeartbeatFrame,
+  type RealtimeHeartbeatFrame,
 } from "./heartbeat.frame";
+import { parseRealtimePongFrame, type RealtimePongFrame } from "./pong.frame";
 import {
-  type RealtimePongFrame,
-  parseRealtimePongFrame,
-} from "./pong.frame";
+  parseRealtimePresenceFrame,
+  type RealtimePresenceFrame,
+} from "./presence.frame";
 import {
-  type RealtimeReadyFrame,
+  parseRealtimeNotificationFrame,
+  type RealtimeNotificationFrame,
+} from "./notification.frame";
+import {
   parseRealtimeReadyFrame,
+  type RealtimeReadyFrame,
 } from "./ready.frame";
 import {
-  type RealtimeSubscribedFrame,
+  parseRealtimeResourceEventFrame,
+  type RealtimeResourceEventFrame,
+} from "./resourceEvent.frame";
+import {
   parseRealtimeSubscribedFrame,
+  type RealtimeSubscribedFrame,
 } from "./subscribed.frame";
 import {
-  type RealtimeUnsubscribedFrame,
   parseRealtimeUnsubscribedFrame,
+  type RealtimeUnsubscribedFrame,
 } from "./unsubscribed.frame";
 
 export type RealtimeServerFrame =
@@ -37,7 +43,10 @@ export type RealtimeServerFrame =
   | RealtimeSubscribedFrame
   | RealtimeUnsubscribedFrame
   | RealtimeHeartbeatFrame
-  | RealtimeAckFrame;
+  | RealtimeAckFrame
+  | RealtimePresenceFrame
+  | RealtimeResourceEventFrame
+  | RealtimeNotificationFrame;
 
 export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
   let parsed: unknown;
@@ -62,6 +71,14 @@ export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
   switch (frame.type) {
     case "ready":
       return parseRealtimeReadyFrame(frame);
+    case "resource-event":
+      return parseRealtimeResourceEventFrame(frame);
+    case "notification":
+      return parseRealtimeNotificationFrame(frame);
+    case "presence-joined":
+    case "presence-left":
+    case "presence-updated":
+      return parseRealtimePresenceFrame(frame);
     case "pong":
       return parseRealtimePongFrame(frame);
     case "error":
@@ -71,7 +88,7 @@ export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
     case "unsubscribed":
       return parseRealtimeUnsubscribedFrame(frame);
     case "heartbeat":
-      return parseRealtimeHeartbeatFrame();
+      return parseRealtimeHeartbeatFrame(frame);
     case "ack":
     case "acknowledged":
       return parseRealtimeAckFrame(frame);

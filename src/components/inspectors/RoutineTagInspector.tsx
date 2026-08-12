@@ -1,10 +1,8 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyRoutineTagById } from "@shared/api/hooks/routineTag.hook";
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -63,15 +61,9 @@ const RoutineTagInspector = ({
     });
 
     setIsLoadingRoutineTagDetail(true);
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
     getRoutineTagQuerier
       .fetch({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           routineTagId,
         },

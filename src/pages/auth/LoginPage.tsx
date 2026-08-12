@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useLogin } from "@shared/api/hooks/auth.hook";
 import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
 import { WebURLPathDictionary } from "@shared/constants";
@@ -38,9 +39,7 @@ const LoginPage = () => {
         try {
           const userAgent = navigator.userAgent;
           await loginMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-            },
+            header: getClientRequestHeaders(userAgent),
             body: {
               account: account,
               password: password,
@@ -48,9 +47,7 @@ const LoginPage = () => {
           });
 
           const responseOfGettingUserData = await queryFnGetUserData({
-            header: {
-              userAgent: userAgent,
-            },
+            header: getClientRequestHeaders(userAgent),
           });
 
           setAccount("");

@@ -1,10 +1,10 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetAllMyRoutinesByTimeRange } from "@shared/api/hooks/routine.hook";
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import { cn } from "@shared/util/utils";
 import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
@@ -154,16 +154,9 @@ const TimeRails = () => {
 
     const currentToken = timeRangeFetchTokenRef.current + 1;
     timeRangeFetchTokenRef.current = currentToken;
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
-
     void timeRangeRoutinesFetchRef
       .current({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           from: timeRangeFetchWindow.from,
           to: timeRangeFetchWindow.to,

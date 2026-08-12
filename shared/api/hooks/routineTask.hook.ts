@@ -55,9 +55,9 @@ import { RoutineTaskLocalSynchronizer } from "@shared/api/local/synchronizers/ro
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
@@ -325,11 +325,6 @@ export const useGetMyRoutineTaskById = (
       }
 
       const response = await queryFnGetMyRoutineTaskById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -409,11 +404,6 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
       }
 
       const response = await queryFnGetAllMyRoutineTasksByRoutineIds(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -495,11 +485,6 @@ export const useGetAllMyRoutineTasks = (
       }
 
       const response = await queryFnGetAllMyRoutineTasks(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -564,11 +549,6 @@ export const useCreateRoutineTaskByRoutineId = () => {
       response,
       request: CreateRoutineTaskByRoutineIdRequest
     ) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -622,11 +602,6 @@ export const useUpdateMyRoutineTaskById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyRoutineTaskById,
     onSuccess: async (response, request: UpdateMyRoutineTaskByIdRequest) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -681,11 +656,6 @@ export const usePauseMyRoutineTaskById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnPauseMyRoutineTaskById,
     onSuccess: async (response, request: PauseMyRoutineTaskByIdRequest) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -718,11 +688,6 @@ export const useResumeMyRoutineTaskById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResumeMyRoutineTaskById,
     onSuccess: async (response, request: ResumeMyRoutineTaskByIdRequest) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -758,11 +723,6 @@ export const useHardDeleteMyRoutineTaskById = () => {
       response,
       request: HardDeleteMyRoutineTaskByIdRequest
     ) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -795,11 +755,6 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
       response,
       request: HardDeleteMyRoutineTasksByIdsRequest
     ) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

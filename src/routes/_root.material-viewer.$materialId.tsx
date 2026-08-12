@@ -1,8 +1,6 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyMaterialAndItsParentById } from "@shared/api/hooks/material.hook";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { isValidUUID } from "@shared/types/uuidv4.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import {
   createFileRoute,
   notFound,
@@ -74,14 +72,8 @@ function MaterialViewerRoute() {
       setIsNotFound(false);
 
       try {
-        const accessToken = LocalStorageManipulator.getItemByKey(
-          LocalStorageKey.accessToken
-        );
         const response = await materialQuerier.fetch({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           param: {
             materialId: loaderData.materialId,
           },

@@ -1,11 +1,10 @@
+import { getClientMutationHeaders } from "@shared/api/clientHeaders";
 import { useUpdateMyAccount } from "@shared/api/hooks/userAccount.hook";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import toast from "@shared/lib/toast";
 import { CSRFTokenGenerator } from "@shared/lib/tokenGenerator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -90,14 +89,8 @@ const BindingTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await updateUserAccountMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               authCode: authCode,
               values: {
@@ -127,14 +120,8 @@ const BindingTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await updateUserAccountMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               authCode: authCode,
               values: {

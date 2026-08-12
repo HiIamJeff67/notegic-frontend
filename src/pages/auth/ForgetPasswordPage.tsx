@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   useForgetPassword,
   useSendAuthCode,
@@ -63,9 +64,7 @@ const ForgetPasswordPage = () => {
           const userAgent = navigator.userAgent;
           const responseOfSendingAuthCode =
             await sendAuthCodeMutator.mutateAsync({
-              header: {
-                userAgent: userAgent,
-              },
+              header: getClientRequestHeaders(userAgent),
               body: {
                 email: email,
               },
@@ -100,9 +99,7 @@ const ForgetPasswordPage = () => {
 
           const userAgent = navigator.userAgent;
           await forgetPasswordMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-            },
+            header: getClientRequestHeaders(userAgent),
             body: {
               account: email,
               newPassword: newPassword,

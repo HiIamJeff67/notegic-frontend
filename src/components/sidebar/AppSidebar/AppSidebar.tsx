@@ -1,9 +1,9 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { NotificationPopover } from "@/components/popovers/NotificationPopover";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import {
-  BellIcon,
   BookOpenIcon,
   ChevronDown,
   ChevronRight,
@@ -437,17 +437,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
               </MenubarContent>
             </MenubarMenu>
           )}
-          {sidebarManager.open && (
-            <MenubarMenu>
-              <MenubarTrigger
-                className="px-2 py-2 flex items-center justify-center"
-                aria-label={t("workspace.navigation.notifications")}
-                title={t("workspace.navigation.notifications")}
-              >
-                <BellIcon size={20} />
-              </MenubarTrigger>
-            </MenubarMenu>
-          )}
+          {sidebarManager.open && <NotificationPopover />}
         </Menubar>
       </SidebarFooter>
     </ResizableSidebar>

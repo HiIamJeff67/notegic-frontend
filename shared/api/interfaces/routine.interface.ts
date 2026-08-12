@@ -66,7 +66,7 @@ export const GetMyRoutineByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -114,7 +114,7 @@ export const GetMyRoutinesByStationIdRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -165,7 +165,7 @@ export const GetAllMyRoutinesByTimeRangeRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -217,7 +217,7 @@ export const CreateRoutineByStationIdRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z
@@ -270,7 +270,7 @@ export const CreateRoutinesByStationIdsRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -325,7 +325,7 @@ export const UpdateMyRoutineByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -370,7 +370,7 @@ export const UpdateMyRoutinesByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -418,7 +418,7 @@ export const LinkRoutineTagByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -449,7 +449,7 @@ export const LinkRoutineTagsByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -484,7 +484,7 @@ export const LinkRoutineTaskByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -517,7 +517,7 @@ export const LinkRoutineTasksByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -554,7 +554,7 @@ export const LinkRoutineItemByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -588,7 +588,7 @@ export const LinkRoutineItemsByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -626,7 +626,7 @@ export const RestoreMyRoutineByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -669,7 +669,7 @@ export const RestoreMyRoutinesByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -715,7 +715,7 @@ export const DeleteMyRoutineByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -746,7 +746,7 @@ export const DeleteMyRoutinesByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -777,7 +777,7 @@ export const HardDeleteMyRoutineByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -810,7 +810,7 @@ export const HardDeleteMyRoutinesByIdsRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({

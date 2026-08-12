@@ -15,9 +15,7 @@ import {
 import { AuthLocalSynchronizer } from "@shared/api/local/synchronizers/auth.synchronizer";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { type QueryKey, useMutation } from "@tanstack/react-query";
 
@@ -27,16 +25,10 @@ export const useRegister = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRegister,
     onSuccess: async (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.data?.accessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken,
-        response.embedded?.publicId
+        response.data?.publicId
       );
       await AuthLocalSynchronizer.syncRegister(request, response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
@@ -54,16 +46,10 @@ export const useRegisterViaGoogle = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRegisterViaGoogle,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.data?.accessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken,
-        response.embedded?.publicId
+        response.data?.publicId
       );
       await AuthLocalSynchronizer.syncRegisterViaGoogle(response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
@@ -81,16 +67,10 @@ export const useLogin = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLogin,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.data?.accessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken,
-        response.embedded?.publicId
+        response.data?.publicId
       );
       await AuthLocalSynchronizer.syncLogin(response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
@@ -108,16 +88,10 @@ export const useLoginViaGoogle = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLoginViaGoogle,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.data?.accessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken,
-        response.embedded?.publicId
+        response.data?.publicId
       );
       await AuthLocalSynchronizer.syncLoginViaGoogle(response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
@@ -136,10 +110,6 @@ export const useLogout = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLogout,
     onSuccess: async (response, request) => {
-      LocalStorageManipulator.removeItem(
-        LocalStorageKey.accessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.removeItem(
         SessionStorageKey.csrfToken,
         response.embedded.publicId
@@ -161,12 +131,6 @@ export const useSendAuthCode = () => {
   const mutation = useMutation({
     mutationFn: mutationFnSendAuthCode,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ??
@@ -184,12 +148,6 @@ export const useValidateEmail = () => {
   const mutation = useMutation({
     mutationFn: mutationFnValidateEmail,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ??
@@ -209,12 +167,6 @@ export const useResetEmail = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetEmail,
     onSuccess: async (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ??
@@ -237,12 +189,6 @@ export const useForgetPassword = () => {
   const mutation = useMutation({
     mutationFn: mutationFnForgetPassword,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ??
@@ -265,12 +211,6 @@ export const useResetMe = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetMe,
     onSuccess: async response => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken ??
-          response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken ??
@@ -307,10 +247,6 @@ export const useDeleteMe = () => {
     mutationFn: mutationFnDeleteMe,
     onSuccess: async response => {
       await AuthLocalSynchronizer.syncDeleteMe(response);
-      LocalStorageManipulator.removeItem(
-        LocalStorageKey.accessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.removeItem(
         SessionStorageKey.csrfToken,
         response.embedded.publicId

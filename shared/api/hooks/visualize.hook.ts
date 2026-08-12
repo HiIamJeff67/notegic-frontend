@@ -4,9 +4,9 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -16,7 +16,6 @@ import {
 
 interface VisualizeResponseEnvelope {
   refreshableTokens?: {
-    newAccessToken?: string;
     newCSRFToken?: string;
   };
   embedded?: {
@@ -46,11 +45,6 @@ export function useVisualizeQuery<
     }
 
     const response = await queryFunction(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,

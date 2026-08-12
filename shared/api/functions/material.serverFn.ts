@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -50,8 +49,8 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -69,9 +68,6 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -97,8 +93,8 @@ export const GetMyMaterialAndItsParentById = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -116,9 +112,6 @@ export const GetMyMaterialAndItsParentById = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -148,8 +141,8 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -168,9 +161,6 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -200,8 +190,8 @@ export const GetAllMyMaterialsByRootShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -220,9 +210,6 @@ export const GetAllMyMaterialsByRootShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -241,8 +228,8 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -264,9 +251,6 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -284,8 +268,8 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -305,9 +289,6 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -325,8 +306,8 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -346,9 +327,6 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -366,8 +344,8 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -387,9 +365,6 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -410,8 +385,8 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -431,9 +406,6 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -457,8 +429,8 @@ export const RestoreMyMaterialsByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -478,9 +450,6 @@ export const RestoreMyMaterialsByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -499,8 +468,8 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -520,9 +489,6 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -543,8 +509,8 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -564,9 +530,6 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }

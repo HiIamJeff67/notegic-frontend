@@ -35,9 +35,9 @@ import { RoutineTagLocalSynchronizer } from "@shared/api/local/synchronizers/rou
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
@@ -66,11 +66,6 @@ export const useGetMyRoutineTagById = (
       }
 
       const response = await queryFnGetMyRoutineTagById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -148,11 +143,6 @@ export const useGetAllMyRoutineTags = (
       }
 
       const response = await queryFnGetAllMyRoutineTags(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -222,11 +212,6 @@ export const useCreateRoutineTag = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutineTagRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -273,11 +258,6 @@ export const useCreateRoutineTags = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutineTagsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -329,11 +309,6 @@ export const useUpdateMyRoutineTagById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutineTagByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -383,11 +358,6 @@ export const useUpdateMyRoutineTagsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutineTagsByIdsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -441,11 +411,6 @@ export const useHardDeleteMyRoutineTagById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutineTagByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -500,11 +465,6 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
       request: HardDeleteMyRoutineTagsByIdsRequest
     ) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

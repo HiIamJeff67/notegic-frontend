@@ -63,9 +63,9 @@ export const createTerrainPositions = (
   const surfaceOffsetZ = layoutRandom() * 80;
   const peaks = [
     {
-      height: 28 * (0.96 + layoutRandom() * 0.08),
-      widthX: 10.5,
-      widthZ: 16,
+      height: 34 * (0.96 + layoutRandom() * 0.08),
+      widthX: 9.2,
+      widthZ: 14.2,
       x: 3 + (layoutRandom() - 0.5) * 2,
       z: terrainCenterZ + (layoutRandom() - 0.5) * 2,
     },
@@ -181,15 +181,22 @@ export const createTerrainPositions = (
 
     const terrainHeight = base + peakHeight;
     const boundaryProgress = Math.min(1, terrainHeight / 4.5);
+    const coarseEdgeNoise =
+      (noise.noise(
+        warpedX * 0.12 + surfaceOffsetX,
+        warpedZ * 0.12 + surfaceOffsetZ
+      ) +
+        1) /
+      2;
+    const fineEdgeNoise =
+      (noise.noise(
+        warpedX * 0.34 + surfaceOffsetX * 1.7,
+        warpedZ * 0.34 + surfaceOffsetZ * 1.7
+      ) +
+        1) /
+      2;
     const edgeNoise =
-      0.35 +
-      0.65 *
-        ((noise.noise(
-          warpedX * 0.12 + surfaceOffsetX,
-          warpedZ * 0.12 + surfaceOffsetZ
-        ) +
-          1) /
-          2);
+      0.08 + 0.92 * (coarseEdgeNoise * 0.58 + fineEdgeNoise * 0.42);
     const gradientKeep =
       (boundaryProgress >= 1
         ? 1

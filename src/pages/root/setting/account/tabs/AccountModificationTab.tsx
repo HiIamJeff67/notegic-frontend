@@ -1,3 +1,4 @@
+import { getClientMutationHeaders } from "@shared/api/clientHeaders";
 import {
   useDeleteMe,
   useForgetPassword,
@@ -6,11 +7,7 @@ import {
 } from "@shared/api/hooks/auth.hook";
 import { UserRole } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -72,24 +69,15 @@ const AccountModificationTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await resetMeMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               authCode: authCode,
             },
           });
           setSendAuthCodeTimeCounter(0);
           setResetMeDialogOpen(false);
-          const accessToken = LocalStorageManipulator.getItemByKey(
-            LocalStorageKey.accessToken
-          );
-          userManager.fetchUserData(accessToken);
+          userManager.fetchUserData();
           onPanelClose();
           toast.success(t("settingsPage.account.messages.accountReset"));
           router.push(WebURLPathDictionary.root.dashboard._);
@@ -104,8 +92,6 @@ const AccountModificationTab = ({
       resetMeMutator,
       setSendAuthCodeTimeCounter,
       setResetMeDialogOpen,
-      SessionStorageManipulator,
-      SessionStorageKey,
       onPanelClose,
     ]
   );
@@ -115,14 +101,8 @@ const AccountModificationTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await resetEmailMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               newEmail: newEmail,
               authCode: authCode,
@@ -142,8 +122,6 @@ const AccountModificationTab = ({
       resetEmailMutator,
       setSendAuthCodeTimeCounter,
       setResetEmailDialogOpen,
-      SessionStorageManipulator,
-      SessionStorageKey,
     ]
   );
 
@@ -165,9 +143,7 @@ const AccountModificationTab = ({
 
           const userAgent = navigator.userAgent;
           await forgetPasswordMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               account: userManager.userData?.email,
               newPassword: newPassword,
@@ -202,14 +178,8 @@ const AccountModificationTab = ({
           }
 
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await deleteMeMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               authCode: authCode,
             },

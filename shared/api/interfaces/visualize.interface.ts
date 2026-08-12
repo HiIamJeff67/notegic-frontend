@@ -8,7 +8,7 @@ import { z } from "zod";
 export const VisualizeRequestHeaderSchema = z
   .object({
     userAgent: z.string().min(1).optional(),
-    authorization: z.string().optional(),
+    csrfToken: z.string().optional(),
   })
   .optional();
 

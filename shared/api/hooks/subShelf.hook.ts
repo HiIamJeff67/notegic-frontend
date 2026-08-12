@@ -61,9 +61,9 @@ import { SubShelfLocalSynchronizer } from "@shared/api/local/synchronizers/subSh
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -93,11 +93,6 @@ export const useGetMySubShelfById = (
       }
 
       const response = await queryFnGetMySubShelfById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -177,11 +172,6 @@ export const useGetMySubShelvesByPrevSubShelfId = (
       }
 
       const response = await queryFnGetMySubShelvesByPrevSubShelfId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -265,11 +255,6 @@ export const useGetAllMySubShelvesByRootShelfId = (
       }
 
       const response = await queryFnGetAllMySubShelvesByRootShelfId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -354,11 +339,6 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
 
       const response =
         await queryFnGetMySubShelvesAndItemsByPrevSubShelfId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -439,11 +419,6 @@ export const useCreateSubShelfByRootShelfId = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -499,11 +474,6 @@ export const useCreateSubShelvesByRootShelfIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -564,11 +534,6 @@ export const useUpdateMySubShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -621,11 +586,6 @@ export const useUpdateMySubShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -685,11 +645,6 @@ export const useMoveMySubShelf = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -749,11 +704,6 @@ export const useMoveMySubShelvesByRootShelfId = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -787,13 +737,18 @@ export const useMoveMySubShelvesByRootShelfId = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
-      await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfId(request, response);
+      await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfId(
+        request,
+        response
+      );
     },
     onError: async (error, request) => {
       if (error instanceof NotezyFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(request);
+            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
+              request
+            );
             break;
         }
       }
@@ -820,11 +775,6 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -873,7 +823,9 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
       if (error instanceof NotezyFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(request);
+            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
+              request
+            );
             break;
         }
       }
@@ -900,11 +852,6 @@ export const useRestoreMySubShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -960,11 +907,6 @@ export const useRestoreMySubShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -1035,11 +977,6 @@ export const useDeleteMySubShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -1096,11 +1033,6 @@ export const useDeleteMySubShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

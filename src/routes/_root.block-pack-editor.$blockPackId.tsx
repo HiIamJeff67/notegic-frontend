@@ -1,8 +1,6 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyBlockPackAndItsParentById } from "@shared/api/hooks/blockPack.hook";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { isValidUUID } from "@shared/types/uuidv4.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import {
   createFileRoute,
   notFound,
@@ -74,16 +72,10 @@ function BlockPackEditorIndexRoute() {
       setIsNotFound(false);
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
 
       try {
         const blockPackResponse = await blockPackQuerier.fetch({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
           param: {
             blockPackId: loaderData.blockPackId,
           },

@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -25,8 +24,8 @@ export const GetMyInfo = createServerFn({ method: "GET" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -44,9 +43,6 @@ export const GetMyInfo = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -64,8 +60,8 @@ export const UpdateMyInfo = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -84,9 +80,6 @@ export const UpdateMyInfo = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });

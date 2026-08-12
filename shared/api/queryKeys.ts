@@ -98,6 +98,11 @@ export const queryKeys = {
     blockPackParticipants: (blockPackId?: UUID) =>
       ["realtime", "blockPackParticipants", blockPackId] as const,
   },
+  notification: {
+    all: () => ["notification"] as const,
+    list: () => ["notification", "list"] as const,
+    unreadCount: () => ["notification", "unreadCount"] as const,
+  },
   station: {
     all: () => ["station"] as const,
     visualizeMyTotalCount: (permission?: string) =>

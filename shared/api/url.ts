@@ -86,7 +86,8 @@ export const APIURLPathDictionary = {
     createSubShelvesByRootShelfIds: "sub-shelves/batch",
     updateMySubShelfById: (subShelfId: string) => `sub-shelves/${subShelfId}`,
     updateMySubShelvesByIds: "sub-shelves/batch",
-    moveMySubShelf: (subShelfId: string) => `sub-shelves/${subShelfId}/position`,
+    moveMySubShelf: (subShelfId: string) =>
+      `sub-shelves/${subShelfId}/position`,
     moveMySubShelvesByRootShelfId: "sub-shelves/position",
     moveMySubShelvesByRootShelfIds: "sub-shelves/batch/position",
     restoreMySubShelfById: (subShelfId: string) =>
@@ -106,8 +107,10 @@ export const APIURLPathDictionary = {
     createMyMaterial: (parentSubShelfId: string) =>
       `materials/sub-shelf/${parentSubShelfId}`,
     updateMyMaterialById: (materialId: string) => `materials/${materialId}`,
-    saveMyMaterialById: (materialId: string) => `materials/${materialId}/content`,
-    moveMyMaterialById: (materialId: string) => `materials/${materialId}/parent`,
+    saveMyMaterialById: (materialId: string) =>
+      `materials/${materialId}/content`,
+    moveMyMaterialById: (materialId: string) =>
+      `materials/${materialId}/parent`,
     moveMyMaterialsByIds: "materials/batch/parent",
     restoreMyMaterialById: (materialId: string) =>
       `materials/${materialId}/restore`,
@@ -126,7 +129,8 @@ export const APIURLPathDictionary = {
     createBlockPack: (parentSubShelfId: string) =>
       `block-packs/sub-shelf/${parentSubShelfId}`,
     createBlockPacks: "block-packs/batch",
-    updateMyBlockPackById: (blockPackId: string) => `block-packs/${blockPackId}`,
+    updateMyBlockPackById: (blockPackId: string) =>
+      `block-packs/${blockPackId}`,
     updateMyBlockPacksByIds: "block-packs/batch",
     moveMyBlockPackById: (blockPackId: string) =>
       `block-packs/${blockPackId}/position`,
@@ -135,7 +139,8 @@ export const APIURLPathDictionary = {
     restoreMyBlockPackById: (blockPackId: string) =>
       `block-packs/${blockPackId}/restore`,
     restoreMyBlockPacksByIds: "block-packs/batch/restore",
-    deleteMyBlockPackById: (blockPackId: string) => `block-packs/${blockPackId}`,
+    deleteMyBlockPackById: (blockPackId: string) =>
+      `block-packs/${blockPackId}`,
     deleteMyBlockPacksByIds: "block-packs/batch",
   },
   block: {
@@ -150,6 +155,12 @@ export const APIURLPathDictionary = {
     getBlockPackParticipants: (blockPackId: string) =>
       `realtime/block-pack/${blockPackId}/participants`,
   },
+  notification: {
+    list: "notifications/",
+    unreadCount: "notifications/unread-count",
+    read: "notifications/read",
+    delete: "notifications/",
+  },
   station: {
     visualizeMyTotalCount: "stations/visualizations/total-count",
     getMyStationById: (stationId: string) => `stations/${stationId}`,
@@ -158,7 +169,8 @@ export const APIURLPathDictionary = {
     createStations: "stations/batch",
     updateMyStationById: (stationId: string) => `stations/${stationId}`,
     updateMyStationsByIds: "stations/batch",
-    restoreMyStationById: (stationId: string) => `stations/${stationId}/restore`,
+    restoreMyStationById: (stationId: string) =>
+      `stations/${stationId}/restore`,
     restoreMyStationsByIds: "stations/batch/restore",
     deleteMyStationById: (stationId: string) => `stations/${stationId}`,
     deleteMyStationsByIds: "stations/batch",
@@ -193,7 +205,8 @@ export const APIURLPathDictionary = {
     linkRoutineItemById: (routineId: string, itemId: string) =>
       `routines/${routineId}/items/${itemId}`,
     linkRoutineItemsByIds: "routines/items",
-    restoreMyRoutineById: (routineId: string) => `routines/${routineId}/restore`,
+    restoreMyRoutineById: (routineId: string) =>
+      `routines/${routineId}/restore`,
     restoreMyRoutinesByIds: "routines/batch/restore",
     deleteMyRoutineById: (routineId: string) => `routines/${routineId}`,
     deleteMyRoutinesByIds: "routines/batch",

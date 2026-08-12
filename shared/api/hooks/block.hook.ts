@@ -18,14 +18,11 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import {
-  type UseQueryOptions,
-  useQuery,
-} from "@tanstack/react-query";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export const useGetMyBlockById = (
   hookRequest?: GetMyBlockByIdRequest,
@@ -42,11 +39,6 @@ export const useGetMyBlockById = (
     }
 
     const response = await queryFnGetMyBlockById(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -97,11 +89,6 @@ export const useGetMyBlocksByIds = (
     }
 
     const response = await queryFnGetMyBlocksByIds(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -160,11 +147,6 @@ export const useGetMyBlocksByBlockPackId = (
     }
 
     const response = await queryFnGetMyBlocksByBlockPackId(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,

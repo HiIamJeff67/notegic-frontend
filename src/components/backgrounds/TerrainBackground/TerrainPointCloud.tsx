@@ -78,31 +78,25 @@ export const TerrainPointCloud = ({
     }
 
     const travelDistance = highestY - lowestY;
-    const verticalSpeed = travelDistance / 2_000;
     const startedAt = performance.now();
     let frameId = 0;
 
     invalidate();
 
     const animate = (now: number) => {
-      const travel = Math.min(
-        travelDistance,
-        (now - startedAt) * verticalSpeed
-      );
-      let isComplete = true;
+      const progress = Math.min(1, (now - startedAt) / 2_000);
 
       for (let index = 1; index < targetPositions.length; index += 3) {
         const targetY = targetPositions[index];
-        const nextY = Math.min(targetY, lowestY + travel);
+        const nextY = lowestY + (targetY - lowestY) * progress;
 
         positions.array[index] = nextY;
-        if (nextY < targetY) isComplete = false;
       }
 
       positions.needsUpdate = true;
       invalidate();
 
-      if (!isComplete) frameId = requestAnimationFrame(animate);
+      if (progress < 1) frameId = requestAnimationFrame(animate);
     };
 
     if (travelDistance === 0) return;
@@ -118,7 +112,12 @@ export const TerrainPointCloud = ({
 
   return (
     <points geometry={geometry}>
-      <pointsMaterial color={color} size={pointSize} sizeAttenuation />
+      <pointsMaterial
+        color={color}
+        depthWrite={false}
+        size={pointSize * 16}
+        sizeAttenuation={false}
+      />
     </points>
   );
 };

@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateMe } from "@shared/api/hooks/user.hook";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
@@ -81,7 +82,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
         try {
           const userAgent = navigator.userAgent;
           await updateMeMutator.mutateAsync({
-            header: { userAgent },
+            header: getClientRequestHeaders(userAgent),
             body: {
               values: {
                 displayName: user.displayName,

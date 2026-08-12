@@ -18,6 +18,7 @@ const fragmentShader = /* glsl */ `
   uniform float fogEnd;
   uniform float fogStart;
   uniform vec3 lineColor;
+  uniform float lineStart;
   uniform float gridSize;
   uniform vec2 fogCenter;
   varying vec3 vWorldPosition;
@@ -26,7 +27,7 @@ const fragmentShader = /* glsl */ `
     vec2 grid = vWorldPosition.xz * gridSize / 520.0;
     vec2 cell = fract(grid);
     float checker = mod(floor(grid.x) + floor(grid.y), 2.0);
-    float edge = smoothstep(0.48, 0.5, max(abs(cell.x - 0.5), abs(cell.y - 0.5)));
+    float edge = smoothstep(lineStart, 0.5, max(abs(cell.x - 0.5), abs(cell.y - 0.5)));
     vec3 tileColor = mix(baseColor, alternateColor, checker * 0.38);
     vec3 gridColor = mix(tileColor, lineColor, edge * 0.48);
     float fog = smoothstep(fogStart, fogEnd, distance(vWorldPosition.xz, fogCenter));
@@ -44,12 +45,13 @@ export const TerrainGridFloor = ({ isDark }: { isDark: boolean }) => {
       baseColor: { value: new THREE.Color(isDark ? "#000000" : "#ffffff") },
       fogCenter: { value: new THREE.Vector2(0, -28) },
       fogColor: { value: new THREE.Color(isDark ? "#000000" : "#ffffff") },
-      fogEnd: { value: 230 },
-      fogStart: { value: 95 },
+      fogEnd: { value: 330 },
+      fogStart: { value: 150 },
       gridSize: { value: 120 },
       lineColor: {
-        value: new THREE.Color(isDark ? "#aeb7be" : "#555c62"),
+        value: new THREE.Color(isDark ? "#aeb7be" : "#626a70"),
       },
+      lineStart: { value: isDark ? 0.48 : 0.492 },
     }),
     [isDark]
   );
@@ -60,7 +62,7 @@ export const TerrainGridFloor = ({ isDark }: { isDark: boolean }) => {
       rotation={[-Math.PI / 2, 0, 0]}
       renderOrder={-1}
     >
-      <planeGeometry args={[520, 520]} />
+      <planeGeometry args={[900, 900]} />
       <shaderMaterial
         depthWrite
         fragmentShader={fragmentShader}

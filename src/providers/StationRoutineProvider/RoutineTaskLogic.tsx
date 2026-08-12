@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
   RoutineTaskStatus as GraphQLRoutineTaskStatus,
@@ -20,12 +21,9 @@ import {
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -76,15 +74,8 @@ export const useRoutineTaskLogic = ({
         return [];
       });
       if (routines.length === 0) return [];
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await getAllRoutineTasksByRoutineIdsQuerier.fetch({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           routineIds,
         },
@@ -411,15 +402,8 @@ export const useRoutineTaskLogic = ({
       }
       if (!stationNode || !routineNode)
         throw new Error("routine does not exist");
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await createRoutineTaskMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineId,
           title,
@@ -576,15 +560,8 @@ export const useRoutineTaskLogic = ({
       if (routineTaskNodes.size === 0) {
         throw new Error("routine task does not exist");
       }
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await updateRoutineTaskMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineTaskId,
           values,
@@ -687,16 +664,9 @@ export const useRoutineTaskLogic = ({
         routineTaskNode.updatedAt = new Date();
       }
       forceUpdate();
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       try {
         const response = await pauseRoutineTaskMutator.mutateAsync({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           body: { routineTaskId },
         });
         if (response.success === false) throw response.exception;
@@ -747,16 +717,9 @@ export const useRoutineTaskLogic = ({
         routineTaskNode.updatedAt = new Date();
       }
       forceUpdate();
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       try {
         const response = await resumeRoutineTaskMutator.mutateAsync({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           body: { routineTaskId },
         });
         if (response.success === false) throw response.exception;

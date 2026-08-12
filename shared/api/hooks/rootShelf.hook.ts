@@ -56,9 +56,9 @@ import { RootShelfLocalSynchronizer } from "@shared/api/local/synchronizers/root
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -88,11 +88,6 @@ export const useGetMyRootShelfById = (
       }
 
       const response = await queryFnGetMyRootShelfById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -166,11 +161,6 @@ export const useCreateRootShelf = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -240,11 +230,6 @@ export const useCreateRootShelves = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -326,11 +311,6 @@ export const useUpdateMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -486,11 +466,6 @@ export const useUpdateMyRootShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -553,11 +528,6 @@ export const useRestoreMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -652,11 +622,6 @@ export const useRestoreMyRootShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -756,11 +721,6 @@ export const useDeleteMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -832,11 +792,6 @@ export const useDeleteMyRootShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

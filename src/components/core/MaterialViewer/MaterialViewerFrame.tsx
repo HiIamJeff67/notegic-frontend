@@ -1,9 +1,7 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useSaveMyMaterialById } from "@shared/api/hooks/material.hook";
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import { cn } from "@shared/util/utils";
 import {
   ChevronDownIcon,
@@ -105,14 +103,8 @@ const MaterialViewerFrame = ({
         name: contentFile.name,
       })
     ) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await saveMaterialMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           materialId: meta.id,
           contentFile: contentFile,

@@ -58,9 +58,7 @@ import { localDB } from "@shared/api/local/db";
 import { Transaction, User } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { asc, eq, InferSelectModel, inArray } from "drizzle-orm";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useNetwork } from "@/hooks";
@@ -323,7 +321,7 @@ export const mergeSingleEntityTransactions = ({
 
 export type SyncHeader = {
   userAgent: string;
-  authorization: string | undefined;
+  csrfToken?: string;
 };
 
 export type SyncProgressReporter = {
@@ -548,14 +546,7 @@ export const TransactionSynchronizerProvider = ({
 
     setSynchronizationProgress(0);
 
-    const userAgent = navigator.userAgent;
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
-    const header: SyncHeader = {
-      userAgent,
-      authorization: getAuthorization(accessToken),
-    };
+    const header: SyncHeader = getClientRequestHeaders();
 
     if (!localDB.isReady) await localDB.ensureReady();
     const localData = await localDB.transaction(async tx => {

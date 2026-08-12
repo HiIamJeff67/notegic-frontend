@@ -23,6 +23,7 @@ export const NotezyExceptionSchema = z.object({
   status: z.number().int().positive(),
   details: z.any().optional(),
   origin: z.string().optional(),
+  retryable: z.boolean().optional(),
 });
 
 export type NotezyExceptionFields = z.infer<typeof NotezyExceptionSchema>;
@@ -35,6 +36,7 @@ export class NotezyException {
   public status: number;
   public details?: any;
   public origin?: string;
+  public retryable?: boolean;
 
   constructor(obj: any) {
     const validated = NotezyExceptionSchema.parse(obj);
@@ -45,6 +47,7 @@ export class NotezyException {
     this.status = validated.status;
     this.details = validated.details;
     this.origin = validated.origin;
+    this.retryable = validated.retryable;
   }
 
   static nullable(value: any): value is null | undefined {
@@ -64,6 +67,7 @@ export class NotezyException {
       status: this.status,
       details: this.details,
       origin: this.origin,
+      retryable: this.retryable,
     };
   }
 

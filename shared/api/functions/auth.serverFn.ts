@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -60,8 +59,6 @@ export const Register = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.set(formattedResponse.data.accessToken);
-
     return formattedResponse;
   });
 
@@ -84,20 +81,15 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-
-    if (!isJsonResponse(response)) {
+    if (!isJsonResponse(response))
       throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
     const formattedResponse =
       (await response.json()) as RegisterViaGoogleResponse;
-    if (formattedResponse.exception != null) {
+    if (formattedResponse.exception != null)
       throw new NotezyAPIError(
         new NotezyException(formattedResponse.exception)
       );
-    }
-    AccessTokenCookieHandler.set(formattedResponse.data.accessToken);
-
     return formattedResponse;
   });
 
@@ -120,19 +112,14 @@ export const Login = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-
-    if (!isJsonResponse(response)) {
+    if (!isJsonResponse(response))
       throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as LoginResponse;
-    if (formattedResponse.exception != null) {
+    if (formattedResponse.exception != null)
       throw new NotezyAPIError(
         new NotezyException(formattedResponse.exception)
       );
-    }
-    AccessTokenCookieHandler.set(formattedResponse.data.accessToken);
-
     return formattedResponse;
   });
 
@@ -155,19 +142,14 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-
-    if (!isJsonResponse(response)) {
+    if (!isJsonResponse(response))
       throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as LoginViaGoogleResponse;
-    if (formattedResponse.exception != null) {
+    if (formattedResponse.exception != null)
       throw new NotezyAPIError(
         new NotezyException(formattedResponse.exception)
       );
-    }
-    AccessTokenCookieHandler.set(formattedResponse.data.accessToken);
-
     return formattedResponse;
   });
 
@@ -184,30 +166,26 @@ export const Logout = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
       }
     );
-
-    if (!isJsonResponse(response)) {
+    if (!isJsonResponse(response))
       throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
     const rawResponse = (await response.json()) as Partial<LogoutResponse>;
     const formattedResponse = {
       ...rawResponse,
       exception: rawResponse.exception ?? null,
     } as LogoutResponse;
-    if (formattedResponse.exception != null) {
+    if (formattedResponse.exception != null)
       throw new NotezyAPIError(
         new NotezyException(formattedResponse.exception)
       );
-    }
-
     return formattedResponse;
   });
 
@@ -223,8 +201,8 @@ export const SendAuthCode = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
         },
         body: JSON.stringify(request.body),
@@ -258,9 +236,6 @@ export const ValidateEmail = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
-            : {}),
           "X-CSRF-Token": request.header.csrfToken,
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -279,9 +254,6 @@ export const ValidateEmail = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -299,9 +271,6 @@ export const ResetEmail = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
-            : {}),
           "X-CSRF-Token": request.header.csrfToken,
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -320,9 +289,6 @@ export const ResetEmail = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -339,8 +305,8 @@ export const ForgetPassword = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
         },
         body: JSON.stringify(request.body),
@@ -374,9 +340,6 @@ export const ResetMe = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
-            : {}),
           "X-CSRF-Token": request.header.csrfToken,
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -395,9 +358,6 @@ export const ResetMe = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -415,9 +375,6 @@ export const DeleteMe = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
-            : {}),
           "X-CSRF-Token": request.header.csrfToken,
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },

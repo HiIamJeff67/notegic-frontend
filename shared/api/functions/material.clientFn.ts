@@ -12,8 +12,6 @@ export async function SaveMyMaterialById(
   const formData = new FormData();
   formData.append("contentFile", request.body.contentFile);
 
-  const clientCookies =
-    typeof document !== "undefined" ? document.cookie : undefined;
   const userAgent = request.header?.userAgent ?? "unknown";
   const response = await fetch(
     `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.saveMyMaterialById(request.body.materialId)}`,
@@ -21,10 +19,9 @@ export async function SaveMyMaterialById(
       method: "PUT",
       headers: {
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
-        ...(clientCookies ? { "X-Client-Cookies": clientCookies } : {}),
       },
       body: formData,
       credentials: "include",

@@ -37,7 +37,7 @@ export const GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({

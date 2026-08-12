@@ -52,9 +52,9 @@ import { StationLocalSynchronizer } from "@shared/api/local/synchronizers/statio
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
@@ -96,11 +96,6 @@ export const useGetMyStationById = (
       }
 
       const response = await queryFnGetMyStationById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -178,11 +173,6 @@ export const useGetAllMyStations = (
       }
 
       const response = await queryFnGetAllMyStations(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -250,11 +240,6 @@ export const useCreateStation = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateStationRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -300,11 +285,6 @@ export const useCreateStations = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateStationsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -350,11 +330,6 @@ export const useUpdateMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyStationByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -402,11 +377,6 @@ export const useUpdateMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -459,11 +429,6 @@ export const useRestoreMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyStationByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -514,11 +479,6 @@ export const useRestoreMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -571,11 +531,6 @@ export const useDeleteMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyStationByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -623,11 +578,6 @@ export const useDeleteMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -680,11 +630,6 @@ export const useHardDeleteMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyStationByIdRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -735,11 +680,6 @@ export const useHardDeleteMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

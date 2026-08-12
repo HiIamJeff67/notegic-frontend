@@ -1,13 +1,10 @@
-import { ApolloLink, HttpLink } from "@apollo/client";
+import { HttpLink } from "@apollo/client";
 import { ErrorLink } from "@apollo/client/link/error";
 import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
 import { CurrentAPIBaseURL } from "@shared/api/url";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 
 export const createApolloClient = () => {
   const apiDomainURL = import.meta.env.VITE_API_DOMAIN_URL || "";
@@ -15,28 +12,6 @@ export const createApolloClient = () => {
   const httpLink = new HttpLink({
     uri: `${apiDomainURL}/${CurrentAPIBaseURL}/graphql/`,
     credentials: "include", // for including the cookies
-  });
-
-  const authLink = new ApolloLink((operation, forward) => {
-    const userAgent =
-      typeof navigator !== "undefined"
-        ? navigator.userAgent
-        : "TanStackStartServer";
-    const accessToken =
-      typeof window !== "undefined"
-        ? LocalStorageManipulator.getItemByKey(LocalStorageKey.accessToken)
-        : null;
-    const authorization = getAuthorization(accessToken);
-
-    operation.setContext(({ headers = {} }) => ({
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-        "User-Agent": userAgent,
-        ...(authorization ? { Authorization: authorization } : {}),
-      },
-    }));
-    return forward(operation);
   });
 
   const errorLink = new ErrorLink(({ error, forward, operation }) => {
@@ -198,7 +173,7 @@ export const createApolloClient = () => {
   });
 
   return new ApolloClient({
-    link: errorLink.concat(authLink, httpLink),
+    link: errorLink.concat(httpLink),
     cache: cache,
   });
 };

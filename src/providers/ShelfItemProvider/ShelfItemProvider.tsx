@@ -1,3 +1,4 @@
+import type { RealtimeResourceEventFrame } from "@shared/api/websocket";
 import {
   MaxMaterialsOfRootShelf,
   MaxSubShelvesOfRootShelf,
@@ -111,12 +112,45 @@ export const ShelfItemProvider = ({
       "notezy:block-pack-room-unavailable",
       handleRealtimeUnavailable
     );
-    return () =>
+    const handleResourceEvent = (event: Event) => {
+      const frame = (event as CustomEvent<RealtimeResourceEventFrame>).detail;
+      if (!frame) return;
+
+      if (
+        frame.eventType === "RootShelfDeleted" ||
+        frame.eventType === "RootShelfPermissionRevoked"
+      ) {
+        rootShelfLogic.removeRootShelfOptimistically(frame.resourceId as UUID);
+      } else if (frame.eventType.startsWith("RootShelf")) {
+        void rootShelfLogic.searchRootShelves();
+      }
+
+      if (frame.eventType === "BlockPackDeleted") {
+        itemLogic.removeBlockPackOptimistically(frame.resourceId as UUID);
+      } else if (frame.eventType.startsWith("BlockPack")) {
+        void rootShelfLogic.searchRootShelves();
+      }
+    };
+
+    window.addEventListener(
+      "notezy:realtime-resource-event",
+      handleResourceEvent
+    );
+    return () => {
       window.removeEventListener(
         "notezy:block-pack-room-unavailable",
         handleRealtimeUnavailable
       );
-  }, [itemLogic.removeBlockPackOptimistically]);
+      window.removeEventListener(
+        "notezy:realtime-resource-event",
+        handleResourceEvent
+      );
+    };
+  }, [
+    itemLogic.removeBlockPackOptimistically,
+    rootShelfLogic.removeRootShelfOptimistically,
+    rootShelfLogic.searchRootShelves,
+  ]);
 
   const contextValue: ShelfItemContextType = {
     inputRef: inputRef,

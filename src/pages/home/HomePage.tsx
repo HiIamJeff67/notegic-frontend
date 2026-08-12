@@ -1,24 +1,13 @@
 import { localDB } from "@shared/api/local/db";
-import { AllLanguageData, WebURLPathDictionary } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { BookTextIcon, CheckIcon } from "lucide-react";
+import { WebURLPathDictionary } from "@shared/constants";
+import { BookTextIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";
 import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import ColorPaletteIcon from "@/components/icons/ColorPaletteIcon";
-import LanguageIcon from "@/components/icons/LanguageIcon";
 import NoteIcon from "@/components/icons/NoteIcon";
+import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { Button } from "@/components/ui/button";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
 import { useAppRouter, useTheme } from "@/hooks";
 
 const DisplayTitle = {
@@ -28,7 +17,7 @@ const DisplayTitle = {
 
 export const HomePage = () => {
   const router = useAppRouter();
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const themeManager = useTheme();
 
   const [displayTitle, setDisplayTitle] = useState<boolean>(true);
@@ -103,72 +92,9 @@ export const HomePage = () => {
   return (
     <TerrainBackground isDark={themeManager.currentTheme.isDark}>
       <Suspense fallback={<StrictLoadingCover />}>
-        <div className="fixed top-2 right-2 z-50">
-          <Menubar className="bg-secondary border-border border shadow-lg h-10">
-            <MenubarMenu>
-              <MenubarTrigger
-                data-density-static
-                className="h-full px-3 py-2 flex items-center justify-center hover:bg-accent hover:text-accent-foreground"
-              >
-                <LanguageIcon size={16} className="mr-2" />
-                <span className="text-sm font-medium">
-                  {t("languages.language")}
-                </span>
-              </MenubarTrigger>
-              <MenubarContent className="w-56 bg-popover border-border">
-                <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                  {`${t("common.choose")}${t(
-                    "syntax.separator"
-                  )}${t("languages.language")}`}
-                </div>
-                <MenubarSeparator />
-                {AllLanguageData.map(language => (
-                  <MenubarItem
-                    key={language.code}
-                    onClick={() => void i18n.changeLanguage(language.code)}
-                    className="flex items-center justify-between cursor-pointer"
-                  >
-                    <span>{language.nativeName}</span>
-                    {i18n.resolvedLanguage === language.code && (
-                      <span className="text-accent text-sm">✓</span>
-                    )}
-                  </MenubarItem>
-                ))}
-              </MenubarContent>
-            </MenubarMenu>
+        <HomeMenu />
 
-            <MenubarMenu>
-              <MenubarTrigger
-                data-density-static
-                className="h-full px-3 py-2 flex items-center justify-center hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
-              >
-                <ColorPaletteIcon size={16} className="mr-2" />
-                <span className="text-sm font-medium">{t("themes.theme")}</span>
-              </MenubarTrigger>
-              <MenubarContent className="w-56 bg-popover border-border">
-                <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                  {`${t("common.choose")}${t(
-                    "syntax.separator"
-                  )}${t("themes.theme")}`}
-                </div>
-                <MenubarSeparator />
-                {themeManager.availableThemes.map(theme => (
-                  <MenubarItem
-                    key={theme.id}
-                    onClick={() => themeManager.switchCurrentTheme(theme.id)}
-                    className="flex items-center justify-between cursor-pointer"
-                    defaultChecked={themeManager.currentTheme.id === theme.id}
-                  >
-                    <span>{t(theme.translationKey)}</span>
-                    {themeManager.currentTheme.id === theme.id && <CheckIcon />}
-                  </MenubarItem>
-                ))}
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
-        </div>
-
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4">
           <div className="text-foreground text-center select-none flex flex-col items-center justify-center gap-0">
             <div className="min-h-[160px] flex flex-col items-center justify-center">
               <div
@@ -189,7 +115,7 @@ export const HomePage = () => {
             <div className="flex items-center justify-center gap-6 mt-4">
               <Button
                 variant="secondary"
-                className="cursor-pointer font-bold hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
+                className="pointer-events-auto cursor-pointer font-bold hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
                 onClick={() => {
                   router.push(WebURLPathDictionary.root.document);
                 }}
@@ -199,11 +125,8 @@ export const HomePage = () => {
               </Button>
               <Button
                 variant="default"
-                className="cursor-pointer font-bold hover:bg-primary/90 focus:bg-primary/90 active:bg-primary/90"
+                className="pointer-events-auto cursor-pointer font-bold hover:bg-primary/90 focus:bg-primary/90 active:bg-primary/90"
                 onClick={() => {
-                  const accessToken = LocalStorageManipulator.getItemByKey(
-                    LocalStorageKey.accessToken
-                  );
                   router.push(WebURLPathDictionary.auth.login);
                 }}
               >

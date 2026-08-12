@@ -1,8 +1,6 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@shared/api/hooks/routineTask.hook";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -36,14 +34,8 @@ const DeleteRoutineTaskDialog = ({
 
   const deleteRoutineTask = async () => {
     try {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await deleteRoutineTaskMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineTaskId,
         },

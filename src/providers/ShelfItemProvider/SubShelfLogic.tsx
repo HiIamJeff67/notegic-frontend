@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   useCreateSubShelfByRootShelfId,
   useDeleteMySubShelfById,
@@ -11,14 +12,11 @@ import { queryFnGetMyBlockPacksByParentSubShelfId } from "@shared/api/invokers/b
 import { queryFnGetMyMaterialsByParentSubShelfId } from "@shared/api/invokers/material.invoker";
 import { queryFnGetMySubShelvesByPrevSubShelfId } from "@shared/api/invokers/subShelf.invoker";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
 import toast from "@shared/lib/toast";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,36 +60,23 @@ export const useSubShelfLogic = ({
     ): Promise<void> => {
       // the isExpanded may be modified if the user just drag and drop something in below the `subShelfNode`
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
-      const authorization = getAuthorization(accessToken);
       const responseOfGettingSubShelves =
         (await queryFnGetMySubShelvesByPrevSubShelfId({
-          header: {
-            userAgent: userAgent,
-            authorization: authorization,
-          },
+          header: getClientRequestHeaders(userAgent),
           param: {
             prevSubShelfId: subShelfNode.id,
           },
         })) as GetMySubShelvesByPrevSubShelfIdResponse;
       const responseOfGettingMaterials =
         (await queryFnGetMyMaterialsByParentSubShelfId({
-          header: {
-            userAgent: userAgent,
-            authorization: authorization,
-          },
+          header: getClientRequestHeaders(userAgent),
           param: {
             parentSubShelfId: subShelfNode.id,
           },
         })) as GetMyMaterialsByParentSubShelfIdResponse;
       const responseOfGettingBlockPacks =
         (await queryFnGetMyBlockPacksByParentSubShelfId({
-          header: {
-            userAgent: userAgent,
-            authorization: authorization,
-          },
+          header: getClientRequestHeaders(userAgent),
           param: {
             parentSubShelfId: subShelfNode.id,
           },
@@ -143,15 +128,9 @@ export const useSubShelfLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const responseOfCreatingSubShelf =
         await createSubShelfMutator.mutateAsync({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
           body: {
             rootShelfId: rootShelfId,
             prevSubShelfId: prevSubShelfNode?.id ?? null,
@@ -257,14 +236,8 @@ export const useSubShelfLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await updateSubShelfMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           subShelfId: editingSubShelfNode.id,
           values: {
@@ -345,14 +318,8 @@ export const useSubShelfLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await deleteSubShelfMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           subShelfId: subShelfNode.id,
         },
@@ -421,14 +388,8 @@ export const useSubShelfLogic = ({
       const childSubShelfIds = childSubShelfNodes.map(val => val.id);
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await moveSubShelfMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           sourceRootShelfId: sourceSubShelfNode.rootShelfId,
           sourceSubShelfId: sourceSubShelfNode.id,

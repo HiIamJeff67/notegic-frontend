@@ -1,7 +1,6 @@
 import { ThemeData } from "@shared/types/theme.type";
 
 export enum LocalStorageKey {
-  accessToken = "access_token",
   theme = "theme",
   language = "language",
   lastVisitedAt = "last_visited_at",
@@ -20,7 +19,6 @@ export interface LocalStorageItem {
   [LocalStorageKey.theme]: ThemeData | null;
   [LocalStorageKey.language]: string | null;
   [LocalStorageKey.lastVisitedAt]: Date | null;
-  [LocalStorageKey.accessToken]: string | null;
   [LocalStorageKey.sidebarWidth]: string | null;
   [LocalStorageKey.dashboardWidgets]: string | null;
   [LocalStorageKey.colors]: string | null;

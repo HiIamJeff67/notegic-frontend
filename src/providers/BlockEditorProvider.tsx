@@ -123,7 +123,12 @@ export const BlockEditorProvider = ({
 
   useEffect(() => {
     if (channel.lifecycleErrorCode === null) return;
-    if (channel.lifecycleErrorCode === "resync_required") return;
+    if (
+      channel.lifecycleErrorCode === "resync_required" ||
+      channel.lifecycleErrorCode === "channel_backpressure" ||
+      channel.lifecycleErrorCode === "worker_unavailable"
+    )
+      return;
 
     window.dispatchEvent(
       new CustomEvent("notezy:block-pack-room-unavailable", {

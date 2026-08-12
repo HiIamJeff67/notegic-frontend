@@ -62,9 +62,9 @@ import { BlockPackLocalSynchronizer } from "@shared/api/local/synchronizers/bloc
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -94,11 +94,6 @@ export const useGetMyBlockPackById = (
       }
 
       const response = await queryFnGetMyBlockPackById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -180,11 +175,6 @@ export const useGetMyBlockPackAndItsParentById = (
       }
 
       const response = await queryFnGetMyBlockPackAndItsParentById(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -278,11 +268,6 @@ export const useGetMyBlockPacksByParentSubShelfId = (
       }
 
       const response = await queryFnGetMyBlockPacksByParentSubShelfId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -366,11 +351,6 @@ export const useGetAllMyBlockPacksByRootShelfId = (
       }
 
       const response = await queryFnGetAllMyBlockPacksByRootShelfId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -447,11 +427,6 @@ export const useCreateBlockPack = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -502,11 +477,6 @@ export const useCreateBlockPacks = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -568,11 +538,6 @@ export const useUpdateMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -628,11 +593,6 @@ export const useUpdateMyBlockPacksByIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -700,11 +660,6 @@ export const useMoveMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -767,11 +722,6 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -841,11 +791,6 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -926,11 +871,6 @@ export const useRestoreMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -988,11 +928,6 @@ export const useRestoreMyBlockPacksByIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -1062,11 +997,6 @@ export const useDeleteMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -1124,11 +1054,6 @@ export const useDeleteMyBlockPacksByIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

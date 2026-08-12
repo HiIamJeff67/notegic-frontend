@@ -32,9 +32,9 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -60,11 +60,6 @@ export const useGetMyMaterialById = (
     }
 
     const response = await queryFnGetMyMaterialById(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -123,11 +118,6 @@ export const useGetMyMaterialAndItsParentById = (
     }
 
     const response = await queryFnGetMyMaterialAndItsParentById(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -186,11 +176,6 @@ export const useGetMyMaterialsByParentSubShelfId = (
     }
 
     const response = await queryFnGetMyMaterialsByParentSubShelfId(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -247,11 +232,6 @@ export const useGetAllMyMaterialsByRootShelfId = (
     }
 
     const response = await queryFnGetAllMyMaterialsByRootShelfId(request);
-    LocalStorageManipulator.ensureItem(
-      LocalStorageKey.accessToken,
-      response.refreshableTokens?.newAccessToken,
-      response.embedded?.publicId
-    );
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
@@ -296,11 +276,6 @@ export const useCreateMyMaterial = () => {
   const mutation = useMutation({
     mutationFn: mutationFnCreateMyMaterial,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -331,11 +306,6 @@ export const useUpdateMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyMaterialById,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -387,11 +357,6 @@ export const useSaveMyMaterialById = () => {
       }
     },
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -421,11 +386,6 @@ export const useMoveMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnMoveMyMaterialById,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -462,11 +422,6 @@ export const useRestoreMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRestoreMyMaterialById,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -499,11 +454,6 @@ export const useRestoreMyMaterialsByIds = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRestoreMyMaterialsByIds,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -548,11 +498,6 @@ export const useDeleteMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnDeleteMyMaterialById,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
@@ -585,11 +530,6 @@ export const useDeleteMyMaterialsByIds = () => {
   const mutation = useMutation({
     mutationFn: mutationFnDeleteMyMaterialsByIds,
     onSuccess: (response, request) => {
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded?.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,

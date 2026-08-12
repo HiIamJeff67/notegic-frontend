@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useApolloClient } from "@apollo/client/react";
 import {
   PrivateRootShelf,
@@ -18,14 +19,11 @@ import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { MaxSearchLimit } from "@shared/constants";
 import { AnalysisStatus } from "@shared/enums";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
 import toast from "@shared/lib/toast";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -90,7 +88,8 @@ export const useRootShelfLogic = ({
     ) {
       for (const edge of data.searchRootShelves
         .searchEdges as SearchRootShelfEdge[]) {
-        if (expandedShelvesRef.current.get(edge.node.id) === undefined) {
+        const existingSummary = expandedShelvesRef.current.get(edge.node.id);
+        if (existingSummary === undefined) {
           const shelfTreeSummary: ShelfTreeSummary = {
             root: {
               id: edge.node.id,
@@ -113,6 +112,16 @@ export const useRootShelfLogic = ({
             maxDepth: 0,
           };
           expandedShelvesRef.current.set(edge.node.id, shelfTreeSummary);
+        } else {
+          existingSummary.root.name = edge.node.name;
+          existingSummary.root.subShelfCount = edge.node.subShelfCount;
+          existingSummary.root.itemCount = edge.node.itemCount;
+          existingSummary.root.lastAnalyzedAt = edge.node.lastAnalyzedAt;
+          existingSummary.root.updatedAt = edge.node.updatedAt;
+          existingSummary.root.createdAt = edge.node.createdAt;
+          existingSummary.root.permission = edge.node
+            .permission as AccessControlPermission;
+          expandedShelvesRef.current.set(edge.node.id, existingSummary);
         }
       }
       forceUpdate();
@@ -163,14 +172,8 @@ export const useRootShelfLogic = ({
     }
 
     const userAgent = navigator.userAgent;
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
     const responseOfGettingAllSubShelves = await getAllSubShelvesQuerier.fetch({
-      header: {
-        userAgent: userAgent,
-        authorization: getAuthorization(accessToken),
-      },
+      header: getClientRequestHeaders(userAgent),
       param: {
         rootShelfId: rootShelf.id,
       },
@@ -201,15 +204,9 @@ export const useRootShelfLogic = ({
   const createRootShelf = useCallback(
     async (name: string): Promise<void> => {
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const responseOfCreatingRootShelf =
         await createRootShelfMutator.mutateAsync({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
           body: {
             name: name,
           },
@@ -285,14 +282,8 @@ export const useRootShelfLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await updateRootShelfMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           rootShelfId: editingRootShelfNode.id,
           values: {
@@ -400,14 +391,8 @@ export const useRootShelfLogic = ({
       const materialIds = materialNodes.map(val => val.id);
 
       const userAgent = navigator.userAgent;
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await deleteRootShelfMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(userAgent),
         body: {
           rootShelfId: rootShelfNode.id,
         },
@@ -451,14 +436,8 @@ export const useRootShelfLogic = ({
 
   const transferRootShelfOwnership = useCallback(
     async (rootShelfId: UUID, targetUserPublicId: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await transferRootShelfOwnershipMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: { rootShelfId },
         body: { targetUserPublicId },
       });
@@ -471,14 +450,8 @@ export const useRootShelfLogic = ({
 
   const leaveRootShelf = useCallback(
     async (rootShelfId: UUID, targetUserPublicId?: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await leaveRootShelfMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: { rootShelfId },
         body: targetUserPublicId ? { targetUserPublicId } : {},
       });

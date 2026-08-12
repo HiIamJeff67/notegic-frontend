@@ -1,3 +1,7 @@
+import {
+  clearLegacyCredentialStorage,
+  getClientRequestHeaders,
+} from "@shared/api/clientHeaders";
 import { NotezyAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { useLogout } from "@shared/api/hooks/auth.hook";
@@ -5,11 +9,8 @@ import { useGetMe, useGetUserData } from "@shared/api/hooks/user.hook";
 import { useGetMyAccount } from "@shared/api/hooks/userAccount.hook";
 import { useGetMyInfo } from "@shared/api/hooks/userInfo.hook";
 import { WebURLPathDictionary } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import React, {
   createContext,
   useCallback,
@@ -28,22 +29,22 @@ interface UserContextType {
   userData: UserData | null;
   setUserData: (userData: UserData | null) => void;
   updateUserData: (fields: Partial<UserData>) => boolean;
-  fetchUserData: (accessToken: string | null) => Promise<void>;
+  fetchUserData: () => Promise<void>;
 
   user: User | null;
   setUser: (user: User | null) => void;
   updateUser: (fields: Partial<User>) => boolean;
-  fetchUser: (accessToken: string | null) => Promise<void>;
+  fetchUser: () => Promise<void>;
 
   userInfo: UserInfo | null;
   setUserInfo: (userInfo: UserInfo | null) => void;
   updateUserInfo: (fields: Partial<UserInfo>) => boolean;
-  fetchUserInfo: (accessToken: string | null) => Promise<void>;
+  fetchUserInfo: () => Promise<void>;
 
   userAccount: UserAccount | null;
   setUserAccount: (userAccount: UserAccount | null) => void;
   updateUserAccount: (fields: Partial<UserAccount>) => boolean;
-  fetchUserAccount: (accessToken: string | null) => Promise<void>;
+  fetchUserAccount: () => Promise<void>;
 
   logout: () => void;
 }
@@ -73,17 +74,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
 
+  useEffect(() => {
+    clearLegacyCredentialStorage();
+  }, []);
+
   const isAutoFetchingUserDataRef = useRef(false);
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
-  const fetchUserDataRef = useRef<
-    (accessToken: string | null) => Promise<void>
-  >(async () => {});
-  const accessToken = LocalStorageManipulator.getItemByKey(
-    LocalStorageKey.accessToken
-  );
+  const fetchUserDataRef = useRef<() => Promise<void>>(async () => {});
 
   const fetchUserData = useCallback(
-    async (accessToken: string | null) =>
+    async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           console.debug("fetching user automatically...");
@@ -93,10 +93,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
           const userAgent = navigator.userAgent;
           const response = await getUserDataQuerier.fetch({
-            header: {
-              userAgent: userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header: getClientRequestHeaders(userAgent),
             body: {},
           });
 
@@ -133,20 +130,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (router.getCurrentPath().includes("/redirect/")) return;
     if (!enableInitialFetching || userData !== null) return;
-    if (!accessToken || isAutoFetchingUserDataRef.current) return;
+    if (isAutoFetchingUserDataRef.current) return;
 
     isAutoFetchingUserDataRef.current = true;
-    void fetchUserDataRef.current(accessToken).finally(() => {
+    void fetchUserDataRef.current().finally(() => {
       isAutoFetchingUserDataRef.current = false;
     });
-  }, [
-    accessToken,
-    enableInitialFetching,
-    isLocalDBReady,
-    userData,
-    isOnline,
-    router,
-  ]);
+  }, [enableInitialFetching, isLocalDBReady, userData, isOnline, router]);
 
   const updateUserData = (fields: Partial<UserData>): boolean => {
     if (!isOnline) return false;
@@ -156,7 +146,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUser = useCallback(
-    async (accessToken: string | null) =>
+    async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
@@ -164,10 +154,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
           const userAgent = navigator.userAgent;
           const response = await getMeQuerier.fetch({
-            header: {
-              userAgent: userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header: getClientRequestHeaders(userAgent),
           });
 
           setUser(response.data);
@@ -202,7 +189,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUserInfo = useCallback(
-    async (accessToken: string | null) =>
+    async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
@@ -210,10 +197,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
           const userAgent = navigator.userAgent;
           const response = await getMyInfoQuerier.fetch({
-            header: {
-              userAgent: userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header: getClientRequestHeaders(userAgent),
           });
 
           setUserInfo(response.data);
@@ -248,7 +232,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUserAccount = useCallback(
-    async (accessToken: string | null) =>
+    async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
@@ -256,10 +240,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
           const userAgent = navigator.userAgent;
           const response = await getMyAccountQuerier.fetch({
-            header: {
-              userAgent: userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header: getClientRequestHeaders(userAgent),
           });
 
           setUserAccount(response.data);
@@ -301,10 +282,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     // to make sure the logout procedure is only done once
     const task = (async () => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
-
       setEnableInitialFetching(false);
       setUserData(null);
       setUser(null);
@@ -314,10 +291,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const userAgent = navigator.userAgent;
       if (isOnline) {
         await logoutMutator.mutateAsync({
-          header: {
-            userAgent: userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(userAgent),
         });
       }
     })();

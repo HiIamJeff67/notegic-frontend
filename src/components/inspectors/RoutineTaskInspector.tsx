@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useGetMyRoutineTaskById } from "@shared/api/hooks/routineTask.hook";
 import {
   AllRoutinePeriods,
@@ -6,11 +7,8 @@ import {
   UserPlan,
 } from "@shared/api/interfaces/enums";
 import { PlanLimitations } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -112,15 +110,9 @@ const RoutineTaskInspector = ({
     setIsPayloadEditorOpen(false);
 
     setIsLoadingRoutineTaskDetail(true);
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
     getRoutineTaskQuerier
       .fetch({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: {
           routineTaskId,
         },
@@ -244,9 +236,7 @@ const RoutineTaskInspector = ({
       userManager.updateUserAccount({
         routineTaskCostUnitCount: estimatedUsageAfterUpdate,
       });
-      void userManager.fetchUserAccount(
-        LocalStorageManipulator.getItemByKey(LocalStorageKey.accessToken)
-      );
+      void userManager.fetchUserAccount();
       toast.success(t("workspace.routineTask.updated"));
       onClose();
     } catch (error) {

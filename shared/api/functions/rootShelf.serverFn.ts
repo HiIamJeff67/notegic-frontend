@@ -1,5 +1,5 @@
 import type { UUID } from "node:crypto";
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
+
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -53,8 +53,8 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -72,12 +72,9 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
-});
+  });
 
 export const CreateRootShelf = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRootShelfRequest) => data)
@@ -92,8 +89,8 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -113,9 +110,6 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -133,8 +127,8 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -154,9 +148,6 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -180,8 +171,8 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -201,9 +192,6 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -227,8 +215,8 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -257,9 +245,6 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -267,7 +252,7 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
 
 const fetchRootShelfMembership = async <T>(
   request: {
-    header?: { userAgent?: string; authorization?: string };
+    header?: { userAgent?: string; csrfToken?: string };
     body?: unknown;
   },
   path: string,
@@ -284,8 +269,8 @@ const fetchRootShelfMembership = async <T>(
           request.header?.userAgent ??
           getRequestHeader("User-Agent") ??
           "unknown",
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -301,15 +286,12 @@ const fetchRootShelfMembership = async <T>(
   if (!isJsonResponse(response)) throw new Error("error.encounterUnknownError");
   const formattedResponse = (await response.json()) as T & {
     exception?: unknown;
-    refreshableTokens?: { newAccessToken?: string };
+    refreshableTokens?: { newCSRFToken?: string };
   };
   if (formattedResponse.exception != null)
     throw new NotezyAPIError(
       new NotezyException(formattedResponse.exception as any)
     );
-  AccessTokenCookieHandler.ensure(
-    formattedResponse.refreshableTokens?.newAccessToken
-  );
   return formattedResponse;
 };
 
@@ -353,8 +335,8 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -374,9 +356,6 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -400,8 +379,8 @@ export const UpdateMyRootShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -421,9 +400,6 @@ export const UpdateMyRootShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -445,8 +421,8 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -466,9 +442,6 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -492,8 +465,8 @@ export const RestoreMyRootShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -513,9 +486,6 @@ export const RestoreMyRootShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -537,8 +507,8 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -558,9 +528,6 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -584,8 +551,8 @@ export const DeleteMyRootShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -605,9 +572,6 @@ export const DeleteMyRootShelvesByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }

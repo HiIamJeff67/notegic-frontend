@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   SupportedIcon as GraphQLSupportedIcon,
   SearchSortOrder,
@@ -18,11 +19,8 @@ import {
 import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.interface";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 
@@ -112,14 +110,8 @@ export const useStationLogic = ({
       icon: SupportedIcon | null = null,
       headerBackgroundURL: string | null = null
     ): Promise<StationNode> => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await createStationMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           name,
           description,
@@ -181,15 +173,8 @@ export const useStationLogic = ({
     ): Promise<StationNode> => {
       const stationNode = stationsRef.current.get(stationId);
       if (!stationNode) throw new Error("station does not exist");
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await updateStationMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           stationId,
           values,
@@ -251,14 +236,8 @@ export const useStationLogic = ({
 
   const deleteStation = useCallback(
     async (stationId: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await deleteStationMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: { stationId },
       });
       if (response.success === false) throw response.exception;
@@ -288,14 +267,8 @@ export const useStationLogic = ({
 
   const transferStationOwnership = useCallback(
     async (stationId: UUID, targetUserPublicId: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await transferStationOwnershipMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: { stationId },
         body: { targetUserPublicId },
       });
@@ -308,14 +281,8 @@ export const useStationLogic = ({
 
   const leaveStation = useCallback(
     async (stationId: UUID, targetUserPublicId?: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       await leaveStationMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         param: { stationId },
         body: targetUserPublicId ? { targetUserPublicId } : {},
       });

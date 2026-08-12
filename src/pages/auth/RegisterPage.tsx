@@ -1,5 +1,4 @@
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useRegister } from "@shared/api/hooks/auth.hook";
 import { useGetUserData } from "@shared/api/hooks/user.hook";
 import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
@@ -42,10 +41,8 @@ const RegisterPage = () => {
       }
 
       const userAgent = navigator.userAgent;
-      const responseOfRegistering = await registerMutator.mutateAsync({
-        header: {
-          userAgent: userAgent,
-        },
+      await registerMutator.mutateAsync({
+        header: getClientRequestHeaders(userAgent),
         body: {
           name: name,
           email: email,
@@ -54,22 +51,9 @@ const RegisterPage = () => {
       });
 
       const responseOfGettingUserData = await getUserDataQuerier.fetch({
-        header: { userAgent: navigator.userAgent },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {},
       });
-
-      if (
-        responseOfGettingUserData?.refreshableTokens?.newAccessToken &&
-        responseOfRegistering.data.accessToken !==
-          responseOfGettingUserData.refreshableTokens.newAccessToken
-      ) {
-        throw new NotezyValidationError(
-          ValidationClientException.InconsistentToken(
-            responseOfRegistering.data.accessToken,
-            responseOfGettingUserData.refreshableTokens.newAccessToken
-          )
-        );
-      }
 
       setName("");
       setEmail("");

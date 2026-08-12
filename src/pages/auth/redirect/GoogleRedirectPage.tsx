@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   useLoginViaGoogle,
   useRegisterViaGoogle,
@@ -5,11 +6,8 @@ import {
 import { useBindGoogleAccount } from "@shared/api/hooks/userAccount.hook";
 import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
 import { WebURLPathDictionary } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { RedirectState } from "@shared/types/redirectState.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -40,36 +38,30 @@ function GoogleRedirectPage() {
     async (
       action: "register" | "login" | "binding",
       code: string
-    ): Promise<string | null> => {
-      const userAgent = navigator.userAgent;
+    ): Promise<void> => {
+      const header = getClientRequestHeaders(navigator.userAgent);
 
       switch (action) {
         case "register": {
-          const response = await registerViaGoogleMutator.mutateAsync({
-            header: { userAgent },
+          await registerViaGoogleMutator.mutateAsync({
+            header,
             body: { authorizationCode: code },
           });
-          return response.data.accessToken;
+          return;
         }
         case "login": {
-          const response = await loginViaGoogleMutator.mutateAsync({
-            header: { userAgent },
+          await loginViaGoogleMutator.mutateAsync({
+            header,
             body: { authorizationCode: code },
           });
-          return response.data.accessToken;
+          return;
         }
         case "binding": {
-          const accessToken = LocalStorageManipulator.getItemByKey(
-            LocalStorageKey.accessToken
-          );
           await bindGoogleAccountMutator.mutateAsync({
-            header: {
-              userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header,
             body: { authorizationCode: code },
           });
-          return accessToken;
+          return;
         }
       }
     },
@@ -109,18 +101,14 @@ function GoogleRedirectPage() {
       }
 
       userManager.setEnableInitialFetching(false);
-      await performGoogleOAuthAction(action, code).then(async accessToken => {
-        const responseOfGettingUserData = await queryFnGetUserData({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
-        });
-
-        userManager.setUserData(responseOfGettingUserData.data);
-        userManager.setEnableInitialFetching(true);
-        router.push(getPreferredStartPath(preferences));
+      await performGoogleOAuthAction(action, code);
+      const responseOfGettingUserData = await queryFnGetUserData({
+        header: getClientRequestHeaders(navigator.userAgent),
       });
+
+      userManager.setUserData(responseOfGettingUserData.data);
+      userManager.setEnableInitialFetching(true);
+      router.push(getPreferredStartPath(preferences));
     } catch (error) {
       console.debug(error);
       toast.error(translateError(error, t));

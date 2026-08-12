@@ -10,6 +10,10 @@ import {
   useUpsertRootShelfPermission,
 } from "@shared/api/hooks/rootShelf.hook";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import type {
+  RealtimePresenceFrame,
+  RealtimePresenceParticipant,
+} from "@shared/api/websocket";
 import toast from "@shared/lib/toast";
 import { cn } from "@shared/util/utils";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
@@ -75,6 +79,9 @@ const BlockPackParticipantsDropdown = ({
   const [removedUserPublicIds, setRemovedUserPublicIds] = useState(
     () => new Set<string>()
   );
+  const [presenceParticipants, setPresenceParticipants] = useState(
+    () => new Map<string, RealtimePresenceParticipant>()
+  );
   const [awarenessVersion, setAwarenessVersion] = useState(0);
 
   const userManager = useUser();
@@ -122,13 +129,71 @@ const BlockPackParticipantsDropdown = ({
 
     return map;
   }, [awarenessVersion, realtimeChannel?.provider, t]);
-  const displayedParticipants = useMemo(
-    () =>
-      Array.from(awarenessUsersByPublicId.values()).filter(
-        participant => !removedUserPublicIds.has(participant.userPublicId)
-      ),
-    [awarenessUsersByPublicId, removedUserPublicIds]
-  );
+  useEffect(() => {
+    setPresenceParticipants(new Map());
+    const handlePresence = (event: Event) => {
+      const detail = (event as CustomEvent).detail as
+        | { blockPackId?: UUID; frame?: RealtimePresenceFrame }
+        | undefined;
+      const frame = detail?.frame;
+      if (!detail || detail.blockPackId !== blockPackId || !frame) return;
+
+      setPresenceParticipants(previous => {
+        const next = new Map(previous);
+        next.set(frame.participant.userPublicId, frame.participant);
+        return next;
+      });
+    };
+    const handlePresenceSnapshot = (event: Event) => {
+      const detail = (event as CustomEvent).detail as
+        | {
+            blockPackId?: UUID;
+            participants?: RealtimePresenceParticipant[];
+          }
+        | undefined;
+      if (!detail || detail.blockPackId !== blockPackId) return;
+
+      setPresenceParticipants(
+        new Map(
+          (detail.participants ?? []).map(participant => [
+            participant.userPublicId,
+            participant,
+          ])
+        )
+      );
+    };
+
+    window.addEventListener("notezy:realtime-presence", handlePresence);
+    window.addEventListener(
+      "notezy:realtime-presence-snapshot",
+      handlePresenceSnapshot
+    );
+    return () => {
+      window.removeEventListener("notezy:realtime-presence", handlePresence);
+      window.removeEventListener(
+        "notezy:realtime-presence-snapshot",
+        handlePresenceSnapshot
+      );
+    };
+  }, [blockPackId]);
+  const displayedParticipants = useMemo(() => {
+    const participants = new Map(awarenessUsersByPublicId);
+    for (const participant of presenceParticipants.values()) {
+      const awarenessParticipant = participants.get(participant.userPublicId);
+      participants.set(participant.userPublicId, {
+        userPublicId: participant.userPublicId,
+        displayName: awarenessParticipant?.displayName ?? "",
+        name: awarenessParticipant?.name ?? "",
+        count: participant.connectionCount,
+      });
+    }
+
+    return Array.from(participants.values()).filter(
+      participant =>
+        participant.count > 0 &&
+        !removedUserPublicIds.has(participant.userPublicId)
+    );
+  }, [awarenessUsersByPublicId, presenceParticipants, removedUserPublicIds]);
   const connectionCountsByPublicId = useMemo(() => {
     const map = new Map<string, number>();
     for (const participant of displayedParticipants) {

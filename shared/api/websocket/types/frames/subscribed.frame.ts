@@ -1,6 +1,8 @@
 import { NotezyAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
+import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import type { RealtimePresenceParticipant } from "./presence.frame";
 
 export type RealtimeSubscribedFrame = {
   version: typeof RealtimeProtocolVersion;
@@ -9,12 +11,17 @@ export type RealtimeSubscribedFrame = {
   channelType: "BlockPack";
   channelId: string;
   connectorChannelId: number;
+  existing: boolean;
+  participants: RealtimePresenceParticipant[];
 };
 
 export const parseRealtimeSubscribedFrame = (
   frame: Record<string, unknown>
 ): RealtimeSubscribedFrame => {
-  if (typeof frame.channelId !== "string" || frame.channelType !== "BlockPack") {
+  if (
+    typeof frame.channelId !== "string" ||
+    frame.channelType !== "BlockPack"
+  ) {
     throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
   }
   if (
@@ -26,13 +33,42 @@ export const parseRealtimeSubscribedFrame = (
       RealtimeError.MissingSubscribedConnectorChannelId()
     );
   }
+  if (typeof frame.existing !== "boolean") {
+    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+  }
+  if (
+    frame.participants !== undefined &&
+    (!Array.isArray(frame.participants) ||
+      frame.participants.some(participant => {
+        if (
+          typeof participant !== "object" ||
+          participant === null ||
+          Array.isArray(participant)
+        )
+          return true;
+        const value = participant as Record<string, unknown>;
+        return (
+          typeof value.userPublicId !== "string" ||
+          !RealtimePermissionSchema.safeParse(value.channelPermission)
+            .success ||
+          typeof value.connectionCount !== "number" ||
+          !Number.isInteger(value.connectionCount) ||
+          value.connectionCount < 0
+        );
+      }))
+  ) {
+    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+  }
 
   return {
     version: RealtimeProtocolVersion,
     type: "subscribed",
-    requestId: typeof frame.requestId === "string" ? frame.requestId : undefined,
+    requestId:
+      typeof frame.requestId === "string" ? frame.requestId : undefined,
     channelType: "BlockPack",
     channelId: frame.channelId,
     connectorChannelId: frame.connectorChannelId,
+    existing: frame.existing,
+    participants: (frame.participants as RealtimePresenceParticipant[]) ?? [],
   };
 };

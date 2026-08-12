@@ -14,7 +14,7 @@ export const GetMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   param: z.object({
@@ -55,7 +55,7 @@ export const GetMyBlockPackAndItsParentByIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -105,7 +105,7 @@ export const GetMyBlockPacksByParentSubShelfIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -149,7 +149,7 @@ export const GetAllMyBlockPacksByRootShelfIdRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     param: z.object({
@@ -192,7 +192,7 @@ export const CreateBlockPackRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -232,7 +232,7 @@ export const CreateBlockPacksRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -276,7 +276,7 @@ export const UpdateMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -319,7 +319,7 @@ export const UpdateMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -367,7 +367,7 @@ export const MoveMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -399,35 +399,37 @@ export type MoveMyBlockPackByIdResponse = z.infer<
 
 /* ============================== MoveMyBlockPacksByParentSubShelfId ============================== */
 
-export const MoveMyBlockPacksByParentSubShelfIdRequestSchema = NotezyRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    blockPackIds: z.array(z.uuidv4()),
-    destinationParentSubShelfId: z.uuidv4(),
-  }),
-  affected: z.object({
-    rootShelfId: z.uuidv4(),
-    sourceParentSubShelfIds: z.array(z.uuidv4()),
-  }),
-});
+export const MoveMyBlockPacksByParentSubShelfIdRequestSchema =
+  NotezyRequestSchema.extend({
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      blockPackIds: z.array(z.uuidv4()),
+      destinationParentSubShelfId: z.uuidv4(),
+    }),
+    affected: z.object({
+      rootShelfId: z.uuidv4(),
+      sourceParentSubShelfIds: z.array(z.uuidv4()),
+    }),
+  });
 
 export type MoveMyBlockPacksByParentSubShelfIdRequest = z.infer<
   typeof MoveMyBlockPacksByParentSubShelfIdRequestSchema
 >;
 
-export const MoveMyBlockPacksByParentSubShelfIdResponseSchema = NotezyResponseSchema.extend({
-  data: z.object({
-    updatedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const MoveMyBlockPacksByParentSubShelfIdResponseSchema =
+  NotezyResponseSchema.extend({
+    data: z.object({
+      updatedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  });
 
 export type MoveMyBlockPacksByParentSubShelfIdResponse = z.infer<
   typeof MoveMyBlockPacksByParentSubShelfIdResponseSchema
@@ -440,7 +442,7 @@ export const MoveMyBlockPacksByParentSubShelfIdsRequestSchema =
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -481,7 +483,7 @@ export const RestoreMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -527,7 +529,7 @@ export const RestoreMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend(
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
-        authorization: z.string().optional(),
+        csrfToken: z.string().optional(),
       })
       .optional(),
     body: z.object({
@@ -574,7 +576,7 @@ export const DeleteMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -609,7 +611,7 @@ export const DeleteMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({

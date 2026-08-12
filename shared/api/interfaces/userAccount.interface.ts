@@ -11,7 +11,7 @@ export const GetMyAccountRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
 });
@@ -54,7 +54,7 @@ export type GetMyAccountResponse = z.infer<typeof GetMyAccountResponseSchema>;
 export const UpdateMyAccountRequestSchema = NotezyRequestSchema.extend({
   header: z.object({
     userAgent: z.string().min(1).optional(),
-    authorization: z.string().optional(),
+
     csrfToken: z.string(),
   }),
   body: z.object({
@@ -93,7 +93,7 @@ export const BindGoogleAccountRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({
@@ -124,7 +124,7 @@ export const UnbindGoogleAccountRequestSchema = NotezyRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
-      authorization: z.string().optional(),
+      csrfToken: z.string().optional(),
     })
     .optional(),
   body: z.object({

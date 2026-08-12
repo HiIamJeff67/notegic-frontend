@@ -1,12 +1,10 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateMyInfo } from "@shared/api/hooks/userInfo.hook";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import { Image } from "@unpic/react";
 import { format } from "date-fns";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -69,9 +67,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (userManager.userInfo) return;
-      await userManager.fetchUserInfo(
-        LocalStorageManipulator.getItemByKey(LocalStorageKey.accessToken)
-      );
+      await userManager.fetchUserInfo();
     };
 
     fetchUserInfo();
@@ -137,14 +133,8 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const accessToken = LocalStorageManipulator.getItemByKey(
-            LocalStorageKey.accessToken
-          );
           await updateUserInfoMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              authorization: getAuthorization(accessToken),
-            },
+            header: getClientRequestHeaders(userAgent),
             body: {
               values: {
                 avatarURL: userInfo.avatarURL,

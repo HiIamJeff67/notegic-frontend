@@ -1,9 +1,8 @@
+import { getClientMutationHeaders } from "@shared/api/clientHeaders";
 import { Dialog } from "@radix-ui/react-dialog";
 import { useValidateEmail } from "@shared/api/hooks/auth.hook";
 import { UserRole } from "@shared/api/interfaces/enums";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import toast from "@shared/lib/toast";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -57,14 +56,8 @@ const SecurityTab = ({
       loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          const csrfToken = SessionStorageManipulator.getItemByKey(
-            SessionStorageKey.csrfToken
-          );
           await validateEmailMutator.mutateAsync({
-            header: {
-              userAgent: userAgent,
-              csrfToken: csrfToken ?? "",
-            },
+            header: getClientMutationHeaders(userAgent),
             body: {
               authCode: authCode,
             },
@@ -82,8 +75,6 @@ const SecurityTab = ({
       validateEmailMutator,
       setSendAuthCodeTimeCounter,
       setValidateEmailDialogOpen,
-      SessionStorageManipulator,
-      SessionStorageKey,
     ]
   );
 

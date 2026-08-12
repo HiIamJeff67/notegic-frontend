@@ -6,4 +6,5 @@ export type RealtimeRegisteredChannel = {
   permission: z.infer<typeof RealtimePermissionSchema>;
   connectorChannelId: number | null;
   pendingRequestId: string | null;
+  ticketRetryCount: number;
 };

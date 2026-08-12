@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
@@ -8,7 +7,7 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 interface VisualizeServerRequest {
   header?: {
     userAgent?: string;
-    authorization?: string;
+    csrfToken?: string;
   };
   param: Record<string, unknown>;
 }
@@ -51,8 +50,8 @@ export async function fetchVisualizeResponse<TResponse>(
     headers: {
       "Content-Type": "application/json",
       "User-Agent": userAgent,
-      ...(request.header?.authorization
-        ? { Authorization: request.header.authorization }
+      ...(request.header?.csrfToken
+        ? { "X-CSRF-Token": request.header.csrfToken }
         : {}),
       ...(inboundCookie ? { Cookie: inboundCookie } : {}),
     },
@@ -65,14 +64,11 @@ export async function fetchVisualizeResponse<TResponse>(
   forwardUpstreamSetCookies(response);
   const formattedResponse = (await response.json()) as TResponse & {
     exception: ConstructorParameters<typeof NotezyException>[0] | null;
-    refreshableTokens?: { newAccessToken?: string };
+    refreshableTokens?: { newCSRFToken?: string };
   };
   if (formattedResponse.exception != null) {
     throw new NotezyAPIError(new NotezyException(formattedResponse.exception));
   }
-  AccessTokenCookieHandler.ensure(
-    formattedResponse.refreshableTokens?.newAccessToken
-  );
 
   return formattedResponse;
 }

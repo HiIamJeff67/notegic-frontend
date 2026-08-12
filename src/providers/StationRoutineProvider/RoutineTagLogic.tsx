@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   SupportedIcon as GraphQLSupportedIcon,
   SearchRoutineTagSortBy,
@@ -13,11 +14,8 @@ import { SupportedIcon } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTagByIdRequest } from "@shared/api/interfaces/routineTag.interface";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 
@@ -91,14 +89,8 @@ export const useRoutineTagLogic = ({
       color: string,
       icon: SupportedIcon | null
     ): Promise<RoutineTagNode> => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await createRoutineTagMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           name,
           color,
@@ -169,15 +161,8 @@ export const useRoutineTagLogic = ({
     ): Promise<RoutineTagNode> => {
       const routineTagNode = routineTagsRef.current.get(routineTagId);
       if (!routineTagNode) throw new Error("routine tag does not exist");
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await updateRoutineTagMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineTagId,
           values,
@@ -197,14 +182,8 @@ export const useRoutineTagLogic = ({
 
   const hardDeleteRoutineTag = useCallback(
     async (routineTagId: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await hardDeleteRoutineTagMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineTagId,
         },

@@ -1,4 +1,3 @@
-import { AccessTokenCookieHandler } from "@shared/api/cookies/accessToken.cookie";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
 import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
 import {
@@ -56,8 +55,8 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.authorization
-          ? { Authorization: request.header.authorization }
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
           : {}),
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
@@ -75,9 +74,6 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -103,8 +99,8 @@ export const GetMyBlockPackAndItsParentById = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -122,9 +118,6 @@ export const GetMyBlockPackAndItsParentById = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -151,8 +144,8 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -170,9 +163,6 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -199,8 +189,8 @@ export const GetAllMyBlockPacksByRootShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -218,9 +208,6 @@ export const GetAllMyBlockPacksByRootShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -239,8 +226,8 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -262,9 +249,6 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -282,8 +266,8 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -303,9 +287,6 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -326,8 +307,8 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -347,9 +328,6 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -373,8 +351,8 @@ export const UpdateMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -394,9 +372,6 @@ export const UpdateMyBlockPacksByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -415,8 +390,8 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.authorization
-            ? { Authorization: request.header.authorization }
+          ...(request.header?.csrfToken
+            ? { "X-CSRF-Token": request.header.csrfToken }
             : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
@@ -436,9 +411,6 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
         new NotezyException(formattedResponse.exception)
       );
     }
-    AccessTokenCookieHandler.ensure(
-      formattedResponse.refreshableTokens?.newAccessToken
-    );
 
     return formattedResponse;
   });
@@ -463,8 +435,8 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -484,9 +456,6 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -512,8 +481,8 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -533,9 +502,6 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -557,8 +523,8 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -578,9 +544,6 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -604,8 +567,8 @@ export const RestoreMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -625,9 +588,6 @@ export const RestoreMyBlockPacksByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -649,8 +609,8 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -670,9 +630,6 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }
@@ -696,8 +653,8 @@ export const DeleteMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.authorization
-              ? { Authorization: request.header.authorization }
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
               : {}),
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
@@ -717,9 +674,6 @@ export const DeleteMyBlockPacksByIds = createServerFn({
           new NotezyException(formattedResponse.exception)
         );
       }
-      AccessTokenCookieHandler.ensure(
-        formattedResponse.refreshableTokens?.newAccessToken
-      );
 
       return formattedResponse;
     }

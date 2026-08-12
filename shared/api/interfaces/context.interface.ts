@@ -16,7 +16,6 @@ export const NotezyResponseSchema = z.object({
   data: z.any().nullable(),
   refreshableTokens: z
     .object({
-      newAccessToken: z.string().optional(), // exist if the API route is under the refresh access token middleware
       newCSRFToken: z.string().optional(),
     })
     .optional(),
@@ -34,7 +33,6 @@ export const duplicateResponse = <T>(
   response: NotezyResponse,
   success?: boolean,
   data?: T,
-  newAccessToken?: string,
   newCSRFToken?: string,
   exception?: NotezyException | null
 ): NotezyResponse => {
@@ -42,8 +40,12 @@ export const duplicateResponse = <T>(
     ...response,
     ...(success !== undefined && { success: success }),
     ...(data !== undefined && { data: data }),
-    ...(newAccessToken !== undefined && { newAccessToken: newAccessToken }),
-    ...(newCSRFToken !== undefined && { newCSRFToken: newCSRFToken }),
+    ...(newCSRFToken !== undefined && {
+      refreshableTokens: {
+        ...(response.refreshableTokens ?? {}),
+        newCSRFToken,
+      },
+    }),
     ...(exception !== undefined && { exception: exception }),
   };
 };

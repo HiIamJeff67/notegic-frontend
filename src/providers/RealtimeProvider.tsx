@@ -1,3 +1,8 @@
+import { useApolloClient } from "@apollo/client/react";
+import {
+  SearchItemsDocument,
+  SearchRootShelvesDocument,
+} from "@shared/api/graphql/generated/graphql";
 import {
   RealtimePermission,
   RealtimePermissionSchema,
@@ -6,18 +11,23 @@ import {
   mutationFnCreateMyBlockPackChannelTicket,
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@shared/api/invokers/realtime.invoker";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  mergeRealtimeNotificationIntoCache,
+  refetchNotifications,
+} from "@shared/api/hooks/notification.hook";
 import {
   RealtimeBinaryFrameType,
   type RealtimeBlockPackChannelStatus,
   RealtimeClient,
   type RealtimeConnectionState,
   type RealtimeErrorCode,
+  type RealtimeResourceEventFrame,
 } from "@shared/api/websocket";
 import { RealtimeYjsProvider } from "@shared/blockpack/core";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import {
   createContext,
@@ -83,6 +93,8 @@ export const RealtimeProvider = ({
 }) => {
   const { userData } = useUser();
   const { isOnline } = useNetwork();
+  const apolloClient = useApolloClient();
+  const queryClient = getQueryClient();
   const clientRef = useRef<RealtimeClient | null>(null);
   const channelsRef = useRef<Map<UUID, RealtimeChannelStore>>(new Map());
   const releaseTimersRef = useRef<Map<UUID, ReturnType<typeof setTimeout>>>(
@@ -119,13 +131,7 @@ export const RealtimeProvider = ({
   );
 
   const getRequestHeader = useCallback(() => {
-    const accessToken = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.accessToken
-    );
-    return {
-      userAgent: navigator.userAgent,
-      authorization: getAuthorization(accessToken),
-    };
+    return getClientRequestHeaders();
   }, []);
 
   const setChannelStatus = useCallback(
@@ -148,6 +154,79 @@ export const RealtimeProvider = ({
       channel.provider.flushPendingDocumentUpdatesNow();
     }
   }, []);
+
+  const refetchCanonicalState = useCallback(() => {
+    void queryClient.invalidateQueries({ refetchType: "active" });
+    void apolloClient.refetchQueries({ include: "active" });
+  }, [apolloClient, queryClient]);
+
+  const handleResourceEvent = useCallback(
+    (frame: RealtimeResourceEventFrame) => {
+      const resourceId = frame.resourceId as UUID;
+      const isRootShelfEvent = frame.eventType.startsWith("RootShelf");
+      const isBlockPackEvent = frame.eventType.startsWith("BlockPack");
+
+      if (isRootShelfEvent) {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.rootShelf.all(),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.subShelf.all(),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.material.all(),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.blockPack.all(),
+        });
+        if (
+          frame.eventType === "RootShelfDeleted" ||
+          frame.eventType === "RootShelfPermissionRevoked"
+        ) {
+          apolloClient.cache.evict({
+            id: apolloClient.cache.identify({
+              __typename: "PrivateRootShelf",
+              id: resourceId,
+            }),
+          });
+          apolloClient.cache.gc();
+        }
+        void apolloClient.refetchQueries({
+          include: [SearchRootShelvesDocument],
+        });
+      }
+
+      if (isBlockPackEvent) {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.blockPack.all(),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.block.all(),
+        });
+        if (frame.eventType === "BlockPackDeleted") {
+          apolloClient.cache.evict({
+            id: apolloClient.cache.identify({
+              __typename: "PrivateItem",
+              id: resourceId,
+            }),
+          });
+          apolloClient.cache.gc();
+        }
+        void apolloClient.refetchQueries({
+          include: [SearchItemsDocument],
+        });
+      }
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("notezy:realtime-resource-event", {
+            detail: frame,
+          })
+        );
+      }
+    },
+    [apolloClient, queryClient]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined" || typeof document === "undefined")
@@ -230,6 +309,26 @@ export const RealtimeProvider = ({
       onReady: nextConnectionId => {
         setConnectionId(nextConnectionId);
       },
+      onReconnect: () => {
+        refetchCanonicalState();
+        refetchNotifications();
+      },
+      onNotification: frame => {
+        if (!userData) return;
+        mergeRealtimeNotificationIntoCache({
+          id: frame.notificationId,
+          recipientUserPublicId: userData.publicId,
+          type: frame.notificationType,
+          priority: frame.priority,
+          templateKey: frame.templateKey,
+          templateVersion: frame.templateVersion,
+          payload: frame.payload,
+          createdAt: new Date(frame.createdAt),
+          readAt: null,
+          deletedAt: null,
+          expiresAt: frame.expiresAt ? new Date(frame.expiresAt) : null,
+        });
+      },
       onChannelStatus: setChannelStatus,
       onChannelSubscribed: (blockPackId, frame, permission) => {
         const channel = channelsRef.current.get(blockPackId as UUID);
@@ -240,6 +339,16 @@ export const RealtimeProvider = ({
         channel.provider.connect((type, payload) => {
           client.sendBlockPackBinary(blockPackId, type, payload);
         });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("notezy:realtime-presence-snapshot", {
+              detail: {
+                blockPackId,
+                participants: frame.participants,
+              },
+            })
+          );
+        }
         rerender();
       },
       onChannelBinary: (blockPackId, frame) => {
@@ -250,6 +359,15 @@ export const RealtimeProvider = ({
         } else if (frame.type === RealtimeBinaryFrameType.Awareness) {
           channel.provider.applyAwarenessUpdate(frame.payload);
         }
+      },
+      onResourceEvent: handleResourceEvent,
+      onPresence: (blockPackId, frame) => {
+        if (typeof window === "undefined") return;
+        window.dispatchEvent(
+          new CustomEvent("notezy:realtime-presence", {
+            detail: { blockPackId, frame },
+          })
+        );
       },
       onChannelError: (blockPackId, frame) => {
         const channel = channelsRef.current.get(blockPackId as UUID);
@@ -270,7 +388,11 @@ export const RealtimeProvider = ({
           channel.status = "error";
           disposeBlockPackChannel(channel);
           toast.error(i18n.t("workspace.notifications.blockPackUnavailable"));
-        } else if (frame.code === "resync_required") {
+        } else if (
+          frame.code === "resync_required" ||
+          frame.code === "channel_backpressure" ||
+          frame.code === "worker_unavailable"
+        ) {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
           channel.provider.setReadOnly(true);
@@ -302,7 +424,10 @@ export const RealtimeProvider = ({
   }, [
     disposeBlockPackChannel,
     getRequestHeader,
+    handleResourceEvent,
     isOnline,
+    refetchCanonicalState,
+    refetchNotifications,
     rerender,
     setChannelStatus,
     userData,

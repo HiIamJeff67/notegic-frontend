@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
   RoutineStatus as GraphQLRoutineStatus,
@@ -20,13 +21,10 @@ import {
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
-import { getAuthorization } from "@shared/util/getAuthorization";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 
@@ -384,15 +382,8 @@ export const useRoutineLogic = ({
     ): Promise<RoutineNode> => {
       const stationNode = stationsRef.current.get(stationId);
       if (!stationNode) throw new Error("station does not exist");
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await createRoutineMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           stationId,
           title: values.title,
@@ -483,14 +474,8 @@ export const useRoutineLogic = ({
 
   const deleteRoutine = useCallback(
     async (routineId: UUID) => {
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       const response = await deleteRoutineMutator.mutateAsync({
-        header: {
-          userAgent: navigator.userAgent,
-          authorization: getAuthorization(accessToken),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineId,
         },
@@ -579,16 +564,9 @@ export const useRoutineLogic = ({
         routineNode.updatedAt = new Date();
       }
       forceUpdate();
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       try {
         const response = await updateRoutineMutator.mutateAsync({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           body: {
             routineId,
             values,
@@ -727,16 +705,9 @@ export const useRoutineLogic = ({
         }
       }
       forceUpdate();
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       try {
         const response = await linkRoutineTagMutator.mutateAsync({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           body: {
             routineId,
             routineTagId,
@@ -790,16 +761,9 @@ export const useRoutineLogic = ({
         routineNode.updatedAt = new Date();
       }
       forceUpdate();
-
-      const accessToken = LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.accessToken
-      );
       try {
         const response = await linkRoutineItemMutator.mutateAsync({
-          header: {
-            userAgent: navigator.userAgent,
-            authorization: getAuthorization(accessToken),
-          },
+          header: getClientRequestHeaders(navigator.userAgent),
           body: {
             routineId,
             itemId,

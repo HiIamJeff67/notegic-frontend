@@ -29,9 +29,9 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
@@ -160,11 +160,6 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
 
       const response =
         await queryFnGetAllMyRoutineTaskRecordsByRoutineTaskId(request);
-      LocalStorageManipulator.ensureItem(
-        LocalStorageKey.accessToken,
-        response.refreshableTokens?.newAccessToken,
-        response.embedded.publicId
-      );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
