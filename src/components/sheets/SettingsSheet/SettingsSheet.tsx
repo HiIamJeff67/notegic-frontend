@@ -23,7 +23,7 @@ const SettingsSheet = () => {
       }}
     >
       <SheetContent
-        className="w-[min(94vw,38rem)] gap-0 overflow-hidden border-border p-0 sm:w-[min(88vw,38rem)] sm:max-w-[min(88vw,38rem)] lg:w-[min(52vw,38rem)] lg:max-w-[min(52vw,38rem)] [&_[data-slot=sheet-close]]:top-3 [&_[data-slot=sheet-close]]:right-3 [&_[data-slot=sheet-close]]:z-20 [&_[data-slot=sheet-close]]:flex [&_[data-slot=sheet-close]]:size-7 [&_[data-slot=sheet-close]]:items-center [&_[data-slot=sheet-close]]:justify-center [&_[data-slot=sheet-close]]:rounded-md [&_[data-slot=sheet-close]]:border-0 [&_[data-slot=sheet-close]]:bg-transparent [&_[data-slot=sheet-close]]:p-0 [&_[data-slot=sheet-close]]:text-foreground [&_[data-slot=sheet-close]]:opacity-100 [&_[data-slot=sheet-close]]:select-none [&_[data-slot=sheet-close]]:hover:bg-primary"
+        className="w-[min(94vw,38rem)] gap-0 overflow-hidden border-border p-0 sm:w-[min(88vw,38rem)] sm:max-w-[min(88vw,38rem)] lg:w-[min(52vw,38rem)] lg:max-w-[min(52vw,38rem)] [&_[data-slot=sheet-close]]:top-0 [&_[data-slot=sheet-close]]:right-0 [&_[data-slot=sheet-close]]:z-20 [&_[data-slot=sheet-close]]:m-2 [&_[data-slot=sheet-close]]:flex [&_[data-slot=sheet-close]]:size-7 [&_[data-slot=sheet-close]]:items-center [&_[data-slot=sheet-close]]:justify-center [&_[data-slot=sheet-close]]:rounded-md [&_[data-slot=sheet-close]]:border-0 [&_[data-slot=sheet-close]]:bg-transparent [&_[data-slot=sheet-close]]:p-0 [&_[data-slot=sheet-close]]:text-foreground [&_[data-slot=sheet-close]]:opacity-100 [&_[data-slot=sheet-close]]:select-none [&_[data-slot=sheet-close]]:hover:bg-primary"
         overlayClassName="bg-overlay/35"
         onInteractOutside={event => event.preventDefault()}
       >

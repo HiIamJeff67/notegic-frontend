@@ -13,12 +13,15 @@ import {
   useResumeMyRoutineTaskById,
   useUpdateMyRoutineTaskById,
 } from "@shared/api/hooks/routineTask.hook";
+import { useGetAllMyRoutineTaskRecordsByRoutineTaskId } from "@shared/api/hooks/routineTaskRecord.hook";
 import {
   RoutinePeriod,
   RoutineTaskPurpose,
+  RoutineTaskRecordStatus,
   RoutineTaskStatus,
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
+import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
 import toast from "@shared/lib/toast";
@@ -44,6 +47,8 @@ export const useRoutineTaskLogic = ({
   const updateRoutineTaskMutator = useUpdateMyRoutineTaskById();
   const pauseRoutineTaskMutator = usePauseMyRoutineTaskById();
   const resumeRoutineTaskMutator = useResumeMyRoutineTaskById();
+  const routineTaskRecordsQuerier =
+    useGetAllMyRoutineTaskRecordsByRoutineTaskId();
 
   const [selectedRoutineTaskId, selectRoutineTask] = useState<UUID | null>(
     null
@@ -145,6 +150,72 @@ export const useRoutineTaskLogic = ({
       return routineTaskNodes;
     },
     [forceUpdate, getAllRoutineTasksByRoutineIdsQuerier, stationsRef]
+  );
+
+  const handleRealtimeRoutineTaskLifecycle = useCallback(
+    async (frame: RealtimeRoutineTaskLifecycleFrame): Promise<void> => {
+      const findRoutineTaskNodes = () => {
+        const nodes = new Set<RoutineTaskNode>();
+        for (const stationNode of stationsRef.current.values()) {
+          const stationRoutineTask = stationNode.routineTasks.find(
+            routineTask => routineTask.id === frame.routineTaskId
+          );
+          if (stationRoutineTask) nodes.add(stationRoutineTask);
+          for (const routineNode of stationNode.routines) {
+            const routineTask = routineNode.routineTasks.find(
+              currentRoutineTask =>
+                currentRoutineTask.id === frame.routineTaskId
+            );
+            if (routineTask) nodes.add(routineTask);
+          }
+        }
+        return nodes;
+      };
+
+      const routineTaskNodes = findRoutineTaskNodes();
+      if (routineTaskNodes.size === 0) return;
+
+      if (frame.status === "running") {
+        const occurredAt = new Date(frame.occurredAt);
+        for (const routineTaskNode of routineTaskNodes) {
+          routineTaskNode.status = RoutineTaskStatus.Running;
+          routineTaskNode.executionStatus = RoutineTaskRecordStatus.Running;
+          routineTaskNode.actualStartedAt = occurredAt;
+          routineTaskNode.updatedAt = occurredAt;
+        }
+        forceUpdate();
+        return;
+      }
+
+      await getAllRoutineTasksByRoutineIds([frame.routineId as UUID]);
+      const recordResponse = await routineTaskRecordsQuerier.fetch({
+        header: getClientRequestHeaders(navigator.userAgent),
+        param: {
+          routineTaskId: frame.routineTaskId as UUID,
+          limit: 1,
+        },
+      });
+      if (recordResponse.success === false) throw recordResponse.exception;
+
+      const record =
+        recordResponse.data.find(
+          currentRecord => currentRecord.id === frame.routineTaskRecordId
+        ) ?? recordResponse.data[0];
+      for (const routineTaskNode of findRoutineTaskNodes()) {
+        routineTaskNode.executionStatus = record?.status ?? null;
+        routineTaskNode.actualEndedAt =
+          record?.actualEndedAt ?? new Date(frame.occurredAt);
+        routineTaskNode.updatedAt =
+          record?.updatedAt ?? new Date(frame.occurredAt);
+      }
+      forceUpdate();
+    },
+    [
+      forceUpdate,
+      getAllRoutineTasksByRoutineIds,
+      routineTaskRecordsQuerier,
+      stationsRef,
+    ]
   );
 
   const searchRoutineTasksByRoutineIds = useCallback(
@@ -748,6 +819,7 @@ export const useRoutineTaskLogic = ({
     isSearchingRoutineTasks,
     fetchMoreRoutineTasks,
     getAllRoutineTasksByRoutineIds,
+    handleRealtimeRoutineTaskLifecycle,
     searchRoutineTasksByRoutineIds,
     loadMoreRoutineTaskCandidates,
     loadMoreRoutineTasks,

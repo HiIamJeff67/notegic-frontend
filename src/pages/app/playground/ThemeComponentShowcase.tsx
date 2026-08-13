@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "@shared/lib/toast";
 import {
   BellIcon,
   BoldIcon,
@@ -28,7 +29,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
@@ -820,7 +820,7 @@ function OverlaysSection() {
               onClick={() =>
                 toast.success("Theme toast", {
                   description:
-                    "Sonner uses the same background and border tokens.",
+                    "Toast uses the same background and border tokens.",
                 })
               }
             >

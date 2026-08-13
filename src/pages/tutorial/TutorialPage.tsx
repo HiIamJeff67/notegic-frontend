@@ -3,10 +3,10 @@ import {
   Article,
   ArticleContent,
   type ArticleNavigationItem,
-  ArticleNavigationSidebar,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
+  ArticleSidebar,
 } from "@/components/commons/Article/Article";
 
 const TutorialPage = () => {
@@ -23,9 +23,9 @@ const TutorialPage = () => {
   ] satisfies ArticleNavigationItem[];
 
   return (
-    <div className="h-svh min-h-0 overflow-hidden bg-canvas px-4 py-6 sm:px-6 lg:px-3">
+    <div className="h-svh min-h-0 overflow-hidden bg-canvas">
       <Article>
-        <ArticleNavigationSidebar items={navigationItems} />
+        <ArticleSidebar items={navigationItems} />
         <ArticleContent>
           <ArticleParagraph id="tutorial">
             <ArticleParagraphHeader>

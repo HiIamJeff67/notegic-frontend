@@ -1,24 +1,28 @@
 import type { ReactNode } from "react";
-import { type ExternalToast, toast as sonner } from "sonner";
+import { type ToastOptions, toast as uiToast } from "@/hooks/use-toast";
 
-const toast = {
-  ...sonner,
+const toast = Object.assign(
+  (message: ReactNode, options?: ToastOptions) => uiToast(message, options),
+  {
+    dismiss: uiToast.dismiss,
+    info: uiToast.info,
+    warning: uiToast.warning,
+    error: (message: ReactNode, options?: Omit<ToastOptions, "variant">) => {
+      if (typeof message === "string" && message.trim() === "") {
+        return "";
+      }
 
-  error: (message: ReactNode, options?: ExternalToast) => {
-    if (typeof message === "string" && message.trim() === "") {
-      return "";
-    }
+      return uiToast.error(message, options);
+    },
 
-    return sonner.error(message, options);
-  },
+    success: (message: ReactNode, options?: Omit<ToastOptions, "variant">) => {
+      if (typeof message === "string" && message.trim() === "") {
+        return "";
+      }
 
-  success: (message: ReactNode, options?: ExternalToast) => {
-    if (typeof message === "string" && message.trim() === "") {
-      return "";
-    }
-
-    return sonner.success(message, options);
-  },
-};
+      return uiToast.success(message, options);
+    },
+  }
+);
 
 export default toast;

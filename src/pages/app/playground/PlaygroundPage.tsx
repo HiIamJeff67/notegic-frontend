@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,
+  ArticleNavigationBar,
   type ArticleNavigationItem,
-  ArticleNavigationSidebar,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
@@ -154,7 +154,7 @@ const PlaygroundPage = () => {
   return (
     <div className="h-full min-h-0 bg-canvas px-4 py-6 sm:px-6 lg:px-3">
       <Article>
-        <ArticleNavigationSidebar items={articleItems} />
+        <ArticleNavigationBar items={articleItems} />
         <ArticleContent>
           {articleItems.map((item, index) => (
             <Fragment key={item.id}>

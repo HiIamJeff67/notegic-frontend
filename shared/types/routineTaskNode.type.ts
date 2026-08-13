@@ -1,6 +1,7 @@
 import {
   RoutinePeriod,
   RoutineTaskPurpose,
+  RoutineTaskRecordStatus,
   RoutineTaskStatus,
 } from "@shared/api/interfaces/enums";
 import type { UUID } from "crypto";
@@ -17,6 +18,7 @@ export interface RoutineTaskNode {
   payload: any;
   priority: number;
   status: RoutineTaskStatus;
+  executionStatus?: RoutineTaskRecordStatus | null;
   attempts: number;
   maxAttempts: number;
   period: RoutinePeriod | null;

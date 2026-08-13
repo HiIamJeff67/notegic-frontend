@@ -1,6 +1,6 @@
-import { parseRealtimeResourceEventFrame } from "@shared/api/websocket/types/frames/resourceEvent.frame";
-import { parseRealtimeNotificationFrame } from "@shared/api/websocket/types/frames/notification.frame";
 import { ListNotificationsResponseSchema } from "@shared/api/interfaces/notification.interface";
+import { parseRealtimeNotificationFrame } from "@shared/api/websocket/types/frames/notification.frame";
+import { parseRealtimeResourceEventFrame } from "@shared/api/websocket/types/frames/resourceEvent.frame";
 import { parseRealtimeServerFrame } from "@shared/api/websocket/types/frames/server.frame";
 
 describe("realtime control frames", () => {
@@ -111,6 +111,29 @@ describe("realtime control frames", () => {
       type: "notification",
       notificationId: "notification-1",
       notificationType: "future-type",
+    });
+  });
+
+  it("parses routine task lifecycle frames", () => {
+    expect(
+      parseRealtimeServerFrame(
+        JSON.stringify({
+          version: 1,
+          type: "routine-task-lifecycle",
+          eventId: "event-3",
+          routineTaskId: "task-1",
+          routineTaskRecordId: "record-1",
+          routineId: "routine-1",
+          purpose: "CreateBlockPack",
+          status: "running",
+          attempt: 1,
+          occurredAt: "2026-08-13T09:00:00.000Z",
+        })
+      )
+    ).toMatchObject({
+      type: "routine-task-lifecycle",
+      routineTaskId: "task-1",
+      status: "running",
     });
   });
 

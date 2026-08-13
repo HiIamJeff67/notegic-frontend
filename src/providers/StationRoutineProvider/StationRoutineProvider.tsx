@@ -1,4 +1,5 @@
 import { RoutineStatus, RoutineTaskStatus } from "@shared/api/interfaces/enums";
+import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { LRUCache } from "@shared/lib/LRUCache";
 import type { RoutineNode } from "@shared/types/routineNode.type";
@@ -226,6 +227,33 @@ export const StationRoutineProvider = ({
   useEffect(() => {
     void initializeStationRoutineData().catch(() => {});
   }, [initializeStationRoutineData]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleRoutineTaskLifecycle = (event: Event) => {
+      const frame = (event as CustomEvent<RealtimeRoutineTaskLifecycleFrame>)
+        .detail;
+      void routineTaskLogic
+        .handleRealtimeRoutineTaskLifecycle(frame)
+        .catch(error => {
+          console.error(
+            "failed to apply realtime routine task lifecycle event",
+            error
+          );
+        });
+    };
+
+    window.addEventListener(
+      "notezy:realtime-routine-task-lifecycle",
+      handleRoutineTaskLifecycle
+    );
+    return () =>
+      window.removeEventListener(
+        "notezy:realtime-routine-task-lifecycle",
+        handleRoutineTaskLifecycle
+      );
+  }, [routineTaskLogic.handleRealtimeRoutineTaskLifecycle]);
 
   const stations = stationsRef.current.values();
   const routineTags = routineTagsRef.current.values();

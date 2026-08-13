@@ -22,7 +22,6 @@ import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCar
 import {
   BlockPackIcon,
   MaterialIcon,
-  RoutineIcon,
   RoutineTagIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
@@ -175,7 +174,6 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                       {routine.isPinned && (
                         <Bookmark className="size-3.5 shrink-0 text-muted-foreground" />
                       )}
-                      <RoutineIcon className="size-3.5 shrink-0 text-muted-foreground" />
                       <span className="min-w-0 truncate">{routine.title}</span>
                     </SidebarMenuSubButton>
                   </CollapsibleTrigger>

@@ -1,4 +1,7 @@
-import { RoutineTaskStatus } from "@shared/api/interfaces/enums";
+import {
+  RoutineTaskRecordStatus,
+  RoutineTaskStatus,
+} from "@shared/api/interfaces/enums";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import {
@@ -29,10 +32,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import { useModal, useStationRoutine } from "@/hooks";
 import { translateError } from "@/i18n/error";
 import {
   translateRoutineTaskPurpose,
+  translateRoutineTaskRecordStatus,
   translateRoutineTaskStatus,
 } from "@/i18n/workspace";
 
@@ -44,12 +49,26 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   const { i18n, t } = useTranslation();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
+  const executionStatus = routineTask.executionStatus;
+  const isRunning =
+    executionStatus === RoutineTaskRecordStatus.Running ||
+    routineTask.status === RoutineTaskStatus.Running;
   const statusDotClassName =
-    routineTask.status === RoutineTaskStatus.Running
-      ? "bg-sky-500"
-      : routineTask.status === RoutineTaskStatus.Pause
-        ? "bg-amber-500"
-        : "bg-muted-foreground";
+    routineTask.status === RoutineTaskStatus.Pause
+      ? "bg-amber-500"
+      : executionStatus === RoutineTaskRecordStatus.Success
+        ? "bg-green-500"
+        : executionStatus === RoutineTaskRecordStatus.Failed
+          ? "bg-red-500"
+          : executionStatus === RoutineTaskRecordStatus.Cancel
+            ? "bg-muted-foreground"
+            : "bg-muted-foreground";
+  const displayedStatus =
+    routineTask.status === RoutineTaskStatus.Pause
+      ? translateRoutineTaskStatus(routineTask.status, t)
+      : executionStatus
+        ? translateRoutineTaskRecordStatus(executionStatus, t)
+        : translateRoutineTaskStatus(routineTask.status, t);
 
   return (
     <SidebarMenuSubItem>
@@ -67,9 +86,13 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
                   stationRoutineManager.selectRoutineTask(routineTask.id)
                 }
               >
-                <span
-                  className={`size-2 shrink-0 rounded-full ${statusDotClassName}`}
-                />
+                {isRunning ? (
+                  <Spinner className="size-3 shrink-0 text-sky-500" />
+                ) : (
+                  <span
+                    className={`size-2 shrink-0 rounded-full ${statusDotClassName}`}
+                  />
+                )}
                 <span>{routineTask.title}</span>
               </SidebarMenuSubButton>
             </ContextMenuTrigger>
@@ -88,7 +111,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
               rows={[
                 {
                   field: t("workspace.table.status"),
-                  value: translateRoutineTaskStatus(routineTask.status, t),
+                  value: displayedStatus,
                 },
                 {
                   field: t("workspace.table.purpose"),

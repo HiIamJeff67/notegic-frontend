@@ -12,6 +12,7 @@ export * from "./frames/pong.frame";
 export * from "./frames/presence.frame";
 export * from "./frames/ready.frame";
 export * from "./frames/resourceEvent.frame";
+export * from "./frames/routineTaskLifecycle.frame";
 export * from "./frames/server.frame";
 export * from "./frames/subscribe.frame";
 export * from "./frames/subscribed.frame";

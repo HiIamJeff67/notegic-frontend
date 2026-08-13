@@ -19,22 +19,22 @@ export const APIURLPathDictionary = {
   static: {
     globalImages: {
       avatars: {
-        first: "static/globalImages/avatars/1",
+        first: "static/global-images/avatars/1",
       },
     },
   },
   auth: {
     register: "auth/register",
-    registerViaGoogle: "auth/registerViaGoogle",
+    registerViaGoogle: "auth/register-via-google",
     login: "auth/login",
-    loginViaGoogle: "auth/loginViaGoogle",
+    loginViaGoogle: "auth/login-via-google",
     logout: "auth/logout",
-    sendAuthCode: "auth/sendAuthCode",
-    validateEmail: "auth/validateEmail",
-    resetEmail: "auth/resetEmail",
-    forgetPassword: "auth/forgetPassword",
-    resetMe: "auth/resetMe",
-    deleteMe: "auth/deleteMe",
+    sendAuthCode: "auth/send-auth-code",
+    validateEmail: "auth/validate-email",
+    resetEmail: "auth/reset-email",
+    forgetPassword: "auth/forget-password",
+    resetMe: "auth/reset-me",
+    deleteMe: "auth/delete-me",
   },
   user: {
     getUserData: "users/data",
@@ -153,7 +153,7 @@ export const APIURLPathDictionary = {
     createMyRealtimeConnectionTicket: "realtime/connection/ticket",
     createMyBlockPackChannelTicket: "realtime/channel/block-pack/ticket",
     getBlockPackParticipants: (blockPackId: string) =>
-      `realtime/block-pack/${blockPackId}/participants`,
+      `block-pack/${blockPackId}/participants`,
   },
   notification: {
     list: "notifications/",

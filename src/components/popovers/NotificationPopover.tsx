@@ -130,6 +130,7 @@ export const NotificationPopover = () => {
   );
 
   const unreadCount = unreadQuery.data?.data.count ?? 0;
+  const totalCount = listQuery.data?.pages[0]?.data.totalCount ?? 0;
 
   return (
     <>
@@ -159,18 +160,23 @@ export const NotificationPopover = () => {
               )}
             </MenubarTrigger>
           </PopoverTrigger>
-          <PopoverContent align="end" sideOffset={8} className="w-[22rem] p-0">
+          <PopoverContent
+            align="start"
+            sideOffset={8}
+            className="w-[22rem] p-0"
+          >
             <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h2 className="font-semibold">
-                  {t("workspace.navigation.notifications")}
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  {unreadCount} unread
-                </p>
-              </div>
+              <h2 className="font-semibold">
+                {t("workspace.navigation.notifications")}
+              </h2>
+              <span
+                className="text-xs text-muted-foreground"
+                aria-label={`${unreadCount} unread of ${totalCount}`}
+              >
+                {unreadCount} / {totalCount}
+              </span>
             </div>
-            <div className="max-h-[28rem] space-y-2 overflow-y-auto p-3">
+            <div className="max-h-[28rem] space-y-px overflow-y-auto p-2">
               {listQuery.isPending && (
                 <div className="flex items-center justify-center py-8 text-muted-foreground">
                   <Loader2Icon className="mr-2 size-4 animate-spin" />
@@ -228,7 +234,7 @@ export const NotificationPopover = () => {
                     <button
                       type="button"
                       className={cn(
-                        "w-full rounded-md border p-3 text-left transition-colors",
+                        "w-full rounded-none border p-3 text-left transition-colors",
                         isUnread
                           ? "border-primary/30 bg-accent/35"
                           : "bg-background/40",

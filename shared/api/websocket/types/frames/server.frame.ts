@@ -28,6 +28,10 @@ import {
   type RealtimeResourceEventFrame,
 } from "./resourceEvent.frame";
 import {
+  parseRealtimeRoutineTaskLifecycleFrame,
+  type RealtimeRoutineTaskLifecycleFrame,
+} from "./routineTaskLifecycle.frame";
+import {
   parseRealtimeSubscribedFrame,
   type RealtimeSubscribedFrame,
 } from "./subscribed.frame";
@@ -46,7 +50,8 @@ export type RealtimeServerFrame =
   | RealtimeAckFrame
   | RealtimePresenceFrame
   | RealtimeResourceEventFrame
-  | RealtimeNotificationFrame;
+  | RealtimeNotificationFrame
+  | RealtimeRoutineTaskLifecycleFrame;
 
 export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
   let parsed: unknown;
@@ -75,6 +80,8 @@ export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
       return parseRealtimeResourceEventFrame(frame);
     case "notification":
       return parseRealtimeNotificationFrame(frame);
+    case "routine-task-lifecycle":
+      return parseRealtimeRoutineTaskLifecycleFrame(frame);
     case "presence-joined":
     case "presence-left":
     case "presence-updated":

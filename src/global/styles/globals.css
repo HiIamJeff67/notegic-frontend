@@ -110,8 +110,7 @@ html[data-density]
 html[data-density] [data-slot="input"],
 html[data-density] [data-slot="textarea"],
 html[data-density] [data-slot="select-trigger"],
-html[data-density]
-  [data-slot="menubar-trigger"]:not([data-density-static]),
+html[data-density] [data-slot="menubar-trigger"]:not([data-density-static]),
 html[data-density] [data-slot="sidebar-input"] {
   min-height: var(--density-control-height);
 }
@@ -119,8 +118,7 @@ html[data-density] [data-slot="sidebar-input"] {
 html[data-density]
   [data-slot="button"]:not([data-density-static]):not([data-size="icon"]),
 html[data-density] [data-slot="select-trigger"],
-html[data-density]
-  [data-slot="menubar-trigger"]:not([data-density-static]) {
+html[data-density] [data-slot="menubar-trigger"]:not([data-density-static]) {
   padding-inline: var(--density-control-padding-x);
 }
 
@@ -193,7 +191,7 @@ since both of them offer some default colors in ShadCN component
 .dark {
   --canvas: oklch(0.185 0 0);
   --inset: oklch(0.215 0 0);
-  --background: oklch(0.320 0 0);
+  --background: oklch(0.32 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.255 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -281,7 +279,7 @@ since both of them offer some default colors in ShadCN component
 /* ============================== Customized Sub Themes ============================== */
 
 .standard {
-  --primary: oklch(0.50 0.080 58);
+  --primary: oklch(0.5 0.08 58);
   --primary-foreground: oklch(0.96 0.02 65);
   --accent: oklch(0.37 0.038 58);
   --accent-foreground: oklch(0.985 0 0);
@@ -291,7 +289,7 @@ since both of them offer some default colors in ShadCN component
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: oklch(0.35 0.034 58);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --ring: oklch(0.50 0.080 58);
+  --ring: oklch(0.5 0.08 58);
   --switch-thumb: oklch(0.985 0 0);
   --caret: oklch(0.985 0 0);
 }
@@ -454,4 +452,89 @@ html[data-density] [data-sidebar="menu-button"],
 html[data-density] [data-sidebar="menu-sub-button"] {
   height: var(--density-menu-item-height) !important;
   min-height: var(--density-menu-item-height) !important;
+}
+
+/* Article sidebars must grow with wrapped navigation labels. */
+.article-sidebar [data-sidebar="menu-button"],
+.article-sidebar [data-sidebar="menu-sub-button"] {
+  height: auto !important;
+  min-height: var(--density-menu-item-height) !important;
+  align-items: flex-start;
+  overflow: visible !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  line-height: 1.25rem;
+}
+
+html[data-density] .article-sidebar [data-sidebar="menu-button"],
+html[data-density] .article-sidebar [data-sidebar="menu-sub-button"] {
+  height: auto !important;
+}
+
+.article-sidebar [data-sidebar="menu-button"] > span:last-child,
+.article-sidebar [data-sidebar="menu-sub-button"] > span:last-child {
+  min-width: 0;
+  overflow: visible !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+/* Keep inspector controls on the standard background surface. */
+.inspector-surface [data-slot="input"],
+.inspector-surface [data-slot="textarea"],
+.inspector-surface [role="combobox"],
+.inspector-surface [data-slot="button"][data-empty],
+.inspector-surface .bg-background,
+.inspector-surface .bg-muted {
+  background-color: var(--background);
+}
+
+/* Prism tokens use the active theme rather than a fixed editor palette. */
+.prism-code {
+  color: var(--foreground);
+}
+
+.prism-code .token.comment,
+.prism-code .token.prolog,
+.prism-code .token.doctype,
+.prism-code .token.cdata {
+  color: var(--muted-foreground);
+}
+
+.prism-code .token.punctuation,
+.prism-code .token.operator {
+  color: color-mix(in oklab, var(--foreground) 82%, var(--muted-foreground));
+}
+
+.prism-code .token.property,
+.prism-code .token.tag,
+.prism-code .token.constant,
+.prism-code .token.symbol,
+.prism-code .token.deleted,
+.prism-code .token.boolean,
+.prism-code .token.number {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--primary));
+}
+
+.prism-code .token.selector,
+.prism-code .token.attr-name,
+.prism-code .token.string,
+.prism-code .token.char,
+.prism-code .token.builtin,
+.prism-code .token.inserted {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--decoration));
+}
+
+.prism-code .token.atrule,
+.prism-code .token.attr-value,
+.prism-code .token.keyword,
+.prism-code .token.function,
+.prism-code .token.class-name {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--accent-foreground));
+}
+
+.prism-code .token.regex,
+.prism-code .token.important,
+.prism-code .token.variable {
+  color: color-mix(in oklab, var(--foreground) 72%, var(--primary));
 }

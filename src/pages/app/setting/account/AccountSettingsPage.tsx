@@ -4,17 +4,19 @@ import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
+import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,
+  ArticleNavigationBar,
   type ArticleNavigationItem,
-  ArticleNavigationSidebar,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
+  ArticleParagraphSeparator,
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import { useAppRouter, useNetwork, useSettingsDisplay, useUser } from "@/hooks";
@@ -150,16 +152,17 @@ const AccountSettingsPage = ({
 
   return (
     <div
-      className={`relative h-full min-h-0 bg-canvas py-6 ${
-        displayMode === "sheet" ? "px-2" : "px-4 sm:px-6 lg:px-3"
-      } [&_.flex.flex-col.gap-5]:gap-[var(--density-content-gap)] [&_.flex.flex-col.gap-6]:gap-[var(--density-content-gap)]`}
+      className={cn(
+        "relative h-full min-h-0 [&_.flex.flex-col.gap-5]:gap-[var(--density-content-gap)] [&_.flex.flex-col.gap-6]:gap-[var(--density-content-gap)]",
+        displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
+      )}
     >
       <Button
         data-density-static
         type="button"
         variant="default"
         size="icon"
-        className="absolute top-3 left-4 z-20 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary sm:left-6"
+        className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
         aria-label={
           displayMode === "sheet"
             ? t("settingsPage.openAsPage")
@@ -188,22 +191,16 @@ const AccountSettingsPage = ({
       >
         {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
       </Button>
-      <Article className="lg:gap-0">
-        <ArticleNavigationSidebar
+      <Article className="gap-0 p-[var(--density-content-padding)] lg:gap-0">
+        <ArticleNavigationBar
           items={navigationItems}
           paragraphBaseHeight={12}
           subParagraphBaseHeight={6}
           className={
-            displayMode === "sheet" ? "hidden lg:block lg:w-16" : undefined
+            displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent
-          className={
-            displayMode === "sheet"
-              ? "px-4 pt-12 sm:px-6 lg:pl-0 lg:pr-14"
-              : "pt-12"
-          }
-        >
+        <ArticleContent className="m-[var(--density-content-padding)]">
           <ArticleParagraph id="personal">
             <ArticleParagraphHeader>
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
@@ -221,6 +218,8 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
+          <ArticleParagraphSeparator />
+
           <ArticleParagraph id="account">
             <ArticleParagraphHeader>
               <h2 className="text-2xl font-semibold tracking-tight">
@@ -235,6 +234,8 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
+          <ArticleParagraphSeparator />
+
           <ArticleParagraph id="upgrade">
             <ArticleParagraphHeader>
               <h2 className="text-2xl font-semibold tracking-tight">
@@ -248,6 +249,8 @@ const AccountSettingsPage = ({
               {isOnline ? <UpgradeTab layout="page" /> : <OfflineTab />}
             </ArticleParagraphContent>
           </ArticleParagraph>
+
+          <ArticleParagraphSeparator />
 
           <ArticleParagraph id="security">
             <ArticleParagraphHeader>
@@ -266,6 +269,8 @@ const AccountSettingsPage = ({
               )}
             </ArticleParagraphContent>
           </ArticleParagraph>
+
+          <ArticleParagraphSeparator />
 
           <ArticleParagraph id="binding">
             <ArticleParagraphHeader>
@@ -288,6 +293,8 @@ const AccountSettingsPage = ({
               )}
             </ArticleParagraphContent>
           </ArticleParagraph>
+
+          <ArticleParagraphSeparator />
 
           <ArticleParagraph id="account-modification">
             <ArticleParagraphHeader>

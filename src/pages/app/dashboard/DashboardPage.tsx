@@ -795,7 +795,7 @@ const DashboardPage = () => {
                       height: widgetHeight,
                     }}
                     className="
-                    w-full h-full 
+                    w-full h-full
                     bg-card border border-foreground/25 rounded-lg
                     transition-all duration-200 ease-in-out
                   "
@@ -827,7 +827,7 @@ const DashboardPage = () => {
               variant="secondary"
               className="
                 flex justify-center items-center
-                border border-foreground/30 rounded-full shadow-lg w-10 h-10 
+                border border-foreground/30 rounded-full shadow-lg w-10 h-10
                 transition
               "
               onClick={handleReorderWidgetsToFitInBoundary}
@@ -841,7 +841,7 @@ const DashboardPage = () => {
                 variant="secondary"
                 className="
                   flex justify-center items-center
-                  border border-foreground/30 rounded-full shadow-lg w-10 h-10 
+                  border border-foreground/30 rounded-full shadow-lg w-10 h-10
                   transition
                 "
                 onClick={() => {
@@ -887,7 +887,7 @@ const DashboardPage = () => {
                 variant="secondary"
                 className="
                   flex justify-center items-center
-                  border border-foreground/30 rounded-full shadow-lg w-10 h-10 
+                  border border-foreground/30 rounded-full shadow-lg w-10 h-10
                   transition
                 "
                 onClick={() => {
@@ -903,7 +903,7 @@ const DashboardPage = () => {
               variant="secondary"
               className="
                 flex justify-center items-center
-                border border-foreground/30 rounded-full shadow-lg w-10 h-10 
+                border border-foreground/30 rounded-full shadow-lg w-10 h-10
                 transition
               "
               onClick={() => setIsEditing(true)}

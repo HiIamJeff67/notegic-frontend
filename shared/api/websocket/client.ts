@@ -22,6 +22,7 @@ import {
   type RealtimePresenceFrame,
   type RealtimeRegisteredChannel,
   type RealtimeResourceEventFrame,
+  type RealtimeRoutineTaskLifecycleFrame,
   type RealtimeSubscribedFrame,
 } from "./types";
 
@@ -52,6 +53,7 @@ type RealtimeClientOptions = {
   onPresence?: (blockPackId: string, frame: RealtimePresenceFrame) => void;
   onResourceEvent?: (frame: RealtimeResourceEventFrame) => void;
   onNotification?: (frame: RealtimeNotificationFrame) => void;
+  onRoutineTaskLifecycle?: (frame: RealtimeRoutineTaskLifecycleFrame) => void;
   onError?: (error: unknown) => void;
 };
 
@@ -80,6 +82,7 @@ export class RealtimeClient {
   private readonly channelByRequestId = new Map<string, string>();
   private readonly seenResourceEventIds = new Set<string>();
   private readonly seenResourceEventOrder: string[] = [];
+  private readonly seenRoutineTaskLifecycleEventIds = new Set<string>();
   private hasEstablishedConnection = false;
   private readonly textEncoder = new TextEncoder();
 
@@ -98,6 +101,7 @@ export class RealtimeClient {
     this.hasEstablishedConnection = false;
     this.seenResourceEventIds.clear();
     this.seenResourceEventOrder.length = 0;
+    this.seenRoutineTaskLifecycleEventIds.clear();
     if (this.reconnectTimeout !== null) {
       clearTimeout(this.reconnectTimeout);
       this.reconnectTimeout = null;
@@ -417,6 +421,11 @@ export class RealtimeClient {
         break;
       case "notification":
         this.options.onNotification?.(frame);
+        break;
+      case "routine-task-lifecycle":
+        if (this.seenRoutineTaskLifecycleEventIds.has(frame.eventId)) break;
+        this.seenRoutineTaskLifecycleEventIds.add(frame.eventId);
+        this.options.onRoutineTaskLifecycle?.(frame);
         break;
       case "presence-joined":
       case "presence-left":

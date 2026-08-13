@@ -2,6 +2,7 @@ import { cn } from "@shared/util/utils";
 import type { HTMLAttributes, ReactNode, RefObject } from "react";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -14,6 +15,17 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 
 type ArticleNavigationItem = {
@@ -27,9 +39,16 @@ type ArticleNavigationItem = {
 const ArticleScrollContext =
   createContext<RefObject<HTMLElement | null> | null>(null);
 
-const Article = ({ className, ...props }: HTMLAttributes<HTMLElement>) => {
+const Article = ({
+  className,
+  scrollRef,
+  ...props
+}: HTMLAttributes<HTMLElement> & {
+  scrollRef?: RefObject<HTMLElement | null>;
+}) => {
   const { preferences } = useLocalPreferences();
-  const articleRef = useRef<HTMLElement>(null);
+  const internalArticleRef = useRef<HTMLElement>(null);
+  const articleRef = scrollRef ?? internalArticleRef;
 
   return (
     <ArticleScrollContext.Provider value={articleRef}>
@@ -59,12 +78,12 @@ const ArticleContent = ({
   return (
     <main
       className={cn(
-        "min-w-0 max-w-6xl flex-1 py-2 pr-4 sm:pr-6 lg:py-5",
+        "mx-auto w-full min-w-0 max-w-none flex-1 px-4 py-2 sm:px-6 lg:px-8 lg:py-5",
         preferences.density === "compact"
-          ? "lg:pr-4"
+          ? "lg:px-4"
           : preferences.density === "comfortable"
-            ? "lg:pr-8"
-            : "lg:pr-6",
+            ? "lg:px-8"
+            : "lg:px-6",
         className
       )}
       {...props}
@@ -72,30 +91,51 @@ const ArticleContent = ({
   );
 };
 
+const articleTone = (level: number) =>
+  level <= 0
+    ? "text-foreground"
+    : level === 1
+      ? "text-foreground/90"
+      : level === 2
+        ? "text-foreground/80"
+        : "text-foreground/70";
+
 const ArticleParagraph = ({
   className,
+  level = 0,
   ...props
-}: HTMLAttributes<HTMLElement>) => (
-  <section className={cn("scroll-mt-8", className)} {...props} />
+}: HTMLAttributes<HTMLElement> & { level?: number }) => (
+  <section
+    data-article-level={level}
+    className={cn("scroll-mt-8", articleTone(level), className)}
+    {...props}
+  />
 );
 
 const ArticleParagraphHeader = ({
   className,
+  level = 0,
   ...props
-}: HTMLAttributes<HTMLElement>) => (
+}: HTMLAttributes<HTMLElement> & { level?: number }) => (
   <header
-    className={cn("min-w-0 max-w-2xl whitespace-normal break-words", className)}
+    className={cn(
+      "mx-auto min-w-0 max-w-5xl whitespace-normal break-words",
+      articleTone(level),
+      className
+    )}
     {...props}
   />
 );
 
 const ArticleParagraphContent = ({
   className,
+  level = 1,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
+}: HTMLAttributes<HTMLDivElement> & { level?: number }) => (
   <div
     className={cn(
-      "mt-8 min-w-0 max-w-2xl space-y-8 whitespace-normal break-words text-sm leading-7 text-muted-foreground",
+      "mx-auto mt-8 min-w-0 max-w-5xl space-y-8 whitespace-normal break-words text-sm leading-7",
+      articleTone(level),
       className
     )}
     {...props}
@@ -121,18 +161,21 @@ const ArticleParagraphSeparator = ({
 }: HTMLAttributes<HTMLDivElement>) => (
   <div
     role="separator"
-    className={cn("my-14 h-px w-full bg-border/60", className)}
+    className={cn("mt-8 mb-6 w-full border-t-2 border-border/60", className)}
     {...props}
   />
 );
 
 const ArticleSubParagraph = ({
   className,
+  level = 1,
   ...props
-}: HTMLAttributes<HTMLElement>) => (
+}: HTMLAttributes<HTMLElement> & { level?: number }) => (
   <section
+    data-article-level={level}
     className={cn(
       "scroll-mt-8 before:mx-4 before:my-8 before:block before:h-px before:bg-border/35 [&:first-of-type]:before:hidden",
+      articleTone(level),
       className
     )}
     {...props}
@@ -142,11 +185,13 @@ const ArticleSubParagraph = ({
 const ArticleSubParagraphHeader = ({
   className,
   children,
+  level = 1,
   ...props
-}: HTMLAttributes<HTMLHeadingElement>) => (
+}: HTMLAttributes<HTMLHeadingElement> & { level?: number }) => (
   <h3
     className={cn(
       "min-w-0 whitespace-normal break-words text-xl font-semibold tracking-tight",
+      articleTone(level),
       className
     )}
     {...props}
@@ -157,11 +202,13 @@ const ArticleSubParagraphHeader = ({
 
 const ArticleSubParagraphContent = ({
   className,
+  level = 2,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
+}: HTMLAttributes<HTMLDivElement> & { level?: number }) => (
   <div
     className={cn(
       "mt-3 min-w-0 space-y-6 whitespace-normal break-words",
+      articleTone(level),
       className
     )}
     {...props}
@@ -179,25 +226,21 @@ const ArticleSubParagraphSeparator = ({
   />
 );
 
-interface ArticleNavigationSidebarProps {
+interface ArticleNavigationProps {
   items: ArticleNavigationItem[];
   className?: string;
-  paragraphBaseHeight?: number;
-  subParagraphBaseHeight?: number;
   onNavigate?: (item: ArticleNavigationItem) => void;
+  scrollContainerRef?: RefObject<HTMLElement | null>;
 }
 
-const ArticleNavigationSidebar = ({
-  items,
-  className,
-  paragraphBaseHeight = 24,
-  subParagraphBaseHeight = 12,
-  onNavigate,
-}: ArticleNavigationSidebarProps) => {
-  const { t } = useTranslation();
-  const { preferences } = useLocalPreferences();
+const useArticleNavigation = (
+  items: ArticleNavigationItem[],
+  onNavigate?: (item: ArticleNavigationItem) => void,
+  scrollContainerRef?: RefObject<HTMLElement | null>
+) => {
   const [activeId, setActiveId] = useState<string | undefined>();
-  const articleRef = useContext(ArticleScrollContext);
+  const contextArticleRef = useContext(ArticleScrollContext);
+  const articleRef = scrollContainerRef ?? contextArticleRef;
   const itemIds = useMemo(() => {
     const ids: string[] = [];
     const addItemIds = (navigationItems: ArticleNavigationItem[]) => {
@@ -244,6 +287,40 @@ const ArticleNavigationSidebar = ({
     };
   }, [articleRef, itemIds]);
 
+  const navigate = useCallback(
+    (item: ArticleNavigationItem) => {
+      setActiveId(item.id);
+      onNavigate?.(item);
+      document.getElementById(item.id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    },
+    [onNavigate]
+  );
+
+  return { activeId, navigate };
+};
+
+const ArticleNavigationBar = ({
+  items,
+  className,
+  paragraphBaseHeight = 24,
+  subParagraphBaseHeight = 12,
+  onNavigate,
+  scrollContainerRef,
+}: ArticleNavigationProps & {
+  paragraphBaseHeight?: number;
+  subParagraphBaseHeight?: number;
+}) => {
+  const { t } = useTranslation();
+  const { preferences } = useLocalPreferences();
+  const { activeId, navigate } = useArticleNavigation(
+    items,
+    onNavigate,
+    scrollContainerRef
+  );
+
   const renderItem = (
     item: ArticleNavigationItem,
     depth: number
@@ -278,16 +355,7 @@ const ArticleNavigationSidebar = ({
               )}
               aria-current={isActive ? "location" : undefined}
               aria-label={item.title}
-              onClick={() => {
-                setActiveId(item.id);
-                onNavigate?.(item);
-                if (typeof document !== "undefined") {
-                  document.getElementById(item.id)?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }
-              }}
+              onClick={() => navigate(item)}
             >
               <span
                 style={{ width: visualHeight }}
@@ -342,16 +410,102 @@ const ArticleNavigationSidebar = ({
   );
 };
 
+const ArticleSidebar = ({
+  items,
+  className,
+  onNavigate,
+  scrollContainerRef,
+}: ArticleNavigationProps) => {
+  const { t } = useTranslation();
+  const { activeId, navigate } = useArticleNavigation(
+    items,
+    onNavigate,
+    scrollContainerRef
+  );
+
+  const renderItem = (
+    item: ArticleNavigationItem,
+    depth: number
+  ): ReactNode => {
+    const isActive = activeId === item.id;
+    const hasChildren = Boolean(item.children?.length);
+    const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      navigate(item);
+    };
+
+    if (depth === 0) {
+      return (
+        <SidebarMenuItem key={item.id}>
+          <SidebarMenuButton
+            className="h-auto min-h-8 items-start overflow-visible whitespace-normal break-words leading-5 [&>span:last-child]:whitespace-normal [&>span:last-child]:break-words [&>span:last-child]:overflow-visible [&>span:last-child]:text-clip"
+            isActive={isActive}
+            onClick={() => navigate(item)}
+          >
+            {item.title}
+          </SidebarMenuButton>
+          {hasChildren && (
+            <SidebarMenuSub>
+              {item.children?.map(child => renderItem(child, depth + 1))}
+            </SidebarMenuSub>
+          )}
+        </SidebarMenuItem>
+      );
+    }
+
+    return (
+      <SidebarMenuSubItem key={item.id}>
+        <SidebarMenuSubButton
+          href={`#${item.id}`}
+          isActive={isActive}
+          className="h-auto min-h-7 items-start overflow-visible whitespace-normal break-words py-1 leading-5 [&>span:last-child]:whitespace-normal [&>span:last-child]:break-words [&>span:last-child]:overflow-visible [&>span:last-child]:text-clip"
+          onClick={handleClick}
+        >
+          {item.title}
+        </SidebarMenuSubButton>
+        {hasChildren && (
+          <SidebarMenuSub>
+            {item.children?.map(child => renderItem(child, depth + 1))}
+          </SidebarMenuSub>
+        )}
+      </SidebarMenuSubItem>
+    );
+  };
+
+  return (
+    <aside
+      aria-label={t("workspace.accessibility.articleNavigation")}
+      className={cn(
+        "article-sidebar hidden h-full min-h-0 w-64 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:block",
+        className
+      )}
+    >
+      <SidebarProvider
+        open
+        onOpenChange={() => undefined}
+        className="h-full min-h-0 w-full"
+      >
+        <SidebarContent className="h-full">
+          <SidebarGroup>
+            <SidebarMenu>{items.map(item => renderItem(item, 0))}</SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </SidebarProvider>
+    </aside>
+  );
+};
+
 export type { ArticleNavigationItem };
 export {
   Article,
   ArticleContent,
-  ArticleNavigationSidebar,
+  ArticleNavigationBar,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
   ArticleParagraphRight,
   ArticleParagraphSeparator,
+  ArticleSidebar,
   ArticleSubParagraph,
   ArticleSubParagraphContent,
   ArticleSubParagraphHeader,

@@ -1,17 +1,19 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
+import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,
+  ArticleNavigationBar,
   type ArticleNavigationItem,
-  ArticleNavigationSidebar,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
+  ArticleParagraphSeparator,
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import { useAppRouterActions, useSettingsDisplay } from "@/hooks";
@@ -57,16 +59,17 @@ const PreferencesPage = ({
 
   return (
     <div
-      className={`relative h-full min-h-0 bg-canvas py-6 ${
-        displayMode === "sheet" ? "px-2" : "px-4 sm:px-6 lg:px-3"
-      }`}
+      className={cn(
+        "relative h-full min-h-0",
+        displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
+      )}
     >
       <Button
         data-density-static
         type="button"
         variant="default"
         size="icon"
-        className="absolute top-3 left-4 z-20 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary sm:left-6"
+        className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
         aria-label={
           displayMode === "sheet"
             ? t("settingsPage.openAsPage")
@@ -95,22 +98,16 @@ const PreferencesPage = ({
       >
         {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
       </Button>
-      <Article className="lg:gap-0">
-        <ArticleNavigationSidebar
+      <Article className="gap-0 p-[var(--density-content-padding)] lg:gap-0">
+        <ArticleNavigationBar
           items={navigationItems}
           paragraphBaseHeight={12}
           subParagraphBaseHeight={6}
           className={
-            displayMode === "sheet" ? "hidden lg:block lg:w-16" : undefined
+            displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent
-          className={
-            displayMode === "sheet"
-              ? "px-4 pt-12 sm:px-6 lg:pl-0 lg:pr-14"
-              : undefined
-          }
-        >
+        <ArticleContent className="m-[var(--density-content-padding)]">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}
@@ -121,6 +118,8 @@ const PreferencesPage = ({
             {isReady && <AppearanceSettings />}
           </PreferenceTab>
 
+          <ArticleParagraphSeparator />
+
           <PreferenceTab
             id="dashboard"
             title={t("settingsPage.preferences.dashboard.title")}
@@ -128,6 +127,8 @@ const PreferencesPage = ({
           >
             {isReady && <DashboardSettings />}
           </PreferenceTab>
+
+          <ArticleParagraphSeparator />
 
           <PreferenceTab
             id="editor"
@@ -137,6 +138,8 @@ const PreferencesPage = ({
             {isReady && <EditorSettings />}
           </PreferenceTab>
 
+          <ArticleParagraphSeparator />
+
           <PreferenceTab
             id="offline"
             title={t("settingsPage.preferences.offline.title")}
@@ -145,6 +148,8 @@ const PreferencesPage = ({
             {isReady && <OfflineSettings />}
           </PreferenceTab>
 
+          <ArticleParagraphSeparator />
+
           <PreferenceTab
             id="privacy"
             title={t("settingsPage.preferences.privacy.title")}
@@ -152,6 +157,8 @@ const PreferencesPage = ({
           >
             <PrivacyTab />
           </PreferenceTab>
+
+          <ArticleParagraphSeparator />
 
           <PreferenceTab
             id="browser-permissions"
@@ -163,6 +170,8 @@ const PreferencesPage = ({
             <BrowserPermissionsTab />
           </PreferenceTab>
 
+          <ArticleParagraphSeparator />
+
           <PreferenceTab
             id="notifications"
             title={t("settingsPage.preferences.notifications.title")}
@@ -172,6 +181,8 @@ const PreferencesPage = ({
           >
             <NotificationsTab />
           </PreferenceTab>
+
+          <ArticleParagraphSeparator />
 
           <PreferenceTab
             id="about"

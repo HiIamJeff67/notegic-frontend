@@ -25,6 +25,7 @@ import {
   type RealtimeConnectionState,
   type RealtimeErrorCode,
   type RealtimeResourceEventFrame,
+  type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
 import { RealtimeYjsProvider } from "@shared/blockpack/core";
 import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
@@ -334,6 +335,14 @@ export const RealtimeProvider = ({
           deletedAt: null,
           expiresAt: frame.expiresAt ? new Date(frame.expiresAt) : null,
         });
+      },
+      onRoutineTaskLifecycle: (frame: RealtimeRoutineTaskLifecycleFrame) => {
+        if (typeof window === "undefined") return;
+        window.dispatchEvent(
+          new CustomEvent("notezy:realtime-routine-task-lifecycle", {
+            detail: frame,
+          })
+        );
       },
       onChannelStatus: setChannelStatus,
       onChannelTicket: (blockPackId, ticket) => {

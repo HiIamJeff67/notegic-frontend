@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
+import { dashboardHeaderBackgroundImageOptions } from "@/assets/backgrounds";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import { Button } from "@/components/ui/button";
@@ -91,6 +91,10 @@ const RoutineOverviewerContent = ({
   const [cropperAspectRatio, setCropperAspectRatio] = useState<number>(16 / 9);
 
   const headerBackgroundImageRef = useRef<HTMLDivElement>(null);
+  const defaultHeaderBackgroundImage =
+    dashboardHeaderBackgroundImageOptions.find(
+      image => image.id === backgroundImagesManager.defaultBackgroundImageId
+    )?.src ?? dashboardHeaderBackgroundImageOptions[0].src;
   const chartComponentIdsRef = useRef<string[]>([]);
   const debugStateRef = useRef(stationRoutineManager.state);
   const debugStartedAtRef = useRef(performance.now());
@@ -356,7 +360,7 @@ const RoutineOverviewerContent = ({
       <header
         className="
           fixed top-0 right-0 z-20 h-10
-          flex shrink-0 justify-between items-center 
+          flex shrink-0 justify-between items-center
           gap-2 bg-inset/75 backdrop-blur-md border-inset/10
         "
         style={{
@@ -397,7 +401,18 @@ const RoutineOverviewerContent = ({
             </Button>
           )}
           {backgroundImagesManager.currentBackgroundImage === null ? (
-            <GridBackground className="w-full h-full shrink-0 relative z-10">
+            <div
+              ref={headerBackgroundImageRef}
+              className="relative z-10 h-full w-full shrink-0 overflow-hidden"
+            >
+              <img
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 size-full object-cover"
+                decoding="async"
+                fetchPriority="high"
+                src={defaultHeaderBackgroundImage}
+              />
               {isHeaderBackgroundImageEditing && (
                 <ModifyImageHover
                   className="absolute"
@@ -411,7 +426,7 @@ const RoutineOverviewerContent = ({
                   hoverText={t("workspace.navigation.changeBackgroundImage")}
                 />
               )}
-            </GridBackground>
+            </div>
           ) : (
             <ProgressiveBackground
               ref={headerBackgroundImageRef}
@@ -432,7 +447,7 @@ const RoutineOverviewerContent = ({
             </ProgressiveBackground>
           )}
         </div>
-        <div className="flex w-full flex-col gap-4 overflow-x-hidden p-4">
+        <div className="relative z-20 -mt-3 flex w-full min-h-0 shrink-0 flex-col gap-2 overflow-x-hidden rounded-t-lg border border-foreground/30 bg-inset p-2">
           {shouldRenderTimeRails ? (
             <Suspense fallback={<TimeRailsSkeleton />}>
               <TimeRails />
