@@ -260,7 +260,7 @@ export const EnglishWorkspaceTranslation = {
     children: "Children",
     generatedJson:
       "Generated JSON for {{purpose}}. The backend remains authoritative.",
-    estimatedCost: "Estimated payload cost: {{count}} CostUnits",
+    estimatedCost: "Estimated cost per execution: {{count}} CostUnits",
     updatedBlocksHint:
       "Each entry needs a blockId and an arborizedEditableBlock. Use the block-specific editor for one block.",
     valuesAvailableAsTokens: 'Values are available as "{{token}}".',
@@ -516,8 +516,6 @@ export const EnglishWorkspaceTranslation = {
     invalidJson: "Payload must be valid JSON.",
     invalidPayload: "Invalid payload.",
     payloadTooLarge: "Payload must be smaller than 16 MiB.",
-    payloadQuotaExceeded:
-      "Routine task payload quota exceeded. Reduce the template size or upgrade your plan.",
   },
   payload: {
     importedFromClipboard: "Payload imported from clipboard.",
@@ -531,10 +529,12 @@ export const EnglishWorkspaceTranslation = {
       "Click to import JSON from the clipboard, paste JSON, or drag a JSON file here.",
     collapse: "Collapse payload",
     expand: "Expand payload",
-    usage: "Routine task payload usage: {{used}} / {{limit}} CostUnits.",
+    usage:
+      "Routine task monthly execution usage: {{used}} / {{limit}} CostUnits.",
     notLoaded: "Not loaded",
     estimateInvalid: "Payload must be valid JSON to estimate CostUnits.",
-    estimatedUsage: "This routine task will use about {{count}} CostUnits.",
+    estimatedUsage:
+      "This routine task is estimated to use {{count}} CostUnits per execution.",
     hardLimit: "Payload hard limit: 16 MiB.",
     edit: "Edit payload",
   },

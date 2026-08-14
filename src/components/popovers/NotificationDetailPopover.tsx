@@ -20,6 +20,13 @@ const formatValue = (value: unknown) => {
   return String(value).trim() || "—";
 };
 
+const formatLabel = (label: string) =>
+  label
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]+/g, " ")
+    .toLowerCase()
+    .replace(/^\w/, character => character.toUpperCase());
+
 const DetailField = ({
   label,
   value,
@@ -30,7 +37,7 @@ const DetailField = ({
   valueClassName?: string;
 }) => (
   <div className="min-w-0 rounded-md border bg-muted/20 px-2.5 py-1.5">
-    <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+    <dt className="text-[10px] font-medium tracking-wide text-muted-foreground">
       {label}
     </dt>
     <dd className={cn("mt-0.5 break-words text-sm", valueClassName)}>
@@ -95,7 +102,7 @@ export const NotificationDetailPopover = ({
                     className="grid grid-cols-[minmax(5rem,auto)_1fr] gap-2 border-b pb-1.5 last:border-b-0 last:pb-0"
                   >
                     <dt className="break-words text-xs font-medium text-muted-foreground">
-                      {key}
+                      {formatLabel(key)}
                     </dt>
                     <dd className="min-w-0 break-words text-sm">
                       {formatValue(value)}
@@ -106,9 +113,9 @@ export const NotificationDetailPopover = ({
             </div>
           )}
 
-          <div className="border-t pt-2">
+          <div>
             <div className="min-h-28 rounded-md border bg-muted/20 px-2.5 py-2">
-              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-[10px] font-medium tracking-wide text-muted-foreground">
                 Body
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words text-sm">

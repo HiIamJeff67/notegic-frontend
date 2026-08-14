@@ -35,6 +35,17 @@ export const EnglishSettingsTranslation = {
         title: "Account",
         description: "Review your account identity, plan, and status.",
       },
+      apiKeys: {
+        title: "API keys",
+        description: "Create and revoke keys for your server-side integrations.",
+        securityTitle: "Keep API keys private",
+        securityDescription:
+          "API keys authenticate requests to the API Gateway. The full secret is shown only once and must never be stored in browser code, URLs, or local storage.",
+        create: "Create API key",
+        emptyTitle: "No API keys yet",
+        emptyDescription:
+          "Key management will be available when the ClientGateway API-key contract is deployed.",
+      },
       upgrade: {
         title: "Upgrade plan",
         description:
@@ -44,7 +55,7 @@ export const EnglishSettingsTranslation = {
         status: "Status",
         blocks: "Blocks",
         workflows: "Workflows",
-        taskCostUnits: "Task CostUnits",
+        taskCostUnits: "Monthly routine-task execution CostUnits",
         billingCycle: "Billing cycle",
         annualPricing: "Yearly billing uses annual prices.",
         monthly: "Monthly",

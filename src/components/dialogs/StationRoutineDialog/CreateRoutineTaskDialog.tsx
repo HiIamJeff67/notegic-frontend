@@ -142,18 +142,12 @@ const CreateRoutineTaskDialog = ({
     }
   }, [payload]);
 
-  const routineTaskCostUnitCount = Number(
+  const routineTaskMonthlyCostUnitUsed = Number(
     userManager.userAccount?.routineTaskCostUnitCount ?? 0
   );
   const maxRoutineTaskCostUnitCount =
     PlanLimitations[userManager.userData?.plan ?? UserPlan.Free]
       .maxRoutineTaskCostUnitCount;
-  const estimatedUsageAfterCreate =
-    routineTaskCostUnitCount + (estimatedPayloadCostUnit ?? 0);
-  const isRoutineTaskCostUnitExceeded =
-    userManager.userAccount !== null &&
-    estimatedPayloadCostUnit !== null &&
-    estimatedUsageAfterCreate > maxRoutineTaskCostUnitCount;
 
   const validation = useMemo(() => {
     try {
@@ -197,11 +191,6 @@ const CreateRoutineTaskDialog = ({
     }
     setPayloadError("");
 
-    if (isRoutineTaskCostUnitExceeded) {
-      toast.error(t("workspace.validation.payloadQuotaExceeded"));
-      return;
-    }
-
     try {
       const routineTaskNode = await stationRoutineManager.createRoutineTask(
         validation.data.body.routineId as UUID,
@@ -214,19 +203,10 @@ const CreateRoutineTaskDialog = ({
         validation.data.body.maxAttempts ?? 1
       );
       await onCreated?.(routineTaskNode.id);
-      userManager.updateUserAccount({
-        routineTaskCostUnitCount: estimatedUsageAfterCreate,
-      });
       toast.success(t("workspace.routineTask.created"));
       onClose();
     } catch (error) {
-      const message = translateError(error, t);
-      toast.error(
-        message.toLowerCase().includes("routine task") &&
-          message.toLowerCase().includes("cost")
-          ? t("workspace.validation.payloadQuotaExceeded")
-          : message
-      );
+      toast.error(translateError(error, t));
     }
   };
 
@@ -550,18 +530,12 @@ const CreateRoutineTaskDialog = ({
                     <span className="text-xs text-muted-foreground">
                       {t("workspace.payload.usage", {
                         used: userManager.userAccount
-                          ? routineTaskCostUnitCount
+                          ? routineTaskMonthlyCostUnitUsed
                           : t("workspace.payload.notLoaded"),
                         limit: maxRoutineTaskCostUnitCount,
                       })}
                     </span>
-                    <span
-                      className={`text-xs ${
-                        isRoutineTaskCostUnitExceeded
-                          ? "text-destructive"
-                          : "text-muted-foreground"
-                      }`}
-                    >
+                    <span className="text-xs text-muted-foreground">
                       {estimatedPayloadCostUnit === null
                         ? t("workspace.payload.estimateInvalid")
                         : t("workspace.payload.estimatedUsage", {
@@ -640,8 +614,7 @@ const CreateRoutineTaskDialog = ({
               variant="default"
               disabled={
                 stationRoutineManager.isCreatingRoutineTask ||
-                validation?.success !== true ||
-                isRoutineTaskCostUnitExceeded
+                validation?.success !== true
               }
             >
               {stationRoutineManager.isCreatingRoutineTask && <Spinner />}

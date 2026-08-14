@@ -262,7 +262,7 @@ export const JapaneseWorkspaceTranslation = {
     children: "子項目",
     generatedJson:
       "{{purpose}} 用に生成された JSON です。最終的な判定はバックエンドが行います。",
-    estimatedCost: "Payload の推定コスト：{{count}} CostUnits",
+    estimatedCost: "実行ごとの推定コスト：{{count}} CostUnits",
     updatedBlocksHint:
       "各項目には blockId と arborizedEditableBlock が必要です。単一ブロックには専用エディターを使用してください。",
     valuesAvailableAsTokens: "値は「{{token}}」として利用できます。",
@@ -518,8 +518,6 @@ export const JapaneseWorkspaceTranslation = {
     invalidJson: "ペイロードは有効な JSON である必要があります。",
     invalidPayload: "ペイロードが無効です。",
     payloadTooLarge: "ペイロードは 16 MiB 未満にしてください。",
-    payloadQuotaExceeded:
-      "ルーティンタスクのペイロード上限を超えました。テンプレートを小さくするか、プランをアップグレードしてください。",
   },
   payload: {
     importedFromClipboard: "クリップボードからペイロードをインポートしました。",
@@ -536,11 +534,11 @@ export const JapaneseWorkspaceTranslation = {
     collapse: "ペイロードを折りたたむ",
     expand: "ペイロードを展開",
     usage:
-      "ルーティンタスクのペイロード使用量: {{used}} / {{limit}} CostUnits。",
+      "ルーティンタスクの今月の実行使用量: {{used}} / {{limit}} CostUnits。",
     notLoaded: "未読み込み",
     estimateInvalid: "CostUnits を見積もるには有効な JSON が必要です。",
     estimatedUsage:
-      "このルーティンタスクは約 {{count}} CostUnits を使用します。",
+      "このルーティンタスクは実行ごとに約 {{count}} CostUnits を使用します。",
     hardLimit: "ペイロード上限: 16 MiB。",
     edit: "ペイロードを編集",
   },

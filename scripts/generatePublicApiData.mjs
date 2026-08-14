@@ -12,21 +12,9 @@ const backendRoot = path.resolve(projectRoot, "../notezy-backend");
 const defaults = {
   gateway: path.join(
     backendRoot,
-    "contracts/gateway/v1/public-api/openapi/openapi.json"
+    "contracts/api-gateway/v1/public/openapi/openapi.json"
   ),
-  realtime: path.join(
-    backendRoot,
-    "contracts/realtime-gateway/v1/public-api/openapi/openapi.json"
-  ),
-  asyncapi: path.join(
-    backendRoot,
-    "contracts/realtime-gateway/v1/public-api/asyncapi/asyncapi.json"
-  ),
-  gatewayRules: path.join(backendRoot, "contracts/gateway/v1/public-api/rules"),
-  realtimeRules: path.join(
-    backendRoot,
-    "contracts/realtime-gateway/v1/public-api/rules"
-  ),
+  gatewayRules: path.join(backendRoot, "contracts/api-gateway/v1/public/rules"),
   output: path.join(projectRoot, "src/pages/document/publicApiData.ts"),
 };
 
@@ -49,11 +37,8 @@ if (args.help === true) {
 Paths may be absolute or relative to the frontend project root.
 
 Options:
-  --gateway <path>        Gateway OpenAPI JSON
-  --realtime <path>       RealtimeGateway OpenAPI JSON
-  --asyncapi <path>       RealtimeGateway AsyncAPI JSON
-  --gatewayRules <path>   Gateway rules directory
-  --realtimeRules <path>  RealtimeGateway rules directory
+  --gateway <path>        API Gateway public OpenAPI JSON
+  --gatewayRules <path>   API Gateway public rules directory
   --output <path>         Generated TypeScript output
 `);
   process.exit(0);
@@ -310,10 +295,10 @@ const tagInfo = {
     "Register and login establish the Beta cookie session.",
   ],
   "block-packs": [
-    "BlockPacks",
-    "Create, read, move, restore, and update BlockPack resources.",
+    "Block Packs",
+    "Create, read, move, restore, and update Block Pack resources.",
   ],
-  blocks: ["Blocks", "Read blocks directly or by their containing BlockPack."],
+  blocks: ["Blocks", "Read blocks directly or by their containing Block Pack."],
   graphql: [
     "GraphQL",
     "GraphQL-over-HTTP endpoint and bundled schema examples.",
@@ -343,16 +328,16 @@ const tagInfo = {
     "Gateway-issued connection and channel tickets.",
   ],
   "root-shelves": [
-    "Root shelves",
+    "Root Shelves",
     "CRUD, memberships, ownership, permissions, and recovery.",
   ],
-  "routine-tags": ["Routine tags", "Routine tag CRUD and permanent deletion."],
+  "routine-tags": ["Routine Tags", "Routine tag CRUD and permanent deletion."],
   "routine-task-records": [
     "Routine task records",
     "History queries and visualizations.",
   ],
   "routine-tasks": [
-    "Routine tasks",
+    "Routine Tasks",
     "Task queries, lifecycle actions, and visualizations.",
   ],
   routines: [
@@ -365,7 +350,7 @@ const tagInfo = {
     "CRUD, memberships, permissions, ownership, and visualizations.",
   ],
   "sub-shelves": [
-    "Sub shelves",
+    "Sub Shelves",
     "CRUD, ordering, item traversal, and recovery.",
   ],
   users: ["Users", "Authenticated user data and self profile endpoints."],
@@ -440,6 +425,14 @@ const endpointGroups = document => {
   }));
 };
 
+const humanizeDocumentation = value =>
+  typeof value === "string"
+    ? value
+        .replaceAll("APIGateway", "API Gateway")
+        .replaceAll("BlockPacks", "Block Packs")
+        .replaceAll("BlockPack", "Block Pack")
+    : value;
+
 const markdownRules = directory =>
   fs
     .readdirSync(directory)
@@ -462,36 +455,32 @@ const markdownRules = directory =>
           line => line.trim() && !line.startsWith("- ") && !line.startsWith("|")
         )
         ?.trim();
-      return { id: file.replace(/\.md$/, ""), title, summary, bullets };
+      return {
+        id: file.replace(/\.md$/, ""),
+        title: humanizeDocumentation(title),
+        summary: humanizeDocumentation(summary),
+        bullets: bullets.map(humanizeDocumentation),
+      };
     });
 
-const realtimeMessages = document =>
-  Object.values(document.components?.messages || {}).map(message => ({
-    name: message.name,
-    contentType: message.contentType,
-    description: message.payload?.description,
-    variants: (message.payload?.oneOf || [message.payload]).map(
-      (schema, index) => ({
-        name:
-          schema?.properties?.type?.const ||
-          `${message.name} variant ${index + 1}`,
-        fields: fieldsForSchema(schema, document),
-        example: exampleForSchema(schema, document),
-      })
-    ),
-  }));
-
 const gateway = readJson(input("gateway"));
-const realtime = readJson(input("realtime"));
-const asyncapi = readJson(input("asyncapi"));
-const gatewayEndpointData = sanitizeDocumentation(endpointGroups(gateway));
+const apiGatewayDomainIds = new Set([
+  "root-shelves",
+  "sub-shelves",
+  "materials",
+  "block-packs",
+  "blocks",
+  "stations",
+  "routines",
+  "routine-tasks",
+  "routine-tags",
+]);
+const gatewayEndpointData = sanitizeDocumentation(
+  endpointGroups(gateway).filter(group => apiGatewayDomainIds.has(group.id))
+);
 const gatewayRuleData = sanitizeDocumentation(
   markdownRules(input("gatewayRules"))
 );
-const realtimeRuleData = sanitizeDocumentation(
-  markdownRules(input("realtimeRules"))
-);
-const realtimeMessageData = sanitizeDocumentation(realtimeMessages(asyncapi));
 const result = `// Generated by scripts/generatePublicApiData.mjs. Do not edit by hand.\n\n${[
   "export type DocumentField = { name: string; type: string; required: boolean; description?: string; enum?: readonly unknown[]; example?: unknown; children?: DocumentField[] };",
   `export type DocumentParameter = { name: string; location: string; required: boolean; type: string; example?: unknown; description?: string };`,
@@ -499,40 +488,22 @@ const result = `// Generated by scripts/generatePublicApiData.mjs. Do not edit b
   "export type DocumentError = { status: string; description: string; message: string };",
   `export type DocumentEndpoint = { method: string; path: string; operation: string; summary: string; description?: string; parameters: DocumentParameter[]; requestExample: unknown; requestFields: DocumentField[]; responseStatus: string | null; responseFields: DocumentField[]; responseExample: unknown; errors: DocumentError[]; examples: DocumentExamples; tag: string };`,
   `export type DocumentEndpointGroup = { id: string; title: string; description: string; endpoints: DocumentEndpoint[] };`,
-  `export type RealtimeMessage = { name: string; contentType?: string; description?: string; variants: { name: string; fields: DocumentField[]; example: unknown }[] };`,
   `export const gatewayEndpointGroups: DocumentEndpointGroup[] = ${JSON.stringify(gatewayEndpointData, null, 2)};`,
   `export const gatewayRules = ${JSON.stringify(gatewayRuleData, null, 2)} as const;`,
-  `export const realtimeRules = ${JSON.stringify(realtimeRuleData, null, 2)} as const;`,
-  `export const realtimeMessages: RealtimeMessage[] = ${JSON.stringify(realtimeMessageData, null, 2)};`,
   `export const documentSources = ${JSON.stringify(
     [
       {
-        title: "Gateway v1",
-        format: "OpenAPI 3.1 + GraphQL SDL",
-        path: "contracts/gateway/v1/public-api/",
-        detail:
-          "Generated endpoint fields, examples, rules, and importable client artifacts.",
-      },
-      {
-        title: "RealtimeGateway v1 HTTP",
+        title: "API Gateway v1 (public)",
         format: "OpenAPI 3.1",
-        path: "contracts/realtime-gateway/v1/public-api/openapi/openapi.json",
+        path: "contracts/api-gateway/v1/public/",
         detail:
-          "Participant presence lookup emitted directly by RealtimeGateway.",
-      },
-      {
-        title: "RealtimeGateway v1 WebSocket",
-        format: "AsyncAPI 3.0",
-        path: "contracts/realtime-gateway/v1/public-api/asyncapi/asyncapi.json",
-        detail:
-          "Multiplexed control, binary, presence, resource-event, and notification messages.",
+          "The canonical public API contract for external integrations and API-key authentication.",
       },
       {
         title: "Rules and examples",
         format: "Markdown + JSON + HTTP",
         path: "*/rules/ and */examples/",
-        detail:
-          "Operational constraints and credential-free request/frame examples.",
+        detail: "Operational constraints and sanitized request examples.",
       },
     ],
     null,

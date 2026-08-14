@@ -179,20 +179,12 @@ const RoutineTaskInspector = ({
     }
   }, [values.payload]);
 
-  const routineTaskCostUnitCount = Number(
+  const routineTaskMonthlyCostUnitUsed = Number(
     userManager.userAccount?.routineTaskCostUnitCount ?? 0
   );
   const maxRoutineTaskCostUnitCount =
     PlanLimitations[userManager.userData?.plan ?? UserPlan.Free]
       .maxRoutineTaskCostUnitCount;
-  const estimatedRoutineTaskCostUnitDelta =
-    (estimatedPayloadCostUnit ?? values.costUnit) - values.costUnit;
-  const estimatedUsageAfterUpdate =
-    routineTaskCostUnitCount + estimatedRoutineTaskCostUnitDelta;
-  const isRoutineTaskCostUnitExceeded =
-    userManager.userAccount !== null &&
-    estimatedPayloadCostUnit !== null &&
-    estimatedUsageAfterUpdate > maxRoutineTaskCostUnitCount;
 
   const saveRoutineTask = async () => {
     const title = values.title.trim();
@@ -212,11 +204,6 @@ const RoutineTaskInspector = ({
       toast.error(t("workspace.validation.payloadTooLarge"));
       return;
     }
-    if (isRoutineTaskCostUnitExceeded) {
-      toast.error(t("workspace.validation.payloadQuotaExceeded"));
-      return;
-    }
-
     try {
       await stationRoutineManager.updateRoutineTask(
         routineTaskId,
@@ -233,20 +220,11 @@ const RoutineTaskInspector = ({
           Period: values.period === null,
         }
       );
-      userManager.updateUserAccount({
-        routineTaskCostUnitCount: estimatedUsageAfterUpdate,
-      });
       void userManager.fetchUserAccount();
       toast.success(t("workspace.routineTask.updated"));
       onClose();
     } catch (error) {
-      const message = translateError(error, t);
-      toast.error(
-        message.toLowerCase().includes("routine task") &&
-          message.toLowerCase().includes("cost")
-          ? t("workspace.validation.payloadQuotaExceeded")
-          : message
-      );
+      toast.error(translateError(error, t));
     }
   };
 
@@ -494,18 +472,12 @@ const RoutineTaskInspector = ({
                 <span className="text-xs text-muted-foreground">
                   {t("workspace.payload.usage", {
                     used: userManager.userAccount
-                      ? routineTaskCostUnitCount
+                      ? routineTaskMonthlyCostUnitUsed
                       : t("workspace.payload.notLoaded"),
                     limit: maxRoutineTaskCostUnitCount,
                   })}
                 </span>
-                <span
-                  className={`text-xs ${
-                    isRoutineTaskCostUnitExceeded
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                  }`}
-                >
+                <span className="text-xs text-muted-foreground">
                   {estimatedPayloadCostUnit === null
                     ? t("workspace.payload.estimateInvalid")
                     : t("workspace.payload.estimatedUsage", {
@@ -542,8 +514,7 @@ const RoutineTaskInspector = ({
                   stationRoutineManager.isUpdatingRoutineTask ||
                   isLoadingRoutineTaskDetail ||
                   values.title.trim().length === 0 ||
-                  estimatedPayloadCostUnit === null ||
-                  isRoutineTaskCostUnitExceeded
+                  estimatedPayloadCostUnit === null
                 }
               >
                 {stationRoutineManager.isUpdatingRoutineTask && <Spinner />}

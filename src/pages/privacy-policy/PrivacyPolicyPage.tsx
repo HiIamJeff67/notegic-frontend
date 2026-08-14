@@ -1,26 +1,43 @@
 import { Trans, useTranslation } from "react-i18next";
+import type { ReactNode } from "react";
+import {
+  ArticleSubParagraph,
+  ArticleSubParagraphContent,
+  ArticleSubParagraphHeader,
+} from "@/components/commons/Article/Article";
 
 const CONTACT_EMAIL = "your-email@example.com";
 
-const PrivacyPolicyPage = () => {
+const PrivacySection = ({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: ReactNode;
+}) => (
+  <ArticleSubParagraph id={id}>
+    <ArticleSubParagraphHeader>{title}</ArticleSubParagraphHeader>
+    <ArticleSubParagraphContent>{children}</ArticleSubParagraphContent>
+  </ArticleSubParagraph>
+);
+
+export const PrivacyPolicySections = () => {
   const { t } = useTranslation();
   const emailLink = (
     <a href={`mailto:${CONTACT_EMAIL}`} className="underline" />
   );
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12 text-foreground">
-      <h1 className="text-3xl font-bold mb-2">
-        {t("workspace.pages.privacy.title")}
-      </h1>
-      <p className="text-sm text-muted-foreground mb-8">
+    <>
+      <p className="mb-8 text-sm text-muted-foreground">
         {t("workspace.pages.privacy.lastUpdated")}
       </p>
-
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.collectTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-collection"
+        title={t("workspace.pages.privacy.collectTitle")}
+      >
         <p>{t("workspace.pages.privacy.collectIntro")}</p>
         <ul className="list-disc ml-6 mt-2 space-y-1">
           <li>{t("workspace.pages.privacy.accountInfo")}</li>
@@ -28,37 +45,37 @@ const PrivacyPolicyPage = () => {
           <li>{t("workspace.pages.privacy.usageData")}</li>
           <li>{t("workspace.pages.privacy.deviceInfo")}</li>
         </ul>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.useTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-use"
+        title={t("workspace.pages.privacy.useTitle")}
+      >
         <ul className="list-disc ml-6 mt-2 space-y-1">
           <li>{t("workspace.pages.privacy.provideService")}</li>
           <li>{t("workspace.pages.privacy.improveExperience")}</li>
           <li>{t("workspace.pages.privacy.communicateUpdates")}</li>
         </ul>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.sharingTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-sharing"
+        title={t("workspace.pages.privacy.sharingTitle")}
+      >
         <p>{t("workspace.pages.privacy.sharingText")}</p>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.retentionTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-retention"
+        title={t("workspace.pages.privacy.retentionTitle")}
+      >
         <p>{t("workspace.pages.privacy.retentionText")}</p>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.rightsTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-rights"
+        title={t("workspace.pages.privacy.rightsTitle")}
+      >
         <p>
           <Trans
             i18nKey="workspace.pages.privacy.rightsText"
@@ -66,26 +83,26 @@ const PrivacyPolicyPage = () => {
             components={{ email: emailLink }}
           />
         </p>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.cookiesTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-cookies"
+        title={t("workspace.pages.privacy.cookiesTitle")}
+      >
         <p>{t("workspace.pages.privacy.cookiesText")}</p>
-      </section>
+      </PrivacySection>
 
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.changesTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-changes"
+        title={t("workspace.pages.privacy.changesTitle")}
+      >
         <p>{t("workspace.pages.privacy.changesText")}</p>
-      </section>
+      </PrivacySection>
 
-      <section>
-        <h2 className="text-xl font-semibold mb-2">
-          {t("workspace.pages.privacy.contactTitle")}
-        </h2>
+      <PrivacySection
+        id="privacy-contact"
+        title={t("workspace.pages.privacy.contactTitle")}
+      >
         <p>
           <Trans
             i18nKey="workspace.pages.privacy.contactText"
@@ -93,7 +110,20 @@ const PrivacyPolicyPage = () => {
             components={{ email: emailLink }}
           />
         </p>
-      </section>
+      </PrivacySection>
+    </>
+  );
+};
+
+const PrivacyPolicyPage = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-12 text-foreground">
+      <h1 className="mb-2 text-3xl font-bold">
+        {t("workspace.pages.privacy.title")}
+      </h1>
+      <PrivacyPolicySections />
     </div>
   );
 };

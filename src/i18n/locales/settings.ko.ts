@@ -37,6 +37,17 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         title: "계정",
         description: "계정 식별 정보, 요금제, 상태를 확인합니다.",
       },
+      apiKeys: {
+        title: "API 키",
+        description: "서버 측 통합에 사용할 키를 생성하고 폐기합니다.",
+        securityTitle: "API 키를 안전하게 관리하세요",
+        securityDescription:
+          "API 키는 API Gateway 요청 인증에 사용됩니다. 전체 secret은 한 번만 표시되며 브라우저 코드, URL 또는 localStorage에 저장하면 안 됩니다.",
+        create: "API 키 생성",
+        emptyTitle: "아직 API 키가 없습니다",
+        emptyDescription:
+          "ClientGateway API 키 contract가 배포되면 키 관리를 사용할 수 있습니다.",
+      },
       upgrade: {
         title: "요금제 업그레이드",
         description:
@@ -46,7 +57,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         status: "상태",
         blocks: "블록",
         workflows: "워크플로",
-        taskCostUnits: "작업 CostUnits",
+        taskCostUnits: "루틴 작업 월간 실행 CostUnits",
         billingCycle: "결제 주기",
         annualPricing: "연간 결제는 연간 가격이 적용됩니다.",
         monthly: "월간",

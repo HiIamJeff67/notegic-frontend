@@ -261,7 +261,7 @@ export const KoreanWorkspaceTranslation = {
     children: "하위 항목",
     generatedJson:
       "{{purpose}}용으로 생성된 JSON입니다. 최종 기준은 백엔드입니다.",
-    estimatedCost: "예상 Payload 비용: {{count}} CostUnits",
+    estimatedCost: "실행당 예상 비용: {{count}} CostUnits",
     updatedBlocksHint:
       "각 항목에는 blockId와 arborizedEditableBlock이 필요합니다. 단일 블록에는 전용 편집기를 사용하세요.",
     valuesAvailableAsTokens: '값은 "{{token}}" 형식으로 사용할 수 있습니다.',
@@ -513,8 +513,6 @@ export const KoreanWorkspaceTranslation = {
     invalidJson: "페이로드는 유효한 JSON이어야 합니다.",
     invalidPayload: "페이로드가 올바르지 않습니다.",
     payloadTooLarge: "페이로드는 16 MiB보다 작아야 합니다.",
-    payloadQuotaExceeded:
-      "루틴 작업 페이로드 할당량을 초과했습니다. 템플릿 크기를 줄이거나 플랜을 업그레이드하세요.",
   },
   payload: {
     importedFromClipboard: "클립보드에서 페이로드를 가져왔습니다.",
@@ -529,10 +527,11 @@ export const KoreanWorkspaceTranslation = {
       "클릭하여 클립보드에서 JSON을 가져오거나, JSON을 붙여넣거나, JSON 파일을 여기에 드롭하세요.",
     collapse: "페이로드 접기",
     expand: "페이로드 펼치기",
-    usage: "루틴 작업 페이로드 사용량: {{used}} / {{limit}} CostUnits.",
+    usage: "루틴 작업 월간 실행 사용량: {{used}} / {{limit}} CostUnits.",
     notLoaded: "불러오지 않음",
     estimateInvalid: "CostUnits를 추정하려면 유효한 JSON이어야 합니다.",
-    estimatedUsage: "이 루틴 작업은 약 {{count}} CostUnits를 사용합니다.",
+    estimatedUsage:
+      "이 루틴 작업은 실행당 약 {{count}} CostUnits를 사용합니다.",
     hardLimit: "페이로드 최대 한도: 16 MiB.",
     edit: "페이로드 편집",
   },

@@ -23,6 +23,7 @@ import { useAppRouter, useNetwork, useSettingsDisplay, useUser } from "@/hooks";
 import { translateError } from "@/i18n/error";
 import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
+import ApiKeysTab from "./tabs/ApiKeysTab";
 import BindingTab from "./tabs/BindingTab";
 import OfflineTab from "./tabs/OfflineTab";
 import ProfileTab from "./tabs/ProfileTab";
@@ -53,6 +54,12 @@ const AccountSettingsPage = ({
       id: "account",
       title: t("settingsPage.account.account.title"),
       description: t("settingsPage.account.account.description"),
+      weight: 3,
+    },
+    {
+      id: "api-keys",
+      title: t("settingsPage.account.apiKeys.title"),
+      description: t("settingsPage.account.apiKeys.description"),
       weight: 3,
     },
     {
@@ -231,6 +238,22 @@ const AccountSettingsPage = ({
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none text-foreground">
               {isOnline ? <AccountTab layout="page" /> : <OfflineTab />}
+            </ArticleParagraphContent>
+          </ArticleParagraph>
+
+          <ArticleParagraphSeparator />
+
+          <ArticleParagraph id="api-keys">
+            <ArticleParagraphHeader>
+              <h2 className="text-2xl font-semibold tracking-tight">
+                {t("settingsPage.account.apiKeys.title")}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {t("settingsPage.account.apiKeys.description")}
+              </p>
+            </ArticleParagraphHeader>
+            <ArticleParagraphContent className="max-w-none text-foreground">
+              {isOnline ? <ApiKeysTab layout="page" /> : <OfflineTab />}
             </ArticleParagraphContent>
           </ArticleParagraph>
 

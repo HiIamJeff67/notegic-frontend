@@ -37,6 +37,17 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         title: "アカウント",
         description: "アカウントの識別情報、プラン、状態を確認します。",
       },
+      apiKeys: {
+        title: "API キー",
+        description: "サーバー側の連携に使うキーを作成・失効します。",
+        securityTitle: "API キーを安全に管理",
+        securityDescription:
+          "API キーは API Gateway リクエストの認証に使います。完全な secret は一度だけ表示され、ブラウザーコード、URL、localStorage に保存してはいけません。",
+        create: "API キーを作成",
+        emptyTitle: "API キーはまだありません",
+        emptyDescription:
+          "ClientGateway の API キー contract がデプロイされるとキー管理を利用できます。",
+      },
       upgrade: {
         title: "プランをアップグレード",
         description:
@@ -46,7 +57,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         status: "状態",
         blocks: "ブロック",
         workflows: "ワークフロー",
-        taskCostUnits: "タスク CostUnits",
+        taskCostUnits: "ルーティンタスク月間実行 CostUnits",
         billingCycle: "請求周期",
         annualPricing: "年額プランには年間価格が適用されます。",
         monthly: "月払い",

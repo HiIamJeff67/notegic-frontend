@@ -36,6 +36,16 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         title: "账户",
         description: "查看账户身份、方案和状态。",
       },
+      apiKeys: {
+        title: "API keys",
+        description: "创建和撤销供服务器端集成使用的密钥。",
+        securityTitle: "请妥善保管 API keys",
+        securityDescription:
+          "API keys 用于验证 API Gateway 请求。完整 secret 只显示一次，不能放入浏览器代码、网址或 localStorage。",
+        create: "创建 API key",
+        emptyTitle: "还没有 API keys",
+        emptyDescription: "ClientGateway 的 API key contract 部署后即可使用密钥管理。",
+      },
       upgrade: {
         title: "升级方案",
         description: "比较方案额度并选择合适的工作区规模。",
@@ -44,7 +54,7 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         status: "状态",
         blocks: "区块",
         workflows: "工作流",
-        taskCostUnits: "任务 CostUnits",
+        taskCostUnits: "流程任务每月执行 CostUnits",
         billingCycle: "付费周期",
         annualPricing: "年付方案使用年度价格。",
         monthly: "月付",

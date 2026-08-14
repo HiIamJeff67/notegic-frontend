@@ -1,5 +1,17 @@
 import { cn } from "@shared/util/utils";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  BlocksIcon,
+  BookOpenIcon,
+  ChevronDown,
+  ChevronRight,
+  FileCode2Icon,
+  GitBranchIcon,
+  Globe2Icon,
+  KeyRoundIcon,
+  ShieldCheckIcon,
+  ShieldIcon,
+  WrenchIcon,
+} from "lucide-react";
 import { Fragment, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -16,14 +28,24 @@ import {
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
 import PrismCode from "@/components/commons/PrismCode/PrismCode";
+import { useAppRouterActions } from "@/hooks/useAppRouter";
+import {
+  BlockPackIcon,
+  MaterialIcon,
+  RootShelfIcon,
+  RoutineIcon,
+  RoutineTagIcon,
+  RoutineTaskIcon,
+  StationIcon,
+  SubShelfIcon,
+} from "@/components/icons/WorkspaceEntityIcons";
+import { PrivacyPolicySections } from "@/pages/privacy-policy/PrivacyPolicyPage";
 import {
   type DocumentEndpoint,
   type DocumentField,
   documentSources,
   gatewayEndpointGroups,
   gatewayRules,
-  realtimeMessages,
-  realtimeRules,
 } from "./publicApiData";
 
 const methodClassName: Record<string, string> = {
@@ -33,6 +55,123 @@ const methodClassName: Record<string, string> = {
   POST: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-300",
   PUT: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
 };
+
+const apiGatewayDomainIds = new Set([
+  "root-shelves",
+  "sub-shelves",
+  "materials",
+  "block-packs",
+  "blocks",
+  "stations",
+  "routines",
+  "routine-tasks",
+  "routine-tags",
+]);
+
+const gatewayDomainOrder = [
+  "root-shelves",
+  "sub-shelves",
+  "stations",
+  "materials",
+  "block-packs",
+  "blocks",
+  "routines",
+  "routine-tasks",
+  "routine-tags",
+] as const;
+
+const apiGatewayEndpointGroups = gatewayEndpointGroups
+  .filter(group => apiGatewayDomainIds.has(group.id))
+  .sort(
+    (left, right) =>
+      gatewayDomainOrder.indexOf(left.id as (typeof gatewayDomainOrder)[number]) -
+      gatewayDomainOrder.indexOf(right.id as (typeof gatewayDomainOrder)[number])
+  );
+
+const apiGatewayDomainIcons: Record<string, ArticleNavigationItem["icon"]> = {
+  "root-shelves": RootShelfIcon,
+  "sub-shelves": SubShelfIcon,
+  materials: MaterialIcon,
+  "block-packs": BlockPackIcon,
+  blocks: BlocksIcon,
+  stations: StationIcon,
+  routines: RoutineIcon,
+  "routine-tasks": RoutineTaskIcon,
+  "routine-tags": RoutineTagIcon,
+} as const;
+
+const domainGuides: Record<string, { summary: string; structure: string }> = {
+  "root-shelves": {
+    summary:
+      "Root shelves are the top-level workspaces that organize a user's Notezy content and permissions.",
+    structure:
+      "A root shelf owns its sub shelves, memberships, and the content tree beneath it; the API exposes the shelf as the boundary for access control.",
+  },
+  "sub-shelves": {
+    summary:
+      "Sub shelves are nested collections inside a root shelf, useful for separating projects, topics, or workflows.",
+    structure:
+      "A sub shelf belongs to one parent shelf and can order and traverse the items that it contains.",
+  },
+  materials: {
+    summary:
+      "Materials are source files or references that can be attached to the knowledge structure.",
+    structure:
+      "A material has metadata and content, can point to a parent location, and can be recovered or removed through its lifecycle endpoints.",
+  },
+  "block-packs": {
+    summary:
+      "Block Packs are collaborative documents that group related blocks into one editable unit.",
+    structure:
+      "A Block Pack is the container; blocks hold the document content, while permissions and realtime editing are managed at the pack boundary.",
+  },
+  blocks: {
+    summary:
+      "Blocks are the smallest content units used to build a Block Pack document.",
+    structure:
+      "A block is addressed inside a Block Pack and carries its content and ordering metadata.",
+  },
+  stations: {
+    summary:
+      "Stations are execution-oriented workspaces that connect routines with the resources they operate on.",
+    structure:
+      "A station has members, permissions, and visualizable state; routine links determine which work can run there.",
+  },
+  routines: {
+    summary:
+      "Routines describe repeatable automation flows that can be attached to a station.",
+    structure:
+      "A routine owns its schedule and task links; its lifecycle endpoints manage the definition rather than an individual run.",
+  },
+  "routine-tasks": {
+    summary:
+      "Routine tasks are executable steps created from a routine and claimed by the scheduler when they are ready.",
+    structure:
+      "A task contains its payload and lifecycle state; cost is charged when the backend claims an execution, not when the task is saved.",
+  },
+  "routine-tags": {
+    summary:
+      "Routine tags provide lightweight labels for finding and grouping routine tasks.",
+    structure:
+      "A tag is an independent resource that can be created, linked to tasks, and permanently deleted.",
+  },
+};
+
+const privacyPolicyNavigation = [
+  ["privacy-collection", "Information we collect"],
+  ["privacy-use", "How we use information"],
+  ["privacy-sharing", "Information sharing"],
+  ["privacy-retention", "Data retention"],
+  ["privacy-rights", "Your rights"],
+  ["privacy-cookies", "Cookies"],
+  ["privacy-changes", "Policy changes"],
+  ["privacy-contact", "Contact"],
+].map(([id, title]) => ({
+  id,
+  title,
+  description: title,
+  weight: 3 as const,
+}));
 
 const RuleBlock = ({
   rule,
@@ -222,7 +361,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
 const EndpointTable = ({
   endpoints,
 }: {
-  endpoints: (typeof gatewayEndpointGroups)[number]["endpoints"];
+  endpoints: DocumentEndpoint[];
 }) => {
   const [expandedOperation, setExpandedOperation] = useState<string | null>(
     null
@@ -271,7 +410,13 @@ const EndpointTable = ({
                     <div className="font-medium text-foreground">
                       {endpoint.summary}
                     </div>
-                    <div className="mt-1 font-mono text-sm text-muted-foreground">
+                    <div
+                      data-article-operation={endpoint.operation}
+                      data-article-operation-path={endpoint.path}
+                      data-article-operation-summary={endpoint.summary}
+                      data-article-operation-method={endpoint.method}
+                      className="mt-1 font-mono text-sm text-muted-foreground"
+                    >
                       {endpoint.operation}
                     </div>
                     {endpoint.description && (
@@ -325,14 +470,20 @@ const EndpointTable = ({
 
 const DocumentPage = () => {
   const { t } = useTranslation();
+  const router = useAppRouterActions();
   const title = t("workspace.navigation.document");
   const articleRef = useRef<HTMLElement>(null);
+  const gatewayOperationCount = apiGatewayEndpointGroups.reduce(
+    (count, group) => count + group.endpoints.length,
+    0
+  );
 
-  const gatewayEndpointNavigation = gatewayEndpointGroups.map(group => ({
+  const gatewayEndpointNavigation = apiGatewayEndpointGroups.map(group => ({
     id: `gateway-${group.id}`,
     title: group.title,
     description: group.description,
     weight: 3 as const,
+    icon: apiGatewayDomainIcons[group.id],
   }));
   const gatewayRuleNavigation = gatewayRules.map(rule => ({
     id: `gateway-rule-${rule.id}`,
@@ -340,31 +491,34 @@ const DocumentPage = () => {
     description: rule.summary,
     weight: 3 as const,
   }));
-  const realtimeRuleNavigation = realtimeRules.map(rule => ({
-    id: `realtime-rule-${rule.id}`,
-    title: rule.title,
-    description: rule.summary,
-    weight: 3 as const,
-  }));
-
   const navigationItems = [
     {
       id: "overview",
       title: "Overview",
       description: "The published Notezy v1 public API contract.",
       weight: 5,
+      icon: BookOpenIcon,
+    },
+    {
+      id: "quick-start",
+      title: "API key quick start",
+      description: "Generate, store, use, and revoke an integration key.",
+      weight: 5,
+      icon: KeyRoundIcon,
     },
     {
       id: "gateway",
-      title: "Gateway v1",
-      description: "OpenAPI 3.1, GraphQL, endpoint reference, and HTTP rules.",
+      title: "API Gateway v1 (public)",
+      description: "OpenAPI 3.1 endpoint reference and HTTP rules.",
       weight: 5,
+      icon: Globe2Icon,
       children: [
         {
           id: "gateway-contract",
           title: "Contract",
           description: "Gateway contract formats and servers.",
           weight: 3,
+          icon: FileCode2Icon,
         },
         ...gatewayEndpointNavigation,
         {
@@ -373,35 +527,9 @@ const DocumentPage = () => {
           description:
             "Authentication, security, rate limits, and compatibility.",
           weight: 3,
+          icon: ShieldCheckIcon,
+          children: gatewayRuleNavigation,
         },
-        ...gatewayRuleNavigation,
-      ],
-    },
-    {
-      id: "realtime",
-      title: "RealtimeGateway v1",
-      description: "Participant HTTP API and multiplexed WebSocket protocol.",
-      weight: 5,
-      children: [
-        {
-          id: "realtime-http",
-          title: "HTTP",
-          description: "OpenAPI presence endpoint.",
-          weight: 3,
-        },
-        {
-          id: "realtime-websocket",
-          title: "WebSocket",
-          description: "AsyncAPI channels and binary frames.",
-          weight: 3,
-        },
-        {
-          id: "realtime-rules",
-          title: "Rules",
-          description: "Admission, frames, presence, limits, and errors.",
-          weight: 3,
-        },
-        ...realtimeRuleNavigation,
       ],
     },
     {
@@ -409,12 +537,22 @@ const DocumentPage = () => {
       title: "Versions",
       description: "The current v1 Beta baseline and future comparison rules.",
       weight: 4,
+      icon: GitBranchIcon,
+    },
+    {
+      id: "privacy-policy",
+      title: "Privacy and policy",
+      description: "How Notezy handles account data and user rights.",
+      weight: 4,
+      icon: ShieldIcon,
+      children: privacyPolicyNavigation,
     },
     {
       id: "implementation",
       title: "Implementation",
       description: "How the contracts are generated, grouped, and maintained.",
       weight: 4,
+      icon: WrenchIcon,
     },
   ] satisfies ArticleNavigationItem[];
 
@@ -425,7 +563,10 @@ const DocumentPage = () => {
           items={navigationItems}
           scrollContainerRef={articleRef}
         />
-        <Article scrollRef={articleRef} className="min-w-0 flex-1">
+        <Article
+          scrollRef={articleRef}
+          className="min-w-0 flex-1"
+        >
           <ArticleContent>
             <ArticleParagraph id="overview">
               <ArticleParagraphHeader>
@@ -436,17 +577,16 @@ const DocumentPage = () => {
                   {title}
                 </h1>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Contract-first documentation for Gateway v1 and
-                  RealtimeGateway v1. The backend contract directories remain
-                  authoritative.
+                  Contract-first documentation for the public API Gateway v1.
+                  The backend contract directories remain authoritative.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {[
-                    ["168", "Gateway operations"],
-                    ["OpenAPI 3.1", "HTTP contracts"],
-                    ["AsyncAPI 3.0", "WebSocket contract"],
+                    [String(gatewayOperationCount), "API Gateway operations"],
+                    ["OpenAPI 3.1", "Public HTTP contract"],
+                    ["9", "API-key resource domains"],
                   ].map(([value, label]) => (
                     <div
                       className="rounded-sm border border-border/70 bg-background p-4"
@@ -462,10 +602,65 @@ const DocumentPage = () => {
                   ))}
                 </div>
                 <p>
-                  Gateway v1 is the cookie-authenticated REST and
-                  GraphQL-over-HTTP surface. RealtimeGateway owns participant
-                  HTTP lookup and a multiplexed WebSocket protocol for BlockPack
-                  collaboration.
+                  API Gateway v1 is the public REST surface for server-to-server
+                  integrations authenticated with X-API-Key. The browser app
+                  continues to use the private ClientGateway JWT/cookie flow;
+                  API keys must never be placed in browser storage, URLs, or
+                  frontend environment variables.
+                </p>
+              </ArticleParagraphContent>
+            </ArticleParagraph>
+
+            <ArticleParagraphSeparator />
+
+            <ArticleParagraph id="quick-start">
+              <ArticleParagraphHeader>
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  API key quick start
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Use an API key only from a trusted server or CLI integration.
+                </p>
+              </ArticleParagraphHeader>
+              <ArticleParagraphContent>
+                <ol className="list-decimal space-y-3 pl-5">
+                  <li>
+                    Open Account settings and select API keys. Create a key
+                    with a descriptive name once the ClientGateway key
+                    management contract is available.
+                  </li>
+                  <li>
+                    Copy the secret immediately and store it in your server's
+                    secret manager. The complete secret is shown only once;
+                    never commit it or place it in browser storage.
+                  </li>
+                  <li>
+                    Send it to the public gateway as
+                    <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                      X-API-Key: nzy_...
+                    </code>
+                    for each integration request.
+                  </li>
+                  <li>
+                    Return to Account settings to review metadata, rotate a
+                    compromised key, or revoke a key that is no longer used.
+                  </li>
+                </ol>
+                <p>
+                  The browser application itself continues to use the private
+                  ClientGateway JWT/cookie session. Read the full workflow in
+                  the{" "}
+                  <a
+                    className="underline"
+                    href="/tutorial#api-keys"
+                    onClick={event => {
+                      event.preventDefault();
+                      router.push("/tutorial#api-keys");
+                    }}
+                  >
+                    API key tutorial
+                  </a>
+                  .
                 </p>
               </ArticleParagraphContent>
             </ArticleParagraph>
@@ -475,11 +670,11 @@ const DocumentPage = () => {
             <ArticleParagraph id="gateway">
               <ArticleParagraphHeader>
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  Gateway v1
+                  API Gateway v1 (public)
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The complete Gateway contract is generated from registered
-                  routes and server schemas.
+                  The public API Gateway contract is generated from its route
+                  allowlist and server schemas.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
@@ -493,8 +688,9 @@ const DocumentPage = () => {
                       <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
                         /api/development/v1
                       </code>
-                      . The same directory bundles GraphQL SDL, operation
-                      examples, curl scripts, and Postman imports.
+                      . The same directory bundles operation examples, curl
+                      scripts, and Postman imports. Requests use an X-API-Key
+                      header for server-to-server authentication.
                     </p>
                     <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
                       <code>{`GET  http://localhost/api/development/v1
@@ -504,196 +700,63 @@ Content-Type: application/json`}</code>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
 
-                {gatewayEndpointGroups.map(group => (
-                  <ArticleSubParagraph
-                    id={`gateway-${group.id}`}
-                    key={group.id}
-                  >
-                    <ArticleSubParagraphHeader>
-                      {group.title}
-                    </ArticleSubParagraphHeader>
-                    <ArticleSubParagraphContent>
-                      <p>{group.description}</p>
-                      <EndpointTable endpoints={group.endpoints} />
-                    </ArticleSubParagraphContent>
-                  </ArticleSubParagraph>
-                ))}
+                {apiGatewayEndpointGroups.map(group => {
+                  const guide = domainGuides[group.id];
+                  return (
+                    <ArticleSubParagraph
+                      id={`gateway-${group.id}`}
+                      key={group.id}
+                    >
+                      <ArticleSubParagraphHeader>
+                        {group.title}
+                      </ArticleSubParagraphHeader>
+                      <ArticleSubParagraphContent>
+                        <p>{guide?.summary ?? group.description}</p>
+                        {guide && (
+                          <p className="text-sm leading-6 text-muted-foreground">
+                            {guide.structure} Read the{" "}
+                            <a
+                              className="underline"
+                              href={`/tutorial#${group.id}`}
+                              onClick={event => {
+                                event.preventDefault();
+                                router.push(`/tutorial#${group.id}`);
+                              }}
+                            >
+                              {group.title.toLowerCase()} tutorial
+                            </a>
+                            .
+                          </p>
+                        )}
+                        <EndpointTable endpoints={group.endpoints} />
+                      </ArticleSubParagraphContent>
+                    </ArticleSubParagraph>
+                  );
+                })}
 
                 <ArticleSubParagraph id="gateway-rules">
                   <ArticleSubParagraphHeader>Rules</ArticleSubParagraphHeader>
                   <ArticleSubParagraphContent>
                     <p>
                       These rules are operational constraints, not product
-                      tutorials. They apply to every endpoint in the Gateway
-                      contract.
+                      tutorials. They apply to every endpoint in the public
+                      API Gateway contract.
                     </p>
+                    {gatewayRules.map(rule => (
+                      <ArticleSubParagraph
+                        id={`gateway-rule-${rule.id}`}
+                        key={rule.id}
+                      >
+                        <ArticleSubParagraphHeader>
+                          {rule.title}
+                        </ArticleSubParagraphHeader>
+                        <ArticleSubParagraphContent>
+                          <RuleBlock rule={rule} />
+                        </ArticleSubParagraphContent>
+                      </ArticleSubParagraph>
+                    ))}
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                {gatewayRules.map(rule => (
-                  <ArticleSubParagraph
-                    id={`gateway-rule-${rule.id}`}
-                    key={rule.id}
-                  >
-                    <ArticleSubParagraphHeader>
-                      {rule.title}
-                    </ArticleSubParagraphHeader>
-                    <ArticleSubParagraphContent>
-                      <RuleBlock rule={rule} />
-                    </ArticleSubParagraphContent>
-                  </ArticleSubParagraph>
-                ))}
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="realtime">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  RealtimeGateway v1
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  HTTP presence uses OpenAPI 3.1. Bidirectional WebSocket
-                  messages use AsyncAPI 3.0.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <ArticleSubParagraph id="realtime-http">
-                  <ArticleSubParagraphHeader>HTTP</ArticleSubParagraphHeader>
-                  <ArticleSubParagraphContent>
-                    <div className="overflow-x-auto rounded-sm border border-border/70">
-                      <table className="w-full min-w-[620px] border-collapse text-left text-sm">
-                        <thead className="bg-muted/40 text-muted-foreground">
-                          <tr className="border-b border-border/70">
-                            <th className="px-3 py-2 font-medium">Method</th>
-                            <th className="px-3 py-2 font-medium">Path</th>
-                            <th className="px-3 py-2 font-medium">Response</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="px-3 py-2 align-top">
-                              <span
-                                className={cn(
-                                  "inline-flex min-w-16 justify-center rounded-sm px-2 py-1 font-mono text-sm font-semibold",
-                                  methodClassName.GET
-                                )}
-                              >
-                                GET
-                              </span>
-                            </td>
-                            <td className="px-3 py-2 font-mono">
-                              /block-pack/{"{block-pack-id}"}/participants
-                            </td>
-                            <td className="px-3 py-2 font-mono text-muted-foreground">
-                              ParticipantsResponse
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <p>
-                      Participant snapshots are ephemeral Redis lease
-                      observations, not an authorization source. Each
-                      participant exposes public user ID, channel permission,
-                      and active connection count.
-                    </p>
-                  </ArticleSubParagraphContent>
-                </ArticleSubParagraph>
-
-                <ArticleSubParagraph id="realtime-websocket">
-                  <ArticleSubParagraphHeader>
-                    WebSocket
-                  </ArticleSubParagraphHeader>
-                  <ArticleSubParagraphContent>
-                    <p>
-                      Connect to
-                      <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                        /realtime/development/v1
-                      </code>
-                      with a single-use connection ticket, then subscribe to
-                      BlockPack channels with a separate channel ticket.
-                    </p>
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      {["ClientControl", "ServerControl", "BinaryFrame"].map(
-                        message => (
-                          <div
-                            className="rounded-sm border border-border/70 bg-background p-3 font-mono text-xs"
-                            key={message}
-                          >
-                            {message}
-                          </div>
-                        )
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      {realtimeMessages.map(message => (
-                        <details
-                          className="rounded-sm border border-border/60 bg-background/50 p-3"
-                          key={message.name}
-                        >
-                          <summary className="cursor-pointer text-sm font-medium text-foreground">
-                            {message.name}
-                          </summary>
-                          {message.description && (
-                            <p className="mt-2 text-sm text-muted-foreground">
-                              {message.description}
-                            </p>
-                          )}
-                          <div className="mt-3 space-y-3">
-                            {message.variants.map(variant => (
-                              <div
-                                className="rounded-sm border border-border/50 p-3"
-                                key={variant.name}
-                              >
-                                <p className="font-mono text-xs font-medium text-foreground">
-                                  {variant.name}
-                                </p>
-                                <div className="mt-2">
-                                  <FieldList fields={variant.fields} />
-                                </div>
-                                <pre className="mt-3 overflow-x-auto rounded-sm border border-border/60 bg-background p-3 font-mono text-xs leading-5 text-foreground/85">
-                                  <code>
-                                    {JSON.stringify(variant.example, null, 2)}
-                                  </code>
-                                </pre>
-                              </div>
-                            ))}
-                          </div>
-                        </details>
-                      ))}
-                    </div>
-                    <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
-                      <code>{`offset 0   1 byte   protocol version (1)
-offset 1   1 byte   payload type (1 = Yjs, 2 = awareness)
-offset 2   4 bytes  unsigned big-endian connectorChannelId
-offset 6   remaining raw Yjs or awareness payload`}</code>
-                    </pre>
-                  </ArticleSubParagraphContent>
-                </ArticleSubParagraph>
-
-                <ArticleSubParagraph id="realtime-rules">
-                  <ArticleSubParagraphHeader>Rules</ArticleSubParagraphHeader>
-                  <ArticleSubParagraphContent>
-                    <p>
-                      Admission, frame, presence, backpressure, and stable error
-                      rules are part of the protocol contract.
-                    </p>
-                  </ArticleSubParagraphContent>
-                </ArticleSubParagraph>
-                {realtimeRules.map(rule => (
-                  <ArticleSubParagraph
-                    id={`realtime-rule-${rule.id}`}
-                    key={rule.id}
-                  >
-                    <ArticleSubParagraphHeader>
-                      {rule.title}
-                    </ArticleSubParagraphHeader>
-                    <ArticleSubParagraphContent>
-                      <RuleBlock rule={rule} />
-                    </ArticleSubParagraphContent>
-                  </ArticleSubParagraph>
-                ))}
               </ArticleParagraphContent>
             </ArticleParagraph>
 
@@ -705,20 +768,17 @@ offset 6   remaining raw Yjs or awareness payload`}</code>
                   Versions
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Both services currently publish one v1 Beta baseline. No
-                  unreleased behavior is implied here.
+                  API Gateway currently publishes one v1 Beta baseline. The
+                  ClientGateway and RealtimeGateway contracts remain private
+                  implementation surfaces and are not listed here.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
                 <div className="space-y-3">
                   {[
                     [
-                      "Gateway",
-                      "v1 Beta · OpenAPI 3.1 · HttpOnly cookies + CSRF · 168 operations",
-                    ],
-                    [
-                      "RealtimeGateway",
-                      "v1 Beta · OpenAPI 3.1 HTTP + AsyncAPI 3.0 WebSocket · BlockPack channels",
+                      "API Gateway",
+                      `v1 Beta · OpenAPI 3.1 · X-API-Key · ${gatewayOperationCount} operations`,
                     ],
                   ].map(([name, detail]) => (
                     <div
@@ -738,6 +798,23 @@ offset 6   remaining raw Yjs or awareness payload`}</code>
                   migration deadlines, binary frames, ticket claims, and
                   reconnect semantics.
                 </p>
+              </ArticleParagraphContent>
+            </ArticleParagraph>
+
+            <ArticleParagraphSeparator />
+
+            <ArticleParagraph id="privacy-policy">
+              <ArticleParagraphHeader>
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  Privacy and policy
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  The same privacy terms apply when an integration accesses
+                  resources through an API key.
+                </p>
+              </ArticleParagraphHeader>
+              <ArticleParagraphContent>
+                <PrivacyPolicySections />
               </ArticleParagraphContent>
             </ArticleParagraph>
 
@@ -786,10 +863,11 @@ offset 6   remaining raw Yjs or awareness payload`}</code>
                   <code>make -C contracts public-api-gen</code>
                 </pre>
                 <p>
-                  The frontend groups operations by the generated OpenAPI tags
-                  and keeps the implementation boundary visible: product usage
-                  teaching belongs in Tutorial, while this page describes
-                  contract behavior and operational constraints.
+                  The frontend groups public API Gateway operations by generated
+                  OpenAPI tags and keeps the implementation boundary visible:
+                  product usage teaching belongs in Tutorial, while this page
+                  describes contract behavior and operational constraints. The
+                  web app itself still calls ClientGateway with JWT cookies.
                 </p>
               </ArticleParagraphContent>
             </ArticleParagraph>

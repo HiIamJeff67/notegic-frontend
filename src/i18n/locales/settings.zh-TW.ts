@@ -33,6 +33,16 @@ export const TraditionalChineseSettingsTranslation = {
         resetChanges: "重設變更",
       },
       account: { title: "帳戶", description: "檢視帳戶識別、方案與基本狀態。" },
+      apiKeys: {
+        title: "API keys",
+        description: "建立與撤銷供伺服器端整合使用的金鑰。",
+        securityTitle: "請妥善保管 API keys",
+        securityDescription:
+          "API keys 用於驗證 API Gateway 請求。完整 secret 只會顯示一次，不能放進瀏覽器程式碼、網址或 localStorage。",
+        create: "建立 API key",
+        emptyTitle: "目前沒有 API keys",
+        emptyDescription: "ClientGateway 的 API key contract 部署後即可使用金鑰管理。",
+      },
       upgrade: {
         title: "升級方案",
         description: "比較方案額度並選擇適合的工作規模。",
@@ -41,7 +51,7 @@ export const TraditionalChineseSettingsTranslation = {
         status: "狀態",
         blocks: "區塊",
         workflows: "工作流程",
-        taskCostUnits: "任務 CostUnits",
+        taskCostUnits: "流程任務每月執行 CostUnits",
         billingCycle: "付款週期",
         annualPricing: "年付方案已套用年度價格。",
         monthly: "月付",

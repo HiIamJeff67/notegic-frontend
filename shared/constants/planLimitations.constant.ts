@@ -35,7 +35,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 10,
     maxRoutineTagCount: 5,
     maxRoutineCountPerStation: 20,
-    maxRoutineTaskCostUnitCount: 16,
+    maxRoutineTaskCostUnitCount: 100,
     maxRoutineTaskAttempts: 3,
   },
   [UserPlan.Pro]: {
@@ -53,7 +53,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 20,
     maxRoutineTagCount: 25,
     maxRoutineCountPerStation: 50,
-    maxRoutineTaskCostUnitCount: 256,
+    maxRoutineTaskCostUnitCount: 300,
     maxRoutineTaskAttempts: 10,
   },
   [UserPlan.Premium]: {
@@ -71,7 +71,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 50,
     maxRoutineTagCount: 50,
     maxRoutineCountPerStation: 100,
-    maxRoutineTaskCostUnitCount: 5120,
+    maxRoutineTaskCostUnitCount: 600,
     maxRoutineTaskAttempts: 10,
   },
   [UserPlan.Ultimate]: {
@@ -89,7 +89,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 100,
     maxRoutineTagCount: 100,
     maxRoutineCountPerStation: 300,
-    maxRoutineTaskCostUnitCount: 10240,
+    maxRoutineTaskCostUnitCount: 1200,
     maxRoutineTaskAttempts: 20,
   },
   [UserPlan.Enterprise]: {
@@ -107,7 +107,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 200,
     maxRoutineTagCount: 200,
     maxRoutineCountPerStation: 500,
-    maxRoutineTaskCostUnitCount: 51200,
+    maxRoutineTaskCostUnitCount: 6000,
     maxRoutineTaskAttempts: 20,
   },
 };
