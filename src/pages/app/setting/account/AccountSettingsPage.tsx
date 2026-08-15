@@ -19,6 +19,7 @@ import {
   ArticleParagraphSeparator,
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouter, useNetwork, useSettingsDisplay, useUser } from "@/hooks";
 import { translateError } from "@/i18n/error";
 import AccountModificationTab from "./tabs/AccountModificationTab";
@@ -39,6 +40,7 @@ const AccountSettingsPage = ({
   const { t } = useTranslation();
   const userManager = useUser();
   const { isOnline } = useNetwork();
+  const sidebarManager = useSidebar();
   const { openSheet, closeSheet } = useSettingsDisplay();
   const sendAuthCodeMutator = useSendAuthCode();
   const [sendAuthCodeTimeCounter, setSendAuthCodeTimeCounter] = useState(0);
@@ -164,6 +166,9 @@ const AccountSettingsPage = ({
         displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
       )}
     >
+      {sidebarManager.isMobile && (
+        <SidebarTrigger className="fixed top-2 right-2 z-40" />
+      )}
       <Button
         data-density-static
         type="button"
@@ -198,7 +203,7 @@ const AccountSettingsPage = ({
       >
         {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
       </Button>
-      <Article className="gap-0 p-[var(--density-content-padding)] lg:gap-0">
+      <Article className="gap-0 overflow-x-hidden p-[var(--density-content-padding)] lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
           paragraphBaseHeight={12}
@@ -207,7 +212,7 @@ const AccountSettingsPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-[var(--density-content-padding)]">
+        <ArticleContent className="my-[var(--density-content-padding)] mx-0 pb-[calc(var(--density-content-padding)+2rem)] lg:m-[var(--density-content-padding)] [&>[role=separator]]:my-10">
           <ArticleParagraph id="personal">
             <ArticleParagraphHeader>
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">

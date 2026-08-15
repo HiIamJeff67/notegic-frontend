@@ -48,6 +48,16 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -88,6 +98,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
   const modalManager = useModal();
   const sidebarManager = useSidebar();
   const resizableSidebarManager = useResizeSidebar();
+  const isSidebarExpanded = sidebarManager.open || sidebarManager.isMobile;
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const shelfItemManager = useShelfItem();
@@ -132,7 +143,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <SidebarMenu>
               <SidebarMenuItem
                 className={`${
-                  sidebarManager.open ? "flex-row pr-1" : "flex-col-reverse"
+                  isSidebarExpanded ? "flex-row pr-1" : "flex-col-reverse"
                 } flex justify-between items-center gap-1 hover:bg-accent rounded-sm`}
               >
                 <SidebarMenuButton
@@ -142,7 +153,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   }
                 >
                   <LayoutDashboardIcon />
-                  {sidebarManager.open && (
+                  {isSidebarExpanded && (
                     <span className="truncate">
                       {t("workspace.navigation.dashboard")}
                     </span>
@@ -156,14 +167,14 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
               <SidebarMenuItem className="rounded-sm">
                 <SidebarMenuButton
                   className={`w-full flex ${
-                    sidebarManager.open ? "justify-start" : "justify-center"
+                    isSidebarExpanded ? "justify-start" : "justify-center"
                   } items-center select-none hover:bg-primary`}
                   onClick={() =>
                     router.push(WebURLPathDictionary.app.routines._)
                   }
                 >
                   <RoutineIcon />
-                  {sidebarManager.open && (
+                  {isSidebarExpanded && (
                     <span className="truncate">
                       {t("workspace.navigation.routines")}
                     </span>
@@ -173,11 +184,11 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
               <SidebarMenuItem className="rounded-sm">
                 <SidebarMenuButton
                   className={`w-full flex ${
-                    sidebarManager.open ? "justify-start" : "justify-center"
+                    isSidebarExpanded ? "justify-start" : "justify-center"
                   } items-center select-none hover:bg-primary`}
                 >
                   <MessageSquareIcon />
-                  {sidebarManager.open && (
+                  {isSidebarExpanded && (
                     <span className="truncate">
                       {t("workspace.navigation.community")}
                     </span>
@@ -308,12 +319,12 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <SidebarMenuItem className="rounded-sm">
               <SidebarMenuButton
                 className={`w-full flex ${
-                  sidebarManager.open ? "justify-start" : "justify-center"
+                  isSidebarExpanded ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
                 onClick={() => router.push(WebURLPathDictionary.document)}
               >
                 <FileTextIcon />
-                {sidebarManager.open && (
+                {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.document")}
                   </span>
@@ -323,12 +334,12 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <SidebarMenuItem className="rounded-sm">
               <SidebarMenuButton
                 className={`w-full flex ${
-                  sidebarManager.open ? "justify-start" : "justify-center"
+                  isSidebarExpanded ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
                 onClick={() => router.push(WebURLPathDictionary.tutorial)}
               >
                 <BookOpenIcon />
-                {sidebarManager.open && (
+                {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.tutorial")}
                   </span>
@@ -338,12 +349,12 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <SidebarMenuItem className="rounded-sm">
               <SidebarMenuButton
                 className={`w-full flex ${
-                  sidebarManager.open ? "justify-start" : "justify-center"
+                  isSidebarExpanded ? "justify-start" : "justify-center"
                 } items-center select-none hover:bg-primary`}
                 onClick={() => router.push(WebURLPathDictionary.app.trash)}
               >
                 <Trash2Icon />
-                {sidebarManager.open && (
+                {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.trash")}
                   </span>
@@ -355,68 +366,67 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
       </SidebarGroup>
       <SidebarSeparator className="w-full m-0 p-0" />
       <SidebarFooter className="w-full p-0 m-0">
-        <Menubar className="w-full h-full flex flex-row justify-start items-center rounded-none bg-transparent border-none">
-          <MenubarMenu>
-            <MenubarTrigger className="h-full my-1 flex flex-1 flex-row min-w-0 gap-2 bg-transparent hover:bg-transparent">
+        {sidebarManager.isMobile ? (
+          <div className="flex w-full items-center gap-1 px-1 py-1">
+            <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1">
               <AvatarIcon avatarURL="" size={30} />
               <div className="flex min-w-0 flex-1 flex-col text-start">
                 <TruncatedText
-                  className="text-xs font-semibold text-foreground transition-all"
-                  width={`${resizableSidebarManager.width - 120}px`}
+                  className="text-xs font-semibold text-foreground"
+                  width="100%"
                 >
                   {userManager.userData?.name ||
                     t("workspace.navigation.userName")}
                 </TruncatedText>
                 <TruncatedText
-                  className="text-xs font-light text-foreground transition-all"
-                  width={`${resizableSidebarManager.width - 120}px`}
+                  className="text-xs font-light text-foreground"
+                  width="100%"
                 >
                   {userManager.userData?.status ||
                     t("workspace.navigation.offline")}
                 </TruncatedText>
               </div>
-            </MenubarTrigger>
-          </MenubarMenu>
-          {sidebarManager.open && (
-            <MenubarMenu>
-              <MenubarTrigger
-                className="px-2 py-2 flex items-center justify-center"
-                aria-label={t("workspace.navigation.settings")}
-                title={t("workspace.navigation.settings")}
-              >
-                <SettingsIcon size={20} />
-              </MenubarTrigger>
-              <MenubarContent className="w-64 bg-popover border-border">
-                <MenubarGroup>
-                  <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 [&_svg]:size-5"
+                  aria-label={t("workspace.navigation.settings")}
+                  title={t("workspace.navigation.settings")}
+                >
+                  <SettingsIcon size={20} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top" className="w-64">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
                     {t("workspace.navigation.settings")}
-                  </MenubarLabel>
-                  <MenubarItem
-                    className="cursor-pointer"
-                    onSelect={() => openSettings("account")}
-                  >
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onSelect={() => openSettings("account")}>
                     <UserRoundIcon />
                     <span>{t("workspace.navigation.account")}</span>
-                  </MenubarItem>
-                  <MenubarItem
-                    className="cursor-pointer"
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onSelect={() => openSettings("preferences")}
                   >
                     <SlidersHorizontalIcon />
                     <span>{t("workspace.navigation.preferences")}</span>
-                  </MenubarItem>
-                </MenubarGroup>
-                <MenubarSeparator />
-                <MenubarGroup>
-                  <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
                     {t("workspace.navigation.account")}
-                  </MenubarLabel>
-                  <MenubarItem className="cursor-pointer">
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem>
                     <Repeat2Icon />
                     <span>{t("auth.switchAccount")}</span>
-                  </MenubarItem>
-                  <MenubarItem
-                    className="cursor-pointer text-destructive focus:text-destructive"
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
                     onSelect={async () => {
                       router.push(WebURLPathDictionary.home);
                       await userManager.logout();
@@ -425,13 +435,91 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   >
                     <LogOutIcon />
                     <span>{t("auth.logout")}</span>
-                  </MenubarItem>
-                </MenubarGroup>
-              </MenubarContent>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <NotificationPopover mobile />
+          </div>
+        ) : (
+          <Menubar className="w-full h-full flex flex-row justify-start items-center rounded-none bg-transparent border-none">
+            <MenubarMenu>
+              <MenubarTrigger className="h-full my-1 flex flex-1 flex-row min-w-0 gap-2 bg-transparent hover:bg-transparent">
+                <AvatarIcon avatarURL="" size={30} />
+                <div className="flex min-w-0 flex-1 flex-col text-start">
+                  <TruncatedText
+                    className="text-xs font-semibold text-foreground transition-all"
+                    width={`${resizableSidebarManager.width - 120}px`}
+                  >
+                    {userManager.userData?.name ||
+                      t("workspace.navigation.userName")}
+                  </TruncatedText>
+                  <TruncatedText
+                    className="text-xs font-light text-foreground transition-all"
+                    width={`${resizableSidebarManager.width - 120}px`}
+                  >
+                    {userManager.userData?.status ||
+                      t("workspace.navigation.offline")}
+                  </TruncatedText>
+                </div>
+              </MenubarTrigger>
             </MenubarMenu>
-          )}
-          {sidebarManager.open && <NotificationPopover />}
-        </Menubar>
+            {isSidebarExpanded && (
+              <MenubarMenu>
+                <MenubarTrigger
+                  className="px-2 py-2 flex items-center justify-center"
+                  aria-label={t("workspace.navigation.settings")}
+                  title={t("workspace.navigation.settings")}
+                >
+                  <SettingsIcon size={20} />
+                </MenubarTrigger>
+                <MenubarContent className="w-64 bg-popover border-border">
+                  <MenubarGroup>
+                    <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
+                      {t("workspace.navigation.settings")}
+                    </MenubarLabel>
+                    <MenubarItem
+                      className="cursor-pointer"
+                      onSelect={() => openSettings("account")}
+                    >
+                      <UserRoundIcon />
+                      <span>{t("workspace.navigation.account")}</span>
+                    </MenubarItem>
+                    <MenubarItem
+                      className="cursor-pointer"
+                      onSelect={() => openSettings("preferences")}
+                    >
+                      <SlidersHorizontalIcon />
+                      <span>{t("workspace.navigation.preferences")}</span>
+                    </MenubarItem>
+                  </MenubarGroup>
+                  <MenubarSeparator />
+                  <MenubarGroup>
+                    <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
+                      {t("workspace.navigation.account")}
+                    </MenubarLabel>
+                    <MenubarItem className="cursor-pointer">
+                      <Repeat2Icon />
+                      <span>{t("auth.switchAccount")}</span>
+                    </MenubarItem>
+                    <MenubarItem
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                      onSelect={async () => {
+                        router.push(WebURLPathDictionary.home);
+                        await userManager.logout();
+                        toast.success(t("workspace.notifications.logoutSuccess"));
+                      }}
+                    >
+                      <LogOutIcon />
+                      <span>{t("auth.logout")}</span>
+                    </MenubarItem>
+                  </MenubarGroup>
+                </MenubarContent>
+              </MenubarMenu>
+            )}
+            {isSidebarExpanded && <NotificationPopover />}
+          </Menubar>
+        )}
       </SidebarFooter>
     </ResizableSidebar>
   );

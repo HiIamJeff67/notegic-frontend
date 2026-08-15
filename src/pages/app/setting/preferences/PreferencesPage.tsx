@@ -16,6 +16,7 @@ import {
   ArticleParagraphSeparator,
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouterActions, useSettingsDisplay } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
@@ -37,6 +38,7 @@ const PreferencesPage = ({
   const { isReady } = useLocalPreferences();
   const router = useAppRouterActions();
   const { openSheet, closeSheet } = useSettingsDisplay();
+  const sidebarManager = useSidebar();
   const { t } = useTranslation();
   const navigationConfig = [
     ["appearance", "settingsPage.preferences.appearance", 5],
@@ -64,6 +66,9 @@ const PreferencesPage = ({
         displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
       )}
     >
+      {sidebarManager.isMobile && (
+        <SidebarTrigger className="fixed top-2 right-2 z-40" />
+      )}
       <Button
         data-density-static
         type="button"
@@ -98,7 +103,7 @@ const PreferencesPage = ({
       >
         {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
       </Button>
-      <Article className="gap-0 p-[var(--density-content-padding)] lg:gap-0">
+      <Article className="gap-0 overflow-x-hidden p-[var(--density-content-padding)] lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
           paragraphBaseHeight={12}
@@ -107,7 +112,7 @@ const PreferencesPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-[var(--density-content-padding)]">
+        <ArticleContent className="my-[var(--density-content-padding)] mx-0 pb-[calc(var(--density-content-padding)+2rem)] lg:m-[var(--density-content-padding)] [&>[role=separator]]:my-10">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}

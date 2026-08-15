@@ -51,6 +51,11 @@ export const APIURLPathDictionary = {
     bindGoogleAccount: "me/account/google",
     unbindGoogleAccount: "me/account/google",
   },
+  apiKey: {
+    create: "me/api-keys/create",
+    list: "me/api-keys/",
+    revoke: (publicId: string) => `me/api-keys/${publicId}`,
+  },
   rootShelf: {
     getMyRootShelfById: (rootShelfId: string) => `root-shelves/${rootShelfId}`,
     createRootShelf: "root-shelves",

@@ -201,7 +201,7 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
       className={
         layout === "panel"
           ? "h-full overflow-y-auto bg-muted px-8 pt-10 pb-8 [scrollbar-color:var(--muted-foreground)_var(--secondary)]!"
-          : ""
+          : "min-h-full pb-[var(--density-content-padding)]"
       }
     >
       <div className="flex w-full flex-col gap-5">

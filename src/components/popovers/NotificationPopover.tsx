@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export const NotificationPopover = () => {
+export const NotificationPopover = ({ mobile = false }: { mobile?: boolean }) => {
   const { t } = useTranslation();
   const queryClient = getQueryClient();
   const [open, setOpen] = useState(false);
@@ -132,10 +132,8 @@ export const NotificationPopover = () => {
   const unreadCount = unreadQuery.data?.data.count ?? 0;
   const totalCount = listQuery.data?.pages[0]?.data.totalCount ?? 0;
 
-  return (
-    <>
-      <MenubarMenu>
-        <Popover
+  const notificationMenu = (
+    <Popover
           open={open}
           onOpenChange={nextOpen => {
             setOpen(nextOpen);
@@ -147,18 +145,36 @@ export const NotificationPopover = () => {
           }}
         >
           <PopoverTrigger asChild>
-            <MenubarTrigger
-              className="relative px-2 py-2 flex items-center justify-center"
-              aria-label={t("workspace.navigation.notifications")}
-              title={t("workspace.navigation.notifications")}
-            >
-              <BellIcon size={20} />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] leading-4 text-destructive-foreground">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </MenubarTrigger>
+            {mobile ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="relative shrink-0 [&_svg]:size-5"
+                aria-label={t("workspace.navigation.notifications")}
+                title={t("workspace.navigation.notifications")}
+              >
+                <BellIcon size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] leading-4 text-destructive-foreground">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </Button>
+            ) : (
+              <MenubarTrigger
+                className="relative px-2 py-2 flex items-center justify-center"
+                aria-label={t("workspace.navigation.notifications")}
+                title={t("workspace.navigation.notifications")}
+              >
+                <BellIcon size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] leading-4 text-destructive-foreground">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </MenubarTrigger>
+            )}
           </PopoverTrigger>
           <PopoverContent
             align="start"
@@ -309,7 +325,11 @@ export const NotificationPopover = () => {
             </Button>
           </PopoverContent>
         </Popover>
-      </MenubarMenu>
+  );
+
+  return (
+    <>
+      {mobile ? notificationMenu : <MenubarMenu>{notificationMenu}</MenubarMenu>}
       <NotificationDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </>
   );

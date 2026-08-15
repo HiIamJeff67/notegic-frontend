@@ -17,15 +17,15 @@ const SettingMenuItem = ({
 }: SettingMenuItemProps) => {
   return (
     <div
-      className={`flex items-center justify-between py-3 ${
+      className={`flex flex-wrap items-center justify-between gap-4 py-3 ${
         !hideSeparator ? "border-b border-border/50" : ""
       }`}
     >
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <div className={`text-sm font-medium ${titleClassName}`}>{title}</div>
         <div className="text-sm text-muted-foreground mt-1">{description}</div>
       </div>
-      <div className="ml-4">{children}</div>
+      <div className="shrink-0">{children}</div>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface DatePickerProps {
+  id?: string;
   value: Date | undefined;
   onValueChange: (value: Date | undefined) => void;
   placeholder?: string;
@@ -23,6 +24,7 @@ interface DatePickerProps {
 }
 
 const DatePicker = ({
+  id,
   value,
   onValueChange,
   placeholder,
@@ -92,6 +94,7 @@ const DatePicker = ({
           <PopoverPrimitive.Trigger asChild>
             <Button
               ref={triggerRef}
+              id={id}
               type="button"
               variant="outline"
               data-empty={!value}

@@ -42,6 +42,31 @@ export const EnglishSettingsTranslation = {
         securityDescription:
           "API keys authenticate requests to the API Gateway. The full secret is shown only once and must never be stored in browser code, URLs, or local storage.",
         create: "Create API key",
+        createTitle: "Create an API key",
+        createDescription:
+          "Give the key a recognizable name and set an optional expiration date.",
+        nameLabel: "Name",
+        namePlaceholder: "e.g. Production worker",
+        expirationHint: "Leave the date empty for a key without an expiration date.",
+        listTitle: "Your API keys",
+        createdAt: "Created",
+        lastUsedAt: "Last used",
+        expiresAt: "Expires",
+        revokedAt: "Revoked",
+        never: "Never",
+        active: "Active",
+        revoked: "Revoked",
+        revoke: "Revoke",
+        revokeConfirm: "Revoke this API key? Existing integrations will stop working.",
+        secretTitle: "Save your API key secret",
+        secretDescription:
+          "This secret is shown only once. Copy it now and store it in your server or secret manager.",
+        secretWarning:
+          "Do not put this secret in browser storage, URLs, source code, logs, or chat messages.",
+        copySecret: "Copy secret",
+        createdToast: "API key created",
+        copiedToast: "API key secret copied",
+        revokedToast: "API key revoked",
         emptyTitle: "No API keys yet",
         emptyDescription:
           "Key management will be available when the ClientGateway API-key contract is deployed.",
