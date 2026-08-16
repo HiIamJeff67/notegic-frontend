@@ -18,7 +18,7 @@ const domainTutorials = [
     id: "root-shelves",
     title: "Root Shelves",
     summary:
-      "A root shelf is the top-level workspace boundary for a collection of Notezy content.",
+      "A root shelf is the top-level workspace boundary for a collection of Notegic content.",
     structure: "Root shelf → sub shelves → Block Packs → blocks",
     details:
       "Use a root shelf when a team, project, or personal area needs its own members, ownership, and permissions. Keep broad access decisions at this level so every nested resource inherits a clear context.",
@@ -30,7 +30,7 @@ const domainTutorials = [
       "Sub shelves divide a root shelf into smaller, navigable areas without creating another top-level workspace.",
     structure: "Root shelf → sub shelf → ordered items",
     details:
-      "Use sub shelves for projects, subjects, or stages of work. Their ordering and traversal endpoints let a client render the same hierarchy users see in Notezy.",
+      "Use sub shelves for projects, subjects, or stages of work. Their ordering and traversal endpoints let a client render the same hierarchy users see in Notegic.",
   },
   {
     id: "materials",
@@ -101,7 +101,7 @@ const navigationItems = [
   {
     id: "tutorial",
     title: "Tutorial overview",
-    description: "API-key integrations and the Notezy resource model.",
+    description: "API-key integrations and the Notegic resource model.",
     weight: 5,
   },
   {
@@ -117,8 +117,8 @@ const navigationItems = [
     weight: 4,
   },
   {
-    id: "notezy-model",
-    title: "Notezy structure",
+    id: "notegic-model",
+    title: "Notegic structure",
     description: "The resource hierarchy at a glance.",
     weight: 5,
   },
@@ -171,19 +171,19 @@ const TutorialPage = () => {
             <ArticleParagraph id="tutorial">
               <ArticleParagraphHeader>
                 <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
-                  NOTEZY TUTORIAL
+                  NOTEGIC TUTORIAL
                 </p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight">
                   {title}
                 </h1>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  A practical guide to API-key integrations and the Notezy
+                  A practical guide to API-key integrations and the Notegic
                   resource model.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
                 <p>
-                  Start with the API key workflow, then use the Notezy structure
+                  Start with the API key workflow, then use the Notegic structure
                   guide to understand which resource family your integration
                   should call.
                 </p>
@@ -226,7 +226,7 @@ const TutorialPage = () => {
                 </ol>
                 <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
                   <code>
-                    {"curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notezy.app/api/development/v1/root-shelves"}
+                    {"curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.app/api/development/v1/root-shelves"}
                   </code>
                 </pre>
               </ArticleParagraphContent>
@@ -265,13 +265,13 @@ const TutorialPage = () => {
 
             <ArticleParagraphSeparator />
 
-            <ArticleParagraph id="notezy-model">
+            <ArticleParagraph id="notegic-model">
               <ArticleParagraphHeader>
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  Understand the Notezy structure
+                  Understand the Notegic structure
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Notezy separates organization, content, and execution so
+                  Notegic separates organization, content, and execution so
                   integrations can request only the resource family they need.
                 </p>
               </ArticleParagraphHeader>
@@ -349,7 +349,7 @@ const TutorialPage = () => {
                   only the data your own client needs.
                 </p>
                 <p>
-                  The Notezy web app uses ClientGateway with HttpOnly JWT
+                  The Notegic web app uses ClientGateway with HttpOnly JWT
                   cookies. Do not add an API key to browser storage, a URL,
                   frontend environment variables, or a WebSocket frame.
                 </p>

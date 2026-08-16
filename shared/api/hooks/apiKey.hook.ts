@@ -2,7 +2,7 @@ import {
   getClientMutationHeaders,
   getClientRequestHeaders,
 } from "@shared/api/clientHeaders";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
   CreateMyAPIKeyResponse,
@@ -36,7 +36,7 @@ const persistCSRFToken = (response: {
 
 const apiKeyRetryPolicy = (failureCount: number, error: Error) =>
   failureCount < 1 &&
-  error instanceof NotezyAPIError &&
+  error instanceof NotegicAPIError &&
   error.unWrap.retryable === true;
 
 export const useMyAPIKeys = (enabled = true) =>

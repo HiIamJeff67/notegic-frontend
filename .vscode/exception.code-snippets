@@ -7,7 +7,7 @@
       "\tExceptionPrefix,",
       "\tExceptionReasonDictionary,",
       "\tExceptionSubDomainCodeShiftAmount,",
-      "\tNotezyException",
+      "\tNotegicException",
       "} from \"@shared/api/exceptions\";",
       "import { StatusCodes } from \"http-status-codes\";",
       "",
@@ -20,7 +20,7 @@
       "\tstatic Prefix: ExceptionPrefix = ExceptionPrefix_${1:_DomainName_};",
       "}"
     ],
-    "description": "Create a basic structure with serveral lines of codes for the exception followed the roles of Notezy API"
+    "description": "Create a basic structure with serveral lines of codes for the exception followed the roles of Notegic API"
   },
   "Generate Some Codes to Start Building Client Exceptions": {
     "prefix": ["clientexception", "clientexcep", "cliexcep"],
@@ -30,7 +30,7 @@
       "\tExceptionPrefix,",
       "\tExceptionReasonDictionary,",
       "\tExceptionSubDomainCodeShiftAmount,",
-      "\tNotezyException",
+      "\tNotegicException",
       "} from \"@shared/api/exceptions\";",
       "import { StatusCodes } from \"http-status-codes\";",
       "",
@@ -43,6 +43,6 @@
       "\tstatic Prefix: ExceptionPrefix = ClientExceptionPrefix_${1:_DomainName_};",
       "}"
     ],
-    "description": "Create a basic structure with serveral lines of codes for the client version exception followed the roles of Notezy API"
+    "description": "Create a basic structure with serveral lines of codes for the client version exception followed the roles of Notegic API"
   }
 }

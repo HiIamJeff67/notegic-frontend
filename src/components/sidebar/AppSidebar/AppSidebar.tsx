@@ -369,7 +369,15 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
         {sidebarManager.isMobile ? (
           <div className="flex w-full items-center gap-1 px-1 py-1">
             <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1">
-              <AvatarIcon avatarURL="" size={30} />
+              <AvatarIcon
+                avatarURL=""
+                fallbackText={
+                  userManager.userData?.displayName ||
+                  userManager.userData?.name ||
+                  "U"
+                }
+                size={30}
+              />
               <div className="flex min-w-0 flex-1 flex-col text-start">
                 <TruncatedText
                   className="text-xs font-semibold text-foreground"
@@ -445,7 +453,15 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
           <Menubar className="w-full h-full flex flex-row justify-start items-center rounded-none bg-transparent border-none">
             <MenubarMenu>
               <MenubarTrigger className="h-full my-1 flex flex-1 flex-row min-w-0 gap-2 bg-transparent hover:bg-transparent">
-                <AvatarIcon avatarURL="" size={30} />
+                <AvatarIcon
+                  avatarURL=""
+                  fallbackText={
+                    userManager.userData?.displayName ||
+                    userManager.userData?.name ||
+                    "U"
+                  }
+                  size={30}
+                />
                 <div className="flex min-w-0 flex-1 flex-col text-start">
                   <TruncatedText
                     className="text-xs font-semibold text-foreground transition-all"

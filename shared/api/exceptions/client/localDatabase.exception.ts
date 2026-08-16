@@ -3,7 +3,7 @@ import {
   ExceptionPrefix,
   ExceptionReasonDictionary,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 
@@ -16,8 +16,8 @@ export class LocalDatabaseClientExceptions {
   static BaseCode: ExceptionCode = ClientExceptionBaseCode_LocalDatabase;
   static Prefix: ExceptionPrefix = ClientExceptionPrefix_LocalDatabase;
 
-  static LocalDatabaseUnavailable = (): NotezyException => {
-    return new NotezyException({
+  static LocalDatabaseUnavailable = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason:
@@ -27,8 +27,8 @@ export class LocalDatabaseClientExceptions {
     });
   };
 
-  static InvalidLoggedInUser = (): NotezyException => {
-    return new NotezyException({
+  static InvalidLoggedInUser = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason:

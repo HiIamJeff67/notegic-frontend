@@ -1,10 +1,10 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
-  NotezyAPIError,
+  NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
@@ -85,14 +85,14 @@ export const useGetMyStationById = (
     request?: GetMyStationByIdRequest
   ): Promise<GetMyStationByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyStationById(request);
@@ -105,8 +105,8 @@ export const useGetMyStationById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const station =
           await StationLocalSimulator.simulateGetMyStationById(request);
@@ -162,14 +162,14 @@ export const useGetAllMyStations = (
     request?: GetAllMyStationsRequest
   ): Promise<GetAllMyStationsResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMyStations(request);
@@ -182,8 +182,8 @@ export const useGetAllMyStations = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const stations =
           await StationLocalSimulator.simulateGetAllMyStations(request);
@@ -231,7 +231,7 @@ export const useCreateStation = () => {
 
   const perform = async (request: CreateStationRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnCreateStation(request);
   };
@@ -258,7 +258,7 @@ export const useCreateStation = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -276,7 +276,7 @@ export const useCreateStations = () => {
 
   const perform = async (request: CreateStationsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnCreateStations(request);
   };
@@ -303,7 +303,7 @@ export const useCreateStations = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -321,7 +321,7 @@ export const useUpdateMyStationById = () => {
 
   const perform = async (request: UpdateMyStationByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnUpdateMyStationById(request);
   };
@@ -350,7 +350,7 @@ export const useUpdateMyStationById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -368,7 +368,7 @@ export const useUpdateMyStationsByIds = () => {
 
   const perform = async (request: UpdateMyStationsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnUpdateMyStationsByIds(request);
   };
@@ -402,7 +402,7 @@ export const useUpdateMyStationsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -420,7 +420,7 @@ export const useRestoreMyStationById = () => {
 
   const perform = async (request: RestoreMyStationByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnRestoreMyStationById(request);
   };
@@ -452,7 +452,7 @@ export const useRestoreMyStationById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -470,7 +470,7 @@ export const useRestoreMyStationsByIds = () => {
 
   const perform = async (request: RestoreMyStationsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnRestoreMyStationsByIds(request);
   };
@@ -504,7 +504,7 @@ export const useRestoreMyStationsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -522,7 +522,7 @@ export const useDeleteMyStationById = () => {
 
   const perform = async (request: DeleteMyStationByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnDeleteMyStationById(request);
   };
@@ -551,7 +551,7 @@ export const useDeleteMyStationById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -569,7 +569,7 @@ export const useDeleteMyStationsByIds = () => {
 
   const perform = async (request: DeleteMyStationsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnDeleteMyStationsByIds(request);
   };
@@ -603,7 +603,7 @@ export const useDeleteMyStationsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -621,7 +621,7 @@ export const useHardDeleteMyStationById = () => {
 
   const perform = async (request: HardDeleteMyStationByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnHardDeleteMyStationById(request);
   };
@@ -653,7 +653,7 @@ export const useHardDeleteMyStationById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -671,7 +671,7 @@ export const useHardDeleteMyStationsByIds = () => {
 
   const perform = async (request: HardDeleteMyStationsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnHardDeleteMyStationsByIds(request);
   };
@@ -705,7 +705,7 @@ export const useHardDeleteMyStationsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {

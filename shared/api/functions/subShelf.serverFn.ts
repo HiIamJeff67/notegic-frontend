@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelfByRootShelfIdResponse,
@@ -70,8 +70,8 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMySubShelfByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -114,8 +114,8 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMySubShelvesByPrevSubShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -159,8 +159,8 @@ export const GetAllMySubShelvesByRootShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetAllMySubShelvesByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -206,8 +206,8 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -250,8 +250,8 @@ export const CreateSubShelfByRootShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as CreateSubShelfByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -296,8 +296,8 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
       const formattedResponse =
         (await response.json()) as CreateSubShelvesByRootShelfIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -335,8 +335,8 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UpdateMySubShelfByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -378,8 +378,8 @@ export const UpdateMySubShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as UpdateMySubShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -418,8 +418,8 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as MoveMySubShelfResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -461,8 +461,8 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as MoveMySubShelvesByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -505,8 +505,8 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as MoveMySubShelvesByRootShelfIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -547,8 +547,8 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMySubShelfByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -591,8 +591,8 @@ export const RestoreMySubShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as RestoreMySubShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -630,8 +630,8 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as DeleteMySubShelfByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -673,8 +673,8 @@ export const DeleteMySubShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as DeleteMySubShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

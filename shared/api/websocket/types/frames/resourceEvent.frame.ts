@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -52,14 +52,14 @@ export const parseRealtimeResourceEventFrame = (
     (frame.targetUserPublicId !== undefined &&
       typeof frame.targetUserPublicId !== "string")
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   if (
     frame.permission !== undefined &&
     (typeof frame.permission !== "string" || frame.permission.length === 0)
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

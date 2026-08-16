@@ -5,11 +5,11 @@ import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
-import { Image } from "@unpic/react";
 import { format } from "date-fns";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import AvatarIcon from "@/components/icons/AvatarIcon";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
@@ -95,10 +95,8 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
     [coverBackgroundURL]
   );
 
-  const avatarSrc = useMemo(
-    () => avatarURL || `${import.meta.env.BASE_URL}avatars/userAvatar1.png`,
-    [avatarURL]
-  );
+  const avatarFallbackText =
+    userManager.userData?.displayName || userManager.userData?.name || "U";
 
   const genderOptions = useMemo(
     () =>
@@ -204,13 +202,11 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   setEditingImageURL(avatarURL ?? "");
                 }}
               >
-                <Image
-                  src={avatarSrc}
+                <AvatarIcon
+                  avatarURL={avatarURL ?? ""}
                   alt={t("settingsPage.account.personal.avatar")}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover bg-muted"
-                  loading="lazy"
+                  fallbackText={avatarFallbackText}
+                  size={128}
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition">
                   <span className="text-white text-center font-semibold text-sm select-none">

@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateRoutineTagRequest,
   CreateRoutineTagResponse,
@@ -77,8 +77,8 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyRoutineTagByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -122,8 +122,8 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetAllMyRoutineTagsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -163,8 +163,8 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateRoutineTagResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -204,8 +204,8 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateRoutineTagsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -250,8 +250,8 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyRoutineTagByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -295,8 +295,8 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyRoutineTagsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -342,8 +342,8 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutineTagByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -389,8 +389,8 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutineTagsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -36,7 +36,7 @@ export const parseRealtimeRoutineTaskLifecycleFrame = (
     frame.attempt < 1 ||
     !isDateString(frame.occurredAt)
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

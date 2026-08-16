@@ -3,7 +3,7 @@ import {
   ExceptionPrefix,
   ExceptionReasonDictionary,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 
@@ -17,8 +17,8 @@ export class FetchClientExceptions {
   static Prefix: ExceptionPrefix = ClientExceptionPrefix_Fetch;
 
   // an unfallbackable network error
-  static NetworkRequired = (): NotezyException => {
-    return new NotezyException({
+  static NetworkRequired = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.fetch.networkRequired,
@@ -28,8 +28,8 @@ export class FetchClientExceptions {
   };
 
   // a fallbackable network error which can be handled with some other logic
-  static MissingNetwork = (): NotezyException => {
-    return new NotezyException({
+  static MissingNetwork = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.fetch.missingNetwork,
@@ -39,8 +39,8 @@ export class FetchClientExceptions {
   };
 
   // an undefined error enforce the client to accept and handle
-  static UndefinedError = (): NotezyException => {
-    return new NotezyException({
+  static UndefinedError = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 3,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.fetch.undefinedError,

@@ -1,6 +1,6 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -96,16 +96,16 @@ export const queryFnGetMySubShelfById = async (
   } catch (error) {
     console.error("error happening in queryFnGetMySubShelfById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -124,16 +124,16 @@ export const queryFnGetMySubShelvesByPrevSubShelfId = async (
   } catch (error) {
     console.error("error happening in queryFnGetMySubShelvesByPrevSubShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -152,16 +152,16 @@ export const queryFnGetAllMySubShelvesByRootShelfId = async (
   } catch (error) {
     console.error("error happening in queryFnGetAllMySubShelvesByRootShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -182,16 +182,16 @@ export const queryFnGetMySubShelvesAndItemsByPrevSubShelfId = async (
   } catch (error) {
     console.error("error happening in queryFnGetMySubShelvesAndItemsByPrevSubShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -210,16 +210,16 @@ export const mutationFnCreateSubShelfByRootShelfId = async (
   } catch (error) {
     console.error("error happening in mutationFnCreateSubShelfByRootShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -238,16 +238,16 @@ export const mutationFnCreateSubShelvesByRootShelfIds = async (
   } catch (error) {
     console.error("error happening in mutationFnCreateSubShelvesByRootShelfIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -265,16 +265,16 @@ export const mutationFnUpdateMySubShelfById = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMySubShelfById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -293,16 +293,16 @@ export const mutationFnUpdateMySubShelvesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMySubShelvesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -318,16 +318,16 @@ export const mutationFnMoveMySubShelf = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMySubShelf", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -343,16 +343,16 @@ export const mutationFnMoveMySubShelvesByRootShelfId = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMySubShelvesByRootShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -370,16 +370,16 @@ export const mutationFnMoveMySubShelvesByRootShelfIds = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMySubShelvesByRootShelfIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -397,16 +397,16 @@ export const mutationFnRestoreMySubShelfById = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMySubShelfById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -425,16 +425,16 @@ export const mutationFnRestoreMySubShelvesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMySubShelvesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -452,16 +452,16 @@ export const mutationFnDeleteMySubShelfById = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMySubShelfById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -480,16 +480,16 @@ export const mutationFnDeleteMySubShelvesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMySubShelvesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }

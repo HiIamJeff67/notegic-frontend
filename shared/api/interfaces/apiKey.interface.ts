@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { z } from "zod";
 
@@ -20,7 +20,7 @@ export const APIKeySummarySchema = z.object({
 });
 export type APIKeySummary = z.infer<typeof APIKeySummarySchema>;
 
-export const CreateMyAPIKeyRequestSchema = NotezyRequestSchema.extend({
+export const CreateMyAPIKeyRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
   body: z.object({
     name: z.string().trim().min(1).max(64),
@@ -31,7 +31,7 @@ export type CreateMyAPIKeyRequest = z.infer<
   typeof CreateMyAPIKeyRequestSchema
 >;
 
-export const CreateMyAPIKeyResponseSchema = NotezyResponseSchema.extend({
+export const CreateMyAPIKeyResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     publicId: z.uuid(),
     name: z.string().min(1),
@@ -45,21 +45,21 @@ export type CreateMyAPIKeyResponse = z.infer<
   typeof CreateMyAPIKeyResponseSchema
 >;
 
-export const ListMyAPIKeysRequestSchema = NotezyRequestSchema.extend({
+export const ListMyAPIKeysRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
 });
 export type ListMyAPIKeysRequest = z.infer<
   typeof ListMyAPIKeysRequestSchema
 >;
 
-export const ListMyAPIKeysResponseSchema = NotezyResponseSchema.extend({
+export const ListMyAPIKeysResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ items: z.array(APIKeySummarySchema) }),
 });
 export type ListMyAPIKeysResponse = z.infer<
   typeof ListMyAPIKeysResponseSchema
 >;
 
-export const RevokeMyAPIKeyRequestSchema = NotezyRequestSchema.extend({
+export const RevokeMyAPIKeyRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
   param: z.object({ publicId: z.uuid() }),
 });
@@ -67,7 +67,7 @@ export type RevokeMyAPIKeyRequest = z.infer<
   typeof RevokeMyAPIKeyRequestSchema
 >;
 
-export const RevokeMyAPIKeyResponseSchema = NotezyResponseSchema.extend({
+export const RevokeMyAPIKeyResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ revokedAt: z.coerce.date() }),
 });
 export type RevokeMyAPIKeyResponse = z.infer<

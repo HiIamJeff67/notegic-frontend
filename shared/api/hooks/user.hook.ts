@@ -1,4 +1,4 @@
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   GetMeRequest,
@@ -36,7 +36,7 @@ export const useGetUserData = (
   ): Promise<GetUserDataResponse> => {
     try {
       if (!request) {
-        throw new NotezyValidationError(
+        throw new NotegicValidationError(
           ValidationClientException.ReceivedUndefinedRequest()
         );
       }
@@ -87,7 +87,7 @@ export const useGetMe = (
   const perform = async (request?: GetMeRequest): Promise<GetMeResponse> => {
     try {
       if (!request) {
-        throw new NotezyValidationError(
+        throw new NotegicValidationError(
           ValidationClientException.ReceivedUndefinedRequest()
         );
       }

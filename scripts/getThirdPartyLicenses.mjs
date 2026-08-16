@@ -7,7 +7,7 @@ const INPUT_JSON = path.resolve("LICENSES/third_party_licenses.json");
 const OUT_DIR = path.resolve("LICENSES/third_party");
 const NOTICES_PATH = path.resolve("LICENSES/THIRD_PARTY_NOTICES.txt");
 
-const INTERNAL_PREFIXES = ["@notezy/"];
+const INTERNAL_PREFIXES = ["@notegic/"];
 
 const CANDIDATE_NAMES = [
   "LICENSE",
@@ -100,7 +100,7 @@ async function main() {
 
   const lines = [];
   const header = [
-    "Third-Party Notices for Notezy Frontend",
+    "Third-Party Notices for Notegic Frontend",
     "This product includes software developed by third parties.",
     "The full license texts are copied under the LICENSES/third_party directory where available.",
     "For licenses requiring NOTICE, any available NOTICE/README has also been copied if present.",

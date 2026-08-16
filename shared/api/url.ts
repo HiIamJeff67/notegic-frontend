@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "./exceptions";
+import { NotegicAPIError } from "./exceptions";
 import { RealtimeError } from "./exceptions/client/realtime.exception";
 
 const API_VERSION = "v1";
@@ -16,13 +16,6 @@ export const withoutPathParams = <T extends Record<string, unknown>>(
 };
 
 export const APIURLPathDictionary = {
-  static: {
-    globalImages: {
-      avatars: {
-        first: "static/global-images/avatars/1",
-      },
-    },
-  },
   auth: {
     register: "auth/register",
     registerViaGoogle: "auth/register-via-google",
@@ -277,7 +270,7 @@ export const APIURLPathDictionary = {
 
 export const getRealtimeWebSocketURL = (endpoint?: string): string => {
   const url = import.meta.env.VITE_REALTIME_WEBSOCKET_URL;
-  if (!url) throw new NotezyAPIError(RealtimeError.MissingWebSocketURL());
+  if (!url) throw new NotegicAPIError(RealtimeError.MissingWebSocketURL());
   const basePath = endpoint ?? CurrentRealtimeBaseURL;
   return `${url.replace(/\/+$/, "")}/${basePath.replace(/^\/+/, "")}`;
 };

@@ -455,7 +455,7 @@ const BlockPackEditorContent = ({
           )}
           style={
             {
-              "--notezy-editor-font-size": `${preferences.editorFontSize}px`,
+              "--notegic-editor-font-size": `${preferences.editorFontSize}px`,
             } as CSSProperties
           }
         >
@@ -477,7 +477,7 @@ const BlockPackEditorContent = ({
               sideMenu={false}
               spellCheck={preferences.spellcheck}
               className={cn(
-                "notezy-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notezy-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!text-[length:var(--notezy-editor-font-size)] [&_.bn-block-content]:py-[3px]",
+                "notegic-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-block-content]:py-[3px]",
                 !preferences.lineWrap &&
                   "[&_.bn-editor]:overflow-x-auto [&_.bn-inline-content]:whitespace-nowrap"
               )}

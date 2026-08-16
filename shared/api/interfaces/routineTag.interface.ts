@@ -1,13 +1,13 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllSupportedIcons } from "@shared/api/interfaces/enums";
 import { z } from "zod";
 
 /* ============================== GetMyRoutineTagById ============================== */
 
-export const GetMyRoutineTagByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMyRoutineTagByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -24,7 +24,7 @@ export type GetMyRoutineTagByIdRequest = z.input<
   typeof GetMyRoutineTagByIdRequestSchema
 >;
 
-export const GetMyRoutineTagByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMyRoutineTagByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     name: z.string(),
@@ -42,7 +42,7 @@ export type GetMyRoutineTagByIdResponse = z.infer<
 
 /* ============================== GetAllMyRoutineTags ============================== */
 
-export const GetAllMyRoutineTagsRequestSchema = NotezyRequestSchema.extend({
+export const GetAllMyRoutineTagsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -61,7 +61,7 @@ export type GetAllMyRoutineTagsRequest = z.input<
   typeof GetAllMyRoutineTagsRequestSchema
 >;
 
-export const GetAllMyRoutineTagsResponseSchema = NotezyResponseSchema.extend({
+export const GetAllMyRoutineTagsResponseSchema = NotegicResponseSchema.extend({
   data: z.array(
     z.object({
       id: z.uuidv4(),
@@ -81,7 +81,7 @@ export type GetAllMyRoutineTagsResponse = z.infer<
 
 /* ============================== CreateRoutineTag ============================== */
 
-export const CreateRoutineTagRequestSchema = NotezyRequestSchema.extend({
+export const CreateRoutineTagRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -100,7 +100,7 @@ export type CreateRoutineTagRequest = z.infer<
   typeof CreateRoutineTagRequestSchema
 >;
 
-export const CreateRoutineTagResponseSchema = NotezyResponseSchema.extend({
+export const CreateRoutineTagResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     createdAt: z.coerce.date(),
@@ -114,7 +114,7 @@ export type CreateRoutineTagResponse = z.infer<
 
 /* ============================== CreateRoutineTags ============================== */
 
-export const CreateRoutineTagsRequestSchema = NotezyRequestSchema.extend({
+export const CreateRoutineTagsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -137,7 +137,7 @@ export type CreateRoutineTagsRequest = z.infer<
   typeof CreateRoutineTagsRequestSchema
 >;
 
-export const CreateRoutineTagsResponseSchema = NotezyResponseSchema.extend({
+export const CreateRoutineTagsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     ids: z.array(z.uuidv4()),
     createdAt: z.coerce.date(),
@@ -151,7 +151,7 @@ export type CreateRoutineTagsResponse = z.infer<
 
 /* ============================== UpdateMyRoutineTagById ============================== */
 
-export const UpdateMyRoutineTagByIdRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyRoutineTagByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -175,7 +175,7 @@ export type UpdateMyRoutineTagByIdRequest = z.infer<
   typeof UpdateMyRoutineTagByIdRequestSchema
 >;
 
-export const UpdateMyRoutineTagByIdResponseSchema = NotezyResponseSchema.extend(
+export const UpdateMyRoutineTagByIdResponseSchema = NotegicResponseSchema.extend(
   {
     data: z.object({
       updatedAt: z.coerce.date(),
@@ -190,7 +190,7 @@ export type UpdateMyRoutineTagByIdResponse = z.infer<
 
 /* ============================== UpdateMyRoutineTagsByIds ============================== */
 
-export const UpdateMyRoutineTagsByIdsRequestSchema = NotezyRequestSchema.extend(
+export const UpdateMyRoutineTagsByIdsRequestSchema = NotegicRequestSchema.extend(
   {
     header: z
       .object({
@@ -221,7 +221,7 @@ export type UpdateMyRoutineTagsByIdsRequest = z.infer<
 >;
 
 export const UpdateMyRoutineTagsByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -235,7 +235,7 @@ export type UpdateMyRoutineTagsByIdsResponse = z.infer<
 /* ============================== HardDeleteMyRoutineTagById ============================== */
 
 export const HardDeleteMyRoutineTagByIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -252,7 +252,7 @@ export type HardDeleteMyRoutineTagByIdRequest = z.infer<
 >;
 
 export const HardDeleteMyRoutineTagByIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),
@@ -266,7 +266,7 @@ export type HardDeleteMyRoutineTagByIdResponse = z.infer<
 /* ============================== HardDeleteMyRoutineTagsByIds ============================== */
 
 export const HardDeleteMyRoutineTagsByIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -283,7 +283,7 @@ export type HardDeleteMyRoutineTagsByIdsRequest = z.infer<
 >;
 
 export const HardDeleteMyRoutineTagsByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),

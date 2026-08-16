@@ -97,8 +97,8 @@ export const TraditionalChineseSettingsTranslation = {
         premium: "Premium",
         ultimate: "Ultimate",
         enterprise: "企業版",
-        monthlyPlan: "Notezy {{plan}}月繳方案",
-        yearlyPlan: "Notezy {{plan}}年繳方案",
+        monthlyPlan: "Notegic {{plan}}月繳方案",
+        yearlyPlan: "Notegic {{plan}}年繳方案",
         paymentNotice:
           "目前已完成介面與後端資料模型對齊；付款、訂閱建立與方案變更 API 會在外部付款流程部署後接上。",
         rootShelves: "根層架",
@@ -254,7 +254,7 @@ export const TraditionalChineseSettingsTranslation = {
         lineWrapDescription: "讓長句自動折行，不需要水平捲動即可閱讀完整段落。",
         spellcheck: "拼字檢查",
         spellcheckDescription:
-          "使用瀏覽器本機拼字檢查能力輔助輸入，不會把內容送到 Notezy API。",
+          "使用瀏覽器本機拼字檢查能力輔助輸入，不會把內容送到 Notegic API。",
         quickInsert: "快速插入列",
         quickInsertDescription:
           "在編輯時顯示常用插入工具，方便快速加入區塊、routine 或素材。",
@@ -282,7 +282,7 @@ export const TraditionalChineseSettingsTranslation = {
         backgroundImages: "背景圖片",
         localDatabase: "本機資料庫",
         localDatabaseDescription:
-          "準備用來控制 Notezy 是否在瀏覽器本機保存工作資料。",
+          "準備用來控制 Notegic 是否在瀏覽器本機保存工作資料。",
         offlineQueue: "離線佇列",
         offlineQueueDescription:
           "準備用來控制離線操作是否先排入本機佇列，等連線恢復後再同步。",
@@ -315,7 +315,7 @@ export const TraditionalChineseSettingsTranslation = {
         title: "隱私",
         description: "控制起始畫面、預覽資訊與本機剪貼簿保護。",
         startSurface: "起始畫面",
-        startSurfaceDescription: "決定開啟 Notezy 時直接進入哪個工作區。",
+        startSurfaceDescription: "決定開啟 Notegic 時直接進入哪個工作區。",
         dashboard: "儀表板",
         routines: "流程",
         privatePreviews: "隱藏預覽標題",
@@ -330,7 +330,7 @@ export const TraditionalChineseSettingsTranslation = {
         regexInvalid: "Regex 格式無效。",
         regexExists: "Regex 已存在。",
         regex: "Regex",
-        regexPlaceholder: "例如：NOTEZY_[A-Z0-9]{16}",
+        regexPlaceholder: "例如：NOTEGIC_[A-Z0-9]{16}",
         noPatterns: "尚未加入自訂 regex。",
       },
       browserPermissions: {
@@ -338,7 +338,7 @@ export const TraditionalChineseSettingsTranslation = {
         description: "查看並重新授權此瀏覽器提供的能力。",
         status: "網站權限狀態",
         statusDescription:
-          "這裡只顯示 Notezy 目前較相關、且瀏覽器允許查詢的權限。",
+          "這裡只顯示 Notegic 目前較相關、且瀏覽器允許查詢的權限。",
         refresh: "重新檢查",
         notifications: "桌面通知",
         notificationsDescription: "用於桌面通知與未來重要狀態提醒。",
@@ -348,7 +348,7 @@ export const TraditionalChineseSettingsTranslation = {
         clipboardWriteDescription: "用於複製偏好、識別碼或產生的內容。",
         persistentStorage: "持久儲存空間",
         persistentStorageDescription:
-          "請求瀏覽器保留 Notezy 的本機資料；是否核准由瀏覽器決定，通常不會跳出確認視窗。",
+          "請求瀏覽器保留 Notegic 的本機資料；是否核准由瀏覽器決定，通常不會跳出確認視窗。",
         geolocation: "地理位置",
         geolocationDescription: "保留給需要位置脈絡的工作區功能。",
         requestPermission: "要求授權",
@@ -373,7 +373,7 @@ export const TraditionalChineseSettingsTranslation = {
         description: "決定桌面、同步與 routine 提醒的傳送方式。",
         desktop: "桌面通知",
         desktopDescription:
-          "允許 Notezy 使用瀏覽器桌面通知提醒你本機事件與工作狀態。",
+          "允許 Notegic 使用瀏覽器桌面通知提醒你本機事件與工作狀態。",
         routine: "Routine 提醒",
         routineDescription:
           "在 routine 接近時間時發出提醒，避免正在工作的流程被遺漏。",
@@ -392,7 +392,7 @@ export const TraditionalChineseSettingsTranslation = {
         title: "關於",
         description: "查看版本資訊、匯出本機偏好或重設設定。",
         version: "版本",
-        versionDescription: "目前安裝的 Notezy 前端版本。",
+        versionDescription: "目前安裝的 Notegic 前端版本。",
         exportPreferences: "偏好匯出",
         exportPreferencesDescription:
           "把目前本機偏好複製成 JSON，方便你之後手動備份或回報問題。",

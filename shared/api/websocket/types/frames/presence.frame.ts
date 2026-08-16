@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
@@ -36,7 +36,7 @@ export const parseRealtimePresenceFrame = (
     frame.participant === null ||
     Array.isArray(frame.participant)
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   const participant = frame.participant as Record<string, unknown>;
@@ -48,7 +48,7 @@ export const parseRealtimePresenceFrame = (
     !Number.isInteger(participant.connectionCount) ||
     participant.connectionCount < 0
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

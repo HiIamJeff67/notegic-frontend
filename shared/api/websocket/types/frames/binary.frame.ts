@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -35,20 +35,20 @@ export const parseRealtimeBinaryFrame = (
   data: ArrayBuffer
 ): RealtimeBinaryFrame => {
   if (data.byteLength < REALTIME_BINARY_HEADER_BYTES) {
-    throw new NotezyAPIError(RealtimeError.InvalidBinaryFrame());
+    throw new NotegicAPIError(RealtimeError.InvalidBinaryFrame());
   }
 
   const view = new DataView(data);
   const version = view.getUint8(0);
   const type = view.getUint8(1);
   if (version !== RealtimeProtocolVersion) {
-    throw new NotezyAPIError(RealtimeError.UnsupportedProtocolVersion());
+    throw new NotegicAPIError(RealtimeError.UnsupportedProtocolVersion());
   }
   if (
     type !== RealtimeBinaryFrameType.YjsDocument &&
     type !== RealtimeBinaryFrameType.Awareness
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidBinaryFrame());
+    throw new NotegicAPIError(RealtimeError.InvalidBinaryFrame());
   }
 
   return {

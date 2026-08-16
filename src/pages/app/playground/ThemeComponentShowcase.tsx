@@ -435,7 +435,7 @@ function InputsSection() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "theme@notezy.app",
+      email: "theme@notegic.app",
       mode: "balanced",
     },
   });
@@ -456,7 +456,7 @@ function InputsSection() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="theme@notezy.app" {...field} />
+                    <Input placeholder="theme@notegic.app" {...field} />
                   </FormControl>
                   <FormDescription>
                     Used to preview label, description, and input tokens.

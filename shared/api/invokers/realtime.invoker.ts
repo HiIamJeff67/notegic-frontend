@@ -1,6 +1,6 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -40,13 +40,13 @@ export const mutationFnCreateMyRealtimeConnectionTicket = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       throw error;
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -69,13 +69,13 @@ export const mutationFnCreateMyBlockPackChannelTicket = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       throw error;
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -95,13 +95,13 @@ export const queryFnGetBlockPackParticipants = async (
   } catch (error) {
     console.error("error happening in queryFnGetBlockPackParticipants", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       throw error;
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;

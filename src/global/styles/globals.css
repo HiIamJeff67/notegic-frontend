@@ -156,27 +156,27 @@ html[data-reduce-motion="true"] *::after {
   transition-duration: 1ms !important;
 }
 
-html[data-density] .notezy-block-editor .bn-extend-button[data-slot="button"],
-.notezy-block-editor .bn-extend-button[data-slot="button"] {
+html[data-density] .notegic-block-editor .bn-extend-button[data-slot="button"],
+.notegic-block-editor .bn-extend-button[data-slot="button"] {
   min-height: 0;
   padding: 0;
   padding-inline: 0;
 }
 
-html[data-density] .notezy-block-editor .bn-extend-button-add-remove-columns,
-.notezy-block-editor .bn-extend-button-add-remove-columns {
+html[data-density] .notegic-block-editor .bn-extend-button-add-remove-columns,
+.notegic-block-editor .bn-extend-button-add-remove-columns {
   height: 100%;
   width: 14px;
 }
 
-html[data-density] .notezy-block-editor .bn-extend-button-add-remove-rows,
-.notezy-block-editor .bn-extend-button-add-remove-rows {
+html[data-density] .notegic-block-editor .bn-extend-button-add-remove-rows,
+.notegic-block-editor .bn-extend-button-add-remove-rows {
   height: 14px;
   width: 100%;
 }
 
-html[data-density] .notezy-block-editor .bn-table-cell-handle,
-.notezy-block-editor .bn-table-cell-handle {
+html[data-density] .notegic-block-editor .bn-table-cell-handle,
+.notegic-block-editor .bn-table-cell-handle {
   min-height: 0;
   height: 10px;
   padding: 0 3px;

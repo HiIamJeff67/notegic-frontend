@@ -1,4 +1,4 @@
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   GetMyAccountRequest,
@@ -34,7 +34,7 @@ export const useGetMyAccount = (
   ): Promise<GetMyAccountResponse> => {
     try {
       if (!request) {
-        throw new NotezyValidationError(
+        throw new NotegicValidationError(
           ValidationClientException.ReceivedUndefinedRequest()
         );
       }

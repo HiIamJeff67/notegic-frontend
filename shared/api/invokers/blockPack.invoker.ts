@@ -1,6 +1,6 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -96,16 +96,16 @@ export const queryFnGetMyBlockPackById = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlockPackById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -125,16 +125,16 @@ export const queryFnGetMyBlockPackAndItsParentById = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlockPackAndItsParentById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -154,16 +154,16 @@ export const queryFnGetMyBlockPacksByParentSubShelfId = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlockPacksByParentSubShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -183,16 +183,16 @@ export const queryFnGetAllMyBlockPacksByRootShelfId = async (
   } catch (error) {
     console.error("error happening in queryFnGetAllMyBlockPacksByRootShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -209,16 +209,16 @@ export const mutationFnCreateBlockPack = async (
   } catch (error) {
     console.error("error happening in mutationFnCreateBlockPack", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -235,16 +235,16 @@ export const mutationFnCreateBlockPacks = async (
   } catch (error) {
     console.error("error happening in mutationFnCreateBlockPacks", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -263,16 +263,16 @@ export const mutationFnUpdateMyBlockPackById = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMyBlockPackById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -292,16 +292,16 @@ export const mutationFnUpdateMyBlockPacksByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMyBlockPacksByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -320,16 +320,16 @@ export const mutationFnMoveMyBlockPackById = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMyBlockPackById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -348,16 +348,16 @@ export const mutationFnMoveMyBlockPacksByParentSubShelfId = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMyBlockPacksByParentSubShelfId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -377,16 +377,16 @@ export const mutationFnMoveMyBlockPacksByParentSubShelfIds = async (
   } catch (error) {
     console.error("error happening in mutationFnMoveMyBlockPacksByParentSubShelfIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -405,16 +405,16 @@ export const mutationFnRestoreMyBlockPackById = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMyBlockPackById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -434,16 +434,16 @@ export const mutationFnRestoreMyBlockPacksByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMyBlockPacksByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -462,16 +462,16 @@ export const mutationFnDeleteMyBlockPackById = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMyBlockPackById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -491,16 +491,16 @@ export const mutationFnDeleteMyBlockPacksByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMyBlockPacksByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;

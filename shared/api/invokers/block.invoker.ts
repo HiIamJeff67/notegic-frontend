@@ -1,6 +1,6 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -34,16 +34,16 @@ export const queryFnGetMyBlockById = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlockById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -60,16 +60,16 @@ export const queryFnGetMyBlocksByIds = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlocksByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -89,16 +89,16 @@ export const queryFnGetMyBlocksByBlockPackId = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyBlocksByBlockPackId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;

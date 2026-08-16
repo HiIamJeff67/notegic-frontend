@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -12,7 +12,7 @@ export const parseRealtimePongFrame = (
   frame: Record<string, unknown>
 ): RealtimePongFrame => {
   if (typeof frame.requestId !== "string") {
-    throw new NotezyAPIError(RealtimeError.MissingPongRequestId());
+    throw new NotegicAPIError(RealtimeError.MissingPongRequestId());
   }
 
   return {

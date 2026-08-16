@@ -1,5 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { NotezyBlockPackEditor } from "@shared/blockpack/core";
+import { NotegicBlockPackEditor } from "@shared/blockpack/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ const CreateBlockPackPayloadEditor = ({
 
   const editor = useMemo(
     () =>
-      NotezyBlockPackEditor.create({
+      NotegicBlockPackEditor.create({
         initialContent: [
           {
             id: crypto.randomUUID(),
@@ -120,7 +120,7 @@ const CreateBlockPackPayloadEditor = ({
   );
   const originalBlockEditor = useMemo(
     () =>
-      NotezyBlockPackEditor.create({
+      NotegicBlockPackEditor.create({
         initialContent: [
           {
             id: crypto.randomUUID(),

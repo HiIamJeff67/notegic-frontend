@@ -1,11 +1,11 @@
 import { UserStatus } from "@shared/api/interfaces/enums";
 import { UserDataSchema, UserSchema } from "@shared/types/user.type";
 import { z } from "zod";
-import { NotezyRequestSchema, NotezyResponseSchema } from "./context.interface";
+import { NotegicRequestSchema, NotegicResponseSchema } from "./context.interface";
 
 /* ============================== GetUserData ============================== */
 
-export const GetUserDataRequestSchema = NotezyRequestSchema.extend({
+export const GetUserDataRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -16,7 +16,7 @@ export const GetUserDataRequestSchema = NotezyRequestSchema.extend({
 
 export type GetUserDataRequest = z.infer<typeof GetUserDataRequestSchema>;
 
-export const GetUserDataResponseSchema = NotezyResponseSchema.extend({
+export const GetUserDataResponseSchema = NotegicResponseSchema.extend({
   data: UserDataSchema,
   embedded: z.object({
     publicId: z.string(),
@@ -27,7 +27,7 @@ export type GetUserDataResponse = z.infer<typeof GetUserDataResponseSchema>;
 
 /* ============================== GetMe ============================== */
 
-export const GetMeRequestSchema = NotezyRequestSchema.extend({
+export const GetMeRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -38,7 +38,7 @@ export const GetMeRequestSchema = NotezyRequestSchema.extend({
 
 export type GetMeRequest = z.infer<typeof GetMeRequestSchema>;
 
-export const GetMeResponseSchema = NotezyResponseSchema.extend({
+export const GetMeResponseSchema = NotegicResponseSchema.extend({
   data: UserSchema,
   embedded: z.object({
     publicId: z.string(),
@@ -49,7 +49,7 @@ export type GetMeResponse = z.infer<typeof GetMeResponseSchema>;
 
 /* ============================== UpdateMe ============================== */
 
-export const UpdateMeRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMeRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -73,7 +73,7 @@ export const UpdateMeRequestSchema = NotezyRequestSchema.extend({
 
 export type UpdateMeRequest = z.infer<typeof UpdateMeRequestSchema>;
 
-export const UpdateMeResponseSchema = NotezyResponseSchema.extend({
+export const UpdateMeResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),

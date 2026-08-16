@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMyBlockByIdRequest,
   GetMyBlockByIdResponse,
@@ -42,8 +42,8 @@ export const GetMyBlockById = createServerFn({ method: "GET" })
 
     const formattedResponse = (await response.json()) as GetMyBlockByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -83,8 +83,8 @@ export const GetMyBlocksByIds = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyBlocksByIdsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -126,8 +126,8 @@ export const GetMyBlocksByBlockPackId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMyBlocksByBlockPackIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

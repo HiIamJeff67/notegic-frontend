@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyRoutinePeriodCountRequest,
   VisualizeMyRoutinePeriodCountResponse,
@@ -158,8 +158,8 @@ export const GetMyRoutineById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyRoutineByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -218,8 +218,8 @@ export const GetMyRoutinesByStationId = createServerFn({ method: "GET" })
       const formattedResponse =
         (await response.json()) as GetMyRoutinesByStationIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -277,8 +277,8 @@ export const GetAllMyRoutinesByTimeRange = createServerFn({ method: "GET" })
       const formattedResponse =
         (await response.json()) as GetAllMyRoutinesByTimeRangeResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -324,8 +324,8 @@ export const CreateRoutineByStationId = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as CreateRoutineByStationIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -369,8 +369,8 @@ export const CreateRoutinesByStationIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as CreateRoutinesByStationIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -411,8 +411,8 @@ export const UpdateMyRoutineById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UpdateMyRoutineByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -455,8 +455,8 @@ export const UpdateMyRoutinesByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyRoutinesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -502,8 +502,8 @@ export const LinkRoutineTagById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as LinkRoutineTagByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -543,8 +543,8 @@ export const LinkRoutineTagsByIds = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as LinkRoutineTagsByIdsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -589,8 +589,8 @@ export const LinkRoutineTaskById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as LinkRoutineTaskByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -633,8 +633,8 @@ export const LinkRoutineTasksByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as LinkRoutineTasksByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -680,8 +680,8 @@ export const LinkRoutineItemById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as LinkRoutineItemByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -724,8 +724,8 @@ export const LinkRoutineItemsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as LinkRoutineItemsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -766,8 +766,8 @@ export const RestoreMyRoutineById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as RestoreMyRoutineByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -810,8 +810,8 @@ export const RestoreMyRoutinesByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMyRoutinesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -852,8 +852,8 @@ export const DeleteMyRoutineById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as DeleteMyRoutineByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -896,8 +896,8 @@ export const DeleteMyRoutinesByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteMyRoutinesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -943,8 +943,8 @@ export const HardDeleteMyRoutineById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutineByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -988,8 +988,8 @@ export const HardDeleteMyRoutinesByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutinesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -13,10 +13,10 @@ export const parseRealtimeReadyFrame = (
   frame: Record<string, unknown>
 ): RealtimeReadyFrame => {
   if (typeof frame.connectionId !== "string") {
-    throw new NotezyAPIError(RealtimeError.MissingReadyConnectionId());
+    throw new NotegicAPIError(RealtimeError.MissingReadyConnectionId());
   }
   if (typeof frame.resubscribeRequired !== "boolean") {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

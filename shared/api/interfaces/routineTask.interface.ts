@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import {
   AllRoutinePeriods,
@@ -108,7 +108,7 @@ export type VisualizeMyRoutineTaskActualEndedAtCountResponse = z.infer<
 
 /* ============================== GetMyRoutineTaskById ============================== */
 
-export const GetMyRoutineTaskByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -125,7 +125,7 @@ export type GetMyRoutineTaskByIdRequest = z.input<
   typeof GetMyRoutineTaskByIdRequestSchema
 >;
 
-export const GetMyRoutineTaskByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMyRoutineTaskByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     routineId: z.uuidv4(),
@@ -157,7 +157,7 @@ export type GetMyRoutineTaskByIdResponse = z.infer<
 /* ============================== GetAllMyRoutineTasksByRoutineIds ============================== */
 
 export const GetAllMyRoutineTasksByRoutineIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -175,7 +175,7 @@ export type GetAllMyRoutineTasksByRoutineIdsRequest = z.input<
 >;
 
 export const GetAllMyRoutineTasksByRoutineIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -207,7 +207,7 @@ export type GetAllMyRoutineTasksByRoutineIdsResponse = z.infer<
 
 /* ============================== GetAllMyRoutineTasks ============================== */
 
-export const GetAllMyRoutineTasksRequestSchema = NotezyRequestSchema.extend({
+export const GetAllMyRoutineTasksRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -226,7 +226,7 @@ export type GetAllMyRoutineTasksRequest = z.input<
   typeof GetAllMyRoutineTasksRequestSchema
 >;
 
-export const GetAllMyRoutineTasksResponseSchema = NotezyResponseSchema.extend({
+export const GetAllMyRoutineTasksResponseSchema = NotegicResponseSchema.extend({
   data: z.array(
     z.object({
       id: z.uuidv4(),
@@ -260,7 +260,7 @@ export type GetAllMyRoutineTasksResponse = z.infer<
 /* ============================== CreateRoutineTaskByRoutineId ============================== */
 
 export const CreateRoutineTaskByRoutineIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -275,7 +275,7 @@ export type CreateRoutineTaskByRoutineIdRequest = z.infer<
 >;
 
 export const CreateRoutineTaskByRoutineIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
       createdAt: z.coerce.date(),
@@ -291,7 +291,7 @@ export type CreateRoutineTaskByRoutineIdResponse = z.infer<
 
 /* ============================== UpdateMyRoutineTaskById ============================== */
 
-export const UpdateMyRoutineTaskByIdRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -330,7 +330,7 @@ export type UpdateMyRoutineTaskByIdRequest = z.infer<
 >;
 
 export const UpdateMyRoutineTaskByIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -345,7 +345,7 @@ export type UpdateMyRoutineTaskByIdResponse = z.infer<
 
 /* ============================== PauseMyRoutineTaskById ============================== */
 
-export const PauseMyRoutineTaskByIdRequestSchema = NotezyRequestSchema.extend({
+export const PauseMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -361,7 +361,7 @@ export type PauseMyRoutineTaskByIdRequest = z.infer<
   typeof PauseMyRoutineTaskByIdRequestSchema
 >;
 
-export const PauseMyRoutineTaskByIdResponseSchema = NotezyResponseSchema.extend(
+export const PauseMyRoutineTaskByIdResponseSchema = NotegicResponseSchema.extend(
   {
     data: z.object({
       updatedAt: z.coerce.date(),
@@ -395,7 +395,7 @@ export type ResumeMyRoutineTaskByIdResponse = z.infer<
 /* ============================== HardDeleteMyRoutineTaskById ============================== */
 
 export const HardDeleteMyRoutineTaskByIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -412,7 +412,7 @@ export type HardDeleteMyRoutineTaskByIdRequest = z.infer<
 >;
 
 export const HardDeleteMyRoutineTaskByIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),
@@ -428,7 +428,7 @@ export type HardDeleteMyRoutineTaskByIdResponse = z.infer<
 /* ============================== HardDeleteMyRoutineTasksByIds ============================== */
 
 export const HardDeleteMyRoutineTasksByIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -445,7 +445,7 @@ export type HardDeleteMyRoutineTasksByIdsRequest = z.infer<
 >;
 
 export const HardDeleteMyRoutineTasksByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),

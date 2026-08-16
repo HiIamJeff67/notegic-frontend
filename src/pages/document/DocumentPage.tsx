@@ -103,7 +103,7 @@ const apiGatewayDomainIcons: Record<string, ArticleNavigationItem["icon"]> = {
 const domainGuides: Record<string, { summary: string; structure: string }> = {
   "root-shelves": {
     summary:
-      "Root shelves are the top-level workspaces that organize a user's Notezy content and permissions.",
+      "Root shelves are the top-level workspaces that organize a user's Notegic content and permissions.",
     structure:
       "A root shelf owns its sub shelves, memberships, and the content tree beneath it; the API exposes the shelf as the boundary for access control.",
   },
@@ -495,7 +495,7 @@ const DocumentPage = () => {
     {
       id: "overview",
       title: "Overview",
-      description: "The published Notezy v1 public API contract.",
+      description: "The published Notegic v1 public API contract.",
       weight: 5,
       icon: BookOpenIcon,
     },
@@ -542,7 +542,7 @@ const DocumentPage = () => {
     {
       id: "privacy-policy",
       title: "Privacy and policy",
-      description: "How Notezy handles account data and user rights.",
+      description: "How Notegic handles account data and user rights.",
       weight: 4,
       icon: ShieldIcon,
       children: privacyPolicyNavigation,
@@ -571,7 +571,7 @@ const DocumentPage = () => {
             <ArticleParagraph id="overview">
               <ArticleParagraphHeader>
                 <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
-                  NOTEZY PUBLIC API
+                  NOTEGIC PUBLIC API
                 </p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight">
                   {title}
@@ -694,7 +694,7 @@ const DocumentPage = () => {
                     </p>
                     <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
                       <code>{`GET  http://localhost/api/development/v1
-GET  https://api.notezy.app/api/development/v1
+GET  https://api.notegic.app/api/development/v1
 Content-Type: application/json`}</code>
                     </pre>
                   </ArticleSubParagraphContent>

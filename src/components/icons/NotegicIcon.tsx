@@ -1,19 +1,19 @@
 import React from "react";
-import Notezy from "@/assets/logo/Notezy.png";
+import Notegic from "@/assets/logo/common.png";
 
-interface NotezyIconProps {
+interface NotegicIconProps {
   size?: number;
   className?: string;
 }
 
-export const NotezyIcon: React.FC<NotezyIconProps> = ({
+export const NotegicIcon: React.FC<NotegicIconProps> = ({
   size = 200,
   className,
 }) => {
   return (
     <img
-      src={Notezy}
-      alt="Notezy"
+      src={Notegic}
+      alt="Notegic"
       width={size}
       height={size}
       className={className}
@@ -22,4 +22,4 @@ export const NotezyIcon: React.FC<NotezyIconProps> = ({
   );
 };
 
-export default NotezyIcon;
+export default NotegicIcon;

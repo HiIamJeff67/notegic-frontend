@@ -103,8 +103,8 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         premium: "Premium",
         ultimate: "Ultimate",
         enterprise: "Enterprise",
-        monthlyPlan: "Notezy {{plan}} 월간 플랜",
-        yearlyPlan: "Notezy {{plan}} 연간 플랜",
+        monthlyPlan: "Notegic {{plan}} 월간 플랜",
+        yearlyPlan: "Notegic {{plan}} 연간 플랜",
         paymentNotice:
           "UI와 백엔드 데이터 모델이 준비되었습니다. 외부 결제 흐름 배포 후 결제, 구독 및 요금제 변경 API를 연결합니다.",
         rootShelves: "루트 선반",
@@ -270,7 +270,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "긴 줄을 자동으로 줄 바꿈하여 가로 스크롤 없이 읽을 수 있게 합니다.",
         spellcheck: "맞춤법 검사",
         spellcheckDescription:
-          "콘텐츠를 Notezy API로 보내지 않고 브라우저의 로컬 맞춤법 검사를 사용합니다.",
+          "콘텐츠를 Notegic API로 보내지 않고 브라우저의 로컬 맞춤법 검사를 사용합니다.",
         quickInsert: "빠른 삽입 바",
         quickInsertDescription:
           "편집 중 자주 쓰는 삽입 도구를 표시하여 블록, 루틴, 자료를 빠르게 추가합니다.",
@@ -300,7 +300,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         backgroundImages: "배경 이미지",
         localDatabase: "로컬 데이터베이스",
         localDatabaseDescription:
-          "이 브라우저에 Notezy 작업 데이터를 저장할지 제어합니다.",
+          "이 브라우저에 Notegic 작업 데이터를 저장할지 제어합니다.",
         offlineQueue: "오프라인 대기열",
         offlineQueueDescription:
           "연결이 복구될 때까지 오프라인 변경을 로컬에서 대기시킬지 제어합니다.",
@@ -338,7 +338,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "시작 페이지, 미리보기 정보, 로컬 클립보드 보호를 제어합니다.",
         startSurface: "시작 페이지",
         startSurfaceDescription:
-          "Notezy로 돌아올 때 열 작업 공간을 선택합니다.",
+          "Notegic로 돌아올 때 열 작업 공간을 선택합니다.",
         dashboard: "대시보드",
         routines: "루틴",
         privatePreviews: "미리보기 제목 숨기기",
@@ -353,7 +353,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         regexInvalid: "정규식이 올바르지 않습니다.",
         regexExists: "이 정규식은 이미 있습니다.",
         regex: "정규식",
-        regexPlaceholder: "예: NOTEZY_[A-Z0-9]{16}",
+        regexPlaceholder: "예: NOTEGIC_[A-Z0-9]{16}",
         noPatterns: "사용자 지정 정규식이 아직 없습니다.",
       },
       browserPermissions: {
@@ -361,7 +361,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         description: "이 브라우저가 제공하는 기능을 검토하고 다시 승인합니다.",
         status: "사이트 권한 상태",
         statusDescription:
-          "여기에는 Notezy와 관련 있고 이 브라우저에서 확인할 수 있는 권한만 표시됩니다.",
+          "여기에는 Notegic와 관련 있고 이 브라우저에서 확인할 수 있는 권한만 표시됩니다.",
         refresh: "다시 확인",
         notifications: "알림",
         notificationsDescription:
@@ -374,7 +374,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "환경 설정, 식별자 또는 생성된 콘텐츠를 복사할 때 사용합니다.",
         persistentStorage: "영구 저장 공간",
         persistentStorageDescription:
-          "브라우저에 Notezy 데이터를 로컬로 보관하도록 요청합니다. 승인 여부는 브라우저가 결정하며 보통 확인 창이 표시되지 않습니다.",
+          "브라우저에 Notegic 데이터를 로컬로 보관하도록 요청합니다. 승인 여부는 브라우저가 결정하며 보통 확인 창이 표시되지 않습니다.",
         geolocation: "위치",
         geolocationDescription:
           "위치 맥락이 필요한 작업 공간 기능을 위해 예약되어 있습니다.",
@@ -400,7 +400,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         description: "데스크톱, 동기화, 루틴 알림의 전달 방법을 선택합니다.",
         desktop: "데스크톱 알림",
         desktopDescription:
-          "Notezy가 로컬 이벤트와 작업 공간 상태에 브라우저 데스크톱 알림을 사용하도록 허용합니다.",
+          "Notegic가 로컬 이벤트와 작업 공간 상태에 브라우저 데스크톱 알림을 사용하도록 허용합니다.",
         routine: "루틴 알림",
         routineDescription:
           "루틴이 예정되었을 때 알림을 보내 진행 중인 워크플로를 놓치지 않도록 합니다.",
@@ -421,7 +421,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         description:
           "버전 정보를 확인하고 로컬 환경 설정을 내보내거나 재설정합니다.",
         version: "버전",
-        versionDescription: "설치된 Notezy 프런트엔드 버전입니다.",
+        versionDescription: "설치된 Notegic 프런트엔드 버전입니다.",
         exportPreferences: "환경 설정 내보내기",
         exportPreferencesDescription:
           "현재 로컬 환경 설정을 JSON으로 복사하여 수동 백업이나 버그 보고에 사용합니다.",

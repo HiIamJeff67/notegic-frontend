@@ -1,6 +1,6 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -181,16 +181,16 @@ export const queryFnGetMyRoutineById = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyRoutineById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -209,16 +209,16 @@ export const queryFnGetMyRoutinesByStationId = async (
   } catch (error) {
     console.error("error happening in queryFnGetMyRoutinesByStationId", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -240,16 +240,16 @@ export const queryFnGetAllMyRoutinesByTimeRange = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -271,16 +271,16 @@ export const mutationFnCreateRoutineByStationId = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -302,16 +302,16 @@ export const mutationFnCreateRoutinesByStationIds = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -329,16 +329,16 @@ export const mutationFnUpdateMyRoutineById = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMyRoutineById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -356,16 +356,16 @@ export const mutationFnUpdateMyRoutinesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMyRoutinesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -383,16 +383,16 @@ export const mutationFnLinkRoutineTagById = async (
   } catch (error) {
     console.error("error happening in mutationFnLinkRoutineTagById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -414,16 +414,16 @@ export const mutationFnLinkRoutineTagsByIds = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -441,16 +441,16 @@ export const mutationFnLinkRoutineTaskById = async (
   } catch (error) {
     console.error("error happening in mutationFnLinkRoutineTaskById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -472,16 +472,16 @@ export const mutationFnLinkRoutineTasksByIds = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -499,16 +499,16 @@ export const mutationFnLinkRoutineItemById = async (
   } catch (error) {
     console.error("error happening in mutationFnLinkRoutineItemById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -530,16 +530,16 @@ export const mutationFnLinkRoutineItemsByIds = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -557,16 +557,16 @@ export const mutationFnRestoreMyRoutineById = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMyRoutineById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -584,16 +584,16 @@ export const mutationFnRestoreMyRoutinesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnRestoreMyRoutinesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -611,16 +611,16 @@ export const mutationFnDeleteMyRoutineById = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMyRoutineById", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -638,16 +638,16 @@ export const mutationFnDeleteMyRoutinesByIds = async (
   } catch (error) {
     console.error("error happening in mutationFnDeleteMyRoutinesByIds", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -669,16 +669,16 @@ export const mutationFnHardDeleteMyRoutineById = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }
@@ -700,16 +700,16 @@ export const mutationFnHardDeleteMyRoutinesByIds = async (
       error
     );
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
           throw error;
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
   }

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAppRouter, useTheme } from "@/hooks";
 
 const DisplayTitle = {
-  mainTitle: "Notezy",
+  mainTitle: "Notegic",
   secondaryTitle: "A More Humanized AI-Driven Note-Taking Application",
 };
 

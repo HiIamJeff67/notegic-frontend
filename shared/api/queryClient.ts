@@ -1,4 +1,4 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { ExceptionReasonDictionary } from "@shared/api/exceptions";
 import { QueryClient } from "@tanstack/react-query";
 
@@ -6,7 +6,7 @@ let browserQueryClient: QueryClient | undefined;
 
 export const makeQueryClient = (): QueryClient => {
   const retryPolicy = (failureCount: number, error: unknown): boolean => {
-    if (error instanceof NotezyFetchError) {
+    if (error instanceof NotegicFetchError) {
       const reason = error.unWrap.reason;
       if (
         reason === ExceptionReasonDictionary.client.fetch.missingNetwork ||

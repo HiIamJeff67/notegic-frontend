@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 
@@ -21,7 +21,7 @@ export const parseRealtimeUnsubscribedFrame = (
     !Number.isInteger(frame.connectorChannelId) ||
     frame.connectorChannelId < 0
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

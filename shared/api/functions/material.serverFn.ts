@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateMyMaterialRequest,
   CreateMyMaterialResponse,
@@ -64,8 +64,8 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyMaterialByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -108,8 +108,8 @@ export const GetMyMaterialAndItsParentById = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMyMaterialAndItsParentByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -157,8 +157,8 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMyMaterialsByParentSubShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -206,8 +206,8 @@ export const GetAllMyMaterialsByRootShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetAllMyMaterialsByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -247,8 +247,8 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateMyMaterialResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -285,8 +285,8 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UpdateMyMaterialByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -323,8 +323,8 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as MoveMyMaterialByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -361,8 +361,8 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as MoveMyMaterialsByIdsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -402,8 +402,8 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMyMaterialByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -446,8 +446,8 @@ export const RestoreMyMaterialsByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as RestoreMyMaterialsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -485,8 +485,8 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as DeleteMyMaterialByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -526,8 +526,8 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteMyMaterialsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

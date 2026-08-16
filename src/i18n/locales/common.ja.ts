@@ -32,7 +32,7 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     profile: "プロフィール",
   },
   homePage: {
-    mainTitle: "Notezy",
+    mainTitle: "Notegic",
     secondaryTitle: "より人間的な AI 駆動ノートアプリケーション",
     subtitle: "あなたのデジタルノートパートナー",
     getStarted: "始める",

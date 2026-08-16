@@ -1,4 +1,4 @@
-export class NotezyError extends Error {
+export class NotegicError extends Error {
   protected isPresentable: boolean;
   protected presentation: string;
 
@@ -8,7 +8,7 @@ export class NotezyError extends Error {
     presentation: string = ""
   ) {
     super(initialMessage);
-    this.name = "NotezyError";
+    this.name = "NotegicError";
     this.isPresentable = isPresentable;
     this.presentation = presentation;
   }
@@ -17,7 +17,7 @@ export class NotezyError extends Error {
     return this.isPresentable ? this.presentation : "";
   }
 
-  setPresentation(presentation: string): NotezyError {
+  setPresentation(presentation: string): NotegicError {
     this.presentation = presentation;
     this.isPresentable = true;
     return this;
@@ -30,7 +30,7 @@ export class NotezyError extends Error {
     return presentation;
   }
 
-  removePresentation(): NotezyError {
+  removePresentation(): NotegicError {
     this.presentation = "";
     this.isPresentable = false;
     return this;

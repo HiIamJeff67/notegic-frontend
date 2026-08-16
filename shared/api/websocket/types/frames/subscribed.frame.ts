@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
@@ -24,19 +24,19 @@ export const parseRealtimeSubscribedFrame = (
     typeof frame.channelId !== "string" ||
     frame.channelType !== "BlockPack"
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
   if (
     typeof frame.connectorChannelId !== "number" ||
     !Number.isInteger(frame.connectorChannelId) ||
     frame.connectorChannelId < 0
   ) {
-    throw new NotezyAPIError(
+    throw new NotegicAPIError(
       RealtimeError.MissingSubscribedConnectorChannelId()
     );
   }
   if (typeof frame.existing !== "boolean") {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
   if (
     typeof frame.documentQuotaPolicyVersion !== "number" ||
@@ -46,7 +46,7 @@ export const parseRealtimeSubscribedFrame = (
     !Number.isSafeInteger(frame.maximumBlockCount) ||
     frame.maximumBlockCount <= 0
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
   if (
     frame.participants !== undefined &&
@@ -69,7 +69,7 @@ export const parseRealtimeSubscribedFrame = (
         );
       }))
   ) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
 
   return {

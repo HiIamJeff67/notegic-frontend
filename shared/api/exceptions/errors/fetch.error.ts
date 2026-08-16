@@ -1,16 +1,16 @@
-import { NotezyException } from "@shared/api/exceptions";
-import { NotezyError } from ".";
+import { NotegicException } from "@shared/api/exceptions";
+import { NotegicError } from ".";
 
-export class NotezyFetchError extends NotezyError {
-  private readonly exception: NotezyException;
+export class NotegicFetchError extends NotegicError {
+  private readonly exception: NotegicException;
 
-  constructor(exception: NotezyException) {
+  constructor(exception: NotegicException) {
     super(exception.reason, true, exception.message);
     this.name = "FetchError";
     this.exception = exception;
   }
 
-  get unWrap(): NotezyException {
+  get unWrap(): NotegicException {
     return this.exception;
   }
 }

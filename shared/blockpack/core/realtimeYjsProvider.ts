@@ -1,8 +1,8 @@
 import { RealtimeBinaryFrameType } from "@shared/api/websocket/types";
 import {
-  NOTEZY_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS,
-  NOTEZY_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN,
-  NOTEZY_REALTIME_YJS_REMOTE_ORIGIN,
+  NOTEGIC_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS,
+  NOTEGIC_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN,
+  NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN,
 } from "@shared/blockpack/core/contract";
 import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
 import type { UUID } from "crypto";
@@ -36,7 +36,7 @@ export class RealtimeYjsProvider {
   private readonly blockPackId: UUID;
   private readonly hydrationPromise: Promise<void>;
   private readonly handleDocUpdate = (update: Uint8Array, origin: unknown) => {
-    if (origin === NOTEZY_REALTIME_YJS_REMOTE_ORIGIN) return;
+    if (origin === NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN) return;
     if (this.readOnly) {
       logRealtimeYjs(
         "skipped local document update because channel is read-only",
@@ -52,7 +52,7 @@ export class RealtimeYjsProvider {
     changes: { added: number[]; updated: number[]; removed: number[] },
     origin: unknown
   ) => {
-    if (origin === NOTEZY_REALTIME_YJS_REMOTE_ORIGIN) return;
+    if (origin === NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN) return;
     const changedClients = [
       ...changes.added,
       ...changes.updated,
@@ -112,6 +112,20 @@ export class RealtimeYjsProvider {
     return Y.encodeStateAsUpdate(this.doc);
   }
 
+  hasUnconfirmedLocalChanges() {
+    if (this.pendingDocumentUpdates.length > 0) return true;
+
+    for (const [clientId, clock] of Y.decodeStateVector(
+      Y.encodeStateVector(this.doc)
+    )) {
+      if (clock > (this.persistedDocumentStateVector.get(clientId) ?? 0)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   setReadOnly(readOnly: boolean) {
     this.readOnly = readOnly;
     if (readOnly) {
@@ -124,7 +138,7 @@ export class RealtimeYjsProvider {
     logRealtimeYjs("received document update", {
       byteLength: update.byteLength,
     });
-    Y.applyUpdate(this.doc, update, NOTEZY_REALTIME_YJS_REMOTE_ORIGIN);
+    Y.applyUpdate(this.doc, update, NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN);
     for (const [clientId, clock] of Y.decodeStateVector(
       Y.encodeStateVectorFromUpdate(update)
     )) {
@@ -154,12 +168,13 @@ export class RealtimeYjsProvider {
     applyAwarenessUpdate(
       this.awareness,
       update,
-      NOTEZY_REALTIME_YJS_REMOTE_ORIGIN
+      NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
     );
   }
 
-  destroy() {
-    void this.flushPendingDocumentUpdatesNow();
+  async destroy() {
+    await this.flushPendingDocumentUpdatesNow();
+    await this.persistencePromise;
     this.announceLocalAwarenessRemoval();
     this.disconnect();
     this.pendingDocumentUpdates.length = 0;
@@ -211,7 +226,7 @@ export class RealtimeYjsProvider {
     this.documentFlushTimeout = setTimeout(() => {
       this.documentFlushTimeout = null;
       this.flushPendingDocumentUpdates();
-    }, NOTEZY_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS);
+    }, NOTEGIC_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS);
   }
 
   private clearDocumentFlushTimeout() {
@@ -263,7 +278,7 @@ export class RealtimeYjsProvider {
       Y.applyUpdate(
         this.doc,
         cachedDocument.update,
-        NOTEZY_REALTIME_YJS_REMOTE_ORIGIN
+        NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
       );
       if (cachedDocument.needsFlush && !this.readOnly) {
         this.pendingDocumentUpdates.push(cachedDocument.update);
@@ -319,7 +334,7 @@ export class RealtimeYjsProvider {
     removeAwarenessStates(
       this.awareness,
       [this.awareness.clientID],
-      NOTEZY_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN
+      NOTEGIC_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN
     );
   }
 
@@ -335,7 +350,7 @@ export class RealtimeYjsProvider {
     removeAwarenessStates(
       this.awareness,
       remoteClientIds,
-      NOTEZY_REALTIME_YJS_REMOTE_ORIGIN
+      NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
     );
   }
 }

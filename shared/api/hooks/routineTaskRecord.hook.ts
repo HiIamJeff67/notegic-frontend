@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
@@ -148,14 +148,14 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
     request?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
   ): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response =
@@ -168,8 +168,8 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         return {
           success: false,

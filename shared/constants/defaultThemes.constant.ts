@@ -4,8 +4,8 @@ import { ThemeData } from "@shared/types/theme.type";
 //   id: "ae29bb37-d4ba-4826-bf56-9074e23ea65b",
 //   name: "Default Dark",
 //   translationKey: "themes.defaultDark",
-//   authorName: "Notezy Team",
-//   authorAvatarURL: "", // place Notezy brand Icon here
+//   authorName: "Notegic Team",
+//   authorAvatarURL: "", // place Notegic brand Icon here
 //   version: "v1",
 //   downloadURL: "",
 //   isDefault: true,
@@ -18,8 +18,8 @@ import { ThemeData } from "@shared/types/theme.type";
 //   id: "9663dc5f-1980-4ca4-b1e5-54c63dcd3ff8",
 //   name: "Default Light",
 //   translationKey: "themes.defaultLight",
-//   authorName: "Notezy Team",
-//   authorAvatarURL: "", // place Notezy brand Icon here
+//   authorName: "Notegic Team",
+//   authorAvatarURL: "", // place Notegic brand Icon here
 //   version: "v1",
 //   downloadURL: "",
 //   isDefault: true,
@@ -33,8 +33,8 @@ export const DefaultStandardTheme: ThemeData = {
   name: "Default Standard",
   isDark: true,
   translationKey: "themes.defaultStandard",
-  authorName: "Notezy Team",
-  authorAvatarURL: "", // place Notezy brand Icon here
+  authorName: "Notegic Team",
+  authorAvatarURL: "", // place Notegic brand Icon here
   version: "v1",
   downloadURL: "",
   isDefault: true,
@@ -48,8 +48,8 @@ export const DefaultNeonTheme: ThemeData = {
   name: "Default Neon",
   isDark: true,
   translationKey: "themes.defaultNeon",
-  authorName: "Notezy Team",
-  authorAvatarURL: "", // place Notezy brand Icon here
+  authorName: "Notegic Team",
+  authorAvatarURL: "", // place Notegic brand Icon here
   version: "v1",
   downloadURL: "",
   isDefault: true,
@@ -63,8 +63,8 @@ export const DefaultOceanTheme: ThemeData = {
   name: "Default Ocean",
   isDark: false,
   translationKey: "themes.defaultOcean",
-  authorName: "Notezy Team",
-  authorAvatarURL: "", // place Notezy brand Icon here
+  authorName: "Notegic Team",
+  authorAvatarURL: "", // place Notegic brand Icon here
   version: "v1",
   downloadURL: "",
   isDefault: true,
@@ -78,7 +78,7 @@ export const DefaultForestTheme: ThemeData = {
   name: "Default Forest",
   isDark: true,
   translationKey: "themes.defaultForest",
-  authorName: "Notezy Team",
+  authorName: "Notegic Team",
   authorAvatarURL: "",
   version: "v1",
   downloadURL: "",
@@ -93,7 +93,7 @@ export const DefaultPhoenixTheme: ThemeData = {
   name: "Default Phoenix",
   isDark: true,
   translationKey: "themes.defaultPhoenix",
-  authorName: "Notezy Team",
+  authorName: "Notegic Team",
   authorAvatarURL: "",
   version: "v1",
   downloadURL: "",
@@ -108,7 +108,7 @@ export const DefaultPearlTheme: ThemeData = {
   name: "Default Pearl",
   isDark: false,
   translationKey: "themes.defaultPearl",
-  authorName: "Notezy Team",
+  authorName: "Notegic Team",
   authorAvatarURL: "",
   version: "v1",
   downloadURL: "",
@@ -123,7 +123,7 @@ export const DefaultSakuraTheme: ThemeData = {
   name: "Default Sakura",
   isDark: false,
   translationKey: "themes.defaultSakura",
-  authorName: "Notezy Team",
+  authorName: "Notegic Team",
   authorAvatarURL: "",
   version: "v1",
   downloadURL: "",
@@ -138,7 +138,7 @@ export const DefaultCitrusTheme: ThemeData = {
   name: "Default Citrus",
   isDark: false,
   translationKey: "themes.defaultCitrus",
-  authorName: "Notezy Team",
+  authorName: "Notegic Team",
   authorAvatarURL: "",
   version: "v1",
   downloadURL: "",

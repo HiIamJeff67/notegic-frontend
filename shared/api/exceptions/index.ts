@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NotezyError } from "./errors";
+import { NotegicError } from "./errors";
 
 /* ============================== Exception Definition ============================== */
 
@@ -15,7 +15,7 @@ export function IsExceptionCode(exceptionCode: ExceptionCode): boolean {
   return exceptionCode >= MinExceptionCode && exceptionCode <= MaxExceptionCode;
 }
 
-export const NotezyExceptionSchema = z.object({
+export const NotegicExceptionSchema = z.object({
   code: z.number().int().positive(),
   prefix: z.string(),
   reason: z.string(),
@@ -26,9 +26,9 @@ export const NotezyExceptionSchema = z.object({
   retryable: z.boolean().optional(),
 });
 
-export type NotezyExceptionFields = z.infer<typeof NotezyExceptionSchema>;
+export type NotegicExceptionFields = z.infer<typeof NotegicExceptionSchema>;
 
-export class NotezyException {
+export class NotegicException {
   public code: number;
   public prefix: string;
   public reason: string;
@@ -39,7 +39,7 @@ export class NotezyException {
   public retryable?: boolean;
 
   constructor(obj: any) {
-    const validated = NotezyExceptionSchema.parse(obj);
+    const validated = NotegicExceptionSchema.parse(obj);
     this.code = validated.code;
     this.prefix = validated.prefix;
     this.reason = validated.reason;
@@ -54,8 +54,8 @@ export class NotezyException {
     return value === null || value === undefined;
   }
 
-  static validate(obj: any): NotezyExceptionFields {
-    return NotezyExceptionSchema.parse(obj);
+  static validate(obj: any): NotegicExceptionFields {
+    return NotegicExceptionSchema.parse(obj);
   }
 
   toJSON(): any {
@@ -97,7 +97,7 @@ export class NotezyException {
   }
 
   equals(
-    other: NotezyException,
+    other: NotegicException,
     withMessage: boolean = false,
     withDetails: boolean = false,
     withError: boolean = false
@@ -116,16 +116,16 @@ export class NotezyException {
 
 /* ============================== Error Instance with Exception ============================== */
 
-export class NotezyAPIError extends NotezyError {
-  private readonly exception: NotezyException;
+export class NotegicAPIError extends NotegicError {
+  private readonly exception: NotegicException;
 
-  constructor(exception: NotezyException) {
+  constructor(exception: NotegicException) {
     super(exception.reason, true, exception.message);
     this.name = "APIError";
     this.exception = exception;
   }
 
-  get unWrap(): NotezyException {
+  get unWrap(): NotegicException {
     return this.exception;
   }
 }

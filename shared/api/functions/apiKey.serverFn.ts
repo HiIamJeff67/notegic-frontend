@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
   CreateMyAPIKeyResponse,
@@ -13,7 +13,7 @@ import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 
-const toAPIKeyException = (exception: unknown): NotezyException => {
+const toAPIKeyException = (exception: unknown): NotegicException => {
   const value =
     typeof exception === "object" && exception !== null
       ? (exception as Record<string, unknown>)
@@ -21,7 +21,7 @@ const toAPIKeyException = (exception: unknown): NotezyException => {
   const status =
     typeof value.status === "number" && value.status > 0 ? value.status : 500;
 
-  return new NotezyException({
+  return new NotegicException({
     code:
       typeof value.code === "number" && value.code > 0 ? value.code : status,
     prefix:
@@ -85,7 +85,7 @@ const fetchAPIKeyResponse = async <T>(
     exception?: unknown;
   };
   if (formattedResponse.exception != null) {
-    throw new NotezyAPIError(
+    throw new NotegicAPIError(
       toAPIKeyException(formattedResponse.exception)
     );
   }

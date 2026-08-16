@@ -1,6 +1,6 @@
 import { Environment } from "@shared/types/environment.type";
 
-export const ServiceName = "notezy-frontend";
+export const ServiceName = "notegic-frontend";
 
 export const CurrentEnvironment: Environment = ((): Environment => {
   const runtimeEnvironment =

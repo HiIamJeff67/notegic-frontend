@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllAccessControlPermissions } from "@shared/api/interfaces/enums";
 import { z } from "zod";
@@ -45,17 +45,17 @@ export const TwoDimensionalDataSchema = z.object({
   data: z.array(TwoDimensionalDatumSchema),
 });
 
-export const VisualizePermissionRequestSchema = NotezyRequestSchema.extend({
+export const VisualizePermissionRequestSchema = NotegicRequestSchema.extend({
   header: VisualizeRequestHeaderSchema,
   param: VisualizePermissionParamSchema,
 });
 
-export const VisualizeTimeBucketRequestSchema = NotezyRequestSchema.extend({
+export const VisualizeTimeBucketRequestSchema = NotegicRequestSchema.extend({
   header: VisualizeRequestHeaderSchema,
   param: VisualizeTimeBucketParamSchema,
 });
 
-export const VisualizeResponseSchema = NotezyResponseSchema.extend({
+export const VisualizeResponseSchema = NotegicResponseSchema.extend({
   data: TwoDimensionalDataSchema,
 });
 

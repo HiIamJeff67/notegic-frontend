@@ -1,5 +1,5 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { getQueryClient } from "@shared/api/queryClient";
@@ -36,12 +36,12 @@ export function useVisualizeQuery<
 
   const perform = async (request?: TRequest): Promise<TResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     const response = await queryFunction(request);

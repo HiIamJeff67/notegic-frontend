@@ -245,12 +245,12 @@ export const StationRoutineProvider = ({
     };
 
     window.addEventListener(
-      "notezy:realtime-routine-task-lifecycle",
+      "notegic:realtime-routine-task-lifecycle",
       handleRoutineTaskLifecycle
     );
     return () =>
       window.removeEventListener(
-        "notezy:realtime-routine-task-lifecycle",
+        "notegic:realtime-routine-task-lifecycle",
         handleRoutineTaskLifecycle
       );
   }, [routineTaskLogic.handleRealtimeRoutineTaskLifecycle]);

@@ -1,4 +1,4 @@
-import { NotezyError } from "@shared/api/exceptions/errors";
+import { NotegicError } from "@shared/api/exceptions/errors";
 import type { TFunction } from "i18next";
 
 export const translateError = (error: unknown, t: TFunction): string => {
@@ -15,7 +15,7 @@ export const translateError = (error: unknown, t: TFunction): string => {
     return "";
   }
 
-  if (error instanceof NotezyError) {
+  if (error instanceof NotegicError) {
     const presentation = error.getPresentation;
     return presentation
       ? String(t(presentation as never, { defaultValue: presentation }))

@@ -2,12 +2,12 @@ import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
 import {
   ExceptionReasonDictionary,
-  NotezyAPIError,
+  NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   CreateRoutineTagRequest,
   CreateRoutineTagsRequest,
@@ -55,14 +55,14 @@ export const useGetMyRoutineTagById = (
     request?: GetMyRoutineTagByIdRequest
   ): Promise<GetMyRoutineTagByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyRoutineTagById(request);
@@ -75,8 +75,8 @@ export const useGetMyRoutineTagById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const routineTag =
           await RoutineTagLocalSimulator.simulateGetMyRoutineTagById(request);
@@ -132,14 +132,14 @@ export const useGetAllMyRoutineTags = (
     request?: GetAllMyRoutineTagsRequest
   ): Promise<GetAllMyRoutineTagsResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMyRoutineTags(request);
@@ -152,8 +152,8 @@ export const useGetAllMyRoutineTags = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const routineTags =
           await RoutineTagLocalSimulator.simulateGetAllMyRoutineTags(request);
@@ -203,7 +203,7 @@ export const useCreateRoutineTag = () => {
 
   const perform = async (request: CreateRoutineTagRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnCreateRoutineTag(request);
   };
@@ -231,7 +231,7 @@ export const useCreateRoutineTag = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -249,7 +249,7 @@ export const useCreateRoutineTags = () => {
 
   const perform = async (request: CreateRoutineTagsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnCreateRoutineTags(request);
   };
@@ -282,7 +282,7 @@ export const useCreateRoutineTags = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -300,7 +300,7 @@ export const useUpdateMyRoutineTagById = () => {
 
   const perform = async (request: UpdateMyRoutineTagByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnUpdateMyRoutineTagById(request);
   };
@@ -331,7 +331,7 @@ export const useUpdateMyRoutineTagById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -349,7 +349,7 @@ export const useUpdateMyRoutineTagsByIds = () => {
 
   const perform = async (request: UpdateMyRoutineTagsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnUpdateMyRoutineTagsByIds(request);
   };
@@ -382,7 +382,7 @@ export const useUpdateMyRoutineTagsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -402,7 +402,7 @@ export const useHardDeleteMyRoutineTagById = () => {
 
   const perform = async (request: HardDeleteMyRoutineTagByIdRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnHardDeleteMyRoutineTagById(request);
   };
@@ -433,7 +433,7 @@ export const useHardDeleteMyRoutineTagById = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
@@ -453,7 +453,7 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
 
   const perform = async (request: HardDeleteMyRoutineTagsByIdsRequest) => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     return await mutationFnHardDeleteMyRoutineTagsByIds(request);
   };
@@ -489,7 +489,7 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
     },
     onError: async (error, request) => {
       if (
-        error instanceof NotezyFetchError &&
+        error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {

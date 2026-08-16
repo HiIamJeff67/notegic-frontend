@@ -2,7 +2,7 @@ import {
   clearLegacyCredentialStorage,
   getClientRequestHeaders,
 } from "@shared/api/clientHeaders";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { useLogout } from "@shared/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@shared/api/hooks/user.hook";
@@ -88,7 +88,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           console.debug("fetching user automatically...");
           if (!isOnline) {
-            throw new NotezyAPIError(FetchClientExceptions.NetworkRequired());
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
           }
 
           const userAgent = navigator.userAgent;
@@ -101,7 +101,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
           console.error(error);
           if (
-            !(error instanceof NotezyAPIError) ||
+            !(error instanceof NotegicAPIError) ||
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
@@ -150,7 +150,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
-            throw new NotezyAPIError(FetchClientExceptions.NetworkRequired());
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
 
           const userAgent = navigator.userAgent;
           const response = await getMeQuerier.fetch({
@@ -161,7 +161,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
           console.error(error);
           if (
-            !(error instanceof NotezyAPIError) ||
+            !(error instanceof NotegicAPIError) ||
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
@@ -193,7 +193,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
-            throw new NotezyAPIError(FetchClientExceptions.NetworkRequired());
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
 
           const userAgent = navigator.userAgent;
           const response = await getMyInfoQuerier.fetch({
@@ -204,7 +204,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
           console.error(error);
           if (
-            !(error instanceof NotezyAPIError) ||
+            !(error instanceof NotegicAPIError) ||
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
@@ -236,7 +236,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (!isOnline)
-            throw new NotezyAPIError(FetchClientExceptions.NetworkRequired());
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
 
           const userAgent = navigator.userAgent;
           const response = await getMyAccountQuerier.fetch({
@@ -247,7 +247,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
           console.error(error);
           if (
-            !(error instanceof NotezyAPIError) ||
+            !(error instanceof NotegicAPIError) ||
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {

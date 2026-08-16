@@ -1,6 +1,6 @@
 import type { UUID } from "node:crypto";
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateMyBlockPackChannelTicketRequest,
   CreateMyBlockPackChannelTicketResponse,
@@ -55,8 +55,8 @@ export const CreateMyRealtimeConnectionTicket = createServerFn({
       const formattedResponse =
         (await response.json()) as CreateMyRealtimeConnectionTicketResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -101,8 +101,8 @@ export const CreateMyBlockPackChannelTicket = createServerFn({
       const formattedResponse =
         (await response.json()) as CreateMyBlockPackChannelTicketResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -142,8 +142,8 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
       const formattedResponse =
         (await response.json()) as GetBlockPackParticipantsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

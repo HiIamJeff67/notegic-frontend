@@ -3,7 +3,7 @@ import {
   ExceptionPrefix,
   ExceptionReasonDictionary,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 import { ZodError } from "zod";
@@ -17,8 +17,8 @@ export class ValidationClientException {
   static BaseCode: ExceptionCode = ClientExceptionBaseCode_Validation;
   static Prefix: ExceptionPrefix = ClientExceptionPrefix_Validation;
 
-  static ZodParsingFailed = (zodError: ZodError): NotezyException => {
-    return new NotezyException({
+  static ZodParsingFailed = (zodError: ZodError): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.validation.zodParsingFailed,
@@ -27,8 +27,8 @@ export class ValidationClientException {
     });
   };
 
-  static ReceivedUndefinedRequest = (): NotezyException => {
-    return new NotezyException({
+  static ReceivedUndefinedRequest = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason:
@@ -41,8 +41,8 @@ export class ValidationClientException {
   static InconsistentToken = (
     first: string,
     second: string
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.validation.inconsistentTokens,

@@ -46,7 +46,7 @@ export const clearLegacyCredentialStorage = (): void => {
 
   for (let index = localStorage.length - 1; index >= 0; index -= 1) {
     const key = localStorage.key(index);
-    if (key === "notezy_access_token" || key?.endsWith("_access_token")) {
+    if (key === "notegic_access_token" || key?.endsWith("_access_token")) {
       localStorage.removeItem(key);
     }
   }

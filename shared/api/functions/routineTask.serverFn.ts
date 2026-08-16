@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyRoutineTaskActualEndedAtCountRequest,
   VisualizeMyRoutineTaskActualEndedAtCountResponse,
@@ -168,8 +168,8 @@ export const GetMyRoutineTaskById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyRoutineTaskByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -222,8 +222,8 @@ export const GetAllMyRoutineTasksByRoutineIds = createServerFn({
       const formattedResponse =
         (await response.json()) as GetAllMyRoutineTasksByRoutineIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -270,8 +270,8 @@ export const GetAllMyRoutineTasks = createServerFn({
     const formattedResponse =
       (await response.json()) as GetAllMyRoutineTasksResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -318,8 +318,8 @@ export const CreateRoutineTaskByRoutineId = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as CreateRoutineTaskByRoutineIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -365,8 +365,8 @@ export const UpdateMyRoutineTaskById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyRoutineTaskByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -412,8 +412,8 @@ export const PauseMyRoutineTaskById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as PauseMyRoutineTaskByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -459,8 +459,8 @@ export const ResumeMyRoutineTaskById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as ResumeMyRoutineTaskByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -506,8 +506,8 @@ export const HardDeleteMyRoutineTaskById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutineTaskByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -553,8 +553,8 @@ export const HardDeleteMyRoutineTasksByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyRoutineTasksByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

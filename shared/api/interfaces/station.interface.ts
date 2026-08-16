@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import {
   AllAccessControlPermissions,
@@ -29,7 +29,7 @@ export type VisualizeMyTotalCountResponse = z.infer<
 
 /* ============================== GetMyStationById ============================== */
 
-export const GetMyStationByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMyStationByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -46,7 +46,7 @@ export type GetMyStationByIdRequest = z.input<
   typeof GetMyStationByIdRequestSchema
 >;
 
-export const GetMyStationByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMyStationByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     name: z.string(),
@@ -70,7 +70,7 @@ export type GetMyStationByIdResponse = z.infer<
 
 /* ============================== GetAllMyStations ============================== */
 
-export const GetAllMyStationsRequestSchema = NotezyRequestSchema.extend({
+export const GetAllMyStationsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -89,7 +89,7 @@ export type GetAllMyStationsRequest = z.input<
   typeof GetAllMyStationsRequestSchema
 >;
 
-export const GetAllMyStationsResponseSchema = NotezyResponseSchema.extend({
+export const GetAllMyStationsResponseSchema = NotegicResponseSchema.extend({
   data: z.array(
     z.object({
       id: z.uuidv4(),
@@ -114,7 +114,7 @@ export type GetAllMyStationsResponse = z.infer<
 
 /* ============================== CreateStation ============================== */
 
-export const CreateStationRequestSchema = NotezyRequestSchema.extend({
+export const CreateStationRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -132,7 +132,7 @@ export const CreateStationRequestSchema = NotezyRequestSchema.extend({
 
 export type CreateStationRequest = z.infer<typeof CreateStationRequestSchema>;
 
-export const CreateStationResponseSchema = NotezyResponseSchema.extend({
+export const CreateStationResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     createdAt: z.coerce.date(),
@@ -146,7 +146,7 @@ export type CreateStationResponse = z.infer<typeof CreateStationResponseSchema>;
 
 /* ============================== CreateStations ============================== */
 
-export const CreateStationsRequestSchema = NotezyRequestSchema.extend({
+export const CreateStationsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -168,7 +168,7 @@ export const CreateStationsRequestSchema = NotezyRequestSchema.extend({
 
 export type CreateStationsRequest = z.infer<typeof CreateStationsRequestSchema>;
 
-export const CreateStationsResponseSchema = NotezyResponseSchema.extend({
+export const CreateStationsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     ids: z.array(z.uuidv4()),
     createdAt: z.coerce.date(),
@@ -185,7 +185,7 @@ export type CreateStationsResponse = z.infer<
 /* ============================== Ownership and membership ============================== */
 
 export const TransferMyStationOwnershipRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -199,7 +199,7 @@ export type TransferMyStationOwnershipRequest = z.infer<
   typeof TransferMyStationOwnershipRequestSchema
 >;
 export const TransferMyStationOwnershipResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       stationId: z.uuidv4(),
       previousOwnerUserPublicId: z.uuidv4(),
@@ -211,7 +211,7 @@ export type TransferMyStationOwnershipResponse = z.infer<
   typeof TransferMyStationOwnershipResponseSchema
 >;
 
-export const LeaveMyStationRequestSchema = NotezyRequestSchema.extend({
+export const LeaveMyStationRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -225,7 +225,7 @@ export const LeaveMyStationRequestSchema = NotezyRequestSchema.extend({
     .default({}),
 });
 export type LeaveMyStationRequest = z.infer<typeof LeaveMyStationRequestSchema>;
-export const LeaveMyStationResponseSchema = NotezyResponseSchema.extend({
+export const LeaveMyStationResponseSchema = NotegicResponseSchema.extend({
   data: z.null(),
 });
 export type LeaveMyStationResponse = z.infer<
@@ -234,7 +234,7 @@ export type LeaveMyStationResponse = z.infer<
 
 /* ============================== UpdateMyStationById ============================== */
 
-export const UpdateMyStationByIdRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyStationByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -259,7 +259,7 @@ export type UpdateMyStationByIdRequest = z.infer<
   typeof UpdateMyStationByIdRequestSchema
 >;
 
-export const UpdateMyStationByIdResponseSchema = NotezyResponseSchema.extend({
+export const UpdateMyStationByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -274,7 +274,7 @@ export type UpdateMyStationByIdResponse = z.infer<
 
 /* ============================== UpdateMyStationsByIds ============================== */
 
-export const UpdateMyStationsByIdsRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -303,7 +303,7 @@ export type UpdateMyStationsByIdsRequest = z.infer<
   typeof UpdateMyStationsByIdsRequestSchema
 >;
 
-export const UpdateMyStationsByIdsResponseSchema = NotezyResponseSchema.extend({
+export const UpdateMyStationsByIdsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -318,7 +318,7 @@ export type UpdateMyStationsByIdsResponse = z.infer<
 
 /* ============================== RestoreMyStationById ============================== */
 
-export const RestoreMyStationByIdRequestSchema = NotezyRequestSchema.extend({
+export const RestoreMyStationByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -334,7 +334,7 @@ export type RestoreMyStationByIdRequest = z.infer<
   typeof RestoreMyStationByIdRequestSchema
 >;
 
-export const RestoreMyStationByIdResponseSchema = NotezyResponseSchema.extend({
+export const RestoreMyStationByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     name: z.string(),
@@ -358,7 +358,7 @@ export type RestoreMyStationByIdResponse = z.infer<
 
 /* ============================== RestoreMyStationsByIds ============================== */
 
-export const RestoreMyStationsByIdsRequestSchema = NotezyRequestSchema.extend({
+export const RestoreMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -374,7 +374,7 @@ export type RestoreMyStationsByIdsRequest = z.infer<
   typeof RestoreMyStationsByIdsRequestSchema
 >;
 
-export const RestoreMyStationsByIdsResponseSchema = NotezyResponseSchema.extend(
+export const RestoreMyStationsByIdsResponseSchema = NotegicResponseSchema.extend(
   {
     data: z.array(
       z.object({
@@ -402,7 +402,7 @@ export type RestoreMyStationsByIdsResponse = z.infer<
 
 /* ============================== DeleteMyStationById ============================== */
 
-export const DeleteMyStationByIdRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -418,7 +418,7 @@ export type DeleteMyStationByIdRequest = z.infer<
   typeof DeleteMyStationByIdRequestSchema
 >;
 
-export const DeleteMyStationByIdResponseSchema = NotezyResponseSchema.extend({
+export const DeleteMyStationByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     deletedAt: z.coerce.date(),
   }),
@@ -433,7 +433,7 @@ export type DeleteMyStationByIdResponse = z.infer<
 
 /* ============================== DeleteMyStationsByIds ============================== */
 
-export const DeleteMyStationsByIdsRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -449,7 +449,7 @@ export type DeleteMyStationsByIdsRequest = z.infer<
   typeof DeleteMyStationsByIdsRequestSchema
 >;
 
-export const DeleteMyStationsByIdsResponseSchema = NotezyResponseSchema.extend({
+export const DeleteMyStationsByIdsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     deletedAt: z.coerce.date(),
   }),
@@ -464,7 +464,7 @@ export type DeleteMyStationsByIdsResponse = z.infer<
 
 /* ============================== HardDeleteMyStationById ============================== */
 
-export const HardDeleteMyStationByIdRequestSchema = NotezyRequestSchema.extend({
+export const HardDeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -481,7 +481,7 @@ export type HardDeleteMyStationByIdRequest = z.infer<
 >;
 
 export const HardDeleteMyStationByIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),
@@ -497,7 +497,7 @@ export type HardDeleteMyStationByIdResponse = z.infer<
 /* ============================== HardDeleteMyStationsByIds ============================== */
 
 export const HardDeleteMyStationsByIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -514,7 +514,7 @@ export type HardDeleteMyStationsByIdsRequest = z.infer<
 >;
 
 export const HardDeleteMyStationsByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),

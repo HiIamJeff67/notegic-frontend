@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import {
   AllAccessControlPermissions,
@@ -33,7 +33,7 @@ const RoutineTaskRecordSchema = z.object({
 export type RoutineTaskRecord = z.infer<typeof RoutineTaskRecordSchema>;
 
 export const GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -51,7 +51,7 @@ export type GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest = z.infer<
 >;
 
 export const GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(RoutineTaskRecordSchema),
     embedded: z.object({
       publicId: z.string(),
@@ -78,19 +78,19 @@ const RoutineTaskRecordVisualizeTimeBucketParamSchema =
   );
 
 export const VisualizeMyRoutineTaskRecordCountRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: VisualizeRequestHeaderSchema,
     param: RoutineTaskRecordVisualizeParamSchema,
   });
 
 export const VisualizeMyRoutineTaskRecordTimeCountRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: VisualizeRequestHeaderSchema,
     param: RoutineTaskRecordVisualizeTimeBucketParamSchema,
   });
 
 export const VisualizeMyRoutineTaskRecordCountResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: TwoDimensionalDataSchema,
   });
 export const VisualizeMyRoutineTaskRecordStatusCountResponseSchema =

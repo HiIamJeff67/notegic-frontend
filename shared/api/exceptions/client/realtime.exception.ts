@@ -3,7 +3,7 @@ import {
   ExceptionPrefix,
   ExceptionReasonDictionary,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 
@@ -16,8 +16,8 @@ export class RealtimeError {
   static BaseCode: ExceptionCode = ClientExceptionBaseCode_Realtime;
   static Prefix: ExceptionPrefix = ClientExceptionPrefix_Realtime;
 
-  static MissingWebSocketURL = (): NotezyException => {
-    return new NotezyException({
+  static MissingWebSocketURL = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.missingWebSocketURL,
@@ -26,8 +26,8 @@ export class RealtimeError {
     });
   };
 
-  static InvalidJsonFrame = (): NotezyException => {
-    return new NotezyException({
+  static InvalidJsonFrame = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.invalidJsonFrame,
@@ -36,8 +36,8 @@ export class RealtimeError {
     });
   };
 
-  static InvalidFrameShape = (): NotezyException => {
-    return new NotezyException({
+  static InvalidFrameShape = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 3,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.invalidFrameShape,
@@ -46,8 +46,8 @@ export class RealtimeError {
     });
   };
 
-  static UnsupportedProtocolVersion = (): NotezyException => {
-    return new NotezyException({
+  static UnsupportedProtocolVersion = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 4,
       prefix: this.Prefix,
       reason:
@@ -57,8 +57,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingFrameType = (): NotezyException => {
-    return new NotezyException({
+  static MissingFrameType = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 5,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.missingFrameType,
@@ -67,8 +67,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingReadyConnectionId = (): NotezyException => {
-    return new NotezyException({
+  static MissingReadyConnectionId = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 6,
       prefix: this.Prefix,
       reason:
@@ -78,8 +78,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingPongRequestId = (): NotezyException => {
-    return new NotezyException({
+  static MissingPongRequestId = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 7,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.missingPongRequestId,
@@ -88,8 +88,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingErrorFrameFields = (): NotezyException => {
-    return new NotezyException({
+  static MissingErrorFrameFields = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 8,
       prefix: this.Prefix,
       reason:
@@ -99,8 +99,8 @@ export class RealtimeError {
     });
   };
 
-  static UnsupportedFrameType = (frameType: string): NotezyException => {
-    return new NotezyException({
+  static UnsupportedFrameType = (frameType: string): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 9,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.unsupportedFrameType,
@@ -109,8 +109,8 @@ export class RealtimeError {
     });
   };
 
-  static UnexpectedBinaryMessage = (): NotezyException => {
-    return new NotezyException({
+  static UnexpectedBinaryMessage = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 10,
       prefix: this.Prefix,
       reason:
@@ -120,8 +120,8 @@ export class RealtimeError {
     });
   };
 
-  static UnableToParseFrame = (): NotezyException => {
-    return new NotezyException({
+  static UnableToParseFrame = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 11,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.unableToParseFrame,
@@ -130,8 +130,8 @@ export class RealtimeError {
     });
   };
 
-  static InvalidBinaryFrame = (): NotezyException => {
-    return new NotezyException({
+  static InvalidBinaryFrame = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 12,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.invalidBinaryFrame,
@@ -140,8 +140,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingSubscribedConnectorChannelId = (): NotezyException => {
-    return new NotezyException({
+  static MissingSubscribedConnectorChannelId = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 13,
       prefix: this.Prefix,
       reason:
@@ -152,8 +152,8 @@ export class RealtimeError {
     });
   };
 
-  static MissingChannelTicket = (): NotezyException => {
-    return new NotezyException({
+  static MissingChannelTicket = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 14,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.client.realtime.missingChannelTicket,

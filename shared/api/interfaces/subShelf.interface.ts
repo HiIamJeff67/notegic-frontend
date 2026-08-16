@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import {
   AllMaterialContentTypes,
@@ -10,7 +10,7 @@ import { z } from "zod";
 
 /* ============================== GetMySubShelfById ============================== */
 
-export const GetMySubShelfByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMySubShelfByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -27,7 +27,7 @@ export type GetMySubShelfByIdRequest = z.input<
   typeof GetMySubShelfByIdRequestSchema
 >;
 
-export const GetMySubShelfByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMySubShelfByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     name: z.string(),
@@ -50,7 +50,7 @@ export type GetMySubShelfByIdResponse = z.infer<
 /* ============================== GetMySubShelvesByPrevSubShelfId ============================== */
 
 export const GetMySubShelvesByPrevSubShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -68,7 +68,7 @@ export type GetMySubShelvesByPrevSubShelfIdRequest = z.input<
 >;
 
 export const GetMySubShelvesByPrevSubShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -93,7 +93,7 @@ export type GetMySubShelvesByPrevSubShelfIdResponse = z.infer<
 /* ============================== GetAllMySubShelvesByRootShelfId ============================== */
 
 export const GetAllMySubShelvesByRootShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -111,7 +111,7 @@ export type GetAllMySubShelvesByRootShelfIdRequest = z.input<
 >;
 
 export const GetAllMySubShelvesByRootShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -136,7 +136,7 @@ export type GetAllMySubShelvesByRootShelfIdResponse = z.infer<
 /* ============================== GetMySubShelvesAndItemsByPrevSubShelfId ============================== */
 
 export const GetMySubShelvesAndItemsByPrevSubShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -154,7 +154,7 @@ export type GetMySubShelvesAndItemsByPrevSubShelfIdRequest = z.input<
 >;
 
 export const GetMySubShelvesAndItemsByPrevSubShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       subShelves: z.array(
         z.object({
@@ -211,7 +211,7 @@ export type GetMySubShelvesAndItemsByPrevSubShelfIdResponse = z.infer<
 /* ============================== CreateSubShelfByRootShelfId ============================== */
 
 export const CreateSubShelfByRootShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -235,7 +235,7 @@ export type CreateSubShelfByRootShelfIdRequest = z.infer<
 >;
 
 export const CreateSubShelfByRootShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
       createdAt: z.coerce.date(),
@@ -252,7 +252,7 @@ export type CreateSubShelfByRootShelfIdResponse = z.infer<
 /* ============================== CreateSubShelvesByRootShelfIds ============================== */
 
 export const CreateSubShelvesByRootShelfIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -280,7 +280,7 @@ export type CreateSubShelvesByRootShelfIdsRequest = z.infer<
 >;
 
 export const CreateSubShelvesByRootShelfIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       ids: z.array(z.uuidv4()),
       createdAt: z.coerce.date(),
@@ -296,7 +296,7 @@ export type CreateSubShelvesByRootShelfIdsResponse = z.infer<
 
 /* ============================== UpdateMySubShelfById ============================== */
 
-export const UpdateMySubShelfByIdRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMySubShelfByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -322,7 +322,7 @@ export type UpdateMySubShelfByIdRequest = z.infer<
   typeof UpdateMySubShelfByIdRequestSchema
 >;
 
-export const UpdateMySubShelfByIdResponseSchema = NotezyResponseSchema.extend({
+export const UpdateMySubShelfByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -337,7 +337,7 @@ export type UpdateMySubShelfByIdResponse = z.infer<
 
 /* ============================== UpdateMySubShelvesByIds ============================== */
 
-export const UpdateMySubShelvesByIdsRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -368,7 +368,7 @@ export type UpdateMySubShelvesByIdsRequest = z.infer<
 >;
 
 export const UpdateMySubShelvesByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -383,7 +383,7 @@ export type UpdateMySubShelvesByIdsResponse = z.infer<
 
 /* ============================== MoveMySubShelf ============================== */
 
-export const MoveMySubShelfRequestSchema = NotezyRequestSchema.extend({
+export const MoveMySubShelfRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -404,7 +404,7 @@ export const MoveMySubShelfRequestSchema = NotezyRequestSchema.extend({
 
 export type MoveMySubShelfRequest = z.infer<typeof MoveMySubShelfRequestSchema>;
 
-export const MoveMySubShelfResponseSchema = NotezyResponseSchema.extend({
+export const MoveMySubShelfResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -420,7 +420,7 @@ export type MoveMySubShelfResponse = z.infer<
 /* ============================== MoveMySubShelvesByRootShelfId ============================== */
 
 export const MoveMySubShelvesByRootShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -444,7 +444,7 @@ export type MoveMySubShelvesByRootShelfIdRequest = z.infer<
 >;
 
 export const MoveMySubShelvesByRootShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -460,7 +460,7 @@ export type MoveMySubShelvesByRootShelfIdResponse = z.infer<
 /* ============================== MoveMySubShelvesByRootShelfIds ============================== */
 
 export const MoveMySubShelvesByRootShelfIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -488,7 +488,7 @@ export type MoveMySubShelvesByRootShelfIdsRequest = z.infer<
 >;
 
 export const MoveMySubShelvesByRootShelfIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -503,7 +503,7 @@ export type MoveMySubShelvesByRootShelfIdsResponse = z.infer<
 
 /* ============================== RestoreMySubShelfById ============================== */
 
-export const RestoreMySubShelfByIdRequestSchema = NotezyRequestSchema.extend({
+export const RestoreMySubShelfByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -523,7 +523,7 @@ export type RestoreMySubShelfByIdRequest = z.infer<
   typeof RestoreMySubShelfByIdRequestSchema
 >;
 
-export const RestoreMySubShelfByIdResponseSchema = NotezyResponseSchema.extend({
+export const RestoreMySubShelfByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     name: z.string(),
@@ -545,7 +545,7 @@ export type RestoreMySubShelfByIdResponse = z.infer<
 
 /* ============================== RestoreMySubShelvesByIds ============================== */
 
-export const RestoreMySubShelvesByIdsRequestSchema = NotezyRequestSchema.extend(
+export const RestoreMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
   {
     header: z
       .object({
@@ -568,7 +568,7 @@ export type RestoreMySubShelvesByIdsRequest = z.infer<
 >;
 
 export const RestoreMySubShelvesByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -592,7 +592,7 @@ export type RestoreMySubShelvesByIdsResponse = z.infer<
 
 /* ============================== DeleteMySubShelfById ============================== */
 
-export const DeleteMySubShelfByIdRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMySubShelfByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -612,7 +612,7 @@ export type DeleteMySubShelfByIdRequest = z.infer<
   typeof DeleteMySubShelfByIdRequestSchema
 >;
 
-export const DeleteMySubShelfByIdResponseSchema = NotezyResponseSchema.extend({
+export const DeleteMySubShelfByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     deletedAt: z.coerce.date(),
   }),
@@ -627,7 +627,7 @@ export type DeleteMySubShelfByIdResponse = z.infer<
 
 /* ============================== DeleteMySubShelvesByIds ============================== */
 
-export const DeleteMySubShelvesByIdsRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -648,7 +648,7 @@ export type DeleteMySubShelvesByIdsRequest = z.infer<
 >;
 
 export const DeleteMySubShelvesByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),

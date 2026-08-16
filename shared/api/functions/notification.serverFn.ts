@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   DeleteNotificationsRequest,
   DeleteNotificationsResponse,
@@ -15,7 +15,7 @@ import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 
-const toNotificationException = (exception: unknown): NotezyException => {
+const toNotificationException = (exception: unknown): NotegicException => {
   const value =
     typeof exception === "object" && exception !== null
       ? (exception as Record<string, unknown>)
@@ -31,7 +31,7 @@ const toNotificationException = (exception: unknown): NotezyException => {
       ? value.message
       : "Notification request failed.";
 
-  return new NotezyException({
+  return new NotegicException({
     code:
       typeof value.code === "number" && value.code > 0 ? value.code : status,
     prefix:
@@ -92,7 +92,7 @@ const fetchNotificationResponse = async <T>(
     exception?: unknown;
   };
   if (formattedResponse.exception != null) {
-    throw new NotezyAPIError(
+    throw new NotegicAPIError(
       toNotificationException(formattedResponse.exception)
     );
   }

@@ -32,7 +32,7 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     profile: "个人资料",
   },
   homePage: {
-    mainTitle: "Notezy",
+    mainTitle: "Notegic",
     secondaryTitle: "一个更人性化的 AI 驱动笔记应用程序",
     subtitle: "您的数字笔记伙伴",
     getStarted: "开始使用",

@@ -8,7 +8,7 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
-const backendRoot = path.resolve(projectRoot, "../notezy-backend");
+const backendRoot = path.resolve(projectRoot, "../notegic-backend");
 const defaults = {
   gateway: path.join(
     backendRoot,

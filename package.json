@@ -1,5 +1,5 @@
 {
-  "name": "notezy-frontend",
+  "name": "notegic-frontend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -21,7 +21,7 @@
     "recodegen:win": "rmdir /s /q src/graphql/generated && npm run codegen",
     "licenses:json": "mkdir -p LICENSES && npx license-checker-rseidelsohn --production --json --relativeLicensePath --out LICENSES/third_party_licenses.json",
     "licenses:csv": "mkdir -p LICENSES && npx license-checker-rseidelsohn --production --csv --out LICENSES/third_party_licenses.csv",
-    "licenses:json:exclude": "mkdir -p LICENSES && npx license-checker-rseidelsohn --production --json --excludePackages '@notezy/ui;@notezy/core' --out LICENSES/third_party_licenses.json",
+    "licenses:json:exclude": "mkdir -p LICENSES && npx license-checker-rseidelsohn --production --json --excludePackages '@notegic/ui;@notegic/core' --out LICENSES/third_party_licenses.json",
     "licenses:collect": "node scripts/getThirdPartyLicenses.mjs",
     "licenses:all": "npm run licenses:json && npm run licenses:collect"
   },

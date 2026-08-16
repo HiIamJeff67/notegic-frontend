@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateBlockPackRequest,
   CreateBlockPackResponse,
@@ -70,8 +70,8 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyBlockPackByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -114,8 +114,8 @@ export const GetMyBlockPackAndItsParentById = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMyBlockPackAndItsParentByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -159,8 +159,8 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetMyBlockPacksByParentSubShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -204,8 +204,8 @@ export const GetAllMyBlockPacksByRootShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as GetAllMyBlockPacksByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -245,8 +245,8 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateBlockPackResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -283,8 +283,8 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateBlockPacksResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -324,8 +324,8 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyBlockPackByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -368,8 +368,8 @@ export const UpdateMyBlockPacksByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as UpdateMyBlockPacksByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -407,8 +407,8 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as MoveMyBlockPackByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -452,8 +452,8 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
       const formattedResponse =
         (await response.json()) as MoveMyBlockPacksByParentSubShelfIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -498,8 +498,8 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
       const formattedResponse =
         (await response.json()) as MoveMyBlockPacksByParentSubShelfIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -540,8 +540,8 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMyBlockPackByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -584,8 +584,8 @@ export const RestoreMyBlockPacksByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as RestoreMyBlockPacksByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -626,8 +626,8 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteMyBlockPackByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -670,8 +670,8 @@ export const DeleteMyBlockPacksByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as DeleteMyBlockPacksByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

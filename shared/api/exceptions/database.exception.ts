@@ -1,7 +1,7 @@
 import {
   ExceptionCode,
   ExceptionPrefix,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -15,8 +15,8 @@ export class DatabaseException {
   static BaseCode: ExceptionCode;
   static Prefix: ExceptionPrefix;
 
-  static NotFound(): NotezyException {
-    return new NotezyException({
+  static NotFound(): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: DatabaseExceptionReasons.notFound,
@@ -25,8 +25,8 @@ export class DatabaseException {
     });
   }
 
-  static FailedToCreate(): NotezyException {
-    return new NotezyException({
+  static FailedToCreate(): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason: DatabaseExceptionReasons.failedToCreate,
@@ -35,8 +35,8 @@ export class DatabaseException {
     });
   }
 
-  static FailedToUpdate(): NotezyException {
-    return new NotezyException({
+  static FailedToUpdate(): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 3,
       prefix: this.Prefix,
       reason: DatabaseExceptionReasons.failedToUpdate,
@@ -45,8 +45,8 @@ export class DatabaseException {
     });
   }
 
-  static FailedToDelete(): NotezyException {
-    return new NotezyException({
+  static FailedToDelete(): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 4,
       prefix: this.Prefix,
       reason: DatabaseExceptionReasons.failedToDelete,
@@ -60,8 +60,8 @@ export class APIException {
   static BaseCode: ExceptionCode;
   static Prefix: ExceptionPrefix;
 
-  static Timeout(time: number = 0): NotezyException {
-    return new NotezyException({
+  static Timeout(time: number = 0): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 12,
       prefix: this.Prefix,
       reason: APIExceptionReasons.timeout,
@@ -85,8 +85,8 @@ export class CommonException {
   static BaseCode: ExceptionCode;
   static Prefix: ExceptionPrefix;
 
-  static InvalidDto(): NotezyException {
-    return new NotezyException({
+  static InvalidDto(): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 32,
       prefix: this.Prefix,
       reason: TypeExceptionReasons.invalidDto,

@@ -6,11 +6,11 @@ Use `src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same
 
 | Entity | Canonical export | Notes |
 | --- | --- | --- |
-| Root shelf | `RootShelfIcon` | Notezy custom shelf icon. `EmptyShelfIcon` is only the collapsed/open-state variation in the sidebar. |
+| Root shelf | `RootShelfIcon` | Notegic custom shelf icon. `EmptyShelfIcon` is only the collapsed/open-state variation in the sidebar. |
 | Sub shelf | `SubShelfIcon` | A folder. Use `FolderPlus` only for the create action. |
 | Material | `MaterialIcon` | A text/file document. |
 | Block pack | `BlockPackIcon` | A package. `PackagePlus` is only the add-items group/action. |
-| Station | `StationIcon` | Notezy custom station icon; a user-selected emoji may replace it in a station row. |
+| Station | `StationIcon` | Notegic custom station icon; a user-selected emoji may replace it in a station row. |
 | Routine | `RoutineIcon` | A clipboard clock. |
 | Routine task | `RoutineTaskIcon` | A clipboard list. |
 | Routine tag | `RoutineTagIcon` | A tag. |
@@ -25,7 +25,7 @@ Use `src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same
 ## Icon implementation
 
 - Use `lucide-react` for general-purpose icons and pass Tailwind size classes (`size-4`, `size-5`) in menus and controls.
-- Keep Notezy domain glyphs in `src/components/icons/`; they accept the shared `IconProps` contract and use `currentColor`.
+- Keep Notegic domain glyphs in `src/components/icons/`; they accept the shared `IconProps` contract and use `currentColor`.
 - Do not introduce an icon library for a single glyph or embed unlabelled SVG markup in feature components.
 - Icon-only controls require an accessible name. Decorative icons next to visible text do not.
 

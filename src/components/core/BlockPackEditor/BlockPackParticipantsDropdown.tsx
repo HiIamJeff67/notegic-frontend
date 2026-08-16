@@ -163,15 +163,15 @@ const BlockPackParticipantsDropdown = ({
       );
     };
 
-    window.addEventListener("notezy:realtime-presence", handlePresence);
+    window.addEventListener("notegic:realtime-presence", handlePresence);
     window.addEventListener(
-      "notezy:realtime-presence-snapshot",
+      "notegic:realtime-presence-snapshot",
       handlePresenceSnapshot
     );
     return () => {
-      window.removeEventListener("notezy:realtime-presence", handlePresence);
+      window.removeEventListener("notegic:realtime-presence", handlePresence);
       window.removeEventListener(
-        "notezy:realtime-presence-snapshot",
+        "notegic:realtime-presence-snapshot",
         handlePresenceSnapshot
       );
     };

@@ -14,7 +14,7 @@ export type RealtimeBlockPackChannelTicket = {
   channelId: string;
   roomName: string;
   fragmentName: string;
-  schemaId: "notezy.blocknote";
+  schemaId: "notegic.blocknote";
   schemaVersion: 1;
   realtimeProtocolVersion: typeof RealtimeProtocolVersion;
   permission: z.infer<typeof RealtimePermissionSchema>;

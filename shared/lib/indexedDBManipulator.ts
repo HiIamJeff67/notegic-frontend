@@ -11,7 +11,7 @@ import {
 } from "idb-keyval";
 
 export class IndexedDBManipulator {
-  private static readonly IndexedDBPrefix = "notezy_";
+  private static readonly IndexedDBPrefix = "notegic_";
 
   private static getIndexedDBKey(key: IndexedDBKey, publicId?: string): string {
     if (publicId !== undefined) {

@@ -1,10 +1,10 @@
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { ExceptionReasonDictionary } from "@shared/api/exceptions";
 
 export const isNetworkFallbackError = (error: unknown): boolean => {
   if (error instanceof TypeError) return true;
   if (
-    error instanceof NotezyFetchError &&
+    error instanceof NotegicFetchError &&
     error.unWrap.reason ===
       ExceptionReasonDictionary.client.fetch.missingNetwork
   ) {

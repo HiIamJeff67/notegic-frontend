@@ -1,12 +1,12 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import z from "zod";
 
 /* ============================== Register Context ============================== */
 
-export const RegisterRequestSchema = NotezyRequestSchema.extend({
+export const RegisterRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -31,7 +31,7 @@ export const RegisterRequestSchema = NotezyRequestSchema.extend({
 
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 
-export const RegisterResponseSchema = NotezyResponseSchema.extend({
+export const RegisterResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     publicId: z.string(),
     name: z.string(),
@@ -46,7 +46,7 @@ export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 
 /* ============================== RegisterViaGoogle Context ============================== */
 
-export const RegisterViaGoogleRequestSchema = NotezyRequestSchema.extend({
+export const RegisterViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -61,7 +61,7 @@ export type RegisterViaGoogleRequest = z.infer<
   typeof RegisterViaGoogleRequestSchema
 >;
 
-export const RegisterViaGoogleResponseSchema = NotezyResponseSchema.extend({
+export const RegisterViaGoogleResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     publicId: z.string(),
     name: z.string(),
@@ -78,7 +78,7 @@ export type RegisterViaGoogleResponse = z.infer<
 
 /* ============================== Login Context ============================== */
 
-export const LoginRequestSchema = NotezyRequestSchema.extend({
+export const LoginRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -98,7 +98,7 @@ export const LoginRequestSchema = NotezyRequestSchema.extend({
 
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
-export const LoginResponseSchema = NotezyResponseSchema.extend({
+export const LoginResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     publicId: z.string(),
     name: z.string(),
@@ -114,7 +114,7 @@ export type LoginResponse = z.infer<typeof LoginResponseSchema>;
 
 /* ============================== LoginViaGoogle Context ============================== */
 
-export const LoginViaGoogleRequestSchema = NotezyRequestSchema.extend({
+export const LoginViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -127,7 +127,7 @@ export const LoginViaGoogleRequestSchema = NotezyRequestSchema.extend({
 
 export type LoginViaGoogleRequest = z.infer<typeof LoginViaGoogleRequestSchema>;
 
-export const LoginViaGoogleResponseSchema = NotezyResponseSchema.extend({
+export const LoginViaGoogleResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     publicId: z.string(),
     name: z.string(),
@@ -145,7 +145,7 @@ export type LoginViaGoogleResponse = z.infer<
 
 /* ============================== Logout Context ============================== */
 
-export const LogoutRequestSchema = NotezyRequestSchema.extend({
+export const LogoutRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -156,7 +156,7 @@ export const LogoutRequestSchema = NotezyRequestSchema.extend({
 
 export type LogoutRequest = z.infer<typeof LogoutRequestSchema>;
 
-export const LogoutResponseSchema = NotezyResponseSchema.extend({
+export const LogoutResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -169,7 +169,7 @@ export type LogoutResponse = z.infer<typeof LogoutResponseSchema>;
 
 /* ============================== SendAuthCode Context ============================== */
 
-export const SendAuthCodeRequestSchema = NotezyRequestSchema.extend({
+export const SendAuthCodeRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -183,7 +183,7 @@ export const SendAuthCodeRequestSchema = NotezyRequestSchema.extend({
 
 export type SendAuthCodeRequest = z.infer<typeof SendAuthCodeRequestSchema>;
 
-export const SendAuthCodeResponseSchema = NotezyResponseSchema.extend({
+export const SendAuthCodeResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     authCodeExpiredAt: z.coerce.date(),
     blockAuthCodeUntil: z.coerce.date(),
@@ -195,7 +195,7 @@ export type SendAuthCodeResponse = z.infer<typeof SendAuthCodeResponseSchema>;
 
 /* ============================== ValidateEmail Context ============================== */
 
-export const ValidateEmailRequestSchema = NotezyRequestSchema.extend({
+export const ValidateEmailRequestSchema = NotegicRequestSchema.extend({
   header: z.object({
     userAgent: z.string().min(1).optional(),
 
@@ -208,7 +208,7 @@ export const ValidateEmailRequestSchema = NotezyRequestSchema.extend({
 
 export type ValidateEmailRequest = z.infer<typeof ValidateEmailRequestSchema>;
 
-export const ValidateEmailResponseSchema = NotezyResponseSchema.extend({
+export const ValidateEmailResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -221,7 +221,7 @@ export type ValidateEmailResponse = z.infer<typeof ValidateEmailResponseSchema>;
 
 /* ============================== ResetEmail Context ============================== */
 
-export const ResetEmailRequestSchema = NotezyRequestSchema.extend({
+export const ResetEmailRequestSchema = NotegicRequestSchema.extend({
   header: z.object({
     userAgent: z.string().min(1).optional(),
 
@@ -235,7 +235,7 @@ export const ResetEmailRequestSchema = NotezyRequestSchema.extend({
 
 export type ResetEmailRequest = z.infer<typeof ResetEmailRequestSchema>;
 
-export const ResetEmailResponseSchema = NotezyResponseSchema.extend({
+export const ResetEmailResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -248,7 +248,7 @@ export type ResetEmailResponse = z.infer<typeof ResetEmailResponseSchema>;
 
 /* ============================== ForgetPassword Context ============================== */
 
-export const ForgetPasswordRequestSchema = NotezyRequestSchema.extend({
+export const ForgetPasswordRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -273,7 +273,7 @@ export const ForgetPasswordRequestSchema = NotezyRequestSchema.extend({
 
 export type ForgetPasswordRequest = z.infer<typeof ForgetPasswordRequestSchema>;
 
-export const ForgetPasswordResponseSchema = NotezyResponseSchema.extend({
+export const ForgetPasswordResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -285,7 +285,7 @@ export type ForgetPasswordResponse = z.infer<
 
 /* ============================== ResetMe Context ============================== */
 
-export const ResetMeRequestSchema = NotezyRequestSchema.extend({
+export const ResetMeRequestSchema = NotegicRequestSchema.extend({
   header: z.object({
     userAgent: z.string().min(1).optional(),
 
@@ -298,7 +298,7 @@ export const ResetMeRequestSchema = NotezyRequestSchema.extend({
 
 export type ResetMeRequest = z.infer<typeof ResetMeRequestSchema>;
 
-export const ResetMeResponseSchema = NotezyResponseSchema.extend({
+export const ResetMeResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -311,7 +311,7 @@ export type ResetMeResponse = z.infer<typeof ResetMeResponseSchema>;
 
 /* ============================== DeleteMe Context ============================== */
 
-export const DeleteMeRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMeRequestSchema = NotegicRequestSchema.extend({
   header: z.object({
     userAgent: z.string().min(1).optional(),
 
@@ -324,7 +324,7 @@ export const DeleteMeRequestSchema = NotezyRequestSchema.extend({
 
 export type DeleteMeRequest = z.infer<typeof DeleteMeRequestSchema>;
 
-export const DeleteMeResponseSchema = NotezyResponseSchema.extend({
+export const DeleteMeResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     deletedAt: z.coerce.date(),
   }),

@@ -1,4 +1,4 @@
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   SaveMyMaterialByIdRequest,
   SaveMyMaterialByIdResponse,
@@ -34,7 +34,7 @@ export async function SaveMyMaterialById(
   const formattedResponse =
     (await response.json()) as SaveMyMaterialByIdResponse;
   if (formattedResponse.exception != null) {
-    throw new NotezyAPIError(new NotezyException(formattedResponse.exception));
+    throw new NotegicAPIError(new NotegicException(formattedResponse.exception));
   }
 
   return formattedResponse;

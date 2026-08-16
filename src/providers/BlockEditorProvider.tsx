@@ -4,8 +4,8 @@ import {
   RealtimePermission,
 } from "@shared/api/interfaces/enums";
 import {
-  getNotezyBlockNoteXmlFragment,
-  NotezyBlockPackEditor,
+  getNotegicBlockNoteXmlFragment,
+  NotegicBlockPackEditor,
 } from "@shared/blockpack/core";
 import { WebURLPathDictionary } from "@shared/constants";
 import { randomColor } from "@shared/util/random";
@@ -68,9 +68,9 @@ export const BlockEditorProvider = ({
   );
   const editor = useMemo(
     () =>
-      NotezyBlockPackEditor.create({
+      NotegicBlockPackEditor.create({
         collaboration: {
-          fragment: getNotezyBlockNoteXmlFragment(channel.doc) as Y.XmlFragment,
+          fragment: getNotegicBlockNoteXmlFragment(channel.doc) as Y.XmlFragment,
           provider: channel.provider,
           user: {
             name:
@@ -140,7 +140,7 @@ export const BlockEditorProvider = ({
       return;
 
     window.dispatchEvent(
-      new CustomEvent("notezy:block-pack-room-unavailable", {
+      new CustomEvent("notegic:block-pack-room-unavailable", {
         detail: {
           rootShelfId: blockPackMeta.rootId,
           blockPackId: blockPackMeta.id,

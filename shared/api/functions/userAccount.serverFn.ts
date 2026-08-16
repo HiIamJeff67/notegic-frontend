@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   BindGoogleAccountRequest,
   BindGoogleAccountResponse,
@@ -43,8 +43,8 @@ export const GetMyAccount = createServerFn({ method: "GET" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as GetMyAccountResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -79,8 +79,8 @@ export const UpdateMyAccount = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UpdateMyAccountResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -117,8 +117,8 @@ export const BindGoogleAccount = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as BindGoogleAccountResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -155,8 +155,8 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UnbindGoogleAccountResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 

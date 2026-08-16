@@ -1,9 +1,9 @@
 import type { UUID } from "node:crypto";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
-  NotezyAPIError,
+  NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
@@ -82,14 +82,14 @@ export const useGetMySubShelfById = (
     request?: GetMySubShelfByIdRequest
   ): Promise<GetMySubShelfByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMySubShelfById(request);
@@ -102,8 +102,8 @@ export const useGetMySubShelfById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingSubShelf =
           await SubShelfLocalSimulator.simulateGetMySubShelfById(request);
@@ -161,14 +161,14 @@ export const useGetMySubShelvesByPrevSubShelfId = (
     request?: GetMySubShelvesByPrevSubShelfIdRequest
   ): Promise<GetMySubShelvesByPrevSubShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMySubShelvesByPrevSubShelfId(request);
@@ -183,8 +183,8 @@ export const useGetMySubShelvesByPrevSubShelfId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingSubShelves =
           await SubShelfLocalSimulator.simulateGetMySubShelvesByPrevSubShelfId(
@@ -244,14 +244,14 @@ export const useGetAllMySubShelvesByRootShelfId = (
     request?: GetAllMySubShelvesByRootShelfIdRequest
   ): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMySubShelvesByRootShelfId(request);
@@ -266,8 +266,8 @@ export const useGetAllMySubShelvesByRootShelfId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingSubShelves =
           await SubShelfLocalSimulator.simulateGetAllMySubShelvesByRootShelfId(
@@ -327,14 +327,14 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
     request?: GetMySubShelvesAndItemsByPrevSubShelfIdRequest
   ): Promise<GetMySubShelvesAndItemsByPrevSubShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response =
@@ -350,8 +350,8 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existing =
           await SubShelfLocalSimulator.simulateGetMySubShelvesAndItemsByPrevSubShelfId(
@@ -409,7 +409,7 @@ export const useCreateSubShelfByRootShelfId = () => {
     request: CreateSubShelfByRootShelfIdRequest
   ): Promise<CreateSubShelfByRootShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnCreateSubShelfByRootShelfId(request);
@@ -442,7 +442,7 @@ export const useCreateSubShelfByRootShelfId = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateCreateSubShelfByRootShelfId(
@@ -464,7 +464,7 @@ export const useCreateSubShelvesByRootShelfIds = () => {
     request: CreateSubShelvesByRootShelfIdsRequest
   ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnCreateSubShelvesByRootShelfIds(request);
@@ -502,7 +502,7 @@ export const useCreateSubShelvesByRootShelfIds = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateCreateSubShelvesByRootShelfIds(
@@ -524,7 +524,7 @@ export const useUpdateMySubShelfById = () => {
     request: UpdateMySubShelfByIdRequest
   ): Promise<UpdateMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnUpdateMySubShelfById(request);
@@ -557,7 +557,7 @@ export const useUpdateMySubShelfById = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateUpdateMySubShelfById(request);
@@ -576,7 +576,7 @@ export const useUpdateMySubShelvesByIds = () => {
     request: UpdateMySubShelvesByIdsRequest
   ): Promise<UpdateMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnUpdateMySubShelvesByIds(request);
@@ -614,7 +614,7 @@ export const useUpdateMySubShelvesByIds = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateUpdateMySubShelvesByIds(
@@ -635,7 +635,7 @@ export const useMoveMySubShelf = () => {
     request: MoveMySubShelfRequest
   ): Promise<MoveMySubShelfResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMySubShelf(request);
@@ -674,7 +674,7 @@ export const useMoveMySubShelf = () => {
       await SubShelfLocalSynchronizer.syncMoveMySubShelf(request, response);
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateMoveMySubShelf(request);
@@ -694,7 +694,7 @@ export const useMoveMySubShelvesByRootShelfId = () => {
     request: MoveMySubShelvesByRootShelfIdRequest
   ): Promise<MoveMySubShelvesByRootShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMySubShelvesByRootShelfId(request);
@@ -743,7 +743,7 @@ export const useMoveMySubShelvesByRootShelfId = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
@@ -765,7 +765,7 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
     request: MoveMySubShelvesByRootShelfIdsRequest
   ): Promise<MoveMySubShelvesByRootShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMySubShelvesByRootShelfIds(request);
@@ -820,7 +820,7 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
@@ -842,7 +842,7 @@ export const useRestoreMySubShelfById = () => {
     request: RestoreMySubShelfByIdRequest
   ): Promise<RestoreMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnRestoreMySubShelfById(request);
@@ -878,7 +878,7 @@ export const useRestoreMySubShelfById = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateRestoreMySubShelfById(request);
@@ -897,7 +897,7 @@ export const useRestoreMySubShelvesByIds = () => {
     request: RestoreMySubShelvesByIdsRequest
   ): Promise<RestoreMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnRestoreMySubShelvesByIds(request);
@@ -945,7 +945,7 @@ export const useRestoreMySubShelvesByIds = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(
@@ -967,7 +967,7 @@ export const useDeleteMySubShelfById = () => {
     request: DeleteMySubShelfByIdRequest
   ): Promise<DeleteMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnDeleteMySubShelfById(request);
@@ -1003,7 +1003,7 @@ export const useDeleteMySubShelfById = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateDeleteMySubShelfById(request);
@@ -1023,7 +1023,7 @@ export const useDeleteMySubShelvesByIds = () => {
     request: DeleteMySubShelvesByIdsRequest
   ): Promise<DeleteMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnDeleteMySubShelvesByIds(request);
@@ -1071,7 +1071,7 @@ export const useDeleteMySubShelvesByIds = () => {
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateDeleteMySubShelvesByIds(

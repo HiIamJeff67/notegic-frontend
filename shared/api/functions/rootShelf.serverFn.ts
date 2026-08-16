@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
 
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateRootShelfRequest,
   CreateRootShelfResponse,
@@ -68,8 +68,8 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyRootShelfByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -106,8 +106,8 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateRootShelfResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -144,8 +144,8 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as CreateRootShelvesResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -188,8 +188,8 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpsertRootShelfPermissionResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -241,8 +241,8 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteRootShelfPermissionsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -289,8 +289,8 @@ const fetchRootShelfMembership = async <T>(
     refreshableTokens?: { newCSRFToken?: string };
   };
   if (formattedResponse.exception != null)
-    throw new NotezyAPIError(
-      new NotezyException(formattedResponse.exception as any)
+    throw new NotegicAPIError(
+      new NotegicException(formattedResponse.exception as any)
     );
   return formattedResponse;
 };
@@ -352,8 +352,8 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyRootShelfByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -396,8 +396,8 @@ export const UpdateMyRootShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as UpdateMyRootShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -438,8 +438,8 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMyRootShelfByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -482,8 +482,8 @@ export const RestoreMyRootShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as RestoreMyRootShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -524,8 +524,8 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteMyRootShelfByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -568,8 +568,8 @@ export const DeleteMyRootShelvesByIds = createServerFn({
       const formattedResponse =
         (await response.json()) as DeleteMyRootShelvesByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

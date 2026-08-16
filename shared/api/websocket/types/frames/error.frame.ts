@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 import type { RealtimeErrorCode } from "../errorCode.type";
@@ -18,7 +18,7 @@ export const parseRealtimeErrorFrame = (
   frame: Record<string, unknown>
 ): RealtimeErrorFrame => {
   if (typeof frame.code !== "string" || typeof frame.message !== "string") {
-    throw new NotezyAPIError(RealtimeError.MissingErrorFrameFields());
+    throw new NotegicAPIError(RealtimeError.MissingErrorFrameFields());
   }
 
   return {

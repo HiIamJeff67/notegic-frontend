@@ -1,5 +1,5 @@
 export class CSRFTokenGenerator {
-  private static readonly CSRFTokenPrefix = "notezy_csrf_token_";
+  private static readonly CSRFTokenPrefix = "notegic_csrf_token_";
 
   static generate = (): string => {
     if (typeof window === "undefined") return "";

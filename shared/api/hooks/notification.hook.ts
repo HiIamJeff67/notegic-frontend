@@ -2,7 +2,7 @@ import {
   getClientMutationHeaders,
   getClientRequestHeaders,
 } from "@shared/api/clientHeaders";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import type {
   DeleteNotificationsRequest,
   DeleteNotificationsResponse,
@@ -40,7 +40,7 @@ const persistCSRFToken = (response: {
 
 const notificationRetryPolicy = (failureCount: number, error: Error) =>
   failureCount < 1 &&
-  error instanceof NotezyAPIError &&
+  error instanceof NotegicAPIError &&
   error.unWrap.retryable === true;
 
 export const useNotifications = (enabled = true) =>

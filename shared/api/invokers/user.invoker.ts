@@ -1,11 +1,11 @@
 import {
   ExceptionReasonDictionary,
-  NotezyAPIError,
+  NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   GetMe,
   GetUserData,
@@ -37,10 +37,10 @@ export const queryFnGetUserData = async (
   } catch (error) {
     console.error("error happening in queryFnGetUserData", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
@@ -48,7 +48,7 @@ export const queryFnGetUserData = async (
           throw new Error(error.unWrap.message);
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -65,10 +65,10 @@ export const queryFnGetMe = async (
   } catch (error) {
     console.error("error happening in queryFnGetMe", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
@@ -76,7 +76,7 @@ export const queryFnGetMe = async (
           throw new Error(error.unWrap.message);
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;
@@ -93,10 +93,10 @@ export const mutationFnUpdateMe = async (
   } catch (error) {
     console.error("error happening in mutationFnUpdateMe", error);
     if (error instanceof ZodError) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotezyAPIError) {
+    } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
@@ -104,7 +104,7 @@ export const mutationFnUpdateMe = async (
           throw new Error(error.unWrap.message);
       }
     } else if (error instanceof TypeError) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     throw error;

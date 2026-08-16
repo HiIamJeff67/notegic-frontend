@@ -32,7 +32,7 @@ export const KoreanCommonTranslation: CommonTranslation = {
     profile: "프로필",
   },
   homePage: {
-    mainTitle: "Notezy",
+    mainTitle: "Notegic",
     secondaryTitle: "보다 인간적인 AI 기반 노트 애플리케이션",
     subtitle: "당신의 디지털 노트 파트너",
     getStarted: "시작하기",

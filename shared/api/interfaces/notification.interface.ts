@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { z } from "zod";
 
@@ -52,7 +52,7 @@ export type NotificationSearchPageInfo = z.infer<
   typeof NotificationSearchPageInfoSchema
 >;
 
-export const ListNotificationsRequestSchema = NotezyRequestSchema.extend({
+export const ListNotificationsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -68,7 +68,7 @@ export type ListNotificationsRequest = z.infer<
   typeof ListNotificationsRequestSchema
 >;
 
-export const ListNotificationsResponseSchema = NotezyResponseSchema.extend({
+export const ListNotificationsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     searchEdges: z.array(NotificationSearchEdgeSchema),
     searchPageInfo: NotificationSearchPageInfoSchema,
@@ -81,7 +81,7 @@ export type ListNotificationsResponse = z.infer<
 >;
 
 export const GetUnreadNotificationCountRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -94,7 +94,7 @@ export type GetUnreadNotificationCountRequest = z.infer<
 >;
 
 export const GetUnreadNotificationCountResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({ count: z.number().int().nonnegative() }),
   });
 export type GetUnreadNotificationCountResponse = z.infer<
@@ -106,7 +106,7 @@ const NotificationMutationHeaderSchema = z.object({
   csrfToken: z.string(),
 });
 
-export const MarkNotificationsReadRequestSchema = NotezyRequestSchema.extend({
+export const MarkNotificationsReadRequestSchema = NotegicRequestSchema.extend({
   header: NotificationMutationHeaderSchema,
   body: z.object({ notificationIds: z.array(z.uuid()).min(1) }),
 });
@@ -114,14 +114,14 @@ export type MarkNotificationsReadRequest = z.infer<
   typeof MarkNotificationsReadRequestSchema
 >;
 
-export const MarkNotificationsReadResponseSchema = NotezyResponseSchema.extend({
+export const MarkNotificationsReadResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ updatedCount: z.number().int().nonnegative() }),
 });
 export type MarkNotificationsReadResponse = z.infer<
   typeof MarkNotificationsReadResponseSchema
 >;
 
-export const DeleteNotificationsRequestSchema = NotezyRequestSchema.extend({
+export const DeleteNotificationsRequestSchema = NotegicRequestSchema.extend({
   header: NotificationMutationHeaderSchema,
   body: z.object({ notificationIds: z.array(z.uuid()).min(1) }),
 });
@@ -129,7 +129,7 @@ export type DeleteNotificationsRequest = z.infer<
   typeof DeleteNotificationsRequestSchema
 >;
 
-export const DeleteNotificationsResponseSchema = NotezyResponseSchema.extend({
+export const DeleteNotificationsResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ deletedCount: z.number().int().nonnegative() }),
 });
 export type DeleteNotificationsResponse = z.infer<

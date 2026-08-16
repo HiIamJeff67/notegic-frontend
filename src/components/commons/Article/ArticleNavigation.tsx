@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
-import notezyLogo from "@/assets/logo/TransparentNotezy.svg";
+import notegicLogo from "@/assets/logo/transparent-background.svg";
 import ArticleCommand from "./ArticleCommand";
 import {
   ArticleDisplayContext,
@@ -375,13 +375,13 @@ export const ArticleSidebar = ({
                 }}
               >
                 <img
-                  src={notezyLogo}
+                  src={notegicLogo}
                   alt=""
                   draggable={false}
                   className="size-4 shrink-0 object-contain"
                 />
                 <span className="text-sm font-semibold tracking-[0.08em] text-white">
-                  Notezy
+                  Notegic
                 </span>
               </a>
             </SidebarMenuItem>

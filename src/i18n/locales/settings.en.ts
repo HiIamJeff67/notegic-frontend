@@ -104,8 +104,8 @@ export const EnglishSettingsTranslation = {
         premium: "Premium",
         ultimate: "Ultimate",
         enterprise: "Enterprise",
-        monthlyPlan: "Notezy monthly {{plan}} plan",
-        yearlyPlan: "Notezy yearly {{plan}} plan",
+        monthlyPlan: "Notegic monthly {{plan}} plan",
+        yearlyPlan: "Notegic yearly {{plan}} plan",
         paymentNotice:
           "The interface and backend data model are ready. Payments, subscriptions, and plan-change APIs will be connected after the external payment flow is deployed.",
         rootShelves: "Root shelves",
@@ -278,7 +278,7 @@ export const EnglishSettingsTranslation = {
           "Wrap long lines so they can be read without horizontal scrolling.",
         spellcheck: "Spellcheck",
         spellcheckDescription:
-          "Use your browser's local spellcheck without sending content to the Notezy API.",
+          "Use your browser's local spellcheck without sending content to the Notegic API.",
         quickInsert: "Quick insert bar",
         quickInsertDescription:
           "Show common insert tools while editing to quickly add blocks, routines, or materials.",
@@ -310,7 +310,7 @@ export const EnglishSettingsTranslation = {
         backgroundImages: "Background images",
         localDatabase: "Local database",
         localDatabaseDescription:
-          "Controls whether Notezy stores working data in this browser.",
+          "Controls whether Notegic stores working data in this browser.",
         offlineQueue: "Offline queue",
         offlineQueueDescription:
           "Controls whether offline changes wait locally until the connection is restored.",
@@ -348,7 +348,7 @@ export const EnglishSettingsTranslation = {
           "Control start page, preview information, and local clipboard protection.",
         startSurface: "Start page",
         startSurfaceDescription:
-          "Choose the workspace Notezy opens when you return.",
+          "Choose the workspace Notegic opens when you return.",
         dashboard: "Dashboard",
         routines: "Routines",
         privatePreviews: "Hide preview titles",
@@ -363,7 +363,7 @@ export const EnglishSettingsTranslation = {
         regexInvalid: "The regular expression is invalid.",
         regexExists: "This regular expression already exists.",
         regex: "Regular expression",
-        regexPlaceholder: "e.g. NOTEZY_[A-Z0-9]{16}",
+        regexPlaceholder: "e.g. NOTEGIC_[A-Z0-9]{16}",
         noPatterns: "No custom regular expressions yet.",
       },
       browserPermissions: {
@@ -372,7 +372,7 @@ export const EnglishSettingsTranslation = {
           "Review and re-authorize capabilities provided by this browser.",
         status: "Site permission status",
         statusDescription:
-          "Only permissions relevant to Notezy that this browser lets us inspect are shown here.",
+          "Only permissions relevant to Notegic that this browser lets us inspect are shown here.",
         refresh: "Check again",
         notifications: "Notifications",
         notificationsDescription:
@@ -385,7 +385,7 @@ export const EnglishSettingsTranslation = {
           "Used when copying preferences, identifiers, or generated content.",
         persistentStorage: "Persistent storage",
         persistentStorageDescription:
-          "Ask the browser to retain Notezy data locally. The browser decides whether to approve it and usually does not show a prompt.",
+          "Ask the browser to retain Notegic data locally. The browser decides whether to approve it and usually does not show a prompt.",
         geolocation: "Location",
         geolocationDescription:
           "Reserved for workspace features that need location context.",
@@ -412,7 +412,7 @@ export const EnglishSettingsTranslation = {
           "Choose how desktop, sync, and routine reminders are delivered.",
         desktop: "Desktop notifications",
         desktopDescription:
-          "Allow Notezy to use browser desktop notifications for local events and workspace status.",
+          "Allow Notegic to use browser desktop notifications for local events and workspace status.",
         routine: "Routine reminders",
         routineDescription:
           "Send reminders when a routine is due so active workflows are not missed.",
@@ -433,7 +433,7 @@ export const EnglishSettingsTranslation = {
         description:
           "Review version details, export local preferences, or reset settings.",
         version: "Version",
-        versionDescription: "The installed Notezy frontend version.",
+        versionDescription: "The installed Notegic frontend version.",
         exportPreferences: "Export preferences",
         exportPreferencesDescription:
           "Copy your current local preferences as JSON for a manual backup or bug report.",

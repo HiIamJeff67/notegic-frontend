@@ -1,5 +1,5 @@
 /**
- * ### Check if the given name is valid or not for Notezy API
+ * ### Check if the given name is valid or not for Notegic API
  * @param name string
  * @returns a boolean value to indicate if given name is valid or not
  * @description A valid name is:
@@ -32,7 +32,7 @@ export const isValidName = function (name: string): boolean {
 };
 
 /**
- * ### Check if the given email is valid or not for Notezy API
+ * ### Check if the given email is valid or not for Notegic API
  * @param email string
  * @returns a boolean value to indicate if the given email is valid or not
  * @description A valid email is:
@@ -47,7 +47,7 @@ export const isValidEmail = function (email: string): boolean {
 };
 
 /**
- * ### Check if the given password is valid or not for Notezy API
+ * ### Check if the given password is valid or not for Notegic API
  * @param password string
  * @returns a boolean value to indicate if the given password is valid or not
  * @description A valid password is:
@@ -88,7 +88,7 @@ export const isValidPassword = function (password: string): boolean {
 };
 
 /**
- * ### Check if the given auth code is valid or not for Notezy API
+ * ### Check if the given auth code is valid or not for Notegic API
  * @param authCode string
  * @returns a boolean value to indicate if the given auth code is valid or not
  * @description A valid auth code is:

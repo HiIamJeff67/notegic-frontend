@@ -104,8 +104,8 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         premium: "Premium",
         ultimate: "Ultimate",
         enterprise: "Enterprise",
-        monthlyPlan: "Notezy {{plan}} 月額プラン",
-        yearlyPlan: "Notezy {{plan}} 年額プラン",
+        monthlyPlan: "Notegic {{plan}} 月額プラン",
+        yearlyPlan: "Notegic {{plan}} 年額プラン",
         paymentNotice:
           "UI とバックエンドのデータモデルは準備済みです。外部決済フローのデプロイ後に、支払い、購読、プラン変更 API を接続します。",
         rootShelves: "ルートシェルフ",
@@ -277,7 +277,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "長い行を折り返し、横スクロールせずに読めるようにします。",
         spellcheck: "スペルチェック",
         spellcheckDescription:
-          "コンテンツを Notezy API に送らず、ブラウザーのローカルスペルチェックを使用します。",
+          "コンテンツを Notegic API に送らず、ブラウザーのローカルスペルチェックを使用します。",
         quickInsert: "クイック挿入バー",
         quickInsertDescription:
           "編集時に一般的な挿入ツールを表示し、ブロック、ルーチン、素材をすばやく追加できます。",
@@ -307,7 +307,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         backgroundImages: "背景画像",
         localDatabase: "ローカルデータベース",
         localDatabaseDescription:
-          "このブラウザーに Notezy の作業データを保存するかを制御します。",
+          "このブラウザーに Notegic の作業データを保存するかを制御します。",
         offlineQueue: "オフラインキュー",
         offlineQueueDescription:
           "オフラインの変更を、接続が復帰するまでローカルで待機させるかを制御します。",
@@ -346,7 +346,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "開始ページ、プレビュー情報、ローカルクリップボード保護を設定します。",
         startSurface: "開始ページ",
         startSurfaceDescription:
-          "Notezy に戻ったとき開くワークスペースを選びます。",
+          "Notegic に戻ったとき開くワークスペースを選びます。",
         dashboard: "ダッシュボード",
         routines: "ルーチン",
         privatePreviews: "プレビュータイトルを隠す",
@@ -361,7 +361,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         regexInvalid: "正規表現が無効です。",
         regexExists: "この正規表現はすでに存在します。",
         regex: "正規表現",
-        regexPlaceholder: "例: NOTEZY_[A-Z0-9]{16}",
+        regexPlaceholder: "例: NOTEGIC_[A-Z0-9]{16}",
         noPatterns: "カスタム正規表現はまだありません。",
       },
       browserPermissions: {
@@ -369,7 +369,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         description: "このブラウザーが提供する機能を確認し、再承認します。",
         status: "サイト権限の状態",
         statusDescription:
-          "ここには Notezy に関連し、このブラウザーで確認できる権限のみ表示されます。",
+          "ここには Notegic に関連し、このブラウザーで確認できる権限のみ表示されます。",
         refresh: "再確認",
         notifications: "通知",
         notificationsDescription:
@@ -382,7 +382,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "設定、識別子、生成されたコンテンツをコピーするときに使用します。",
         persistentStorage: "永続ストレージ",
         persistentStorageDescription:
-          "Notezy データをローカルに保持するようブラウザーに要求します。承認はブラウザーが決定し、通常は確認画面を表示しません。",
+          "Notegic データをローカルに保持するようブラウザーに要求します。承認はブラウザーが決定し、通常は確認画面を表示しません。",
         geolocation: "位置情報",
         geolocationDescription:
           "位置コンテキストが必要なワークスペース機能のために予約されています。",
@@ -409,7 +409,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "デスクトップ、同期、ルーチンのリマインダー方法を選びます。",
         desktop: "デスクトップ通知",
         desktopDescription:
-          "ローカルイベントやワークスペース状態について、Notezy がブラウザーのデスクトップ通知を使えるようにします。",
+          "ローカルイベントやワークスペース状態について、Notegic がブラウザーのデスクトップ通知を使えるようにします。",
         routine: "ルーチンのリマインダー",
         routineDescription:
           "ルーチンの期限が近づいたら通知し、進行中のワークフローを見逃さないようにします。",
@@ -430,7 +430,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "バージョン情報を確認し、ローカル設定をエクスポートまたはリセットします。",
         version: "バージョン",
         versionDescription:
-          "インストールされている Notezy フロントエンドのバージョンです。",
+          "インストールされている Notegic フロントエンドのバージョンです。",
         exportPreferences: "設定をエクスポート",
         exportPreferencesDescription:
           "現在のローカル設定を JSON としてコピーし、手動バックアップや不具合報告に利用できます。",

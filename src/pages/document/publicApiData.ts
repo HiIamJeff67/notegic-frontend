@@ -29,7 +29,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -280,9 +280,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "block-packs"
       },
@@ -627,7 +627,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -785,9 +785,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/block-packs/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/block-packs/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "block-packs"
       },
@@ -802,7 +802,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -960,9 +960,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "block-packs"
       },
@@ -977,7 +977,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -1140,9 +1140,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdBlockPacks\": [\n    {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdBlockPacks\": [\n    {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdBlockPacks\": [\n      {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\",\n        \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdBlockPacks\": [\n    {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdBlockPacks\": [\n    {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdBlockPacks\": [\n      {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\",\n        \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -1157,7 +1157,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "parent-sub-shelf-id",
@@ -1350,9 +1350,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"😀\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"😀\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\",\n    \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"😀\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/block-packs/sub-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"😀\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\",\n    \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -1367,7 +1367,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -1559,9 +1559,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"😀\",\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"😀\",\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -1576,7 +1576,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -1729,9 +1729,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedBlockPacks\": [\n    {\n      \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedBlockPacks\": [\n    {\n      \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedBlockPacks\": [\n      {\n        \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"headerBackgroundURL\": \"https://example.com\",\n          \"icon\": \"😀\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedBlockPacks\": [\n    {\n      \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedBlockPacks\": [\n    {\n      \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"😀\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedBlockPacks\": [\n      {\n        \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"headerBackgroundURL\": \"https://example.com\",\n          \"icon\": \"😀\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -1746,7 +1746,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -1890,9 +1890,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ],\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PUT http://localhost/api/development/v1/block-packs/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ],\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ],\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ],\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PUT http://localhost/api/development/v1/block-packs/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ],\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ],\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -1907,7 +1907,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -2054,9 +2054,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PUT http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PUT http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -2071,7 +2071,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -2218,9 +2218,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/batch/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"movedBlockPacks\": [\n    {\n      \"blockPackIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ],\n      \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/block-packs/batch/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"movedBlockPacks\": [\n    {\n      \"blockPackIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ],\n      \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"movedBlockPacks\": [\n      {\n        \"blockPackIds\": [\n          \"00000000-0000-4000-8000-000000000001\"\n        ],\n        \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/block-packs/batch/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"movedBlockPacks\": [\n    {\n      \"blockPackIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ],\n      \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/block-packs/batch/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"movedBlockPacks\": [\n    {\n      \"blockPackIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ],\n      \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"movedBlockPacks\": [\n      {\n        \"blockPackIds\": [\n          \"00000000-0000-4000-8000-000000000001\"\n        ],\n        \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -2235,7 +2235,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -2479,9 +2479,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "PATCH http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "PATCH http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "block-packs"
       },
@@ -2496,7 +2496,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -2653,9 +2653,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/block-packs/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/block-packs/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/block-packs/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/block-packs/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "block-packs"
       },
@@ -2670,7 +2670,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -2801,9 +2801,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/block-packs/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "block-packs"
       },
@@ -2818,7 +2818,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -2955,9 +2955,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/block-packs/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/block-packs/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"blockPackIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"blockPackIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "block-packs"
       }
@@ -2979,7 +2979,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-id",
@@ -3182,9 +3182,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/blocks/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/blocks/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "blocks"
       },
@@ -3199,7 +3199,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "blockIds",
@@ -3346,9 +3346,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/batch?blockIds=00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/blocks/batch?blockIds=00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/batch?blockIds=00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/blocks/batch?blockIds=00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "blocks"
       },
@@ -3363,7 +3363,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "block-pack-id",
@@ -3508,9 +3508,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/block-pack/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/blocks/block-pack/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/blocks/block-pack/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/blocks/block-pack/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "blocks"
       }
@@ -3532,7 +3532,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -3759,9 +3759,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "materials"
       },
@@ -4068,7 +4068,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -4220,9 +4220,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "materials"
       },
@@ -4237,7 +4237,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -4389,9 +4389,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "materials"
       },
@@ -4406,7 +4406,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "parent-sub-shelf-id",
@@ -4561,9 +4561,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"name\": \"example\",\n    \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"name\": \"example\",\n    \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "materials"
       },
@@ -4578,7 +4578,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "material-id",
@@ -4737,9 +4737,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "materials"
       },
@@ -4754,7 +4754,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "material-id",
@@ -4898,9 +4898,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"contentFile\": [\n    1\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"contentFile\": [\n    1\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"contentFile\": [\n      1\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"contentFile\": [\n    1\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"contentFile\": [\n    1\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"contentFile\": [\n      1\n    ]\n  }\n}"
         },
         "tag": "materials"
       },
@@ -4915,7 +4915,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "material-id",
@@ -5062,9 +5062,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "materials"
       },
@@ -5079,7 +5079,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -5223,9 +5223,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/batch/parent' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/materials/batch/parent\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/materials/batch/parent' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/materials/batch/parent\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "materials"
       },
@@ -5240,7 +5240,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "material-id",
@@ -5460,9 +5460,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "PATCH http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "PATCH http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "materials"
       },
@@ -5477,7 +5477,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -5628,9 +5628,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/materials/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/materials/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/materials/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/materials/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "materials"
       },
@@ -5645,7 +5645,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "material-id",
@@ -5776,9 +5776,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "materials"
       },
@@ -5793,7 +5793,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -5930,9 +5930,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/materials/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/materials/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/materials/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/materials/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"materialIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "materials"
       }
@@ -5954,7 +5954,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -6156,9 +6156,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "root-shelves"
       },
@@ -6173,7 +6173,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -6335,9 +6335,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "root-shelves"
       },
@@ -6352,7 +6352,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -6508,9 +6508,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
-          "http": "POST http://localhost/api/development/v1/root-shelves\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
+          "http": "POST http://localhost/api/development/v1/root-shelves\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -6525,7 +6525,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -6690,9 +6690,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"insertedRootShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"insertedRootShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"insertedRootShelves\": [\n      {\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"insertedRootShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"insertedRootShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"insertedRootShelves\": [\n      {\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -6707,7 +6707,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -6871,9 +6871,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/ownership' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/ownership\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/ownership' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/ownership\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -6888,7 +6888,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -7065,9 +7065,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permission\": \"Read\"\n}'",
-          "http": "POST http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permission\": \"Read\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permission\": \"Read\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permission\": \"Read\"\n}'",
+          "http": "POST http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permission\": \"Read\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permission\": \"Read\"\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -7082,7 +7082,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -7241,9 +7241,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -7258,7 +7258,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -7407,9 +7407,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRootShelves\": [\n      {\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRootShelves\": [\n      {\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -7424,7 +7424,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -7595,9 +7595,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permissions\": [\n      {\n        \"permission\": \"Read\",\n        \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permissions\": [\n      {\n        \"permission\": \"Read\",\n        \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -7784,7 +7784,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -7980,9 +7980,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PATCH http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PATCH http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -7997,7 +7997,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -8144,9 +8144,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/root-shelves/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/root-shelves/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/root-shelves/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/root-shelves/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -8333,7 +8333,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -8473,9 +8473,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -8490,7 +8490,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -8627,9 +8627,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/root-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -8644,7 +8644,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -8777,9 +8777,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"userPublicIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"userPublicIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -8794,7 +8794,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -8924,9 +8924,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/memberships/me' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/root-shelves/memberships/me\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelves\": [\n      {\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/memberships/me' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"rootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/root-shelves/memberships/me\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"rootShelves\": [\n    {\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"rootShelves\": [\n      {\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "root-shelves"
       },
@@ -8941,7 +8941,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -9061,9 +9061,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/memberships/me' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/memberships/me\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/memberships/me' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/root-shelves/00000000-0000-4000-8000-000000000001/memberships/me\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "root-shelves"
       },
@@ -9222,7 +9222,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -9359,9 +9359,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tags?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tags?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tags?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tags?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tags"
       },
@@ -9376,7 +9376,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -9554,9 +9554,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tags"
       },
@@ -9571,7 +9571,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -9733,9 +9733,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tags' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"color\": \"example\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
-          "http": "POST http://localhost/api/development/v1/routine-tags\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"color\": \"example\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tags' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"color\": \"example\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
+          "http": "POST http://localhost/api/development/v1/routine-tags\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"color\": \"example\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
         },
         "tag": "routine-tags"
       },
@@ -9750,7 +9750,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -9911,9 +9911,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tags/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdRoutineTags\": [\n    {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/routine-tags/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdRoutineTags\": [\n    {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdRoutineTags\": [\n      {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tags/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdRoutineTags\": [\n    {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/routine-tags/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdRoutineTags\": [\n    {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdRoutineTags\": [\n      {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
         },
         "tag": "routine-tags"
       },
@@ -9928,7 +9928,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-tag-id",
@@ -10103,9 +10103,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"color\": \"example\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"color\": \"example\",\n      \"icon\": \"example\",\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "routine-tags"
       },
@@ -10120,7 +10120,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -10273,9 +10273,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tags/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRoutineTags\": [\n    {\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/routine-tags/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRoutineTags\": [\n    {\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRoutineTags\": [\n      {\n        \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"color\": \"example\",\n          \"icon\": \"example\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tags/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRoutineTags\": [\n    {\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/routine-tags/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRoutineTags\": [\n    {\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"color\": \"example\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRoutineTags\": [\n      {\n        \"routineTagId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"color\": \"example\",\n          \"icon\": \"example\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "routine-tags"
       },
@@ -10290,7 +10290,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-tag-id",
@@ -10421,9 +10421,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/routine-tags/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tags"
       },
@@ -10438,7 +10438,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -10575,9 +10575,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tags/batch/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTagIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routine-tags/batch/permanently\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTagIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTagIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tags/batch/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTagIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routine-tags/batch/permanently\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTagIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTagIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "routine-tags"
       }
@@ -10599,7 +10599,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -10758,9 +10758,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tasks?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tasks?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tasks"
       },
@@ -10775,7 +10775,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -11069,9 +11069,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tasks"
       },
@@ -11086,7 +11086,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -11254,9 +11254,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tasks"
       },
@@ -11733,7 +11733,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "permission",
@@ -11906,9 +11906,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/visualizations/scheduled-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tasks/visualizations/scheduled-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/visualizations/scheduled-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tasks/visualizations/scheduled-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tasks"
       },
@@ -11923,7 +11923,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "permission",
@@ -12075,9 +12075,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/visualizations/status-count?permission=Read' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routine-tasks/visualizations/status-count?permission=Read\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routine-tasks/visualizations/status-count?permission=Read' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routine-tasks/visualizations/status-count?permission=Read\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routine-tasks"
       },
@@ -12092,7 +12092,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-id",
@@ -12311,9 +12311,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"maxAttempts\": 1,\n  \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n  \"payload\": {},\n  \"period\": \"Daily\",\n  \"priority\": 1,\n  \"purpose\": \"CreateRootShelf\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"title\": \"example\"\n}'",
-          "http": "POST http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"maxAttempts\": 1,\n  \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n  \"payload\": {},\n  \"period\": \"Daily\",\n  \"priority\": 1,\n  \"purpose\": \"CreateRootShelf\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"title\": \"example\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"maxAttempts\": 1,\n  \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n  \"payload\": {},\n  \"period\": \"Daily\",\n  \"priority\": 1,\n  \"purpose\": \"CreateRootShelf\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"title\": \"example\"\n}'",
+          "http": "POST http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"maxAttempts\": 1,\n  \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n  \"payload\": {},\n  \"period\": \"Daily\",\n  \"priority\": 1,\n  \"purpose\": \"CreateRootShelf\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"title\": \"example\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}"
         },
         "tag": "routine-tasks"
       },
@@ -12328,7 +12328,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-task-id",
@@ -12571,9 +12571,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n    \"setNull\": {},\n    \"values\": {\n      \"maxAttempts\": 1,\n      \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n      \"payload\": {},\n      \"period\": \"Daily\",\n      \"priority\": 1,\n      \"purpose\": \"CreateRootShelf\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"title\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"maxAttempts\": 1,\n    \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n    \"payload\": {},\n    \"period\": \"Daily\",\n    \"priority\": 1,\n    \"purpose\": \"CreateRootShelf\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"title\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\",\n    \"setNull\": {},\n    \"values\": {\n      \"maxAttempts\": 1,\n      \"nextScheduledAt\": \"2026-01-01T00:00:00Z\",\n      \"payload\": {},\n      \"period\": \"Daily\",\n      \"priority\": 1,\n      \"purpose\": \"CreateRootShelf\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"title\": \"example\"\n    }\n  }\n}"
         },
         "tag": "routine-tasks"
       },
@@ -12588,7 +12588,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-task-id",
@@ -12728,9 +12728,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PUT http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PUT http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routine-tasks"
       },
@@ -12745,7 +12745,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-task-id",
@@ -12885,9 +12885,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routine-tasks"
       },
@@ -12902,7 +12902,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-task-id",
@@ -13042,9 +13042,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routine-tasks/00000000-0000-4000-8000-000000000001/suspension\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routine-tasks"
       },
@@ -13059,7 +13059,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -13196,9 +13196,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/batch/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routine-tasks/batch/permanently\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routine-tasks/batch/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routine-tasks/batch/permanently\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineTaskIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "routine-tasks"
       }
@@ -13220,7 +13220,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -13412,9 +13412,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routines?areDeleted=true&from=2026-01-01T00%3A00%3A00Z&stationIds=00000000-0000-4000-8000-000000000001&to=2026-01-01T00%3A00%3A00Z' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routines?areDeleted=true&from=2026-01-01T00%3A00%3A00Z&stationIds=00000000-0000-4000-8000-000000000001&to=2026-01-01T00%3A00%3A00Z\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routines?areDeleted=true&from=2026-01-01T00%3A00%3A00Z&stationIds=00000000-0000-4000-8000-000000000001&to=2026-01-01T00%3A00%3A00Z' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routines?areDeleted=true&from=2026-01-01T00%3A00%3A00Z&stationIds=00000000-0000-4000-8000-000000000001&to=2026-01-01T00%3A00%3A00Z\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routines"
       },
@@ -13429,7 +13429,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -13716,9 +13716,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routines"
       },
@@ -13733,7 +13733,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -13909,9 +13909,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routines"
       },
@@ -14234,7 +14234,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "permission",
@@ -14407,9 +14407,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/visualizations/scheduled-start-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routines/visualizations/scheduled-start-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/visualizations/scheduled-start-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routines/visualizations/scheduled-start-at-count?permission=Read&queryRangeEndedAt=2026-01-01T00%3A00%3A00Z&queryRangeStartedAt=2026-01-01T00%3A00%3A00Z&timeHourUnit=1\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routines"
       },
@@ -14424,7 +14424,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "permission",
@@ -14576,9 +14576,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/visualizations/status-count?permission=Read' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/routines/visualizations/status-count?permission=Read\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/routines/visualizations/status-count?permission=Read' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/routines/visualizations/status-count?permission=Read\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "routines"
       },
@@ -14593,7 +14593,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -14766,9 +14766,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdRoutines\": [\n    {\n      \"description\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdRoutines\": [\n    {\n      \"description\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdRoutines\": [\n      {\n        \"description\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdRoutines\": [\n    {\n      \"description\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdRoutines\": [\n    {\n      \"description\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdRoutines\": [\n      {\n        \"description\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -14783,7 +14783,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -14935,9 +14935,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/items' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndItems\": [\n    {\n      \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n      \"itemType\": \"BlockPack\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/items\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndItems\": [\n    {\n      \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n      \"itemType\": \"BlockPack\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"linkedRoutinesAndItems\": [\n      {\n        \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n        \"itemType\": \"BlockPack\",\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/items' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndItems\": [\n    {\n      \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n      \"itemType\": \"BlockPack\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/items\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndItems\": [\n    {\n      \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n      \"itemType\": \"BlockPack\",\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"linkedRoutinesAndItems\": [\n      {\n        \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n        \"itemType\": \"BlockPack\",\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -14952,7 +14952,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -15102,9 +15102,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/tags' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndTags\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/tags\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndTags\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"linkedRoutinesAndTags\": [\n      {\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n        \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/tags' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndTags\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/tags\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"linkedRoutinesAndTags\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"linkedRoutinesAndTags\": [\n      {\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n        \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -15119,7 +15119,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -15341,9 +15341,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"description\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"isPinned\": true,\n  \"period\": \"Daily\",\n  \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n  \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n  \"status\": \"Scheduled\",\n  \"timezone\": \"example\",\n  \"title\": \"example\"\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"description\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"isPinned\": true,\n  \"period\": \"Daily\",\n  \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n  \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n  \"status\": \"Scheduled\",\n  \"timezone\": \"example\",\n  \"title\": \"example\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"description\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"description\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"isPinned\": true,\n  \"period\": \"Daily\",\n  \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n  \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n  \"status\": \"Scheduled\",\n  \"timezone\": \"example\",\n  \"title\": \"example\"\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"description\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"isPinned\": true,\n  \"period\": \"Daily\",\n  \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n  \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n  \"status\": \"Scheduled\",\n  \"timezone\": \"example\",\n  \"title\": \"example\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"description\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}"
         },
         "tag": "routines"
       },
@@ -15358,7 +15358,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "item-id",
@@ -15530,9 +15530,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/items/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n  \"itemType\": \"BlockPack\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/items/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n  \"itemType\": \"BlockPack\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n    \"itemType\": \"BlockPack\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/items/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n  \"itemType\": \"BlockPack\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/items/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n  \"itemType\": \"BlockPack\",\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"itemId\": \"00000000-0000-4000-8000-000000000001\",\n    \"itemType\": \"BlockPack\",\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routines"
       },
@@ -15547,7 +15547,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-id",
@@ -15708,9 +15708,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/tags/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/tags/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/tags/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"isUnlink\": true,\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/tags/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"isUnlink\": true,\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"isUnlink\": true,\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"routineTagId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routines"
       },
@@ -15725,7 +15725,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-id",
@@ -15966,9 +15966,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"setNull\": {},\n    \"values\": {\n      \"description\": \"example\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"isPinned\": true,\n    \"period\": \"Daily\",\n    \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n    \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n    \"status\": \"Scheduled\",\n    \"timezone\": \"example\",\n    \"title\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n    \"setNull\": {},\n    \"values\": {\n      \"description\": \"example\",\n      \"isPinned\": true,\n      \"period\": \"Daily\",\n      \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n      \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"status\": \"Scheduled\",\n      \"timezone\": \"example\",\n      \"title\": \"example\"\n    }\n  }\n}"
         },
         "tag": "routines"
       },
@@ -15983,7 +15983,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -16148,9 +16148,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRoutines\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"description\": \"example\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/routines/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRoutines\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"description\": \"example\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRoutines\": [\n      {\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"description\": \"example\",\n          \"isPinned\": true,\n          \"period\": \"Daily\",\n          \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n          \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n          \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n          \"status\": \"Scheduled\",\n          \"timezone\": \"example\",\n          \"title\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedRoutines\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"description\": \"example\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedRoutines\": [\n    {\n      \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n      \"setNull\": {},\n      \"values\": {\n        \"description\": \"example\",\n        \"isPinned\": true,\n        \"period\": \"Daily\",\n        \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n        \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"status\": \"Scheduled\",\n        \"timezone\": \"example\",\n        \"title\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedRoutines\": [\n      {\n        \"routineId\": \"00000000-0000-4000-8000-000000000001\",\n        \"setNull\": {},\n        \"values\": {\n          \"description\": \"example\",\n          \"isPinned\": true,\n          \"period\": \"Daily\",\n          \"scheduledEndAt\": \"2026-01-01T00:00:00Z\",\n          \"scheduledStartAt\": \"2026-01-01T00:00:00Z\",\n          \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n          \"status\": \"Scheduled\",\n          \"timezone\": \"example\",\n          \"title\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -16165,7 +16165,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-id",
@@ -16454,9 +16454,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PATCH http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PATCH http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routines"
       },
@@ -16471,7 +16471,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -16646,9 +16646,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/routines/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/routines/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/routines/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/routines/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -16663,7 +16663,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "routine-id",
@@ -16803,9 +16803,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "routines"
       },
@@ -16820,7 +16820,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -16957,9 +16957,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/routines/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/routines/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"routineIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"routineIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "routines"
       },
@@ -17255,7 +17255,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -17398,9 +17398,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/stations?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/stations?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/stations?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/stations?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       },
@@ -17415,7 +17415,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -17625,9 +17625,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       },
@@ -17642,7 +17642,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "permission",
@@ -17791,9 +17791,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/visualizations/total-count?permission=Read' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/stations/visualizations/total-count?permission=Read\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/visualizations/total-count?permission=Read' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/stations/visualizations/total-count?permission=Read\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       },
@@ -17808,7 +17808,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -17970,9 +17970,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       },
@@ -17987,7 +17987,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -18156,9 +18156,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/stations' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"description\": \"example\",\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
-          "http": "POST http://localhost/api/development/v1/stations\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"description\": \"example\",\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/stations' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"description\": \"example\",\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}'",
+          "http": "POST http://localhost/api/development/v1/stations\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"description\": \"example\",\n  \"headerBackgroundURL\": \"https://example.com\",\n  \"icon\": \"example\",\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -18173,7 +18173,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -18336,9 +18336,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdStations\": [\n    {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/stations/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdStations\": [\n    {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdStations\": [\n      {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdStations\": [\n    {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/stations/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdStations\": [\n    {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdStations\": [\n      {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\"\n      }\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -18353,7 +18353,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -18517,9 +18517,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/ownership' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/ownership\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/ownership' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/ownership\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"targetUserPublicId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -18534,7 +18534,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -18711,9 +18711,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permission\": \"Read\"\n}'",
-          "http": "POST http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permission\": \"Read\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permission\": \"Read\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permission\": \"Read\"\n}'",
+          "http": "POST http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permission\": \"Read\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permission\": \"Read\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -18728,7 +18728,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -18911,9 +18911,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"description\": \"example\",\n    \"headerBackgroundURL\": \"https://example.com\",\n    \"icon\": \"example\",\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"description\": \"example\",\n      \"headerBackgroundURL\": \"https://example.com\",\n      \"icon\": \"example\",\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "stations"
       },
@@ -18928,7 +18928,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -19083,9 +19083,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedStations\": [\n    {\n      \"setNull\": {},\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/stations/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedStations\": [\n    {\n      \"setNull\": {},\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedStations\": [\n      {\n        \"setNull\": {},\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"values\": {\n          \"description\": \"example\",\n          \"headerBackgroundURL\": \"https://example.com\",\n          \"icon\": \"example\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedStations\": [\n    {\n      \"setNull\": {},\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/stations/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedStations\": [\n    {\n      \"setNull\": {},\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"description\": \"example\",\n        \"headerBackgroundURL\": \"https://example.com\",\n        \"icon\": \"example\",\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedStations\": [\n      {\n        \"setNull\": {},\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\",\n        \"values\": {\n          \"description\": \"example\",\n          \"headerBackgroundURL\": \"https://example.com\",\n          \"icon\": \"example\",\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -19100,7 +19100,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -19271,9 +19271,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permissions\": [\n      {\n        \"permission\": \"Read\",\n        \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"permissions\": [\n    {\n      \"permission\": \"Read\",\n      \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"permissions\": [\n      {\n        \"permission\": \"Read\",\n        \"userPublicId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -19460,7 +19460,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -19664,9 +19664,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PATCH http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PATCH http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -19681,7 +19681,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -19830,9 +19830,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/stations/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/stations/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/stations/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/stations/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20019,7 +20019,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -20159,9 +20159,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20176,7 +20176,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -20313,9 +20313,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20330,7 +20330,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -20470,9 +20470,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permanently\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20487,7 +20487,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -20620,9 +20620,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"userPublicIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"userPublicIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"userPublicIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20637,7 +20637,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -20774,9 +20774,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/batch/permanently' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/batch/permanently\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/batch/permanently' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/batch/permanently\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stationIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stationIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20791,7 +20791,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -20921,9 +20921,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/memberships/me' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stations\": [\n    {\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/stations/memberships/me\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stations\": [\n    {\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stations\": [\n      {\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/memberships/me' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"stations\": [\n    {\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/stations/memberships/me\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"stations\": [\n    {\n      \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"stations\": [\n      {\n        \"stationId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "stations"
       },
@@ -20938,7 +20938,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -21058,9 +21058,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/memberships/me' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/memberships/me\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/memberships/me' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/memberships/me\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       },
@@ -21075,7 +21075,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "station-id",
@@ -21202,9 +21202,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/stations/00000000-0000-4000-8000-000000000001/permissions/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "stations"
       }
@@ -21226,7 +21226,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "isDeleted",
@@ -21426,9 +21426,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -21443,7 +21443,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -21595,9 +21595,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -21612,7 +21612,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -21764,9 +21764,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -21781,7 +21781,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "areDeleted",
@@ -22061,9 +22061,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001/items?areDeleted=true' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "GET http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001/items?areDeleted=true\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request GET 'http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001/items?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "GET http://localhost/api/development/v1/sub-shelves/prev-sub-shelf/00000000-0000-4000-8000-000000000001/items?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22078,7 +22078,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -22239,9 +22239,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdSubShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          "http": "POST http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdSubShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdSubShelves\": [\n      {\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\",\n        \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"createdSubShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
+          "http": "POST http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"createdSubShelves\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"name\": \"example\",\n      \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"createdSubShelves\": [\n      {\n        \"id\": \"00000000-0000-4000-8000-000000000001\",\n        \"name\": \"example\",\n        \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n      }\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22256,7 +22256,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "root-shelf-id",
@@ -22425,9 +22425,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request POST 'http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "POST http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\",\n    \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request POST 'http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "POST http://localhost/api/development/v1/sub-shelves/root-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"id\": \"00000000-0000-4000-8000-000000000001\",\n  \"name\": \"example\",\n  \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"name\": \"example\",\n    \"prevSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"rootShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22442,7 +22442,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "sub-shelf-id",
@@ -22601,9 +22601,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
-          "http": "PUT http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
+          "http": "PUT http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"setNull\": {},\n    \"values\": {\n      \"name\": \"example\"\n    }\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22618,7 +22618,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -22767,9 +22767,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedSubShelves\": [\n    {\n      \"setNull\": {},\n      \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedSubShelves\": [\n    {\n      \"setNull\": {},\n      \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedSubShelves\": [\n      {\n        \"setNull\": {},\n        \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"values\": {\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"updatedSubShelves\": [\n    {\n      \"setNull\": {},\n      \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"updatedSubShelves\": [\n    {\n      \"setNull\": {},\n      \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"values\": {\n        \"name\": \"example\"\n      }\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"updatedSubShelves\": [\n      {\n        \"setNull\": {},\n        \"subShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"values\": {\n          \"name\": \"example\"\n        }\n      }\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22784,7 +22784,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -22942,9 +22942,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/sub-shelves/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceSubShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/sub-shelves/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceSubShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -22959,7 +22959,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "sub-shelf-id",
@@ -23120,9 +23120,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          "http": "PUT http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          "http": "PUT http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n    \"sourceSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -23137,7 +23137,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -23288,9 +23288,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/batch/position' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"movedSubShelves\": [\n    {\n      \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceSubShelfIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ]\n    }\n  ]\n}'",
-          "http": "PUT http://localhost/api/development/v1/sub-shelves/batch/position\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"movedSubShelves\": [\n    {\n      \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceSubShelfIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ]\n    }\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"movedSubShelves\": [\n      {\n        \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"sourceSubShelfIds\": [\n          \"00000000-0000-4000-8000-000000000001\"\n        ]\n      }\n    ]\n  }\n}"
+          "curl": "curl --request PUT 'http://localhost/api/development/v1/sub-shelves/batch/position' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"movedSubShelves\": [\n    {\n      \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceSubShelfIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ]\n    }\n  ]\n}'",
+          "http": "PUT http://localhost/api/development/v1/sub-shelves/batch/position\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"movedSubShelves\": [\n    {\n      \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n      \"sourceSubShelfIds\": [\n        \"00000000-0000-4000-8000-000000000001\"\n      ]\n    }\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"movedSubShelves\": [\n      {\n        \"destinationRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"destinationSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"sourceRootShelfId\": \"00000000-0000-4000-8000-000000000001\",\n        \"sourceSubShelfIds\": [\n          \"00000000-0000-4000-8000-000000000001\"\n        ]\n      }\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -23305,7 +23305,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "sub-shelf-id",
@@ -23498,9 +23498,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "PATCH http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "PATCH http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -23515,7 +23515,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -23666,9 +23666,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request PATCH 'http://localhost/api/development/v1/sub-shelves/batch/restore' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "PATCH http://localhost/api/development/v1/sub-shelves/batch/restore\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"subShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request PATCH 'http://localhost/api/development/v1/sub-shelves/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "PATCH http://localhost/api/development/v1/sub-shelves/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"subShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       },
@@ -23683,7 +23683,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           },
           {
             "name": "sub-shelf-id",
@@ -23814,9 +23814,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotezyIntegration/1.0'",
-          "http": "DELETE http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotezyIntegration/1.0",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\"\n  },\n  \"body\": null\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          "http": "DELETE http://localhost/api/development/v1/sub-shelves/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\"\n  },\n  \"body\": null\n}"
         },
         "tag": "sub-shelves"
       },
@@ -23831,7 +23831,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             "location": "header",
             "required": true,
             "type": "string",
-            "example": "NotezyIntegration/1.0"
+            "example": "NotegicIntegration/1.0"
           }
         ],
         "requestExample": {
@@ -23968,9 +23968,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           }
         ],
         "examples": {
-          "curl": "curl --request DELETE 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotezyIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          "http": "DELETE http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotezyIntegration/1.0\nContent-Type: application/json\n\n{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
-          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotezyIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"subShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
+          "curl": "curl --request DELETE 'http://localhost/api/development/v1/sub-shelves/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          "http": "DELETE http://localhost/api/development/v1/sub-shelves/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  \"subShelfIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}",
+          "json": "{\n  \"headers\": {\n    \"User-Agent\": \"NotegicIntegration/1.0\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"subShelfIds\": [\n      \"00000000-0000-4000-8000-000000000001\"\n    ]\n  }\n}"
         },
         "tag": "sub-shelves"
       }

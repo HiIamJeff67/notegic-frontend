@@ -1,13 +1,13 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 import { z } from "zod";
 
 export const CreateMyRealtimeConnectionTicketRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -22,7 +22,7 @@ export type CreateMyRealtimeConnectionTicketRequest = z.input<
 >;
 
 export const CreateMyRealtimeConnectionTicketResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       realtimeEndpoint: z.string().min(1),
       realtimeProtocolVersion: z.literal(RealtimeProtocolVersion),
@@ -36,7 +36,7 @@ export type CreateMyRealtimeConnectionTicketResponse = z.infer<
 >;
 
 export const CreateMyBlockPackChannelTicketRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -54,13 +54,13 @@ export type CreateMyBlockPackChannelTicketRequest = z.input<
 >;
 
 export const CreateMyBlockPackChannelTicketResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       channelType: z.literal("BlockPack"),
       channelId: z.uuidv4(),
       roomName: z.string().min(1),
       fragmentName: z.string().min(1),
-      schemaId: z.literal("notezy.blocknote"),
+      schemaId: z.literal("notegic.blocknote"),
       schemaVersion: z.literal(1),
       realtimeProtocolVersion: z.literal(RealtimeProtocolVersion),
       permission: RealtimePermissionSchema,
@@ -77,7 +77,7 @@ export type CreateMyBlockPackChannelTicketResponse = z.infer<
   typeof CreateMyBlockPackChannelTicketResponseSchema
 >;
 
-export const GetBlockPackParticipantsRequestSchema = NotezyRequestSchema.extend(
+export const GetBlockPackParticipantsRequestSchema = NotegicRequestSchema.extend(
   {
     header: z
       .object({
@@ -96,7 +96,7 @@ export type GetBlockPackParticipantsRequest = z.input<
 >;
 
 export const GetBlockPackParticipantsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         userPublicId: z.uuidv4(),

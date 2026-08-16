@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   DeleteMeRequest,
   DeleteMeResponse,
@@ -55,8 +55,8 @@ export const Register = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as RegisterResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
     return formattedResponse;
@@ -87,8 +87,8 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as RegisterViaGoogleResponse;
     if (formattedResponse.exception != null)
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     return formattedResponse;
   });
@@ -117,8 +117,8 @@ export const Login = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as LoginResponse;
     if (formattedResponse.exception != null)
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     return formattedResponse;
   });
@@ -147,8 +147,8 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as LoginViaGoogleResponse;
     if (formattedResponse.exception != null)
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     return formattedResponse;
   });
@@ -183,8 +183,8 @@ export const Logout = createServerFn({ method: "POST" })
       exception: rawResponse.exception ?? null,
     } as LogoutResponse;
     if (formattedResponse.exception != null)
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     return formattedResponse;
   });
@@ -215,8 +215,8 @@ export const SendAuthCode = createServerFn({ method: "POST" })
     }
     const formattedResponse = (await response.json()) as SendAuthCodeResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -250,8 +250,8 @@ export const ValidateEmail = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as ValidateEmailResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -285,8 +285,8 @@ export const ResetEmail = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as ResetEmailResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -319,8 +319,8 @@ export const ForgetPassword = createServerFn({ method: "POST" })
     }
     const formattedResponse = (await response.json()) as ForgetPasswordResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -354,8 +354,8 @@ export const ResetMe = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as ResetMeResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -388,8 +388,8 @@ export const DeleteMe = createServerFn({ method: "POST" })
     }
     const formattedResponse = (await response.json()) as DeleteMeResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 

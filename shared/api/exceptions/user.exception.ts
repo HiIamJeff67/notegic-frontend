@@ -2,7 +2,7 @@ import {
   ExceptionCode,
   ExceptionPrefix,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { DatabaseException } from "@shared/api/exceptions/database.exception";
 import { StatusCodes } from "http-status-codes";
@@ -17,8 +17,8 @@ export class UserExceptions extends DatabaseException {
   static BaseCode: ExceptionCode = ExceptionBaseCode_User;
   static Prefix: ExceptionPrefix = ExceptionPrefix_User;
 
-  static DuplicateName(name: string = "FAKE_NAME"): NotezyException {
-    return new NotezyException({
+  static DuplicateName(name: string = "FAKE_NAME"): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.user.duplicateName,
@@ -27,8 +27,8 @@ export class UserExceptions extends DatabaseException {
     });
   }
 
-  static DuplicateEmail(email: string = "FAKE_EMAIL"): NotezyException {
-    return new NotezyException({
+  static DuplicateEmail(email: string = "FAKE_EMAIL"): NotegicException {
+    return new NotegicException({
       code: this.BaseCode + 2,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.user.duplicateEmail,

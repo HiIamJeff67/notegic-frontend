@@ -1,9 +1,9 @@
 import type { UUID } from "node:crypto";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
-  NotezyAPIError,
+  NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
@@ -83,14 +83,14 @@ export const useGetMyBlockPackById = (
     request?: GetMyBlockPackByIdRequest
   ): Promise<GetMyBlockPackByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyBlockPackById(request);
@@ -103,8 +103,8 @@ export const useGetMyBlockPackById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingBlockPack =
           await BlockPackLocalSimulator.simulateGetMyBlockPackById(request);
@@ -164,14 +164,14 @@ export const useGetMyBlockPackAndItsParentById = (
     request?: GetMyBlockPackAndItsParentByIdRequest
   ): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyBlockPackAndItsParentById(request);
@@ -186,8 +186,8 @@ export const useGetMyBlockPackAndItsParentById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingBlockPackAndItsParent =
           await BlockPackLocalSimulator.simulateGetMyBlockPackAndItsParentById(
@@ -257,14 +257,14 @@ export const useGetMyBlockPacksByParentSubShelfId = (
     request?: GetMyBlockPacksByParentSubShelfIdRequest
   ): Promise<GetMyBlockPacksByParentSubShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyBlockPacksByParentSubShelfId(request);
@@ -279,8 +279,8 @@ export const useGetMyBlockPacksByParentSubShelfId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingBlockPacks =
           await BlockPackLocalSimulator.simulateGetMyBlockPacksByParentSubShelfId(
@@ -340,14 +340,14 @@ export const useGetAllMyBlockPacksByRootShelfId = (
     request?: GetAllMyBlockPacksByRootShelfIdRequest
   ): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMyBlockPacksByRootShelfId(request);
@@ -362,8 +362,8 @@ export const useGetAllMyBlockPacksByRootShelfId = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const existingBlockPacks =
           await BlockPackLocalSimulator.simulateGetAllMyBlockPacksByRootShelfId(
@@ -418,7 +418,7 @@ export const useCreateBlockPack = () => {
     request: CreateBlockPackRequest
   ): Promise<CreateBlockPackResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnCreateBlockPack(request);
@@ -448,7 +448,7 @@ export const useCreateBlockPack = () => {
       await BlockPackLocalSynchronizer.syncCreateBlockPack(variables, response);
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateCreateBlockPack(variables);
@@ -468,7 +468,7 @@ export const useCreateBlockPacks = () => {
     request: CreateBlockPacksRequest
   ): Promise<CreateBlockPacksResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnCreateBlockPacks(request);
@@ -509,7 +509,7 @@ export const useCreateBlockPacks = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateCreateBlockPacks(variables);
@@ -529,7 +529,7 @@ export const useUpdateMyBlockPackById = () => {
     request: UpdateMyBlockPackByIdRequest
   ): Promise<UpdateMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnUpdateMyBlockPackById(request);
@@ -562,7 +562,7 @@ export const useUpdateMyBlockPackById = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateUpdateMyBlockPackById(
@@ -584,7 +584,7 @@ export const useUpdateMyBlockPacksByIds = () => {
     request: UpdateMyBlockPacksByIdsRequest
   ): Promise<UpdateMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnUpdateMyBlockPacksByIds(request);
@@ -629,7 +629,7 @@ export const useUpdateMyBlockPacksByIds = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateUpdateMyBlockPacksByIds(
@@ -651,7 +651,7 @@ export const useMoveMyBlockPackById = () => {
     request: MoveMyBlockPackByIdRequest
   ): Promise<MoveMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMyBlockPackById(request);
@@ -691,7 +691,7 @@ export const useMoveMyBlockPackById = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPackById(
@@ -713,7 +713,7 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
     request: MoveMyBlockPacksByParentSubShelfIdRequest
   ): Promise<MoveMyBlockPacksByParentSubShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMyBlockPacksByParentSubShelfId(request);
@@ -760,7 +760,7 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfId(
@@ -782,7 +782,7 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
     request: MoveMyBlockPacksByParentSubShelfIdsRequest
   ): Promise<MoveMyBlockPacksByParentSubShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnMoveMyBlockPacksByParentSubShelfIds(request);
@@ -840,7 +840,7 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfIds(
@@ -862,7 +862,7 @@ export const useRestoreMyBlockPackById = () => {
     request: RestoreMyBlockPackByIdRequest
   ): Promise<RestoreMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnRestoreMyBlockPackById(request);
@@ -897,7 +897,7 @@ export const useRestoreMyBlockPackById = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateRestoreMyBlockPackById(
@@ -919,7 +919,7 @@ export const useRestoreMyBlockPacksByIds = () => {
     request: RestoreMyBlockPacksByIdsRequest
   ): Promise<RestoreMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnRestoreMyBlockPacksByIds(request);
@@ -966,7 +966,7 @@ export const useRestoreMyBlockPacksByIds = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(
@@ -988,7 +988,7 @@ export const useDeleteMyBlockPackById = () => {
     request: DeleteMyBlockPackByIdRequest
   ): Promise<DeleteMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnDeleteMyBlockPackById(request);
@@ -1023,7 +1023,7 @@ export const useDeleteMyBlockPackById = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateDeleteMyBlockPackById(
@@ -1045,7 +1045,7 @@ export const useDeleteMyBlockPacksByIds = () => {
     request: DeleteMyBlockPacksByIdsRequest
   ): Promise<DeleteMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
     return await mutationFnDeleteMyBlockPacksByIds(request);
@@ -1092,7 +1092,7 @@ export const useDeleteMyBlockPacksByIds = () => {
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotezyFetchError) {
+      if (error instanceof NotegicFetchError) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateDeleteMyBlockPacksByIds(

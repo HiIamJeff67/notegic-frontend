@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { z } from "zod";
 
@@ -21,7 +21,7 @@ export type PrivateBlock = z.infer<typeof PrivateBlockSchema>;
 
 /* ============================== GetMyBlockById ============================== */
 
-export const GetMyBlockByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMyBlockByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -35,7 +35,7 @@ export const GetMyBlockByIdRequestSchema = NotezyRequestSchema.extend({
 
 export type GetMyBlockByIdRequest = z.infer<typeof GetMyBlockByIdRequestSchema>;
 
-export const GetMyBlockByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMyBlockByIdResponseSchema = NotegicResponseSchema.extend({
   data: PrivateBlockSchema,
   embedded: z.object({
     publicId: z.string(),
@@ -48,7 +48,7 @@ export type GetMyBlockByIdResponse = z.infer<
 
 /* ============================== GetMyBlocksByIds ============================== */
 
-export const GetMyBlocksByIdsRequestSchema = NotezyRequestSchema.extend({
+export const GetMyBlocksByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -64,7 +64,7 @@ export type GetMyBlocksByIdsRequest = z.infer<
   typeof GetMyBlocksByIdsRequestSchema
 >;
 
-export const GetMyBlocksByIdsResponseSchema = NotezyResponseSchema.extend({
+export const GetMyBlocksByIdsResponseSchema = NotegicResponseSchema.extend({
   data: z.array(PrivateBlockSchema),
   embedded: z.object({
     publicId: z.string(),
@@ -77,7 +77,7 @@ export type GetMyBlocksByIdsResponse = z.infer<
 
 /* ============================== GetMyBlocksByBlockPackId ============================== */
 
-export const GetMyBlocksByBlockPackIdRequestSchema = NotezyRequestSchema.extend(
+export const GetMyBlocksByBlockPackIdRequestSchema = NotegicRequestSchema.extend(
   {
     header: z
       .object({
@@ -96,7 +96,7 @@ export type GetMyBlocksByBlockPackIdRequest = z.infer<
 >;
 
 export const GetMyBlocksByBlockPackIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(PrivateBlockSchema),
     embedded: z.object({
       publicId: z.string(),

@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyTotalCountRequest,
   VisualizeMyTotalCountResponse,
@@ -91,8 +91,8 @@ const fetchStationMembership = async <T>(
     refreshableTokens?: { newCSRFToken?: string };
   };
   if (formattedResponse.exception != null)
-    throw new NotezyAPIError(
-      new NotezyException(formattedResponse.exception as any)
+    throw new NotegicAPIError(
+      new NotegicException(formattedResponse.exception as any)
     );
   return formattedResponse;
 };
@@ -171,8 +171,8 @@ export const GetMyStationById = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetMyStationByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -214,8 +214,8 @@ export const GetAllMyStations = createServerFn({ method: "GET" })
     const formattedResponse =
       (await response.json()) as GetAllMyStationsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -254,8 +254,8 @@ export const CreateStation = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as CreateStationResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -294,8 +294,8 @@ export const CreateStations = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as CreateStationsResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -335,8 +335,8 @@ export const UpdateMyStationById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as UpdateMyStationByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -379,8 +379,8 @@ export const UpdateMyStationsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as UpdateMyStationsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -421,8 +421,8 @@ export const RestoreMyStationById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as RestoreMyStationByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -465,8 +465,8 @@ export const RestoreMyStationsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as RestoreMyStationsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -507,8 +507,8 @@ export const DeleteMyStationById = createServerFn({ method: "POST" })
     const formattedResponse =
       (await response.json()) as DeleteMyStationByIdResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -551,8 +551,8 @@ export const DeleteMyStationsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as DeleteMyStationsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -598,8 +598,8 @@ export const HardDeleteMyStationById = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyStationByIdResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 
@@ -643,8 +643,8 @@ export const HardDeleteMyStationsByIds = createServerFn({ method: "POST" })
       const formattedResponse =
         (await response.json()) as HardDeleteMyStationsByIdsResponse;
       if (formattedResponse.exception != null) {
-        throw new NotezyAPIError(
-          new NotezyException(formattedResponse.exception)
+        throw new NotegicAPIError(
+          new NotegicException(formattedResponse.exception)
         );
       }
 

@@ -109,7 +109,7 @@ export const ShelfItemProvider = ({
     };
 
     window.addEventListener(
-      "notezy:block-pack-room-unavailable",
+      "notegic:block-pack-room-unavailable",
       handleRealtimeUnavailable
     );
     const handleResourceEvent = (event: Event) => {
@@ -133,16 +133,16 @@ export const ShelfItemProvider = ({
     };
 
     window.addEventListener(
-      "notezy:realtime-resource-event",
+      "notegic:realtime-resource-event",
       handleResourceEvent
     );
     return () => {
       window.removeEventListener(
-        "notezy:block-pack-room-unavailable",
+        "notegic:block-pack-room-unavailable",
         handleRealtimeUnavailable
       );
       window.removeEventListener(
-        "notezy:realtime-resource-event",
+        "notegic:realtime-resource-event",
         handleResourceEvent
       );
     };

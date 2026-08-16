@@ -1,5 +1,5 @@
 import type { UUID } from "node:crypto";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   GetMyBlockByIdRequest,
@@ -33,7 +33,7 @@ export const useGetMyBlockById = (
     request?: GetMyBlockByIdRequest
   ): Promise<GetMyBlockByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -83,7 +83,7 @@ export const useGetMyBlocksByIds = (
     request?: GetMyBlocksByIdsRequest
   ): Promise<GetMyBlocksByIdsResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -141,7 +141,7 @@ export const useGetMyBlocksByBlockPackId = (
     request?: GetMyBlocksByBlockPackIdRequest
   ): Promise<GetMyBlocksByBlockPackIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }

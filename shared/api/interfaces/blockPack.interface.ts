@@ -1,6 +1,6 @@
 import {
-  NotezyRequestSchema,
-  NotezyResponseSchema,
+  NotegicRequestSchema,
+  NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import {
   AllAccessControlPermissions,
@@ -10,7 +10,7 @@ import { z } from "zod";
 
 /* ============================== GetMyBlockPackById ============================== */
 
-export const GetMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
+export const GetMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -27,7 +27,7 @@ export type GetMyBlockPackByIdRequest = z.input<
   typeof GetMyBlockPackByIdRequestSchema
 >;
 
-export const GetMyBlockPackByIdResponseSchema = NotezyResponseSchema.extend({
+export const GetMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     parentSubShelfId: z.uuidv4(),
@@ -51,7 +51,7 @@ export type GetMyBlockPackByIdResponse = z.infer<
 /* ============================== GetMyBlockPackAndItsParentById ============================== */
 
 export const GetMyBlockPackAndItsParentByIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -69,7 +69,7 @@ export type GetMyBlockPackAndItsParentByIdRequest = z.input<
 >;
 
 export const GetMyBlockPackAndItsParentByIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
       name: z.string(),
@@ -101,7 +101,7 @@ export type GetMyBlockPackAndItsParentByIdResponse = z.infer<
 /* ============================== GetMyBlockPacksByParentSubShelfId ============================== */
 
 export const GetMyBlockPacksByParentSubShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -119,7 +119,7 @@ export type GetMyBlockPacksByParentSubShelfIdRequest = z.input<
 >;
 
 export const GetMyBlockPacksByParentSubShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -145,7 +145,7 @@ export type GetMyBlockPacksByParentSubShelfIdResponse = z.infer<
 /* ============================== GetAllMyBlockPacksByRootShelfId ============================== */
 
 export const GetAllMyBlockPacksByRootShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -163,7 +163,7 @@ export type GetAllMyBlockPacksByRootShelfIdRequest = z.input<
 >;
 
 export const GetAllMyBlockPacksByRootShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -188,7 +188,7 @@ export type GetAllMyBlockPacksByRootShelfIdResponse = z.infer<
 
 /* ============================== CreateBlockPack ============================== */
 
-export const CreateBlockPackRequestSchema = NotezyRequestSchema.extend({
+export const CreateBlockPackRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -212,7 +212,7 @@ export type CreateBlockPackRequest = z.infer<
   typeof CreateBlockPackRequestSchema
 >;
 
-export const CreateBlockPackResponseSchema = NotezyResponseSchema.extend({
+export const CreateBlockPackResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     id: z.uuidv4(),
     createdAt: z.coerce.date(),
@@ -228,7 +228,7 @@ export type CreateBlockPackResponse = z.infer<
 
 /* ============================== CreateBlockPacks ============================== */
 
-export const CreateBlockPacksRequestSchema = NotezyRequestSchema.extend({
+export const CreateBlockPacksRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -256,7 +256,7 @@ export type CreateBlockPacksRequest = z.infer<
   typeof CreateBlockPacksRequestSchema
 >;
 
-export const CreateBlockPacksResponseSchema = NotezyResponseSchema.extend({
+export const CreateBlockPacksResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     ids: z.array(z.uuidv4()),
     createdAt: z.coerce.date(),
@@ -272,7 +272,7 @@ export type CreateBlockPacksResponse = z.infer<
 
 /* ============================== UpdateMyBlockPackById ============================== */
 
-export const UpdateMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -300,7 +300,7 @@ export type UpdateMyBlockPackByIdRequest = z.infer<
   typeof UpdateMyBlockPackByIdRequestSchema
 >;
 
-export const UpdateMyBlockPackByIdResponseSchema = NotezyResponseSchema.extend({
+export const UpdateMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -315,7 +315,7 @@ export type UpdateMyBlockPackByIdResponse = z.infer<
 
 /* ============================== UpdateMyBlockPacksByIds ============================== */
 
-export const UpdateMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend({
+export const UpdateMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -348,7 +348,7 @@ export type UpdateMyBlockPacksByIdsRequest = z.infer<
 >;
 
 export const UpdateMyBlockPacksByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -363,7 +363,7 @@ export type UpdateMyBlockPacksByIdsResponse = z.infer<
 
 /* ============================== MoveMyBlockPackById ============================== */
 
-export const MoveMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
+export const MoveMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -384,7 +384,7 @@ export type MoveMyBlockPackByIdRequest = z.infer<
   typeof MoveMyBlockPackByIdRequestSchema
 >;
 
-export const MoveMyBlockPackByIdResponseSchema = NotezyResponseSchema.extend({
+export const MoveMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
   }),
@@ -400,7 +400,7 @@ export type MoveMyBlockPackByIdResponse = z.infer<
 /* ============================== MoveMyBlockPacksByParentSubShelfId ============================== */
 
 export const MoveMyBlockPacksByParentSubShelfIdRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -422,7 +422,7 @@ export type MoveMyBlockPacksByParentSubShelfIdRequest = z.infer<
 >;
 
 export const MoveMyBlockPacksByParentSubShelfIdResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -438,7 +438,7 @@ export type MoveMyBlockPacksByParentSubShelfIdResponse = z.infer<
 /* ============================== MoveMyBlockPacksByParentSubShelfIds ============================== */
 
 export const MoveMyBlockPacksByParentSubShelfIdsRequestSchema =
-  NotezyRequestSchema.extend({
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -464,7 +464,7 @@ export type MoveMyBlockPacksByParentSubShelfIdsRequest = z.infer<
 >;
 
 export const MoveMyBlockPacksByParentSubShelfIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
@@ -479,7 +479,7 @@ export type MoveMyBlockPacksByParentSubShelfIdsResponse = z.infer<
 
 /* ============================== RestoreMyBlockPackById ============================== */
 
-export const RestoreMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
+export const RestoreMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -499,7 +499,7 @@ export type RestoreMyBlockPackByIdRequest = z.infer<
   typeof RestoreMyBlockPackByIdRequestSchema
 >;
 
-export const RestoreMyBlockPackByIdResponseSchema = NotezyResponseSchema.extend(
+export const RestoreMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend(
   {
     data: z.object({
       id: z.uuidv4(),
@@ -524,7 +524,7 @@ export type RestoreMyBlockPackByIdResponse = z.infer<
 
 /* ============================== RestoreMyBlockPacksByIds ============================== */
 
-export const RestoreMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend(
+export const RestoreMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
   {
     header: z
       .object({
@@ -547,7 +547,7 @@ export type RestoreMyBlockPacksByIdsRequest = z.infer<
 >;
 
 export const RestoreMyBlockPacksByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -572,7 +572,7 @@ export type RestoreMyBlockPacksByIdsResponse = z.infer<
 
 /* ============================== DeleteMyBlockPackById ============================== */
 
-export const DeleteMyBlockPackByIdRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -592,7 +592,7 @@ export type DeleteMyBlockPackByIdRequest = z.infer<
   typeof DeleteMyBlockPackByIdRequestSchema
 >;
 
-export const DeleteMyBlockPackByIdResponseSchema = NotezyResponseSchema.extend({
+export const DeleteMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     deletedAt: z.coerce.date(),
   }),
@@ -607,7 +607,7 @@ export type DeleteMyBlockPackByIdResponse = z.infer<
 
 /* ============================== DeleteMyBlockPacksByIds ============================== */
 
-export const DeleteMyBlockPacksByIdsRequestSchema = NotezyRequestSchema.extend({
+export const DeleteMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
@@ -628,7 +628,7 @@ export type DeleteMyBlockPacksByIdsRequest = z.infer<
 >;
 
 export const DeleteMyBlockPacksByIdsResponseSchema =
-  NotezyResponseSchema.extend({
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),

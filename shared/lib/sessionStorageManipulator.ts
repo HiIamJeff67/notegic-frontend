@@ -5,7 +5,7 @@ import {
 import { Key } from "lucide-react";
 
 export class SessionStorageManipulator {
-  private static readonly SessionStoragePrefix = "notezy_";
+  private static readonly SessionStoragePrefix = "notegic_";
 
   private static getStorageKey(
     key: SessionStorageKey,

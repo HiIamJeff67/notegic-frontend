@@ -1,5 +1,5 @@
 import { forwardUpstreamSetCookies } from "@shared/api/cookies/bridge";
-import { NotezyAPIError, NotezyException } from "@shared/api/exceptions";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMeRequest,
   GetMeResponse,
@@ -41,8 +41,8 @@ export const GetUserData = createServerFn({ method: "GET" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as GetUserDataResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -77,8 +77,8 @@ export const GetMe = createServerFn({ method: "GET" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as GetMeResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 
@@ -114,8 +114,8 @@ export const UpdateMe = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     const formattedResponse = (await response.json()) as UpdateMeResponse;
     if (formattedResponse.exception != null) {
-      throw new NotezyAPIError(
-        new NotezyException(formattedResponse.exception)
+      throw new NotegicAPIError(
+        new NotegicException(formattedResponse.exception)
       );
     }
 

@@ -7,7 +7,7 @@ import {
   type PartialBlock,
 } from "@blocknote/core";
 
-type NotezyBlockPackEditorOptions = {
+type NotegicBlockPackEditorOptions = {
   initialContent?: PartialBlock[];
   trailingBlock?: boolean;
   collaboration?: NonNullable<
@@ -15,8 +15,8 @@ type NotezyBlockPackEditorOptions = {
   >["collaboration"];
 };
 
-export class NotezyBlockPackEditor {
-  private static notezyBlockNoteBlockSpecs = {
+export class NotegicBlockPackEditor {
+  private static notegicBlockNoteBlockSpecs = {
     paragraph: defaultBlockSpecs.paragraph,
     heading: defaultBlockSpecs.heading,
     quote: defaultBlockSpecs.quote,
@@ -36,10 +36,10 @@ export class NotezyBlockPackEditor {
     initialContent,
     trailingBlock = false,
     collaboration,
-  }: NotezyBlockPackEditorOptions) {
+  }: NotegicBlockPackEditorOptions) {
     return BlockNoteEditor.create({
       schema: BlockNoteSchema.create({
-        blockSpecs: this.notezyBlockNoteBlockSpecs,
+        blockSpecs: this.notegicBlockNoteBlockSpecs,
         inlineContentSpecs: defaultInlineContentSpecs,
         styleSpecs: defaultStyleSpecs,
       }),

@@ -1,4 +1,4 @@
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
 import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
 import { parseRealtimeAckFrame, type RealtimeAckFrame } from "./ack.frame";
@@ -58,19 +58,19 @@ export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
   try {
     parsed = JSON.parse(data);
   } catch {
-    throw new NotezyAPIError(RealtimeError.InvalidJsonFrame());
+    throw new NotegicAPIError(RealtimeError.InvalidJsonFrame());
   }
 
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    throw new NotezyAPIError(RealtimeError.InvalidFrameShape());
+    throw new NotegicAPIError(RealtimeError.InvalidFrameShape());
   }
   const frame = parsed as Record<string, unknown>;
 
   if (frame.version !== RealtimeProtocolVersion) {
-    throw new NotezyAPIError(RealtimeError.UnsupportedProtocolVersion());
+    throw new NotegicAPIError(RealtimeError.UnsupportedProtocolVersion());
   }
   if (typeof frame.type !== "string") {
-    throw new NotezyAPIError(RealtimeError.MissingFrameType());
+    throw new NotegicAPIError(RealtimeError.MissingFrameType());
   }
 
   switch (frame.type) {
@@ -100,6 +100,6 @@ export const parseRealtimeServerFrame = (data: string): RealtimeServerFrame => {
     case "acknowledged":
       return parseRealtimeAckFrame(frame);
     default:
-      throw new NotezyAPIError(RealtimeError.UnsupportedFrameType(frame.type));
+      throw new NotegicAPIError(RealtimeError.UnsupportedFrameType(frame.type));
   }
 };

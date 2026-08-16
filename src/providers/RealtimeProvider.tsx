@@ -128,7 +128,7 @@ export const RealtimeProvider = ({
       clearReleaseTimer(channel.blockPackId);
       channel.provider.setReadOnly(true);
       channel.provider.disconnect();
-      channel.provider.destroy();
+      void channel.provider.destroy();
       channel.doc.destroy();
       channel.connectorChannelId = null;
       channel.hasRejectedDraft = false;
@@ -226,7 +226,7 @@ export const RealtimeProvider = ({
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(
-          new CustomEvent("notezy:realtime-resource-event", {
+          new CustomEvent("notegic:realtime-resource-event", {
             detail: frame,
           })
         );
@@ -339,7 +339,7 @@ export const RealtimeProvider = ({
       onRoutineTaskLifecycle: (frame: RealtimeRoutineTaskLifecycleFrame) => {
         if (typeof window === "undefined") return;
         window.dispatchEvent(
-          new CustomEvent("notezy:realtime-routine-task-lifecycle", {
+          new CustomEvent("notegic:realtime-routine-task-lifecycle", {
             detail: frame,
           })
         );
@@ -365,7 +365,7 @@ export const RealtimeProvider = ({
         });
         if (typeof window !== "undefined") {
           window.dispatchEvent(
-            new CustomEvent("notezy:realtime-presence-snapshot", {
+            new CustomEvent("notegic:realtime-presence-snapshot", {
               detail: {
                 blockPackId,
                 participants: frame.participants,
@@ -388,7 +388,7 @@ export const RealtimeProvider = ({
       onPresence: (blockPackId, frame) => {
         if (typeof window === "undefined") return;
         window.dispatchEvent(
-          new CustomEvent("notezy:realtime-presence", {
+          new CustomEvent("notegic:realtime-presence", {
             detail: { blockPackId, frame },
           })
         );
@@ -450,14 +450,14 @@ export const RealtimeProvider = ({
         if (frame.code === "permission_revoked") {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
-          disposeBlockPackChannel(channel);
+          void disposeBlockPackChannel(channel);
           toast.error(
             i18n.t("workspace.notifications.blockPackRoomUnavailable")
           );
         } else if (frame.code === "resource_unavailable") {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
-          disposeBlockPackChannel(channel);
+          void disposeBlockPackChannel(channel);
           toast.error(i18n.t("workspace.notifications.blockPackUnavailable"));
         } else if (
           frame.code === "resync_required" ||
@@ -583,7 +583,7 @@ export const RealtimeProvider = ({
         if (!latestChannel || latestChannel.retainCount > 0) return;
 
         if (!latestChannel.isDisposed) {
-          latestChannel.provider.destroy();
+          void latestChannel.provider.destroy();
           latestChannel.doc.destroy();
         }
         clientRef.current?.unregisterBlockPackChannel(blockPackId);
@@ -612,10 +612,19 @@ export const RealtimeProvider = ({
       const previousChannel = channelsRef.current.get(blockPackId);
 
       if (previousChannel && !previousChannel.isDisposed) {
+        if (previousChannel.provider.hasUnconfirmedLocalChanges()) {
+          const rejectedUpdate =
+            await previousChannel.provider.snapshotLocalDocument();
+          await LocalYjsDocumentStore.saveRejectedDraft(
+            blockPackId,
+            rejectedUpdate
+          );
+          rejectedDraftBlockPackIdsRef.current.add(blockPackId);
+          previousChannel.hasRejectedDraft = true;
+        }
         previousChannel.provider.setReadOnly(true);
         previousChannel.provider.disconnect();
-        await previousChannel.provider.clearLocalDocument();
-        previousChannel.provider.destroy();
+        await previousChannel.provider.destroy();
         previousChannel.doc.destroy();
         previousChannel.isDisposed = true;
       }

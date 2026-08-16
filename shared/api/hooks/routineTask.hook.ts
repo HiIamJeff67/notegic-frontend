@@ -1,8 +1,8 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotezyFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
@@ -314,14 +314,14 @@ export const useGetMyRoutineTaskById = (
     request?: GetMyRoutineTaskByIdRequest
   ): Promise<GetMyRoutineTaskByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetMyRoutineTaskById(request);
@@ -334,8 +334,8 @@ export const useGetMyRoutineTaskById = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const routineTask =
           await RoutineTaskLocalSimulator.simulateGetMyRoutineTaskById(request);
@@ -393,14 +393,14 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
     request?: GetAllMyRoutineTasksByRoutineIdsRequest
   ): Promise<GetAllMyRoutineTasksByRoutineIdsResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMyRoutineTasksByRoutineIds(request);
@@ -415,8 +415,8 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const routineTasks =
           await RoutineTaskLocalSimulator.simulateGetAllMyRoutineTasksByRoutineIds(
@@ -474,14 +474,14 @@ export const useGetAllMyRoutineTasks = (
     request?: GetAllMyRoutineTasksRequest
   ): Promise<GetAllMyRoutineTasksResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
     try {
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotezyFetchError(FetchClientExceptions.MissingNetwork());
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
       const response = await queryFnGetAllMyRoutineTasks(request);
@@ -494,8 +494,8 @@ export const useGetAllMyRoutineTasks = (
       return response;
     } catch (error) {
       if (
-        error instanceof NotezyAPIError ||
-        error instanceof NotezyFetchError
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
       ) {
         const routineTasks =
           await RoutineTaskLocalSimulator.simulateGetAllMyRoutineTasks(request);

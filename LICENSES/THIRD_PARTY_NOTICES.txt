@@ -1,4 +1,4 @@
-Third-Party Notices for Notezy Frontend
+Third-Party Notices for Notegic Frontend
 This product includes software developed by third parties.
 The full license texts are copied under the LICENSES/third_party directory where available.
 For licenses requiring NOTICE, any available NOTICE/README has also been copied if present.

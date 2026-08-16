@@ -32,7 +32,7 @@ export const EnglishCommonTranslation: CommonTranslation = {
     profile: "Profile",
   },
   homePage: {
-    mainTitle: "Notezy",
+    mainTitle: "Notegic",
     secondaryTitle: "A More Humanized AI-Driven Note-Taking Application",
     subtitle: "Your digital note-taking companion",
     getStarted: "Get Started",

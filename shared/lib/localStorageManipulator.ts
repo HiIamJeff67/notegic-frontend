@@ -4,7 +4,7 @@ import {
 } from "@shared/types/localStorage.type";
 
 export class LocalStorageManipulator {
-  private static readonly LocalStoragePrefix = "notezy_";
+  private static readonly LocalStoragePrefix = "notegic_";
 
   private static getStorageKey(
     key: LocalStorageKey,

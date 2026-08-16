@@ -1,6 +1,6 @@
 import type { UUID } from "node:crypto";
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { NotezyAPIError } from "@shared/api/exceptions";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { SaveMyMaterialById } from "@shared/api/functions/material.clientFn";
 import {
@@ -54,7 +54,7 @@ export const useGetMyMaterialById = (
     request?: GetMyMaterialByIdRequest
   ): Promise<GetMyMaterialByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -112,7 +112,7 @@ export const useGetMyMaterialAndItsParentById = (
     request?: GetMyMaterialAndItsParentByIdRequest
   ): Promise<GetMyMaterialAndItsParentByIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -170,7 +170,7 @@ export const useGetMyMaterialsByParentSubShelfId = (
     request?: GetMyMaterialsByParentSubShelfIdRequest
   ): Promise<GetMyMaterialsByParentSubShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -226,7 +226,7 @@ export const useGetAllMyMaterialsByRootShelfId = (
     request?: GetAllMyMaterialsByRootShelfIdRequest
   ): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
     if (!request) {
-      throw new NotezyValidationError(
+      throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
@@ -347,7 +347,7 @@ export const useSaveMyMaterialById = () => {
             .map(issue => issue.message)
             .join(", ");
           throw new Error(`validation failed : ${errorMessage}`);
-        } else if (error instanceof NotezyAPIError) {
+        } else if (error instanceof NotegicAPIError) {
           switch (error.unWrap.reason) {
             default:
               throw new Error(error.unWrap.message);

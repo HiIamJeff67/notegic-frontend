@@ -1,7 +1,7 @@
-import { NotezyException, NotezyExceptionSchema } from "@shared/api/exceptions";
+import { NotegicException, NotegicExceptionSchema } from "@shared/api/exceptions";
 import { z } from "zod";
 
-export const NotezyRequestSchema = z.object({
+export const NotegicRequestSchema = z.object({
   header: z.object({}).optional(),
   // contextFields: z.object({}).optional(), // this field is only exist in the backend
   body: z.object({}).optional(),
@@ -9,9 +9,9 @@ export const NotezyRequestSchema = z.object({
   affected: z.object({}).optional(), // this field is only exist in the frontend(for cache strategy)
 });
 
-export type NotezyRequest = z.infer<typeof NotezyRequestSchema>;
+export type NotegicRequest = z.infer<typeof NotegicRequestSchema>;
 
-export const NotezyResponseSchema = z.object({
+export const NotegicResponseSchema = z.object({
   success: z.boolean(),
   data: z.any().nullable(),
   refreshableTokens: z
@@ -24,18 +24,18 @@ export const NotezyResponseSchema = z.object({
       publicId: z.string().optional(),
     })
     .optional(),
-  exception: NotezyExceptionSchema.nullable(),
+  exception: NotegicExceptionSchema.nullable(),
 });
 
-export type NotezyResponse = z.infer<typeof NotezyResponseSchema>;
+export type NotegicResponse = z.infer<typeof NotegicResponseSchema>;
 
 export const duplicateResponse = <T>(
-  response: NotezyResponse,
+  response: NotegicResponse,
   success?: boolean,
   data?: T,
   newCSRFToken?: string,
-  exception?: NotezyException | null
-): NotezyResponse => {
+  exception?: NotegicException | null
+): NotegicResponse => {
   return {
     ...response,
     ...(success !== undefined && { success: success }),

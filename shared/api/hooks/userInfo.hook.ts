@@ -1,4 +1,4 @@
-import { NotezyValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   GetMyInfoRequest,
@@ -32,7 +32,7 @@ export const useGetMyInfo = (
   ): Promise<GetMyInfoResponse> => {
     try {
       if (!request) {
-        throw new NotezyValidationError(
+        throw new NotegicValidationError(
           ValidationClientException.ReceivedUndefinedRequest()
         );
       }

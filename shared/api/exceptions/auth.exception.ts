@@ -2,7 +2,7 @@ import {
   ExceptionCode,
   ExceptionPrefix,
   ExceptionSubDomainCodeShiftAmount,
-  NotezyException,
+  NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
 import { ExceptionReasonDictionary } from ".";
@@ -17,8 +17,8 @@ export class AuthExceptions extends DatabaseException {
   static BaseCode: ExceptionCode = ExceptionBaseCode_Auth;
   static Prefix: ExceptionPrefix = ExceptionPrefix_Auth;
 
-  static WrongPassword = (): NotezyException => {
-    return new NotezyException({
+  static WrongPassword = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 1,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.auth.wrongPassword,
@@ -27,8 +27,8 @@ export class AuthExceptions extends DatabaseException {
     });
   };
 
-  static WrongAuthCode = (): NotezyException => {
-    return new NotezyException({
+  static WrongAuthCode = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 5,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.auth.wrongAuthCode,
@@ -39,8 +39,8 @@ export class AuthExceptions extends DatabaseException {
 
   static LoginBlockedDueToTryingTooManyTimes = (
     blockUntil: Date = new Date()
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 8,
       prefix: this.Prefix,
       reason:
@@ -52,8 +52,8 @@ export class AuthExceptions extends DatabaseException {
 
   static AuthCodeBlockedDueToTryingTooManyTimes = (
     blockUntil: Date = new Date()
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 9,
       prefix: this.Prefix,
       reason:
@@ -65,8 +65,8 @@ export class AuthExceptions extends DatabaseException {
 
   static PermissionDeniedDueToUserRole = (
     userRole: any = "FAKE_USER_ROLE"
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 101,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.auth.permissionDeniedDueToUserRole,
@@ -77,8 +77,8 @@ export class AuthExceptions extends DatabaseException {
 
   static PermissionDeniedDueToUserPlan = (
     userPlan: any = "FAKE_USER_PLAN"
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 102,
       prefix: this.Prefix,
       reason: ExceptionReasonDictionary.auth.permissionDeniedDueToUserPlan,
@@ -89,8 +89,8 @@ export class AuthExceptions extends DatabaseException {
 
   static PermissionDeniedDueToInvalidRequestOriginDomain = (
     origin: any = "FAKE_ORIGIN"
-  ): NotezyException => {
-    return new NotezyException({
+  ): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 103,
       prefix: this.Prefix,
       reason:
@@ -101,8 +101,8 @@ export class AuthExceptions extends DatabaseException {
     });
   };
 
-  static PermissionDeniedDueToTooManyRequests = (): NotezyException => {
-    return new NotezyException({
+  static PermissionDeniedDueToTooManyRequests = (): NotegicException => {
+    return new NotegicException({
       code: this.BaseCode + 104,
       prefix: this.Prefix,
       reason:
