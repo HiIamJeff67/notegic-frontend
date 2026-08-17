@@ -4,7 +4,6 @@ import {
   CheckIcon,
   Clock3Icon,
   DatabaseIcon,
-  FactoryIcon,
   GaugeIcon,
   LeafIcon,
   ShieldCheckIcon,
@@ -208,27 +207,18 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
         <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))] gap-4">
           <div className="relative overflow-hidden rounded-md border border-border bg-background/45 p-5 shadow-inner">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent" />
-            <div className="flex items-start justify-between gap-4">
+            <div className="pr-28">
               <div>
-                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <FactoryIcon className="size-4 text-primary" />
-                  {t("settingsPage.account.upgrade.accountPlan")}
-                </div>
-                <h3 className="mt-2 text-2xl font-semibold text-foreground">
+                <h3 className="text-2xl font-semibold text-foreground">
                   {t(currentOption.labelKey)}
                 </h3>
                 <p className="mt-1 max-w-md text-sm text-muted-foreground">
                   {t(currentOption.bestForKey)}
                 </p>
               </div>
-              <div className="rounded-sm border border-border bg-primary/10 px-3 py-2 text-right">
-                <div className="text-[11px] text-muted-foreground">
-                  {t("settingsPage.account.upgrade.status")}
-                </div>
-                <div className="mt-1 text-sm font-semibold text-primary">
-                  {t("settingsPage.account.upgrade.active")}
-                </div>
-              </div>
+            </div>
+            <div className="absolute top-5 right-5 flex min-w-24 items-center justify-center rounded-sm border border-border bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
+              {t("settingsPage.account.upgrade.active")}
             </div>
 
             <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2">

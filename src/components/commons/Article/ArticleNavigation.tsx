@@ -1,13 +1,14 @@
 import { cn } from "@shared/util/utils";
-import type { ComponentType, ReactNode, RefObject } from "react";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   BookOpenIcon,
   CircleHelpIcon,
   FileTextIcon,
   MailIcon,
 } from "lucide-react";
+import type { ComponentType, ReactNode, RefObject } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import notegicLogo from "@/assets/logo/transparent-background.svg";
 import {
   HoverCard,
   HoverCardContent,
@@ -29,12 +30,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
-import notegicLogo from "@/assets/logo/transparent-background.svg";
 import ArticleCommand from "./ArticleCommand";
-import {
-  ArticleDisplayContext,
-  ArticleScrollContext,
-} from "./ArticleContext";
+import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";
 
 export type ArticleNavigationItem = {
   id: string;
@@ -94,12 +91,18 @@ const useArticleNavigation = (
       const sections = Array.from(
         articleElement.querySelectorAll<HTMLElement>("section[id]")
       ).filter(section => itemIds.includes(section.id));
+      const isAtBottom =
+        articleElement.scrollTop + articleElement.clientHeight >=
+        articleElement.scrollHeight - 2;
       const activeSection =
-        sections
-          .filter(
-            section => section.getBoundingClientRect().top <= articleTop + 96
-          )
-          .at(-1) ?? sections[0];
+        (isAtBottom
+          ? sections.at(-1)
+          : sections
+              .filter(
+                section =>
+                  section.getBoundingClientRect().top <= articleTop + 96
+              )
+              .at(-1)) ?? sections[0];
 
       setActiveId(activeSection?.id);
     };
@@ -299,7 +302,9 @@ export const ArticleSidebar = ({
           </SidebarMenuButton>
           {hasChildren && (
             <SidebarMenuSub>
-              {item.children?.map(child => renderItem(child, depth + 1, pageId))}
+              {item.children?.map(child =>
+                renderItem(child, depth + 1, pageId)
+              )}
             </SidebarMenuSub>
           )}
         </SidebarMenuItem>
@@ -385,10 +390,12 @@ export const ArticleSidebar = ({
                 </span>
               </a>
             </SidebarMenuItem>
-            {(display?.headerLinks ?? [
-              { label: "Home", href: "/" },
-              { label: "Tutorial", href: "/tutorial" },
-            ])
+            {(
+              display?.headerLinks ?? [
+                { label: "Home", href: "/" },
+                { label: "Tutorial", href: "/tutorial" },
+              ]
+            )
               .slice(1)
               .map(link => {
                 const LinkIcon =

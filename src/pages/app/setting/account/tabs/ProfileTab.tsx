@@ -1,16 +1,17 @@
-import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useUpdateMyInfo } from "@shared/api/hooks/userInfo.hook";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
 import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import AvatarIcon from "@/components/icons/AvatarIcon";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
+import AvatarIcon from "@/components/icons/AvatarIcon";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,7 +21,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -31,6 +31,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -59,7 +64,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
 
   const updateUserInfoMutator = useUpdateMyInfo();
 
-  const [birthDateDialogOpen, setBirthDateDialogOpen] = useState(false);
   const [editingImageField, setEditingImageField] =
     useState<ProfileImageField | null>(null);
   const [editingImageURL, setEditingImageURL] = useState("");
@@ -203,7 +207,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 }}
               >
                 <AvatarIcon
-                  avatarURL={avatarURL ?? ""}
+                  avatarURL={avatarURL}
                   alt={t("settingsPage.account.personal.avatar")}
                   fallbackText={avatarFallbackText}
                   size={128}
@@ -439,40 +443,41 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                         : t("settingsPage.account.personal.birthDateUnset")
                     }
                   >
-                    <Dialog
-                      open={birthDateDialogOpen}
-                      onOpenChange={setBirthDateDialogOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button variant="outline">
-                          {t("settingsPage.account.personal.changeDate")}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-44 justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="size-4" />
+                          {field.value
+                            ? format(
+                                typeof field.value === "string"
+                                  ? new Date(field.value)
+                                  : field.value,
+                                "yyyy-MM-dd"
+                              )
+                            : t("settingsPage.account.personal.birthDateUnset")}
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent className="w-auto">
-                        <DialogHeader>
-                          <DialogTitle>
-                            {t("settingsPage.account.personal.selectBirthDate")}
-                          </DialogTitle>
-                          <DialogDescription>
-                            {t("settingsPage.account.personal.selectBirthDate")}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex justify-center">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={date => {
-                              field.onChange(date);
-                              setBirthDateDialogOpen(false);
-                            }}
-                            disabled={date =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
+                          }
+                          onSelect={date => {
+                            if (date) field.onChange(date);
+                          }}
+                          disabled={date =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </SettingMenuItem>
                   <FormMessage className="ml-[200px] mt-1" />
                 </FormItem>

@@ -4,10 +4,10 @@ import { useContext, useRef } from "react";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
   ArticleDisplayContext,
-  ArticleDisplayProvider,
-  ArticleScrollContext,
   type ArticleDisplayMode,
+  ArticleDisplayProvider,
   type ArticleHeaderLink,
+  ArticleScrollContext,
 } from "./ArticleContext";
 
 export const Article = ({
@@ -65,6 +65,7 @@ export const Article = ({
 
 export const ArticleContent = ({
   className,
+  children,
   ...props
 }: HTMLAttributes<HTMLElement>) => {
   const { preferences } = useLocalPreferences();
@@ -72,7 +73,7 @@ export const ArticleContent = ({
   return (
     <main
       className={cn(
-        "mx-auto w-full min-w-0 max-w-none flex-1 px-4 py-2 sm:px-6 lg:px-8 lg:py-5",
+        "mx-auto w-full min-w-0 max-w-none flex-1 px-4 py-2 !pb-16 sm:px-6 lg:px-8 lg:py-5 lg:!pb-20",
         preferences.density === "compact"
           ? "lg:px-4"
           : preferences.density === "comfortable"
@@ -81,6 +82,9 @@ export const ArticleContent = ({
         className
       )}
       {...props}
-    />
+    >
+      {children}
+      <div aria-hidden="true" className="h-48 shrink-0 lg:h-56" />
+    </main>
   );
 };

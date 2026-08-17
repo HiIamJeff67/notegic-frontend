@@ -11,6 +11,12 @@ import {
   ArticleParagraphSeparator,
   ArticleSidebar,
 } from "@/components/commons/Article/Article";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 
 const domainTutorials = [
@@ -53,8 +59,7 @@ const domainTutorials = [
   {
     id: "blocks",
     title: "Blocks",
-    summary:
-      "Blocks are the small content units that make up a Block Pack.",
+    summary: "Blocks are the small content units that make up a Block Pack.",
     structure: "Block Pack → block id → content + ordering metadata",
     details:
       "Address blocks through their containing Block Pack when possible. This keeps authorization and ordering decisions tied to the document boundary.",
@@ -134,7 +139,56 @@ const navigationItems = [
     description: "Keep API keys on the server and call the public gateway.",
     weight: 4,
   },
+  {
+    id: "q-and-a",
+    title: "Q&A",
+    description: "Answers to common Notegic integration questions.",
+    weight: 4,
+  },
 ] satisfies ArticleNavigationItem[];
+
+const tutorialQuestions = [
+  {
+    question: "What is a Block Pack?",
+    answer:
+      "A Block Pack is a collaborative document container made from ordered blocks. Use the API for lifecycle and permissions, and use the realtime flow for collaborative editing.",
+  },
+  {
+    question: "Where should I store an API key?",
+    answer:
+      "Store it in a backend, worker, CLI secret manager, or deployment secret. Do not put it in frontend environment variables, browser storage, URLs, logs, or WebSocket frames.",
+  },
+  {
+    question: "Should I use one API key for every environment?",
+    answer:
+      "No. Create separate keys for development, staging, and production so each environment can be rotated or revoked independently.",
+  },
+  {
+    question: "What is the difference between a Root Shelf and a Sub Shelf?",
+    answer:
+      "A Root Shelf is a top-level workspace boundary for ownership, membership, and permissions. A Sub Shelf organizes content inside that boundary without creating another workspace.",
+  },
+  {
+    question: "When should I use a Station?",
+    answer:
+      "Use a Station when you need an execution-oriented workspace that brings members, permissions, and routines together.",
+  },
+  {
+    question: "What is the difference between a Routine and a Routine Task?",
+    answer:
+      "A Routine is the repeatable automation definition and schedule. A Routine Task is an executable step created from that definition and claimed by the scheduler.",
+  },
+  {
+    question: "When is routine quota consumed?",
+    answer:
+      "Quota is consumed when the backend claims a Routine Task for execution. A client should not reject a task based only on a local estimate of its payload cost.",
+  },
+  {
+    question: "What should I do if an API key may have leaked?",
+    answer:
+      "Revoke it immediately, create a replacement key, update the server-side secret, and review logs or deployments for places where the old secret may have been exposed.",
+  },
+] as const;
 
 const TutorialPage = () => {
   const { t } = useTranslation();
@@ -167,195 +221,219 @@ const TutorialPage = () => {
             ]}
             className="min-w-0 flex-1"
           >
-          <ArticleContent>
-            <ArticleParagraph id="tutorial">
-              <ArticleParagraphHeader>
-                <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
-                  NOTEGIC TUTORIAL
-                </p>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-                  {title}
-                </h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  A practical guide to API-key integrations and the Notegic
-                  resource model.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <p>
-                  Start with the API key workflow, then use the Notegic structure
-                  guide to understand which resource family your integration
-                  should call.
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
+            <ArticleContent>
+              <ArticleParagraph id="tutorial">
+                <ArticleParagraphHeader>
+                  <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
+                    NOTEGIC TUTORIAL
+                  </p>
+                  <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+                    {title}
+                  </h1>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    A practical guide to API-key integrations and the Notegic
+                    resource model.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <p>
+                    Start with the API key workflow, then use the Notegic
+                    structure guide to understand which resource family your
+                    integration should call.
+                  </p>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
 
-            <ArticleParagraphSeparator />
+              <ArticleParagraphSeparator />
 
-            <ArticleParagraph id="api-keys">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Generate your first API key
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  API keys authenticate server-to-server calls to the public
-                  API Gateway.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <p>
-                  An API key is not a replacement for the browser session and
-                  must never be shipped to frontend code.
-                </p>
-                <ol className="list-decimal space-y-2 pl-5">
-                  <li>Open Account settings and select API keys.</li>
-                  <li>
-                    Create a named key for one integration or environment.
-                  </li>
-                  <li>
-                    Copy the complete secret immediately; it is displayed only
-                    once.
-                  </li>
-                  <li>
-                    Store it in a server secret manager and send it as
-                    <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                      X-API-Key
+              <ArticleParagraph id="api-keys">
+                <ArticleParagraphHeader>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    Generate your first API key
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    API keys authenticate server-to-server calls to the public
+                    API Gateway.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <p>
+                    An API key is not a replacement for the browser session and
+                    must never be shipped to frontend code.
+                  </p>
+                  <ol className="list-decimal space-y-2 pl-5">
+                    <li>Open Account settings and select API keys.</li>
+                    <li>
+                      Create a named key for one integration or environment.
+                    </li>
+                    <li>
+                      Copy the complete secret immediately; it is displayed only
+                      once.
+                    </li>
+                    <li>
+                      Store it in a server secret manager and send it as
+                      <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                        X-API-Key
+                      </code>
+                      on each request.
+                    </li>
+                  </ol>
+                  <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
+                    <code>
+                      {
+                        "curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.app/api/development/v1/root-shelves"
+                      }
                     </code>
-                    on each request.
-                  </li>
-                </ol>
-                <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
-                  <code>
-                    {"curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.app/api/development/v1/root-shelves"}
-                  </code>
-                </pre>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
+                  </pre>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
 
-            <ArticleParagraphSeparator />
+              <ArticleParagraphSeparator />
 
-            <ArticleParagraph id="api-key-management">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Manage and revoke keys
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Key metadata is visible after creation, but the secret is
-                  never returned again.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>
-                    Use separate keys for production and development
-                    environments.
-                  </li>
-                  <li>
-                    Rotate a key when an owner or environment changes.
-                  </li>
-                  <li>
-                    Revoke immediately if a secret may have leaked.
-                  </li>
-                  <li>
-                    Keep raw secrets out of logs, URLs, and metrics.
-                  </li>
-                </ul>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
+              <ArticleParagraph id="api-key-management">
+                <ArticleParagraphHeader>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    Manage and revoke keys
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Key metadata is visible after creation, but the secret is
+                    never returned again.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <ul className="list-disc space-y-2 pl-5">
+                    <li>
+                      Use separate keys for production and development
+                      environments.
+                    </li>
+                    <li>Rotate a key when an owner or environment changes.</li>
+                    <li>Revoke immediately if a secret may have leaked.</li>
+                    <li>Keep raw secrets out of logs, URLs, and metrics.</li>
+                  </ul>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
 
-            <ArticleParagraphSeparator />
+              <ArticleParagraphSeparator />
 
-            <ArticleParagraph id="notegic-model">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Understand the Notegic structure
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Notegic separates organization, content, and execution so
-                  integrations can request only the resource family they need.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
-                  <code>
-                    {"Root shelf\n├─ Sub shelves\n│  ├─ Materials\n│  └─ Block Packs\n│     └─ Blocks\n└─ Station\n   └─ Routine\n      ├─ Routine tasks\n      └─ Routine tags"}
-                  </code>
-                </pre>
-                <p>
-                  Each resource section below explains its boundary and links
-                  to the public API reference in the{" "}
-                  <a
-                    className="underline"
-                    href="/document#gateway"
-                    onClick={event => {
-                      event.preventDefault();
-                      router.push("/document#gateway");
-                    }}
-                  >
-                    document page
-                  </a>
-                  .
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            {domainTutorials.map(domain => (
-              <Fragment key={domain.id}>
-                <ArticleParagraphSeparator />
-                <ArticleParagraph id={domain.id}>
-                  <ArticleParagraphHeader>
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      {domain.title}
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {domain.summary}
-                    </p>
-                  </ArticleParagraphHeader>
-                  <ArticleParagraphContent>
-                    <p>{domain.details}</p>
-                    <p className="font-mono text-xs leading-6 text-muted-foreground">
-                      Structure: {domain.structure}
-                    </p>
+              <ArticleParagraph id="notegic-model">
+                <ArticleParagraphHeader>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    Understand the Notegic structure
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Notegic separates organization, content, and execution so
+                    integrations can request only the resource family they need.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
+                    <code>
+                      {
+                        "Root shelf\n├─ Sub shelves\n│  ├─ Materials\n│  └─ Block Packs\n│     └─ Blocks\n└─ Station\n   └─ Routine\n      ├─ Routine tasks\n      └─ Routine tags"
+                      }
+                    </code>
+                  </pre>
+                  <p>
+                    Each resource section below explains its boundary and links
+                    to the public API reference in the{" "}
                     <a
                       className="underline"
-                      href={"/document#gateway-" + domain.id}
+                      href="/document#gateway"
                       onClick={event => {
                         event.preventDefault();
-                        router.push("/document#gateway-" + domain.id);
+                        router.push("/document#gateway");
                       }}
                     >
-                      View {domain.title} API operations
+                      document page
                     </a>
-                  </ArticleParagraphContent>
-                </ArticleParagraph>
-              </Fragment>
-            ))}
+                    .
+                  </p>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
 
-            <ArticleParagraphSeparator />
+              {domainTutorials.map(domain => (
+                <Fragment key={domain.id}>
+                  <ArticleParagraphSeparator />
+                  <ArticleParagraph id={domain.id}>
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {domain.title}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {domain.summary}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <p>{domain.details}</p>
+                      <p className="font-mono text-xs leading-6 text-muted-foreground">
+                        Structure: {domain.structure}
+                      </p>
+                      <a
+                        className="underline"
+                        href={"/document#gateway-" + domain.id}
+                        onClick={event => {
+                          event.preventDefault();
+                          router.push("/document#gateway-" + domain.id);
+                        }}
+                      >
+                        View {domain.title} API operations
+                      </a>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
+                </Fragment>
+              ))}
 
-            <ArticleParagraph id="integration-patterns">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Integration patterns
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Keep API keys on the server and call the public gateway.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <p>
-                  Keep the API key in your backend, worker, or CLI process. Your
-                  service calls the API Gateway, validates responses, and exposes
-                  only the data your own client needs.
-                </p>
-                <p>
-                  The Notegic web app uses ClientGateway with HttpOnly JWT
-                  cookies. Do not add an API key to browser storage, a URL,
-                  frontend environment variables, or a WebSocket frame.
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-          </ArticleContent>
+              <ArticleParagraphSeparator />
+
+              <ArticleParagraph id="integration-patterns">
+                <ArticleParagraphHeader>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    Integration patterns
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Keep API keys on the server and call the public gateway.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <p>
+                    Keep the API key in your backend, worker, or CLI process.
+                    Your service calls the API Gateway, validates responses, and
+                    exposes only the data your own client needs.
+                  </p>
+                  <p>
+                    The Notegic web app uses ClientGateway with HttpOnly JWT
+                    cookies. Do not add an API key to browser storage, a URL,
+                    frontend environment variables, or a WebSocket frame.
+                  </p>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
+
+              <ArticleParagraphSeparator />
+
+              <ArticleParagraph id="q-and-a">
+                <ArticleParagraphHeader>
+                  <h2 className="text-2xl font-semibold tracking-tight">Q&A</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Common questions about Notegic resources and integrations.
+                  </p>
+                </ArticleParagraphHeader>
+                <ArticleParagraphContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    {tutorialQuestions.map((item, index) => (
+                      <AccordionItem
+                        key={item.question}
+                        value={`question-${index}`}
+                      >
+                        <AccordionTrigger>{item.question}</AccordionTrigger>
+                        <AccordionContent className="leading-6 text-muted-foreground">
+                          {item.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </ArticleParagraphContent>
+              </ArticleParagraph>
+            </ArticleContent>
           </Article>
         </div>
       </ArticleDisplayProvider>

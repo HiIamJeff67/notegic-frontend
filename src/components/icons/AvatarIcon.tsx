@@ -3,33 +3,10 @@ import { Image } from "@unpic/react";
 import { useEffect, useState } from "react";
 
 interface AvatarIconProps extends IconProps {
-  avatarURL: string;
+  avatarURL: string | null;
   alt?: string;
   fallbackText?: string;
 }
-
-const fallbackColors = [
-  "#0f766e",
-  "#1d4ed8",
-  "#7c3aed",
-  "#be123c",
-  "#c2410c",
-  "#4d7c0f",
-];
-
-const getFallbackColor = (value: string) => {
-  const hash = Array.from(value).reduce(
-    (current, character) => current * 31 + character.charCodeAt(0),
-    0
-  );
-
-  return fallbackColors[Math.abs(hash) % fallbackColors.length];
-};
-
-const getFallbackInitial = (value: string) =>
-  value.match(/[A-Za-z]/)?.[0]?.toUpperCase() ||
-  value.trim().charAt(0).toUpperCase() ||
-  "U";
 
 export const AvatarIcon = ({
   size = 24,
@@ -40,7 +17,11 @@ export const AvatarIcon = ({
 }: AvatarIconProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const fallbackValue = fallbackText.trim() || "U";
-  const fallbackInitial = getFallbackInitial(fallbackValue);
+  const firstEnglishLetter = fallbackValue.match(/[A-Za-z]/)?.[0];
+  const fallbackInitial =
+    firstEnglishLetter?.toUpperCase() ||
+    fallbackValue.charAt(0).toUpperCase() ||
+    "U";
   const hasAvatar = Boolean(avatarURL) && !imageFailed;
 
   useEffect(() => {
@@ -50,7 +31,7 @@ export const AvatarIcon = ({
   return (
     <div
       className={
-        "inline-flex items-center justify-center overflow-hidden rounded-full " +
+        "inline-flex items-center justify-center overflow-hidden rounded-full bg-primary text-primary-foreground " +
         className
       }
       style={{
@@ -58,14 +39,11 @@ export const AvatarIcon = ({
         height: size,
         minWidth: size,
         minHeight: size,
-        backgroundColor: hasAvatar
-          ? "#d1d5db"
-          : getFallbackColor(fallbackValue),
       }}
     >
       {hasAvatar ? (
         <Image
-          src={avatarURL}
+          src={avatarURL ?? ""}
           alt={alt}
           width={80}
           height={80}
@@ -74,7 +52,7 @@ export const AvatarIcon = ({
         />
       ) : (
         <span
-          className="text-white font-medium"
+          className="text-primary-foreground font-medium"
           style={{ fontSize: size * 0.4 }}
         >
           {fallbackInitial}

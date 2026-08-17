@@ -1,27 +1,25 @@
-import type {
-  APIKeySummary,
-  CreateMyAPIKeyResponse,
-} from "@shared/api/interfaces/apiKey.interface";
 import {
   useCreateMyAPIKey,
   useMyAPIKeys,
   useRevokeMyAPIKey,
 } from "@shared/api/hooks/apiKey.hook";
+import type {
+  APIKeySummary,
+  CreateMyAPIKeyResponse,
+} from "@shared/api/interfaces/apiKey.interface";
 import toast from "@shared/lib/toast";
-import {
-  CheckIcon,
-  CopyIcon,
-  KeyRoundIcon,
-  Loader2Icon,
-  PlusIcon,
-  ShieldCheckIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -72,66 +70,74 @@ const APIKeyRow = ({
 }) => {
   const isRevoked = apiKey.revokedAt !== null;
   return (
-    <div className="rounded-md border border-border/70 bg-background/55 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <AccordionItem
+      value={apiKey.publicId}
+      className="rounded-md border border-border/70 bg-background/55 px-4"
+    >
+      <AccordionTrigger>
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <KeyRoundIcon className="size-4 shrink-0 text-primary" />
-            <p className="truncate font-medium text-foreground">{apiKey.name}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="truncate font-medium text-foreground">
+              {apiKey.name}
+            </p>
             <span
               className={`rounded-full px-2 py-0.5 text-[11px] ${isRevoked ? "bg-muted text-muted-foreground" : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"}`}
             >
               {isRevoked ? labels.revoked : labels.active}
             </span>
           </div>
-          <code className="mt-2 block font-mono text-xs text-muted-foreground">
+          <code className="mt-1 block font-mono text-xs text-muted-foreground">
             {apiKey.keyPrefix}••••••••
           </code>
         </div>
-        {!isRevoked && (
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="text-destructive hover:text-destructive"
-            disabled={isRevoking}
-            onClick={() => onRevoke(apiKey)}
-          >
-            {isRevoking ? (
-              <Loader2Icon className="animate-spin" />
-            ) : (
-              <Trash2Icon />
-            )}
-            {labels.revoke}
-          </Button>
-        )}
-      </div>
-      <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-3">
-        <div>
-          <dt className="text-muted-foreground">{labels.created}</dt>
-          <dd className="mt-1 text-foreground">
-            {formatDate(apiKey.createdAt, neverLabel)}
-          </dd>
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="flex justify-end">
+          {!isRevoked && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="text-destructive hover:text-destructive"
+              disabled={isRevoking}
+              onClick={() => onRevoke(apiKey)}
+            >
+              {isRevoking ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <Trash2Icon />
+              )}
+              {labels.revoke}
+            </Button>
+          )}
         </div>
-        <div>
-          <dt className="text-muted-foreground">{labels.lastUsed}</dt>
-          <dd className="mt-1 text-foreground">
-            {formatDate(apiKey.lastUsedAt, neverLabel)}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground">
-            {isRevoked ? labels.revoked : labels.expires}
-          </dt>
-          <dd className="mt-1 text-foreground">
-            {formatDate(
-              isRevoked ? apiKey.revokedAt : apiKey.expiresAt,
-              neverLabel
-            )}
-          </dd>
-        </div>
-      </dl>
-    </div>
+        <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-3">
+          <div>
+            <dt className="text-muted-foreground">{labels.created}</dt>
+            <dd className="mt-1 text-foreground">
+              {formatDate(apiKey.createdAt, neverLabel)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">{labels.lastUsed}</dt>
+            <dd className="mt-1 text-foreground">
+              {formatDate(apiKey.lastUsedAt, neverLabel)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">
+              {isRevoked ? labels.revoked : labels.expires}
+            </dt>
+            <dd className="mt-1 text-foreground">
+              {formatDate(
+                isRevoked ? apiKey.revokedAt : apiKey.expiresAt,
+                neverLabel
+              )}
+            </dd>
+          </div>
+        </dl>
+      </AccordionContent>
+    </AccordionItem>
   );
 };
 
@@ -190,7 +196,9 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
       return;
     }
     try {
-      await revokeMutation.mutateAsync({ param: { publicId: apiKey.publicId } });
+      await revokeMutation.mutateAsync({
+        param: { publicId: apiKey.publicId },
+      });
       toast.success(t("settingsPage.account.apiKeys.revokedToast"));
     } catch (error) {
       toast.error(translateError(error, t));
@@ -200,18 +208,13 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
   return (
     <SettingMenu layout={layout} menuItemsClassName="gap-4">
       <div className="rounded-md border border-border bg-background/55 p-5">
-        <div className="flex items-start gap-3">
-          <div className="rounded-sm border border-primary/30 bg-primary/10 p-2">
-            <ShieldCheckIcon className="size-5 text-primary" />
-          </div>
-          <div className="min-w-0">
-            <h3 className="font-medium text-foreground">
-              {t("settingsPage.account.apiKeys.securityTitle")}
-            </h3>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              {t("settingsPage.account.apiKeys.securityDescription")}
-            </p>
-          </div>
+        <div className="min-w-0">
+          <h3 className="font-medium text-foreground">
+            {t("settingsPage.account.apiKeys.securityTitle")}
+          </h3>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            {t("settingsPage.account.apiKeys.securityDescription")}
+          </p>
         </div>
       </div>
 
@@ -219,11 +222,7 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
         title={t("settingsPage.account.apiKeys.createTitle")}
         description={t("settingsPage.account.apiKeys.createDescription")}
       >
-        <Button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-        >
-          <PlusIcon />
+        <Button type="button" onClick={() => setCreateOpen(true)}>
           {t("settingsPage.account.apiKeys.create")}
         </Button>
       </SettingMenuItem>
@@ -233,7 +232,9 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
           <h3 className="font-medium text-foreground">
             {t("settingsPage.account.apiKeys.listTitle")}
           </h3>
-          {listQuery.isFetching && <Loader2Icon className="size-4 animate-spin" />}
+          {listQuery.isFetching && (
+            <Loader2Icon className="size-4 animate-spin" />
+          )}
         </div>
         {listQuery.isLoading ? (
           <div className="space-y-3">
@@ -246,8 +247,7 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
           </div>
         ) : apiKeys.length === 0 ? (
           <div className="flex min-h-40 flex-col items-center justify-center rounded-md border border-dashed border-border bg-background/35 p-8 text-center">
-            <KeyRoundIcon className="size-8 text-muted-foreground" />
-            <h3 className="mt-3 font-medium text-foreground">
+            <h3 className="font-medium text-foreground">
               {t("settingsPage.account.apiKeys.emptyTitle")}
             </h3>
             <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">
@@ -255,26 +255,28 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
             </p>
           </div>
         ) : (
-          apiKeys.map(apiKey => (
-            <APIKeyRow
-              key={apiKey.publicId}
-              apiKey={apiKey}
-              onRevoke={handleRevoke}
-              isRevoking={
-                revokeMutation.isPending &&
-                revokeMutation.variables?.param.publicId === apiKey.publicId
-              }
-              neverLabel={neverLabel}
-              labels={{
-                created: t("settingsPage.account.apiKeys.createdAt"),
-                lastUsed: t("settingsPage.account.apiKeys.lastUsedAt"),
-                expires: t("settingsPage.account.apiKeys.expiresAt"),
-                revoked: t("settingsPage.account.apiKeys.revokedAt"),
-                active: t("settingsPage.account.apiKeys.active"),
-                revoke: t("settingsPage.account.apiKeys.revoke"),
-              }}
-            />
-          ))
+          <Accordion type="multiple" className="space-y-3">
+            {apiKeys.map(apiKey => (
+              <APIKeyRow
+                key={apiKey.publicId}
+                apiKey={apiKey}
+                onRevoke={handleRevoke}
+                isRevoking={
+                  revokeMutation.isPending &&
+                  revokeMutation.variables?.param.publicId === apiKey.publicId
+                }
+                neverLabel={neverLabel}
+                labels={{
+                  created: t("settingsPage.account.apiKeys.createdAt"),
+                  lastUsed: t("settingsPage.account.apiKeys.lastUsedAt"),
+                  expires: t("settingsPage.account.apiKeys.expiresAt"),
+                  revoked: t("settingsPage.account.apiKeys.revokedAt"),
+                  active: t("settingsPage.account.apiKeys.active"),
+                  revoke: t("settingsPage.account.apiKeys.revoke"),
+                }}
+              />
+            ))}
+          </Accordion>
         )}
       </div>
 
@@ -332,11 +334,10 @@ const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
               >
                 {t("common.cancel")}
               </Button>
-              <Button
-                type="submit"
-                disabled={createMutation.isPending}
-              >
-                {createMutation.isPending && <Loader2Icon className="animate-spin" />}
+              <Button type="submit" disabled={createMutation.isPending}>
+                {createMutation.isPending && (
+                  <Loader2Icon className="animate-spin" />
+                )}
                 {t("settingsPage.account.apiKeys.create")}
               </Button>
             </DialogFooter>

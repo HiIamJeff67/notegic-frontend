@@ -181,7 +181,7 @@ const AuthPanel = ({
                         button-gradient border border-green-400
                         text-green-400 font-mono text-xs leading-normal font-bold
                         transition-all duration-300 max-w-2/5 h-4/5
-                        hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] 
+                        hover:shadow-[0_0_20px_rgba(0,255,136,0.3)]
                         disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none
                         ${
                           input.rightButton.disabled || isLoading
@@ -203,8 +203,8 @@ const AuthPanel = ({
               type="submit"
               disabled={isLoading}
               className="
-                relative button-gradient border border-green-400 rounded-md px-8 py-4 
-                text-green-400 font-mono text-base leading-normal font-bold tracking-wider cursor-pointer 
+                relative button-gradient border border-green-400 rounded-md px-8 py-4
+                text-green-400 font-mono text-base leading-normal font-bold tracking-wider cursor-pointer
                 transition-all duration-300 mt-4 overflow-hidden
                 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:-translate-y-0.5
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none
@@ -216,7 +216,7 @@ const AuthPanel = ({
               {!isLoading && (
                 <div
                   className="
-                  absolute top-0 left-[-100%] w-full h-full 
+                  absolute top-0 left-[-100%] w-full h-full
                   bg-gradient-to-r from-transparent via-[rgba(0,255,136,0.3)] to-transparent
                   button-glow
                 "
@@ -231,7 +231,7 @@ const AuthPanel = ({
               <div className="flex items-center justify-center gap-4 mb-6 opacity-70">
                 <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
                 <span
-                  className={`font-mono text-[10px] tracking-[3px] uppercase ${
+                  className={`font-mono text-[10px] tracking-[3px] ${
                     themeManager.currentTheme.isDark
                       ? "text-gray-500"
                       : "text-gray-600"
@@ -243,12 +243,12 @@ const AuthPanel = ({
               </div>
 
               <div className="flex flex-col gap-3">
-                {oauthButtons.map((btn, idx) => (
+                {oauthButtons.map((button, index) => (
                   <button
-                    key={idx}
+                    key={index}
                     type="button"
-                    onClick={btn.onClick}
-                    disabled={btn.disabled || isLoading}
+                    onClick={button.onClick}
+                    disabled={button.disabled || isLoading}
                     className={`
                             group relative w-full flex items-center justify-center gap-4
                             px-4 py-3 rounded border
@@ -265,12 +265,12 @@ const AuthPanel = ({
                   >
                     {/* Icon Render */}
                     <div className="w-5 h-5 transition-transform duration-300 group-hover:scale-110">
-                      {OAuthIcons[btn.provider]
-                        ? OAuthIcons[btn.provider]("w-full h-full")
+                      {OAuthIcons[button.provider]
+                        ? OAuthIcons[button.provider]("w-full h-full")
                         : null}
                     </div>
 
-                    <span>{btn.label}</span>
+                    <span>{button.label}</span>
 
                     {/* Hover Corner Accents (Mini styling detail) */}
                     <div className="absolute top-0 right-0 w-1 h-1 bg-green-400/0 group-hover:bg-green-400/50 transition-colors"></div>
@@ -300,7 +300,7 @@ const AuthPanel = ({
                     onClick={switchButton.onClick}
                     className="
                       relative inline-block px-3 py-1 ml-1 mt-2
-                      font-mono text-xs leading-normal font-bold tracking-wider uppercase
+                      font-mono text-xs leading-normal font-bold tracking-wider
                       text-green-400 cursor-pointer
                       border border-green-400/30 rounded
                       bg-gradient-to-r from-gray-900/50 to-gray-800/50
@@ -310,7 +310,7 @@ const AuthPanel = ({
                       hover:bg-gradient-to-r hover:from-green-900/20 hover:to-green-800/20
                       focus:outline-none focus:ring-1 focus:ring-green-400/50
                       active:scale-95
-                      before:absolute before:inset-0 
+                      before:absolute before:inset-0
                       before:bg-gradient-to-r before:from-transparent before:via-green-400/5 before:to-transparent
                       before:opacity-0 before:transition-opacity before:duration-300
                       hover:before:opacity-100

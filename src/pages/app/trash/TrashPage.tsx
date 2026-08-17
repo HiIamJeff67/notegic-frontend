@@ -124,7 +124,7 @@ const TrashPage = ({
         <header className="flex flex-col gap-3">
           <div className="flex items-center gap-3 text-muted-foreground">
             <Trash2Icon className="size-5" />
-            <span className="font-mono text-xs uppercase tracking-[0.16em]">
+            <span className="font-mono text-xs tracking-[0.16em]">
               {t("workspace.trash.eyebrow")}
             </span>
           </div>
