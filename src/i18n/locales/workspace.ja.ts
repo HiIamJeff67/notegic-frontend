@@ -841,6 +841,8 @@ export const JapaneseWorkspaceTranslation = {
     fileImported: "{{name}} をインポートしました。",
     exported: "エクスポートしました。",
     reconnecting: "最新のドキュメントに再接続しています…",
+    syncConnected: "同期に接続しました。",
+    routineReminder: "ルーチンタスクが開始されました。",
     pdfAnnotationsSaved: "PDF の注釈を保存しました。",
     pdfDownloaded: "PDF をダウンロードしました。",
     annotatedPdfDownloaded: "注釈付き PDF をダウンロードしました。",

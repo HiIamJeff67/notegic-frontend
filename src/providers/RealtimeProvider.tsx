@@ -41,9 +41,14 @@ import {
 } from "react";
 import * as Y from "yjs";
 import type { z } from "zod";
+import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
 import i18n from "@/i18n";
+import {
+  canSendDesktopNotification,
+  isQuietHours,
+} from "./notificationPreferences";
 
 const RealtimeBlockPackChannelReleaseDelayMs = 250;
 
@@ -98,6 +103,7 @@ export const RealtimeProvider = ({
 }) => {
   const { userData } = useUser();
   const { isOnline } = useNetwork();
+  const { preferences, notificationPermission } = useLocalPreferences();
   const apolloClient = useApolloClient();
   const queryClient = getQueryClient();
   const clientRef = useRef<RealtimeClient | null>(null);
@@ -106,6 +112,11 @@ export const RealtimeProvider = ({
     new Map()
   );
   const rejectedDraftBlockPackIdsRef = useRef<Set<UUID>>(new Set());
+  const preferencesRef = useRef(preferences);
+  const notificationPermissionRef = useRef(notificationPermission);
+
+  preferencesRef.current = preferences;
+  notificationPermissionRef.current = notificationPermission;
   const [rootState, setRootState] = useState<RealtimeConnectionState>("idle");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
@@ -166,6 +177,53 @@ export const RealtimeProvider = ({
     void queryClient.invalidateQueries({ refetchType: "active" });
     void apolloClient.refetchQueries({ include: "active" });
   }, [apolloClient, queryClient]);
+
+  const showSyncError = useCallback((message: string) => {
+    if (preferencesRef.current.syncNotifications) toast.error(message);
+  }, []);
+
+  const showSyncConnected = useCallback(() => {
+    const currentPreferences = preferencesRef.current;
+    if (
+      !currentPreferences.syncNotifications ||
+      (currentPreferences.quietMode &&
+        isQuietHours(
+          new Date(),
+          currentPreferences.quietModeStart,
+          currentPreferences.quietModeEnd
+        ))
+    ) {
+      return;
+    }
+    toast.success(i18n.t("workspace.notifications.syncConnected"));
+  }, []);
+
+  const showDesktopNotification = useCallback(
+    (
+      title: string,
+      body: string,
+      priority: "low" | "normal" | "high" | "critical"
+    ) => {
+      if (
+        typeof window === "undefined" ||
+        typeof Notification === "undefined" ||
+        !canSendDesktopNotification(
+          preferencesRef.current,
+          notificationPermissionRef.current,
+          priority
+        )
+      ) {
+        return;
+      }
+
+      try {
+        new Notification(title, { body, tag: "notegic" });
+      } catch {
+        // Browser notification APIs can fail when permission changes externally.
+      }
+    },
+    []
+  );
 
   const handleResourceEvent = useCallback(
     (frame: RealtimeResourceEventFrame) => {
@@ -319,6 +377,7 @@ export const RealtimeProvider = ({
       onReconnect: () => {
         refetchCanonicalState();
         refetchNotifications();
+        showSyncConnected();
       },
       onNotification: frame => {
         if (!userData) return;
@@ -335,9 +394,33 @@ export const RealtimeProvider = ({
           deletedAt: null,
           expiresAt: frame.expiresAt ? new Date(frame.expiresAt) : null,
         });
+
+        const title =
+          typeof frame.payload.title === "string" &&
+          frame.payload.title.trim().length > 0
+            ? frame.payload.title
+            : frame.templateKey;
+        const body =
+          typeof frame.payload.summary === "string" &&
+          frame.payload.summary.trim().length > 0
+            ? frame.payload.summary
+            : typeof frame.payload.body === "string"
+              ? frame.payload.body
+              : "";
+        showDesktopNotification(title, body, frame.priority);
       },
       onRoutineTaskLifecycle: (frame: RealtimeRoutineTaskLifecycleFrame) => {
         if (typeof window === "undefined") return;
+        if (
+          frame.status === "running" &&
+          preferencesRef.current.routineNudges
+        ) {
+          showDesktopNotification(
+            i18n.t("workspace.notifications.routineReminder"),
+            frame.purpose,
+            "normal"
+          );
+        }
         window.dispatchEvent(
           new CustomEvent("notegic:realtime-routine-task-lifecycle", {
             detail: frame,
@@ -402,7 +485,7 @@ export const RealtimeProvider = ({
           channel.status = "error";
           channel.provider.setReadOnly(true);
           channel.provider.disconnect();
-          toast.error(i18n.t("workspace.notifications.realtimeError"));
+          showSyncError(i18n.t("workspace.notifications.realtimeError"));
           rerender();
 
           void (async () => {
@@ -429,7 +512,7 @@ export const RealtimeProvider = ({
               channel.error = frame.message;
               channel.status = "error";
               rerender();
-              toast.error(i18n.t("workspace.notifications.realtimeError"));
+              showSyncError(i18n.t("workspace.notifications.realtimeError"));
             }
           })();
           return;
@@ -451,14 +534,14 @@ export const RealtimeProvider = ({
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
           void disposeBlockPackChannel(channel);
-          toast.error(
+          showSyncError(
             i18n.t("workspace.notifications.blockPackRoomUnavailable")
           );
         } else if (frame.code === "resource_unavailable") {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
           void disposeBlockPackChannel(channel);
-          toast.error(i18n.t("workspace.notifications.blockPackUnavailable"));
+          showSyncError(i18n.t("workspace.notifications.blockPackUnavailable"));
         } else if (
           frame.code === "resync_required" ||
           frame.code === "channel_backpressure" ||
@@ -468,15 +551,18 @@ export const RealtimeProvider = ({
           channel.status = "error";
           channel.provider.setReadOnly(true);
           channel.provider.disconnect();
-          toast.error(i18n.t("workspace.notifications.realtimeResyncRequired"));
+          showSyncError(
+            i18n.t("workspace.notifications.realtimeResyncRequired")
+          );
         } else {
           channel.provider.disconnect();
-          toast.error(i18n.t("workspace.notifications.realtimeError"));
+          showSyncError(i18n.t("workspace.notifications.realtimeError"));
         }
         rerender();
       },
       onError: error => {
         console.error("[Realtime]", error);
+        showSyncError(i18n.t("workspace.notifications.realtimeError"));
       },
     });
 
@@ -501,6 +587,9 @@ export const RealtimeProvider = ({
     refetchNotifications,
     rerender,
     setChannelStatus,
+    showDesktopNotification,
+    showSyncConnected,
+    showSyncError,
     userData,
   ]);
 

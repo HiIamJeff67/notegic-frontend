@@ -809,6 +809,8 @@ export const TraditionalChineseWorkspaceTranslation = {
     fileImported: "已匯入 {{name}}。",
     exported: "已匯出。",
     reconnecting: "正在重新連線到最新文件…",
+    syncConnected: "同步已連線。",
+    routineReminder: "例行任務已開始。",
     pdfAnnotationsSaved: "已儲存 PDF 註解。",
     pdfDownloaded: "已下載 PDF。",
     annotatedPdfDownloaded: "已下載附註解的 PDF。",

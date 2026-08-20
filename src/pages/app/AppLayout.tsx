@@ -15,35 +15,38 @@ import { ShelfItemProvider } from "@/providers/ShelfItemProvider/ShelfItemProvid
 import { StationRoutineProvider } from "@/providers/StationRoutineProvider/StationRoutineProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import { UserProvider } from "@/providers/UserProvider";
+import { UserSettingsProvider } from "@/providers/UserSettingsProvider";
 
 export default function AppLayout() {
   return (
     <TransactionSynchronizerProvider>
       <UserProvider>
-        <RealtimeProvider>
-          <BackgroundImagesProvider>
-            <DndProvider backend={HTML5Backend}>
-              <SidebarProvider>
-                <ResizeSidebarProvider>
-                  <ShelfItemProvider>
-                    <StationRoutineProvider>
-                      <ModalProvider>
-                        <SettingsDisplayProvider>
-                          <AppSidebar />
-                          <AppSidebarInset>
-                            <Outlet />
-                          </AppSidebarInset>
-                          <SettingsSheet />
-                          <StationRoutineInspectorHost />
-                        </SettingsDisplayProvider>
-                      </ModalProvider>
-                    </StationRoutineProvider>
-                  </ShelfItemProvider>
-                </ResizeSidebarProvider>
-              </SidebarProvider>
-            </DndProvider>
-          </BackgroundImagesProvider>
-        </RealtimeProvider>
+        <UserSettingsProvider>
+          <RealtimeProvider>
+            <BackgroundImagesProvider>
+              <DndProvider backend={HTML5Backend}>
+                <SidebarProvider>
+                  <ResizeSidebarProvider>
+                    <ShelfItemProvider>
+                      <StationRoutineProvider>
+                        <ModalProvider>
+                          <SettingsDisplayProvider>
+                            <AppSidebar />
+                            <AppSidebarInset>
+                              <Outlet />
+                            </AppSidebarInset>
+                            <SettingsSheet />
+                            <StationRoutineInspectorHost />
+                          </SettingsDisplayProvider>
+                        </ModalProvider>
+                      </StationRoutineProvider>
+                    </ShelfItemProvider>
+                  </ResizeSidebarProvider>
+                </SidebarProvider>
+              </DndProvider>
+            </BackgroundImagesProvider>
+          </RealtimeProvider>
+        </UserSettingsProvider>
       </UserProvider>
     </TransactionSynchronizerProvider>
   );

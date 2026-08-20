@@ -136,7 +136,6 @@ const AppearanceSettings = () => {
         onCheckedChange={checked =>
           updatePreference("tactileFeedback", checked)
         }
-        unsupportedReason={t("settingsPage.preferences.appearance.unsupported")}
         hideSeparator
       />
     </Section>
@@ -396,7 +395,6 @@ const OfflineSettings = () => {
           )}
           checked={preferences.localVault}
           onCheckedChange={checked => updatePreference("localVault", checked)}
-          unsupportedReason={t("settingsPage.preferences.offline.pending")}
         />
         <SwitchRow
           title={t("settingsPage.preferences.offline.offlineQueue")}
@@ -405,7 +403,6 @@ const OfflineSettings = () => {
           )}
           checked={preferences.offlineQueue}
           onCheckedChange={checked => updatePreference("offlineQueue", checked)}
-          unsupportedReason={t("settingsPage.preferences.offline.pending")}
         />
         <SwitchRow
           title={t("settingsPage.preferences.offline.attachmentCache")}

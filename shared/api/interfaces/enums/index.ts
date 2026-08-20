@@ -17,4 +17,6 @@ export * from "./supportedIcon.enum";
 export * from "./userGender.enum";
 export * from "./userPlan.enum";
 export * from "./userRole.enum";
+export * from "./userSettingDensity.enum";
+export * from "./userSettingStartSurface.enum";
 export * from "./userStatus.enum";

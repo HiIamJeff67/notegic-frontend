@@ -833,6 +833,8 @@ export const KoreanWorkspaceTranslation = {
     fileImported: "{{name}}을(를) 가져왔습니다.",
     exported: "내보냈습니다.",
     reconnecting: "최신 문서에 다시 연결하는 중…",
+    syncConnected: "동기화가 연결되었습니다.",
+    routineReminder: "루틴 작업이 시작되었습니다.",
     pdfAnnotationsSaved: "PDF 주석을 저장했습니다.",
     pdfDownloaded: "PDF를 다운로드했습니다.",
     annotatedPdfDownloaded: "주석이 포함된 PDF를 다운로드했습니다.",

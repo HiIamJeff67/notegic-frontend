@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   useCreateBlockPacks,
   useDeleteMyBlockPacksByIds,
@@ -55,10 +56,10 @@ import {
   useUpdateMySubShelvesByIds,
 } from "@shared/api/hooks/subShelf.hook";
 import { localDB } from "@shared/api/local/db";
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import { Transaction, User } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { asc, eq, InferSelectModel, inArray } from "drizzle-orm";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useNetwork } from "@/hooks";
@@ -444,6 +445,14 @@ export const TransactionSynchronizerProvider = ({
   const isSynchronizingRef = useRef<boolean>(false);
 
   const getTransactionCount = useCallback(async (): Promise<number> => {
+    if (!localDB.isEnabled) return 0;
+    if (
+      !isLocalPreferenceEnabled("offlineQueue") &&
+      typeof navigator !== "undefined" &&
+      navigator.onLine === false
+    ) {
+      return 0;
+    }
     if (!localDB.isReady) await localDB.ensureReady();
     return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
@@ -542,7 +551,7 @@ export const TransactionSynchronizerProvider = ({
   );
 
   const synchronizeTransactions = useCallback(async () => {
-    if (!isOnline) return;
+    if (!isOnline || !localDB.isEnabled) return;
 
     setSynchronizationProgress(0);
 

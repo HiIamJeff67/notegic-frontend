@@ -64,6 +64,11 @@ export type UpdatePreference = <Key extends keyof LocalPreferences>(
   value: LocalPreferences[Key]
 ) => void;
 
+export type PreferenceChangeListener = <Key extends keyof LocalPreferences>(
+  key: Key,
+  value: LocalPreferences[Key]
+) => void;
+
 export const defaultLocalPreferences: LocalPreferences = {
   density: "balanced",
   reduceMotion: false,
@@ -126,6 +131,9 @@ const normalizeLocalPreferences = (
 export type LocalPreferencesContextValue = {
   preferences: LocalPreferences;
   updatePreference: UpdatePreference;
+  subscribePreferenceChanges: (
+    listener: PreferenceChangeListener
+  ) => () => void;
   resetPreferences: () => void;
   copyPreferences: () => Promise<void>;
   clipboardState: "idle" | "copied" | "failed";
@@ -156,6 +164,9 @@ export const LocalPreferencesProvider = ({
   const [clipboardState, setClipboardState] = useState<
     "idle" | "copied" | "failed"
   >("idle");
+  const preferenceChangeListeners = React.useRef<Set<PreferenceChangeListener>>(
+    new Set()
+  );
 
   useEffect(() => {
     const saved = LocalStorageManipulator.getItemByKey(
@@ -198,6 +209,30 @@ export const LocalPreferencesProvider = ({
   }, [preferences.density, preferences.reduceMotion]);
 
   useEffect(() => {
+    if (
+      !preferences.tactileFeedback ||
+      typeof navigator === "undefined" ||
+      typeof navigator.vibrate !== "function"
+    ) {
+      return;
+    }
+
+    const handlePointerUp = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest("button, a, [role='button'], input, select")) {
+        return;
+      }
+      navigator.vibrate(8);
+    };
+
+    document.addEventListener("pointerup", handlePointerUp, {
+      passive: true,
+    });
+    return () => document.removeEventListener("pointerup", handlePointerUp);
+  }, [preferences.tactileFeedback]);
+
+  useEffect(() => {
     if (typeof navigator === "undefined" || !navigator.storage?.estimate) {
       setStorageEstimate(null);
       return;
@@ -216,6 +251,12 @@ export const LocalPreferencesProvider = ({
       ...prev,
       [key]: value,
     }));
+    preferenceChangeListeners.current.forEach(listener => listener(key, value));
+  };
+
+  const subscribePreferenceChanges = (listener: PreferenceChangeListener) => {
+    preferenceChangeListeners.current.add(listener);
+    return () => preferenceChangeListeners.current.delete(listener);
   };
 
   const resetPreferences = () => {
@@ -263,6 +304,7 @@ export const LocalPreferencesProvider = ({
       value={{
         preferences,
         updatePreference,
+        subscribePreferenceChanges,
         resetPreferences,
         copyPreferences,
         clipboardState,

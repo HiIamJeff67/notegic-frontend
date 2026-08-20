@@ -1,4 +1,5 @@
 import { useLazyQuery, useQuery } from "@apollo/client/react";
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { isNetworkFallbackError } from "./hooks/error";
 
@@ -38,6 +39,9 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
 
   const writeFallback = useCallback(
     async (variables?: TVariables) => {
+      if (!isLocalPreferenceEnabled("localVault")) {
+        throw new Error("Local database is disabled.");
+      }
       const input = (variables as any)?.input;
       if (input === undefined) throw new Error("missing search input");
       const fallback = await adapter.simulate(input);
@@ -121,6 +125,9 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
   };
 
   const writeFallback = async (fallbackVariables?: TVariables) => {
+    if (!isLocalPreferenceEnabled("localVault")) {
+      throw new Error("Local database is disabled.");
+    }
     const input = (fallbackVariables as any)?.input;
     if (input === undefined) throw new Error("missing search input");
     const fallback = await adapter.simulate(input);

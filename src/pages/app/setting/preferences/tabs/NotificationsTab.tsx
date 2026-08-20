@@ -18,8 +18,27 @@ interface NotificationsTabProps {
 }
 
 const NotificationsTab = ({ layout = "panel" }: NotificationsTabProps) => {
-  const { preferences, updatePreference } = useLocalPreferences();
+  const {
+    preferences,
+    notificationPermission,
+    requestNotificationPermission,
+    updatePreference,
+  } = useLocalPreferences();
   const { t } = useTranslation();
+
+  const updateDesktopNotifications = async (checked: boolean) => {
+    if (!checked) {
+      updatePreference("desktopNotifications", false);
+      return;
+    }
+
+    if (notificationPermission === "granted") {
+      updatePreference("desktopNotifications", true);
+      return;
+    }
+
+    await requestNotificationPermission();
+  };
 
   return (
     <div>
@@ -30,12 +49,7 @@ const NotificationsTab = ({ layout = "panel" }: NotificationsTabProps) => {
             "settingsPage.preferences.notifications.desktopDescription"
           )}
           checked={preferences.desktopNotifications}
-          unsupportedReason={t(
-            "settingsPage.preferences.appearance.unsupported"
-          )}
-          onCheckedChange={checked =>
-            updatePreference("desktopNotifications", checked)
-          }
+          onCheckedChange={checked => void updateDesktopNotifications(checked)}
         />
         <SwitchRow
           title={t("settingsPage.preferences.notifications.routine")}
@@ -43,9 +57,6 @@ const NotificationsTab = ({ layout = "panel" }: NotificationsTabProps) => {
             "settingsPage.preferences.notifications.routineDescription"
           )}
           checked={preferences.routineNudges}
-          unsupportedReason={t(
-            "settingsPage.preferences.appearance.unsupported"
-          )}
           onCheckedChange={checked =>
             updatePreference("routineNudges", checked)
           }

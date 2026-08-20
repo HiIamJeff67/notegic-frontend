@@ -1,6 +1,5 @@
 import {
   Country,
-  Language,
   UserGender,
   UserPlan,
   UserRole,
@@ -84,9 +83,6 @@ export const UserDataSchema = z.object({
   plan: z.enum(UserPlan),
   status: z.enum(UserStatus),
   avatarURL: z.string().nullable(),
-  language: z.enum(Language),
-  generalSettingCode: z.coerce.bigint(),
-  privacySettingCode: z.coerce.bigint(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

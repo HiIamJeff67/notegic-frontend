@@ -1,3 +1,4 @@
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import { CurrentEnvironment } from "@shared/constants/project";
 import { Environment } from "@shared/types/environment.type";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
@@ -41,7 +42,20 @@ if (import.meta.hot) {
   });
 }
 
-const { driver: rawDriver, batchDriver: rawBatchDriver } = sqlocalDrizzle;
+const { driver: sqlocalDriver, batchDriver: sqlocalBatchDriver } =
+  sqlocalDrizzle;
+const rawDriver: typeof sqlocalDriver = async (...args) => {
+  if (!isLocalPreferenceEnabled("localVault")) {
+    return { rows: [], columns: [] };
+  }
+  return await sqlocalDriver(...args);
+};
+const rawBatchDriver: typeof sqlocalBatchDriver = async (...args) => {
+  if (!isLocalPreferenceEnabled("localVault")) {
+    return args[0].map(() => ({ rows: [], columns: [] }));
+  }
+  return await sqlocalBatchDriver(...args);
+};
 let _SQLOperationChain: Promise<void> = Promise.resolve(); // the chain that make sure the sql operations are executed in sequences
 let _SQLOperationSequence = 0;
 let markLocalDBNotReady = () => {};
@@ -115,9 +129,14 @@ const wrappedValues = (async (...args: Parameters<typeof rawValues>) =>
 const wrappedTransaction = (async (
   ...args: Parameters<typeof rawTransaction>
 ) =>
-  await runOperations(
-    async () => await rawTransaction(...args)
-  )) as typeof rawTransaction;
+  !isLocalPreferenceEnabled("localVault") ||
+  (!isLocalPreferenceEnabled("offlineQueue") &&
+    typeof navigator !== "undefined" &&
+    navigator.onLine === false)
+    ? (undefined as never)
+    : await runOperations(
+        async () => await rawTransaction(...args)
+      )) as typeof rawTransaction;
 
 const localDBMigrator = new LocalDBMigrator({
   run: async query => await wrappedRun(query),
@@ -149,6 +168,7 @@ type LocalDB = typeof drizzleDB & {
   get: typeof rawGet;
   values: typeof rawValues;
   readonly isMigrated: boolean;
+  readonly isEnabled: boolean;
   readonly isReady: boolean;
   getLatestMigrationVersion: () => number;
   ensureMigrated: (
@@ -180,6 +200,10 @@ const setVersion = async (version: number): Promise<void> => {
 const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
+  if (!isLocalPreferenceEnabled("localVault")) {
+    return { appliedTags: [], finalVersion: 0 };
+  }
+
   const migrationResult = await localDBMigrator.ensureMigrated({
     currentVersion: options?.currentVersion ?? (await getVersion()),
     targetVersion:
@@ -195,6 +219,10 @@ const ensureMigrated = async (
 const ensureReady = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
+  if (!isLocalPreferenceEnabled("localVault")) {
+    return { appliedTags: [], finalVersion: 0 };
+  }
+
   const currentVersion = options?.currentVersion ?? (await getVersion());
   const targetVersion =
     options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
@@ -256,11 +284,15 @@ localDB.transaction = wrappedTransaction;
 
 Object.defineProperties(localDB, {
   isMigrated: {
-    get: () => isMigrated,
+    get: () => isLocalPreferenceEnabled("localVault") && isMigrated,
+    enumerable: true,
+  },
+  isEnabled: {
+    get: () => isLocalPreferenceEnabled("localVault"),
     enumerable: true,
   },
   isReady: {
-    get: () => isReady,
+    get: () => isLocalPreferenceEnabled("localVault") && isReady,
     enumerable: true,
   },
   getLatestMigrationVersion: {

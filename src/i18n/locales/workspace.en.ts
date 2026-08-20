@@ -841,6 +841,8 @@ export const EnglishWorkspaceTranslation = {
     fileImported: "Imported {{name}}.",
     exported: "Exported.",
     reconnecting: "Reconnecting to the latest document...",
+    syncConnected: "Sync connected.",
+    routineReminder: "Routine task started.",
     pdfAnnotationsSaved: "PDF annotations saved.",
     pdfDownloaded: "PDF downloaded.",
     annotatedPdfDownloaded: "Annotated PDF downloaded.",

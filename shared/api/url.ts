@@ -38,6 +38,10 @@ export const APIURLPathDictionary = {
     getMyInfo: "me/info",
     updateMyInfo: "me/info",
   },
+  userSetting: {
+    getMySetting: "me/settings/",
+    updateMySetting: "me/settings/",
+  },
   userAccount: {
     getMyAccount: "me/account",
     updatedMyAccount: "me/account",
