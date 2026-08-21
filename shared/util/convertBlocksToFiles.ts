@@ -1,4 +1,14 @@
 import { BlockNoteEditor } from "@blocknote/core";
+import { diagramBlockMapping as diagramDocxBlockMapping } from "@blocknote/diagram-block/docx-exporter";
+import { diagramBlockMapping as diagramPdfBlockMapping } from "@blocknote/diagram-block/pdf-exporter";
+import {
+  inlineMathMapping as inlineMathDocxMapping,
+  mathBlockMapping as mathDocxBlockMapping,
+} from "@blocknote/math-block/docx-exporter";
+import {
+  inlineMathMapping as inlineMathPdfMapping,
+  mathBlockMapping as mathPdfBlockMapping,
+} from "@blocknote/math-block/pdf-exporter";
 import {
   DOCXExporter,
   docxDefaultSchemaMappings,
@@ -8,7 +18,13 @@ import {
   pdfDefaultSchemaMappings,
 } from "@blocknote/xl-pdf-exporter";
 import * as ReactPDF from "@react-pdf/renderer";
-import { Packer } from "docx";
+import { Packer, Paragraph } from "docx";
+import * as React from "react";
+
+const calendarPdfBlockMapping = () =>
+  React.createElement(ReactPDF.Text, null, "Calendar");
+
+const calendarDocxBlockMapping = () => new Paragraph("Calendar");
 
 export async function convertBlocksToMarkdown(
   editor: BlockNoteEditor
@@ -62,17 +78,43 @@ export async function convertBlocksToJSON(
 }
 
 export async function convertBlocksToPDF(
-  editor: BlockNoteEditor
+  editor: BlockNoteEditor<any, any, any>
 ): Promise<Blob> {
-  const exporter = new PDFExporter(editor.schema, pdfDefaultSchemaMappings);
+  const mappings = {
+    ...pdfDefaultSchemaMappings,
+    blockMapping: {
+      ...pdfDefaultSchemaMappings.blockMapping,
+      mathBlock: mathPdfBlockMapping,
+      diagram: diagramPdfBlockMapping,
+      calendar: calendarPdfBlockMapping,
+    },
+    inlineContentMapping: {
+      ...pdfDefaultSchemaMappings.inlineContentMapping,
+      math: inlineMathPdfMapping,
+    },
+  } as any;
+  const exporter = new PDFExporter(editor.schema, mappings);
   const pdfDocument = await exporter.toReactPDFDocument(editor.document);
   return await ReactPDF.pdf(pdfDocument).toBlob();
 }
 
 export async function convertBlocksToDOCX(
-  editor: BlockNoteEditor
+  editor: BlockNoteEditor<any, any, any>
 ): Promise<Blob> {
-  const exporter = new DOCXExporter(editor.schema, docxDefaultSchemaMappings);
+  const mappings = {
+    ...docxDefaultSchemaMappings,
+    blockMapping: {
+      ...docxDefaultSchemaMappings.blockMapping,
+      mathBlock: mathDocxBlockMapping,
+      diagram: diagramDocxBlockMapping,
+      calendar: calendarDocxBlockMapping,
+    },
+    inlineContentMapping: {
+      ...docxDefaultSchemaMappings.inlineContentMapping,
+      math: inlineMathDocxMapping,
+    },
+  } as any;
+  const exporter = new DOCXExporter(editor.schema, mappings);
   const docxDocument = await exporter.toDocxJsDocument(editor.document);
   return await Packer.toBlob(docxDocument);
 }

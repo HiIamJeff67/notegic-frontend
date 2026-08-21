@@ -6,17 +6,27 @@ import {
   defaultStyleSpecs,
   type PartialBlock,
 } from "@blocknote/core";
+import {
+  CollaborationExtension,
+  type CollaborationOptions,
+} from "@blocknote/core/yjs";
+
+export const createNotegicBlockPackSchema = () =>
+  BlockNoteSchema.create({
+    blockSpecs: NotegicBlockPackEditor.notegicBlockNoteBlockSpecs,
+    inlineContentSpecs: defaultInlineContentSpecs,
+    styleSpecs: defaultStyleSpecs,
+  });
 
 type NotegicBlockPackEditorOptions = {
-  initialContent?: PartialBlock[];
+  initialContent?: PartialBlock<any, any, any>[];
   trailingBlock?: boolean;
-  collaboration?: NonNullable<
-    Parameters<typeof BlockNoteEditor.create>[0]
-  >["collaboration"];
+  schema?: BlockNoteSchema<any, any, any>;
+  collaboration?: CollaborationOptions;
 };
 
 export class NotegicBlockPackEditor {
-  private static notegicBlockNoteBlockSpecs = {
+  static notegicBlockNoteBlockSpecs = {
     paragraph: defaultBlockSpecs.paragraph,
     heading: defaultBlockSpecs.heading,
     quote: defaultBlockSpecs.quote,
@@ -35,16 +45,16 @@ export class NotegicBlockPackEditor {
   static create({
     initialContent,
     trailingBlock = false,
+    schema,
     collaboration,
   }: NotegicBlockPackEditorOptions) {
     return BlockNoteEditor.create({
-      schema: BlockNoteSchema.create({
-        blockSpecs: this.notegicBlockNoteBlockSpecs,
-        inlineContentSpecs: defaultInlineContentSpecs,
-        styleSpecs: defaultStyleSpecs,
-      }),
-      ...(collaboration ? { collaboration } : { initialContent }),
+      schema: schema ?? createNotegicBlockPackSchema(),
+      ...(collaboration ? {} : { initialContent }),
+      ...(collaboration
+        ? { extensions: [CollaborationExtension(collaboration)] }
+        : {}),
       trailingBlock,
-    });
+    }) as BlockNoteEditor<any, any, any>;
   }
 }

@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
+import { NotegicSlashMenuController } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import BlockPackParticipantsDropdown from "@/components/core/BlockPackEditor/BlockPackParticipantsDropdown";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
@@ -474,6 +475,7 @@ const BlockPackEditorContent = ({
               editor={editor}
               editable={state !== "readOnly"}
               onChange={handleEditorChange}
+              slashMenu={false}
               sideMenu={false}
               spellCheck={preferences.spellcheck}
               className={cn(
@@ -482,9 +484,12 @@ const BlockPackEditorContent = ({
                   "[&_.bn-editor]:overflow-x-auto [&_.bn-inline-content]:whitespace-nowrap"
               )}
             >
+              <NotegicSlashMenuController editor={editor} />
               {shouldShowSideMenu && (
                 <SideMenuController
-                  floatingOptions={{ placement: "left-start" }}
+                  floatingUIOptions={{
+                    useFloatingOptions: { placement: "left-start" },
+                  }}
                   sideMenu={sideMenuProps => (
                     <BlockSideMenu
                       {...sideMenuProps}

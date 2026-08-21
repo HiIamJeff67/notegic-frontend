@@ -1,9 +1,11 @@
 import type { BlockNoteEditor } from "@blocknote/core";
+import { SideMenuExtension } from "@blocknote/core/extensions";
 import {
   AddBlockButton,
   DragHandleButton,
   SideMenu,
   SideMenuController,
+  useExtensionState,
 } from "@blocknote/react";
 import {
   BlockNoteView,
@@ -28,6 +30,68 @@ interface CreateBlockPackPayloadTemplateEditorProps {
   onConfirm: (payload: string) => void;
   isSaveDisabled?: boolean;
 }
+
+const PatternToggleButton = ({
+  patternBlockIds,
+  onAddPatternBlock,
+  onRemovePatternBlock,
+  t,
+}: Pick<
+  CreateBlockPackPayloadTemplateEditorProps,
+  "patternBlockIds" | "onAddPatternBlock" | "onRemovePatternBlock"
+> & { t: (key: string) => string }) => {
+  const block = useExtensionState(SideMenuExtension, {
+    selector: state => state?.block,
+  });
+
+  if (!block) return null;
+
+  const isSelected = patternBlockIds.has(block.id);
+  return (
+    <blockNoteShadcnComponents.SideMenu.Button
+      className="bn-button size-7 min-w-0 p-1.5 text-muted-foreground"
+      label={
+        isSelected
+          ? t("workspace.payloadEditor.removeFromPatternTable")
+          : t("workspace.payloadEditor.addToPatternTable")
+      }
+      icon={
+        isSelected ? <XIcon className="size-4" /> : <Form className="size-4" />
+      }
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (isSelected) {
+          onRemovePatternBlock(block.id);
+          return;
+        }
+
+        onAddPatternBlock({
+          id: block.id,
+          type: block.type,
+          props: block.props ?? {},
+          label: Array.isArray(block.content)
+            ? block.content
+                .map((content: any) => {
+                  if (content.type === "text") return content.text;
+                  if (
+                    content.type === "link" &&
+                    Array.isArray(content.content)
+                  ) {
+                    return content.content
+                      .map((linkContent: any) => linkContent.text ?? "")
+                      .join("");
+                  }
+                  return "";
+                })
+                .join("")
+                .trim()
+            : "",
+        });
+      }}
+    />
+  );
+};
 
 const CreateBlockPackPayloadTemplateEditor = ({
   editor,
@@ -85,58 +149,14 @@ const CreateBlockPackPayloadTemplateEditor = ({
             <SideMenuController
               sideMenu={sideMenuProps => (
                 <SideMenu {...sideMenuProps}>
-                  <AddBlockButton {...sideMenuProps} />
-                  <blockNoteShadcnComponents.SideMenu.Button
-                    className="bn-button size-7 min-w-0 p-1.5 text-muted-foreground"
-                    label={
-                      patternBlockIds.has(sideMenuProps.block.id)
-                        ? t("workspace.payloadEditor.removeFromPatternTable")
-                        : t("workspace.payloadEditor.addToPatternTable")
-                    }
-                    icon={
-                      patternBlockIds.has(sideMenuProps.block.id) ? (
-                        <XIcon className="size-4" />
-                      ) : (
-                        <Form className="size-4" />
-                      )
-                    }
-                    onClick={event => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      if (patternBlockIds.has(sideMenuProps.block.id)) {
-                        onRemovePatternBlock(sideMenuProps.block.id);
-                        return;
-                      }
-                      onAddPatternBlock({
-                        id: sideMenuProps.block.id,
-                        type: sideMenuProps.block.type,
-                        props: sideMenuProps.block.props ?? {},
-                        label: Array.isArray(sideMenuProps.block.content)
-                          ? sideMenuProps.block.content
-                              .map((content: any) => {
-                                if (content.type === "text") {
-                                  return content.text;
-                                }
-                                if (
-                                  content.type === "link" &&
-                                  Array.isArray(content.content)
-                                ) {
-                                  return content.content
-                                    .map(
-                                      (linkContent: any) =>
-                                        linkContent.text ?? ""
-                                    )
-                                    .join("");
-                                }
-                                return "";
-                              })
-                              .join("")
-                              .trim()
-                          : "",
-                      });
-                    }}
+                  <AddBlockButton />
+                  <PatternToggleButton
+                    patternBlockIds={patternBlockIds}
+                    onAddPatternBlock={onAddPatternBlock}
+                    onRemovePatternBlock={onRemovePatternBlock}
+                    t={t}
                   />
-                  <DragHandleButton {...sideMenuProps} />
+                  <DragHandleButton />
                 </SideMenu>
               )}
             />

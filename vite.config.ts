@@ -43,6 +43,9 @@ export default defineConfig(({ mode }) => {
     resolve: {
       tsconfigPaths: true,
     },
+    ssr: {
+      noExternal: ["@blocknote/math-block"],
+    },
     plugins: [
       {
         name: "sqlite-wasm-dev-asset-fix",

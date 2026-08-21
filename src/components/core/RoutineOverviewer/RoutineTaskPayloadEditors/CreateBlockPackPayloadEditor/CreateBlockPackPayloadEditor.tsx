@@ -2,6 +2,7 @@ import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { NotegicBlockPackEditor } from "@shared/blockpack/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -107,6 +108,7 @@ const CreateBlockPackPayloadEditor = ({
   const editor = useMemo(
     () =>
       NotegicBlockPackEditor.create({
+        schema: notegicBlockPackSchema,
         initialContent: [
           {
             id: crypto.randomUUID(),
@@ -121,6 +123,7 @@ const CreateBlockPackPayloadEditor = ({
   const originalBlockEditor = useMemo(
     () =>
       NotegicBlockPackEditor.create({
+        schema: notegicBlockPackSchema,
         initialContent: [
           {
             id: crypto.randomUUID(),

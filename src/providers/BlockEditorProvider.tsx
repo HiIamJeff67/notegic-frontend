@@ -12,6 +12,7 @@ import { randomColor } from "@shared/util/random";
 import { createContext, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type * as Y from "yjs";
+import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useBlockPackRealtimeChannel, useRealtime } from "@/hooks/useRealtime";
 import { useUser } from "@/hooks/useUser";
@@ -69,8 +70,11 @@ export const BlockEditorProvider = ({
   const editor = useMemo(
     () =>
       NotegicBlockPackEditor.create({
+        schema: notegicBlockPackSchema,
         collaboration: {
-          fragment: getNotegicBlockNoteXmlFragment(channel.doc) as Y.XmlFragment,
+          fragment: getNotegicBlockNoteXmlFragment(
+            channel.doc
+          ) as Y.XmlFragment,
           provider: channel.provider,
           user: {
             name:
@@ -111,16 +115,6 @@ export const BlockEditorProvider = ({
       channel.permission === RealtimePermission.Write &&
       channel.status !== "readOnly" &&
       channel.status !== "error";
-    if (import.meta.env.DEV) {
-      console.debug("[BlockEditorProvider] editor realtime state", {
-        blockPackId: blockPackMeta.id,
-        accessPermission: blockPackMeta.permission,
-        requestedRealtimePermission,
-        channelPermission: channel.permission,
-        channelStatus: channel.status,
-        isEditable: editor.isEditable,
-      });
-    }
   }, [
     blockPackMeta.id,
     blockPackMeta.permission,
