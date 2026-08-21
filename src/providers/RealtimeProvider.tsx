@@ -50,7 +50,11 @@ import {
   isQuietHours,
 } from "./notificationPreferences";
 
-const RealtimeBlockPackChannelReleaseDelayMs = 250;
+const RealtimeBlockPackChannelReleaseDelayMs =
+  Number.parseInt(
+    import.meta.env.VITE_REALTIME_BLOCK_PACK_CHANNEL_RELEASE_DELAY_MS ?? "250",
+    10
+  ) || 250;
 
 export type RealtimeBlockPackChannel = {
   blockPackId: UUID;
@@ -348,12 +352,6 @@ export const RealtimeProvider = ({
         return response.data;
       },
       getBlockPackChannelTicket: async (blockPackId, permission) => {
-        if (import.meta.env.DEV) {
-          console.debug("[RealtimeProvider] requesting block pack ticket", {
-            blockPackId,
-            permission,
-          });
-        }
         const response = await mutationFnCreateMyBlockPackChannelTicket({
           header: getRequestHeader(),
           body: {
@@ -361,13 +359,6 @@ export const RealtimeProvider = ({
             permission,
           },
         });
-        if (import.meta.env.DEV) {
-          console.debug("[RealtimeProvider] received block pack ticket", {
-            blockPackId,
-            requestedPermission: permission,
-            grantedPermission: response.data.permission,
-          });
-        }
         return response.data;
       },
       onState: setRootState,
@@ -493,6 +484,7 @@ export const RealtimeProvider = ({
               const rejectedUpdate =
                 await channel.provider.snapshotLocalDocument();
               await LocalYjsDocumentStore.saveRejectedDraft(
+                userData?.publicId ?? null,
                 channel.blockPackId,
                 rejectedUpdate
               );
@@ -600,7 +592,11 @@ export const RealtimeProvider = ({
       retainCount = 0
     ): RealtimeChannelStore => {
       const doc = new Y.Doc();
-      const provider = new RealtimeYjsProvider(doc, blockPackId);
+      const provider = new RealtimeYjsProvider(
+        doc,
+        blockPackId,
+        userData?.publicId ?? null
+      );
       provider.setReadOnly(permission === RealtimePermission.Read);
       return {
         blockPackId,
@@ -618,7 +614,7 @@ export const RealtimeProvider = ({
         isDisposed: false,
       };
     },
-    []
+    [userData?.publicId]
   );
 
   const getOrCreateBlockPackChannel = useCallback(
@@ -705,6 +701,7 @@ export const RealtimeProvider = ({
           const rejectedUpdate =
             await previousChannel.provider.snapshotLocalDocument();
           await LocalYjsDocumentStore.saveRejectedDraft(
+            userData?.publicId ?? null,
             blockPackId,
             rejectedUpdate
           );
@@ -729,7 +726,7 @@ export const RealtimeProvider = ({
       client.registerBlockPackChannel(blockPackId, permission);
       rerender();
     },
-    [clearReleaseTimer, createBlockPackChannel, rerender]
+    [clearReleaseTimer, createBlockPackChannel, rerender, userData?.publicId]
   );
 
   const value = useMemo<RealtimeContextType>(

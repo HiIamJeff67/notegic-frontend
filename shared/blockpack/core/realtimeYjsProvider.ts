@@ -14,12 +14,6 @@ import {
 } from "y-protocols/awareness";
 import * as Y from "yjs";
 
-const logRealtimeYjs = (message: string, data?: Record<string, unknown>) => {
-  if (import.meta.env.DEV) {
-    console.debug(`[RealtimeYjs] ${message}`, data ?? "");
-  }
-};
-
 export class RealtimeYjsProvider {
   readonly awareness: Awareness;
 
@@ -34,18 +28,11 @@ export class RealtimeYjsProvider {
 
   private readonly doc: Y.Doc;
   private readonly blockPackId: UUID;
+  private readonly userPublicId: string | null;
   private readonly hydrationPromise: Promise<void>;
   private readonly handleDocUpdate = (update: Uint8Array, origin: unknown) => {
     if (origin === NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN) return;
-    if (this.readOnly) {
-      logRealtimeYjs(
-        "skipped local document update because channel is read-only",
-        {
-          byteLength: update.byteLength,
-        }
-      );
-      return;
-    }
+    if (this.readOnly) return;
     this.sendOrQueue(RealtimeBinaryFrameType.YjsDocument, update);
   };
   private readonly handleAwarenessUpdate = (
@@ -65,9 +52,14 @@ export class RealtimeYjsProvider {
     );
   };
 
-  constructor(doc: Y.Doc, blockPackId: UUID) {
+  constructor(
+    doc: Y.Doc,
+    blockPackId: UUID,
+    userPublicId: string | null
+  ) {
     this.doc = doc;
     this.blockPackId = blockPackId;
+    this.userPublicId = userPublicId;
     this.awareness = new Awareness(doc);
     this.doc.on("update", this.handleDocUpdate);
     this.awareness.on("update", this.handleAwarenessUpdate);
@@ -78,18 +70,12 @@ export class RealtimeYjsProvider {
     send: (type: RealtimeBinaryFrameType, payload: Uint8Array) => boolean
   ) {
     this.send = send;
-    logRealtimeYjs("provider connected", {
-      pendingDocumentUpdates: this.pendingDocumentUpdates.length,
-    });
     this.flushPendingUpdates();
     void this.hydrationPromise.then(() => this.flushPendingUpdates());
     this.announceLocalAwarenessState();
   }
 
   disconnect() {
-    if (this.send !== null) {
-      logRealtimeYjs("provider disconnected");
-    }
     this.clearDocumentFlushTimeout();
     this.send = null;
     this.clearRemoteAwarenessStates();
@@ -103,7 +89,7 @@ export class RealtimeYjsProvider {
   async clearLocalDocument() {
     this.setReadOnly(true);
     await this.persistencePromise;
-    await LocalYjsDocumentStore.remove(this.blockPackId);
+    await LocalYjsDocumentStore.remove(this.userPublicId, this.blockPackId);
   }
 
   async snapshotLocalDocument(): Promise<Uint8Array> {
@@ -135,9 +121,6 @@ export class RealtimeYjsProvider {
   }
 
   applyDocumentUpdate(update: Uint8Array) {
-    logRealtimeYjs("received document update", {
-      byteLength: update.byteLength,
-    });
     Y.applyUpdate(this.doc, update, NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN);
     for (const [clientId, clock] of Y.decodeStateVector(
       Y.encodeStateVectorFromUpdate(update)
@@ -162,9 +145,6 @@ export class RealtimeYjsProvider {
   }
 
   applyAwarenessUpdate(update: Uint8Array) {
-    logRealtimeYjs("received awareness update", {
-      byteLength: update.byteLength,
-    });
     applyAwarenessUpdate(
       this.awareness,
       update,
@@ -192,17 +172,9 @@ export class RealtimeYjsProvider {
     }
 
     if (this.send === null) {
-      logRealtimeYjs("dropped awareness update before channel connect", {
-        type,
-        byteLength: payload.byteLength,
-      });
       return;
     }
 
-    logRealtimeYjs("sending update", {
-      type,
-      byteLength: payload.byteLength,
-    });
     this.send(type, payload);
   }
 
@@ -211,10 +183,6 @@ export class RealtimeYjsProvider {
     void this.persistLocalDocument(true);
 
     if (this.send === null) {
-      logRealtimeYjs("queued document update before channel connect", {
-        byteLength: payload.byteLength,
-        queuedUpdates: this.pendingDocumentUpdates.length,
-      });
       return;
     }
 
@@ -251,10 +219,6 @@ export class RealtimeYjsProvider {
       return;
     }
     if (this.readOnly) return;
-    logRealtimeYjs("sending debounced document update", {
-      updateCount: updates.length,
-      byteLength: payload.byteLength,
-    });
     if (!send(RealtimeBinaryFrameType.YjsDocument, payload)) {
       this.pendingDocumentUpdates.unshift(...updates);
     }
@@ -273,7 +237,10 @@ export class RealtimeYjsProvider {
 
   private async hydrateLocalDocument() {
     try {
-      const cachedDocument = await LocalYjsDocumentStore.load(this.blockPackId);
+      const cachedDocument = await LocalYjsDocumentStore.load(
+        this.userPublicId,
+        this.blockPackId
+      );
       if (!cachedDocument) return;
       Y.applyUpdate(
         this.doc,
@@ -283,10 +250,14 @@ export class RealtimeYjsProvider {
       if (cachedDocument.needsFlush && !this.readOnly) {
         this.pendingDocumentUpdates.push(cachedDocument.update);
       }
-      logRealtimeYjs("hydrated local document cache", {
-        byteLength: cachedDocument.update.byteLength,
-        needsFlush: cachedDocument.needsFlush,
-      });
+      for (const [clientId, clock] of Y.decodeStateVector(
+        cachedDocument.stateVector ??
+          Y.encodeStateVectorFromUpdate(cachedDocument.update)
+      ) ?? []) {
+        if ((this.persistedDocumentStateVector.get(clientId) ?? 0) < clock) {
+          this.persistedDocumentStateVector.set(clientId, clock);
+        }
+      }
     } catch (error) {
       console.error(
         "[RealtimeYjs] failed to hydrate local document cache",
@@ -297,10 +268,17 @@ export class RealtimeYjsProvider {
 
   private persistLocalDocument(needsFlush: boolean) {
     const update = Y.encodeStateAsUpdate(this.doc);
+    const stateVector = Y.encodeStateVector(this.doc);
     this.persistencePromise = this.persistencePromise
       .catch(() => undefined)
       .then(() =>
-        LocalYjsDocumentStore.save(this.blockPackId, update, needsFlush)
+        LocalYjsDocumentStore.save(
+          this.userPublicId,
+          this.blockPackId,
+          update,
+          stateVector,
+          needsFlush
+        )
       )
       .catch(error => {
         console.error(
@@ -319,18 +297,11 @@ export class RealtimeYjsProvider {
     const payload = encodeAwarenessUpdate(this.awareness, [
       this.awareness.clientID,
     ]);
-    logRealtimeYjs("announcing local awareness state", {
-      clientId: this.awareness.clientID,
-      byteLength: payload.byteLength,
-    });
     send(RealtimeBinaryFrameType.Awareness, payload);
   }
 
   private announceLocalAwarenessRemoval() {
     if (this.awareness.getLocalState() === null) return;
-    logRealtimeYjs("announcing local awareness removal", {
-      clientId: this.awareness.clientID,
-    });
     removeAwarenessStates(
       this.awareness,
       [this.awareness.clientID],
@@ -344,9 +315,6 @@ export class RealtimeYjsProvider {
     ).filter(clientId => clientId !== this.awareness.clientID);
     if (remoteClientIds.length === 0) return;
 
-    logRealtimeYjs("clearing remote awareness states", {
-      clientIds: remoteClientIds,
-    });
     removeAwarenessStates(
       this.awareness,
       remoteClientIds,

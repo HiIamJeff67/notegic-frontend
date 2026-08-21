@@ -1,7 +1,4 @@
-import {
-  getClientMutationHeaders,
-  getClientRequestHeaders,
-} from "@shared/api/clientHeaders";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
@@ -61,11 +58,13 @@ export const useCreateMyAPIKey = () => {
     Error,
     Omit<CreateMyAPIKeyRequest, "header">
   >({
-    mutationFn: request =>
-      mutationFnCreateMyAPIKey({
+    mutationFn: request => {
+      const header = getClientRequestHeaders();
+      return mutationFnCreateMyAPIKey({
         ...request,
-        header: getClientMutationHeaders(),
-      }),
+        header: { ...header, csrfToken: header.csrfToken ?? "" },
+      });
+    },
     onSuccess: response => {
       persistCSRFToken(response);
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
@@ -81,11 +80,13 @@ export const useRevokeMyAPIKey = () => {
     Error,
     Omit<RevokeMyAPIKeyRequest, "header">
   >({
-    mutationFn: request =>
-      mutationFnRevokeMyAPIKey({
+    mutationFn: request => {
+      const header = getClientRequestHeaders();
+      return mutationFnRevokeMyAPIKey({
         ...request,
-        header: getClientMutationHeaders(),
-      }),
+        header: { ...header, csrfToken: header.csrfToken ?? "" },
+      });
+    },
     onSuccess: response => {
       persistCSRFToken(response);
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
