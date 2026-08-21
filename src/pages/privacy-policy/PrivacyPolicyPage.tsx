@@ -1,5 +1,5 @@
-import { Trans, useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import {
   ArticleSubParagraph,
   ArticleSubParagraphContent,
@@ -82,6 +82,9 @@ export const PrivacyPolicySections = () => {
             values={{ email: CONTACT_EMAIL }}
             components={{ email: emailLink }}
           />
+        </p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.rightsDetails")}
         </p>
       </PrivacySection>
 

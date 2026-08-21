@@ -1,3 +1,4 @@
+import { WebURLPathDictionary } from "@shared/constants";
 import { cn } from "@shared/util/utils";
 import {
   BlocksIcon,
@@ -12,6 +13,7 @@ import {
   ShieldIcon,
   WrenchIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { Fragment, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -28,7 +30,6 @@ import {
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
 import PrismCode from "@/components/commons/PrismCode/PrismCode";
-import { useAppRouterActions } from "@/hooks/useAppRouter";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -39,6 +40,7 @@ import {
   StationIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
+import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { PrivacyPolicySections } from "@/pages/privacy-policy/PrivacyPolicyPage";
 import {
   type DocumentEndpoint,
@@ -84,8 +86,12 @@ const apiGatewayEndpointGroups = gatewayEndpointGroups
   .filter(group => apiGatewayDomainIds.has(group.id))
   .sort(
     (left, right) =>
-      gatewayDomainOrder.indexOf(left.id as (typeof gatewayDomainOrder)[number]) -
-      gatewayDomainOrder.indexOf(right.id as (typeof gatewayDomainOrder)[number])
+      gatewayDomainOrder.indexOf(
+        left.id as (typeof gatewayDomainOrder)[number]
+      ) -
+      gatewayDomainOrder.indexOf(
+        right.id as (typeof gatewayDomainOrder)[number]
+      )
   );
 
 const apiGatewayDomainIcons: Record<string, ArticleNavigationItem["icon"]> = {
@@ -147,7 +153,7 @@ const domainGuides: Record<string, { summary: string; structure: string }> = {
     summary:
       "Routine tasks are executable steps created from a routine and claimed by the scheduler when they are ready.",
     structure:
-      "A task contains its payload and lifecycle state; cost is charged when the backend claims an execution, not when the task is saved.",
+      "A task contains its payload and lifecycle state; cost is charged when the service claims an execution, not when the task is saved.",
   },
   "routine-tags": {
     summary:
@@ -173,16 +179,60 @@ const privacyPolicyNavigation = [
   weight: 3 as const,
 }));
 
+const inlineCodeClassName =
+  "rounded-sm bg-muted px-1 py-0.5 font-mono text-[0.9em] text-foreground";
+
+const InlineText = ({ children }: { children: ReactNode }) => {
+  if (typeof children !== "string") return <>{children}</>;
+
+  return children.split(/(`[^`]+`)/g).map((part, index) =>
+    part.startsWith("`") && part.endsWith("`") ? (
+      <code className={inlineCodeClassName} key={`${part}-${index}`}>
+        {part.slice(1, -1)}
+      </code>
+    ) : (
+      part
+    )
+  );
+};
+
+const stripInlineCode = (value: string) => value.replace(/`([^`]+)`/g, "$1");
+
+const NavigationPath = ({
+  href,
+  onNavigate,
+  children,
+}: {
+  href: string;
+  onNavigate: () => void;
+  children: ReactNode;
+}) => (
+  <a
+    className="cursor-pointer font-semibold text-foreground underline decoration-foreground/60 underline-offset-4 hover:text-primary"
+    href={href.startsWith("/") ? href : `/${href}`}
+    onClick={event => {
+      event.preventDefault();
+      onNavigate();
+    }}
+  >
+    {children}
+  </a>
+);
+
 const RuleBlock = ({
   rule,
 }: {
   rule: { summary: string; bullets: readonly string[] };
 }) => (
   <>
-    <p>{rule.summary}</p>
+    <p>
+      <InlineText>{rule.summary}</InlineText>
+    </p>
     <ul className="mt-4 list-disc space-y-2 pl-5">
       {rule.bullets.map(bullet => (
-        <li key={bullet}>{bullet}</li>
+        <li key={bullet}>
+          <InlineText>{bullet}</InlineText>
+        </li>
       ))}
     </ul>
   </>
@@ -208,7 +258,7 @@ const FieldList = ({ fields }: { fields: DocumentField[] }) => {
           </div>
           {field.description && (
             <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
-              {field.description}
+              <InlineText>{field.description}</InlineText>
             </p>
           )}
           {field.children && field.children.length > 0 && (
@@ -343,10 +393,12 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
                     <span className="rounded-sm border border-red-500/40 bg-red-500/15 px-2 py-0.5 font-mono text-sm text-red-700 dark:text-red-300">
                       {error.status}
                     </span>
-                    <span>{error.description}</span>
+                    <span>
+                      <InlineText>{error.description}</InlineText>
+                    </span>
                   </summary>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {error.message}
+                    <InlineText>{error.message}</InlineText>
                   </p>
                 </details>
               ))}
@@ -358,11 +410,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
   );
 };
 
-const EndpointTable = ({
-  endpoints,
-}: {
-  endpoints: DocumentEndpoint[];
-}) => {
+const EndpointTable = ({ endpoints }: { endpoints: DocumentEndpoint[] }) => {
   const [expandedOperation, setExpandedOperation] = useState<string | null>(
     null
   );
@@ -408,7 +456,7 @@ const EndpointTable = ({
                   </td>
                   <td className="px-3 py-3 align-top">
                     <div className="font-medium text-foreground">
-                      {endpoint.summary}
+                      <InlineText>{endpoint.summary}</InlineText>
                     </div>
                     <div
                       data-article-operation={endpoint.operation}
@@ -421,7 +469,7 @@ const EndpointTable = ({
                     </div>
                     {endpoint.description && (
                       <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                        {endpoint.description}
+                        <InlineText>{endpoint.description}</InlineText>
                       </p>
                     )}
                   </td>
@@ -472,6 +520,10 @@ const DocumentPage = () => {
   const { t } = useTranslation();
   const router = useAppRouterActions();
   const title = t("workspace.navigation.document");
+  const publicApiVersion =
+    documentSources[0]?.title.replace(/^API\s+/, "") || "v1";
+  const publicApiLabel = `API ${publicApiVersion}`;
+  const accountApiKeysPath = `${WebURLPathDictionary.app.setting.account}#api-keys`;
   const articleRef = useRef<HTMLElement>(null);
   const gatewayOperationCount = apiGatewayEndpointGroups.reduce(
     (count, group) => count + group.endpoints.length,
@@ -488,14 +540,14 @@ const DocumentPage = () => {
   const gatewayRuleNavigation = gatewayRules.map(rule => ({
     id: `gateway-rule-${rule.id}`,
     title: rule.title,
-    description: rule.summary,
+    description: stripInlineCode(rule.summary),
     weight: 3 as const,
   }));
   const navigationItems = [
     {
       id: "overview",
       title: "Overview",
-      description: "The published Notegic v1 public API contract.",
+      description: `The published ${publicApiLabel} contract.`,
       weight: 5,
       icon: BookOpenIcon,
     },
@@ -508,7 +560,7 @@ const DocumentPage = () => {
     },
     {
       id: "gateway",
-      title: "API Gateway v1 (public)",
+      title: publicApiLabel,
       description: "OpenAPI 3.1 endpoint reference and HTTP rules.",
       weight: 5,
       icon: Globe2Icon,
@@ -516,7 +568,7 @@ const DocumentPage = () => {
         {
           id: "gateway-contract",
           title: "Contract",
-          description: "Gateway contract formats and servers.",
+          description: "Contract formats and servers.",
           weight: 3,
           icon: FileCode2Icon,
         },
@@ -563,28 +615,25 @@ const DocumentPage = () => {
           items={navigationItems}
           scrollContainerRef={articleRef}
         />
-        <Article
-          scrollRef={articleRef}
-          className="min-w-0 flex-1"
-        >
+        <Article scrollRef={articleRef} className="min-w-0 flex-1">
           <ArticleContent>
             <ArticleParagraph id="overview">
               <ArticleParagraphHeader>
                 <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
-                  NOTEGIC PUBLIC API
+                  PUBLIC API
                 </p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight">
                   {title}
                 </h1>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Contract-first documentation for the public API Gateway v1.
-                  The backend contract directories remain authoritative.
+                  Contract-first documentation for the public API. This page
+                  presents the published public contract.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {[
-                    [String(gatewayOperationCount), "API Gateway operations"],
+                    [String(gatewayOperationCount), "API operations"],
                     ["OpenAPI 3.1", "Public HTTP contract"],
                     ["9", "API-key resource domains"],
                   ].map(([value, label]) => (
@@ -602,11 +651,11 @@ const DocumentPage = () => {
                   ))}
                 </div>
                 <p>
-                  API Gateway v1 is the public REST surface for server-to-server
+                  The public API is the REST surface for server-to-server
                   integrations authenticated with X-API-Key. The browser app
-                  continues to use the private ClientGateway JWT/cookie flow;
-                  API keys must never be placed in browser storage, URLs, or
-                  frontend environment variables.
+                  continues to use its secure session flow; API keys must never
+                  be placed in browser storage, URLs, or frontend environment
+                  variables.
                 </p>
               </ArticleParagraphContent>
             </ArticleParagraph>
@@ -623,11 +672,22 @@ const DocumentPage = () => {
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
+                <p className="mb-4">
+                  Find the API key area at{" "}
+                  <NavigationPath
+                    href={accountApiKeysPath}
+                    onNavigate={() => router.push(accountApiKeysPath)}
+                  >
+                    Dashboard Page <span aria-hidden="true">›</span> Setting
+                    button (bottom-left) <span aria-hidden="true">›</span>{" "}
+                    Account Settings <span aria-hidden="true">›</span> API key
+                    area
+                  </NavigationPath>
+                  .
+                </p>
                 <ol className="list-decimal space-y-3 pl-5">
                   <li>
-                    Open Account settings and select API keys. Create a key
-                    with a descriptive name once the ClientGateway key
-                    management contract is available.
+                    Create a named key for one integration or environment.
                   </li>
                   <li>
                     Copy the secret immediately and store it in your server's
@@ -635,21 +695,20 @@ const DocumentPage = () => {
                     never commit it or place it in browser storage.
                   </li>
                   <li>
-                    Send it to the public gateway as
+                    Send it to the public API as
                     <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
                       X-API-Key: nzy_...
                     </code>
                     for each integration request.
                   </li>
                   <li>
-                    Return to Account settings to review metadata, rotate a
+                    Return to the API key area to review metadata, rotate a
                     compromised key, or revoke a key that is no longer used.
                   </li>
                 </ol>
                 <p>
-                  The browser application itself continues to use the private
-                  ClientGateway JWT/cookie session. Read the full workflow in
-                  the{" "}
+                  The browser application itself continues to use its secure
+                  session. Read the full workflow in the{" "}
                   <a
                     className="underline"
                     href="/tutorial#api-keys"
@@ -670,11 +729,11 @@ const DocumentPage = () => {
             <ArticleParagraph id="gateway">
               <ArticleParagraphHeader>
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  API Gateway v1 (public)
+                  {publicApiLabel}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The public API Gateway contract is generated from its route
-                  allowlist and server schemas.
+                  The public API contract is generated from its route allowlist
+                  and schemas.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
@@ -740,7 +799,7 @@ Content-Type: application/json`}</code>
                     <p>
                       These rules are operational constraints, not product
                       tutorials. They apply to every endpoint in the public
-                      API Gateway contract.
+                      public API contract.
                     </p>
                     {gatewayRules.map(rule => (
                       <ArticleSubParagraph
@@ -768,17 +827,16 @@ Content-Type: application/json`}</code>
                   Versions
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  API Gateway currently publishes one v1 Beta baseline. The
-                  ClientGateway and RealtimeGateway contracts remain private
-                  implementation surfaces and are not listed here.
+                  The public API currently publishes one Beta baseline. Only the
+                  public contract is listed here.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
                 <div className="space-y-3">
                   {[
                     [
-                      "API Gateway",
-                      `v1 Beta · OpenAPI 3.1 · X-API-Key · ${gatewayOperationCount} operations`,
+                      "Public API",
+                      `${publicApiVersion} Beta · OpenAPI 3.1 · X-API-Key · ${gatewayOperationCount} operations`,
                     ],
                   ].map(([name, detail]) => (
                     <div
@@ -826,8 +884,8 @@ Content-Type: application/json`}</code>
                   Implementation
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The page is a readable index of the backend-owned contracts;
-                  it does not replace the generated artifacts.
+                  The page is a readable index of the published contracts; it
+                  does not replace the generated artifacts.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
@@ -856,18 +914,16 @@ Content-Type: application/json`}</code>
                 </div>
                 <p>
                   Routes and server schemas remain authoritative. Refresh the
-                  public artifacts from the backend contract generator before
+                  public artifacts from the public API generator before
                   reviewing API changes:
                 </p>
                 <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
                   <code>make -C contracts public-api-gen</code>
                 </pre>
                 <p>
-                  The frontend groups public API Gateway operations by generated
-                  OpenAPI tags and keeps the implementation boundary visible:
-                  product usage teaching belongs in Tutorial, while this page
-                  describes contract behavior and operational constraints. The
-                  web app itself still calls ClientGateway with JWT cookies.
+                  The frontend groups public API operations by generated OpenAPI
+                  tags. Product usage teaching belongs in Tutorial, while this
+                  page describes contract behavior and operational constraints.
                 </p>
               </ArticleParagraphContent>
             </ArticleParagraph>

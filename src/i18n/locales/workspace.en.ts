@@ -574,7 +574,6 @@ export const EnglishWorkspaceTranslation = {
     documentComingSoon: "Documentation is coming soon.",
     tutorialComingSoon: "Tutorial is coming soon.",
     downloadLocalDb: "Download local database file",
-    logUsers: "Log all existing users",
     loadingTest: "Loading indicator test",
     loadingTestDescription:
       "Open the full-screen loading cover and close it manually.",
@@ -603,6 +602,8 @@ export const EnglishWorkspaceTranslation = {
       rightsTitle: "5. Your rights",
       rightsText:
         "You may access, correct, or delete your personal data. Contact us at <email>{{email}}</email>.",
+      rightsDetails:
+        "Depending on applicable law, you may also ask us to explain how your data is used, object to certain processing, request a portable copy, or withdraw consent where consent is the basis. We may ask you to verify your identity before fulfilling a request, and some requests may be limited by legal or security obligations. Contact us with the account email and a clear description of what you want changed.",
       cookiesTitle: "6. Cookies",
       cookiesText:
         "We use cookies and local storage to maintain your session and preferences.",
@@ -857,6 +858,7 @@ export const EnglishWorkspaceTranslation = {
     logoutSuccess: "Logged out successfully. See you next time!",
     googleAuthError: "Google sign-in error: {{error}}",
     invalidRootShelfName: "The root shelf name is invalid.",
+    shelfRenamed: "Shelf renamed.",
     invalidSubShelfName: "The sub shelf name is invalid.",
     sensitiveClipboard:
       "Sensitive-looking content was copied. Check the target before pasting.",

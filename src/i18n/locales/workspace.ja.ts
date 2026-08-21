@@ -580,7 +580,6 @@ export const JapaneseWorkspaceTranslation = {
     documentComingSoon: "ドキュメントは近日公開予定です。",
     tutorialComingSoon: "チュートリアルページは近日公開予定です。",
     downloadLocalDb: "ローカルデータベースをダウンロード",
-    logUsers: "既存ユーザーをすべてログ出力",
     loadingTest: "読み込み表示のテスト",
     loadingTestDescription: "全画面の読み込みカバーを開き、手動で閉じます。",
     showLoading: "読み込みを表示",
@@ -608,6 +607,8 @@ export const JapaneseWorkspaceTranslation = {
       rightsTitle: "5. お客様の権利",
       rightsText:
         "個人データへのアクセス、訂正、削除を求めることができます。<email>{{email}}</email> までご連絡ください。",
+      rightsDetails:
+        "適用される法律に基づき、データの利用目的の説明、特定の処理への異議申立て、移植可能な形式でのコピーの請求、または同意を根拠とする処理について同意の撤回を求めることもできます。ご依頼への対応前に本人確認をお願いする場合があり、法的または安全上の義務により一部のご依頼を制限することがあります。ご連絡の際はアカウントのメールアドレスと希望する対応を明記してください。",
       cookiesTitle: "6. Cookie",
       cookiesText:
         "セッションと設定を維持するため、Cookie とローカルストレージを使用します。",
@@ -856,6 +857,7 @@ export const JapaneseWorkspaceTranslation = {
     logoutSuccess: "ログアウトしました。またお会いしましょう！",
     googleAuthError: "Google ログインエラー: {{error}}",
     invalidRootShelfName: "ルートシェルフ名が無効です。",
+    shelfRenamed: "シェルフの名前を変更しました。",
     invalidSubShelfName: "サブシェルフ名が無効です。",
     sensitiveClipboard:
       "機密情報の可能性がある内容をコピーしました。貼り付け先を確認してください。",

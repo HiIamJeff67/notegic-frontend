@@ -560,7 +560,6 @@ export const TraditionalChineseWorkspaceTranslation = {
     documentComingSoon: "文件即將推出。",
     tutorialComingSoon: "教學頁面即將推出。",
     downloadLocalDb: "下載本機資料庫檔案",
-    logUsers: "記錄所有既有使用者",
     loadingTest: "載入指示器測試",
     loadingTestDescription: "開啟全螢幕載入遮罩，並手動將其關閉。",
     showLoading: "顯示載入畫面",
@@ -588,6 +587,8 @@ export const TraditionalChineseWorkspaceTranslation = {
       rightsTitle: "5. 你的權利",
       rightsText:
         "你有權存取、更正或刪除個人資料。請透過 <email>{{email}}</email> 聯絡我們。",
+      rightsDetails:
+        "依適用法律，你也可以要求我們說明資料用途、反對特定處理方式、要求可攜格式的副本，或在以同意為處理依據時撤回同意。我們可能會在處理要求前請你驗證身分，且法律或安全義務可能限制部分要求。聯絡時請提供帳號電子郵件與希望處理的內容。",
       cookiesTitle: "6. Cookie",
       cookiesText: "我們使用 Cookie 與本機儲存空間來維持工作階段與偏好設定。",
       changesTitle: "7. 政策變更",
@@ -824,6 +825,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     logoutSuccess: "已成功登出，下次見！",
     googleAuthError: "Google 登入錯誤：{{error}}",
     invalidRootShelfName: "根層架名稱無效。",
+    shelfRenamed: "已重新命名層架。",
     invalidSubShelfName: "子層架名稱無效。",
     sensitiveClipboard: "已複製看似敏感的內容，貼上前請確認目標位置。",
     routineTasksOnlineOnly: "只有連線時才能查看流程任務。",

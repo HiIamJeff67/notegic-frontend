@@ -12,6 +12,9 @@ const articleTone = (level: number) =>
         ? "text-foreground/80"
         : "text-foreground/70";
 
+const articleLevelPadding = (level: number, baseLevel = 0) =>
+  level > baseLevel ? `${(level - baseLevel) * 1}rem` : undefined;
+
 export const ArticleParagraph = ({
   className,
   level = 0,
@@ -41,7 +44,7 @@ const ArticleParagraphRenderer = ({
       id={id}
       data-article-level={level}
       className={cn(
-        "scroll-mt-8",
+        "scroll-mt-8 flex w-full flex-col items-center",
         articleTone(level),
         isHidden && "hidden",
         className
@@ -54,14 +57,16 @@ const ArticleParagraphRenderer = ({
 export const ArticleParagraphHeader = ({
   className,
   level = 0,
+  style,
   ...props
 }: HTMLAttributes<HTMLElement> & { level?: number }) => (
   <header
     className={cn(
-      "mx-auto min-w-0 max-w-5xl whitespace-normal break-words",
+      "w-full min-w-0 whitespace-normal break-words",
       articleTone(level),
       className
     )}
+    style={{ paddingLeft: articleLevelPadding(level), ...style }}
     {...props}
   />
 );
@@ -69,14 +74,16 @@ export const ArticleParagraphHeader = ({
 export const ArticleParagraphContent = ({
   className,
   level = 1,
+  style,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { level?: number }) => (
   <div
     className={cn(
-      "mx-auto mt-8 min-w-0 max-w-5xl space-y-8 whitespace-normal break-words text-sm leading-7",
+      "mt-8 w-full min-w-0 space-y-8 whitespace-normal break-words text-sm leading-7",
       articleTone(level),
       className
     )}
+    style={{ paddingLeft: articleLevelPadding(level, 1), ...style }}
     {...props}
   />
 );
@@ -87,7 +94,7 @@ export const ArticleParagraphRight = ({
 }: HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex shrink-0 items-center justify-end gap-2 self-start",
+      "flex shrink-0 items-center justify-end gap-2 self-center",
       className
     )}
     {...props}
@@ -104,10 +111,7 @@ export const ArticleParagraphSeparator = ({
   return (
     <div
       role="separator"
-      className={cn(
-        "mt-8 mb-6 w-full border-t-2 border-border/60",
-        className
-      )}
+      className={cn("mt-8 mb-6 w-full border-t-2 border-border/60", className)}
       {...props}
     />
   );
@@ -121,7 +125,7 @@ export const ArticleSubParagraph = ({
   <section
     data-article-level={level}
     className={cn(
-      "scroll-mt-8 before:mx-4 before:my-8 before:block before:h-px before:bg-border/35 [&:first-of-type]:before:hidden",
+      "scroll-mt-8 flex w-full flex-col items-center before:mx-4 before:my-8 before:block before:h-px before:w-full before:bg-border/35 [&:first-of-type]:before:hidden",
       articleTone(level),
       className
     )}
@@ -133,14 +137,16 @@ export const ArticleSubParagraphHeader = ({
   className,
   children,
   level = 1,
+  style,
   ...props
 }: HTMLAttributes<HTMLHeadingElement> & { level?: number }) => (
   <h3
     className={cn(
-      "min-w-0 whitespace-normal break-words text-xl font-semibold tracking-tight",
+      "w-full min-w-0 whitespace-normal break-words text-xl font-semibold tracking-tight",
       articleTone(level),
       className
     )}
+    style={{ paddingLeft: articleLevelPadding(level), ...style }}
     {...props}
   >
     {children}
@@ -150,14 +156,16 @@ export const ArticleSubParagraphHeader = ({
 export const ArticleSubParagraphContent = ({
   className,
   level = 2,
+  style,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { level?: number }) => (
   <div
     className={cn(
-      "mt-3 min-w-0 space-y-6 whitespace-normal break-words",
+      "mt-3 w-full min-w-0 space-y-6 whitespace-normal break-words",
       articleTone(level),
       className
     )}
+    style={{ paddingLeft: articleLevelPadding(level, 1), ...style }}
     {...props}
   />
 );

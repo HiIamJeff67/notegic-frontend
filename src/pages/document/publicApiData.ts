@@ -23982,7 +23982,7 @@ export const gatewayRules = [
   {
     "id": "authentication",
     "title": "Authentication and credential rules",
-    "summary": "API Gateway v1 integrations authenticate with a user-owned `X-API-Key` header. Create the key through the authenticated ClientGateway flow, record the returned secret once, and send it on subsequent API requests.",
+    "summary": "public API v1 integrations authenticate with a user-owned `X-API-Key` header. Create the key through the authenticated web app flow, record the returned secret once, and send it on subsequent API requests.",
     "bullets": [
       "The full secret is returned only once. Store it in a secret manager or local environment and never commit it.",
       "The server persists only a SHA-256 digest and a short display prefix.",
@@ -24016,7 +24016,7 @@ export const gatewayRules = [
     "summary": "Public documentation does not itself grant a third-party origin permission to call the service.",
     "bullets": [
       "Send the API key in `X-API-Key`; never put it in a URL, query string, or request body.",
-      "Cross-origin browser access works only for origins configured in the API Gateway allowlist.",
+      "Cross-origin browser access works only for origins configured in the public API allowlist.",
       "CLI and server clients should omit Origin and Referer rather than forge an allowed browser origin.",
       "HTTPS is mandatory outside local development.",
       "Never commit Postman environments after adding credentials.",
@@ -24027,7 +24027,7 @@ export const gatewayRules = [
   {
     "id": "rate-limits-and-retries",
     "title": "Rate limits and retry rules",
-    "summary": "API Gateway emits these headers on rate-limited routes:",
+    "summary": "public API emits these headers on rate-limited routes:",
     "bullets": [
       "`X-RateLimit-Limit`: request allowance for the active window.",
       "`X-RateLimit-Remaining`: remaining allowance.",
@@ -24053,9 +24053,9 @@ export const gatewayRules = [
 
 export const documentSources = [
   {
-    "title": "API Gateway v1 (public)",
+    "title": "API 0.1.0-beta.3",
     "format": "OpenAPI 3.1",
-    "path": "contracts/api-gateway/v1/public/",
+    "path": "Public API reference",
     "detail": "The canonical public API contract for external integrations and API-key authentication."
   },
   {

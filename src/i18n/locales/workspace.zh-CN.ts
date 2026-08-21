@@ -556,7 +556,6 @@ export const SimpleChineseWorkspaceTranslation = {
     documentComingSoon: "文档即将推出。",
     tutorialComingSoon: "教程页面即将推出。",
     downloadLocalDb: "下载本地数据库文件",
-    logUsers: "记录所有现有用户",
     loadingTest: "加载指示器测试",
     loadingTestDescription: "打开全屏加载遮罩，并手动将其关闭。",
     showLoading: "显示加载画面",
@@ -584,6 +583,8 @@ export const SimpleChineseWorkspaceTranslation = {
       rightsTitle: "5. 你的权利",
       rightsText:
         "你有权访问、更正或删除个人数据。请通过 <email>{{email}}</email> 联系我们。",
+      rightsDetails:
+        "根据适用法律，你还可以要求我们说明数据用途、反对特定处理方式、要求可携格式的副本，或在以同意作为处理依据时撤回同意。我们可能会在处理请求前要求你验证身份，且法律或安全义务可能限制部分请求。联系时请提供账号电子邮件与希望处理的内容。",
       cookiesTitle: "6. Cookie",
       cookiesText: "我们使用 Cookie 与本地存储空间来维持会话与偏好设置。",
       changesTitle: "7. 政策变更",
@@ -820,6 +821,7 @@ export const SimpleChineseWorkspaceTranslation = {
     logoutSuccess: "已成功退出登录，下次见！",
     googleAuthError: "Google 登录错误：{{error}}",
     invalidRootShelfName: "根层架名称无效。",
+    shelfRenamed: "已重命名层架。",
     invalidSubShelfName: "子层架名称无效。",
     sensitiveClipboard: "已复制看似敏感的内容，粘贴前请确认目标位置。",
     routineTasksOnlineOnly: "只有连接时才能查看流程任务。",

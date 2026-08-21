@@ -571,7 +571,6 @@ export const KoreanWorkspaceTranslation = {
     documentComingSoon: "문서는 곧 제공될 예정입니다.",
     tutorialComingSoon: "튜토리얼 페이지는 곧 제공될 예정입니다.",
     downloadLocalDb: "로컬 데이터베이스 파일 다운로드",
-    logUsers: "기존 사용자 모두 로그 출력",
     loadingTest: "로딩 표시기 테스트",
     loadingTestDescription: "전체 화면 로딩 커버를 열고 수동으로 닫습니다.",
     showLoading: "로딩 표시",
@@ -599,6 +598,8 @@ export const KoreanWorkspaceTranslation = {
       rightsTitle: "5. 사용자의 권리",
       rightsText:
         "개인 데이터 열람, 수정 또는 삭제를 요청할 수 있습니다. <email>{{email}}</email>로 문의하세요.",
+      rightsDetails:
+        "관련 법률이 적용되는 경우 데이터 이용 방식에 대한 설명, 특정 처리에 대한 이의 제기, 이동 가능한 형식의 사본 요청 또는 동의를 근거로 한 처리에 대한 동의 철회를 요청할 수 있습니다. 요청을 처리하기 전에 본인 확인을 요구할 수 있으며 법적 또는 보안상 의무로 인해 일부 요청이 제한될 수 있습니다. 문의할 때 계정 이메일과 원하는 조치를 함께 알려 주세요.",
       cookiesTitle: "6. 쿠키",
       cookiesText:
         "세션과 환경설정을 유지하기 위해 쿠키와 로컬 저장소를 사용합니다.",
@@ -848,6 +849,7 @@ export const KoreanWorkspaceTranslation = {
     logoutSuccess: "성공적으로 로그아웃했습니다. 다음에 또 만나요!",
     googleAuthError: "Google 로그인 오류: {{error}}",
     invalidRootShelfName: "루트 선반 이름이 올바르지 않습니다.",
+    shelfRenamed: "선반 이름을 변경했습니다.",
     invalidSubShelfName: "하위 선반 이름이 올바르지 않습니다.",
     sensitiveClipboard:
       "민감할 수 있는 콘텐츠를 복사했습니다. 붙여넣기 전에 대상을 확인하세요.",
