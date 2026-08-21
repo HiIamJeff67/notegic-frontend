@@ -20,3 +20,18 @@
 - Borders describe containment or a true separation. Do not add a border merely to make a layout visible.
 - Separators and spacing communicate hierarchy; parent sections receive more space than sibling options.
 - Prefer local utility classes over bespoke CSS. Add a reusable component before repeating a long visual pattern in multiple features.
+
+## Style helper boundaries
+
+- Keep a one-use class composition, responsive condition, or visual state
+  decision in the component that owns it when the result is readable.
+- Do not create a style helper file to hide a short Tailwind class list or a
+  single component's variant decision.
+- Reuse the existing token, primitive, or styling utility before adding a new
+  class-name wrapper. A new abstraction must represent a real repeated visual
+  concept, not merely reduce the number of lines in one component.
+- Keep component-local style variants and constants beside the component when
+  no other component consumes them. Do not create a `styles/`, `constants/`, or
+  `helpers/` module for one consumer.
+- Keep styling decisions in the presentation layer. A style helper must not
+  perform data fetching, mutate storage, or conceal feature workflow logic.
