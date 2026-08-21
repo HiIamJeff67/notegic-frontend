@@ -142,7 +142,6 @@ const TimerWidget = ({
         setRemainingMs(timeLeft);
 
         if (timeLeft === 0) {
-          // TODO: notify the user using websocket
           setStatus("ended");
           setData(prev => ({
             ...prev,

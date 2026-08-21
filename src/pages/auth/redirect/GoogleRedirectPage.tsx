@@ -110,7 +110,6 @@ function GoogleRedirectPage() {
       userManager.setEnableInitialFetching(true);
       router.push(getPreferredStartPath(preferences));
     } catch (error) {
-      console.debug(error);
       toast.error(translateError(error, t));
       router.push(
         WebURLPathDictionary.auth.redirect.error(

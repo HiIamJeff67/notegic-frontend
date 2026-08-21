@@ -1,5 +1,4 @@
 import { localDB } from "@shared/api/local/db";
-import { User } from "@shared/api/local/schemas";
 import toast from "@shared/lib/toast";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,20 +9,12 @@ const AdminPage = () => {
   const { t } = useTranslation();
   const [isLoadingPreviewOpen, setIsLoadingPreviewOpen] = useState(false);
 
-  const logAllExistingUsers = async (): Promise<void> => {
-    const existingUsers = await localDB.select().from(User);
-    console.debug("existingUsers: ", existingUsers);
-  };
-
   return (
     <>
       <div className="p-4 flex flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={localDB.download}>
             {t("workspace.pages.downloadLocalDb")}
-          </Button>
-          <Button variant="secondary" onClick={logAllExistingUsers}>
-            {t("workspace.pages.logUsers")}
           </Button>
         </div>
 

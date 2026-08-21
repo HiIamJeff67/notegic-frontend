@@ -118,10 +118,6 @@ export const useLogout = () => {
       queryClient.removeQueries();
       apolloClient.clearStore();
     },
-    onError: (error, request) => {
-      console.debug("WTF: ", error);
-      console.debug("WTF2: ", request);
-    },
   });
 
   return mutation;
