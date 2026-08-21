@@ -1,5 +1,5 @@
-import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useApolloClient } from "@apollo/client/react";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import {
   PrivateRootShelf,
   SearchRootShelfEdge,
@@ -34,6 +34,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { translateError } from "@/i18n/error";
 
 interface UseRootShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -266,53 +267,71 @@ export const useRootShelfLogic = ({
   }, [setEditingRootShelfNode, setOriginalRootShelfName, setEditRootShelfName]);
 
   const renameEditingRootShelf = useCallback(async (): Promise<void> => {
-    try {
-      if (!isNewRootShelfName() || !editingRootShelfNode) {
-        toast.error(t("workspace.notifications.invalidRootShelfName"));
-        return;
-      }
+    const editingNode = editingRootShelfNode;
+    if (!editingNode) return;
 
-      const shelfTreeSummary = expandedShelvesRef.current.get(
-        editingRootShelfNode.id
+    if (editRootShelfName === originalRootShelfName) {
+      cancelRenamingRootShelfNode();
+      return;
+    }
+
+    if (editRootShelfName.trim() === "") {
+      toast.error(t("workspace.notifications.invalidRootShelfName"));
+      cancelRenamingRootShelfNode();
+      return;
+    }
+
+    const shelfTreeSummary = expandedShelvesRef.current.get(editingNode.id);
+    if (shelfTreeSummary === undefined) {
+      cancelRenamingRootShelfNode();
+      toast.error(
+        translateError(
+          new Error(
+            `parentShelfNode not found in one of the children of editingRootShelfNode`
+          ),
+          t
+        )
       );
-      if (shelfTreeSummary === undefined) {
-        throw new Error(
-          `parentShelfNode not found in one of the children of editingRootShelfNode`
-        );
-      }
+      return;
+    }
 
-      const userAgent = navigator.userAgent;
-      await updateRootShelfMutator.mutateAsync({
-        header: getClientRequestHeaders(userAgent),
+    const previousName = editingNode.name;
+    shelfTreeSummary.root.name = editRootShelfName;
+    editingNode.name = editRootShelfName;
+    setEditingRootShelfNode(prev =>
+      prev ? { ...prev, name: editRootShelfName } : undefined
+    );
+    forceUpdate();
+
+    try {
+      const response = await updateRootShelfMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
-          rootShelfId: editingRootShelfNode.id,
+          rootShelfId: editingNode.id,
           values: {
             name: editRootShelfName,
           },
         },
       });
-
-      shelfTreeSummary.root.name = editRootShelfName;
-      editingRootShelfNode.name = editRootShelfName;
-      setEditingRootShelfNode(prev =>
-        prev ? { ...prev, name: editRootShelfName } : undefined
-      );
-      forceUpdate();
+      if (response.success === false) throw response.exception;
+      toast.success(t("workspace.notifications.shelfRenamed"));
     } catch (error) {
-      throw error;
+      shelfTreeSummary.root.name = previousName;
+      editingNode.name = previousName;
+      forceUpdate();
+      toast.error(translateError(error, t));
     } finally {
-      setEditingRootShelfNode(undefined);
-      setEditRootShelfName("");
-      setOriginalRootShelfName("");
+      cancelRenamingRootShelfNode();
     }
   }, [
-    editingRootShelfNode,
+    cancelRenamingRootShelfNode,
     editRootShelfName,
+    editingRootShelfNode,
+    expandedShelvesRef,
+    forceUpdate,
     originalRootShelfName,
     setEditingRootShelfNode,
-    setEditRootShelfName,
-    setOriginalRootShelfName,
-    expandedShelvesRef,
+    t,
     updateRootShelfMutator,
   ]);
 

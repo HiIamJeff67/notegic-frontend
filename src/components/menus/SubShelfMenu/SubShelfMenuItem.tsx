@@ -182,14 +182,8 @@ const SubShelfMenuItem = ({
   }, [root, current, t, shelfItemManager]);
 
   const handleRenameSubShelfOnSubmit = useCallback(
-    async () =>
-      await loadingManager.startAsyncTransactionLoading(
-        async () =>
-          await shelfItemManager
-            .renameEditingSubShelf()
-            .catch(error => toast.error(translateError(error, t)))
-      ),
-    [loadingManager, t, shelfItemManager]
+    async () => await shelfItemManager.renameEditingSubShelf(),
+    [shelfItemManager]
   );
 
   return (

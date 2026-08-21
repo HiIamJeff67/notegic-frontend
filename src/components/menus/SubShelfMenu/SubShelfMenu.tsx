@@ -1,4 +1,3 @@
-import toast from "@shared/lib/toast";
 import { RootShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
 import { CheckIcon } from "lucide-react";
@@ -7,8 +6,7 @@ import { useTranslation } from "react-i18next";
 import SubShelfMenuItem from "@/components/menus/SubShelfMenu/SubShelfMenuItem";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
 import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
-import { useLoading, useShelfItem } from "@/hooks";
-import { translateError } from "@/i18n/error";
+import { useShelfItem } from "@/hooks";
 
 interface SubShelfMenuProps {
   summary: ShelfTreeSummary;
@@ -17,19 +15,12 @@ interface SubShelfMenuProps {
 
 // handle the translation and some loading states here
 const SubShelfMenu = ({ summary, root }: SubShelfMenuProps) => {
-  const loadingManager = useLoading();
   const { t } = useTranslation();
   const shelfItemManager = useShelfItem();
 
   const handleRenameSubShelfOnSubmit = useCallback(
-    async () =>
-      await loadingManager.startAsyncTransactionLoading(
-        async () =>
-          await shelfItemManager
-            .renameEditingSubShelf()
-            .catch(error => toast.error(translateError(error, t)))
-      ),
-    [loadingManager, t, shelfItemManager]
+    async () => await shelfItemManager.renameEditingSubShelf(),
+    [shelfItemManager]
   );
 
   return (

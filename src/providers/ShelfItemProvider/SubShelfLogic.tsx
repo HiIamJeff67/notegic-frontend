@@ -20,6 +20,7 @@ import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { translateError } from "@/i18n/error";
 
 interface UseSubShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -229,47 +230,58 @@ export const useSubShelfLogic = ({
   }, [setEditingSubShelfNode, setOriginalSubShelfName, setEditSubShelfName]);
 
   const renameEditingSubShelf = useCallback(async (): Promise<void> => {
-    try {
-      if (!isNewSubShelfName() || !editingSubShelfNode) {
-        toast.error(t("workspace.notifications.invalidSubShelfName"));
-        return;
-      }
+    const editingNode = editingSubShelfNode;
+    if (!editingNode) return;
 
-      const userAgent = navigator.userAgent;
-      await updateSubShelfMutator.mutateAsync({
-        header: getClientRequestHeaders(userAgent),
+    if (editSubShelfName === originalSubShelfName) {
+      cancelRenamingSubShelfNode();
+      return;
+    }
+
+    if (editSubShelfName.trim() === "") {
+      toast.error(t("workspace.notifications.invalidSubShelfName"));
+      cancelRenamingSubShelfNode();
+      return;
+    }
+
+    const previousName = editingNode.name;
+    editingNode.name = editSubShelfName;
+    setEditingSubShelfNode(prev =>
+      prev ? { ...prev, name: editSubShelfName } : undefined
+    );
+    forceUpdate();
+
+    try {
+      const response = await updateSubShelfMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
         body: {
-          subShelfId: editingSubShelfNode.id,
+          subShelfId: editingNode.id,
           values: {
             name: editSubShelfName,
           },
         },
         affected: {
-          rootShelfId: editingSubShelfNode.rootShelfId,
-          prevSubShelfId: editingSubShelfNode.prevSubShelfId,
+          rootShelfId: editingNode.rootShelfId,
+          prevSubShelfId: editingNode.prevSubShelfId,
         },
       });
-
-      // update the reference value stored in the useState value of `editingSubShelfNode`
-      editingSubShelfNode.name = editSubShelfName;
-      setEditingSubShelfNode(prev =>
-        prev ? { ...prev, name: editSubShelfName } : undefined
-      );
-      forceUpdate();
+      if (response.success === false) throw response.exception;
+      toast.success(t("workspace.notifications.shelfRenamed"));
     } catch (error) {
-      throw error;
+      editingNode.name = previousName;
+      forceUpdate();
+      toast.error(translateError(error, t));
     } finally {
-      setEditingSubShelfNode(undefined);
-      setEditSubShelfName("");
-      setOriginalSubShelfName("");
+      cancelRenamingSubShelfNode();
     }
   }, [
-    editingSubShelfNode,
+    cancelRenamingSubShelfNode,
     editSubShelfName,
+    editingSubShelfNode,
+    forceUpdate,
     originalSubShelfName,
     setEditingSubShelfNode,
-    setEditSubShelfName,
-    setOriginalSubShelfName,
+    t,
     updateSubShelfMutator,
   ]);
 

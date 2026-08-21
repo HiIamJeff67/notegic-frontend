@@ -91,14 +91,8 @@ const RootShelfMenuItem = ({
   }));
 
   const handleRenameRootShelfOnSubmit = useCallback(
-    async () =>
-      await loadingManager.startAsyncTransactionLoading(
-        async () =>
-          await shelfItemManager
-            .renameEditingRootShelf()
-            .catch(error => toast.error(translateError(error, t)))
-      ),
-    [loadingManager, t, shelfItemManager]
+    async () => await shelfItemManager.renameEditingRootShelf(),
+    [shelfItemManager]
   );
 
   if (!summary) return <RootShelfMenuItemSkeleton key={index} />;
@@ -108,7 +102,7 @@ const RootShelfMenuItem = ({
       <SidebarMenuItem>
         <ContextMenu>
           {shelfItemManager.isRootShelfNodeEditing(summary.root.id) ? (
-            <div className="relative flex items-center justify-end rounded-sm border-none bg-muted px-2 py-1">
+            <div className="relative flex items-center justify-end rounded-sm border border-foreground bg-muted px-2 py-1">
               <input
                 ref={shelfItemManager.inputRef}
                 type="text"
