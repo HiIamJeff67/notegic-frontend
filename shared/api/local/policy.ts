@@ -2,7 +2,7 @@ import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 
 export const isLocalPreferenceEnabled = (
-  key: "localVault" | "offlineQueue"
+  key: "localVault" | "offlineQueue" | "cacheAttachments"
 ): boolean => {
   const preferences = LocalStorageManipulator.getItemByKey(
     LocalStorageKey.localPreferences

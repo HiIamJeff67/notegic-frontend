@@ -10,6 +10,7 @@ export interface MaterialMeta {
   contentType: string;
   parseMediaType: string;
   downloadURL: string | null;
+  localContentURL?: string | null;
   path: UUID[];
   deletedAt: Date | null;
   updatedAt: Date;

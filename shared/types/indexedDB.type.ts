@@ -8,11 +8,13 @@ export enum IndexedDBKey {
   blockPackYjsRejectedDrafts = "blockPackYjsRejectedDrafts",
   currentBackgroundImage = "currentBackgroundImage",
   currentProfileCoverBackgroundImageId = "currentProfileCoverBackgroundImageId",
+  materialAttachments = "materialAttachments",
 }
 
 export interface BlockPackYjsDocumentCacheContent {
   blockPackId: UUID;
   update: Uint8Array;
+  stateVector: Uint8Array;
   byteSize: number;
   needsFlush: boolean;
   updatedAt: Date;
@@ -39,6 +41,23 @@ export interface BlockPackYjsRejectedDraftCache {
   contents: BlockPackYjsRejectedDraft[];
 }
 
+export interface MaterialAttachmentCacheContent {
+  materialId: UUID;
+  content: Blob;
+  contentType: string;
+  byteSize: number;
+  sourceUpdatedAt: Date;
+  createdAt: Date;
+  lastAccessedAt: Date;
+}
+
+export interface MaterialAttachmentCache {
+  header: {
+    totalSize: number;
+  };
+  contents: MaterialAttachmentCacheContent[];
+}
+
 export interface IndexedDBItem {
   [IndexedDBKey.backgroundImageThumbnails]: ImageThumbnailInfo | null;
   [IndexedDBKey.backgroundImages]: ImageInfo | null;
@@ -46,4 +65,5 @@ export interface IndexedDBItem {
   [IndexedDBKey.blockPackYjsRejectedDrafts]: BlockPackYjsRejectedDraftCache | null;
   [IndexedDBKey.currentBackgroundImage]: ImageContent | null;
   [IndexedDBKey.currentProfileCoverBackgroundImageId]: UUID | null;
+  [IndexedDBKey.materialAttachments]: MaterialAttachmentCache | null;
 }

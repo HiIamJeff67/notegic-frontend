@@ -17,9 +17,9 @@ const MaterialImageViewerContent = ({
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
     >
-      {meta.downloadURL && (
+      {(meta.localContentURL ?? meta.downloadURL) && (
         <img
-          src={meta.downloadURL}
+          src={meta.localContentURL ?? meta.downloadURL ?? undefined}
           alt={meta.name}
           className="max-h-[70vh] w-auto"
         />

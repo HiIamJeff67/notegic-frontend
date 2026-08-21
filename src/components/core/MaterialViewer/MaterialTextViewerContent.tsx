@@ -17,9 +17,10 @@ const MaterialTextViewerContent = ({
   const [text, setText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState<boolean>(false);
   const [isTextAvailable, setIsTextAvailable] = useState<boolean>(true);
+  const contentURL = meta.localContentURL ?? meta.downloadURL;
 
   useEffect(() => {
-    if (!meta.downloadURL) return;
+    if (!contentURL) return;
 
     let isCancelled = false;
 
@@ -29,7 +30,7 @@ const MaterialTextViewerContent = ({
 
     void (async () => {
       try {
-        const response = await fetch(meta.downloadURL as string);
+        const response = await fetch(contentURL);
         if (!response.ok) {
           setIsTextAvailable(false);
           return;
@@ -61,7 +62,7 @@ const MaterialTextViewerContent = ({
     return () => {
       isCancelled = true;
     };
-  }, [materialContentType, meta.downloadURL]);
+  }, [contentURL, materialContentType]);
 
   return (
     <MaterialViewerFrame

@@ -1,13 +1,11 @@
-import {
-  clearLegacyCredentialStorage,
-  getClientRequestHeaders,
-} from "@shared/api/clientHeaders";
+import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { useLogout } from "@shared/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@shared/api/hooks/user.hook";
 import { useGetMyAccount } from "@shared/api/hooks/userAccount.hook";
 import { useGetMyInfo } from "@shared/api/hooks/userInfo.hook";
+import { clearMaterialAttachmentCache } from "@shared/api/local/material-attachment.cache";
 import { WebURLPathDictionary } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
@@ -74,10 +72,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
 
-  useEffect(() => {
-    clearLegacyCredentialStorage();
-  }, []);
-
   const isAutoFetchingUserDataRef = useRef(false);
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
   const fetchUserDataRef = useRef<() => Promise<void>>(async () => {});
@@ -86,7 +80,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
-          console.debug("fetching user automatically...");
           if (!isOnline) {
             throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
           }
@@ -289,10 +282,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setUserAccount(null);
 
       const userAgent = navigator.userAgent;
-      if (isOnline) {
-        await logoutMutator.mutateAsync({
-          header: getClientRequestHeaders(userAgent),
-        });
+      try {
+        if (isOnline) {
+          await logoutMutator.mutateAsync({
+            header: getClientRequestHeaders(userAgent),
+          });
+        }
+      } finally {
+        await clearMaterialAttachmentCache();
       }
     })();
 
@@ -302,7 +299,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       logoutInFlightRef.current = null;
     }
-  }, [logoutMutator]);
+  }, [isOnline, logoutMutator]);
 
   const contextValue: UserContextType = {
     enableInitialFetching: enableInitialFetching,

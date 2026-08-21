@@ -17,8 +17,12 @@ const MaterialAudioViewerContent = ({
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
     >
-      {meta.downloadURL && (
-        <audio src={meta.downloadURL} controls className="w-full" />
+      {(meta.localContentURL ?? meta.downloadURL) && (
+        <audio
+          src={meta.localContentURL ?? meta.downloadURL ?? undefined}
+          controls
+          className="w-full"
+        />
       )}
     </MaterialViewerFrame>
   );

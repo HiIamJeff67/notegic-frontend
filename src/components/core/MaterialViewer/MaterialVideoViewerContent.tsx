@@ -17,9 +17,9 @@ const MaterialVideoViewerContent = ({
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
     >
-      {meta.downloadURL && (
+      {(meta.localContentURL ?? meta.downloadURL) && (
         <video
-          src={meta.downloadURL}
+          src={meta.localContentURL ?? meta.downloadURL ?? undefined}
           controls
           className="max-h-[70vh] w-full"
         />

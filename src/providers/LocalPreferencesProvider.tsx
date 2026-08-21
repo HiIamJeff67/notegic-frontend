@@ -1,3 +1,5 @@
+import { cleanupLocalData } from "@shared/api/local/local-data.cleanup";
+import { clearMaterialAttachmentCache } from "@shared/api/local/material-attachment.cache";
 import { WebURLPathDictionary } from "@shared/constants";
 import {
   DashboardWidthFrameCountStep,
@@ -107,27 +109,6 @@ export const getPreferredStartPath = (preferences: LocalPreferences) => {
   return WebURLPathDictionary.app.dashboard._;
 };
 
-const normalizeLocalPreferences = (
-  preferences: Partial<LocalPreferences>
-): Partial<LocalPreferences> => ({
-  ...preferences,
-  manualDashboardWidth: preferences.manualDashboardWidth === true,
-  startSurface:
-    preferences.startSurface === "routines" ||
-    preferences.startSurface === "dashboard"
-      ? preferences.startSurface
-      : defaultLocalPreferences.startSurface,
-  dashboardWidthFrameCount:
-    typeof preferences.dashboardWidthFrameCount === "number" &&
-    preferences.dashboardWidthFrameCount >= MinDashboardWidthFrameCount &&
-    preferences.dashboardWidthFrameCount <= MaxDashboardWidthFrameCount &&
-    (preferences.dashboardWidthFrameCount - MinDashboardWidthFrameCount) %
-      DashboardWidthFrameCountStep ===
-      0
-      ? preferences.dashboardWidthFrameCount
-      : defaultLocalPreferences.dashboardWidthFrameCount,
-});
-
 export type LocalPreferencesContextValue = {
   preferences: LocalPreferences;
   updatePreference: UpdatePreference;
@@ -174,9 +155,28 @@ export const LocalPreferencesProvider = ({
     );
 
     if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+      const savedPreferences = saved as Partial<LocalPreferences>;
       setPreferences({
         ...defaultLocalPreferences,
-        ...normalizeLocalPreferences(saved as Partial<LocalPreferences>),
+        ...savedPreferences,
+        manualDashboardWidth: savedPreferences.manualDashboardWidth === true,
+        startSurface:
+          savedPreferences.startSurface === "routines" ||
+          savedPreferences.startSurface === "dashboard"
+            ? savedPreferences.startSurface
+            : defaultLocalPreferences.startSurface,
+        dashboardWidthFrameCount:
+          typeof savedPreferences.dashboardWidthFrameCount === "number" &&
+          savedPreferences.dashboardWidthFrameCount >=
+            MinDashboardWidthFrameCount &&
+          savedPreferences.dashboardWidthFrameCount <=
+            MaxDashboardWidthFrameCount &&
+          (savedPreferences.dashboardWidthFrameCount -
+            MinDashboardWidthFrameCount) %
+            DashboardWidthFrameCountStep ===
+            0
+            ? savedPreferences.dashboardWidthFrameCount
+            : defaultLocalPreferences.dashboardWidthFrameCount,
       });
     }
 
@@ -185,6 +185,18 @@ export const LocalPreferencesProvider = ({
         ? Notification.permission
         : "unknown"
     );
+
+    if (typeof navigator !== "undefined" && navigator.storage?.estimate) {
+      navigator.storage.estimate().then(estimate => {
+        setStorageEstimate({
+          quota: estimate.quota ?? 0,
+          usage: estimate.usage ?? 0,
+        });
+      });
+    } else {
+      setStorageEstimate(null);
+    }
+
     setIsReady(true);
   }, []);
 
@@ -197,25 +209,22 @@ export const LocalPreferencesProvider = ({
   }, [isReady, preferences]);
 
   useEffect(() => {
+    if (!isReady) return;
+    void cleanupLocalData(preferences.cleanupAfterDays).catch(error => {
+      console.error("Failed to clean up local data.", error);
+    });
+    if (!preferences.cacheAttachments) {
+      void clearMaterialAttachmentCache().catch(error => {
+        console.error("Failed to clear material attachment cache.", error);
+      });
+    }
+  }, [isReady, preferences.cacheAttachments, preferences.cleanupAfterDays]);
+
+  useEffect(() => {
     const root = document.documentElement;
 
     root.dataset.density = preferences.density;
     root.dataset.reduceMotion = String(preferences.reduceMotion);
-
-    return () => {
-      delete root.dataset.density;
-      delete root.dataset.reduceMotion;
-    };
-  }, [preferences.density, preferences.reduceMotion]);
-
-  useEffect(() => {
-    if (
-      !preferences.tactileFeedback ||
-      typeof navigator === "undefined" ||
-      typeof navigator.vibrate !== "function"
-    ) {
-      return;
-    }
 
     const handlePointerUp = (event: PointerEvent) => {
       const target = event.target;
@@ -226,25 +235,26 @@ export const LocalPreferencesProvider = ({
       navigator.vibrate(8);
     };
 
-    document.addEventListener("pointerup", handlePointerUp, {
-      passive: true,
-    });
-    return () => document.removeEventListener("pointerup", handlePointerUp);
-  }, [preferences.tactileFeedback]);
-
-  useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.storage?.estimate) {
-      setStorageEstimate(null);
-      return;
+    if (
+      preferences.tactileFeedback &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function"
+    ) {
+      document.addEventListener("pointerup", handlePointerUp, {
+        passive: true,
+      });
     }
 
-    navigator.storage.estimate().then(estimate => {
-      setStorageEstimate({
-        quota: estimate.quota ?? 0,
-        usage: estimate.usage ?? 0,
-      });
-    });
-  }, []);
+    return () => {
+      delete root.dataset.density;
+      delete root.dataset.reduceMotion;
+      document.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [
+    preferences.density,
+    preferences.reduceMotion,
+    preferences.tactileFeedback,
+  ]);
 
   const updatePreference: UpdatePreference = (key, value) => {
     setPreferences(prev => ({

@@ -18,16 +18,19 @@ describe("local data policy", () => {
   it("keeps local data features enabled when preferences are unavailable", () => {
     expect(isLocalPreferenceEnabled("localVault")).toBe(true);
     expect(isLocalPreferenceEnabled("offlineQueue")).toBe(true);
+    expect(isLocalPreferenceEnabled("cacheAttachments")).toBe(true);
   });
 
   it("respects disabled local database and offline queue settings", () => {
     getItemByKey.mockReturnValue({
       localVault: false,
       offlineQueue: false,
+      cacheAttachments: false,
     } as never);
 
     expect(isLocalPreferenceEnabled("localVault")).toBe(false);
     expect(isLocalPreferenceEnabled("offlineQueue")).toBe(false);
+    expect(isLocalPreferenceEnabled("cacheAttachments")).toBe(false);
   });
 
   it("only disables the selected feature", () => {
@@ -35,5 +38,6 @@ describe("local data policy", () => {
 
     expect(isLocalPreferenceEnabled("localVault")).toBe(false);
     expect(isLocalPreferenceEnabled("offlineQueue")).toBe(true);
+    expect(isLocalPreferenceEnabled("cacheAttachments")).toBe(true);
   });
 });

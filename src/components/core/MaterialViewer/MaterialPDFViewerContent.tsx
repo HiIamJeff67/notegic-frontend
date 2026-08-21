@@ -105,6 +105,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
   const [textAnnotationDraft, setTextAnnotationDraft] = useState<string>("");
   const [isApplyingAnnotations, setIsApplyingAnnotations] =
     useState<boolean>(false);
+  const contentURL = meta.localContentURL ?? meta.downloadURL;
 
   const renderAnnotations = (
     context: CanvasRenderingContext2D,
@@ -564,9 +565,9 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
   }, [currentTool, totalPages, annotations.length, pdfBytes]);
 
   useEffect(() => {
-    if (!meta.downloadURL) return;
+    if (!contentURL) return;
 
-    void loadPdf(meta.downloadURL);
+    void loadPdf(contentURL);
 
     return () => {
       renderTaskRef.current?.cancel();
@@ -575,7 +576,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
         pdfDocumentRef.current = null;
       }
     };
-  }, [meta.downloadURL]);
+  }, [contentURL]);
 
   useEffect(() => {
     void renderPage(currentPage);

@@ -19,9 +19,9 @@ const MaterialUnsupportedViewerContent = ({
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
     >
-      {meta.downloadURL && (
+      {(meta.localContentURL ?? meta.downloadURL) && (
         <a
-          href={meta.downloadURL}
+          href={meta.localContentURL ?? meta.downloadURL ?? undefined}
           target="_blank"
           rel="noreferrer"
           className="underline text-primary"

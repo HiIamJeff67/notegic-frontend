@@ -8,6 +8,7 @@ import {
   getMany,
   set,
   setMany,
+  update,
 } from "idb-keyval";
 
 export class IndexedDBManipulator {
@@ -119,6 +120,28 @@ export class IndexedDBManipulator {
     } catch (error) {
       console.error(
         `Failed to set indexedDB item with key of "${key}":`,
+        error
+      );
+      return false;
+    }
+  };
+
+  static updateItem = async <K extends IndexedDBKey>(
+    key: K,
+    updater: (value: IndexedDBItem[K] | undefined) => IndexedDBItem[K],
+    publicId?: string
+  ): Promise<boolean> => {
+    if (!this.isIndexedDBAvailable()) return false;
+
+    try {
+      await update(
+        this.getIndexedDBKey(key, publicId),
+        updater as (value: unknown) => unknown
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        `Failed to update indexedDB item with key of "${key}":`,
         error
       );
       return false;

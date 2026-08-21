@@ -56,13 +56,13 @@ import {
   useUpdateMySubShelvesByIds,
 } from "@shared/api/hooks/subShelf.hook";
 import { localDB } from "@shared/api/local/db";
-import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import { Transaction, User } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { asc, eq, InferSelectModel, inArray } from "drizzle-orm";
+import { and, asc, eq, gte, InferSelectModel, inArray, lt } from "drizzle-orm";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useNetwork } from "@/hooks";
+import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
   mergeBlockPackTransactions,
   prepareBlockPackSyncJobs,
@@ -364,6 +364,8 @@ interface TransactionSynchronizerContextType {
     | "migrating"
     | "synchronized";
   getTransactionCount: () => Promise<number>;
+  getTerminalTransactionCount: () => Promise<number>;
+  clearTerminalTransactions: () => Promise<void>;
   synchronizeTransactions: () => Promise<void>;
   synchronizationProgress: number;
 }
@@ -387,6 +389,10 @@ export const TransactionSynchronizerProvider = ({
     | "synchronized"
   >("analyzing");
   const { isOnline } = useNetwork();
+  const {
+    isReady: areLocalPreferencesReady,
+    preferences: { localVault, offlineQueue },
+  } = useLocalPreferences();
 
   const createRootShelfMutator = useCreateRootShelf();
   const updateRootShelvesMutator = useUpdateMyRootShelvesByIds();
@@ -445,28 +451,93 @@ export const TransactionSynchronizerProvider = ({
   const isSynchronizingRef = useRef<boolean>(false);
 
   const getTransactionCount = useCallback(async (): Promise<number> => {
-    if (!localDB.isEnabled) return 0;
+    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+      return 0;
+    }
     if (
-      !isLocalPreferenceEnabled("offlineQueue") &&
+      !offlineQueue &&
       typeof navigator !== "undefined" &&
       navigator.onLine === false
     ) {
       return 0;
     }
     if (!localDB.isReady) await localDB.ensureReady();
-    return await localDB.transaction(async tx => {
-      const loggedInUser = await tx.query.User.findFirst({
-        where: eq(User.isLoggedIn, true),
-      });
-      if (!loggedInUser) return 0;
+    if (!localDB.isEnabled || !localDB.isReady) return 0;
 
-      const transactions = await tx
-        .select({ sequence: Transaction.sequence })
-        .from(Transaction)
-        .where(eq(Transaction.ownerPublicId, loggedInUser.publicId));
-      return transactions.length;
-    });
-  }, []);
+    const loggedInUser = (
+      await localDB
+        .select({ publicId: User.publicId })
+        .from(User)
+        .where(eq(User.isLoggedIn, true))
+        .limit(1)
+    )[0];
+    if (!loggedInUser) return 0;
+
+    const transactions = await localDB
+      .select({ sequence: Transaction.sequence })
+      .from(Transaction)
+      .where(
+        and(
+          eq(Transaction.ownerPublicId, loggedInUser.publicId),
+          lt(Transaction.retryCount, MAX_TRANSACTION_RETRY_COUNT)
+        )
+      );
+    return transactions.length;
+  }, [areLocalPreferencesReady, localVault, offlineQueue]);
+
+  const getTerminalTransactionCount = useCallback(async (): Promise<number> => {
+    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+      return 0;
+    }
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (!localDB.isEnabled || !localDB.isReady) return 0;
+
+    const loggedInUser = (
+      await localDB
+        .select({ publicId: User.publicId })
+        .from(User)
+        .where(eq(User.isLoggedIn, true))
+        .limit(1)
+    )[0];
+    if (!loggedInUser) return 0;
+
+    const transactions = await localDB
+      .select({ sequence: Transaction.sequence })
+      .from(Transaction)
+      .where(
+        and(
+          eq(Transaction.ownerPublicId, loggedInUser.publicId),
+          gte(Transaction.retryCount, MAX_TRANSACTION_RETRY_COUNT)
+        )
+      );
+    return transactions.length;
+  }, [areLocalPreferencesReady, localVault]);
+
+  const clearTerminalTransactions = useCallback(async (): Promise<void> => {
+    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+      return;
+    }
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (!localDB.isEnabled || !localDB.isReady) return;
+
+    const loggedInUser = (
+      await localDB
+        .select({ publicId: User.publicId })
+        .from(User)
+        .where(eq(User.isLoggedIn, true))
+        .limit(1)
+    )[0];
+    if (!loggedInUser) return;
+
+    await localDB
+      .delete(Transaction)
+      .where(
+        and(
+          eq(Transaction.ownerPublicId, loggedInUser.publicId),
+          gte(Transaction.retryCount, MAX_TRANSACTION_RETRY_COUNT)
+        )
+      );
+  }, [areLocalPreferencesReady, localVault]);
 
   const syncPreparedSyncJobs = useCallback(
     async (
@@ -551,30 +622,46 @@ export const TransactionSynchronizerProvider = ({
   );
 
   const synchronizeTransactions = useCallback(async () => {
-    if (!isOnline || !localDB.isEnabled) return;
+    if (
+      !areLocalPreferencesReady ||
+      !localVault ||
+      !isOnline ||
+      !localDB.isEnabled
+    ) {
+      return;
+    }
 
     setSynchronizationProgress(0);
 
     const header: SyncHeader = getClientRequestHeaders();
 
     if (!localDB.isReady) await localDB.ensureReady();
-    const localData = await localDB.transaction(async tx => {
-      const loggedInUser = await tx.query.User.findFirst({
-        where: eq(User.isLoggedIn, true),
-      });
-      if (!loggedInUser) return { ownerPublicId: undefined, transactions: [] };
-      const transactions = await tx
-        .select()
-        .from(Transaction)
-        .where(eq(Transaction.ownerPublicId, loggedInUser.publicId))
-        .orderBy(asc(Transaction.sequence));
-      return { ownerPublicId: loggedInUser.publicId, transactions };
-    });
+    if (!localDB.isEnabled || !localDB.isReady) return;
 
-    const transactions = localData.transactions.filter(
-      transaction => transaction.retryCount < MAX_TRANSACTION_RETRY_COUNT
-    );
-    if (!localData.ownerPublicId || transactions.length === 0) {
+    const loggedInUser = (
+      await localDB
+        .select({ publicId: User.publicId })
+        .from(User)
+        .where(eq(User.isLoggedIn, true))
+        .limit(1)
+    )[0];
+    if (!loggedInUser) {
+      setSynchronizationProgress(1);
+      return;
+    }
+
+    const transactions = await localDB
+      .select()
+      .from(Transaction)
+      .where(
+        and(
+          eq(Transaction.ownerPublicId, loggedInUser.publicId),
+          lt(Transaction.retryCount, MAX_TRANSACTION_RETRY_COUNT)
+        )
+      )
+      .orderBy(asc(Transaction.sequence));
+
+    if (transactions.length === 0) {
       setSynchronizationProgress(1);
       return;
     }
@@ -837,6 +924,8 @@ export const TransactionSynchronizerProvider = ({
     setSynchronizationProgress(1);
   }, [
     isOnline,
+    areLocalPreferencesReady,
+    localVault,
     createRootShelfMutator,
     updateRootShelvesMutator,
     restoreRootShelvesMutator,
@@ -886,6 +975,15 @@ export const TransactionSynchronizerProvider = ({
 
   useEffect(() => {
     let cancelled = false;
+    if (!areLocalPreferencesReady) return;
+    if (!localVault) {
+      hasBootstrappedRef.current = false;
+      isSynchronizingRef.current = false;
+      setSynchronizationProgress(0);
+      setStatus("synchronized");
+      return;
+    }
+
     const bootstrap = async () => {
       if (hasBootstrappedRef.current || isBootstrappingRef.current) return;
       isBootstrappingRef.current = true;
@@ -978,13 +1076,20 @@ export const TransactionSynchronizerProvider = ({
     return () => {
       cancelled = true;
     };
-  }, [getTransactionCount, synchronizeTransactions]);
+  }, [
+    areLocalPreferencesReady,
+    localVault,
+    getTransactionCount,
+    synchronizeTransactions,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
 
     const synchronizeWhenOnline = async () => {
       if (
+        !areLocalPreferencesReady ||
+        !localVault ||
         !isOnline ||
         isSynchronizingRef.current ||
         isBootstrappingRef.current
@@ -1024,7 +1129,13 @@ export const TransactionSynchronizerProvider = ({
     return () => {
       cancelled = true;
     };
-  }, [isOnline, getTransactionCount, synchronizeTransactions]);
+  }, [
+    areLocalPreferencesReady,
+    localVault,
+    isOnline,
+    getTransactionCount,
+    synchronizeTransactions,
+  ]);
 
   return (
     <TransactionSynchronizerContext.Provider
@@ -1032,6 +1143,8 @@ export const TransactionSynchronizerProvider = ({
         status: status,
         synchronizationProgress: synchronizationProgress,
         getTransactionCount: getTransactionCount,
+        getTerminalTransactionCount: getTerminalTransactionCount,
+        clearTerminalTransactions: clearTerminalTransactions,
         synchronizeTransactions: synchronizeTransactions,
       }}
     >
