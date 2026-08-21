@@ -339,6 +339,14 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         clearYjsConfirm:
           "ローカル Yjs ドキュメント復元キャッシュを消去しますか？",
         clearYjsSuccess: "ローカル Yjs ドキュメントキャッシュを消去しました。",
+        terminalFailures: "同期に失敗したオフライン変更",
+        terminalFailuresDescription:
+          "これらの変更は再試行上限に達したため、自動再試行されません。",
+        transactions: "{{count}} 件の変更",
+        clearTerminalFailures: "失敗した変更を消去",
+        clearTerminalFailuresConfirm:
+          "失敗したオフライン変更を消去しますか？削除後は再試行できません。",
+        clearTerminalFailuresSuccess: "失敗したオフライン変更を消去しました。",
       },
       privacy: {
         title: "プライバシー",

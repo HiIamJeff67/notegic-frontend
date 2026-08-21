@@ -341,6 +341,14 @@ export const EnglishSettingsTranslation = {
           "Close active BlockPack editors before clearing the Yjs cache.",
         clearYjsConfirm: "Clear the local Yjs document recovery cache?",
         clearYjsSuccess: "Local Yjs document cache cleared.",
+        terminalFailures: "Failed offline changes",
+        terminalFailuresDescription:
+          "These changes reached the retry limit and will not retry automatically.",
+        transactions: "{{count}} changes",
+        clearTerminalFailures: "Clear failed changes",
+        clearTerminalFailuresConfirm:
+          "Clear failed offline changes? They cannot be retried after removal.",
+        clearTerminalFailuresSuccess: "Failed offline changes cleared.",
       },
       privacy: {
         title: "Privacy",

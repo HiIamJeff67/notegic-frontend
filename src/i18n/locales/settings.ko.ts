@@ -331,6 +331,14 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "Yjs 캐시를 지우기 전에 활성 BlockPack 편집기를 닫으세요.",
         clearYjsConfirm: "로컬 Yjs 문서 복구 캐시를 지울까요?",
         clearYjsSuccess: "로컬 Yjs 문서 캐시를 지웠습니다.",
+        terminalFailures: "동기화에 실패한 오프라인 변경 사항",
+        terminalFailuresDescription:
+          "이 변경 사항은 재시도 한도에 도달하여 자동으로 다시 시도되지 않습니다.",
+        transactions: "변경 사항 {{count}}개",
+        clearTerminalFailures: "실패한 변경 사항 지우기",
+        clearTerminalFailuresConfirm:
+          "실패한 오프라인 변경 사항을 지울까요? 삭제 후에는 다시 시도할 수 없습니다.",
+        clearTerminalFailuresSuccess: "실패한 오프라인 변경 사항을 지웠습니다.",
       },
       privacy: {
         title: "개인정보 보호",

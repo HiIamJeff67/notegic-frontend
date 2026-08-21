@@ -87,6 +87,28 @@
   --loading-logo-ghost-opacity: 0.84;
 }
 
+/* Keep editor suggestion menus borderless with a theme-independent black shadow. */
+.notegic-block-editor .bn-suggestion-menu,
+.notegic-block-editor .bn-grid-suggestion-menu {
+  border: none !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 28%) !important;
+}
+
+/* Let a short final paragraph scroll to the top of the ArticleContent viewport. */
+.article-content {
+  --article-scroll-tail: 12rem;
+}
+
+.article-content > section[data-article-level="0"]:nth-last-child(2) {
+  min-height: max(0px, calc(100% - var(--article-scroll-tail)));
+}
+
+@media (min-width: 64rem) {
+  .article-content {
+    --article-scroll-tail: 14rem;
+  }
+}
+
 html[data-density="comfortable"] {
   --density-control-height: 2.5rem;
   --density-control-padding-x: 1rem;

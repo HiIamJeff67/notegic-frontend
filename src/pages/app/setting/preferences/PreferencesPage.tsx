@@ -103,7 +103,7 @@ const PreferencesPage = ({
       >
         {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
       </Button>
-      <Article className="gap-0 overflow-x-hidden p-[var(--density-content-padding)] lg:gap-0">
+      <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
           paragraphBaseHeight={12}
@@ -112,7 +112,7 @@ const PreferencesPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="my-[var(--density-content-padding)] mx-0 pb-[calc(var(--density-content-padding)+2rem)] lg:m-[var(--density-content-padding)] [&>[role=separator]]:my-10">
+        <ArticleContent className="m-0 pb-[calc(var(--density-content-padding)+2rem)] [&>[role=separator]]:my-10">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}

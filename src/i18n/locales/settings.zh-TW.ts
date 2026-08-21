@@ -310,6 +310,13 @@ export const TraditionalChineseSettingsTranslation = {
         activeEditors: "請先關閉使用中的 BlockPack 編輯器，再清除 Yjs 快取。",
         clearYjsConfirm: "要清除本機 Yjs 文件復原快取嗎？",
         clearYjsSuccess: "本機 Yjs 文件快取已清除。",
+        terminalFailures: "同步失敗的離線變更",
+        terminalFailuresDescription: "這些變更已達重試上限，不會再自動重試。",
+        transactions: "{{count}} 筆變更",
+        clearTerminalFailures: "清除失敗變更",
+        clearTerminalFailuresConfirm:
+          "要清除失敗的離線變更嗎？移除後無法再重試。",
+        clearTerminalFailuresSuccess: "失敗的離線變更已清除。",
       },
       privacy: {
         title: "隱私",

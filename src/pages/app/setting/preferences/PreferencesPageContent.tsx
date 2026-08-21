@@ -1,3 +1,4 @@
+import { estimateMaterialAttachmentCache } from "@shared/api/local/material-attachment.cache";
 import { LocalYjsDocumentStore } from "@shared/blockpack/core";
 import { AllLanguageData } from "@shared/constants";
 import {
@@ -23,6 +24,8 @@ import type { Density, EditorWidth } from "@/hooks/localPreferences";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRealtime } from "@/hooks/useRealtime";
+import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
+import { useUser } from "@/hooks/useUser";
 import { Section, SettingRow, SwitchRow } from "./tabs/PreferenceRows";
 
 const formatStorageSize = (bytes = 0) => {
@@ -284,54 +287,40 @@ const OfflineSettings = () => {
   } = useLocalPreferences();
   const backgroundImages = useBackgroundImages();
   const { activeBlockPackChannelCount } = useRealtime();
+  const { getTerminalTransactionCount, clearTerminalTransactions } =
+    useTransactionSynchronizer();
+  const { userData } = useUser();
   const { t } = useTranslation();
   const [backgroundCache, setBackgroundCache] = useState({
     totalBytes: 0,
     count: 0,
   });
   const [yjsCache, setYjsCache] = useState({ totalSize: 0, count: 0 });
+  const [attachmentCache, setAttachmentCache] = useState({
+    totalSize: 0,
+    count: 0,
+  });
+  const [terminalTransactionCount, setTerminalTransactionCount] = useState(0);
 
   const refreshCacheUsage = useCallback(async () => {
-    const [backgroundEstimate, yjsEstimate] = await Promise.all([
-      backgroundImages.getCacheEstimate(),
-      LocalYjsDocumentStore.estimate(),
-    ]);
+    const [backgroundEstimate, yjsEstimate, attachmentEstimate] =
+      await Promise.all([
+        backgroundImages.getCacheEstimate(),
+        LocalYjsDocumentStore.estimate(userData?.publicId ?? null),
+        estimateMaterialAttachmentCache(),
+      ]);
     setBackgroundCache({
       totalBytes: backgroundEstimate.totalBytes,
       count: backgroundEstimate.count,
     });
     setYjsCache(yjsEstimate);
-  }, [backgroundImages]);
+    setAttachmentCache(attachmentEstimate);
+    setTerminalTransactionCount(await getTerminalTransactionCount());
+  }, [backgroundImages, getTerminalTransactionCount, userData?.publicId]);
 
   useEffect(() => {
     void refreshCacheUsage();
   }, [refreshCacheUsage]);
-
-  const clearUnusedBackgroundImages = async () => {
-    await backgroundImages.clearUnused();
-    await refreshCacheUsage();
-    toast.success(t("settingsPage.preferences.offline.clearUnusedSuccess"));
-  };
-
-  const clearAllBackgroundImages = async () => {
-    if (!window.confirm(t("settingsPage.preferences.offline.clearAllConfirm")))
-      return;
-    await backgroundImages.clearAll();
-    await refreshCacheUsage();
-    toast.success(t("settingsPage.preferences.offline.clearAllSuccess"));
-  };
-
-  const clearLocalYjsDocuments = async () => {
-    if (activeBlockPackChannelCount > 0) {
-      toast.error(t("settingsPage.preferences.offline.activeEditors"));
-      return;
-    }
-    if (!window.confirm(t("settingsPage.preferences.offline.clearYjsConfirm")))
-      return;
-    await LocalYjsDocumentStore.clear();
-    await refreshCacheUsage();
-    toast.success(t("settingsPage.preferences.offline.clearYjsSuccess"));
-  };
 
   return (
     <>
@@ -384,6 +373,14 @@ const OfflineSettings = () => {
               {formatStorageSize(backgroundCache.totalBytes)}
             </div>
           </div>
+          <div>
+            <div className="text-muted-foreground">
+              {t("settingsPage.preferences.offline.attachmentCache")}
+            </div>
+            <div className="mt-1 font-medium">
+              {formatStorageSize(attachmentCache.totalSize)}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -413,20 +410,32 @@ const OfflineSettings = () => {
           onCheckedChange={checked =>
             updatePreference("cacheAttachments", checked)
           }
-          unsupportedReason={t("settingsPage.preferences.offline.pending")}
         />
         <SettingRow
           title={t("settingsPage.preferences.offline.cleanupPeriod")}
           description={t(
             "settingsPage.preferences.offline.cleanupPeriodDescription"
           )}
-          unsupportedReason={t("settingsPage.preferences.offline.pending")}
         >
-          <span className="text-sm font-semibold">
-            {t("settingsPage.preferences.offline.cleanupDays", {
-              count: preferences.cleanupAfterDays,
-            })}
-          </span>
+          <Select
+            value={String(preferences.cleanupAfterDays)}
+            onValueChange={value =>
+              updatePreference("cleanupAfterDays", Number(value))
+            }
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[7, 30, 90, 180, 365].map(days => (
+                <SelectItem key={days} value={String(days)}>
+                  {t("settingsPage.preferences.offline.cleanupDays", {
+                    count: days,
+                  })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </SettingRow>
         <SettingRow
           title={t("settingsPage.preferences.offline.yjsCache")}
@@ -447,12 +456,73 @@ const OfflineSettings = () => {
               size="sm"
               className="h-8 px-3 text-xs"
               disabled={activeBlockPackChannelCount > 0}
-              onClick={clearLocalYjsDocuments}
+              onClick={async () => {
+                if (activeBlockPackChannelCount > 0) {
+                  toast.error(
+                    t("settingsPage.preferences.offline.activeEditors")
+                  );
+                  return;
+                }
+                if (
+                  !window.confirm(
+                    t("settingsPage.preferences.offline.clearYjsConfirm")
+                  )
+                ) {
+                  return;
+                }
+                await LocalYjsDocumentStore.clear(userData?.publicId ?? null);
+                await refreshCacheUsage();
+                toast.success(
+                  t("settingsPage.preferences.offline.clearYjsSuccess")
+                );
+              }}
             >
               {t("settingsPage.preferences.offline.clear")}
             </Button>
           </div>
         </SettingRow>
+        {terminalTransactionCount > 0 && (
+          <SettingRow
+            title={t("settingsPage.preferences.offline.terminalFailures")}
+            description={t(
+              "settingsPage.preferences.offline.terminalFailuresDescription"
+            )}
+          >
+            <div className="flex flex-col items-end gap-2">
+              <span className="text-xs text-muted-foreground">
+                {t("settingsPage.preferences.offline.transactions", {
+                  count: terminalTransactionCount,
+                })}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs"
+                onClick={async () => {
+                  if (
+                    !window.confirm(
+                      t(
+                        "settingsPage.preferences.offline.clearTerminalFailuresConfirm"
+                      )
+                    )
+                  ) {
+                    return;
+                  }
+                  await clearTerminalTransactions();
+                  await refreshCacheUsage();
+                  toast.success(
+                    t(
+                      "settingsPage.preferences.offline.clearTerminalFailuresSuccess"
+                    )
+                  );
+                }}
+              >
+                {t("settingsPage.preferences.offline.clearTerminalFailures")}
+              </Button>
+            </div>
+          </SettingRow>
+        )}
         <SettingRow
           title={t("settingsPage.preferences.offline.backgroundCache")}
           description={t(
@@ -473,7 +543,13 @@ const OfflineSettings = () => {
                 variant="outline"
                 size="sm"
                 className="h-8 px-3 text-xs"
-                onClick={clearUnusedBackgroundImages}
+                onClick={async () => {
+                  await backgroundImages.clearUnused();
+                  await refreshCacheUsage();
+                  toast.success(
+                    t("settingsPage.preferences.offline.clearUnusedSuccess")
+                  );
+                }}
               >
                 {t("settingsPage.preferences.offline.clearUnused")}
               </Button>
@@ -482,7 +558,20 @@ const OfflineSettings = () => {
                 variant="destructive"
                 size="sm"
                 className="h-8 px-3 text-xs"
-                onClick={clearAllBackgroundImages}
+                onClick={async () => {
+                  if (
+                    !window.confirm(
+                      t("settingsPage.preferences.offline.clearAllConfirm")
+                    )
+                  ) {
+                    return;
+                  }
+                  await backgroundImages.clearAll();
+                  await refreshCacheUsage();
+                  toast.success(
+                    t("settingsPage.preferences.offline.clearAllSuccess")
+                  );
+                }}
               >
                 {t("settingsPage.preferences.offline.clearAll")}
               </Button>

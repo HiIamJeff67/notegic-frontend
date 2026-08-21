@@ -308,6 +308,13 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         activeEditors: "清除 Yjs 缓存前，请先关闭正在使用的 BlockPack 编辑器。",
         clearYjsConfirm: "要清除本地 Yjs 文档恢复缓存吗？",
         clearYjsSuccess: "已清除本地 Yjs 文档缓存。",
+        terminalFailures: "同步失败的离线变更",
+        terminalFailuresDescription: "这些变更已达到重试上限，不会再自动重试。",
+        transactions: "{{count}} 条变更",
+        clearTerminalFailures: "清除失败变更",
+        clearTerminalFailuresConfirm:
+          "要清除失败的离线变更吗？移除后无法再重试。",
+        clearTerminalFailuresSuccess: "失败的离线变更已清除。",
       },
       privacy: {
         title: "隐私",
