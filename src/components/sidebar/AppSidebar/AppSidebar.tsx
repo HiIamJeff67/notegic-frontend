@@ -9,9 +9,7 @@ import {
   FileTextIcon,
   LayoutDashboardIcon,
   LogOutIcon,
-  MessageSquareIcon,
   PlusIcon,
-  Repeat2Icon,
   SettingsIcon,
   SlidersHorizontalIcon,
   TagIcon,
@@ -177,20 +175,6 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   {isSidebarExpanded && (
                     <span className="truncate">
                       {t("workspace.navigation.routines")}
-                    </span>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-sm">
-                <SidebarMenuButton
-                  className={`w-full flex ${
-                    isSidebarExpanded ? "justify-start" : "justify-center"
-                  } items-center select-none hover:bg-primary`}
-                >
-                  <MessageSquareIcon />
-                  {isSidebarExpanded && (
-                    <span className="truncate">
-                      {t("workspace.navigation.community")}
                     </span>
                   )}
                 </SidebarMenuButton>
@@ -429,10 +413,6 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   <DropdownMenuLabel>
                     {t("workspace.navigation.account")}
                   </DropdownMenuLabel>
-                  <DropdownMenuItem>
-                    <Repeat2Icon />
-                    <span>{t("auth.switchAccount")}</span>
-                  </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
                     onSelect={async () => {
@@ -514,10 +494,6 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                     <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
                       {t("workspace.navigation.account")}
                     </MenubarLabel>
-                    <MenubarItem className="cursor-pointer">
-                      <Repeat2Icon />
-                      <span>{t("auth.switchAccount")}</span>
-                    </MenubarItem>
                     <MenubarItem
                       className="cursor-pointer text-destructive focus:text-destructive"
                       onSelect={async () => {

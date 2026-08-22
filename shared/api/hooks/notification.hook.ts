@@ -11,7 +11,6 @@ import type {
   ListNotificationsResponse,
   MarkNotificationsReadRequest,
   MarkNotificationsReadResponse,
-  Notification,
 } from "@shared/api/interfaces/notification.interface";
 import {
   mutationFnDeleteNotifications,
@@ -25,23 +24,6 @@ import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import type { InfiniteData } from "@tanstack/react-query";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-
-const persistCSRFToken = (response: {
-  refreshableTokens?: { newCSRFToken?: string };
-  embedded?: { publicId?: string };
-}) => {
-  if (!response.refreshableTokens?.newCSRFToken) return;
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    response.refreshableTokens.newCSRFToken,
-    response.embedded?.publicId
-  );
-};
-
-const notificationRetryPolicy = (failureCount: number, error: Error) =>
-  failureCount < 1 &&
-  error instanceof NotegicAPIError &&
-  error.unWrap.retryable === true;
 
 export const useNotifications = (enabled = true) =>
   useInfiniteQuery<
@@ -68,7 +50,10 @@ export const useNotifications = (enabled = true) =>
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     networkMode: "always",
-    retry: notificationRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
     enabled,
   });
 
@@ -83,7 +68,10 @@ export const useUnreadNotificationCount = (enabled = true) =>
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     networkMode: "always",
-    retry: notificationRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
     enabled,
   });
 
@@ -100,7 +88,10 @@ export const useMarkNotificationsRead = () => {
         header: getClientMutationHeaders(),
       }),
     onSuccess: response => {
-      persistCSRFToken(response);
+      SessionStorageManipulator.ensureItem(
+        SessionStorageKey.csrfToken,
+        response.refreshableTokens?.newCSRFToken
+      );
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),
       });
@@ -108,7 +99,10 @@ export const useMarkNotificationsRead = () => {
         queryKey: queryKeys.notification.unreadCount(),
       });
     },
-    retry: notificationRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
   });
 };
 
@@ -125,7 +119,10 @@ export const useDeleteNotifications = () => {
         header: getClientMutationHeaders(),
       }),
     onSuccess: response => {
-      persistCSRFToken(response);
+      SessionStorageManipulator.ensureItem(
+        SessionStorageKey.csrfToken,
+        response.refreshableTokens?.newCSRFToken
+      );
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),
       });
@@ -133,59 +130,9 @@ export const useDeleteNotifications = () => {
         queryKey: queryKeys.notification.unreadCount(),
       });
     },
-    retry: notificationRetryPolicy,
-  });
-};
-
-export const mergeRealtimeNotificationIntoCache = (
-  notification: Notification
-) => {
-  const queryClient = getQueryClient();
-  queryClient.setQueryData<InfiniteData<ListNotificationsResponse>>(
-    queryKeys.notification.list(),
-    current => {
-      if (!current || current.pages.length === 0) return current;
-      if (
-        current.pages.some(page =>
-          page.data.searchEdges.some(edge => edge.node.id === notification.id)
-        )
-      ) {
-        return current;
-      }
-      const [firstPage, ...restPages] = current.pages;
-      return {
-        ...current,
-        pages: [
-          {
-            ...firstPage,
-            data: {
-              ...firstPage.data,
-              searchEdges: [
-                {
-                  // Client-inserted entries are never used as pagination cursors.
-                  encodedSearchCursor: notification.id,
-                  node: notification,
-                },
-                ...firstPage.data.searchEdges,
-              ],
-            },
-          },
-          ...restPages,
-        ],
-      };
-    }
-  );
-  void queryClient.invalidateQueries({
-    queryKey: queryKeys.notification.unreadCount(),
-  });
-};
-
-export const refetchNotifications = () => {
-  const queryClient = getQueryClient();
-  void queryClient.invalidateQueries({
-    queryKey: queryKeys.notification.list(),
-  });
-  void queryClient.invalidateQueries({
-    queryKey: queryKeys.notification.unreadCount(),
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
   });
 };

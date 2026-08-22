@@ -43,7 +43,6 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
     login: "登入",
     register: "註冊",
     resetPassword: "重設密碼",
-    switchAccount: "切換帳號",
     logout: "登出",
     account: "帳號",
     name: "名稱",

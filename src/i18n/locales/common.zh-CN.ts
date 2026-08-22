@@ -43,7 +43,6 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     login: "登录",
     register: "注册",
     resetPassword: "重置密码",
-    switchAccount: "切换账号",
     logout: "登出",
     account: "账号",
     name: "姓名",

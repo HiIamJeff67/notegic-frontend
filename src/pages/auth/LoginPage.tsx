@@ -1,6 +1,5 @@
 import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useLogin } from "@shared/api/hooks/auth.hook";
-import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import toast from "@shared/lib/toast";
@@ -46,13 +45,10 @@ const LoginPage = () => {
             },
           });
 
-          const responseOfGettingUserData = await queryFnGetUserData({
-            header: getClientRequestHeaders(userAgent),
-          });
+          await userManager.fetchUserData();
 
           setAccount("");
           setPassword("");
-          userManager.setUserData(responseOfGettingUserData.data);
           router.push(getPreferredStartPath(preferences));
         } catch (error) {
           setPassword("");
@@ -66,7 +62,7 @@ const LoginPage = () => {
   return (
     <GridBackground>
       <Suspense fallback={<StrictLoadingCover />}>
-        <StrictLoadingCover condition={loginMutator.isPending} />
+        <StrictLoadingCover condition={isLoginPending} />
         <AuthPanel
           title={t("auth.login")}
           subtitle={`${t(

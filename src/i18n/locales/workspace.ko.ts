@@ -4,7 +4,6 @@ export const KoreanWorkspaceTranslation = {
   navigation: {
     dashboard: "대시보드",
     routines: "루틴",
-    community: "커뮤니티",
     shelves: "선반",
     stations: "스테이션",
     routineTags: "루틴 태그",
@@ -554,6 +553,7 @@ export const KoreanWorkspaceTranslation = {
     redirectError: "리디렉션 오류",
     redirectUnknown: "리디렉션 중 알 수 없는 오류가 발생했습니다.",
     validatingGoogle: "Google 인증 확인 중…",
+    redirectingToDashboard: "대시보드로 리디렉션 중…",
     xRedirectUnavailable: "X 인증은 아직 사용할 수 없습니다.",
     contactUs: "문의하기",
     goBack: "돌아가기",
@@ -585,16 +585,24 @@ export const KoreanWorkspaceTranslation = {
       createdContent: "노트와 문서 등 사용자가 만든 콘텐츠",
       usageData: "방문 페이지와 사용 기능 등의 이용 데이터",
       deviceInfo: "기기 및 브라우저 정보",
+      collectDetails:
+        "서비스를 운영하고 보호하며 개선하는 데 필요한 정보만 수집합니다. 일부 정보는 사용자가 제공하고, 일부 기술 정보는 애플리케이션이 실행될 때 자동으로 생성될 수 있습니다.",
       useTitle: "2. 정보 이용 방법",
       provideService: "Notegic 서비스 제공 및 유지",
       improveExperience: "사용자 경험 개선",
       communicateUpdates: "업데이트 안내",
+      useDetails:
+        "계정 인증, 콘텐츠 저장 및 동기화, 협업 지원, 오류 진단, 악용 방지, 제품 개선점 파악 등에 사용합니다. 개인 메모를 광고 자료로 사용하지 않습니다.",
       sharingTitle: "3. 데이터 공유",
       sharingText:
         "개인 데이터를 판매하지 않습니다. 서비스 운영에 필요한 경우에만 인증 제공업체 등 제3자 서비스와 데이터를 공유할 수 있습니다.",
+      sharingDetails:
+        "호스팅, 인증, 저장, 이메일 전송, 분석 또는 보안을 위해 서비스 제공업체가 당사를 대신하여 정보를 처리할 수 있습니다. 업무에 필요한 범위의 접근만 허용하며 정보를 보호하도록 요구합니다. 법적 의무 또는 서비스와 사용자를 보호하기 위해 필요한 정보를 공개할 수도 있습니다.",
       retentionTitle: "4. 데이터 보관",
       retentionText:
         "계정이 활성화된 동안 데이터를 보관합니다. 언제든지 문의하여 삭제를 요청할 수 있습니다.",
+      retentionDetails:
+        "콘텐츠를 삭제하거나 계정을 닫으면 합리적인 기간 내에 활성 시스템에서 삭제합니다. 단, 백업, 사기 방지, 분쟁 처리 또는 기타 법적 의무로 인해 남을 수 있습니다. 백업은 제한된 기간 후 안전하게 덮어씁니다.",
       rightsTitle: "5. 사용자의 권리",
       rightsText:
         "개인 데이터 열람, 수정 또는 삭제를 요청할 수 있습니다. <email>{{email}}</email>로 문의하세요.",
@@ -603,11 +611,18 @@ export const KoreanWorkspaceTranslation = {
       cookiesTitle: "6. 쿠키",
       cookiesText:
         "세션과 환경설정을 유지하기 위해 쿠키와 로컬 저장소를 사용합니다.",
+      cookiesDetails:
+        "로그인 유지, 표시 설정 기억, 요청 보호, 오프라인 또는 로컬 우선 기능 지원에 사용됩니다. 브라우저에서 삭제하거나 차단할 수 있지만 Notegic의 일부 기능이 제대로 작동하지 않을 수 있습니다.",
       changesTitle: "7. 방침 변경",
       changesText:
         "이 방침은 수시로 업데이트될 수 있으며 중요한 변경 사항은 앱에서 안내합니다.",
+      changesDetails:
+        "페이지 상단의 시행일이 현재 버전을 나타냅니다. 권리 또는 정보 처리 방식에 중대한 영향을 주는 변경은 더 눈에 띄게 알리고, 법에서 요구하는 경우 동의를 요청합니다.",
       contactTitle: "8. 문의",
       contactText: "질문이 있다면 <email>{{email}}</email>로 문의하세요.",
+      contactDetails:
+        "개인 데이터에 대해 문의할 때는 계정에 등록된 이메일 주소를 사용해 주세요. 합리적인 기간 내에 답변하며, 요청자 확인을 위해 추가 정보를 요청할 수 있습니다.",
+      viewEula: "최종 사용자 라이선스 계약(EULA) 보기",
     },
   },
   dialogs: {

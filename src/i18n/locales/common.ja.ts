@@ -43,7 +43,6 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     login: "ログイン",
     register: "登録",
     resetPassword: "パスワード再設定",
-    switchAccount: "アカウントを切り替える",
     logout: "ログアウト",
     account: "アカウント",
     name: "名前",

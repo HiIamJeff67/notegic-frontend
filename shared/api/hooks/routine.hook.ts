@@ -1,18 +1,24 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
   NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  FragmentedBasicPrivateSearchableRoutineFragmentDoc,
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineStatus as GraphQLRoutineStatus,
-} from "@shared/api/graphql/generated/graphql";
+  patchSearchRoutine,
+  patchSearchRoutineIdList,
+  patchSearchRoutineTaskRoutineIds,
+  removeSearchRoutines,
+  upsertSearchRoutine,
+} from "@shared/api/graphql/cache";
+import {
+  toGraphQLRoutinePeriod,
+  toGraphQLRoutineStatus,
+} from "@shared/api/graphql/conversions";
 import type {
   CreateRoutineByStationIdRequest,
   CreateRoutinesByStationIdsRequest,
@@ -85,294 +91,6 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
-
-const getSearchInput = (storeFieldName: string) => {
-  const start = storeFieldName.indexOf("(");
-  if (start === -1) return undefined;
-  try {
-    return JSON.parse(storeFieldName.slice(start + 1, -1)).input;
-  } catch {
-    return undefined;
-  }
-};
-
-const toGraphQLRoutineStatus = (status?: string | null) =>
-  status
-    ? {
-        Scheduled: GraphQLRoutineStatus.RoutineStatusScheduled,
-        InProgress: GraphQLRoutineStatus.RoutineStatusInProgress,
-        Completed: GraphQLRoutineStatus.RoutineStatusCompleted,
-        OverDue: GraphQLRoutineStatus.RoutineStatusOverDue,
-      }[status]
-    : GraphQLRoutineStatus.RoutineStatusScheduled;
-
-const toGraphQLRoutinePeriod = (period?: string | null) =>
-  period
-    ? {
-        Daily: GraphQLRoutinePeriod.RoutinePeriodDaily,
-        Weekly: GraphQLRoutinePeriod.RoutinePeriodWeekly,
-        Monthly: GraphQLRoutinePeriod.RoutinePeriodMonthly,
-      }[period]
-    : null;
-
-const toSearchRoutinePatch = (values: Record<string, any>, updatedAt: Date) => {
-  const patch: Record<string, any> = { updatedAt };
-  for (const key of [
-    "stationId",
-    "title",
-    "isPinned",
-    "scheduledStartAt",
-    "scheduledEndAt",
-    "timezone",
-  ]) {
-    if (values[key] !== undefined) patch[key] = values[key];
-  }
-  if (values.status !== undefined)
-    patch.status = toGraphQLRoutineStatus(values.status);
-  if (values.period !== undefined)
-    patch.period = toGraphQLRoutinePeriod(values.period);
-  return patch;
-};
-
-const routineMatchesSearchInput = (routine: any, input: any) => {
-  const query = input?.query?.trim().toLowerCase();
-  const stationIds = input?.stationIds ?? [];
-  const tagIds = input?.tagIds ?? [];
-  if (query && !routine.title.toLowerCase().includes(query)) return false;
-  if (stationIds.length > 0 && !stationIds.includes(routine.stationId))
-    return false;
-  if (
-    tagIds.length > 0 &&
-    !tagIds.some((tagId: string) => routine.tagIds.includes(tagId))
-  )
-    return false;
-  return true;
-};
-
-const upsertSearchRoutine = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routine: any
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutines(existing, { readField, storeFieldName }) {
-        if (!existing?.searchEdges) return existing;
-        const input = getSearchInput(storeFieldName);
-        if (input?.after) return existing;
-        if (!routineMatchesSearchInput(routine, input)) return existing;
-
-        const existed = existing.searchEdges.some(
-          (edge: any) => readField("id", edge.node) === routine.id
-        );
-        const edges = existing.searchEdges.filter(
-          (edge: any) => readField("id", edge.node) !== routine.id
-        );
-        const nextEdges = [
-          {
-            __typename: "SearchRoutineEdge",
-            encodedSearchCursor: routine.id,
-            node: routine,
-          },
-          ...edges,
-        ];
-        return {
-          ...existing,
-          totalCount: existed
-            ? (existing.totalCount ?? nextEdges.length)
-            : Math.max(existing.totalCount ?? 0, edges.length) + 1,
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
-
-const patchSearchRoutine = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineId: string,
-  patch: any
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutines(existing, { readField, storeFieldName }) {
-        if (!existing?.searchEdges) return existing;
-        const input = getSearchInput(storeFieldName);
-        const nextEdges = existing.searchEdges.flatMap((edge: any) => {
-          if (readField("id", edge.node) !== routineId) return [edge];
-          const node = {
-            ...edge.node,
-            id: routineId,
-            stationId: readField("stationId", edge.node),
-            title: readField("title", edge.node),
-            tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
-            ...patch,
-          };
-          return routineMatchesSearchInput(node, input)
-            ? [{ ...edge, node }]
-            : [];
-        });
-        return {
-          ...existing,
-          totalCount: Math.max(
-            0,
-            (existing.totalCount ?? nextEdges.length) -
-              (existing.searchEdges.length - nextEdges.length)
-          ),
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
-
-const patchSearchRoutineIdList = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineId: string,
-  fieldName: "tagIds" | "taskIds" | "itemIds",
-  value: string,
-  isRemove: boolean
-) => {
-  const cachedRoutine = apolloClient.cache.readFragment<any>({
-    id: apolloClient.cache.identify({
-      __typename: "PrivateSearchableRoutine",
-      id: routineId,
-    }),
-    fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
-  });
-  const currentIds = (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
-  const nextIds = isRemove
-    ? currentIds.filter(id => id !== value)
-    : Array.from(new Set([...currentIds, value]));
-  const patchedRoutine = cachedRoutine
-    ? { ...cachedRoutine, [fieldName]: nextIds }
-    : null;
-
-  const cacheId = apolloClient.cache.identify({
-    __typename: "PrivateSearchableRoutine",
-    id: routineId,
-  });
-  if (cacheId) {
-    apolloClient.cache.modify({
-      id: cacheId,
-      fields: {
-        [fieldName](existing: any = []) {
-          return isRemove
-            ? existing.filter((id: string) => id !== value)
-            : Array.from(new Set([...existing, value]));
-        },
-      },
-    });
-  }
-
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutines(existing, { readField, storeFieldName, toReference }) {
-        if (!existing?.searchEdges) return existing;
-        const input = getSearchInput(storeFieldName);
-        let existed = false;
-        const nextEdges = existing.searchEdges.flatMap((edge: any) => {
-          if (readField("id", edge.node) !== routineId) return [edge];
-          existed = true;
-          const current = (readField(fieldName, edge.node) as string[]) ?? [];
-          const node = patchedRoutine ?? {
-            ...edge.node,
-            id: routineId,
-            stationId: readField("stationId", edge.node),
-            title: readField("title", edge.node),
-            tagIds:
-              fieldName === "tagIds"
-                ? isRemove
-                  ? current.filter(id => id !== value)
-                  : Array.from(new Set([...current, value]))
-                : ((readField("tagIds", edge.node) as string[]) ?? []),
-          };
-          return routineMatchesSearchInput(node, input)
-            ? [
-                {
-                  ...edge,
-                  node: patchedRoutine
-                    ? (toReference(patchedRoutine, true) ?? patchedRoutine)
-                    : node,
-                },
-              ]
-            : [];
-        });
-        if (
-          !existed &&
-          patchedRoutine &&
-          routineMatchesSearchInput(patchedRoutine, input)
-        ) {
-          nextEdges.unshift({
-            __typename: "SearchRoutineEdge",
-            encodedSearchCursor: routineId,
-            node: toReference(patchedRoutine, true) ?? patchedRoutine,
-          });
-        }
-        return {
-          ...existing,
-          totalCount:
-            (existing.totalCount ?? existing.searchEdges.length) +
-            nextEdges.length -
-            existing.searchEdges.length,
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
-
-const patchSearchRoutineTaskRoutineIds = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineTaskId: string,
-  routineId: string,
-  isRemove: boolean
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutineTasks(existing, { readField }) {
-        if (!existing?.searchEdges) return existing;
-        return {
-          ...existing,
-          searchEdges: existing.searchEdges.map((edge: any) => {
-            if (readField("id", edge.node) !== routineTaskId) return edge;
-            const current =
-              (readField("routineIds", edge.node) as string[]) ?? [];
-            const routineIds = isRemove
-              ? current.filter(id => id !== routineId)
-              : Array.from(new Set([...current, routineId]));
-            return { ...edge, node: { ...edge.node, routineIds } };
-          }),
-        };
-      },
-    },
-  });
-};
-
-const removeSearchRoutines = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineIds: string[]
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutines(existing, { readField }) {
-        if (!existing?.searchEdges) return existing;
-        const nextEdges = existing.searchEdges.filter(
-          (edge: any) =>
-            !routineIds.includes(readField("id", edge.node) as string)
-        );
-        return {
-          ...existing,
-          totalCount: Math.max(
-            0,
-            (existing.totalCount ?? nextEdges.length) -
-              (existing.searchEdges.length - nextEdges.length)
-          ),
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
 
 export const useVisualizeMyRoutineStatusCount = (
   request?: VisualizeMyRoutineStatusCountRequest,
@@ -467,8 +185,7 @@ export const useGetMyRoutineById = (
       const response = await queryFnGetMyRoutineById(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineLocalSynchronizer.syncGetMyRoutineById(response);
       return response;
@@ -544,8 +261,7 @@ export const useGetMyRoutinesByStationId = (
       const response = await queryFnGetMyRoutinesByStationId(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineLocalSynchronizer.syncGetMyRoutinesByStationId(response);
       return response;
@@ -621,8 +337,7 @@ export const useGetAllMyRoutinesByTimeRange = (
       const response = await queryFnGetAllMyRoutinesByTimeRange(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineLocalSynchronizer.syncGetAllMyRoutinesByTimeRange(response);
       return response;
@@ -747,8 +462,7 @@ export const useCreateRoutineByStationId = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -821,8 +535,7 @@ export const useCreateRoutinesByStationIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -907,8 +620,7 @@ export const useUpdateMyRoutineById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -918,11 +630,33 @@ export const useUpdateMyRoutineById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      patchSearchRoutine(
-        apolloClient,
-        request.body.routineId,
-        toSearchRoutinePatch(request.body.values, response.data.updatedAt)
-      );
+      patchSearchRoutine(apolloClient, request.body.routineId, {
+        updatedAt: response.data.updatedAt,
+        ...(request.body.values.stationId !== undefined && {
+          stationId: request.body.values.stationId,
+        }),
+        ...(request.body.values.title !== undefined && {
+          title: request.body.values.title,
+        }),
+        ...(request.body.values.isPinned !== undefined && {
+          isPinned: request.body.values.isPinned,
+        }),
+        ...(request.body.values.scheduledStartAt !== undefined && {
+          scheduledStartAt: request.body.values.scheduledStartAt,
+        }),
+        ...(request.body.values.scheduledEndAt !== undefined && {
+          scheduledEndAt: request.body.values.scheduledEndAt,
+        }),
+        ...(request.body.values.timezone !== undefined && {
+          timezone: request.body.values.timezone,
+        }),
+        ...(request.body.values.status !== undefined && {
+          status: toGraphQLRoutineStatus(request.body.values.status),
+        }),
+        ...(request.body.values.period !== undefined && {
+          period: toGraphQLRoutinePeriod(request.body.values.period),
+        }),
+      });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
       await RoutineLocalSynchronizer.syncUpdateMyRoutineById(request, response);
@@ -958,8 +692,7 @@ export const useUpdateMyRoutinesByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -971,11 +704,33 @@ export const useUpdateMyRoutinesByIds = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       for (const routine of request.body.updatedRoutines) {
-        patchSearchRoutine(
-          apolloClient,
-          routine.routineId,
-          toSearchRoutinePatch(routine.values, response.data.updatedAt)
-        );
+        patchSearchRoutine(apolloClient, routine.routineId, {
+          updatedAt: response.data.updatedAt,
+          ...(routine.values.stationId !== undefined && {
+            stationId: routine.values.stationId,
+          }),
+          ...(routine.values.title !== undefined && {
+            title: routine.values.title,
+          }),
+          ...(routine.values.isPinned !== undefined && {
+            isPinned: routine.values.isPinned,
+          }),
+          ...(routine.values.scheduledStartAt !== undefined && {
+            scheduledStartAt: routine.values.scheduledStartAt,
+          }),
+          ...(routine.values.scheduledEndAt !== undefined && {
+            scheduledEndAt: routine.values.scheduledEndAt,
+          }),
+          ...(routine.values.timezone !== undefined && {
+            timezone: routine.values.timezone,
+          }),
+          ...(routine.values.status !== undefined && {
+            status: toGraphQLRoutineStatus(routine.values.status),
+          }),
+          ...(routine.values.period !== undefined && {
+            period: toGraphQLRoutinePeriod(routine.values.period),
+          }),
+        });
       }
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -1015,8 +770,7 @@ export const useLinkRoutineTagById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1068,8 +822,7 @@ export const useLinkRoutineTagsByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1122,8 +875,7 @@ export const useLinkRoutineTaskById = () => {
     onSuccess: async (response, request: LinkRoutineTaskByIdRequest) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1163,8 +915,7 @@ export const useLinkRoutineTasksByIds = () => {
     onSuccess: async (response, request: LinkRoutineTasksByIdsRequest) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1218,8 +969,7 @@ export const useLinkRoutineItemById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1271,8 +1021,7 @@ export const useLinkRoutineItemsByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1330,8 +1079,7 @@ export const useRestoreMyRoutineById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1380,8 +1128,7 @@ export const useRestoreMyRoutinesByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1433,8 +1180,7 @@ export const useDeleteMyRoutineById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1481,8 +1227,7 @@ export const useDeleteMyRoutinesByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1534,8 +1279,7 @@ export const useHardDeleteMyRoutineById = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1585,8 +1329,7 @@ export const useHardDeleteMyRoutinesByIds = () => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routine.all(),

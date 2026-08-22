@@ -19,23 +19,6 @@ import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-const persistCSRFToken = (response: {
-  refreshableTokens?: { newCSRFToken?: string };
-  embedded?: { publicId?: string };
-}) => {
-  if (!response.refreshableTokens?.newCSRFToken) return;
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    response.refreshableTokens.newCSRFToken,
-    response.embedded?.publicId
-  );
-};
-
-const apiKeyRetryPolicy = (failureCount: number, error: Error) =>
-  failureCount < 1 &&
-  error instanceof NotegicAPIError &&
-  error.unWrap.retryable === true;
-
 export const useMyAPIKeys = (enabled = true) =>
   useQuery<ListMyAPIKeysResponse, Error>({
     queryKey: queryKeys.apiKey.my(),
@@ -47,7 +30,10 @@ export const useMyAPIKeys = (enabled = true) =>
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     networkMode: "always",
-    retry: apiKeyRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
     enabled,
   });
 
@@ -66,10 +52,16 @@ export const useCreateMyAPIKey = () => {
       });
     },
     onSuccess: response => {
-      persistCSRFToken(response);
+      SessionStorageManipulator.ensureItem(
+        SessionStorageKey.csrfToken,
+        response.refreshableTokens?.newCSRFToken
+      );
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
     },
-    retry: apiKeyRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
   });
 };
 
@@ -88,9 +80,15 @@ export const useRevokeMyAPIKey = () => {
       });
     },
     onSuccess: response => {
-      persistCSRFToken(response);
+      SessionStorageManipulator.ensureItem(
+        SessionStorageKey.csrfToken,
+        response.refreshableTokens?.newCSRFToken
+      );
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
     },
-    retry: apiKeyRetryPolicy,
+    retry: (failureCount, error) =>
+      failureCount < 1 &&
+      error instanceof NotegicAPIError &&
+      error.unWrap.retryable === true,
   });
 };

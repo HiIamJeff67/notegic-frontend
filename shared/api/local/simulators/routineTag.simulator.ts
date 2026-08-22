@@ -1,7 +1,5 @@
+import { toGraphQLSupportedIcon } from "@shared/api/graphql/conversions";
 import {
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineStatus as GraphQLRoutineStatus,
-  SupportedIcon as GraphQLSupportedIcon,
   type SearchRoutineTagInput,
   SearchRoutineTagSortBy,
   type SearchRoutineTagsQuery,
@@ -117,42 +115,7 @@ export class RoutineTagLocalSimulator {
     return {
       __typename: "SearchRoutineTagConnection",
       searchEdges: pagedTags.map(tag => {
-        const icon = (() => {
-          switch (tag.icon) {
-            case "📚":
-              return GraphQLSupportedIcon.SupportedIconBooks;
-            case "📅":
-              return GraphQLSupportedIcon.SupportedIconCalendar;
-            case "✅":
-              return GraphQLSupportedIcon.SupportedIconCheckMark;
-            case "⏰":
-              return GraphQLSupportedIcon.SupportedIconClock;
-            case "🔥":
-              return GraphQLSupportedIcon.SupportedIconFire;
-            case "📂":
-              return GraphQLSupportedIcon.SupportedIconFolderOpen;
-            case "😀":
-              return GraphQLSupportedIcon.SupportedIconGrinningFace;
-            case "💡":
-              return GraphQLSupportedIcon.SupportedIconLightbulb;
-            case "📓":
-              return GraphQLSupportedIcon.SupportedIconNotebook;
-            case "📝":
-              return GraphQLSupportedIcon.SupportedIconPencilPaper;
-            case "📌":
-              return GraphQLSupportedIcon.SupportedIconPin;
-            case "❤️":
-              return GraphQLSupportedIcon.SupportedIconRedHeart;
-            case "🚀":
-              return GraphQLSupportedIcon.SupportedIconRocket;
-            case "😊":
-              return GraphQLSupportedIcon.SupportedIconSmilingFaceWithSmilingEyes;
-            case "⭐":
-              return GraphQLSupportedIcon.SupportedIconStar;
-            default:
-              return null;
-          }
-        })();
+        const icon = toGraphQLSupportedIcon(tag.icon);
 
         return {
           __typename: "SearchRoutineTagEdge",

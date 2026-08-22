@@ -4,7 +4,6 @@ export const JapaneseWorkspaceTranslation = {
   navigation: {
     dashboard: "ダッシュボード",
     routines: "ルーティン",
-    community: "コミュニティ",
     shelves: "シェルフ",
     stations: "ステーション",
     routineTags: "ルーティンタグ",
@@ -562,6 +561,7 @@ export const JapaneseWorkspaceTranslation = {
     redirectError: "リダイレクトエラー",
     redirectUnknown: "リダイレクト中に不明なエラーが発生しました。",
     validatingGoogle: "Google 認証を確認中…",
+    redirectingToDashboard: "ダッシュボードにリダイレクト中…",
     xRedirectUnavailable: "X 認証はまだ利用できません。",
     contactUs: "お問い合わせ",
     goBack: "戻る",
@@ -594,16 +594,24 @@ export const JapaneseWorkspaceTranslation = {
       createdContent: "ノートやドキュメントなど、作成したコンテンツ",
       usageData: "閲覧ページや使用機能などの利用データ",
       deviceInfo: "デバイスとブラウザーの情報",
+      collectDetails:
+        "サービスの運用、保護、改善に必要な情報のみを収集します。情報の一部はユーザーが提供し、技術情報の一部はアプリケーションの実行時に自動的に生成されます。",
       useTitle: "2. 情報の利用目的",
       provideService: "Notegic サービスの提供と維持",
       improveExperience: "ユーザー体験の改善",
       communicateUpdates: "更新情報の案内",
+      useDetails:
+        "アカウント認証、コンテンツの保存と同期、共同作業のサポート、障害の診断、不正利用の防止、改善点の把握などに使用します。プライベートなノートを広告素材として使用することはありません。",
       sharingTitle: "3. データの共有",
       sharingText:
         "個人データを販売することはありません。サービス運営に必要な場合に限り、認証プロバイダーなどの第三者サービスとデータを共有することがあります。",
+      sharingDetails:
+        "ホスティング、認証、保存、メール配信、分析、セキュリティのため、サービス提供者が当社に代わって情報を処理することがあります。必要な作業に適した範囲の情報のみを提供し、適切な保護を求めます。法律上の義務やサービスとユーザーの保護のために開示する場合もあります。",
       retentionTitle: "4. データの保持",
       retentionText:
         "アカウントが有効な間、データを保持します。いつでもお問い合わせにより削除を依頼できます。",
+      retentionDetails:
+        "コンテンツを削除またはアカウントを閉鎖した場合、合理的な期間内に稼働中のシステムから削除します。ただし、バックアップ、不正防止、紛争処理、その他の法的義務のために残る場合があります。バックアップは限られた期間後に安全に上書きされます。",
       rightsTitle: "5. お客様の権利",
       rightsText:
         "個人データへのアクセス、訂正、削除を求めることができます。<email>{{email}}</email> までご連絡ください。",
@@ -612,12 +620,19 @@ export const JapaneseWorkspaceTranslation = {
       cookiesTitle: "6. Cookie",
       cookiesText:
         "セッションと設定を維持するため、Cookie とローカルストレージを使用します。",
+      cookiesDetails:
+        "ログイン状態の維持、表示設定の記憶、リクエストの保護、オフラインまたはローカル優先機能のサポートに役立ちます。ブラウザで削除またはブロックできますが、一部の機能が正常に動作しなくなることがあります。",
       changesTitle: "7. ポリシーの変更",
       changesText:
         "本ポリシーを随時更新する場合があります。重要な変更はアプリ内でお知らせします。",
+      changesDetails:
+        "ページ上部の発効日が現在のバージョンを示します。権利や情報の取り扱いに重大な影響がある変更については、より目立つ通知を行い、必要な場合は同意を求めます。",
       contactTitle: "8. お問い合わせ",
       contactText:
         "ご質問は <email>{{email}}</email> までお問い合わせください。",
+      contactDetails:
+        "個人データについて問い合わせる際は、アカウントに登録されたメールアドレスを使用してください。合理的な期間内に回答しますが、本人確認のため追加情報をお願いする場合があります。",
+      viewEula: "エンドユーザー使用許諾契約（EULA）を見る",
     },
   },
   dialogs: {

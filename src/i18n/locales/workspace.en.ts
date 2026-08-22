@@ -2,7 +2,6 @@ export const EnglishWorkspaceTranslation = {
   navigation: {
     dashboard: "Dashboard",
     routines: "Routines",
-    community: "Community",
     shelves: "Shelves",
     stations: "Stations",
     routineTags: "Routine tags",
@@ -557,6 +556,7 @@ export const EnglishWorkspaceTranslation = {
     redirectError: "Redirect error",
     redirectUnknown: "An unknown error occurred during redirect.",
     validatingGoogle: "Validating Google authentication...",
+    redirectingToDashboard: "Redirecting to dashboard...",
     googleAuthFailed: "Google authentication failed",
     googleRedirectFailed: "Unable to complete the Google redirect",
     xRedirectUnavailable: "X authentication is not available yet.",
@@ -589,16 +589,24 @@ export const EnglishWorkspaceTranslation = {
       createdContent: "Content you create, such as notes and documents",
       usageData: "Usage data, such as pages visited and features used",
       deviceInfo: "Device and browser information",
+      collectDetails:
+        "We collect only the information needed to operate, secure, and improve the service. Some information is provided by you, while technical data may be created automatically when the application runs.",
       useTitle: "2. How we use your information",
       provideService: "To provide and maintain the Notegic service",
       improveExperience: "To improve the user experience",
       communicateUpdates: "To communicate with you about updates",
+      useDetails:
+        "This includes authenticating your account, saving and synchronizing content, supporting collaboration, diagnosing failures, preventing abuse, and understanding which parts of the product need improvement. We do not use your private notes as advertising material.",
       sharingTitle: "3. Data sharing",
       sharingText:
         "We do not sell your personal data. We may share data with third-party services, such as authentication providers, only as needed to operate the service.",
+      sharingDetails:
+        "Service providers may process information on our behalf for hosting, authentication, storage, email delivery, analytics, or security. They receive access appropriate to their task and are expected to protect the information. We may also disclose information when required by law or to protect the service and its users.",
       retentionTitle: "4. Data retention",
       retentionText:
         "We retain your data while your account is active. You may request deletion at any time by contacting us.",
+      retentionDetails:
+        "When you delete content or close your account, we will remove it from active systems within a reasonable period, subject to backups, fraud prevention, dispute resolution, and other legal obligations. Backups may remain for a limited time before they are safely overwritten.",
       rightsTitle: "5. Your rights",
       rightsText:
         "You may access, correct, or delete your personal data. Contact us at <email>{{email}}</email>.",
@@ -607,12 +615,19 @@ export const EnglishWorkspaceTranslation = {
       cookiesTitle: "6. Cookies",
       cookiesText:
         "We use cookies and local storage to maintain your session and preferences.",
+      cookiesDetails:
+        "These technologies help keep you signed in, remember display preferences, protect requests, and support offline or local-first features. You can clear or block them in your browser, but some parts of Notegic may no longer work correctly.",
       changesTitle: "7. Changes to this policy",
       changesText:
         "We may update this policy from time to time. We will notify you of significant changes in the application.",
+      changesDetails:
+        "The effective date at the top of this page identifies the current version. If a change materially affects your rights or how we handle information, we will provide a more prominent notice and, where required, ask for consent.",
       contactTitle: "8. Contact us",
       contactText:
         "If you have questions, contact us at <email>{{email}}</email>.",
+      contactDetails:
+        "Please use an email address associated with your account when asking about personal data. We aim to respond within a reasonable period and may ask for additional information to confirm that the request belongs to you.",
+      viewEula: "View the End User License Agreement (EULA)",
     },
   },
   dialogs: {

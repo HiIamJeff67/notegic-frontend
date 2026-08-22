@@ -17,17 +17,13 @@ import React, {
   useState,
 } from "react";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
-import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 import i18n from "@/i18n";
 
 interface UserContextType {
-  enableInitialFetching: boolean;
-  setEnableInitialFetching: (state: boolean) => void;
-
   userData: UserData | null;
   setUserData: (userData: UserData | null) => void;
   updateUserData: (fields: Partial<UserData>) => boolean;
-  fetchUserData: () => Promise<void>;
+  fetchUserData: () => Promise<UserData>;
 
   user: User | null;
   setUser: (user: User | null) => void;
@@ -51,13 +47,16 @@ export const UserContext = createContext<UserContextType | undefined>(
   undefined
 );
 
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+export const UserProvider = ({
+  children,
+  autoFetchUserData = false,
+}: {
+  children: React.ReactNode;
+  autoFetchUserData?: boolean;
+}) => {
   const router = useAppRouterActions();
   const loadingManager = useLoading();
   const { isOnline } = useNetwork();
-  const { status: transactionSynchronizerStatus } =
-    useTransactionSynchronizer();
-  const isLocalDBReady = transactionSynchronizerStatus === "synchronized";
 
   const getUserDataQuerier = useGetUserData();
   const getMeQuerier = useGetMe();
@@ -65,71 +64,60 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const getMyAccountQuerier = useGetMyAccount();
   const logoutMutator = useLogout();
 
-  const [enableInitialFetching, setEnableInitialFetching] =
-    useState<boolean>(true);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
 
-  const isAutoFetchingUserDataRef = useRef(false);
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
-  const fetchUserDataRef = useRef<() => Promise<void>>(async () => {});
+  const hasAttemptedInitialUserDataFetchRef = useRef(false);
 
   const fetchUserData = useCallback(
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
-        try {
-          if (!isOnline) {
-            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
-          }
-
-          const userAgent = navigator.userAgent;
-          const response = await getUserDataQuerier.fetch({
-            header: getClientRequestHeaders(userAgent),
-            body: {},
-          });
-
-          setUserData(response.data);
-        } catch (error) {
-          console.error(error);
-          if (
-            !(error instanceof NotegicAPIError) ||
-            error.unWrap.reason !==
-              FetchClientExceptions.NetworkRequired().reason
-          ) {
-            setEnableInitialFetching(false);
-            if (
-              !router.isSamePath(
-                router.getCurrentPath(),
-                WebURLPathDictionary.home
-              )
-            ) {
-              toast.error(i18n.t("workspace.notifications.sessionExpired"));
-              router.push(WebURLPathDictionary.auth.login);
-            }
-          }
-          return;
+        if (!isOnline) {
+          throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
         }
+
+        const userAgent = navigator.userAgent;
+        const response = await getUserDataQuerier.fetch({
+          header: getClientRequestHeaders(userAgent),
+          body: {},
+        });
+
+        setUserData(response.data);
+        return response.data;
       }),
-    [getUserDataQuerier, isOnline, loadingManager, router]
+    [getUserDataQuerier, isOnline, loadingManager]
   );
 
   useEffect(() => {
-    fetchUserDataRef.current = fetchUserData;
-  }, [fetchUserData]);
+    if (
+      !autoFetchUserData ||
+      hasAttemptedInitialUserDataFetchRef.current ||
+      userData !== null
+    ) {
+      return;
+    }
 
-  // For maintaining the basic user data in the context
-  useEffect(() => {
-    if (router.getCurrentPath().includes("/redirect/")) return;
-    if (!enableInitialFetching || userData !== null) return;
-    if (isAutoFetchingUserDataRef.current) return;
+    hasAttemptedInitialUserDataFetchRef.current = true;
 
-    isAutoFetchingUserDataRef.current = true;
-    void fetchUserDataRef.current().finally(() => {
-      isAutoFetchingUserDataRef.current = false;
+    void fetchUserData().catch(error => {
+      console.error(error);
+
+      if (
+        !(error instanceof NotegicAPIError) ||
+        error.unWrap.reason !== FetchClientExceptions.NetworkRequired().reason
+      ) {
+        if (
+          !router.isSamePath(router.getCurrentPath(), WebURLPathDictionary.home)
+        ) {
+          toast.error(i18n.t("workspace.notifications.sessionExpired"));
+          router.push(WebURLPathDictionary.auth.login);
+        }
+      }
     });
-  }, [enableInitialFetching, isLocalDBReady, userData, isOnline, router]);
+  }, [autoFetchUserData, fetchUserData, router, userData]);
 
   const updateUserData = (fields: Partial<UserData>): boolean => {
     if (!isOnline) return false;
@@ -275,7 +263,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     // to make sure the logout procedure is only done once
     const task = (async () => {
-      setEnableInitialFetching(false);
       setUserData(null);
       setUser(null);
       setUserInfo(null);
@@ -302,9 +289,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isOnline, logoutMutator]);
 
   const contextValue: UserContextType = {
-    enableInitialFetching: enableInitialFetching,
-    setEnableInitialFetching: setEnableInitialFetching,
-
     userData: userData,
     setUserData: setUserData,
     updateUserData: updateUserData,

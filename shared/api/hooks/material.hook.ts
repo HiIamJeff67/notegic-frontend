@@ -46,16 +46,16 @@ import { ZodError } from "zod";
 
 export const useGetMyMaterialById = (
   hookRequest?: GetMyMaterialByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyMaterialByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyMaterialByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyMaterialByIdRequest
+    request?: GetMyMaterialByIdRequest,
   ): Promise<GetMyMaterialByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -63,7 +63,6 @@ export const useGetMyMaterialById = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
@@ -72,7 +71,7 @@ export const useGetMyMaterialById = (
     queryKey: queryKeys.material.oneById(
       hookRequest?.param.materialId as UUID | undefined,
       false,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -83,13 +82,13 @@ export const useGetMyMaterialById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyMaterialByIdRequest
+    callbackRequest: GetMyMaterialByIdRequest,
   ): Promise<GetMyMaterialByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.material.oneById(
         callbackRequest.param.materialId as UUID | undefined,
         false,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -104,16 +103,16 @@ export const useGetMyMaterialAndItsParentById = (
   hookRequest?: GetMyMaterialAndItsParentByIdRequest,
   options?: Partial<
     UseQueryOptions<GetMyMaterialAndItsParentByIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyMaterialAndItsParentByIdRequest
+    request?: GetMyMaterialAndItsParentByIdRequest,
   ): Promise<GetMyMaterialAndItsParentByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -121,7 +120,6 @@ export const useGetMyMaterialAndItsParentById = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
@@ -130,7 +128,7 @@ export const useGetMyMaterialAndItsParentById = (
     queryKey: queryKeys.material.oneById(
       hookRequest?.param.materialId as UUID | undefined,
       true,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -141,13 +139,13 @@ export const useGetMyMaterialAndItsParentById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyMaterialAndItsParentByIdRequest
+    callbackRequest: GetMyMaterialAndItsParentByIdRequest,
   ): Promise<GetMyMaterialAndItsParentByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.material.oneById(
         callbackRequest.param.materialId as UUID | undefined,
         true,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -162,16 +160,16 @@ export const useGetMyMaterialsByParentSubShelfId = (
   hookRequest?: GetMyMaterialsByParentSubShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetMyMaterialsByParentSubShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyMaterialsByParentSubShelfIdRequest
+    request?: GetMyMaterialsByParentSubShelfIdRequest,
   ): Promise<GetMyMaterialsByParentSubShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -179,7 +177,6 @@ export const useGetMyMaterialsByParentSubShelfId = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
@@ -187,7 +184,7 @@ export const useGetMyMaterialsByParentSubShelfId = (
   const query = useQuery<GetMyMaterialsByParentSubShelfIdResponse, Error>({
     queryKey: queryKeys.material.manyByParentSubShelfId(
       hookRequest?.param.parentSubShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -198,12 +195,12 @@ export const useGetMyMaterialsByParentSubShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyMaterialsByParentSubShelfIdRequest
+    callbackRequest: GetMyMaterialsByParentSubShelfIdRequest,
   ): Promise<GetMyMaterialsByParentSubShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.material.manyByParentSubShelfId(
         callbackRequest.param.parentSubShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -218,16 +215,16 @@ export const useGetAllMyMaterialsByRootShelfId = (
   hookRequest?: GetAllMyMaterialsByRootShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetAllMyMaterialsByRootShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyMaterialsByRootShelfIdRequest
+    request?: GetAllMyMaterialsByRootShelfIdRequest,
   ): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -235,7 +232,6 @@ export const useGetAllMyMaterialsByRootShelfId = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
@@ -243,7 +239,7 @@ export const useGetAllMyMaterialsByRootShelfId = (
   const query = useQuery<GetAllMyMaterialsByRootShelfIdResponse, Error>({
     queryKey: queryKeys.material.manyByRootShelfId(
       hookRequest?.param.rootShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -254,12 +250,12 @@ export const useGetAllMyMaterialsByRootShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyMaterialsByRootShelfIdRequest
+    callbackRequest: GetAllMyMaterialsByRootShelfIdRequest,
   ): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.material.manyByRootShelfId(
         callbackRequest.param.rootShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -279,7 +275,6 @@ export const useCreateMyMaterial = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -289,12 +284,12 @@ export const useCreateMyMaterial = () => {
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -309,7 +304,6 @@ export const useUpdateMyMaterialById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -320,12 +314,12 @@ export const useUpdateMyMaterialById = () => {
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -344,7 +338,7 @@ export const useSaveMyMaterialById = () => {
       } catch (error) {
         if (error instanceof ZodError) {
           const errorMessage = error.issues
-            .map(issue => issue.message)
+            .map((issue) => issue.message)
             .join(", ");
           throw new Error(`validation failed : ${errorMessage}`);
         } else if (error instanceof NotegicAPIError) {
@@ -360,7 +354,6 @@ export const useSaveMyMaterialById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -369,12 +362,12 @@ export const useSaveMyMaterialById = () => {
         queryKeys.material.manyByParentSubShelfId(parentSubShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -389,7 +382,6 @@ export const useMoveMyMaterialById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialId = request.body.materialId as UUID;
       const destinationParentSubShelfId = request.body
@@ -406,12 +398,12 @@ export const useMoveMyMaterialById = () => {
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -425,7 +417,6 @@ export const useRestoreMyMaterialById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -437,12 +428,12 @@ export const useRestoreMyMaterialById = () => {
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -457,36 +448,35 @@ export const useRestoreMyMaterialsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialIds = (request.body.materialIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const parentSubShelfIds = (
         request.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.material.manyByRootShelfId(rootShelfId),
         ]),
-        ...parentSubShelfIds.map(parentSubShelfId =>
-          queryKeys.material.manyByParentSubShelfId(parentSubShelfId)
+        ...parentSubShelfIds.map((parentSubShelfId) =>
+          queryKeys.material.manyByParentSubShelfId(parentSubShelfId),
         ),
-        ...materialIds.map(materialId =>
-          queryKeys.material.oneById(materialId)
+        ...materialIds.map((materialId) =>
+          queryKeys.material.oneById(materialId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -501,7 +491,6 @@ export const useDeleteMyMaterialById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -513,12 +502,12 @@ export const useDeleteMyMaterialById = () => {
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -533,36 +522,35 @@ export const useDeleteMyMaterialsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const materialIds = (request.body.materialIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const parentSubShelfIds = (
         request.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.material.manyByRootShelfId(rootShelfId),
         ]),
-        ...parentSubShelfIds.map(parentSubShelfId =>
-          queryKeys.material.manyByParentSubShelfId(parentSubShelfId)
+        ...parentSubShelfIds.map((parentSubShelfId) =>
+          queryKeys.material.manyByParentSubShelfId(parentSubShelfId),
         ),
-        ...materialIds.map(materialId =>
-          queryKeys.material.oneById(materialId)
+        ...materialIds.map((materialId) =>
+          queryKeys.material.oneById(materialId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;

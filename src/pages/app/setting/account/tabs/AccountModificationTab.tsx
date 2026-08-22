@@ -77,7 +77,7 @@ const AccountModificationTab = ({
           });
           setSendAuthCodeTimeCounter(0);
           setResetMeDialogOpen(false);
-          userManager.fetchUserData();
+          await userManager.fetchUserData();
           onPanelClose();
           toast.success(t("settingsPage.account.messages.accountReset"));
           router.push(WebURLPathDictionary.app.dashboard._);

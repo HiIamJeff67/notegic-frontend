@@ -4,7 +4,6 @@ export const SimpleChineseWorkspaceTranslation = {
   navigation: {
     dashboard: "仪表板",
     routines: "流程",
-    community: "社区",
     shelves: "层架",
     stations: "工作站",
     routineTags: "流程标签",
@@ -539,6 +538,7 @@ export const SimpleChineseWorkspaceTranslation = {
     redirectError: "重定向错误",
     redirectUnknown: "重定向期间发生未知错误。",
     validatingGoogle: "正在验证 Google 身份……",
+    redirectingToDashboard: "正在重定向到仪表板……",
     xRedirectUnavailable: "X 身份验证尚未开放。",
     contactUs: "联系我们",
     goBack: "返回",
@@ -570,16 +570,24 @@ export const SimpleChineseWorkspaceTranslation = {
       createdContent: "你创建的内容，例如笔记与文档",
       usageData: "使用数据，例如访问的页面与使用的功能",
       deviceInfo: "设备与浏览器信息",
+      collectDetails:
+        "我们只收集运营、保护和改进服务所需的信息。有些信息由你主动提供，其他技术数据可能会在应用运行时自动生成。",
       useTitle: "2. 信息使用方式",
       provideService: "提供并维护 Notegic 服务",
       improveExperience: "改善用户体验",
       communicateUpdates: "向你传达更新信息",
+      useDetails:
+        "这些用途包括验证帐户、保存和同步内容、支持协作、诊断故障、防止滥用，以及了解产品哪些部分需要改进。我们不会将你的私人笔记用作广告材料。",
       sharingTitle: "3. 数据共享",
       sharingText:
         "我们不会出售你的个人数据。仅为运营服务所需，我们可能会与第三方服务（例如身份验证提供商）共享数据。",
+      sharingDetails:
+        "服务提供商可能代表我们处理托管、身份验证、存储、邮件发送、分析或安全相关的信息。他们只能获得完成任务所需的权限，并应保护这些信息。法律要求，或为保护服务和用户时，我们也可能披露必要的信息。",
       retentionTitle: "4. 数据保留",
       retentionText:
         "账号有效期间，我们会保留你的数据。你可以随时联系我们要求删除。",
+      retentionDetails:
+        "当你删除内容或关闭帐户后，我们会在合理期限内从活跃系统中移除相关数据，但备份、防欺诈、争议处理或其他法律义务可能例外。备份可能会在有限期限后安全覆盖。",
       rightsTitle: "5. 你的权利",
       rightsText:
         "你有权访问、更正或删除个人数据。请通过 <email>{{email}}</email> 联系我们。",
@@ -587,10 +595,17 @@ export const SimpleChineseWorkspaceTranslation = {
         "根据适用法律，你还可以要求我们说明数据用途、反对特定处理方式、要求可携格式的副本，或在以同意作为处理依据时撤回同意。我们可能会在处理请求前要求你验证身份，且法律或安全义务可能限制部分请求。联系时请提供账号电子邮件与希望处理的内容。",
       cookiesTitle: "6. Cookie",
       cookiesText: "我们使用 Cookie 与本地存储空间来维持会话与偏好设置。",
+      cookiesDetails:
+        "这些技术可帮助你保持登录、记住显示偏好、保护请求，并支持离线或本地优先功能。你可以在浏览器中清除或阻止它们，但 Notegic 的部分功能可能无法正常工作。",
       changesTitle: "7. 政策变更",
       changesText: "我们可能不时更新本政策；重大变更将通过应用程序通知你。",
+      changesDetails:
+        "页面顶部的生效日期代表当前版本。如果变更会实质影响你的权利或我们处理信息的方式，我们会提供更醒目的通知，并在法律要求时征得你的同意。",
       contactTitle: "8. 联系我们",
       contactText: "如有疑问，请通过 <email>{{email}}</email> 联系我们。",
+      contactDetails:
+        "询问个人数据时，请尽量使用与帐户关联的电子邮件。我们会在合理期限内回复，也可能要求补充信息，以确认请求确实由你提出。",
+      viewEula: "查看终端用户许可协议（EULA）",
     },
   },
   dialogs: {

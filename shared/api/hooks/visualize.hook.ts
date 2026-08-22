@@ -30,14 +30,14 @@ export function useVisualizeQuery<
   hookRequest: TRequest | undefined,
   queryKeyFactory: (request: TRequest | undefined) => QueryKey,
   queryFunction: (request: TRequest) => Promise<TResponse>,
-  options?: Partial<UseQueryOptions<TResponse, Error>>
+  options?: Partial<UseQueryOptions<TResponse, Error>>,
 ) {
   const queryClient = getQueryClient();
 
   const perform = async (request?: TRequest): Promise<TResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
@@ -48,7 +48,6 @@ export function useVisualizeQuery<
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };

@@ -4,15 +4,14 @@ import {
   useRegisterViaGoogle,
 } from "@shared/api/hooks/auth.hook";
 import { useBindGoogleAccount } from "@shared/api/hooks/userAccount.hook";
-import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
 import { WebURLPathDictionary } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { RedirectState } from "@shared/types/redirectState.type";
 import { useLocation } from "@tanstack/react-router";
-import { Suspense, useCallback, useEffect, useRef } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import { useAppRouter, useLoading, useUser } from "@/hooks";
+import { useAppRouter, useUser } from "@/hooks";
 import {
   getPreferredStartPath,
   useLocalPreferences,
@@ -23,7 +22,6 @@ function GoogleRedirectPage() {
   const location = useLocation();
 
   const router = useAppRouter();
-  const loadingManager = useLoading();
   const { t } = useTranslation();
   const { preferences } = useLocalPreferences();
   const userManager = useUser();
@@ -31,6 +29,9 @@ function GoogleRedirectPage() {
   const registerViaGoogleMutator = useRegisterViaGoogle();
   const loginViaGoogleMutator = useLoginViaGoogle();
   const bindGoogleAccountMutator = useBindGoogleAccount();
+  const [loadingPhase, setLoadingPhase] = useState<
+    "validating" | "redirecting"
+  >("validating");
 
   const hasRendered = useRef(false);
 
@@ -100,14 +101,10 @@ function GoogleRedirectPage() {
         }
       }
 
-      userManager.setEnableInitialFetching(false);
       await performGoogleOAuthAction(action, code);
-      const responseOfGettingUserData = await queryFnGetUserData({
-        header: getClientRequestHeaders(navigator.userAgent),
-      });
+      await userManager.fetchUserData();
 
-      userManager.setUserData(responseOfGettingUserData.data);
-      userManager.setEnableInitialFetching(true);
+      setLoadingPhase("redirecting");
       router.push(getPreferredStartPath(preferences));
     } catch (error) {
       toast.error(translateError(error, t));
@@ -136,9 +133,13 @@ function GoogleRedirectPage() {
 
   return (
     <Suspense fallback={<StrictLoadingCover />}>
-      <div className="flex h-screen w-full items-center justify-center">
-        <p>{t("workspace.pages.validatingGoogle")}</p>
-      </div>
+      <StrictLoadingCover
+        label={t(
+          loadingPhase === "validating"
+            ? "workspace.pages.validatingGoogle"
+            : "workspace.pages.redirectingToDashboard"
+        )}
+      />
     </Suspense>
   );
 }

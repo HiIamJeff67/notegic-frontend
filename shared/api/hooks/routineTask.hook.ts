@@ -1,15 +1,20 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineTaskPurpose as GraphQLRoutineTaskPurpose,
-  RoutineTaskStatus as GraphQLRoutineTaskStatus,
-} from "@shared/api/graphql/generated/graphql";
+  patchSearchRoutineTask,
+  removeSearchRoutineTasks,
+  upsertSearchRoutineTask,
+} from "@shared/api/graphql/cache";
+import {
+  toGraphQLRoutinePeriod,
+  toGraphQLRoutineTaskPurpose,
+  toGraphQLRoutineTaskStatus,
+} from "@shared/api/graphql/conversions";
 import type {
   CreateRoutineTaskByRoutineIdRequest,
   GetAllMyRoutineTasksByRoutineIdsRequest,
@@ -65,155 +70,6 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
-
-const getSearchInput = (storeFieldName: string) => {
-  const start = storeFieldName.indexOf("(");
-  if (start === -1) return undefined;
-  try {
-    return JSON.parse(storeFieldName.slice(start + 1, -1)).input;
-  } catch {
-    return undefined;
-  }
-};
-
-const toGraphQLRoutineTaskPurpose = (purpose?: string | null) =>
-  purpose
-    ? (GraphQLRoutineTaskPurpose[
-        `RoutineTaskPurpose${purpose}` as keyof typeof GraphQLRoutineTaskPurpose
-      ] ?? GraphQLRoutineTaskPurpose.RoutineTaskPurposeCreateBlockPack)
-    : GraphQLRoutineTaskPurpose.RoutineTaskPurposeCreateBlockPack;
-
-const toGraphQLRoutineTaskStatus = (status?: string | null) =>
-  status
-    ? {
-        Idle: GraphQLRoutineTaskStatus.RoutineTaskStatusIdle,
-        Waiting: GraphQLRoutineTaskStatus.RoutineTaskStatusWaiting,
-        Running: GraphQLRoutineTaskStatus.RoutineTaskStatusRunning,
-        Pause: GraphQLRoutineTaskStatus.RoutineTaskStatusPause,
-      }[status]
-    : GraphQLRoutineTaskStatus.RoutineTaskStatusIdle;
-
-const toGraphQLRoutinePeriod = (period?: string | null) =>
-  period
-    ? {
-        Daily: GraphQLRoutinePeriod.RoutinePeriodDaily,
-        Weekly: GraphQLRoutinePeriod.RoutinePeriodWeekly,
-        Monthly: GraphQLRoutinePeriod.RoutinePeriodMonthly,
-      }[period]
-    : null;
-
-const routineTaskMatchesSearchInput = (routineTask: any, input: any) => {
-  const query = input?.query?.trim().toLowerCase();
-  if (query && !routineTask.title.toLowerCase().includes(query)) return false;
-  if (
-    input?.routineIds?.length > 0 &&
-    !input.routineIds.includes(routineTask.routineId)
-  ) {
-    return false;
-  }
-  return true;
-};
-
-const upsertSearchRoutineTask = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineTask: any
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutineTasks(existing, { readField, storeFieldName }) {
-        if (!existing?.searchEdges) return existing;
-        const input = getSearchInput(storeFieldName);
-        if (input?.after) return existing;
-        if (!routineTaskMatchesSearchInput(routineTask, input)) return existing;
-
-        const existed = existing.searchEdges.some(
-          (edge: any) => readField("id", edge.node) === routineTask.id
-        );
-        const edges = existing.searchEdges.filter(
-          (edge: any) => readField("id", edge.node) !== routineTask.id
-        );
-        const nextEdges = [
-          {
-            __typename: "SearchRoutineTaskEdge",
-            encodedSearchCursor: routineTask.id,
-            node: routineTask,
-          },
-          ...edges,
-        ];
-        return {
-          ...existing,
-          totalCount: existed
-            ? (existing.totalCount ?? nextEdges.length)
-            : Math.max(existing.totalCount ?? 0, edges.length) + 1,
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
-
-const patchSearchRoutineTask = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineTaskId: string,
-  patch: any
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutineTasks(existing, { readField, storeFieldName }) {
-        if (!existing?.searchEdges) return existing;
-        const input = getSearchInput(storeFieldName);
-        const nextEdges = existing.searchEdges.flatMap((edge: any) => {
-          if (readField("id", edge.node) !== routineTaskId) return [edge];
-          const node = {
-            ...edge.node,
-            id: routineTaskId,
-            routineId: readField("routineId", edge.node),
-            title: readField("title", edge.node),
-            ...patch,
-          };
-          return routineTaskMatchesSearchInput(node, input)
-            ? [{ ...edge, node }]
-            : [];
-        });
-        return {
-          ...existing,
-          totalCount: Math.max(
-            0,
-            (existing.totalCount ?? nextEdges.length) -
-              (existing.searchEdges.length - nextEdges.length)
-          ),
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
-
-const removeSearchRoutineTasks = (
-  apolloClient: ReturnType<typeof useApolloClient>,
-  routineTaskIds: string[]
-) => {
-  apolloClient.cache.modify({
-    fields: {
-      searchRoutineTasks(existing, { readField }) {
-        if (!existing?.searchEdges) return existing;
-        const nextEdges = existing.searchEdges.filter(
-          (edge: any) =>
-            !routineTaskIds.includes(readField("id", edge.node) as string)
-        );
-        return {
-          ...existing,
-          totalCount: Math.max(
-            0,
-            (existing.totalCount ?? nextEdges.length) -
-              (existing.searchEdges.length - nextEdges.length)
-          ),
-          searchEdges: nextEdges,
-        };
-      },
-    },
-  });
-};
 
 export const useVisualizeMyRoutineTaskStatusCount = (
   request?: VisualizeMyRoutineTaskStatusCountRequest,
@@ -327,8 +183,7 @@ export const useGetMyRoutineTaskById = (
       const response = await queryFnGetMyRoutineTaskById(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineTaskLocalSynchronizer.syncGetMyRoutineTaskById(response);
       return response;
@@ -406,8 +261,7 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
       const response = await queryFnGetAllMyRoutineTasksByRoutineIds(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineTaskLocalSynchronizer.syncGetAllMyRoutineTasksByRoutineIds(
         response
@@ -487,8 +341,7 @@ export const useGetAllMyRoutineTasks = (
       const response = await queryFnGetAllMyRoutineTasks(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       await RoutineTaskLocalSynchronizer.syncGetAllMyRoutineTasks(response);
       return response;
@@ -551,8 +404,7 @@ export const useCreateRoutineTaskByRoutineId = () => {
     ) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),
@@ -576,7 +428,7 @@ export const useCreateRoutineTaskByRoutineId = () => {
             .length / 1024
         ),
         priority: request.body.priority ?? 0,
-        status: GraphQLRoutineTaskStatus.RoutineTaskStatusIdle,
+        status: toGraphQLRoutineTaskStatus("Idle"),
         attempts: 0,
         maxAttempts: request.body.maxAttempts ?? 1,
         period: toGraphQLRoutinePeriod(request.body.period),
@@ -604,8 +456,7 @@ export const useUpdateMyRoutineTaskById = () => {
     onSuccess: async (response, request: UpdateMyRoutineTaskByIdRequest) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),
@@ -658,8 +509,7 @@ export const usePauseMyRoutineTaskById = () => {
     onSuccess: async (response, request: PauseMyRoutineTaskByIdRequest) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),
@@ -670,7 +520,7 @@ export const usePauseMyRoutineTaskById = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       patchSearchRoutineTask(apolloClient, request.body.routineTaskId, {
-        status: GraphQLRoutineTaskStatus.RoutineTaskStatusPause,
+        status: toGraphQLRoutineTaskStatus("Pause"),
         updatedAt: response.data.updatedAt,
       });
       apolloClient.cache.gc();
@@ -690,8 +540,7 @@ export const useResumeMyRoutineTaskById = () => {
     onSuccess: async (response, request: ResumeMyRoutineTaskByIdRequest) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),
@@ -702,7 +551,7 @@ export const useResumeMyRoutineTaskById = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       patchSearchRoutineTask(apolloClient, request.body.routineTaskId, {
-        status: GraphQLRoutineTaskStatus.RoutineTaskStatusIdle,
+        status: toGraphQLRoutineTaskStatus("Idle"),
         updatedAt: response.data.updatedAt,
       });
       apolloClient.cache.gc();
@@ -725,8 +574,7 @@ export const useHardDeleteMyRoutineTaskById = () => {
     ) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),
@@ -757,8 +605,7 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
     ) => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
+        response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
         queryKeys.routineTask.all(),

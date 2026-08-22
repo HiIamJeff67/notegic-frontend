@@ -17,7 +17,6 @@ export const useUpdateMySetting = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       void queryClient.invalidateQueries({
         queryKey: queryKeys.userSetting.all(),

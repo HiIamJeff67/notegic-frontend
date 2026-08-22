@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
@@ -5,6 +6,7 @@ import {
   ArticleSubParagraphContent,
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
+import { useAppRouterActions } from "@/hooks/useAppRouter";
 
 const CONTACT_EMAIL = "your-email@example.com";
 
@@ -25,6 +27,7 @@ const PrivacySection = ({
 
 export const PrivacyPolicySections = () => {
   const { t } = useTranslation();
+  const router = useAppRouterActions();
   const emailLink = (
     <a href={`mailto:${CONTACT_EMAIL}`} className="underline" />
   );
@@ -45,6 +48,9 @@ export const PrivacyPolicySections = () => {
           <li>{t("workspace.pages.privacy.usageData")}</li>
           <li>{t("workspace.pages.privacy.deviceInfo")}</li>
         </ul>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.collectDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -56,6 +62,9 @@ export const PrivacyPolicySections = () => {
           <li>{t("workspace.pages.privacy.improveExperience")}</li>
           <li>{t("workspace.pages.privacy.communicateUpdates")}</li>
         </ul>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.useDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -63,6 +72,9 @@ export const PrivacyPolicySections = () => {
         title={t("workspace.pages.privacy.sharingTitle")}
       >
         <p>{t("workspace.pages.privacy.sharingText")}</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.sharingDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -70,6 +82,9 @@ export const PrivacyPolicySections = () => {
         title={t("workspace.pages.privacy.retentionTitle")}
       >
         <p>{t("workspace.pages.privacy.retentionText")}</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.retentionDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -93,6 +108,9 @@ export const PrivacyPolicySections = () => {
         title={t("workspace.pages.privacy.cookiesTitle")}
       >
         <p>{t("workspace.pages.privacy.cookiesText")}</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.cookiesDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -100,6 +118,9 @@ export const PrivacyPolicySections = () => {
         title={t("workspace.pages.privacy.changesTitle")}
       >
         <p>{t("workspace.pages.privacy.changesText")}</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.changesDetails")}
+        </p>
       </PrivacySection>
 
       <PrivacySection
@@ -113,6 +134,20 @@ export const PrivacyPolicySections = () => {
             components={{ email: emailLink }}
           />
         </p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {t("workspace.pages.privacy.contactDetails")}
+        </p>
+        <a
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+          href="/eula"
+          onClick={event => {
+            event.preventDefault();
+            router.push("/eula");
+          }}
+        >
+          {t("workspace.pages.privacy.viewEula")}
+          <ExternalLinkIcon className="size-3.5" />
+        </a>
       </PrivacySection>
     </>
   );

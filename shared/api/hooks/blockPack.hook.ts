@@ -75,16 +75,16 @@ import {
 
 export const useGetMyBlockPackById = (
   hookRequest?: GetMyBlockPackByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyBlockPackByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyBlockPackByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyBlockPackByIdRequest
+    request?: GetMyBlockPackByIdRequest,
   ): Promise<GetMyBlockPackByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -97,7 +97,6 @@ export const useGetMyBlockPackById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await BlockPackLocalSynchronizer.syncGetMyBlockPackById(response);
       return response;
@@ -124,7 +123,7 @@ export const useGetMyBlockPackById = (
     queryKey: queryKeys.blockPack.oneById(
       hookRequest?.param.blockPackId as UUID | undefined,
       false,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -135,13 +134,13 @@ export const useGetMyBlockPackById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyBlockPackByIdRequest
+    callbackRequest: GetMyBlockPackByIdRequest,
   ): Promise<GetMyBlockPackByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.oneById(
         callbackRequest.param.blockPackId as UUID | undefined,
         false,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -156,16 +155,16 @@ export const useGetMyBlockPackAndItsParentById = (
   hookRequest?: GetMyBlockPackAndItsParentByIdRequest,
   options?: Partial<
     UseQueryOptions<GetMyBlockPackAndItsParentByIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyBlockPackAndItsParentByIdRequest
+    request?: GetMyBlockPackAndItsParentByIdRequest,
   ): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -178,10 +177,9 @@ export const useGetMyBlockPackAndItsParentById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await BlockPackLocalSynchronizer.syncGetMyBlockPackAndItsParentById(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -191,7 +189,7 @@ export const useGetMyBlockPackAndItsParentById = (
       ) {
         const existingBlockPackAndItsParent =
           await BlockPackLocalSimulator.simulateGetMyBlockPackAndItsParentById(
-            request
+            request,
           );
         return {
           success: false,
@@ -217,7 +215,7 @@ export const useGetMyBlockPackAndItsParentById = (
     queryKey: queryKeys.blockPack.oneById(
       hookRequest?.param.blockPackId as UUID | undefined,
       true,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -228,13 +226,13 @@ export const useGetMyBlockPackAndItsParentById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyBlockPackAndItsParentByIdRequest
+    callbackRequest: GetMyBlockPackAndItsParentByIdRequest,
   ): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.oneById(
         callbackRequest.param.blockPackId as UUID | undefined,
         true,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -249,16 +247,16 @@ export const useGetMyBlockPacksByParentSubShelfId = (
   hookRequest?: GetMyBlockPacksByParentSubShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetMyBlockPacksByParentSubShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyBlockPacksByParentSubShelfIdRequest
+    request?: GetMyBlockPacksByParentSubShelfIdRequest,
   ): Promise<GetMyBlockPacksByParentSubShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -271,10 +269,9 @@ export const useGetMyBlockPacksByParentSubShelfId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await BlockPackLocalSynchronizer.syncGetMyBlockPacksByParentSubShelfId(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -284,7 +281,7 @@ export const useGetMyBlockPacksByParentSubShelfId = (
       ) {
         const existingBlockPacks =
           await BlockPackLocalSimulator.simulateGetMyBlockPacksByParentSubShelfId(
-            request
+            request,
           );
         return {
           success: false,
@@ -301,7 +298,7 @@ export const useGetMyBlockPacksByParentSubShelfId = (
   const query = useQuery<GetMyBlockPacksByParentSubShelfIdResponse, Error>({
     queryKey: queryKeys.blockPack.manyByParentSubShelfId(
       hookRequest?.param.parentSubShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -312,12 +309,12 @@ export const useGetMyBlockPacksByParentSubShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyBlockPacksByParentSubShelfIdRequest
+    callbackRequest: GetMyBlockPacksByParentSubShelfIdRequest,
   ): Promise<GetMyBlockPacksByParentSubShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.manyByParentSubShelfId(
         callbackRequest.param.parentSubShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -332,16 +329,16 @@ export const useGetAllMyBlockPacksByRootShelfId = (
   hookRequest?: GetAllMyBlockPacksByRootShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetAllMyBlockPacksByRootShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyBlockPacksByRootShelfIdRequest
+    request?: GetAllMyBlockPacksByRootShelfIdRequest,
   ): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -354,10 +351,9 @@ export const useGetAllMyBlockPacksByRootShelfId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await BlockPackLocalSynchronizer.syncGetAllMyBlockPacksByRootShelfId(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -367,7 +363,7 @@ export const useGetAllMyBlockPacksByRootShelfId = (
       ) {
         const existingBlockPacks =
           await BlockPackLocalSimulator.simulateGetAllMyBlockPacksByRootShelfId(
-            request
+            request,
           );
         return {
           success: false,
@@ -384,7 +380,7 @@ export const useGetAllMyBlockPacksByRootShelfId = (
   const query = useQuery<GetAllMyBlockPacksByRootShelfIdResponse, Error>({
     queryKey: queryKeys.blockPack.manyByRootShelfId(
       hookRequest?.param.rootShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -395,12 +391,12 @@ export const useGetAllMyBlockPacksByRootShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyBlockPacksByRootShelfIdRequest
+    callbackRequest: GetAllMyBlockPacksByRootShelfIdRequest,
   ): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.manyByRootShelfId(
         callbackRequest.param.rootShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -415,7 +411,7 @@ export const useCreateBlockPack = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: CreateBlockPackRequest
+    request: CreateBlockPackRequest,
   ): Promise<CreateBlockPackResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -430,7 +426,6 @@ export const useCreateBlockPack = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
@@ -441,9 +436,9 @@ export const useCreateBlockPack = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncCreateBlockPack(variables, response);
     },
@@ -465,7 +460,7 @@ export const useCreateBlockPacks = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: CreateBlockPacksRequest
+    request: CreateBlockPacksRequest,
   ): Promise<CreateBlockPacksResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -480,32 +475,31 @@ export const useCreateBlockPacks = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const parentSubShelfIds = (
         variables.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (variables.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...parentSubShelfIds.flatMap(parentSubShelfId => [
+        ...parentSubShelfIds.flatMap((parentSubShelfId) => [
           queryKeys.subShelf.oneById(parentSubShelfId),
           queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId),
         ]),
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.blockPack.manyByRootShelfId(rootShelfId),
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncCreateBlockPacks(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -526,7 +520,7 @@ export const useUpdateMyBlockPackById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: UpdateMyBlockPackByIdRequest
+    request: UpdateMyBlockPackByIdRequest,
   ): Promise<UpdateMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -541,7 +535,6 @@ export const useUpdateMyBlockPackById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
@@ -552,13 +545,13 @@ export const useUpdateMyBlockPackById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncUpdateMyBlockPackById(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -566,7 +559,7 @@ export const useUpdateMyBlockPackById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateUpdateMyBlockPackById(
-              variables
+              variables,
             );
             break;
         }
@@ -581,7 +574,7 @@ export const useUpdateMyBlockPacksByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: UpdateMyBlockPacksByIdsRequest
+    request: UpdateMyBlockPacksByIdsRequest,
   ): Promise<UpdateMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -596,36 +589,35 @@ export const useUpdateMyBlockPacksByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackIds = variables.body.updatedBlockPacks
-        .map(updatedBlockPack => updatedBlockPack.blockPackId)
+        .map((updatedBlockPack) => updatedBlockPack.blockPackId)
         .filter(Boolean) as UUID[];
       const parentSubShelfIds = (
         variables.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (variables.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...blockPackIds.flatMap(blockPackId => [
+        ...blockPackIds.flatMap((blockPackId) => [
           queryKeys.blockPack.oneById(blockPackId),
         ]),
-        ...parentSubShelfIds.map(parentSubShelfId =>
-          queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId)
+        ...parentSubShelfIds.map((parentSubShelfId) =>
+          queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId),
         ),
-        ...rootShelfIds.map(rootShelfId =>
-          queryKeys.blockPack.manyByRootShelfId(rootShelfId)
+        ...rootShelfIds.map((rootShelfId) =>
+          queryKeys.blockPack.manyByRootShelfId(rootShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncUpdateMyBlockPacksByIds(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -633,7 +625,7 @@ export const useUpdateMyBlockPacksByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateUpdateMyBlockPacksByIds(
-              variables
+              variables,
             );
             break;
         }
@@ -648,7 +640,7 @@ export const useMoveMyBlockPackById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: MoveMyBlockPackByIdRequest
+    request: MoveMyBlockPackByIdRequest,
   ): Promise<MoveMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -663,7 +655,6 @@ export const useMoveMyBlockPackById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackId = variables.body.blockPackId as UUID;
       const destinationParentSubShelfId = variables.body
@@ -681,13 +672,13 @@ export const useMoveMyBlockPackById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncMoveMyBlockPackById(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -695,7 +686,7 @@ export const useMoveMyBlockPackById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPackById(
-              variables
+              variables,
             );
             break;
         }
@@ -710,7 +701,7 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: MoveMyBlockPacksByParentSubShelfIdRequest
+    request: MoveMyBlockPacksByParentSubShelfIdRequest,
   ): Promise<MoveMyBlockPacksByParentSubShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -725,10 +716,9 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const destinationParentSubShelfId = variables.body
         .destinationParentSubShelfId as UUID;
@@ -738,25 +728,25 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
       const rootShelfId = variables.affected.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
         queryKeys.rootShelf.oneById(rootShelfId),
-        ...sourceParentSubShelfIds.flatMap(sourceParentSubShelfId => [
+        ...sourceParentSubShelfIds.flatMap((sourceParentSubShelfId) => [
           queryKeys.subShelf.oneById(sourceParentSubShelfId),
           queryKeys.blockPack.manyByParentSubShelfId(sourceParentSubShelfId),
         ]),
         queryKeys.subShelf.oneById(destinationParentSubShelfId),
-        ...blockPackIds.map(blockPackId =>
-          queryKeys.blockPack.oneById(blockPackId)
+        ...blockPackIds.map((blockPackId) =>
+          queryKeys.blockPack.oneById(blockPackId),
         ),
         queryKeys.blockPack.manyByParentSubShelfId(destinationParentSubShelfId),
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncMoveMyBlockPacksByParentSubShelfId(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -764,7 +754,7 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfId(
-              variables
+              variables,
             );
             break;
         }
@@ -779,7 +769,7 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: MoveMyBlockPacksByParentSubShelfIdsRequest
+    request: MoveMyBlockPacksByParentSubShelfIdsRequest,
   ): Promise<MoveMyBlockPacksByParentSubShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -794,49 +784,50 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackIds = [] as UUID[];
       const destinationParentSubShelfIds = [] as UUID[];
       for (const movedBlockPack of variables.body.movedBlockPacks) {
         blockPackIds.push(...(movedBlockPack.blockPackIds as UUID[]));
         destinationParentSubShelfIds.push(
-          movedBlockPack.destinationParentSubShelfId as UUID
+          movedBlockPack.destinationParentSubShelfId as UUID,
         );
       }
       const sourceParentSubShelfIds = (
         variables.affected.sourceParentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (variables.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...sourceParentSubShelfIds.flatMap(sourceParentSubShelfId => [
+        ...sourceParentSubShelfIds.flatMap((sourceParentSubShelfId) => [
           queryKeys.subShelf.oneById(sourceParentSubShelfId),
           queryKeys.blockPack.manyByParentSubShelfId(sourceParentSubShelfId),
         ]),
-        ...destinationParentSubShelfIds.flatMap(destinationParentSubShelfId => [
-          queryKeys.subShelf.oneById(destinationParentSubShelfId),
-          ...blockPackIds.map(blockPackId =>
-            queryKeys.blockPack.oneById(blockPackId)
-          ),
-          queryKeys.blockPack.manyByParentSubShelfId(
-            destinationParentSubShelfId
-          ),
-        ]),
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...destinationParentSubShelfIds.flatMap(
+          (destinationParentSubShelfId) => [
+            queryKeys.subShelf.oneById(destinationParentSubShelfId),
+            ...blockPackIds.map((blockPackId) =>
+              queryKeys.blockPack.oneById(blockPackId),
+            ),
+            queryKeys.blockPack.manyByParentSubShelfId(
+              destinationParentSubShelfId,
+            ),
+          ],
+        ),
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.blockPack.manyByRootShelfId(rootShelfId),
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncMoveMyBlockPacksByParentSubShelfIds(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -844,7 +835,7 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfIds(
-              variables
+              variables,
             );
             break;
         }
@@ -859,7 +850,7 @@ export const useRestoreMyBlockPackById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: RestoreMyBlockPackByIdRequest
+    request: RestoreMyBlockPackByIdRequest,
   ): Promise<RestoreMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -874,7 +865,6 @@ export const useRestoreMyBlockPackById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
@@ -887,13 +877,13 @@ export const useRestoreMyBlockPackById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncRestoreMyBlockPackById(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -901,7 +891,7 @@ export const useRestoreMyBlockPackById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateRestoreMyBlockPackById(
-              variables
+              variables,
             );
             break;
         }
@@ -916,7 +906,7 @@ export const useRestoreMyBlockPacksByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: RestoreMyBlockPacksByIdsRequest
+    request: RestoreMyBlockPacksByIdsRequest,
   ): Promise<RestoreMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -931,38 +921,37 @@ export const useRestoreMyBlockPacksByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const parentSubShelfIds = (
         variables.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (variables.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.blockPack.manyByRootShelfId(rootShelfId),
         ]),
-        ...parentSubShelfIds.flatMap(parentSubShelfId => [
+        ...parentSubShelfIds.flatMap((parentSubShelfId) => [
           queryKeys.subShelf.oneById(parentSubShelfId),
           queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId),
         ]),
-        ...blockPackIds.flatMap(blockPackId => [
+        ...blockPackIds.flatMap((blockPackId) => [
           queryKeys.blockPack.oneById(blockPackId),
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncRestoreMyBlockPacksByIds(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -970,7 +959,7 @@ export const useRestoreMyBlockPacksByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(
-              variables
+              variables,
             );
             break;
         }
@@ -985,7 +974,7 @@ export const useDeleteMyBlockPackById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: DeleteMyBlockPackByIdRequest
+    request: DeleteMyBlockPackByIdRequest,
   ): Promise<DeleteMyBlockPackByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -1000,7 +989,6 @@ export const useDeleteMyBlockPackById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
@@ -1013,13 +1001,13 @@ export const useDeleteMyBlockPackById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncDeleteMyBlockPackById(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -1027,7 +1015,7 @@ export const useDeleteMyBlockPackById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateDeleteMyBlockPackById(
-              variables
+              variables,
             );
             break;
         }
@@ -1042,7 +1030,7 @@ export const useDeleteMyBlockPacksByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: DeleteMyBlockPacksByIdsRequest
+    request: DeleteMyBlockPacksByIdsRequest,
   ): Promise<DeleteMyBlockPacksByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -1057,38 +1045,37 @@ export const useDeleteMyBlockPacksByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const parentSubShelfIds = (
         variables.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
       const rootShelfIds = (variables.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.blockPack.manyByRootShelfId(rootShelfId),
         ]),
-        ...parentSubShelfIds.flatMap(parentSubShelfId => [
+        ...parentSubShelfIds.flatMap((parentSubShelfId) => [
           queryKeys.subShelf.oneById(parentSubShelfId),
           queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId),
         ]),
-        ...blockPackIds.flatMap(blockPackId => [
+        ...blockPackIds.flatMap((blockPackId) => [
           queryKeys.blockPack.oneById(blockPackId),
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await BlockPackLocalSynchronizer.syncDeleteMyBlockPacksByIds(
         variables,
-        response
+        response,
       );
     },
     onError: async (error, variables) => {
@@ -1096,7 +1083,7 @@ export const useDeleteMyBlockPacksByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateDeleteMyBlockPacksByIds(
-              variables
+              variables,
             );
             break;
         }

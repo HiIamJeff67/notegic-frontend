@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_auth")({
 function AuthRouteLayout() {
   return (
     <TransactionSynchronizerProvider>
-      <UserProvider>
+      <UserProvider autoFetchUserData={false}>
         <Outlet />
       </UserProvider>
     </TransactionSynchronizerProvider>

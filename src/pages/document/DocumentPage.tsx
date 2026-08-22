@@ -31,6 +31,14 @@ import {
 } from "@/components/commons/Article/Article";
 import PrismCode from "@/components/commons/PrismCode/PrismCode";
 import {
+  VersionCard,
+  VersionCardProgress,
+} from "@/components/commons/VersionCard/VersionCard";
+import {
+  getVersionProgress,
+  versionRoadmap,
+} from "@/components/commons/VersionCard/versions";
+import {
   BlockPackIcon,
   MaterialIcon,
   RootShelfIcon,
@@ -543,6 +551,7 @@ const DocumentPage = () => {
     description: stripInlineCode(rule.summary),
     weight: 3 as const,
   }));
+
   const navigationItems = [
     {
       id: "overview",
@@ -827,35 +836,53 @@ Content-Type: application/json`}</code>
                   Versions
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The public API currently publishes one Beta baseline. Only the
-                  public contract is listed here.
+                  A compact view of what Notegic has shipped, what is available
+                  now, and the direction of the next release.
                 </p>
               </ArticleParagraphHeader>
               <ArticleParagraphContent>
-                <div className="space-y-3">
-                  {[
-                    [
-                      "Public API",
-                      `${publicApiVersion} Beta · OpenAPI 3.1 · X-API-Key · ${gatewayOperationCount} operations`,
-                    ],
-                  ].map(([name, detail]) => (
-                    <div
-                      className="rounded-sm border border-border/70 bg-background p-4"
-                      key={name}
-                    >
-                      <p className="font-medium text-foreground">{name}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {detail}
+                <div className="rounded-xl border border-primary/25 bg-primary/5 p-5">
+                  <div className="space-y-5">
+                    <div className="max-w-2xl">
+                      <p className="font-mono text-[11px] tracking-[0.16em] text-primary">
+                        Product Roadmap
+                      </p>
+                      <h3 className="mt-2 text-lg font-semibold text-foreground">
+                        Making knowledge work more intelligent and
+                        conversational
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        Our current focus is AI integration: building a more
+                        advanced and human-centered conversational interface
+                        that connects with existing notes and turns dialogue
+                        into more structured, reusable knowledge.
                       </p>
                     </div>
+                    <VersionCardProgress
+                      {...getVersionProgress(versionRoadmap)}
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-5">
+                  {versionRoadmap.map(version => (
+                    <VersionCard key={version.version} version={version} />
                   ))}
                 </div>
-                <p>
-                  Future comparisons must cover base paths, authentication,
-                  renamed or removed operations, schema changes, errors, limits,
-                  migration deadlines, binary frames, ticket claims, and
-                  reconnect semantics.
-                </p>
+                <div className="rounded-sm border border-border/70 bg-background p-4">
+                  <p className="font-medium text-foreground">
+                    Public API baseline
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {publicApiVersion} Beta · OpenAPI 3.1 · X-API-Key ·{" "}
+                    {gatewayOperationCount} operations
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    Future API comparisons will cover base paths,
+                    authentication, renamed or removed operations, schema
+                    changes, errors, limits, migration deadlines, binary frames,
+                    ticket claims, and reconnect semantics.
+                  </p>
+                </div>
               </ArticleParagraphContent>
             </ArticleParagraph>
 

@@ -25,17 +25,17 @@ import {
 
 export const useGetMyAccount = (
   hookRequest?: GetMyAccountRequest,
-  options?: Partial<UseQueryOptions<GetMyAccountResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyAccountResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyAccountRequest
+    request?: GetMyAccountRequest,
   ): Promise<GetMyAccountResponse> => {
     try {
       if (!request) {
         throw new NotegicValidationError(
-          ValidationClientException.ReceivedUndefinedRequest()
+          ValidationClientException.ReceivedUndefinedRequest(),
         );
       }
 
@@ -43,7 +43,6 @@ export const useGetMyAccount = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       return response;
     } catch (error) {
@@ -62,7 +61,7 @@ export const useGetMyAccount = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyAccountRequest
+    callbackRequest: GetMyAccountRequest,
   ): Promise<GetMyAccountResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.userAccount.my(),
@@ -84,11 +83,10 @@ export const useUpdateMyAccount = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -103,11 +101,10 @@ export const useBindGoogleAccount = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;
@@ -122,11 +119,10 @@ export const useUnbindGoogleAccount = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;

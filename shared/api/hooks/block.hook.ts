@@ -26,15 +26,15 @@ import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export const useGetMyBlockById = (
   hookRequest?: GetMyBlockByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyBlockByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyBlockByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
   const perform = async (
-    request?: GetMyBlockByIdRequest
+    request?: GetMyBlockByIdRequest,
   ): Promise<GetMyBlockByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -42,14 +42,13 @@ export const useGetMyBlockById = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
 
   const query = useQuery<GetMyBlockByIdResponse, Error>({
     queryKey: queryKeys.block.oneById(
-      hookRequest?.param.blockId as UUID | undefined
+      hookRequest?.param.blockId as UUID | undefined,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -63,7 +62,7 @@ export const useGetMyBlockById = (
   const fetch = async (callbackRequest: GetMyBlockByIdRequest) =>
     queryClient.fetchQuery({
       queryKey: queryKeys.block.oneById(
-        callbackRequest.param.blockId as UUID | undefined
+        callbackRequest.param.blockId as UUID | undefined,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -76,15 +75,15 @@ export const useGetMyBlockById = (
 
 export const useGetMyBlocksByIds = (
   hookRequest?: GetMyBlocksByIdsRequest,
-  options?: Partial<UseQueryOptions<GetMyBlocksByIdsResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyBlocksByIdsResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
   const perform = async (
-    request?: GetMyBlocksByIdsRequest
+    request?: GetMyBlocksByIdsRequest,
   ): Promise<GetMyBlocksByIdsResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -92,13 +91,12 @@ export const useGetMyBlocksByIds = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     if (response.success && response.data) {
-      response.data.forEach(block => {
+      response.data.forEach((block) => {
         queryClient.setQueriesData(
           { queryKey: queryKeys.block.oneById(block.id as UUID) },
-          duplicateResponse(response, true, block)
+          duplicateResponse(response, true, block),
         );
       });
     }
@@ -107,7 +105,7 @@ export const useGetMyBlocksByIds = (
 
   const query = useQuery<GetMyBlocksByIdsResponse, Error>({
     queryKey: queryKeys.block.manyByIds(
-      hookRequest?.param.blockIds as UUID[] | undefined
+      hookRequest?.param.blockIds as UUID[] | undefined,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -121,7 +119,7 @@ export const useGetMyBlocksByIds = (
   const fetch = async (callbackRequest: GetMyBlocksByIdsRequest) =>
     queryClient.fetchQuery({
       queryKey: queryKeys.block.manyByIds(
-        callbackRequest.param.blockIds as UUID[] | undefined
+        callbackRequest.param.blockIds as UUID[] | undefined,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -134,15 +132,15 @@ export const useGetMyBlocksByIds = (
 
 export const useGetMyBlocksByBlockPackId = (
   hookRequest?: GetMyBlocksByBlockPackIdRequest,
-  options?: Partial<UseQueryOptions<GetMyBlocksByBlockPackIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyBlocksByBlockPackIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
   const perform = async (
-    request?: GetMyBlocksByBlockPackIdRequest
+    request?: GetMyBlocksByBlockPackIdRequest,
   ): Promise<GetMyBlocksByBlockPackIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -150,14 +148,13 @@ export const useGetMyBlocksByBlockPackId = (
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken,
-      response.embedded?.publicId
     );
     return response;
   };
 
   const query = useQuery<GetMyBlocksByBlockPackIdResponse, Error>({
     queryKey: queryKeys.block.manyByBlockPackId(
-      hookRequest?.param.blockPackId as UUID | undefined
+      hookRequest?.param.blockPackId as UUID | undefined,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -171,7 +168,7 @@ export const useGetMyBlocksByBlockPackId = (
   const fetch = async (callbackRequest: GetMyBlocksByBlockPackIdRequest) =>
     queryClient.fetchQuery({
       queryKey: queryKeys.block.manyByBlockPackId(
-        callbackRequest.param.blockPackId as UUID | undefined
+        callbackRequest.param.blockPackId as UUID | undefined,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,

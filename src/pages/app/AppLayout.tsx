@@ -20,7 +20,7 @@ import { UserSettingsProvider } from "@/providers/UserSettingsProvider";
 export default function AppLayout() {
   return (
     <TransactionSynchronizerProvider>
-      <UserProvider>
+      <UserProvider autoFetchUserData>
         <UserSettingsProvider>
           <RealtimeProvider>
             <BackgroundImagesProvider>

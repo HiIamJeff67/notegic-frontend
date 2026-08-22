@@ -4,7 +4,6 @@ export const TraditionalChineseWorkspaceTranslation = {
   navigation: {
     dashboard: "儀表板",
     routines: "流程",
-    community: "社群",
     shelves: "層架",
     stations: "工作站",
     routineTags: "流程標籤",
@@ -543,6 +542,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     redirectError: "重新導向錯誤",
     redirectUnknown: "重新導向期間發生未知錯誤。",
     validatingGoogle: "正在驗證 Google 身分……",
+    redirectingToDashboard: "正在重新導向至儀表板……",
     googleAuthFailed: "Google 身分驗證失敗",
     googleRedirectFailed: "無法完成 Google 重新導向",
     xRedirectUnavailable: "X 身分驗證尚未開放。",
@@ -574,16 +574,24 @@ export const TraditionalChineseWorkspaceTranslation = {
       createdContent: "你建立的內容，例如筆記與文件",
       usageData: "使用資料，例如造訪的頁面與使用的功能",
       deviceInfo: "裝置與瀏覽器資訊",
+      collectDetails:
+        "我們只會蒐集營運、保護與改善服務所需的資訊。有些資訊由你主動提供，另一些技術資料則可能在應用程式執行時自動產生。",
       useTitle: "2. 資訊使用方式",
       provideService: "提供並維護 Notegic 服務",
       improveExperience: "改善使用者體驗",
       communicateUpdates: "向你傳達更新資訊",
+      useDetails:
+        "這些用途包括驗證帳號、儲存與同步內容、支援協作、診斷錯誤、防止濫用，以及了解產品哪些部分需要改善。我們不會將你的私人筆記作為廣告素材使用。",
       sharingTitle: "3. 資料共享",
       sharingText:
         "我們不會出售你的個人資料。僅為營運服務所需，我們可能會與第三方服務（例如身分驗證供應商）共享資料。",
+      sharingDetails:
+        "服務供應商可能代表我們處理主機代管、身分驗證、儲存、電子郵件寄送、分析或安全相關資訊。他們只能取得完成工作所需的權限，並應妥善保護這些資訊。若法律要求，或為保護服務與使用者，我們也可能揭露必要資訊。",
       retentionTitle: "4. 資料保留",
       retentionText:
         "帳號有效期間，我們會保留你的資料。你可隨時聯絡我們要求刪除。",
+      retentionDetails:
+        "當你刪除內容或關閉帳號後，我們會在合理期間內從啟用中的系統移除相關資料，但備份、詐欺防範、爭議處理或其他法律義務可能例外。備份資料可能會在有限期間後安全覆寫。",
       rightsTitle: "5. 你的權利",
       rightsText:
         "你有權存取、更正或刪除個人資料。請透過 <email>{{email}}</email> 聯絡我們。",
@@ -591,10 +599,17 @@ export const TraditionalChineseWorkspaceTranslation = {
         "依適用法律，你也可以要求我們說明資料用途、反對特定處理方式、要求可攜格式的副本，或在以同意為處理依據時撤回同意。我們可能會在處理要求前請你驗證身分，且法律或安全義務可能限制部分要求。聯絡時請提供帳號電子郵件與希望處理的內容。",
       cookiesTitle: "6. Cookie",
       cookiesText: "我們使用 Cookie 與本機儲存空間來維持工作階段與偏好設定。",
+      cookiesDetails:
+        "這些技術可協助你保持登入、記住顯示偏好、保護請求，並支援離線或以本機優先的功能。你可以在瀏覽器中清除或封鎖它們，但 Notegic 的部分功能可能因此無法正常運作。",
       changesTitle: "7. 政策變更",
       changesText: "我們可能不時更新本政策；重大變更將透過應用程式通知你。",
+      changesDetails:
+        "本頁頂端的生效日期代表目前版本。如果變更會實質影響你的權利或我們處理資訊的方式，我們會提供更醒目的通知，並在法律要求時取得你的同意。",
       contactTitle: "8. 聯絡我們",
       contactText: "如有疑問，請透過 <email>{{email}}</email> 聯絡我們。",
+      contactDetails:
+        "詢問個人資料時，請盡量使用與帳號相關的電子郵件。我們會在合理期間內回覆，也可能要求補充資訊，以確認要求確實由你提出。",
+      viewEula: "查看終端使用者授權合約（EULA）",
     },
   },
   dialogs: {

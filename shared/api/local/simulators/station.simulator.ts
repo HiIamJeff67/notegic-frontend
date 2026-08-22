@@ -1,5 +1,5 @@
+import { toGraphQLSupportedIcon } from "@shared/api/graphql/conversions";
 import {
-  SupportedIcon as GraphQLSupportedIcon,
   SearchSortOrder,
   type SearchStationInput,
   SearchStationSortBy,
@@ -159,42 +159,7 @@ export class StationLocalSimulator {
     return {
       __typename: "SearchStationConnection",
       searchEdges: pagedStations.map(station => {
-        const icon = (() => {
-          switch (station.icon) {
-            case "📚":
-              return GraphQLSupportedIcon.SupportedIconBooks;
-            case "📅":
-              return GraphQLSupportedIcon.SupportedIconCalendar;
-            case "✅":
-              return GraphQLSupportedIcon.SupportedIconCheckMark;
-            case "⏰":
-              return GraphQLSupportedIcon.SupportedIconClock;
-            case "🔥":
-              return GraphQLSupportedIcon.SupportedIconFire;
-            case "📂":
-              return GraphQLSupportedIcon.SupportedIconFolderOpen;
-            case "😀":
-              return GraphQLSupportedIcon.SupportedIconGrinningFace;
-            case "💡":
-              return GraphQLSupportedIcon.SupportedIconLightbulb;
-            case "📓":
-              return GraphQLSupportedIcon.SupportedIconNotebook;
-            case "📝":
-              return GraphQLSupportedIcon.SupportedIconPencilPaper;
-            case "📌":
-              return GraphQLSupportedIcon.SupportedIconPin;
-            case "❤️":
-              return GraphQLSupportedIcon.SupportedIconRedHeart;
-            case "🚀":
-              return GraphQLSupportedIcon.SupportedIconRocket;
-            case "😊":
-              return GraphQLSupportedIcon.SupportedIconSmilingFaceWithSmilingEyes;
-            case "⭐":
-              return GraphQLSupportedIcon.SupportedIconStar;
-            default:
-              return null;
-          }
-        })();
+        const icon = toGraphQLSupportedIcon(station.icon);
 
         return {
           __typename: "SearchStationEdge",

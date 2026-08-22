@@ -1,7 +1,5 @@
 import { getClientRequestHeaders } from "@shared/api/clientHeaders";
 import { useRegister } from "@shared/api/hooks/auth.hook";
-import { useGetUserData } from "@shared/api/hooks/user.hook";
-import { queryFnGetUserData } from "@shared/api/invokers/user.invoker";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import toast from "@shared/lib/toast";
@@ -21,7 +19,6 @@ const RegisterPage = () => {
   const userManager = useUser();
 
   const registerMutator = useRegister();
-  const getUserDataQuerier = useGetUserData();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,16 +47,12 @@ const RegisterPage = () => {
         },
       });
 
-      const responseOfGettingUserData = await getUserDataQuerier.fetch({
-        header: getClientRequestHeaders(navigator.userAgent),
-        body: {},
-      });
+      await userManager.fetchUserData();
 
       setName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-      userManager.setUserData(responseOfGettingUserData.data);
       router.push(WebURLPathDictionary.app.dashboard._);
     };
 
@@ -85,7 +78,7 @@ const RegisterPage = () => {
   return (
     <GridBackground>
       <Suspense fallback={<StrictLoadingCover />}>
-        <StrictLoadingCover condition={registerMutator.isPending} />
+        <StrictLoadingCover condition={isRegisterPending} />
         <AuthPanel
           title={t("auth.register")}
           subtitle={`${t(

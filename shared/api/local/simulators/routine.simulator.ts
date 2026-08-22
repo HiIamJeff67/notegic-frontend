@@ -1,6 +1,8 @@
 import {
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineStatus as GraphQLRoutineStatus,
+  toGraphQLRoutinePeriod,
+  toGraphQLRoutineStatus,
+} from "@shared/api/graphql/conversions";
+import {
   type SearchRoutineInput,
   SearchRoutineSortBy,
   type SearchRoutinesQuery,
@@ -239,30 +241,8 @@ export class RoutineLocalSimulator {
     return {
       __typename: "SearchRoutineConnection",
       searchEdges: pagedRoutines.map(routine => {
-        const status = (() => {
-          switch (routine.status) {
-            case "Completed":
-              return GraphQLRoutineStatus.RoutineStatusCompleted;
-            case "InProgress":
-              return GraphQLRoutineStatus.RoutineStatusInProgress;
-            case "OverDue":
-              return GraphQLRoutineStatus.RoutineStatusOverDue;
-            default:
-              return GraphQLRoutineStatus.RoutineStatusScheduled;
-          }
-        })();
-        const period = (() => {
-          switch (routine.period) {
-            case "Daily":
-              return GraphQLRoutinePeriod.RoutinePeriodDaily;
-            case "Weekly":
-              return GraphQLRoutinePeriod.RoutinePeriodWeekly;
-            case "Monthly":
-              return GraphQLRoutinePeriod.RoutinePeriodMonthly;
-            default:
-              return null;
-          }
-        })();
+        const status = toGraphQLRoutineStatus(routine.status);
+        const period = toGraphQLRoutinePeriod(routine.period);
         return {
           __typename: "SearchRoutineEdge",
           encodedSearchCursor: btoa(JSON.stringify({ id: routine.id })),

@@ -1,3 +1,4 @@
+import { toGraphQLUserStatus } from "@shared/api/graphql/conversions";
 import {
   SearchRootShelfInput,
   SearchRootShelfSortBy,
@@ -5,7 +6,6 @@ import {
   SearchSortOrder,
   UserPlan,
   UserRole,
-  UserStatus as GraphQLUserStatus,
 } from "@shared/api/graphql/generated/graphql";
 import {
   AccessControlPermission,
@@ -180,10 +180,7 @@ export class RootShelfLocalSimulator {
             .from(UsersToShelves)
             .innerJoin(User, eq(User.publicId, UsersToShelves.userPublicId))
             .where(inArray(UsersToShelves.rootShelfId, pagedRootShelfIds));
-    const usersByRootShelfId = new Map<
-      string,
-      typeof usersToShelves
-    >();
+    const usersByRootShelfId = new Map<string, typeof usersToShelves>();
     for (const userToShelf of usersToShelves) {
       const users = usersByRootShelfId.get(userToShelf.rootShelfId) ?? [];
       users.push(userToShelf);
@@ -217,7 +214,7 @@ export class RootShelfLocalSimulator {
             displayName: user.displayName,
             role: UserRole.Normal,
             plan: UserPlan.Free,
-            status: user.status as GraphQLUserStatus,
+            status: toGraphQLUserStatus(user.status),
             createdAt: user.createdAt,
             info: null,
           });

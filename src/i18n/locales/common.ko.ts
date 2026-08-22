@@ -43,7 +43,6 @@ export const KoreanCommonTranslation: CommonTranslation = {
     login: "로그인",
     register: "회원가입",
     resetPassword: "비밀번호 재설정",
-    switchAccount: "계정 전환",
     logout: "로그아웃",
     account: "계정",
     name: "이름",

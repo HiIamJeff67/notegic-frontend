@@ -27,17 +27,17 @@ import {
 
 export const useGetUserData = (
   hookRequest?: GetUserDataRequest,
-  options?: Partial<UseQueryOptions<GetUserDataResponse, Error>>
+  options?: Partial<UseQueryOptions<GetUserDataResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetUserDataRequest
+    request?: GetUserDataRequest,
   ): Promise<GetUserDataResponse> => {
     try {
       if (!request) {
         throw new NotegicValidationError(
-          ValidationClientException.ReceivedUndefinedRequest()
+          ValidationClientException.ReceivedUndefinedRequest(),
         );
       }
 
@@ -45,7 +45,6 @@ export const useGetUserData = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await UserLocalSynchronizer.syncGetUserData(response);
       return response;
@@ -65,12 +64,12 @@ export const useGetUserData = (
   });
 
   const fetch = async (
-    callbackRequest: GetUserDataRequest
+    callbackRequest: GetUserDataRequest,
   ): Promise<GetUserDataResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.user.data(true),
       queryFn: async () => perform(callbackRequest),
-      staleTime: UseQueryDefaultOptions.staleTime,
+      staleTime: 0,
       ...options,
     });
   };
@@ -80,7 +79,7 @@ export const useGetUserData = (
 
 export const useGetMe = (
   hookRequest?: GetMeRequest,
-  options?: Partial<UseQueryOptions<GetMeResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMeResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
@@ -88,7 +87,7 @@ export const useGetMe = (
     try {
       if (!request) {
         throw new NotegicValidationError(
-          ValidationClientException.ReceivedUndefinedRequest()
+          ValidationClientException.ReceivedUndefinedRequest(),
         );
       }
 
@@ -96,7 +95,6 @@ export const useGetMe = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await UserLocalSynchronizer.syncGetMe(response);
       return response;
@@ -116,7 +114,7 @@ export const useGetMe = (
   });
 
   const fetch = async (
-    callbackRequest: GetMeRequest
+    callbackRequest: GetMeRequest,
   ): Promise<GetMeResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.user.me(true),
@@ -138,11 +136,10 @@ export const useUpdateMe = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;

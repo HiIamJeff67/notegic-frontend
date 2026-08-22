@@ -11,10 +11,19 @@ const LOGO_SIZE_PX = 154;
 const GHOST_STROKE_WIDTH = 18;
 const GHOST_STROKE_MITER_LIMIT = 2;
 
-const LoadingIndicator = () => {
+interface LoadingIndicatorProps {
+  label?: string;
+}
+
+const LoadingIndicator = ({ label }: LoadingIndicatorProps) => {
   const { t } = useTranslation();
+  const loadingLabel = label ?? t("common.loading");
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div
+      className="flex flex-col items-center justify-center"
+      role="status"
+      aria-live="polite"
+    >
       <svg
         viewBox={LOGO_VIEW_BOX}
         aria-hidden="true"
@@ -46,7 +55,7 @@ const LoadingIndicator = () => {
         </g>
       </svg>
       <p className="text-base font-semibold tracking-[0.16em] text-[var(--loading-logo-front)]">
-        {t("common.loading")}
+        {loadingLabel}
       </p>
     </div>
   );

@@ -74,16 +74,16 @@ import {
 
 export const useGetMySubShelfById = (
   hookRequest?: GetMySubShelfByIdRequest,
-  options?: Partial<UseQueryOptions<GetMySubShelfByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMySubShelfByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMySubShelfByIdRequest
+    request?: GetMySubShelfByIdRequest,
   ): Promise<GetMySubShelfByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -96,7 +96,6 @@ export const useGetMySubShelfById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await SubShelfLocalSynchronizer.syncGetMySubShelfById(response);
       return response;
@@ -122,7 +121,7 @@ export const useGetMySubShelfById = (
   const query = useQuery<GetMySubShelfByIdResponse, Error>({
     queryKey: queryKeys.subShelf.oneById(
       hookRequest?.param.subShelfId as UUID | undefined,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -133,12 +132,12 @@ export const useGetMySubShelfById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMySubShelfByIdRequest
+    callbackRequest: GetMySubShelfByIdRequest,
   ): Promise<GetMySubShelfByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.subShelf.oneById(
         callbackRequest.param.subShelfId as UUID | undefined,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -153,16 +152,16 @@ export const useGetMySubShelvesByPrevSubShelfId = (
   hookRequest?: GetMySubShelvesByPrevSubShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetMySubShelvesByPrevSubShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMySubShelvesByPrevSubShelfIdRequest
+    request?: GetMySubShelvesByPrevSubShelfIdRequest,
   ): Promise<GetMySubShelvesByPrevSubShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -175,10 +174,9 @@ export const useGetMySubShelvesByPrevSubShelfId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await SubShelfLocalSynchronizer.syncGetMySubShelvesByPrevSubShelfId(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -188,7 +186,7 @@ export const useGetMySubShelvesByPrevSubShelfId = (
       ) {
         const existingSubShelves =
           await SubShelfLocalSimulator.simulateGetMySubShelvesByPrevSubShelfId(
-            request
+            request,
           );
         return {
           success: false,
@@ -205,7 +203,7 @@ export const useGetMySubShelvesByPrevSubShelfId = (
   const query = useQuery<GetMySubShelvesByPrevSubShelfIdResponse, Error>({
     queryKey: queryKeys.subShelf.manyByPrevSubShelfId(
       hookRequest?.param.prevSubShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -216,12 +214,12 @@ export const useGetMySubShelvesByPrevSubShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetMySubShelvesByPrevSubShelfIdRequest
+    callbackRequest: GetMySubShelvesByPrevSubShelfIdRequest,
   ): Promise<GetMySubShelvesByPrevSubShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.subShelf.manyByPrevSubShelfId(
         callbackRequest.param.prevSubShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -236,16 +234,16 @@ export const useGetAllMySubShelvesByRootShelfId = (
   hookRequest?: GetAllMySubShelvesByRootShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetAllMySubShelvesByRootShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMySubShelvesByRootShelfIdRequest
+    request?: GetAllMySubShelvesByRootShelfIdRequest,
   ): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -258,10 +256,9 @@ export const useGetAllMySubShelvesByRootShelfId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await SubShelfLocalSynchronizer.syncGetAllMySubShelvesByRootShelfId(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -271,7 +268,7 @@ export const useGetAllMySubShelvesByRootShelfId = (
       ) {
         const existingSubShelves =
           await SubShelfLocalSimulator.simulateGetAllMySubShelvesByRootShelfId(
-            request
+            request,
           );
         return {
           success: false,
@@ -288,7 +285,7 @@ export const useGetAllMySubShelvesByRootShelfId = (
   const query = useQuery<GetAllMySubShelvesByRootShelfIdResponse, Error>({
     queryKey: queryKeys.subShelf.manyByRootShelfId(
       hookRequest?.param.rootShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: options?.staleTime ?? UseQueryDefaultOptions.staleTime,
@@ -299,12 +296,12 @@ export const useGetAllMySubShelvesByRootShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMySubShelvesByRootShelfIdRequest
+    callbackRequest: GetAllMySubShelvesByRootShelfIdRequest,
   ): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.subShelf.manyByRootShelfId(
         callbackRequest.param.rootShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -319,16 +316,16 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
   hookRequest?: GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   options?: Partial<
     UseQueryOptions<GetMySubShelvesAndItemsByPrevSubShelfIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMySubShelvesAndItemsByPrevSubShelfIdRequest
+    request?: GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   ): Promise<GetMySubShelvesAndItemsByPrevSubShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -342,10 +339,9 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await SubShelfLocalSynchronizer.syncGetMySubShelvesAndItemsByPrevSubShelfId(
-        response
+        response,
       );
       return response;
     } catch (error) {
@@ -355,7 +351,7 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
       ) {
         const existing =
           await SubShelfLocalSimulator.simulateGetMySubShelvesAndItemsByPrevSubShelfId(
-            request
+            request,
           );
         return {
           success: false,
@@ -375,7 +371,7 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
   >({
     queryKey: queryKeys.subShelf.manyByPrevSubShelfId(
       hookRequest?.param.prevSubShelfId as UUID | undefined,
-      hookRequest?.param.areDeleted ?? false
+      hookRequest?.param.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -386,12 +382,12 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetMySubShelvesAndItemsByPrevSubShelfIdRequest
+    callbackRequest: GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   ): Promise<GetMySubShelvesAndItemsByPrevSubShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.subShelf.manyByPrevSubShelfId(
         callbackRequest.param.prevSubShelfId as UUID | undefined,
-        callbackRequest.param.areDeleted ?? false
+        callbackRequest.param.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -406,7 +402,7 @@ export const useCreateSubShelfByRootShelfId = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: CreateSubShelfByRootShelfIdRequest
+    request: CreateSubShelfByRootShelfIdRequest,
   ): Promise<CreateSubShelfByRootShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -422,7 +418,6 @@ export const useCreateSubShelfByRootShelfId = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const prevSubShelfId = request.affected.prevSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -432,13 +427,13 @@ export const useCreateSubShelfByRootShelfId = () => {
         queryKeys.subShelf.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncCreateSubShelfByRootShelfId(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -446,7 +441,7 @@ export const useCreateSubShelfByRootShelfId = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateCreateSubShelfByRootShelfId(
-              request
+              request,
             );
             break;
         }
@@ -461,7 +456,7 @@ export const useCreateSubShelvesByRootShelfIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: CreateSubShelvesByRootShelfIdsRequest
+    request: CreateSubShelvesByRootShelfIdsRequest,
   ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -477,28 +472,27 @@ export const useCreateSubShelvesByRootShelfIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const prevSubShelfIds = request.affected
         .prevSubShelfIds as (UUID | null)[];
       const rootShelfIds = request.affected.rootShelfIds as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...prevSubShelfIds.map(prevSubShelfId =>
-          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId)
+        ...prevSubShelfIds.map((prevSubShelfId) =>
+          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncCreateSubShelvesByRootShelfIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -506,7 +500,7 @@ export const useCreateSubShelvesByRootShelfIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateCreateSubShelvesByRootShelfIds(
-              request
+              request,
             );
             break;
         }
@@ -521,7 +515,7 @@ export const useUpdateMySubShelfById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: UpdateMySubShelfByIdRequest
+    request: UpdateMySubShelfByIdRequest,
   ): Promise<UpdateMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -537,7 +531,6 @@ export const useUpdateMySubShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const prevSubShelfId = request.affected.prevSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -547,13 +540,13 @@ export const useUpdateMySubShelfById = () => {
         queryKeys.subShelf.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncUpdateMySubShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -573,7 +566,7 @@ export const useUpdateMySubShelvesByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: UpdateMySubShelvesByIdsRequest
+    request: UpdateMySubShelvesByIdsRequest,
   ): Promise<UpdateMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -589,28 +582,27 @@ export const useUpdateMySubShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const prevSubShelfIds = request.affected
         .prevSubShelfIds as (UUID | null)[];
       const rootShelfIds = request.affected.rootShelfIds as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...prevSubShelfIds.map(prevSubShelfId =>
-          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId)
+        ...prevSubShelfIds.map((prevSubShelfId) =>
+          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncUpdateMySubShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -618,7 +610,7 @@ export const useUpdateMySubShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateUpdateMySubShelvesByIds(
-              request
+              request,
             );
             break;
         }
@@ -632,7 +624,7 @@ export const useUpdateMySubShelvesByIds = () => {
 export const useMoveMySubShelf = () => {
   const queryClient = getQueryClient();
   const perform = async (
-    request: MoveMySubShelfRequest
+    request: MoveMySubShelfRequest,
   ): Promise<MoveMySubShelfResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -648,28 +640,27 @@ export const useMoveMySubShelf = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const sourceSubShelfId = request.body.sourceSubShelfId as UUID;
       const destinationSubShelfId = request.body
         .destinationSubShelfId as UUID | null;
       const rootShelfId = request.affected.rootShelfId as UUID;
       const childSubShelfIds = (request.affected.childSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
         queryKeys.rootShelf.oneById(rootShelfId),
-        ...childSubShelfIds.map(childSubShelfId =>
-          queryKeys.subShelf.oneById(childSubShelfId)
+        ...childSubShelfIds.map((childSubShelfId) =>
+          queryKeys.subShelf.oneById(childSubShelfId),
         ),
         queryKeys.subShelf.oneById(sourceSubShelfId),
         queryKeys.subShelf.manyByPrevSubShelfId(destinationSubShelfId),
         queryKeys.subShelf.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncMoveMySubShelf(request, response);
     },
@@ -691,7 +682,7 @@ export const useMoveMySubShelvesByRootShelfId = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: MoveMySubShelvesByRootShelfIdRequest
+    request: MoveMySubShelvesByRootShelfIdRequest,
   ): Promise<MoveMySubShelvesByRootShelfIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -707,39 +698,38 @@ export const useMoveMySubShelvesByRootShelfId = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const sourceSubShelfIds = (request.body.sourceSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const destinationSubShelfId = request.body.destinationSubShelfId as UUID;
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const childSubShelfIds = (request.affected.childSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...sourceSubShelfIds.map(sourceSubShelfId =>
-          queryKeys.subShelf.oneById(sourceSubShelfId)
+        ...sourceSubShelfIds.map((sourceSubShelfId) =>
+          queryKeys.subShelf.oneById(sourceSubShelfId),
         ),
         queryKeys.subShelf.manyByPrevSubShelfId(destinationSubShelfId),
-        ...childSubShelfIds.map(childSubShelfId =>
-          queryKeys.subShelf.oneById(childSubShelfId)
+        ...childSubShelfIds.map((childSubShelfId) =>
+          queryKeys.subShelf.oneById(childSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfId(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -747,7 +737,7 @@ export const useMoveMySubShelvesByRootShelfId = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
-              request
+              request,
             );
             break;
         }
@@ -762,7 +752,7 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: MoveMySubShelvesByRootShelfIdsRequest
+    request: MoveMySubShelvesByRootShelfIdsRequest,
   ): Promise<MoveMySubShelvesByRootShelfIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -778,45 +768,44 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const sourceSubShelfIds = [] as UUID[];
       const destinationSubShelfIds = [] as UUID[];
       for (const movedSubShelf of request.body.moveSubShelves) {
         sourceSubShelfIds.push(...(movedSubShelf.sourceSubShelfIds as UUID[]));
         destinationSubShelfIds.push(
-          movedSubShelf.destinationSubShelfId as UUID
+          movedSubShelf.destinationSubShelfId as UUID,
         );
       }
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const childSubShelfIds = (request.affected.childSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...sourceSubShelfIds.map(sourceSubShelfId =>
-          queryKeys.subShelf.oneById(sourceSubShelfId)
+        ...sourceSubShelfIds.map((sourceSubShelfId) =>
+          queryKeys.subShelf.oneById(sourceSubShelfId),
         ),
-        ...destinationSubShelfIds.map(destinationSubShelfId =>
-          queryKeys.subShelf.manyByPrevSubShelfId(destinationSubShelfId)
+        ...destinationSubShelfIds.map((destinationSubShelfId) =>
+          queryKeys.subShelf.manyByPrevSubShelfId(destinationSubShelfId),
         ),
-        ...childSubShelfIds.map(childSubShelfId =>
-          queryKeys.subShelf.oneById(childSubShelfId)
+        ...childSubShelfIds.map((childSubShelfId) =>
+          queryKeys.subShelf.oneById(childSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -824,7 +813,7 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
-              request
+              request,
             );
             break;
         }
@@ -839,7 +828,7 @@ export const useRestoreMySubShelfById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: RestoreMySubShelfByIdRequest
+    request: RestoreMySubShelfByIdRequest,
   ): Promise<RestoreMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -855,7 +844,6 @@ export const useRestoreMySubShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const subShelfId = request.body.subShelfId as UUID;
       const prevSubShelfId = request.affected.prevSubShelfId as UUID;
@@ -868,13 +856,13 @@ export const useRestoreMySubShelfById = () => {
         queryKeys.material.manyByParentSubShelfId(subShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncRestoreMySubShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -894,7 +882,7 @@ export const useRestoreMySubShelvesByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: RestoreMySubShelvesByIdsRequest
+    request: RestoreMySubShelvesByIdsRequest,
   ): Promise<RestoreMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -910,38 +898,37 @@ export const useRestoreMySubShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const subShelfIds = (request.body.subShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const prevSubShelfIds = (request.affected.prevSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...subShelfIds.flatMap(subShelfId => [
+        ...subShelfIds.flatMap((subShelfId) => [
           queryKeys.subShelf.oneById(subShelfId),
           queryKeys.material.manyByParentSubShelfId(subShelfId),
         ]),
-        ...prevSubShelfIds.map(prevSubShelfId =>
-          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId)
+        ...prevSubShelfIds.map((prevSubShelfId) =>
+          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncRestoreMySubShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -949,7 +936,7 @@ export const useRestoreMySubShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(
-              request
+              request,
             );
             break;
         }
@@ -964,7 +951,7 @@ export const useDeleteMySubShelfById = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: DeleteMySubShelfByIdRequest
+    request: DeleteMySubShelfByIdRequest,
   ): Promise<DeleteMySubShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -980,7 +967,6 @@ export const useDeleteMySubShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const subShelfId = request.body.subShelfId as UUID;
       const prevSubShelfId = request.affected.prevSubShelfId as UUID;
@@ -993,13 +979,13 @@ export const useDeleteMySubShelfById = () => {
         queryKeys.material.manyByParentSubShelfId(subShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncDeleteMySubShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -1020,7 +1006,7 @@ export const useDeleteMySubShelvesByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: DeleteMySubShelvesByIdsRequest
+    request: DeleteMySubShelvesByIdsRequest,
   ): Promise<DeleteMySubShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -1036,38 +1022,37 @@ export const useDeleteMySubShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const subShelfIds = (request.body.subShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const rootShelfIds = (request.affected.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const prevSubShelfIds = (request.affected.prevSubShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
         ]),
-        ...subShelfIds.flatMap(subShelfId => [
+        ...subShelfIds.flatMap((subShelfId) => [
           queryKeys.subShelf.oneById(subShelfId),
           queryKeys.material.manyByParentSubShelfId(subShelfId),
         ]),
-        ...prevSubShelfIds.map(prevSubShelfId =>
-          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId)
+        ...prevSubShelfIds.map((prevSubShelfId) =>
+          queryKeys.subShelf.manyByPrevSubShelfId(prevSubShelfId),
         ),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await SubShelfLocalSynchronizer.syncDeleteMySubShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -1075,7 +1060,7 @@ export const useDeleteMySubShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await SubShelfLocalSimulator.simulateDeleteMySubShelvesByIds(
-              request
+              request,
             );
             break;
         }

@@ -40,54 +40,54 @@ export const useVisualizeMyRoutineTaskRecordStatusCount = (
   request?: VisualizeMyRoutineTaskRecordStatusCountRequest,
   options?: Partial<
     UseQueryOptions<VisualizeMyRoutineTaskRecordStatusCountResponse, Error>
-  >
+  >,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.routineTaskRecord.visualizeMyStatusCount(
         currentRequest?.param.permission,
-        currentRequest?.param.routineTaskIds as UUID[] | undefined
+        currentRequest?.param.routineTaskIds as UUID[] | undefined,
       ),
     queryFnVisualizeMyRoutineTaskRecordStatusCount,
-    options
+    options,
   );
 
 export const useVisualizeMyRoutineTaskRecordPurposeCount = (
   request?: VisualizeMyRoutineTaskRecordPurposeCountRequest,
   options?: Partial<
     UseQueryOptions<VisualizeMyRoutineTaskRecordPurposeCountResponse, Error>
-  >
+  >,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.routineTaskRecord.visualizeMyPurposeCount(
         currentRequest?.param.permission,
-        currentRequest?.param.routineTaskIds as UUID[] | undefined
+        currentRequest?.param.routineTaskIds as UUID[] | undefined,
       ),
     queryFnVisualizeMyRoutineTaskRecordPurposeCount,
-    options
+    options,
   );
 
 export const useVisualizeMyRoutineTaskRecordScheduledAtCount = (
   request?: VisualizeMyRoutineTaskRecordScheduledAtCountRequest,
   options?: Partial<
     UseQueryOptions<VisualizeMyRoutineTaskRecordScheduledAtCountResponse, Error>
-  >
+  >,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.routineTaskRecord.visualizeMyScheduledAtCount(
         currentRequest?.param.permission,
         currentRequest?.param.timeHourUnit,
         currentRequest?.param.queryRangeStartedAt,
         currentRequest?.param.queryRangeEndedAt,
-        currentRequest?.param.routineTaskIds as UUID[] | undefined
+        currentRequest?.param.routineTaskIds as UUID[] | undefined,
       ),
     queryFnVisualizeMyRoutineTaskRecordScheduledAtCount,
-    options
+    options,
   );
 
 export const useVisualizeMyRoutineTaskRecordActualStartedAtCount = (
@@ -97,20 +97,20 @@ export const useVisualizeMyRoutineTaskRecordActualStartedAtCount = (
       VisualizeMyRoutineTaskRecordActualStartedAtCountResponse,
       Error
     >
-  >
+  >,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.routineTaskRecord.visualizeMyActualStartedAtCount(
         currentRequest?.param.permission,
         currentRequest?.param.timeHourUnit,
         currentRequest?.param.queryRangeStartedAt,
         currentRequest?.param.queryRangeEndedAt,
-        currentRequest?.param.routineTaskIds as UUID[] | undefined
+        currentRequest?.param.routineTaskIds as UUID[] | undefined,
       ),
     queryFnVisualizeMyRoutineTaskRecordActualStartedAtCount,
-    options
+    options,
   );
 
 export const useVisualizeMyRoutineTaskRecordActualEndedAtCount = (
@@ -120,36 +120,36 @@ export const useVisualizeMyRoutineTaskRecordActualEndedAtCount = (
       VisualizeMyRoutineTaskRecordActualEndedAtCountResponse,
       Error
     >
-  >
+  >,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.routineTaskRecord.visualizeMyActualEndedAtCount(
         currentRequest?.param.permission,
         currentRequest?.param.timeHourUnit,
         currentRequest?.param.queryRangeStartedAt,
         currentRequest?.param.queryRangeEndedAt,
-        currentRequest?.param.routineTaskIds as UUID[] | undefined
+        currentRequest?.param.routineTaskIds as UUID[] | undefined,
       ),
     queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
-    options
+    options,
   );
 
 export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
   hookRequest?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
   options?: Partial<
     UseQueryOptions<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse, Error>
-  >
+  >,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
+    request?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
   ): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -163,7 +163,6 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       return response;
     } catch (error) {
@@ -189,7 +188,7 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
   >({
     queryKey: queryKeys.routineTaskRecord.recentByRoutineTaskId(
       hookRequest?.param.routineTaskId as UUID | undefined,
-      hookRequest?.param.limit
+      hookRequest?.param.limit,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -200,12 +199,12 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
+    callbackRequest: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
   ): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> =>
     queryClient.fetchQuery({
       queryKey: queryKeys.routineTaskRecord.recentByRoutineTaskId(
         callbackRequest.param.routineTaskId as UUID,
-        callbackRequest.param.limit
+        callbackRequest.param.limit,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,

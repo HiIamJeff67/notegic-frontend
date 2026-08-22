@@ -47,16 +47,16 @@ import {
 
 export const useGetMyRoutineTagById = (
   hookRequest?: GetMyRoutineTagByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyRoutineTagByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyRoutineTagByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyRoutineTagByIdRequest
+    request?: GetMyRoutineTagByIdRequest,
   ): Promise<GetMyRoutineTagByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -69,7 +69,6 @@ export const useGetMyRoutineTagById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await RoutineTagLocalSynchronizer.syncGetMyRoutineTagById(response);
       return response;
@@ -95,7 +94,7 @@ export const useGetMyRoutineTagById = (
   const query = useQuery<GetMyRoutineTagByIdResponse, Error>({
     queryKey: queryKeys.routineTag.oneById(
       hookRequest?.param.routineTagId as UUID | undefined,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -106,12 +105,12 @@ export const useGetMyRoutineTagById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyRoutineTagByIdRequest
+    callbackRequest: GetMyRoutineTagByIdRequest,
   ): Promise<GetMyRoutineTagByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.routineTag.oneById(
         callbackRequest.param.routineTagId as UUID | undefined,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -124,16 +123,16 @@ export const useGetMyRoutineTagById = (
 
 export const useGetAllMyRoutineTags = (
   hookRequest?: GetAllMyRoutineTagsRequest,
-  options?: Partial<UseQueryOptions<GetAllMyRoutineTagsResponse, Error>>
+  options?: Partial<UseQueryOptions<GetAllMyRoutineTagsResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyRoutineTagsRequest
+    request?: GetAllMyRoutineTagsRequest,
   ): Promise<GetAllMyRoutineTagsResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -146,7 +145,6 @@ export const useGetAllMyRoutineTags = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await RoutineTagLocalSynchronizer.syncGetAllMyRoutineTags(response);
       return response;
@@ -171,7 +169,7 @@ export const useGetAllMyRoutineTags = (
 
   const query = useQuery<GetAllMyRoutineTagsResponse, Error>({
     queryKey: queryKeys.routineTag.myAll(
-      hookRequest?.param?.areDeleted ?? false
+      hookRequest?.param?.areDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -182,11 +180,11 @@ export const useGetAllMyRoutineTags = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyRoutineTagsRequest
+    callbackRequest: GetAllMyRoutineTagsRequest,
   ): Promise<GetAllMyRoutineTagsResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.routineTag.myAll(
-        callbackRequest.param?.areDeleted ?? false
+        callbackRequest.param?.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -215,14 +213,15 @@ export const useCreateRoutineTag = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(response.data.id as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -261,23 +260,24 @@ export const useCreateRoutineTags = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
-        ...response.data.ids.map(id =>
-          queryKeys.routineTag.oneById(id as UUID)
+        ...response.data.ids.map((id) =>
+          queryKeys.routineTag.oneById(id as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
       apolloClient.cache.gc();
       await RoutineTagLocalSynchronizer.syncCreateRoutineTags(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -312,21 +312,22 @@ export const useUpdateMyRoutineTagById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(request.body.routineTagId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
       apolloClient.cache.gc();
       await RoutineTagLocalSynchronizer.syncUpdateMyRoutineTagById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -361,23 +362,24 @@ export const useUpdateMyRoutineTagsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
-        ...request.body.updatedRoutineTags.map(tag =>
-          queryKeys.routineTag.oneById(tag.routineTagId as UUID)
+        ...request.body.updatedRoutineTags.map((tag) =>
+          queryKeys.routineTag.oneById(tag.routineTagId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
       apolloClient.cache.gc();
       await RoutineTagLocalSynchronizer.syncUpdateMyRoutineTagsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -387,7 +389,7 @@ export const useUpdateMyRoutineTagsByIds = () => {
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
         await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagsByIds(
-          request
+          request,
         );
       }
     },
@@ -414,21 +416,22 @@ export const useHardDeleteMyRoutineTagById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(request.body.routineTagId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
       apolloClient.cache.gc();
       await RoutineTagLocalSynchronizer.syncHardDeleteMyRoutineTagById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -438,7 +441,7 @@ export const useHardDeleteMyRoutineTagById = () => {
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
         await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagById(
-          request
+          request,
         );
       }
     },
@@ -462,29 +465,30 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
     mutationFn: perform,
     onSuccess: async (
       response,
-      request: HardDeleteMyRoutineTagsByIdsRequest
+      request: HardDeleteMyRoutineTagsByIdsRequest,
     ) => {
       if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.routineTag.all(),
-        ...request.body.routineTagIds.map(routineTagId =>
-          queryKeys.routineTag.oneById(routineTagId as UUID)
+        ...request.body.routineTagIds.map((routineTagId) =>
+          queryKeys.routineTag.oneById(routineTagId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
       apolloClient.cache.gc();
       await RoutineTagLocalSynchronizer.syncHardDeleteMyRoutineTagsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -494,7 +498,7 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
           ExceptionReasonDictionary.client.fetch.missingNetwork
       ) {
         await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagsByIds(
-          request
+          request,
         );
       }
     },

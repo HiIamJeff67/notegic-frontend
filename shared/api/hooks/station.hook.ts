@@ -65,28 +65,28 @@ import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyTotalCount = (
   request?: VisualizeMyTotalCountRequest,
-  options?: Partial<UseQueryOptions<VisualizeMyTotalCountResponse, Error>>
+  options?: Partial<UseQueryOptions<VisualizeMyTotalCountResponse, Error>>,
 ) =>
   useVisualizeQuery(
     request,
-    currentRequest =>
+    (currentRequest) =>
       queryKeys.station.visualizeMyTotalCount(currentRequest?.param.permission),
     queryFnVisualizeMyTotalCount,
-    options
+    options,
   );
 
 export const useGetMyStationById = (
   hookRequest?: GetMyStationByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyStationByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyStationByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyStationByIdRequest
+    request?: GetMyStationByIdRequest,
   ): Promise<GetMyStationByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -99,7 +99,6 @@ export const useGetMyStationById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       await StationLocalSynchronizer.syncGetMyStationById(response);
       return response;
@@ -125,7 +124,7 @@ export const useGetMyStationById = (
   const query = useQuery<GetMyStationByIdResponse, Error>({
     queryKey: queryKeys.station.oneById(
       hookRequest?.param.stationId as UUID | undefined,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -136,12 +135,12 @@ export const useGetMyStationById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyStationByIdRequest
+    callbackRequest: GetMyStationByIdRequest,
   ): Promise<GetMyStationByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.station.oneById(
         callbackRequest.param.stationId as UUID | undefined,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -154,16 +153,16 @@ export const useGetMyStationById = (
 
 export const useGetAllMyStations = (
   hookRequest?: GetAllMyStationsRequest,
-  options?: Partial<UseQueryOptions<GetAllMyStationsResponse, Error>>
+  options?: Partial<UseQueryOptions<GetAllMyStationsResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyStationsRequest
+    request?: GetAllMyStationsRequest,
   ): Promise<GetAllMyStationsResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -176,7 +175,6 @@ export const useGetAllMyStations = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await StationLocalSynchronizer.syncGetAllMyStations(response);
       return response;
@@ -210,11 +208,11 @@ export const useGetAllMyStations = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyStationsRequest
+    callbackRequest: GetAllMyStationsRequest,
   ): Promise<GetAllMyStationsResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.station.myAll(
-        callbackRequest.param?.areDeleted ?? false
+        callbackRequest.param?.areDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -243,14 +241,15 @@ export const useCreateStation = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(response.data.id as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.gc();
@@ -288,14 +287,15 @@ export const useCreateStations = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
-        ...response.data.ids.map(id => queryKeys.station.oneById(id as UUID)),
+        ...response.data.ids.map((id) => queryKeys.station.oneById(id as UUID)),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.gc();
@@ -333,14 +333,15 @@ export const useUpdateMyStationById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -380,16 +381,17 @@ export const useUpdateMyStationsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
-        ...request.body.updatedStations.map(station =>
-          queryKeys.station.oneById(station.stationId as UUID)
+        ...request.body.updatedStations.map((station) =>
+          queryKeys.station.oneById(station.stationId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -397,7 +399,7 @@ export const useUpdateMyStationsByIds = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncUpdateMyStationsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -432,14 +434,15 @@ export const useRestoreMyStationById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -447,7 +450,7 @@ export const useRestoreMyStationById = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncRestoreMyStationById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -482,16 +485,17 @@ export const useRestoreMyStationsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
-        ...request.body.stationIds.map(stationId =>
-          queryKeys.station.oneById(stationId as UUID)
+        ...request.body.stationIds.map((stationId) =>
+          queryKeys.station.oneById(stationId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -499,7 +503,7 @@ export const useRestoreMyStationsByIds = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncRestoreMyStationsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -534,14 +538,15 @@ export const useDeleteMyStationById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -581,16 +586,17 @@ export const useDeleteMyStationsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
-        ...request.body.stationIds.map(stationId =>
-          queryKeys.station.oneById(stationId as UUID)
+        ...request.body.stationIds.map((stationId) =>
+          queryKeys.station.oneById(stationId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -598,7 +604,7 @@ export const useDeleteMyStationsByIds = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncDeleteMyStationsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -633,14 +639,15 @@ export const useHardDeleteMyStationById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -648,7 +655,7 @@ export const useHardDeleteMyStationById = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncHardDeleteMyStationById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -683,16 +690,17 @@ export const useHardDeleteMyStationsByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const targetKeys = [
         queryKeys.station.all(),
-        ...request.body.stationIds.map(stationId =>
-          queryKeys.station.oneById(stationId as UUID)
+        ...request.body.stationIds.map((stationId) =>
+          queryKeys.station.oneById(stationId as UUID),
         ),
       ];
       await Promise.all(
-        targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
+        targetKeys.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       );
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutines" });
@@ -700,7 +708,7 @@ export const useHardDeleteMyStationsByIds = () => {
       apolloClient.cache.gc();
       await StationLocalSynchronizer.syncHardDeleteMyStationsByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -721,7 +729,7 @@ export const useTransferMyStationOwnership = () => {
   const queryClient = getQueryClient();
   return useMutation({
     mutationFn: (
-      request: TransferMyStationOwnershipRequest
+      request: TransferMyStationOwnershipRequest,
     ): Promise<TransferMyStationOwnershipResponse> =>
       mutationFnTransferMyStationOwnership(request),
     onSuccess: async (_response, request) => {
@@ -739,7 +747,7 @@ export const useLeaveMyStation = () => {
   const queryClient = getQueryClient();
   return useMutation({
     mutationFn: (
-      request: LeaveMyStationRequest
+      request: LeaveMyStationRequest,
     ): Promise<LeaveMyStationResponse> => mutationFnLeaveMyStation(request),
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({

@@ -41,7 +41,6 @@ export interface CommonTranslation {
     login: string;
     register: string;
     resetPassword: string;
-    switchAccount: string;
     logout: string;
     account: string;
     name: string;

@@ -69,16 +69,16 @@ import {
 
 export const useGetMyRootShelfById = (
   hookRequest?: GetMyRootShelfByIdRequest,
-  options?: Partial<UseQueryOptions<GetMyRootShelfByIdResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyRootShelfByIdResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyRootShelfByIdRequest
+    request?: GetMyRootShelfByIdRequest,
   ): Promise<GetMyRootShelfByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
+        ValidationClientException.ReceivedUndefinedRequest(),
       );
     }
 
@@ -91,7 +91,6 @@ export const useGetMyRootShelfById = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       await RootShelfLocalSynchronizer.syncGetMyRootShelfById(response);
       return response;
@@ -117,7 +116,7 @@ export const useGetMyRootShelfById = (
   const query = useQuery<GetMyRootShelfByIdResponse, Error>({
     queryKey: queryKeys.rootShelf.oneById(
       hookRequest?.param.rootShelfId as UUID | undefined,
-      hookRequest?.param.isDeleted ?? false
+      hookRequest?.param.isDeleted ?? false,
     ),
     queryFn: async () => perform(hookRequest),
     staleTime: UseQueryDefaultOptions.staleTime,
@@ -128,12 +127,12 @@ export const useGetMyRootShelfById = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyRootShelfByIdRequest
+    callbackRequest: GetMyRootShelfByIdRequest,
   ): Promise<GetMyRootShelfByIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.rootShelf.oneById(
         callbackRequest.param.rootShelfId as UUID | undefined,
-        callbackRequest.param.isDeleted ?? false
+        callbackRequest.param.isDeleted ?? false,
       ),
       queryFn: async () => perform(callbackRequest),
       staleTime: UseQueryDefaultOptions.staleTime,
@@ -148,7 +147,7 @@ export const useCreateRootShelf = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: CreateRootShelfRequest
+    request: CreateRootShelfRequest,
   ): Promise<CreateRootShelfResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -164,7 +163,6 @@ export const useCreateRootShelf = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       apolloClient.cache.modify({
         fields: {
@@ -217,7 +215,7 @@ export const useCreateRootShelves = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: CreateRootShelvesRequest
+    request: CreateRootShelvesRequest,
   ): Promise<CreateRootShelvesResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -233,7 +231,6 @@ export const useCreateRootShelves = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       apolloClient.cache.modify({
         fields: {
@@ -298,7 +295,7 @@ export const useUpdateMyRootShelfById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: UpdateMyRootShelfByIdRequest
+    request: UpdateMyRootShelfByIdRequest,
   ): Promise<UpdateMyRootShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -314,7 +311,6 @@ export const useUpdateMyRootShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const rootShelfId = request.body.rootShelfId as UUID;
       queryClient.invalidateQueries({
@@ -333,7 +329,7 @@ export const useUpdateMyRootShelfById = () => {
       });
       await RootShelfLocalSynchronizer.syncUpdateMyRootShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -341,7 +337,7 @@ export const useUpdateMyRootShelfById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateUpdateMyRootShelfById(
-              request
+              request,
             );
             break;
         }
@@ -357,7 +353,7 @@ export const useUpsertRootShelfPermission = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: UpsertRootShelfPermissionRequest
+    request: UpsertRootShelfPermissionRequest,
   ): Promise<UpsertRootShelfPermissionResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -373,7 +369,7 @@ export const useUpsertRootShelfPermission = () => {
 
       queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.oneById(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
       apolloClient.cache.modify({
@@ -406,7 +402,7 @@ export const useDeleteRootShelfPermissions = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: DeleteRootShelfPermissionsRequest
+    request: DeleteRootShelfPermissionsRequest,
   ): Promise<DeleteRootShelfPermissionsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -422,7 +418,7 @@ export const useDeleteRootShelfPermissions = () => {
 
       queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.oneById(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
       apolloClient.cache.modify({
@@ -437,7 +433,8 @@ export const useDeleteRootShelfPermissions = () => {
             }
 
             return existingSharerPublicIds.filter(
-              userPublicId => !request.body.userPublicIds.includes(userPublicId)
+              (userPublicId) =>
+                !request.body.userPublicIds.includes(userPublicId),
             );
           },
         },
@@ -453,7 +450,7 @@ export const useUpdateMyRootShelvesByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: UpdateMyRootShelvesByIdsRequest
+    request: UpdateMyRootShelvesByIdsRequest,
   ): Promise<UpdateMyRootShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -469,12 +466,11 @@ export const useUpdateMyRootShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       for (const updatedRootShelf of request.body.updatedRootShelves) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.rootShelf.oneById(
-            updatedRootShelf.rootShelfId as UUID
+            updatedRootShelf.rootShelfId as UUID,
           ),
         });
         apolloClient.cache.modify({
@@ -491,7 +487,7 @@ export const useUpdateMyRootShelvesByIds = () => {
       }
       await RootShelfLocalSynchronizer.syncUpdateMyRootShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -499,7 +495,7 @@ export const useUpdateMyRootShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateUpdateMyRootShelvesByIds(
-              request
+              request,
             );
             break;
         }
@@ -515,7 +511,7 @@ export const useRestoreMyRootShelfById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: RestoreMyRootShelfByIdRequest
+    request: RestoreMyRootShelfByIdRequest,
   ): Promise<RestoreMyRootShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -531,7 +527,6 @@ export const useRestoreMyRootShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const rootShelfId = request.body.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -541,9 +536,9 @@ export const useRestoreMyRootShelfById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       apolloClient.cache.modify({
         fields: {
@@ -566,7 +561,7 @@ export const useRestoreMyRootShelfById = () => {
 
             if (
               existingSearchRootShelves.searchEdges.some(
-                (edge: any) => readField("id", edge.node) === response.data.id
+                (edge: any) => readField("id", edge.node) === response.data.id,
               )
             )
               return existingSearchRootShelves;
@@ -585,7 +580,7 @@ export const useRestoreMyRootShelfById = () => {
       });
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -593,7 +588,7 @@ export const useRestoreMyRootShelfById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateRestoreMyRootShelfById(
-              request
+              request,
             );
             break;
         }
@@ -609,7 +604,7 @@ export const useRestoreMyRootShelvesByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: RestoreMyRootShelvesByIdsRequest
+    request: RestoreMyRootShelvesByIdsRequest,
   ): Promise<RestoreMyRootShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -625,13 +620,12 @@ export const useRestoreMyRootShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const rootShelfIds = (request.body.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
           queryKeys.material.manyByRootShelfId(rootShelfId),
@@ -639,9 +633,9 @@ export const useRestoreMyRootShelvesByIds = () => {
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       apolloClient.cache.modify({
         fields: {
@@ -649,7 +643,7 @@ export const useRestoreMyRootShelvesByIds = () => {
             if (!existingSearchRootShelves) return existingSearchRootShelves;
 
             const newEdges = response.data
-              .map(shelf => ({
+              .map((shelf) => ({
                 __typename: "SearchRootShelfEdge",
                 node: {
                   __typename: "PrivateRootShelf",
@@ -662,10 +656,10 @@ export const useRestoreMyRootShelvesByIds = () => {
                   createdAt: shelf.createdAt,
                 },
               }))
-              .filter(edge => {
+              .filter((edge) => {
                 const exists = existingSearchRootShelves.searchEdges.some(
                   (existingEdge: any) =>
-                    readField("id", existingEdge.node) === edge.node.id
+                    readField("id", existingEdge.node) === edge.node.id,
                 );
                 return !exists;
               });
@@ -684,7 +678,7 @@ export const useRestoreMyRootShelvesByIds = () => {
       });
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -692,7 +686,7 @@ export const useRestoreMyRootShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(
-              request
+              request,
             );
             break;
         }
@@ -708,7 +702,7 @@ export const useDeleteMyRootShelfById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (
-    request: DeleteMyRootShelfByIdRequest
+    request: DeleteMyRootShelfByIdRequest,
   ): Promise<DeleteMyRootShelfByIdResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -724,7 +718,6 @@ export const useDeleteMyRootShelfById = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const rootShelfId = request.body.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -734,9 +727,9 @@ export const useDeleteMyRootShelfById = () => {
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       apolloClient.cache.modify({
         fields: {
@@ -744,7 +737,7 @@ export const useDeleteMyRootShelfById = () => {
             if (!existingSearchRootShelves) return existingSearchRootShelves;
 
             const updatedEdges = existingSearchRootShelves.searchEdges.filter(
-              (edge: any) => readField("id", edge.node) !== rootShelfId
+              (edge: any) => readField("id", edge.node) !== rootShelfId,
             );
 
             return {
@@ -756,7 +749,7 @@ export const useDeleteMyRootShelfById = () => {
       });
       await RootShelfLocalSynchronizer.syncDeleteMyRootShelfById(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -764,7 +757,7 @@ export const useDeleteMyRootShelfById = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateDeleteMyRootShelfById(
-              request
+              request,
             );
             break;
         }
@@ -779,7 +772,7 @@ export const useDeleteMyRootShelvesByIds = () => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request: DeleteMyRootShelvesByIdsRequest
+    request: DeleteMyRootShelvesByIdsRequest,
   ): Promise<DeleteMyRootShelvesByIdsResponse> => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -795,13 +788,12 @@ export const useDeleteMyRootShelvesByIds = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded?.publicId
       );
       const rootShelfIds = (request.body.rootShelfIds || []).filter(
-        Boolean
+        Boolean,
       ) as UUID[];
       const targetKeys: QueryKey[] = [
-        ...rootShelfIds.flatMap(rootShelfId => [
+        ...rootShelfIds.flatMap((rootShelfId) => [
           queryKeys.rootShelf.oneById(rootShelfId),
           queryKeys.subShelf.manyByRootShelfId(rootShelfId),
           queryKeys.material.manyByRootShelfId(rootShelfId),
@@ -809,13 +801,13 @@ export const useDeleteMyRootShelvesByIds = () => {
         ]),
       ];
       Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+        targetKeys.map((targetKey) =>
+          queryClient.invalidateQueries({ queryKey: targetKey }),
+        ),
       );
       await RootShelfLocalSynchronizer.syncDeleteMyRootShelvesByIds(
         request,
-        response
+        response,
       );
     },
     onError: async (error, request) => {
@@ -823,7 +815,7 @@ export const useDeleteMyRootShelvesByIds = () => {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateDeleteMyRootShelvesByIds(
-              request
+              request,
             );
             break;
         }
@@ -838,18 +830,18 @@ export const useTransferMyRootShelfOwnership = () => {
   const queryClient = getQueryClient();
   return useMutation({
     mutationFn: (
-      request: TransferMyRootShelfOwnershipRequest
+      request: TransferMyRootShelfOwnershipRequest,
     ): Promise<TransferMyRootShelfOwnershipResponse> =>
       mutationFnTransferMyRootShelfOwnership(request),
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.permission(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.oneById(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
     },
@@ -860,17 +852,17 @@ export const useLeaveMyRootShelf = () => {
   const queryClient = getQueryClient();
   return useMutation({
     mutationFn: (
-      request: LeaveMyRootShelfRequest
+      request: LeaveMyRootShelfRequest,
     ): Promise<LeaveMyRootShelfResponse> => mutationFnLeaveMyRootShelf(request),
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.permission(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.oneById(
-          request.param.rootShelfId as UUID
+          request.param.rootShelfId as UUID,
         ),
       });
     },

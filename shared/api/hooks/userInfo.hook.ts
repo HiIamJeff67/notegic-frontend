@@ -23,17 +23,17 @@ import {
 
 export const useGetMyInfo = (
   hookRequest?: GetMyInfoRequest,
-  options?: Partial<UseQueryOptions<GetMyInfoResponse, Error>>
+  options?: Partial<UseQueryOptions<GetMyInfoResponse, Error>>,
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyInfoRequest
+    request?: GetMyInfoRequest,
   ): Promise<GetMyInfoResponse> => {
     try {
       if (!request) {
         throw new NotegicValidationError(
-          ValidationClientException.ReceivedUndefinedRequest()
+          ValidationClientException.ReceivedUndefinedRequest(),
         );
       }
 
@@ -41,7 +41,6 @@ export const useGetMyInfo = (
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       return response;
     } catch (error) {
@@ -60,7 +59,7 @@ export const useGetMyInfo = (
   });
 
   const fetch = async (
-    callbackRequest: GetMyInfoRequest
+    callbackRequest: GetMyInfoRequest,
   ): Promise<GetMyInfoResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.userInfo.my(),
@@ -82,11 +81,10 @@ export const useUpdateMyInfo = () => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken,
-        response.embedded.publicId
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.userInfo.my() });
     },
-    onError: error => {},
+    onError: (error) => {},
   });
 
   return mutation;

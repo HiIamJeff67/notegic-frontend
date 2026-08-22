@@ -43,7 +43,6 @@ export const EnglishCommonTranslation: CommonTranslation = {
     login: "Login",
     register: "Register",
     resetPassword: "Reset Password",
-    switchAccount: "Switch Account",
     logout: "Logout",
     account: "Account",
     name: "Name",

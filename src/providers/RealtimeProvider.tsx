@@ -5,10 +5,6 @@ import {
   SearchRootShelvesDocument,
 } from "@shared/api/graphql/generated/graphql";
 import {
-  mergeRealtimeNotificationIntoCache,
-  refetchNotifications,
-} from "@shared/api/hooks/notification.hook";
-import {
   RealtimePermission,
   RealtimePermissionSchema,
 } from "@shared/api/interfaces/enums";
@@ -16,6 +12,7 @@ import {
   mutationFnCreateMyBlockPackChannelTicket,
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@shared/api/invokers/realtime.invoker";
+import { mergeRealtimeNotificationIntoCache } from "@shared/api/notificationCache";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import {
@@ -367,7 +364,12 @@ export const RealtimeProvider = ({
       },
       onReconnect: () => {
         refetchCanonicalState();
-        refetchNotifications();
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.notification.list(),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.notification.unreadCount(),
+        });
         showSyncConnected();
       },
       onNotification: frame => {
@@ -576,7 +578,6 @@ export const RealtimeProvider = ({
     handleResourceEvent,
     isOnline,
     refetchCanonicalState,
-    refetchNotifications,
     rerender,
     setChannelStatus,
     showDesktopNotification,

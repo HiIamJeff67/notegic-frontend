@@ -29,6 +29,22 @@ import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 
+export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() => {
+  const cookieHeader = getRequestHeader("cookie") ?? "";
+
+  return cookieHeader.split(";").some(cookie => {
+    const separatorIndex = cookie.indexOf("=");
+    if (separatorIndex < 1) return false;
+
+    const name = cookie.slice(0, separatorIndex).trim();
+    const value = cookie.slice(separatorIndex + 1).trim();
+
+    return (
+      (name === "accessToken" || name === "refreshToken") && value.length > 0
+    );
+  });
+});
+
 export const Register = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterResponse> => {
