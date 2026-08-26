@@ -9,16 +9,10 @@ import { ValidationClientException } from "@shared/api/exceptions/client/validat
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  patchSearchRoutine,
-  patchSearchRoutineIdList,
-  patchSearchRoutineTaskRoutineIds,
-  removeSearchRoutines,
-  upsertSearchRoutine,
-} from "@shared/api/graphql/cache";
-import {
   toGraphQLRoutinePeriod,
   toGraphQLRoutineStatus,
 } from "@shared/api/graphql/conversions";
+import { FragmentedBasicPrivateSearchableRoutineFragmentDoc } from "@shared/api/graphql/generated/graphql";
 import type {
   CreateRoutineByStationIdRequest,
   CreateRoutinesByStationIdsRequest,
@@ -476,7 +470,7 @@ export const useCreateRoutineByStationId = () => {
       );
       const scheduledStartAt =
         request.body.scheduledStartAt ?? response.data.createdAt;
-      upsertSearchRoutine(apolloClient, {
+      const routine: any = {
         __typename: "PrivateSearchableRoutine",
         id: response.data.id,
         stationId: request.body.stationId,
@@ -495,6 +489,50 @@ export const useCreateRoutineByStationId = () => {
         tagIds: [],
         taskIds: [],
         itemIds: [],
+      };
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField, storeFieldName }) {
+            if (!existing?.searchEdges) return existing;
+            const input = JSON.parse(
+              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+            ).input;
+            if (input.after) return existing;
+            const query = input.query.trim().toLowerCase();
+            if (
+              (query && !routine.title.toLowerCase().includes(query)) ||
+              (input.stationIds.length > 0 &&
+                !input.stationIds.includes(routine.stationId)) ||
+              (input.tagIds.length > 0 &&
+                !input.tagIds.some((tagId: string) =>
+                  routine.tagIds.includes(tagId)
+                ))
+            ) {
+              return existing;
+            }
+            const existed = existing.searchEdges.some(
+              (edge: any) => readField("id", edge.node) === routine.id
+            );
+            const edges = existing.searchEdges.filter(
+              (edge: any) => readField("id", edge.node) !== routine.id
+            );
+            const searchEdges = [
+              {
+                __typename: "SearchRoutineEdge",
+                encodedSearchCursor: routine.id,
+                node: routine,
+              },
+              ...edges,
+            ];
+            return {
+              ...existing,
+              totalCount: existed
+                ? (existing.totalCount ?? searchEdges.length)
+                : Math.max(existing.totalCount ?? 0, edges.length) + 1,
+              searchEdges,
+            };
+          },
+        },
       });
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
@@ -560,7 +598,7 @@ export const useCreateRoutinesByStationIds = () => {
         const routine = request.body.createdRoutines[index];
         const scheduledStartAt =
           routine.scheduledStartAt ?? response.data.createdAt;
-        upsertSearchRoutine(apolloClient, {
+        const routineNode: any = {
           __typename: "PrivateSearchableRoutine",
           id: response.data.ids[index],
           stationId: routine.stationId,
@@ -579,6 +617,50 @@ export const useCreateRoutinesByStationIds = () => {
           tagIds: [],
           taskIds: [],
           itemIds: [],
+        };
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutines(existing, { readField, storeFieldName }) {
+              if (!existing?.searchEdges) return existing;
+              const input = JSON.parse(
+                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+              ).input;
+              if (input.after) return existing;
+              const query = input.query.trim().toLowerCase();
+              if (
+                (query && !routineNode.title.toLowerCase().includes(query)) ||
+                (input.stationIds.length > 0 &&
+                  !input.stationIds.includes(routineNode.stationId)) ||
+                (input.tagIds.length > 0 &&
+                  !input.tagIds.some((tagId: string) =>
+                    routineNode.tagIds.includes(tagId)
+                  ))
+              ) {
+                return existing;
+              }
+              const existed = existing.searchEdges.some(
+                (edge: any) => readField("id", edge.node) === routineNode.id
+              );
+              const edges = existing.searchEdges.filter(
+                (edge: any) => readField("id", edge.node) !== routineNode.id
+              );
+              const searchEdges = [
+                {
+                  __typename: "SearchRoutineEdge",
+                  encodedSearchCursor: routineNode.id,
+                  node: routineNode,
+                },
+                ...edges,
+              ];
+              return {
+                ...existing,
+                totalCount: existed
+                  ? (existing.totalCount ?? searchEdges.length)
+                  : Math.max(existing.totalCount ?? 0, edges.length) + 1,
+                searchEdges,
+              };
+            },
+          },
         });
       }
       apolloClient.cache.evict({ fieldName: "searchStations" });
@@ -630,7 +712,7 @@ export const useUpdateMyRoutineById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      patchSearchRoutine(apolloClient, request.body.routineId, {
+      const patch = {
         updatedAt: response.data.updatedAt,
         ...(request.body.values.stationId !== undefined && {
           stationId: request.body.values.stationId,
@@ -656,6 +738,50 @@ export const useUpdateMyRoutineById = () => {
         ...(request.body.values.period !== undefined && {
           period: toGraphQLRoutinePeriod(request.body.values.period),
         }),
+      };
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField, storeFieldName }) {
+            if (!existing?.searchEdges) return existing;
+            const input = JSON.parse(
+              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+            ).input;
+            const query = input.query.trim().toLowerCase();
+            const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+              if (readField("id", edge.node) !== request.body.routineId) {
+                return [edge];
+              }
+              const node = {
+                ...edge.node,
+                id: request.body.routineId,
+                stationId: readField("stationId", edge.node),
+                title: readField("title", edge.node),
+                tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+                ...patch,
+              };
+              return query && !node.title.toLowerCase().includes(query)
+                ? []
+                : input.stationIds.length > 0 &&
+                    !input.stationIds.includes(node.stationId)
+                  ? []
+                  : input.tagIds.length > 0 &&
+                      !input.tagIds.some((tagId: string) =>
+                        node.tagIds.includes(tagId)
+                      )
+                    ? []
+                    : [{ ...edge, node }];
+            });
+            return {
+              ...existing,
+              totalCount: Math.max(
+                0,
+                (existing.totalCount ?? searchEdges.length) -
+                  (existing.searchEdges.length - searchEdges.length)
+              ),
+              searchEdges,
+            };
+          },
+        },
       });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -704,7 +830,7 @@ export const useUpdateMyRoutinesByIds = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       for (const routine of request.body.updatedRoutines) {
-        patchSearchRoutine(apolloClient, routine.routineId, {
+        const patch = {
           updatedAt: response.data.updatedAt,
           ...(routine.values.stationId !== undefined && {
             stationId: routine.values.stationId,
@@ -730,6 +856,50 @@ export const useUpdateMyRoutinesByIds = () => {
           ...(routine.values.period !== undefined && {
             period: toGraphQLRoutinePeriod(routine.values.period),
           }),
+        };
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutines(existing, { readField, storeFieldName }) {
+              if (!existing?.searchEdges) return existing;
+              const input = JSON.parse(
+                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+              ).input;
+              const query = input.query.trim().toLowerCase();
+              const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+                if (readField("id", edge.node) !== routine.routineId) {
+                  return [edge];
+                }
+                const node = {
+                  ...edge.node,
+                  id: routine.routineId,
+                  stationId: readField("stationId", edge.node),
+                  title: readField("title", edge.node),
+                  tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+                  ...patch,
+                };
+                return query && !node.title.toLowerCase().includes(query)
+                  ? []
+                  : input.stationIds.length > 0 &&
+                      !input.stationIds.includes(node.stationId)
+                    ? []
+                    : input.tagIds.length > 0 &&
+                        !input.tagIds.some((tagId: string) =>
+                          node.tagIds.includes(tagId)
+                        )
+                      ? []
+                      : [{ ...edge, node }];
+              });
+              return {
+                ...existing,
+                totalCount: Math.max(
+                  0,
+                  (existing.totalCount ?? searchEdges.length) -
+                    (existing.searchEdges.length - searchEdges.length)
+                ),
+                searchEdges,
+              };
+            },
+          },
         });
       }
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
@@ -780,13 +950,110 @@ export const useLinkRoutineTagById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      patchSearchRoutineIdList(
-        apolloClient,
-        request.body.routineId,
-        "tagIds",
-        request.body.routineTagId,
-        request.body.isUnlink
-      );
+      const routineId = request.body.routineId;
+      const fieldName: "tagIds" | "taskIds" | "itemIds" = "tagIds";
+      const value = request.body.routineTagId;
+      const isRemove = request.body.isUnlink;
+      const cachedRoutine = apolloClient.cache.readFragment<any>({
+        id: apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        }),
+        fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+      });
+      const currentIds =
+        (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+      const nextIds = isRemove
+        ? currentIds.filter(id => id !== value)
+        : Array.from(new Set([...currentIds, value]));
+      const patchedRoutine = cachedRoutine
+        ? { ...cachedRoutine, [fieldName]: nextIds }
+        : null;
+      const cacheId = apolloClient.cache.identify({
+        __typename: "PrivateSearchableRoutine",
+        id: routineId,
+      });
+      if (cacheId) {
+        apolloClient.cache.modify({
+          id: cacheId,
+          fields: {
+            [fieldName](existing: any = []) {
+              return isRemove
+                ? existing.filter((id: string) => id !== value)
+                : Array.from(new Set([...existing, value]));
+            },
+          },
+        });
+      }
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+            if (!existing?.searchEdges) return existing;
+            const input = JSON.parse(
+              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+            ).input;
+            const query = input.query.trim().toLowerCase();
+            let existed = false;
+            const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+              if (readField("id", edge.node) !== routineId) return [edge];
+              existed = true;
+              const current =
+                (readField(fieldName, edge.node) as string[]) ?? [];
+              const node = patchedRoutine ?? {
+                ...edge.node,
+                id: routineId,
+                stationId: readField("stationId", edge.node),
+                title: readField("title", edge.node),
+                tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+              };
+              return query && !node.title.toLowerCase().includes(query)
+                ? []
+                : input.stationIds.length > 0 &&
+                    !input.stationIds.includes(node.stationId)
+                  ? []
+                  : input.tagIds.length > 0 &&
+                      !input.tagIds.some((tagId: string) =>
+                        node.tagIds.includes(tagId)
+                      )
+                    ? []
+                    : [
+                        {
+                          ...edge,
+                          node: patchedRoutine
+                            ? (toReference(patchedRoutine, true) ??
+                              patchedRoutine)
+                            : node,
+                        },
+                      ];
+            });
+            if (
+              !existed &&
+              patchedRoutine &&
+              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (input.stationIds.length === 0 ||
+                input.stationIds.includes(patchedRoutine.stationId)) &&
+              (input.tagIds.length === 0 ||
+                input.tagIds.some((tagId: string) =>
+                  patchedRoutine.tagIds.includes(tagId)
+                ))
+            ) {
+              searchEdges.unshift({
+                __typename: "SearchRoutineEdge",
+                encodedSearchCursor: routineId,
+                node: toReference(patchedRoutine, true) ?? patchedRoutine,
+              });
+            }
+            return {
+              ...existing,
+              totalCount:
+                (existing.totalCount ?? existing.searchEdges.length) +
+                searchEdges.length -
+                existing.searchEdges.length,
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
       await RoutineLocalSynchronizer.syncLinkRoutineTagById(request, response);
@@ -837,13 +1104,114 @@ export const useLinkRoutineTagsByIds = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       for (const item of request.body.linkedRoutinesAndTags) {
-        patchSearchRoutineIdList(
-          apolloClient,
-          item.routineId,
-          "tagIds",
-          item.routineTagId,
-          request.body.isUnlink
-        );
+        const routineId = item.routineId;
+        const fieldName: "tagIds" | "taskIds" | "itemIds" = "tagIds";
+        const value = item.routineTagId;
+        const isRemove = request.body.isUnlink;
+        const cachedRoutine = apolloClient.cache.readFragment<any>({
+          id: apolloClient.cache.identify({
+            __typename: "PrivateSearchableRoutine",
+            id: routineId,
+          }),
+          fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+        });
+        const currentIds =
+          (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+        const nextIds = isRemove
+          ? currentIds.filter(id => id !== value)
+          : Array.from(new Set([...currentIds, value]));
+        const patchedRoutine = cachedRoutine
+          ? { ...cachedRoutine, [fieldName]: nextIds }
+          : null;
+        const cacheId = apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        });
+        if (cacheId) {
+          apolloClient.cache.modify({
+            id: cacheId,
+            fields: {
+              [fieldName](existing: any = []) {
+                return isRemove
+                  ? existing.filter((id: string) => id !== value)
+                  : Array.from(new Set([...existing, value]));
+              },
+            },
+          });
+        }
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutines(
+              existing,
+              { readField, storeFieldName, toReference }
+            ) {
+              if (!existing?.searchEdges) return existing;
+              const input = JSON.parse(
+                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+              ).input;
+              const query = input.query.trim().toLowerCase();
+              let existed = false;
+              const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+                if (readField("id", edge.node) !== routineId) return [edge];
+                existed = true;
+                const current =
+                  (readField(fieldName, edge.node) as string[]) ?? [];
+                const node = patchedRoutine ?? {
+                  ...edge.node,
+                  id: routineId,
+                  stationId: readField("stationId", edge.node),
+                  title: readField("title", edge.node),
+                  tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+                };
+                return query && !node.title.toLowerCase().includes(query)
+                  ? []
+                  : input.stationIds.length > 0 &&
+                      !input.stationIds.includes(node.stationId)
+                    ? []
+                    : input.tagIds.length > 0 &&
+                        !input.tagIds.some((tagId: string) =>
+                          node.tagIds.includes(tagId)
+                        )
+                      ? []
+                      : [
+                          {
+                            ...edge,
+                            node: patchedRoutine
+                              ? (toReference(patchedRoutine, true) ??
+                                patchedRoutine)
+                              : node,
+                          },
+                        ];
+              });
+              if (
+                !existed &&
+                patchedRoutine &&
+                (!query ||
+                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (input.stationIds.length === 0 ||
+                  input.stationIds.includes(patchedRoutine.stationId)) &&
+                (input.tagIds.length === 0 ||
+                  input.tagIds.some((tagId: string) =>
+                    patchedRoutine.tagIds.includes(tagId)
+                  ))
+              ) {
+                searchEdges.unshift({
+                  __typename: "SearchRoutineEdge",
+                  encodedSearchCursor: routineId,
+                  node: toReference(patchedRoutine, true) ?? patchedRoutine,
+                });
+              }
+              return {
+                ...existing,
+                totalCount:
+                  (existing.totalCount ?? existing.searchEdges.length) +
+                  searchEdges.length -
+                  existing.searchEdges.length,
+                searchEdges,
+              };
+            },
+          },
+        });
       }
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -885,19 +1253,131 @@ export const useLinkRoutineTaskById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      patchSearchRoutineIdList(
-        apolloClient,
-        request.body.routineId,
-        "taskIds",
-        request.body.routineTaskId,
-        request.body.isUnlink
-      );
-      patchSearchRoutineTaskRoutineIds(
-        apolloClient,
-        request.body.routineTaskId,
-        request.body.routineId,
-        request.body.isUnlink
-      );
+      const routineId = request.body.routineId;
+      const fieldName: "tagIds" | "taskIds" | "itemIds" = "taskIds";
+      const value = request.body.routineTaskId;
+      const isRemove = request.body.isUnlink;
+      const cachedRoutine = apolloClient.cache.readFragment<any>({
+        id: apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        }),
+        fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+      });
+      const currentIds =
+        (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+      const nextIds = isRemove
+        ? currentIds.filter(id => id !== value)
+        : Array.from(new Set([...currentIds, value]));
+      const patchedRoutine = cachedRoutine
+        ? { ...cachedRoutine, [fieldName]: nextIds }
+        : null;
+      const cacheId = apolloClient.cache.identify({
+        __typename: "PrivateSearchableRoutine",
+        id: routineId,
+      });
+      if (cacheId) {
+        apolloClient.cache.modify({
+          id: cacheId,
+          fields: {
+            [fieldName](existing: any = []) {
+              return isRemove
+                ? existing.filter((id: string) => id !== value)
+                : Array.from(new Set([...existing, value]));
+            },
+          },
+        });
+      }
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+            if (!existing?.searchEdges) return existing;
+            const input = JSON.parse(
+              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+            ).input;
+            const query = input.query.trim().toLowerCase();
+            let existed = false;
+            const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+              if (readField("id", edge.node) !== routineId) return [edge];
+              existed = true;
+              const current =
+                (readField(fieldName, edge.node) as string[]) ?? [];
+              const node = patchedRoutine ?? {
+                ...edge.node,
+                id: routineId,
+                stationId: readField("stationId", edge.node),
+                title: readField("title", edge.node),
+                tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+              };
+              return query && !node.title.toLowerCase().includes(query)
+                ? []
+                : input.stationIds.length > 0 &&
+                    !input.stationIds.includes(node.stationId)
+                  ? []
+                  : input.tagIds.length > 0 &&
+                      !input.tagIds.some((tagId: string) =>
+                        node.tagIds.includes(tagId)
+                      )
+                    ? []
+                    : [
+                        {
+                          ...edge,
+                          node: patchedRoutine
+                            ? (toReference(patchedRoutine, true) ??
+                              patchedRoutine)
+                            : node,
+                        },
+                      ];
+            });
+            if (
+              !existed &&
+              patchedRoutine &&
+              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (input.stationIds.length === 0 ||
+                input.stationIds.includes(patchedRoutine.stationId)) &&
+              (input.tagIds.length === 0 ||
+                input.tagIds.some((tagId: string) =>
+                  patchedRoutine.tagIds.includes(tagId)
+                ))
+            ) {
+              searchEdges.unshift({
+                __typename: "SearchRoutineEdge",
+                encodedSearchCursor: routineId,
+                node: toReference(patchedRoutine, true) ?? patchedRoutine,
+              });
+            }
+            return {
+              ...existing,
+              totalCount:
+                (existing.totalCount ?? existing.searchEdges.length) +
+                searchEdges.length -
+                existing.searchEdges.length,
+              searchEdges,
+            };
+          },
+        },
+      });
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutineTasks(existing, { readField }) {
+            if (!existing?.searchEdges) return existing;
+            return {
+              ...existing,
+              searchEdges: existing.searchEdges.map((edge: any) => {
+                if (readField("id", edge.node) !== request.body.routineTaskId) {
+                  return edge;
+                }
+                const current =
+                  (readField("routineIds", edge.node) as string[]) ?? [];
+                const routineIds = isRemove
+                  ? current.filter(id => id !== routineId)
+                  : Array.from(new Set([...current, routineId]));
+                return { ...edge, node: { ...edge.node, routineIds } };
+              }),
+            };
+          },
+        },
+      });
       apolloClient.cache.gc();
     },
     onError: error => {},
@@ -930,19 +1410,135 @@ export const useLinkRoutineTasksByIds = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       for (const item of request.body.linkedRoutinesAndTasks) {
-        patchSearchRoutineIdList(
-          apolloClient,
-          item.routineId,
-          "taskIds",
-          item.routineTaskId,
-          request.body.isUnlink
-        );
-        patchSearchRoutineTaskRoutineIds(
-          apolloClient,
-          item.routineTaskId,
-          item.routineId,
-          request.body.isUnlink
-        );
+        const routineId = item.routineId;
+        const fieldName: "tagIds" | "taskIds" | "itemIds" = "taskIds";
+        const value = item.routineTaskId;
+        const isRemove = request.body.isUnlink;
+        const cachedRoutine = apolloClient.cache.readFragment<any>({
+          id: apolloClient.cache.identify({
+            __typename: "PrivateSearchableRoutine",
+            id: routineId,
+          }),
+          fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+        });
+        const currentIds =
+          (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+        const nextIds = isRemove
+          ? currentIds.filter(id => id !== value)
+          : Array.from(new Set([...currentIds, value]));
+        const patchedRoutine = cachedRoutine
+          ? { ...cachedRoutine, [fieldName]: nextIds }
+          : null;
+        const cacheId = apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        });
+        if (cacheId) {
+          apolloClient.cache.modify({
+            id: cacheId,
+            fields: {
+              [fieldName](existing: any = []) {
+                return isRemove
+                  ? existing.filter((id: string) => id !== value)
+                  : Array.from(new Set([...existing, value]));
+              },
+            },
+          });
+        }
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutines(
+              existing,
+              { readField, storeFieldName, toReference }
+            ) {
+              if (!existing?.searchEdges) return existing;
+              const input = JSON.parse(
+                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+              ).input;
+              const query = input.query.trim().toLowerCase();
+              let existed = false;
+              const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+                if (readField("id", edge.node) !== routineId) return [edge];
+                existed = true;
+                const current =
+                  (readField(fieldName, edge.node) as string[]) ?? [];
+                const node = patchedRoutine ?? {
+                  ...edge.node,
+                  id: routineId,
+                  stationId: readField("stationId", edge.node),
+                  title: readField("title", edge.node),
+                  tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+                };
+                return query && !node.title.toLowerCase().includes(query)
+                  ? []
+                  : input.stationIds.length > 0 &&
+                      !input.stationIds.includes(node.stationId)
+                    ? []
+                    : input.tagIds.length > 0 &&
+                        !input.tagIds.some((tagId: string) =>
+                          node.tagIds.includes(tagId)
+                        )
+                      ? []
+                      : [
+                          {
+                            ...edge,
+                            node: patchedRoutine
+                              ? (toReference(patchedRoutine, true) ??
+                                patchedRoutine)
+                              : node,
+                          },
+                        ];
+              });
+              if (
+                !existed &&
+                patchedRoutine &&
+                (!query ||
+                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (input.stationIds.length === 0 ||
+                  input.stationIds.includes(patchedRoutine.stationId)) &&
+                (input.tagIds.length === 0 ||
+                  input.tagIds.some((tagId: string) =>
+                    patchedRoutine.tagIds.includes(tagId)
+                  ))
+              ) {
+                searchEdges.unshift({
+                  __typename: "SearchRoutineEdge",
+                  encodedSearchCursor: routineId,
+                  node: toReference(patchedRoutine, true) ?? patchedRoutine,
+                });
+              }
+              return {
+                ...existing,
+                totalCount:
+                  (existing.totalCount ?? existing.searchEdges.length) +
+                  searchEdges.length -
+                  existing.searchEdges.length,
+                searchEdges,
+              };
+            },
+          },
+        });
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutineTasks(existing, { readField }) {
+              if (!existing?.searchEdges) return existing;
+              return {
+                ...existing,
+                searchEdges: existing.searchEdges.map((edge: any) => {
+                  if (readField("id", edge.node) !== item.routineTaskId) {
+                    return edge;
+                  }
+                  const current =
+                    (readField("routineIds", edge.node) as string[]) ?? [];
+                  const routineIds = isRemove
+                    ? current.filter(id => id !== routineId)
+                    : Array.from(new Set([...current, routineId]));
+                  return { ...edge, node: { ...edge.node, routineIds } };
+                }),
+              };
+            },
+          },
+        });
       }
       apolloClient.cache.gc();
     },
@@ -979,13 +1575,110 @@ export const useLinkRoutineItemById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      patchSearchRoutineIdList(
-        apolloClient,
-        request.body.routineId,
-        "itemIds",
-        request.body.itemId,
-        request.body.isUnlink
-      );
+      const routineId = request.body.routineId;
+      const fieldName: "tagIds" | "taskIds" | "itemIds" = "itemIds";
+      const value = request.body.itemId;
+      const isRemove = request.body.isUnlink;
+      const cachedRoutine = apolloClient.cache.readFragment<any>({
+        id: apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        }),
+        fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+      });
+      const currentIds =
+        (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+      const nextIds = isRemove
+        ? currentIds.filter(id => id !== value)
+        : Array.from(new Set([...currentIds, value]));
+      const patchedRoutine = cachedRoutine
+        ? { ...cachedRoutine, [fieldName]: nextIds }
+        : null;
+      const cacheId = apolloClient.cache.identify({
+        __typename: "PrivateSearchableRoutine",
+        id: routineId,
+      });
+      if (cacheId) {
+        apolloClient.cache.modify({
+          id: cacheId,
+          fields: {
+            [fieldName](existing: any = []) {
+              return isRemove
+                ? existing.filter((id: string) => id !== value)
+                : Array.from(new Set([...existing, value]));
+            },
+          },
+        });
+      }
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+            if (!existing?.searchEdges) return existing;
+            const input = JSON.parse(
+              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+            ).input;
+            const query = input.query.trim().toLowerCase();
+            let existed = false;
+            const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+              if (readField("id", edge.node) !== routineId) return [edge];
+              existed = true;
+              const current =
+                (readField(fieldName, edge.node) as string[]) ?? [];
+              const node = patchedRoutine ?? {
+                ...edge.node,
+                id: routineId,
+                stationId: readField("stationId", edge.node),
+                title: readField("title", edge.node),
+                tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+              };
+              return query && !node.title.toLowerCase().includes(query)
+                ? []
+                : input.stationIds.length > 0 &&
+                    !input.stationIds.includes(node.stationId)
+                  ? []
+                  : input.tagIds.length > 0 &&
+                      !input.tagIds.some((tagId: string) =>
+                        node.tagIds.includes(tagId)
+                      )
+                    ? []
+                    : [
+                        {
+                          ...edge,
+                          node: patchedRoutine
+                            ? (toReference(patchedRoutine, true) ??
+                              patchedRoutine)
+                            : node,
+                        },
+                      ];
+            });
+            if (
+              !existed &&
+              patchedRoutine &&
+              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (input.stationIds.length === 0 ||
+                input.stationIds.includes(patchedRoutine.stationId)) &&
+              (input.tagIds.length === 0 ||
+                input.tagIds.some((tagId: string) =>
+                  patchedRoutine.tagIds.includes(tagId)
+                ))
+            ) {
+              searchEdges.unshift({
+                __typename: "SearchRoutineEdge",
+                encodedSearchCursor: routineId,
+                node: toReference(patchedRoutine, true) ?? patchedRoutine,
+              });
+            }
+            return {
+              ...existing,
+              totalCount:
+                (existing.totalCount ?? existing.searchEdges.length) +
+                searchEdges.length -
+                existing.searchEdges.length,
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchItems" });
       apolloClient.cache.gc();
       await RoutineLocalSynchronizer.syncLinkRoutineItemById(request, response);
@@ -1033,13 +1726,114 @@ export const useLinkRoutineItemsByIds = () => {
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
       for (const item of request.body.linkedRoutinesAndItems) {
-        patchSearchRoutineIdList(
-          apolloClient,
-          item.routineId,
-          "itemIds",
-          item.itemId,
-          request.body.isUnlink
-        );
+        const routineId = item.routineId;
+        const fieldName: "tagIds" | "taskIds" | "itemIds" = "itemIds";
+        const value = item.itemId;
+        const isRemove = request.body.isUnlink;
+        const cachedRoutine = apolloClient.cache.readFragment<any>({
+          id: apolloClient.cache.identify({
+            __typename: "PrivateSearchableRoutine",
+            id: routineId,
+          }),
+          fragment: FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+        });
+        const currentIds =
+          (cachedRoutine?.[fieldName] as string[] | undefined) ?? [];
+        const nextIds = isRemove
+          ? currentIds.filter(id => id !== value)
+          : Array.from(new Set([...currentIds, value]));
+        const patchedRoutine = cachedRoutine
+          ? { ...cachedRoutine, [fieldName]: nextIds }
+          : null;
+        const cacheId = apolloClient.cache.identify({
+          __typename: "PrivateSearchableRoutine",
+          id: routineId,
+        });
+        if (cacheId) {
+          apolloClient.cache.modify({
+            id: cacheId,
+            fields: {
+              [fieldName](existing: any = []) {
+                return isRemove
+                  ? existing.filter((id: string) => id !== value)
+                  : Array.from(new Set([...existing, value]));
+              },
+            },
+          });
+        }
+        apolloClient.cache.modify({
+          fields: {
+            searchRoutines(
+              existing,
+              { readField, storeFieldName, toReference }
+            ) {
+              if (!existing?.searchEdges) return existing;
+              const input = JSON.parse(
+                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
+              ).input;
+              const query = input.query.trim().toLowerCase();
+              let existed = false;
+              const searchEdges = existing.searchEdges.flatMap((edge: any) => {
+                if (readField("id", edge.node) !== routineId) return [edge];
+                existed = true;
+                const current =
+                  (readField(fieldName, edge.node) as string[]) ?? [];
+                const node = patchedRoutine ?? {
+                  ...edge.node,
+                  id: routineId,
+                  stationId: readField("stationId", edge.node),
+                  title: readField("title", edge.node),
+                  tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
+                };
+                return query && !node.title.toLowerCase().includes(query)
+                  ? []
+                  : input.stationIds.length > 0 &&
+                      !input.stationIds.includes(node.stationId)
+                    ? []
+                    : input.tagIds.length > 0 &&
+                        !input.tagIds.some((tagId: string) =>
+                          node.tagIds.includes(tagId)
+                        )
+                      ? []
+                      : [
+                          {
+                            ...edge,
+                            node: patchedRoutine
+                              ? (toReference(patchedRoutine, true) ??
+                                patchedRoutine)
+                              : node,
+                          },
+                        ];
+              });
+              if (
+                !existed &&
+                patchedRoutine &&
+                (!query ||
+                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (input.stationIds.length === 0 ||
+                  input.stationIds.includes(patchedRoutine.stationId)) &&
+                (input.tagIds.length === 0 ||
+                  input.tagIds.some((tagId: string) =>
+                    patchedRoutine.tagIds.includes(tagId)
+                  ))
+              ) {
+                searchEdges.unshift({
+                  __typename: "SearchRoutineEdge",
+                  encodedSearchCursor: routineId,
+                  node: toReference(patchedRoutine, true) ?? patchedRoutine,
+                });
+              }
+              return {
+                ...existing,
+                totalCount:
+                  (existing.totalCount ?? existing.searchEdges.length) +
+                  searchEdges.length -
+                  existing.searchEdges.length,
+                searchEdges,
+              };
+            },
+          },
+        });
       }
       apolloClient.cache.evict({ fieldName: "searchItems" });
       apolloClient.cache.gc();
@@ -1190,7 +1984,26 @@ export const useDeleteMyRoutineById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      removeSearchRoutines(apolloClient, [request.body.routineId]);
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField }) {
+            if (!existing?.searchEdges) return existing;
+            const searchEdges = existing.searchEdges.filter(
+              (edge: any) =>
+                readField("id", edge.node) !== request.body.routineId
+            );
+            return {
+              ...existing,
+              totalCount: Math.max(
+                0,
+                (existing.totalCount ?? searchEdges.length) -
+                  (existing.searchEdges.length - searchEdges.length)
+              ),
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -1239,7 +2052,28 @@ export const useDeleteMyRoutinesByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      removeSearchRoutines(apolloClient, request.body.routineIds);
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField }) {
+            if (!existing?.searchEdges) return existing;
+            const searchEdges = existing.searchEdges.filter(
+              (edge: any) =>
+                !request.body.routineIds.includes(
+                  readField("id", edge.node) as string
+                )
+            );
+            return {
+              ...existing,
+              totalCount: Math.max(
+                0,
+                (existing.totalCount ?? searchEdges.length) -
+                  (existing.searchEdges.length - searchEdges.length)
+              ),
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -1289,7 +2123,26 @@ export const useHardDeleteMyRoutineById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      removeSearchRoutines(apolloClient, [request.body.routineId]);
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField }) {
+            if (!existing?.searchEdges) return existing;
+            const searchEdges = existing.searchEdges.filter(
+              (edge: any) =>
+                readField("id", edge.node) !== request.body.routineId
+            );
+            return {
+              ...existing,
+              totalCount: Math.max(
+                0,
+                (existing.totalCount ?? searchEdges.length) -
+                  (existing.searchEdges.length - searchEdges.length)
+              ),
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
@@ -1341,7 +2194,28 @@ export const useHardDeleteMyRoutinesByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      removeSearchRoutines(apolloClient, request.body.routineIds);
+      apolloClient.cache.modify({
+        fields: {
+          searchRoutines(existing, { readField }) {
+            if (!existing?.searchEdges) return existing;
+            const searchEdges = existing.searchEdges.filter(
+              (edge: any) =>
+                !request.body.routineIds.includes(
+                  readField("id", edge.node) as string
+                )
+            );
+            return {
+              ...existing,
+              totalCount: Math.max(
+                0,
+                (existing.totalCount ?? searchEdges.length) -
+                  (existing.searchEdges.length - searchEdges.length)
+              ),
+              searchEdges,
+            };
+          },
+        },
+      });
       apolloClient.cache.evict({ fieldName: "searchStations" });
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();

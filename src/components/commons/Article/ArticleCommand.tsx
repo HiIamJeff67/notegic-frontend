@@ -1,11 +1,21 @@
+import { BlocksIcon, Code2Icon, FileTextIcon } from "lucide-react";
 import {
+  type ComponentType,
   Fragment,
+  type RefObject,
   useEffect,
   useState,
-  type ComponentType,
-  type RefObject,
 } from "react";
-import { BlocksIcon, Code2Icon, FileTextIcon } from "lucide-react";
+import {
+  BlockPackIcon,
+  MaterialIcon,
+  RootShelfIcon,
+  RoutineIcon,
+  RoutineTagIcon,
+  RoutineTaskIcon,
+  StationIcon,
+  SubShelfIcon,
+} from "@/components/icons/WorkspaceEntityIcons";
 import {
   Command,
   CommandDialog,
@@ -17,16 +27,6 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
-import {
-  BlockPackIcon,
-  MaterialIcon,
-  RootShelfIcon,
-  RoutineIcon,
-  RoutineTagIcon,
-  RoutineTaskIcon,
-  StationIcon,
-  SubShelfIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
 
 type ArticleIcon = ComponentType<{ className?: string; size?: number }>;
 
@@ -90,10 +90,7 @@ const ArticleCommand = ({ articleRef, onSelect }: ArticleCommandProps) => {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
-      if (
-        (event.metaKey || event.altKey) &&
-        event.key.toLowerCase() === "f"
-      ) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen(true);
       }
@@ -266,9 +263,7 @@ const ArticleCommand = ({ articleRef, onSelect }: ArticleCommandProps) => {
     }
 
     const groupItems =
-      group.children.length > 0 && group.level > 0
-        ? []
-        : visibleItems;
+      group.children.length > 0 && group.level > 0 ? [] : visibleItems;
 
     return (
       <CommandGroup
@@ -288,7 +283,7 @@ const ArticleCommand = ({ articleRef, onSelect }: ArticleCommandProps) => {
         <Command className="h-10 w-full min-w-0 bg-transparent p-0 shadow-none">
           <CommandInput
             readOnly
-            placeholder="⌘ + F / Alt + F"
+            placeholder="⌘ + K / Ctrl + K"
             aria-label="Search article"
             onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}

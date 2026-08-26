@@ -73,7 +73,7 @@ export const ArticleContent = ({
   return (
     <main
       className={cn(
-        "article-content mx-auto w-full min-w-0 max-w-none flex-1 px-4 py-2 !pb-16 sm:px-6 lg:px-8 lg:py-5 lg:!pb-20",
+        "article-content mx-auto w-full min-w-0 max-w-none flex-1 px-4 pt-4 pb-2 !pb-16 sm:px-6 lg:px-8 lg:pt-7 lg:pb-5 lg:!pb-20",
         preferences.density === "compact"
           ? "lg:px-4"
           : preferences.density === "comfortable"

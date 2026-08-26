@@ -1,17 +1,23 @@
-### GraphQL for Notegic Backend, Frontend, and Software
+# Frontend GraphQL Inputs
 
-- Folders which have used in backend:
+This directory contains the frontend GraphQL schema mirror, fragments, and
+queries used by the client code generator. The backend public GraphQL
+contracts are authoritative; this directory is a frontend consumer and
+generated-artifact input, not a backend implementation or resolver source.
 
-  - schemas/
-  - scalars/
+## Layout
 
-- Folders which have used in web frontend:
+```text
+shared/graphql/
+  schemas/       frontend schema inputs, including enums
+  fragments/     reusable GraphQL fragments
+  queries/       frontend operation documents
+shared/api/graphql/
+  generated/     generated client types and operations
+```
 
-  - schemas/
-  - fragments/
-  - queries/
-
-- Note:
-  - This folder will be built to submodule one day.
-  - The schemas(`*.graphql` files) are the same in all the environments, and should be maintain or synchronize them periodically, but the yaml file to generate the adapted codes are different, for example: the backend use `gqlgen.yml` to generate codes, and the web frontend use `codegen.yml` otherwise.
-  - This submodule MUST be a private property of Notegic, this means don't release this submodule and don't make it public in github.
+The frontend and backend may use different code generation configuration for
+their respective languages and runtimes. Keep the public schema semantics
+aligned through the backend contract workflow. Run `npm run codegen` after
+changing schema inputs or documents; generated files must not be edited by
+hand.

@@ -224,10 +224,7 @@ const TutorialPage = () => {
             <ArticleContent>
               <ArticleParagraph id="tutorial">
                 <ArticleParagraphHeader>
-                  <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
-                    NOTEGIC TUTORIAL
-                  </p>
-                  <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+                  <h1 className="text-3xl font-semibold tracking-tight">
                     {title}
                   </h1>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">

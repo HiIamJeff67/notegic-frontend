@@ -1,8 +1,8 @@
 # Notegic Frontend Documentation
 
-This directory is the documentation entry point for the current Notegic Web
-frontend. It describes the existing Web application, its coding style, and the
-conventions contributors should follow.
+This directory is the documentation entry point for the Notegic frontend
+monorepo. It describes the current Web application, the approved shared-code
+architecture, and the conventions contributors should follow.
 
 The frontend and backend remain separate repositories. Frontend documentation
 may link to backend contracts or backend design documents, but it must not
@@ -22,7 +22,7 @@ describe backend implementation as if it belongs to this repository.
 
 | Directory | Scope |
 | --- | --- |
-| [codebase-design](codebase-design/) | Current Web repository structure, ownership, and dependency direction |
+| [codebase-design](codebase-design/) | Current Web structure, target monorepo, ownership, and dependency direction |
 | [api-route-design](api-route-design/) | Frontend transport entry points and client-facing API concerns |
 | [system-design](system-design/) | Editor, synchronization, local data, and cross-platform design notes |
 | [conventions](conventions/) | Naming, UI, styling, icons, generated code, and implementation conventions |
@@ -46,8 +46,9 @@ deployment, and server-side contracts. Cross-repository behavior should be
 described through versioned public contracts and links to the backend
 documentation.
 
-## Deliberate scope
+## Architecture scope
 
-Future application architecture is tracked in Linear and is intentionally not
-documented in this repository yet. The current docs focus on making Web
-development consistent while the Web local database work continues.
+The frontend monorepo architecture is documented here after the Phase 1
+decision. Implementation remains phased: the current Web app remains at its
+existing paths until Phase 2. Desktop and Mobile are planned boundaries only
+and have no implementation yet.

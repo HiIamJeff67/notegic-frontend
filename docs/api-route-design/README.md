@@ -8,16 +8,23 @@ It does not duplicate backend route definitions or server implementation.
 | Frontend area | Responsibility |
 | --- | --- |
 | `shared/api/fetches/` | HTTP-facing fetch helpers for feature data |
-| `shared/api/functions/` | TanStack Start server/client function boundaries |
+| `shared/api/functions/` | Current TanStack Start Web server/client adapter boundaries; transitional until Phase 2 |
 | `shared/api/invokers/` | Feature-level invocation wrappers |
 | `shared/api/hooks/` | React query and feature hooks |
 | `shared/api/graphql/` | Apollo client, generated GraphQL types, hooks, and local adapters |
 | `shared/api/websocket/` | WebSocket client and frame/type definitions |
 | `shared/api/interfaces/` | Current frontend request and domain interfaces |
 
-These are current Web ownership descriptions. Keep transport, query, and local
-database responsibilities explicit while the Web local database work is being
-developed.
+These paths are transitional. Keep portable contracts, requests, queries, and
+domain logic independent from Web runtime adapters while the workspace
+migration is being developed.
+
+## Boundary and codegen decisions
+
+| Document | Scope |
+| --- | --- |
+| [Frontend contracts and codegen](frontend-contracts-and-codegen.md) | Backend contract ownership, GraphQL inputs, generated output, and codegen workflow |
+| [API, query, storage, and platform boundaries](../system-design/api-query-storage-platform-boundaries.md) | Shared responsibilities and app/runtime adapters |
 
 ## Contract rule
 
