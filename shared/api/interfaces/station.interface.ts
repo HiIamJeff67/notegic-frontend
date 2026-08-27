@@ -303,14 +303,16 @@ export type UpdateMyStationsByIdsRequest = z.infer<
   typeof UpdateMyStationsByIdsRequestSchema
 >;
 
-export const UpdateMyStationsByIdsResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    updatedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const UpdateMyStationsByIdsResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      updatedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type UpdateMyStationsByIdsResponse = z.infer<
   typeof UpdateMyStationsByIdsResponseSchema
@@ -374,8 +376,8 @@ export type RestoreMyStationsByIdsRequest = z.infer<
   typeof RestoreMyStationsByIdsRequestSchema
 >;
 
-export const RestoreMyStationsByIdsResponseSchema = NotegicResponseSchema.extend(
-  {
+export const RestoreMyStationsByIdsResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.array(
       z.object({
         id: z.uuidv4(),
@@ -393,8 +395,7 @@ export const RestoreMyStationsByIdsResponseSchema = NotegicResponseSchema.extend
     embedded: z.object({
       publicId: z.string(),
     }),
-  }
-);
+  });
 
 export type RestoreMyStationsByIdsResponse = z.infer<
   typeof RestoreMyStationsByIdsResponseSchema
@@ -449,14 +450,16 @@ export type DeleteMyStationsByIdsRequest = z.infer<
   typeof DeleteMyStationsByIdsRequestSchema
 >;
 
-export const DeleteMyStationsByIdsResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    deletedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const DeleteMyStationsByIdsResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type DeleteMyStationsByIdsResponse = z.infer<
   typeof DeleteMyStationsByIdsResponseSchema
@@ -464,17 +467,19 @@ export type DeleteMyStationsByIdsResponse = z.infer<
 
 /* ============================== HardDeleteMyStationById ============================== */
 
-export const HardDeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    stationId: z.uuidv4(),
-  }),
-});
+export const HardDeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      stationId: z.uuidv4(),
+    }),
+  }
+);
 
 export type HardDeleteMyStationByIdRequest = z.infer<
   typeof HardDeleteMyStationByIdRequestSchema

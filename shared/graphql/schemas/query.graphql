@@ -10,8 +10,12 @@ type Query {
   searchStations(input: SearchStationInput!): SearchStationConnection!
   searchRoutines(input: SearchRoutineInput!): SearchRoutineConnection!
   searchRoutineTags(input: SearchRoutineTagInput!): SearchRoutineTagConnection!
-  searchRoutineTasks(input: SearchRoutineTaskInput!): SearchRoutineTaskConnection!
-  searchRoutineTaskRecords(input: SearchRoutineTaskRecordInput!): SearchRoutineTaskRecordConnection!
+  searchRoutineTasks(
+    input: SearchRoutineTaskInput!
+  ): SearchRoutineTaskConnection!
+  searchRoutineTaskRecords(
+    input: SearchRoutineTaskRecordInput!
+  ): SearchRoutineTaskRecordConnection!
 }
 
 # type Mutation {}

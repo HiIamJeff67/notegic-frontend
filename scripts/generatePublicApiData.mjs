@@ -15,7 +15,10 @@ const defaults = {
     "contracts/api-gateway/v1/public/openapi/openapi.json"
   ),
   gatewayRules: path.join(backendRoot, "contracts/api-gateway/v1/public/rules"),
-  output: path.join(projectRoot, "src/pages/document/publicApiData.ts"),
+  output: path.join(
+    projectRoot,
+    "apps/web/src/pages/document/publicApiData.ts"
+  ),
 };
 
 const args = {};

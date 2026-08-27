@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!apps/web/src/routeTree.gen.ts",
+      "!shared/api/graphql/generated/**"
+    ]
   },
   "formatter": {
     "enabled": true,

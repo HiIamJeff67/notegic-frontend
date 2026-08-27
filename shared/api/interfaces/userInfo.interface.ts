@@ -1,7 +1,10 @@
 import { Country, UserGender } from "@shared/api/interfaces/enums";
 import { UserInfoSchema } from "@shared/types/user.type";
 import { z } from "zod";
-import { NotegicRequestSchema, NotegicResponseSchema } from "./context.interface";
+import {
+  NotegicRequestSchema,
+  NotegicResponseSchema,
+} from "./context.interface";
 
 /* ============================== GetMyInfo ============================== */
 

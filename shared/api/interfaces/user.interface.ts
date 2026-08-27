@@ -1,7 +1,10 @@
 import { UserStatus } from "@shared/api/interfaces/enums";
 import { UserDataSchema, UserSchema } from "@shared/types/user.type";
 import { z } from "zod";
-import { NotegicRequestSchema, NotegicResponseSchema } from "./context.interface";
+import {
+  NotegicRequestSchema,
+  NotegicResponseSchema,
+} from "./context.interface";
 
 /* ============================== GetUserData ============================== */
 

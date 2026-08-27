@@ -274,14 +274,16 @@ export type UpdateMyRootShelfByIdRequest = z.infer<
   typeof UpdateMyRootShelfByIdRequestSchema
 >;
 
-export const UpdateMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    updatedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const UpdateMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      updatedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type UpdateMyRootShelfByIdResponse = z.infer<
   typeof UpdateMyRootShelfByIdResponseSchema
@@ -289,8 +291,8 @@ export type UpdateMyRootShelfByIdResponse = z.infer<
 
 /* ============================== UpdateMyRootShelvesByIds ============================== */
 
-export const UpdateMyRootShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const UpdateMyRootShelvesByIdsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -310,8 +312,7 @@ export const UpdateMyRootShelvesByIdsRequestSchema = NotegicRequestSchema.extend
         })
       ),
     }),
-  }
-);
+  });
 
 export type UpdateMyRootShelvesByIdsRequest = z.infer<
   typeof UpdateMyRootShelvesByIdsRequestSchema
@@ -349,8 +350,8 @@ export type RestoreMyRootShelfByIdRequest = z.infer<
   typeof RestoreMyRootShelfByIdRequestSchema
 >;
 
-export const RestoreMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend(
-  {
+export const RestoreMyRootShelfByIdResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
       name: z.string(),
@@ -364,8 +365,7 @@ export const RestoreMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend
     embedded: z.object({
       publicId: z.string(),
     }),
-  }
-);
+  });
 
 export type RestoreMyRootShelfByIdResponse = z.infer<
   typeof RestoreMyRootShelfByIdResponseSchema
@@ -435,14 +435,16 @@ export type DeleteMyRootShelfByIdRequest = z.infer<
   typeof DeleteMyRootShelfByIdRequestSchema
 >;
 
-export const DeleteMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    deletedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const DeleteMyRootShelfByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type DeleteMyRootShelfByIdResponse = z.infer<
   typeof DeleteMyRootShelfByIdResponseSchema
@@ -450,8 +452,8 @@ export type DeleteMyRootShelfByIdResponse = z.infer<
 
 /* ============================== DeleteMyRootShelvesByIds ============================== */
 
-export const DeleteMyRootShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const DeleteMyRootShelvesByIdsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -465,8 +467,7 @@ export const DeleteMyRootShelvesByIdsRequestSchema = NotegicRequestSchema.extend
       subShelfIds: z.array(z.uuidv4()),
       materialIds: z.array(z.uuidv4()),
     }),
-  }
-);
+  });
 
 export type DeleteMyRootShelvesByIdsRequest = z.infer<
   typeof DeleteMyRootShelvesByIdsRequestSchema

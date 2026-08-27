@@ -27,9 +27,7 @@ export const CreateMyAPIKeyRequestSchema = NotegicRequestSchema.extend({
     expiresAt: z.coerce.date().nullable().optional(),
   }),
 });
-export type CreateMyAPIKeyRequest = z.infer<
-  typeof CreateMyAPIKeyRequestSchema
->;
+export type CreateMyAPIKeyRequest = z.infer<typeof CreateMyAPIKeyRequestSchema>;
 
 export const CreateMyAPIKeyResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
@@ -48,24 +46,18 @@ export type CreateMyAPIKeyResponse = z.infer<
 export const ListMyAPIKeysRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
 });
-export type ListMyAPIKeysRequest = z.infer<
-  typeof ListMyAPIKeysRequestSchema
->;
+export type ListMyAPIKeysRequest = z.infer<typeof ListMyAPIKeysRequestSchema>;
 
 export const ListMyAPIKeysResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ items: z.array(APIKeySummarySchema) }),
 });
-export type ListMyAPIKeysResponse = z.infer<
-  typeof ListMyAPIKeysResponseSchema
->;
+export type ListMyAPIKeysResponse = z.infer<typeof ListMyAPIKeysResponseSchema>;
 
 export const RevokeMyAPIKeyRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
   param: z.object({ publicId: z.uuid() }),
 });
-export type RevokeMyAPIKeyRequest = z.infer<
-  typeof RevokeMyAPIKeyRequestSchema
->;
+export type RevokeMyAPIKeyRequest = z.infer<typeof RevokeMyAPIKeyRequestSchema>;
 
 export const RevokeMyAPIKeyResponseSchema = NotegicResponseSchema.extend({
   data: z.object({ revokedAt: z.coerce.date() }),

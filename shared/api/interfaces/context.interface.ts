@@ -1,4 +1,7 @@
-import { NotegicException, NotegicExceptionSchema } from "@shared/api/exceptions";
+import {
+  NotegicException,
+  NotegicExceptionSchema,
+} from "@shared/api/exceptions";
 import { z } from "zod";
 
 export const NotegicRequestSchema = z.object({

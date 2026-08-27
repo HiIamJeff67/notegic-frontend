@@ -1,7 +1,7 @@
 import {
   canSendDesktopNotification,
   isQuietHours,
-} from "../../src/providers/notificationPreferences";
+} from "@/providers/notificationPreferences";
 
 const preferences = {
   desktopNotifications: true,

@@ -1,12 +1,12 @@
 type PrivateItem {
-    id: UUID!
-    parentSubShelfId: UUID!
-    rootShelfId: UUID!
-    type: ItemType!
-    deletedAt: Time
-    updatedAt: Time!
-    createdAt: Time!
+  id: UUID!
+  parentSubShelfId: UUID!
+  rootShelfId: UUID!
+  type: ItemType!
+  deletedAt: Time
+  updatedAt: Time!
+  createdAt: Time!
 
-    # relations
-    routineIds: [UUID!]!
+  # relations
+  routineIds: [UUID!]!
 }

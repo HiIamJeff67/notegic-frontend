@@ -19,7 +19,7 @@ function git(args) {
 }
 
 function printHelp() {
-  console.log(`Generate deterministic devlog snapshots from local Git history.
+  console.log(`Generate deterministic devlog snapshots from local Git history and the current change.
 
 Usage:
   npm run devlog
@@ -36,6 +36,8 @@ Options:
 Environment:
   DEVLOG_COMMITS        Number of recent commits for a daily snapshot (default: 20)
   DEVLOG_ARCHIVE_DIR    Override the archive directory (default: docs/devlogs)
+  DEVLOG_README_FILE     Override the README file to refresh (default: README.md)
+  DEVLOG_SOURCE          Use "index" to read staged files (default: worktree)
 
 The fetch command only updates local remote refs. It does not merge or modify
 the working tree. The backfill command reads the fetched ref and creates
@@ -104,7 +106,12 @@ function localDate() {
 
 function formatCommits(records) {
   return records.length > 0
-    ? records.map(({ shortHash, date, subject }) => `- \`${shortHash}\` ${date} — ${subject}`).join("\n")
+    ? records
+        .map(
+          ({ shortHash, date, subject }) =>
+            `- \`${shortHash}\` ${date} — ${subject}`
+        )
+        .join("\n")
     : "- No commits found.";
 }
 
@@ -118,10 +125,57 @@ function formatChangedAreas(records) {
   }
 
   const areas = [...counts.entries()]
-    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .sort(
+      (left, right) => right[1] - left[1] || left[0].localeCompare(right[0])
+    )
     .map(([area, count]) => `- \`${area}\` — ${count} changed-file references`);
 
-  return areas.length > 0 ? areas.join("\n") : "- No changed-file information found.";
+  return areas.length > 0
+    ? areas.join("\n")
+    : "- No changed-file information found.";
+}
+
+function splitLines(output) {
+  return output
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+}
+
+function getCurrentChangeFiles() {
+  const files =
+    process.env.DEVLOG_SOURCE === "index"
+      ? splitLines(
+          git([
+            "diff",
+            "--cached",
+            "--name-only",
+            "--diff-filter=ACDMRTUXB",
+            "--",
+          ])
+        )
+      : [
+          ...splitLines(
+            git([
+              "diff",
+              "--name-only",
+              "--diff-filter=ACDMRTUXB",
+              "HEAD",
+              "--",
+            ])
+          ),
+          ...splitLines(git(["ls-files", "--others", "--exclude-standard"])),
+        ];
+
+  return [...new Set(files)]
+    .filter(file => file !== "README.md" && !file.startsWith("docs/devlogs/"))
+    .sort();
+}
+
+function formatCurrentChange(files) {
+  return files.length > 0
+    ? files.map(file => `- \`${file}\``).join("\n")
+    : "- No current changes found.";
 }
 
 function getRecentSnapshots(archiveDir) {
@@ -145,39 +199,53 @@ function getRecentSnapshots(archiveDir) {
 }
 
 function refreshReadme(archiveDir) {
-  const readmePath = join(root, "README.md");
+  const readmePath = process.env.DEVLOG_README_FILE ?? join(root, "README.md");
   const readme = readFileSync(readmePath, "utf8");
   const start = readme.indexOf(startMarker);
   const end = readme.indexOf(endMarker);
   if (start < 0 || end < start) {
     throw new Error(
-      "README.md is missing DEVLOG markers. Add DEVLOG:START and DEVLOG:END around the generated section.",
+      "README.md is missing DEVLOG markers. Add DEVLOG:START and DEVLOG:END around the generated section."
     );
   }
 
   const links = getRecentSnapshots(archiveDir)
-    .map((file) => {
+    .map(file => {
       const archiveRelative = relative(root, file).split(sep).join("/");
-      const name = archiveRelative.replace(/^docs\/devlogs\//, "").replace(/\.md$/, "");
+      const name = archiveRelative
+        .replace(/^docs\/devlogs\//, "")
+        .replace(/\.md$/, "");
       return `- [${name}](${archiveRelative})`;
     })
     .join("\n");
   const section = [
     "## Development log",
     "",
-    "This section is automatically maintained from recent local Git history. Detailed intent belongs in commit messages and design documents.",
+    "This section is automatically maintained from the current change and recent local Git history. Detailed intent belongs in commit messages and design documents.",
     "",
     "### Recent snapshots",
     "",
     links || "- No generated snapshots found.",
   ].join("\n");
 
-  writeFileSync(readmePath, `${readme.slice(0, start)}${startMarker}\n${section}\n${readme.slice(end)}`);
+  writeFileSync(
+    readmePath,
+    `${readme.slice(0, start)}${startMarker}\n${section}\n${readme.slice(end)}`
+  );
 }
 
-function writeSnapshot(archiveDir, date, records, description) {
+function writeSnapshot(
+  archiveDir,
+  date,
+  records,
+  description,
+  currentChangeFiles = null
+) {
   const archiveFile = join(archiveDir, date.slice(0, 7), `${date}.md`);
   mkdirSync(dirname(archiveFile), { recursive: true });
+  const currentChangeSection = currentChangeFiles
+    ? ["## Current change", "", formatCurrentChange(currentChangeFiles), ""]
+    : [];
   writeFileSync(
     archiveFile,
     [
@@ -185,6 +253,7 @@ function writeSnapshot(archiveDir, date, records, description) {
       "",
       description,
       "",
+      ...currentChangeSection,
       "## Recent commits",
       "",
       formatCommits(records),
@@ -195,15 +264,16 @@ function writeSnapshot(archiveDir, date, records, description) {
       "",
       "## Regeneration",
       "",
-      "Run `npm run devlog` or `node scripts/devlog.mjs` from the repository root. The snapshot reads local Git history and does not call GitHub or an AI service.",
+      "Run `npm run devlog` or `node scripts/devlog.mjs` from the repository root. The snapshot reads the current change and local Git history; it does not call GitHub or an AI service.",
       "",
-    ].join("\n"),
+    ].join("\n")
   );
   return archiveFile;
 }
 
 const options = parseArgs(process.argv.slice(2));
-const archiveDir = process.env.DEVLOG_ARCHIVE_DIR ?? join(root, "docs", "devlogs");
+const archiveDir =
+  process.env.DEVLOG_ARCHIVE_DIR ?? join(root, "docs", "devlogs");
 const records = getCommitRecords(options.ref);
 
 if (options.backfill) {
@@ -219,12 +289,14 @@ if (options.backfill) {
       archiveDir,
       date,
       dateRecords,
-      `This snapshot is generated from ${dateRecords.length} commit${dateRecords.length === 1 ? "" : "s"} dated ${date} in Git ref \`${options.ref}\`. It is a deterministic repository summary; detailed intent belongs in commit messages and design documents.`,
+      `This snapshot is generated from ${dateRecords.length} commit${dateRecords.length === 1 ? "" : "s"} dated ${date} in Git ref \`${options.ref}\`. It is a deterministic repository summary; detailed intent belongs in commit messages and design documents.`
     );
   }
 
   refreshReadme(archiveDir);
-  console.log(`Backfilled ${recordsByDate.size} daily snapshots from ${options.ref} and refreshed README.md`);
+  console.log(
+    `Backfilled ${recordsByDate.size} daily snapshots from ${options.ref} and refreshed README.md`
+  );
 } else {
   const commitLimitValue = process.env.DEVLOG_COMMITS ?? "20";
   const commitLimit = Number(commitLimitValue);
@@ -234,12 +306,16 @@ if (options.backfill) {
 
   const today = localDate();
   const latestRecords = records.slice(0, commitLimit);
+  const currentChangeFiles = getCurrentChangeFiles();
   const archiveFile = writeSnapshot(
     archiveDir,
     today,
     latestRecords,
-    `This snapshot is generated from the latest ${commitLimit} Git commits in ref \`${options.ref}\`. It is a deterministic repository summary; detailed intent belongs in commit messages and design documents.`,
+    `This snapshot is generated from the current change and the latest ${commitLimit} Git commits in ref \`${options.ref}\`. It is a deterministic repository summary; detailed intent belongs in commit messages and design documents.`,
+    currentChangeFiles
   );
   refreshReadme(archiveDir);
-  console.log(`Generated ${relative(root, archiveFile)} from ${options.ref} and refreshed README.md`);
+  console.log(
+    `Generated ${relative(root, archiveFile)} from ${options.ref} and refreshed README.md`
+  );
 }

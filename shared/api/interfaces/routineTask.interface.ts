@@ -291,39 +291,41 @@ export type CreateRoutineTaskByRoutineIdResponse = z.infer<
 
 /* ============================== UpdateMyRoutineTaskById ============================== */
 
-export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    routineTaskId: z.uuidv4(),
-    values: z
+export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
       .object({
-        routineId: z.uuidv4(),
-        title: z.string().min(1).max(128),
-        purpose: z.enum(AllRoutineTaskPurposes),
-        payload: z.any().refine(value => {
-          try {
-            return (
-              new TextEncoder().encode(JSON.stringify(value ?? {})).length <=
-              16_777_216
-            );
-          } catch {
-            return false;
-          }
-        }, "Payload must be smaller than 16 MiB."),
-        priority: z.int32().min(0),
-        maxAttempts: z.int32().min(1).max(20),
-        period: z.enum(AllRoutinePeriods).nullable(),
-        nextScheduledAt: z.coerce.date(),
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
       })
-      .partial(),
-    setNull: z.record(z.string(), z.boolean()).optional(),
-  }),
-});
+      .optional(),
+    body: z.object({
+      routineTaskId: z.uuidv4(),
+      values: z
+        .object({
+          routineId: z.uuidv4(),
+          title: z.string().min(1).max(128),
+          purpose: z.enum(AllRoutineTaskPurposes),
+          payload: z.any().refine(value => {
+            try {
+              return (
+                new TextEncoder().encode(JSON.stringify(value ?? {})).length <=
+                16_777_216
+              );
+            } catch {
+              return false;
+            }
+          }, "Payload must be smaller than 16 MiB."),
+          priority: z.int32().min(0),
+          maxAttempts: z.int32().min(1).max(20),
+          period: z.enum(AllRoutinePeriods).nullable(),
+          nextScheduledAt: z.coerce.date(),
+        })
+        .partial(),
+      setNull: z.record(z.string(), z.boolean()).optional(),
+    }),
+  }
+);
 
 export type UpdateMyRoutineTaskByIdRequest = z.infer<
   typeof UpdateMyRoutineTaskByIdRequestSchema
@@ -361,16 +363,15 @@ export type PauseMyRoutineTaskByIdRequest = z.infer<
   typeof PauseMyRoutineTaskByIdRequestSchema
 >;
 
-export const PauseMyRoutineTaskByIdResponseSchema = NotegicResponseSchema.extend(
-  {
+export const PauseMyRoutineTaskByIdResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
     embedded: z.object({
       publicId: z.string(),
     }),
-  }
-);
+  });
 
 export type PauseMyRoutineTaskByIdResponse = z.infer<
   typeof PauseMyRoutineTaskByIdResponseSchema

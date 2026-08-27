@@ -1,5 +1,5 @@
 import { createInstance } from "i18next";
-import { resources, supportedLanguages } from "../../src/i18n";
+import { resources, supportedLanguages } from "@shared/i18n";
 
 const getLeafKeys = (value: object, prefix = ""): string[] =>
   Object.entries(value).flatMap(([key, child]) => {

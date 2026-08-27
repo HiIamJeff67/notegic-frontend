@@ -1,14 +1,14 @@
 fragment FragmentedBasicPrivateItem on PrivateItem {
-    id
-    parentSubShelfId
-    rootShelfId
-    type
-    deletedAt
-    updatedAt
-    createdAt
-    routineIds
+  id
+  parentSubShelfId
+  rootShelfId
+  type
+  deletedAt
+  updatedAt
+  createdAt
+  routineIds
 }
 
 fragment FragmentedPrivateItem on PrivateItem {
-    ...FragmentedBasicPrivateItem
+  ...FragmentedBasicPrivateItem
 }

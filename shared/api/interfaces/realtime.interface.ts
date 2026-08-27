@@ -77,8 +77,8 @@ export type CreateMyBlockPackChannelTicketResponse = z.infer<
   typeof CreateMyBlockPackChannelTicketResponseSchema
 >;
 
-export const GetBlockPackParticipantsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const GetBlockPackParticipantsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -88,8 +88,7 @@ export const GetBlockPackParticipantsRequestSchema = NotegicRequestSchema.extend
     param: z.object({
       blockPackId: z.uuidv4(),
     }),
-  }
-);
+  });
 
 export type GetBlockPackParticipantsRequest = z.input<
   typeof GetBlockPackParticipantsRequestSchema

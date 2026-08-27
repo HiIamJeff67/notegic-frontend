@@ -1,7 +1,7 @@
 import {
   getClientMutationHeaders,
   getClientRequestHeaders,
-} from "@shared/api/clientHeaders";
+} from "@/api/clientHeaders";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 
@@ -54,11 +54,11 @@ beforeEach(() => {
 test("reads only the current-session CSRF token", () => {
   storage.setItem(
     "notegic_user-a_CSRFToken",
-    JSON.stringify("stale-user-token"),
+    JSON.stringify("stale-user-token")
   );
   SessionStorageManipulator.ensureItem(
     SessionStorageKey.csrfToken,
-    "current-token",
+    "current-token"
   );
 
   expect(getClientRequestHeaders()).toEqual({
@@ -70,7 +70,7 @@ test("reads only the current-session CSRF token", () => {
 test("does not guess a token from arbitrary scoped storage", () => {
   storage.setItem(
     "notegic_user-a_CSRFToken",
-    JSON.stringify("stale-user-token"),
+    JSON.stringify("stale-user-token")
   );
 
   expect(getClientRequestHeaders()).toEqual({ userAgent: "test-agent" });
@@ -83,7 +83,7 @@ test("does not guess a token from arbitrary scoped storage", () => {
 test("mutation headers always include the CSRF field", () => {
   SessionStorageManipulator.ensureItem(
     SessionStorageKey.csrfToken,
-    "current-token",
+    "current-token"
   );
 
   expect(getClientMutationHeaders("explicit-agent")).toEqual({

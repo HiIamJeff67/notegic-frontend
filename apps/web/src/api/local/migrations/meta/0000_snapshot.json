@@ -1,0 +1,1384 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "5fb8841d-0bd6-442d-bba4-370b948e69db",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "BlockPackTable": {
+      "name": "BlockPackTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "parent_sub_shelf_id": {
+          "name": "parent_sub_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "header_background_url": {
+          "name": "header_background_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "block_count": {
+          "name": "block_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.517Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.517Z\"'"
+        }
+      },
+      "indexes": {
+        "block_pack_parent_sub_shelf_idx": {
+          "name": "block_pack_parent_sub_shelf_idx",
+          "columns": ["parent_sub_shelf_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "BlockPackTable_parent_sub_shelf_id_SubShelfTable_id_fk": {
+          "name": "BlockPackTable_parent_sub_shelf_id_SubShelfTable_id_fk",
+          "tableFrom": "BlockPackTable",
+          "tableTo": "SubShelfTable",
+          "columnsFrom": ["parent_sub_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "ItemTable": {
+      "name": "ItemTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "parent_sub_shelf_id": {
+          "name": "parent_sub_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "root_shelf_id": {
+          "name": "root_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.619Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.619Z\"'"
+        }
+      },
+      "indexes": {
+        "item_parent_sub_shelf_idx": {
+          "name": "item_parent_sub_shelf_idx",
+          "columns": ["parent_sub_shelf_id"],
+          "isUnique": false
+        },
+        "item_root_shelf_idx": {
+          "name": "item_root_shelf_idx",
+          "columns": ["root_shelf_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "ItemTable_parent_sub_shelf_id_SubShelfTable_id_fk": {
+          "name": "ItemTable_parent_sub_shelf_id_SubShelfTable_id_fk",
+          "tableFrom": "ItemTable",
+          "tableTo": "SubShelfTable",
+          "columnsFrom": ["parent_sub_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ItemTable_root_shelf_id_RootShelfTable_id_fk": {
+          "name": "ItemTable_root_shelf_id_RootShelfTable_id_fk",
+          "tableFrom": "ItemTable",
+          "tableTo": "RootShelfTable",
+          "columnsFrom": ["root_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RootShelfTable": {
+      "name": "RootShelfTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "sub_shelf_count": {
+          "name": "sub_shelf_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "item_count": {
+          "name": "item_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "last_analyzed_count": {
+          "name": "last_analyzed_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.521Z\"'"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.521Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.521Z\"'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutineTable": {
+      "name": "RoutineTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Scheduled'"
+        },
+        "is_pinned": {
+          "name": "is_pinned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "scheduled_start_at": {
+          "name": "scheduled_start_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.618Z\"'"
+        },
+        "scheduled_end_at": {
+          "name": "scheduled_end_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.618Z\"'"
+        },
+        "period": {
+          "name": "period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'UTC'"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.618Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.618Z\"'"
+        }
+      },
+      "indexes": {
+        "routine_station_idx": {
+          "name": "routine_station_idx",
+          "columns": ["station_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "RoutineTable_station_id_StationTable_id_fk": {
+          "name": "RoutineTable_station_id_StationTable_id_fk",
+          "tableFrom": "RoutineTable",
+          "tableTo": "StationTable",
+          "columnsFrom": ["station_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutinesToItemsTable": {
+      "name": "RoutinesToItemsTable",
+      "columns": {
+        "routine_id": {
+          "name": "routine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.618Z\"'"
+        }
+      },
+      "indexes": {
+        "routines_to_items_routine_idx": {
+          "name": "routines_to_items_routine_idx",
+          "columns": ["routine_id"],
+          "isUnique": false
+        },
+        "routines_to_items_item_idx": {
+          "name": "routines_to_items_item_idx",
+          "columns": ["item_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "RoutinesToItemsTable_routine_id_RoutineTable_id_fk": {
+          "name": "RoutinesToItemsTable_routine_id_RoutineTable_id_fk",
+          "tableFrom": "RoutinesToItemsTable",
+          "tableTo": "RoutineTable",
+          "columnsFrom": ["routine_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "RoutinesToItemsTable_item_id_ItemTable_id_fk": {
+          "name": "RoutinesToItemsTable_item_id_ItemTable_id_fk",
+          "tableFrom": "RoutinesToItemsTable",
+          "tableTo": "ItemTable",
+          "columnsFrom": ["item_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutinesToTags": {
+      "name": "RoutinesToTags",
+      "columns": {
+        "routine_id": {
+          "name": "routine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {
+        "routines_to_tags_routine_idx": {
+          "name": "routines_to_tags_routine_idx",
+          "columns": ["routine_id"],
+          "isUnique": false
+        },
+        "routines_to_tags_tag_idx": {
+          "name": "routines_to_tags_tag_idx",
+          "columns": ["tag_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "RoutinesToTags_routine_id_RoutineTable_id_fk": {
+          "name": "RoutinesToTags_routine_id_RoutineTable_id_fk",
+          "tableFrom": "RoutinesToTags",
+          "tableTo": "RoutineTable",
+          "columnsFrom": ["routine_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "RoutinesToTags_tag_id_RoutineTag_id_fk": {
+          "name": "RoutinesToTags_tag_id_RoutineTag_id_fk",
+          "tableFrom": "RoutinesToTags",
+          "tableTo": "RoutineTag",
+          "columnsFrom": ["tag_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutinesToTasksTable": {
+      "name": "RoutinesToTasksTable",
+      "columns": {
+        "routine_id": {
+          "name": "routine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "task_id": {
+          "name": "task_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {
+        "routines_to_tasks_routine_idx": {
+          "name": "routines_to_tasks_routine_idx",
+          "columns": ["routine_id"],
+          "isUnique": false
+        },
+        "routines_to_tasks_task_idx": {
+          "name": "routines_to_tasks_task_idx",
+          "columns": ["task_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "RoutinesToTasksTable_routine_id_RoutineTable_id_fk": {
+          "name": "RoutinesToTasksTable_routine_id_RoutineTable_id_fk",
+          "tableFrom": "RoutinesToTasksTable",
+          "tableTo": "RoutineTable",
+          "columnsFrom": ["routine_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "RoutinesToTasksTable_task_id_RoutineTaskTable_id_fk": {
+          "name": "RoutinesToTasksTable_task_id_RoutineTaskTable_id_fk",
+          "tableFrom": "RoutinesToTasksTable",
+          "tableTo": "RoutineTaskTable",
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutineTag": {
+      "name": "RoutineTag",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_public_id": {
+          "name": "owner_public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "color": {
+          "name": "color",
+          "type": "text(7)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'#FFFFFF'"
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "RoutineTag_owner_public_id_UserTable_public_id_fk": {
+          "name": "RoutineTag_owner_public_id_UserTable_public_id_fk",
+          "tableFrom": "RoutineTag",
+          "tableTo": "UserTable",
+          "columnsFrom": ["owner_public_id"],
+          "columnsTo": ["public_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutineTaskTable": {
+      "name": "RoutineTaskTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "routine_id": {
+          "name": "routine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cost_unit": {
+          "name": "cost_unit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "payload": {
+          "name": "payload",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "priority": {
+          "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Idle'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "max_attempts": {
+          "name": "max_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "period": {
+          "name": "period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "next_scheduled_at": {
+          "name": "next_scheduled_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "scheduled_at": {
+          "name": "scheduled_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "actual_started_at": {
+          "name": "actual_started_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "actual_ended_at": {
+          "name": "actual_ended_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {
+        "routine_task_routine_idx": {
+          "name": "routine_task_routine_idx",
+          "columns": ["routine_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "RoutineTaskTable_routine_id_RoutineTable_id_fk": {
+          "name": "RoutineTaskTable_routine_id_RoutineTable_id_fk",
+          "tableFrom": "RoutineTaskTable",
+          "tableTo": "RoutineTable",
+          "columnsFrom": ["routine_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "StationTable": {
+      "name": "StationTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "header_background_url": {
+          "name": "header_background_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "routine_count": {
+          "name": "routine_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "SubShelfTable": {
+      "name": "SubShelfTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'undefined'"
+        },
+        "root_shelf_id": {
+          "name": "root_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "prev_sub_shelf_id": {
+          "name": "prev_sub_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.619Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.619Z\"'"
+        }
+      },
+      "indexes": {
+        "sub_shelf_root_shelf_idx": {
+          "name": "sub_shelf_root_shelf_idx",
+          "columns": ["root_shelf_id"],
+          "isUnique": false
+        },
+        "sub_shelf_prev_idx": {
+          "name": "sub_shelf_prev_idx",
+          "columns": ["prev_sub_shelf_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "SubShelfTable_root_shelf_id_RootShelfTable_id_fk": {
+          "name": "SubShelfTable_root_shelf_id_RootShelfTable_id_fk",
+          "tableFrom": "SubShelfTable",
+          "tableTo": "RootShelfTable",
+          "columnsFrom": ["root_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "sub_shelf_fk_prev_sub_shelf_id": {
+          "name": "sub_shelf_fk_prev_sub_shelf_id",
+          "tableFrom": "SubShelfTable",
+          "tableTo": "SubShelfTable",
+          "columnsFrom": ["prev_sub_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "TestTable": {
+      "name": "TestTable",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'unknown'"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.620Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.620Z\"'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "TransactionTable": {
+      "name": "TransactionTable",
+      "columns": {
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "owner_public_id": {
+          "name": "owner_public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "action_type": {
+          "name": "action_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "affected": {
+          "name": "affected",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "retry_count": {
+          "name": "retry_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.622Z\"'"
+        }
+      },
+      "indexes": {
+        "transaction_owner_retry_idx": {
+          "name": "transaction_owner_retry_idx",
+          "columns": ["owner_public_id", "retry_count"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "TransactionTable_owner_public_id_UserTable_public_id_fk": {
+          "name": "TransactionTable_owner_public_id_UserTable_public_id_fk",
+          "tableFrom": "TransactionTable",
+          "tableTo": "UserTable",
+          "columnsFrom": ["owner_public_id"],
+          "columnsTo": ["public_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "UserTable": {
+      "name": "UserTable",
+      "columns": {
+        "public_id": {
+          "name": "public_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Online'"
+        },
+        "is_logged_in": {
+          "name": "is_logged_in",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {
+        "UserTable_name_unique": {
+          "name": "UserTable_name_unique",
+          "columns": ["name"],
+          "isUnique": true
+        },
+        "UserTable_email_unique": {
+          "name": "UserTable_email_unique",
+          "columns": ["email"],
+          "isUnique": true
+        },
+        "user_unique_idx_is_logged_in": {
+          "name": "user_unique_idx_is_logged_in",
+          "columns": ["is_logged_in"],
+          "isUnique": true,
+          "where": "\"UserTable\".\"is_logged_in\" = ?"
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "UsersToShelvesTable": {
+      "name": "UsersToShelvesTable",
+      "columns": {
+        "user_public_id": {
+          "name": "user_public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "root_shelf_id": {
+          "name": "root_shelf_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "permission": {
+          "name": "permission",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.623Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.623Z\"'"
+        }
+      },
+      "indexes": {
+        "users_to_shelves_root_shelf_idx": {
+          "name": "users_to_shelves_root_shelf_idx",
+          "columns": ["root_shelf_id"],
+          "isUnique": false
+        },
+        "users_to_shelves_unique_idx_root_shelf_owner": {
+          "name": "users_to_shelves_unique_idx_root_shelf_owner",
+          "columns": ["root_shelf_id"],
+          "isUnique": true,
+          "where": "\"UsersToShelvesTable\".\"permission\" = ?"
+        }
+      },
+      "foreignKeys": {
+        "UsersToShelvesTable_user_public_id_UserTable_public_id_fk": {
+          "name": "UsersToShelvesTable_user_public_id_UserTable_public_id_fk",
+          "tableFrom": "UsersToShelvesTable",
+          "tableTo": "UserTable",
+          "columnsFrom": ["user_public_id"],
+          "columnsTo": ["public_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UsersToShelvesTable_root_shelf_id_RootShelfTable_id_fk": {
+          "name": "UsersToShelvesTable_root_shelf_id_RootShelfTable_id_fk",
+          "tableFrom": "UsersToShelvesTable",
+          "tableTo": "RootShelfTable",
+          "columnsFrom": ["root_shelf_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "UsersToShelvesTable_user_public_id_root_shelf_id_pk": {
+          "columns": ["user_public_id", "root_shelf_id"],
+          "name": "UsersToShelvesTable_user_public_id_root_shelf_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "UsersToStationsTable": {
+      "name": "UsersToStationsTable",
+      "columns": {
+        "user_public_id": {
+          "name": "user_public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "permission": {
+          "name": "permission",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-07-23T11:09:10.617Z\"'"
+        }
+      },
+      "indexes": {
+        "users_to_stations_station_idx": {
+          "name": "users_to_stations_station_idx",
+          "columns": ["station_id"],
+          "isUnique": false
+        },
+        "users_to_stations_unique_idx_station_owner": {
+          "name": "users_to_stations_unique_idx_station_owner",
+          "columns": ["station_id"],
+          "isUnique": true,
+          "where": "\"UsersToStationsTable\".\"permission\" = ?"
+        }
+      },
+      "foreignKeys": {
+        "UsersToStationsTable_user_public_id_UserTable_public_id_fk": {
+          "name": "UsersToStationsTable_user_public_id_UserTable_public_id_fk",
+          "tableFrom": "UsersToStationsTable",
+          "tableTo": "UserTable",
+          "columnsFrom": ["user_public_id"],
+          "columnsTo": ["public_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UsersToStationsTable_station_id_StationTable_id_fk": {
+          "name": "UsersToStationsTable_station_id_StationTable_id_fk",
+          "tableFrom": "UsersToStationsTable",
+          "tableTo": "StationTable",
+          "columnsFrom": ["station_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "UsersToStationsTable_user_public_id_station_id_pk": {
+          "columns": ["user_public_id", "station_id"],
+          "name": "UsersToStationsTable_user_public_id_station_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

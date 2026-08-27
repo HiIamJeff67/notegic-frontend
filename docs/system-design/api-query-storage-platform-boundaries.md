@@ -35,8 +35,8 @@ are supplied by each application.
 
 ## Current Web responsibilities
 
-Until Phase 2 moves files, the current Web implementation remains at its
-existing paths. Its runtime responsibilities include:
+The current Web implementation owns the following runtime responsibilities
+under `apps/web/src/api/` and `apps/web/src/`:
 
 - TanStack Start server functions, cookies, headers, CSRF, and request forwarding.
 - `localStorage`, `sessionStorage`, `document`, and browser lifecycle behavior.
@@ -45,8 +45,7 @@ existing paths. Its runtime responsibilities include:
 - CSS, Tailwind, BlockNote/editor styles, browser metadata, and Web assets.
 
 These are not a prescription for the future Desktop or Mobile runtime. They
-are the current Web ownership boundary that Phase 2 will make explicit under
-`apps/web/`.
+are the explicit current Web ownership boundary.
 
 ## Future application responsibilities
 
@@ -67,7 +66,6 @@ dependency is intentionally shared.
 
 ## Migration rule
 
-Phase 1 documents and enforces ownership without moving the current source
-tree. Phase 2 creates `apps/web`, `apps/desktop`, `apps/mobile`, and the shared
-workspace boundaries. New code should follow the target boundary now, while
-existing paths may remain until the planned migration issue is implemented.
+Phase 2 has created the `apps/web` and shared workspace boundaries. New code
+should follow the target boundary now; Desktop and Mobile directories remain
+planned and are intentionally not created by NOT-90.

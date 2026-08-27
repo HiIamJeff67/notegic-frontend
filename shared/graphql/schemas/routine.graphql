@@ -36,5 +36,5 @@ type PrivateSearchableRoutine {
   # relations
   tagIds: [UUID!]!
   taskIds: [UUID!]!
-  itemIds: [UUID!]! 
+  itemIds: [UUID!]!
 }

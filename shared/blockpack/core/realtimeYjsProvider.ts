@@ -52,11 +52,7 @@ export class RealtimeYjsProvider {
     );
   };
 
-  constructor(
-    doc: Y.Doc,
-    blockPackId: UUID,
-    userPublicId: string | null
-  ) {
+  constructor(doc: Y.Doc, blockPackId: UUID, userPublicId: string | null) {
     this.doc = doc;
     this.blockPackId = blockPackId;
     this.userPublicId = userPublicId;

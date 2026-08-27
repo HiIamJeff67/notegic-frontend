@@ -337,31 +337,33 @@ export type UpdateMySubShelfByIdResponse = z.infer<
 
 /* ============================== UpdateMySubShelvesByIds ============================== */
 
-export const UpdateMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    updatedSubShelves: z.array(
-      z.object({
-        subShelfId: z.uuidv4(),
-        values: z
-          .object({
-            name: z.string().min(1).max(128),
-          })
-          .partial(),
-        setNull: z.record(z.string(), z.boolean()).optional(),
+export const UpdateMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
       })
-    ),
-  }),
-  affected: z.object({
-    rootShelfIds: z.array(z.uuidv4()),
-    prevSubShelfIds: z.array(z.uuidv4().nullable()),
-  }),
-});
+      .optional(),
+    body: z.object({
+      updatedSubShelves: z.array(
+        z.object({
+          subShelfId: z.uuidv4(),
+          values: z
+            .object({
+              name: z.string().min(1).max(128),
+            })
+            .partial(),
+          setNull: z.record(z.string(), z.boolean()).optional(),
+        })
+      ),
+    }),
+    affected: z.object({
+      rootShelfIds: z.array(z.uuidv4()),
+      prevSubShelfIds: z.array(z.uuidv4().nullable()),
+    }),
+  }
+);
 
 export type UpdateMySubShelvesByIdsRequest = z.infer<
   typeof UpdateMySubShelvesByIdsRequestSchema
@@ -523,21 +525,23 @@ export type RestoreMySubShelfByIdRequest = z.infer<
   typeof RestoreMySubShelfByIdRequestSchema
 >;
 
-export const RestoreMySubShelfByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    id: z.uuidv4(),
-    name: z.string(),
-    rootShelfId: z.uuidv4(),
-    prevSubShelfId: z.uuidv4().nullable(),
-    path: z.array(z.uuidv4()),
-    deletedAt: z.coerce.date().nullable(),
-    updatedAt: z.coerce.date(),
-    createdAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const RestoreMySubShelfByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      id: z.uuidv4(),
+      name: z.string(),
+      rootShelfId: z.uuidv4(),
+      prevSubShelfId: z.uuidv4().nullable(),
+      path: z.array(z.uuidv4()),
+      deletedAt: z.coerce.date().nullable(),
+      updatedAt: z.coerce.date(),
+      createdAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type RestoreMySubShelfByIdResponse = z.infer<
   typeof RestoreMySubShelfByIdResponseSchema
@@ -545,8 +549,8 @@ export type RestoreMySubShelfByIdResponse = z.infer<
 
 /* ============================== RestoreMySubShelvesByIds ============================== */
 
-export const RestoreMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const RestoreMySubShelvesByIdsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -560,8 +564,7 @@ export const RestoreMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend
       rootShelfIds: z.array(z.uuidv4()),
       prevSubShelfIds: z.array(z.uuidv4()),
     }),
-  }
-);
+  });
 
 export type RestoreMySubShelvesByIdsRequest = z.infer<
   typeof RestoreMySubShelvesByIdsRequestSchema
@@ -627,21 +630,23 @@ export type DeleteMySubShelfByIdResponse = z.infer<
 
 /* ============================== DeleteMySubShelvesByIds ============================== */
 
-export const DeleteMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    subShelfIds: z.array(z.uuidv4()).min(1).max(128),
-  }),
-  affected: z.object({
-    rootShelfIds: z.array(z.uuidv4()),
-    prevSubShelfIds: z.array(z.uuidv4()),
-  }),
-});
+export const DeleteMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      subShelfIds: z.array(z.uuidv4()).min(1).max(128),
+    }),
+    affected: z.object({
+      rootShelfIds: z.array(z.uuidv4()),
+      prevSubShelfIds: z.array(z.uuidv4()),
+    }),
+  }
+);
 
 export type DeleteMySubShelvesByIdsRequest = z.infer<
   typeof DeleteMySubShelvesByIdsRequestSchema

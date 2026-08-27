@@ -1,0 +1,459 @@
+import type { SettingsTranslation } from "./settings.type";
+
+export const JapaneseSettingsTranslation: SettingsTranslation = {
+  settingsPage: {
+    openAsPage: "設定をページで開く",
+    openInSheet: "設定をサイドシートで開く",
+    account: {
+      eyebrow: "アカウント設定",
+      personal: {
+        title: "個人情報",
+        description: "公開プロフィール、アバター、自己紹介を管理します。",
+        changeCover: "クリックしてカバー画像を変更",
+        changeAvatar: "クリックしてアバターを変更",
+        avatar: "アバター",
+        changeAvatarTitle: "アバターを変更",
+        changeCoverTitle: "カバー画像を変更",
+        imageDescription:
+          "公開画像 URL を貼り付け、プロフィールを保存して変更を適用します。",
+        removeImage: "画像を削除",
+        apply: "適用",
+        headline: "プロフィール見出し",
+        introduction: "自己紹介",
+        gender: "性別",
+        genderUnset: "性別は未設定です",
+        selectGender: "性別を選択",
+        country: "国",
+        countryUnset: "国は未設定です",
+        birthDate: "生年月日",
+        birthDateUnset: "生年月日は未設定です",
+        changeDate: "日付を変更",
+        selectBirthDate: "生年月日を選択",
+        lastUpdated: "最終更新",
+        saveProfile: "プロフィールを保存",
+        resetChanges: "変更をリセット",
+      },
+      account: {
+        title: "アカウント",
+        description: "アカウントの識別情報、プラン、状態を確認します。",
+      },
+      apiKeys: {
+        title: "API キー",
+        description: "サーバー側の連携に使うキーを作成・失効します。",
+        securityTitle: "API キーを安全に管理",
+        securityDescription:
+          "API キーは API Gateway リクエストの認証に使います。完全な secret は一度だけ表示され、ブラウザーコード、URL、localStorage に保存してはいけません。",
+        create: "API キーを作成",
+        createTitle: "API キーを作成",
+        createDescription:
+          "キーに名前を付け、必要に応じて有効期限を設定します。",
+        nameLabel: "名前",
+        namePlaceholder: "例: Production worker",
+        expirationHint: "空欄にすると有効期限なしになります。",
+        listTitle: "あなたの API キー",
+        createdAt: "作成日時",
+        lastUsedAt: "最終使用",
+        expiresAt: "有効期限",
+        revokedAt: "失効日時",
+        never: "なし",
+        active: "有効",
+        revoked: "失効済み",
+        revoke: "失効",
+        revokeConfirm:
+          "この API キーを失効させますか？既存の連携は停止します。",
+        secretTitle: "API キー secret を保存",
+        secretDescription:
+          "Secret は一度だけ表示されます。今すぐコピーしてサーバーまたは secret manager に保存してください。",
+        secretWarning:
+          "Secret をブラウザー保存、URL、ソースコード、ログ、チャットに置かないでください。",
+        copySecret: "Secret をコピー",
+        createdToast: "API キーを作成しました",
+        copiedToast: "API キー secret をコピーしました",
+        revokedToast: "API キーを失効させました",
+        emptyTitle: "API キーはまだありません",
+        emptyDescription:
+          "ClientGateway の API キー contract がデプロイされるとキー管理を利用できます。",
+      },
+      upgrade: {
+        title: "プランをアップグレード",
+        description:
+          "プランの上限を比較し、適したワークスペース規模を選びます。",
+        accountPlan: "アカウントプラン",
+        active: "有効",
+        status: "状態",
+        blocks: "ブロック",
+        workflows: "ワークフロー",
+        taskCostUnits: "ルーティンタスク月間実行 CostUnits",
+        billingCycle: "請求周期",
+        annualPricing: "年額プランには年間価格が適用されます。",
+        monthly: "月払い",
+        yearly: "年払い",
+        selectedBillingPlan: "選択した請求プラン",
+        perMonth: "月",
+        perYear: "年",
+        currentPlan: "現在のプラン",
+        downgradeUnavailable:
+          "ダウングレードはデプロイ後に利用可能になります。",
+        paymentUnavailable: "支払いはデプロイ後に利用可能になります。",
+        limitComparison: "上限の比較",
+        currentSelected: "現在のプラン／選択したプラン",
+        paymentStatus: "支払い状況",
+        subscriptionStatus: "購読履歴",
+        currency: "通貨",
+        paymentChannel: "支払い方法",
+        pending: "デプロイ待ち",
+        approvalPending: "承認待ち",
+        free: "無料",
+        pro: "Pro",
+        premium: "Premium",
+        ultimate: "Ultimate",
+        enterprise: "Enterprise",
+        monthlyPlan: "Notegic {{plan}} 月額プラン",
+        yearlyPlan: "Notegic {{plan}} 年額プラン",
+        paymentNotice:
+          "UI とバックエンドのデータモデルは準備済みです。外部決済フローのデプロイ後に、支払い、購読、プラン変更 API を接続します。",
+        rootShelves: "ルートシェルフ",
+        materials: "素材",
+        materialSize: "素材サイズ",
+        stations: "ステーション",
+        freeNote: "はじめに",
+        freeBestFor: "個人利用と小規模データベース",
+        proNote: "安定した拡張",
+        proBestFor: "日常メモ、ワークフロー、中規模データ",
+        premiumNote: "高負荷ワークスペース",
+        premiumBestFor: "複数プロジェクトの知識ベースと高度なタスク",
+        ultimateNote: "大容量",
+        ultimateBestFor: "大規模研究、集中的な同期、長期保存",
+        enterpriseNote: "エンタープライズ規模",
+        enterpriseBestFor: "チームデータベースと大容量運用",
+      },
+      security: {
+        title: "セキュリティ",
+        description:
+          "メールアドレスを確認し、アカウントのセキュリティ操作を管理します。",
+        verifyEmail: "メールアドレスを確認",
+        verifyEmailDescription:
+          "送信した認証コードでメールアドレスを確認します。",
+        enterCodeForEmail: "{{email}} に送信した認証コードを入力してください。",
+        enterCode: "認証コードを入力",
+        resendIn: "{{count}} 秒後に再送",
+        resendCode: "認証コードを再送",
+        verified: "確認済み",
+        verify: "確認",
+        activity: "アカウントアクティビティ",
+        activityDescription: "最近のアカウントセキュリティ活動を確認します。",
+        view: "表示",
+      },
+      binding: {
+        title: "アカウント連携",
+        description: "予備の連絡先や外部アカウントを連携します。",
+        backupEmail: "予備メールアドレスを連携",
+        backupEmailDescription:
+          "アカウント復旧のための予備メールアドレスを追加します。",
+        backupEmailDialogDescription:
+          "予備メールアドレスと認証コードを入力してください。ログイン用メールアドレスとは異なる必要があります。",
+        phoneNumber: "電話番号を連携",
+        phoneNumberDescription: "アカウント復旧のために電話番号を追加します。",
+        phoneNumberDialogDescription:
+          "電話番号と認証コードを入力してください。",
+        gmail: "Google アカウントを連携",
+        gmailDescription: "Google を連携して素早くログインします。",
+        meta: "Meta アカウントを連携",
+        metaDescription: "Meta を連携して素早くログインします。",
+        discord: "Discord アカウントを連携",
+        discordDescription: "Discord を連携して素早く利用します。",
+        enterBackupEmail: "予備メールアドレスを入力",
+        selectCountryCode: "国番号を選択",
+        countryCode: "国番号",
+        enterPhoneNumber: "電話番号を入力",
+        bind: "連携",
+        confirmBinding: "連携を確認",
+      },
+      modification: {
+        title: "アカウントの変更",
+        description: "アカウントをリセットするか、元に戻せない変更を行います。",
+        resetAccount: "アカウントをリセット",
+        resetWarning:
+          "メモや設定を含む個人データが完全に消去され、元に戻せません。",
+        changeEmail: "メールアドレスを変更",
+        changeEmailDialogDescription:
+          "現在のメールアドレスとは異なる新しいメールアドレスを入力してください。",
+        enterNewEmail: "新しいメールアドレスを入力",
+        changePassword: "パスワードを変更",
+        changePasswordDescription:
+          "アカウントを安全に保つためパスワードを更新します。",
+        changePasswordDialogDescription:
+          "新しいパスワードと認証コードを入力してください。",
+        updatePassword: "パスワードを更新",
+        deleteAccount: "アカウントを削除",
+        deleteAccountDescription:
+          "アカウントとすべてのデータを完全に削除します。",
+        deleteAccountTitle: "アカウントを完全に削除",
+        deleteWarning:
+          "警告: アカウントとすべてのデータが完全に削除され、元に戻せません。",
+        enterDelete: "削除を確認するには DELETE と入力",
+        deletePermanently: "完全に削除",
+        confirmReset: "リセットを確認",
+        confirmChange: "変更を確認",
+        passwordMismatch: "新しいパスワードと確認用パスワードが一致しません。",
+        deleteConfirmationInvalid:
+          "アカウントを削除するには DELETE と入力してください。",
+      },
+      authCodeAlreadySent:
+        "認証コードは送信済みです。{{count}} 秒後にもう一度お試しください。",
+      authCodeSent: "認証コードを {{email}} に送信しました。",
+      sessionExpired:
+        "セッションの有効期限が切れました。もう一度ログインしてください。",
+      fields: {
+        publicId: "公開 ID",
+        accountName: "アカウント名",
+        displayName: "表示名",
+        displayNameUnset: "表示名は未設定です",
+        setDisplayName: "表示名を設定",
+        email: "メールアドレス",
+        role: "ロール",
+        plan: "プラン",
+        status: "ステータス",
+        currentStatus: "現在の状態: {{status}}",
+        selectStatus: "ステータスを選択",
+        joinedAt: "登録日",
+        saveAccount: "アカウントを保存",
+        resetChanges: "変更をリセット",
+      },
+      statuses: {
+        Online: "オンライン",
+        AFK: "離席中",
+        DoNotDisturb: "取り込み中",
+        Offline: "オフライン",
+      },
+      messages: {
+        accountUpdated: "アカウントを更新しました。",
+        profileUpdated: "プロフィールを更新しました。",
+        backupEmailSet: "予備のメールアドレスを設定しました。",
+        phoneNumberSet: "電話番号を設定しました。",
+        accountReset: "アカウントをリセットしました。",
+        emailReset: "メールアドレスをリセットしました。",
+        passwordChanged: "パスワードを変更しました。",
+        accountDeleted: "アカウントを削除しました。",
+        invalidImageUrl: "有効な画像 URL を入力してください。",
+      },
+    },
+    preferences: {
+      eyebrow: "環境設定",
+      appearance: {
+        title: "外観",
+        description: "テーマ、言語、密度、操作フィードバックを調整します。",
+        theme: "テーマ",
+        themeDescription:
+          "製品の色とコントラストを調整します。変更はこのデバイスにすぐ適用されます。",
+        chooseTheme: "テーマを選択",
+        language: "表示言語",
+        languageDescription:
+          "表示言語を変更します。コンテンツは翻訳・書き換えされません。",
+        chooseLanguage: "言語を選択",
+        density: "密度",
+        densityDescription: "リスト、ボタン、パネルの間隔を調整します。",
+        comfortable: "ゆったり",
+        balanced: "標準",
+        compact: "コンパクト",
+        reduceMotion: "モーションを減らす",
+        reduceMotionDescription:
+          "長時間の作業時や動きに敏感な場合に、遷移やアニメーションを減らします。",
+        tactileFeedback: "操作フィードバック",
+        tactileFeedbackDescription:
+          "コントロールの選択・切替時に、控えめな視覚・触覚フィードバックを維持します。",
+        unsupported: "未対応",
+      },
+      editor: {
+        title: "エディター",
+        description: "閲覧幅、文字サイズ、編集時に表示するツールを設定します。",
+        pageWidth: "ページ幅",
+        pageWidthDescription:
+          "読み書きやコンテンツ整理に使う、既定のエディター幅を設定します。",
+        narrow: "狭い",
+        standard: "標準",
+        wide: "広い",
+        textSize: "文字サイズ",
+        textSizeDescription:
+          "このデバイスのエディター基本文字サイズを設定します。",
+        lineWrap: "行の折り返し",
+        lineWrapDescription:
+          "長い行を折り返し、横スクロールせずに読めるようにします。",
+        spellcheck: "スペルチェック",
+        spellcheckDescription:
+          "コンテンツを Notegic API に送らず、ブラウザーのローカルスペルチェックを使用します。",
+        quickInsert: "クイック挿入バー",
+        quickInsertDescription:
+          "編集時に一般的な挿入ツールを表示し、ブロック、ルーチン、素材をすばやく追加できます。",
+        dragHandle: "ブロックのドラッグハンドル",
+        dragHandleDescription:
+          "各ブロックの横に六点ハンドルを表示し、移動や管理に使います。",
+      },
+      dashboard: {
+        title: "ダッシュボード",
+        description: "このデバイスに表示するウィジェット列数を調整します。",
+        manualWidth: "ダッシュボード幅を手動で調整",
+        manualWidthDescription:
+          "オフにすると、ダッシュボードは画面サイズに合わせて自動調整されます。",
+        widthDescription: "この数値はダッシュボードのウィジェット総列数です。",
+        expandWidth: "ダッシュボード幅を広げる",
+        reduceWidth: "ダッシュボード幅を狭める",
+      },
+      offline: {
+        title: "オフラインデータ",
+        description:
+          "ローカルキャッシュ、Yjs ドキュメント、ブラウザー保存領域を管理します。",
+        storage: "ローカル保存領域の上限",
+        storageDescription: "ブラウザーが報告するサイト使用量と推定上限です。",
+        used: "使用済み {{size}}",
+        limit: "上限 {{size}}",
+        yjsDocuments: "Yjs ドキュメント",
+        backgroundImages: "背景画像",
+        localDatabase: "ローカルデータベース",
+        localDatabaseDescription:
+          "このブラウザーに Notegic の作業データを保存するかを制御します。",
+        offlineQueue: "オフラインキュー",
+        offlineQueueDescription:
+          "オフラインの変更を、接続が復帰するまでローカルで待機させるかを制御します。",
+        attachmentCache: "添付ファイルキャッシュ",
+        attachmentCacheDescription:
+          "最近の添付ファイルをローカルキャッシュに残すかを制御します。",
+        cleanupPeriod: "クリーンアップ期間",
+        cleanupPeriodDescription:
+          "ローカルキャッシュデータを保持する期間を設定します。",
+        cleanupDays_one: "{{count}} 日",
+        cleanupDays_other: "{{count}} 日",
+        pending: "連携待ち",
+        yjsCache: "Yjs ドキュメントキャッシュ",
+        yjsCacheDescription:
+          "ブラウザーを閉じた後、オフライン時、再接続時に BlockPack の共同編集ドキュメントを復元します。",
+        backgroundCache: "背景画像キャッシュ",
+        backgroundCacheDescription:
+          "ローカル背景画像は 1 GB までで、追加前にブラウザー保存領域を確認します。",
+        clear: "消去",
+        clearUnused: "未使用分を消去",
+        clearAll: "すべて消去",
+        documents: "{{count}} 件のドキュメント",
+        images: "{{count}} 枚の画像",
+        clearUnusedSuccess: "未使用の背景画像を消去しました。",
+        clearAllConfirm: "すべてのローカル背景画像を消去しますか？",
+        clearAllSuccess: "背景画像キャッシュを消去しました。",
+        activeEditors:
+          "Yjs キャッシュを消去する前に、使用中の BlockPack エディターを閉じてください。",
+        clearYjsConfirm:
+          "ローカル Yjs ドキュメント復元キャッシュを消去しますか？",
+        clearYjsSuccess: "ローカル Yjs ドキュメントキャッシュを消去しました。",
+        terminalFailures: "同期に失敗したオフライン変更",
+        terminalFailuresDescription:
+          "これらの変更は再試行上限に達したため、自動再試行されません。",
+        transactions: "{{count}} 件の変更",
+        clearTerminalFailures: "失敗した変更を消去",
+        clearTerminalFailuresConfirm:
+          "失敗したオフライン変更を消去しますか？削除後は再試行できません。",
+        clearTerminalFailuresSuccess: "失敗したオフライン変更を消去しました。",
+      },
+      privacy: {
+        title: "プライバシー",
+        description:
+          "開始ページ、プレビュー情報、ローカルクリップボード保護を設定します。",
+        startSurface: "開始ページ",
+        startSurfaceDescription:
+          "Notegic に戻ったとき開くワークスペースを選びます。",
+        dashboard: "ダッシュボード",
+        routines: "ルーチン",
+        privatePreviews: "プレビュータイトルを隠す",
+        privatePreviewsDescription:
+          "画面共有時に、切替画面やプレビューでのノートタイトルの表示を抑えます。",
+        clipboardGuard: "クリップボード保護",
+        clipboardGuardDescription:
+          "機密性のある可能性がある内容を別のアプリにコピーする前に、ローカル警告を表示します。",
+        sensitivePatterns: "機密パターン",
+        sensitivePatternsDescription:
+          "カスタム正規表現を追加します。クリップボード保護はこの順にコピー内容を確認します。",
+        regexInvalid: "正規表現が無効です。",
+        regexExists: "この正規表現はすでに存在します。",
+        regex: "正規表現",
+        regexPlaceholder: "例: NOTEGIC_[A-Z0-9]{16}",
+        noPatterns: "カスタム正規表現はまだありません。",
+      },
+      browserPermissions: {
+        title: "ブラウザー権限",
+        description: "このブラウザーが提供する機能を確認し、再承認します。",
+        status: "サイト権限の状態",
+        statusDescription:
+          "ここには Notegic に関連し、このブラウザーで確認できる権限のみ表示されます。",
+        refresh: "再確認",
+        notifications: "通知",
+        notificationsDescription:
+          "デスクトップ通知や今後の重要な状態通知に使用します。",
+        clipboardRead: "クリップボードの読み取り",
+        clipboardReadDescription:
+          "クリップボードからコンテンツを取り込むフローで使用します。",
+        clipboardWrite: "クリップボードへの書き込み",
+        clipboardWriteDescription:
+          "設定、識別子、生成されたコンテンツをコピーするときに使用します。",
+        persistentStorage: "永続ストレージ",
+        persistentStorageDescription:
+          "Notegic データをローカルに保持するようブラウザーに要求します。承認はブラウザーが決定し、通常は確認画面を表示しません。",
+        geolocation: "位置情報",
+        geolocationDescription:
+          "位置コンテキストが必要なワークスペース機能のために予約されています。",
+        requestPermission: "権限を要求",
+        requestStorage: "保存を要求",
+        requesting: "要求中",
+        revokeInBrowser: "ブラウザーで取り消す",
+        browserControlled: "ブラウザー管理",
+        persistentStorageGranted: "永続ストレージを有効にしました。",
+        persistentStorageDenied:
+          "ブラウザーは永続ストレージを承認しませんでした。一部のブラウザーは自動で判断し、確認画面を表示しません。",
+        states: {
+          granted: "許可",
+          prompt: "確認待ち",
+          denied: "ブロック",
+          unsupported: "未対応",
+          unavailable: "利用不可",
+          checking: "確認中",
+        },
+      },
+      notifications: {
+        title: "通知",
+        description:
+          "デスクトップ、同期、ルーチンのリマインダー方法を選びます。",
+        desktop: "デスクトップ通知",
+        desktopDescription:
+          "ローカルイベントやワークスペース状態について、Notegic がブラウザーのデスクトップ通知を使えるようにします。",
+        routine: "ルーチンのリマインダー",
+        routineDescription:
+          "ルーチンの期限が近づいたら通知し、進行中のワークフローを見逃さないようにします。",
+        sync: "同期通知",
+        syncDescription: "同期の完了、停止、失敗時にメッセージを表示します。",
+        quietMode: "通知を控える時間",
+        quietModeDescription:
+          "選択した時間帯は通知の中断を減らし、必要なシステム状態のみ維持します。",
+        quietRange: "静音時間帯",
+        quietRangeDescription: "毎日通常の通知を止める時間を設定します。",
+        startTime: "開始時刻",
+        endTime: "終了時刻",
+        to: "から",
+      },
+      about: {
+        title: "このアプリについて",
+        description:
+          "バージョン情報を確認し、ローカル設定をエクスポートまたはリセットします。",
+        version: "バージョン",
+        versionDescription:
+          "インストールされている Notegic フロントエンドのバージョンです。",
+        exportPreferences: "設定をエクスポート",
+        exportPreferencesDescription:
+          "現在のローカル設定を JSON としてコピーし、手動バックアップや不具合報告に利用できます。",
+        resetPreferences: "設定をリセット",
+        resetPreferencesDescription:
+          "このパネルのローカル設定を既定値に戻します。",
+        copy: "コピー",
+        copied: "コピー済み",
+        failed: "失敗",
+        reset: "リセット",
+      },
+    },
+  },
+};

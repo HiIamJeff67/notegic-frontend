@@ -1,15 +1,15 @@
 type PrivateBlock {
-    id: UUID!
-    blockPackId: UUID!
-    parentBlockId: UUID
-    prevBlockId: UUID
-    nextBlockId: UUID
-    type: BlockType!
-    props: DatatypeJSON!
-    content: DatatypeJSON!
-    updatedAt: Time!
-    createdAt: Time!
+  id: UUID!
+  blockPackId: UUID!
+  parentBlockId: UUID
+  prevBlockId: UUID
+  nextBlockId: UUID
+  type: BlockType!
+  props: DatatypeJSON!
+  content: DatatypeJSON!
+  updatedAt: Time!
+  createdAt: Time!
 
-    # relations
-    childrenIds: [UUID!]!
+  # relations
+  childrenIds: [UUID!]!
 }

@@ -60,7 +60,7 @@ rename.
 
 ## Folder rules
 
-### `src/components/`
+### `apps/web/src/components/`
 
 Use lowercase category folders such as `commons/`, `dialogs/`, `menus/`,
 `panels/`, and `widgets/`. A component or feature group under those categories
@@ -68,22 +68,22 @@ uses a PascalCase folder and normally keeps its main component beside its
 PascalCase companion files:
 
 ```text
-src/components/dialogs/NotificationDialog/NotificationDialog.tsx
-src/components/dialogs/NotificationDialog/NotificationDialogContent.tsx
+apps/web/src/components/dialogs/NotificationDialog/NotificationDialog.tsx
+apps/web/src/components/dialogs/NotificationDialog/NotificationDialogContent.tsx
 ```
 
-The `src/components/ui/` directory is a shadcn-style primitive collection and
+The `apps/web/src/components/ui/` directory is a shadcn-style primitive collection and
 uses kebab-case files. Do not make a new primitive there PascalCase merely to
 match feature components.
 
-### `src/pages/`
+### `apps/web/src/pages/`
 
 Use lowercase kebab-case for route-oriented folders, such as
 `block-pack-editor/`, `material-viewer/`, and `privacy-policy/`. Use
 PascalCase for page modules and add a role suffix such as `Page`, `Layout`, or
 `Tab` when the module has that role.
 
-### `src/routes/`
+### `apps/web/src/routes/`
 
 TanStack Router owns the route-file grammar. Use dot-delimited route segments,
 underscores for pathless segments, `$` for parameters, and `.index` for index

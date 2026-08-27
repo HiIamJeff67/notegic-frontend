@@ -5,7 +5,7 @@ jest.mock("@shared/lib/indexedDBManipulator", () => ({
     removeItem: jest.fn(),
   },
 }));
-jest.mock("@shared/api/local/db", () => ({
+jest.mock("@/api/local/db", () => ({
   localDB: {
     isEnabled: true,
     isReady: true,
@@ -22,7 +22,7 @@ jest.mock("@shared/blockpack/core/localYjsDocumentStore", () => ({
   },
 }));
 
-import { cleanupLocalData } from "@shared/api/local/local-data.cleanup";
+import { cleanupLocalData } from "@/api/local/local-data.cleanup";
 import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";

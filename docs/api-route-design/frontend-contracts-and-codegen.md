@@ -41,8 +41,10 @@ consumer artifacts and must never be edited by hand. Phase 3 adds CI checks
 for drift and reproducible generation.
 
 Generated GraphQL types, operation definitions, conversions, and schema
-helpers must remain portable: they must not import TanStack Start, browser
-globals, Cloudflare bindings, Web CSS, or app-specific storage.
+helpers remain under `shared/api/graphql/` and must stay portable: they must
+not import TanStack Start, browser globals, Cloudflare bindings, Web CSS, or
+app-specific storage. Web Apollo and local-search adapters live under
+`apps/web/src/api/`.
 
 ## Runtime boundary
 

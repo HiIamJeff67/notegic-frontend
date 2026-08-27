@@ -175,14 +175,13 @@ export type UpdateMyRoutineTagByIdRequest = z.infer<
   typeof UpdateMyRoutineTagByIdRequestSchema
 >;
 
-export const UpdateMyRoutineTagByIdResponseSchema = NotegicResponseSchema.extend(
-  {
+export const UpdateMyRoutineTagByIdResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
     }),
     embedded: z.object({ publicId: z.string().optional() }).optional(),
-  }
-);
+  });
 
 export type UpdateMyRoutineTagByIdResponse = z.infer<
   typeof UpdateMyRoutineTagByIdResponseSchema
@@ -190,8 +189,8 @@ export type UpdateMyRoutineTagByIdResponse = z.infer<
 
 /* ============================== UpdateMyRoutineTagsByIds ============================== */
 
-export const UpdateMyRoutineTagsByIdsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const UpdateMyRoutineTagsByIdsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -213,8 +212,7 @@ export const UpdateMyRoutineTagsByIdsRequestSchema = NotegicRequestSchema.extend
         })
       ),
     }),
-  }
-);
+  });
 
 export type UpdateMyRoutineTagsByIdsRequest = z.infer<
   typeof UpdateMyRoutineTagsByIdsRequestSchema

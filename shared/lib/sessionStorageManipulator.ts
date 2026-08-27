@@ -23,7 +23,7 @@ export class SessionStorageManipulator {
   };
 
   static getItemByKey = <K extends SessionStorageKey>(
-    key: K,
+    key: K
   ): SessionStorageItem[K] | null => {
     if (!this.isSessionStorageAvailable()) return null;
     try {
@@ -38,14 +38,14 @@ export class SessionStorageManipulator {
   };
 
   static getItemsByKeys = <K extends SessionStorageKey>(
-    keys: K[],
+    keys: K[]
   ): Pick<SessionStorageItem, K> => {
     if (!this.isSessionStorageAvailable())
       return {} as Pick<SessionStorageItem, K>;
 
     const result = {} as Pick<SessionStorageItem, K>;
 
-    keys.forEach((key) => {
+    keys.forEach(key => {
       result[key] = this.getItemByKey(key);
     });
 
@@ -66,10 +66,10 @@ export class SessionStorageManipulator {
         if (keyString && keyString.startsWith(this.SessionStoragePrefix)) {
           const cleanKey = keyString.replace(
             this.SessionStoragePrefix,
-            "",
+            ""
           ) as K;
           result[cleanKey] = sessionStorage.getItem(
-            keyString,
+            keyString
           ) as SessionStorageItem[K];
         }
       }
@@ -88,7 +88,7 @@ export class SessionStorageManipulator {
 
   static setItem = <K extends SessionStorageKey>(
     key: K,
-    value: SessionStorageItem[K], // use the key of the Storage
+    value: SessionStorageItem[K] // use the key of the Storage
   ): boolean => {
     if (!this.isSessionStorageAvailable()) return false;
 
@@ -136,7 +136,7 @@ export class SessionStorageManipulator {
 
   static ensureItem = <K extends SessionStorageKey>(
     key: K,
-    value: SessionStorageItem[K] | null | undefined,
+    value: SessionStorageItem[K] | null | undefined
   ): boolean => {
     if (!this.isSessionStorageAvailable()) return false;
     else if (!value) return false;
@@ -177,7 +177,7 @@ export class SessionStorageManipulator {
         }
       }
 
-      keysToRemove.forEach((key) => {
+      keysToRemove.forEach(key => {
         sessionStorage.removeItem(key);
       });
     } catch (error) {

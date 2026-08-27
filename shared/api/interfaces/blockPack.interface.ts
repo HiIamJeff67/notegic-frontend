@@ -300,14 +300,16 @@ export type UpdateMyBlockPackByIdRequest = z.infer<
   typeof UpdateMyBlockPackByIdRequestSchema
 >;
 
-export const UpdateMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    updatedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const UpdateMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      updatedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type UpdateMyBlockPackByIdResponse = z.infer<
   typeof UpdateMyBlockPackByIdResponseSchema
@@ -315,33 +317,35 @@ export type UpdateMyBlockPackByIdResponse = z.infer<
 
 /* ============================== UpdateMyBlockPacksByIds ============================== */
 
-export const UpdateMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    updatedBlockPacks: z.array(
-      z.object({
-        blockPackId: z.uuidv4(),
-        values: z
-          .object({
-            name: z.string().min(1).max(128),
-            icon: z.enum(AllSupportedIcons),
-            headerBackgroundURL: z.url(),
-          })
-          .partial(),
-        setNull: z.record(z.string(), z.boolean()).optional(),
+export const UpdateMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
       })
-    ),
-  }),
-  affected: z.object({
-    rootShelfIds: z.array(z.uuidv4()),
-    parentSubShelfIds: z.array(z.uuidv4()),
-  }),
-});
+      .optional(),
+    body: z.object({
+      updatedBlockPacks: z.array(
+        z.object({
+          blockPackId: z.uuidv4(),
+          values: z
+            .object({
+              name: z.string().min(1).max(128),
+              icon: z.enum(AllSupportedIcons),
+              headerBackgroundURL: z.url(),
+            })
+            .partial(),
+          setNull: z.record(z.string(), z.boolean()).optional(),
+        })
+      ),
+    }),
+    affected: z.object({
+      rootShelfIds: z.array(z.uuidv4()),
+      parentSubShelfIds: z.array(z.uuidv4()),
+    }),
+  }
+);
 
 export type UpdateMyBlockPacksByIdsRequest = z.infer<
   typeof UpdateMyBlockPacksByIdsRequestSchema
@@ -499,8 +503,8 @@ export type RestoreMyBlockPackByIdRequest = z.infer<
   typeof RestoreMyBlockPackByIdRequestSchema
 >;
 
-export const RestoreMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend(
-  {
+export const RestoreMyBlockPackByIdResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
       parentSubShelfId: z.uuidv4(),
@@ -515,8 +519,7 @@ export const RestoreMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend
     embedded: z.object({
       publicId: z.string(),
     }),
-  }
-);
+  });
 
 export type RestoreMyBlockPackByIdResponse = z.infer<
   typeof RestoreMyBlockPackByIdResponseSchema
@@ -524,8 +527,8 @@ export type RestoreMyBlockPackByIdResponse = z.infer<
 
 /* ============================== RestoreMyBlockPacksByIds ============================== */
 
-export const RestoreMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
-  {
+export const RestoreMyBlockPacksByIdsRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -539,8 +542,7 @@ export const RestoreMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend
       rootShelfIds: z.array(z.uuidv4()),
       parentSubShelfIds: z.array(z.uuidv4()),
     }),
-  }
-);
+  });
 
 export type RestoreMyBlockPacksByIdsRequest = z.infer<
   typeof RestoreMyBlockPacksByIdsRequestSchema
@@ -592,14 +594,16 @@ export type DeleteMyBlockPackByIdRequest = z.infer<
   typeof DeleteMyBlockPackByIdRequestSchema
 >;
 
-export const DeleteMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    deletedAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const DeleteMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type DeleteMyBlockPackByIdResponse = z.infer<
   typeof DeleteMyBlockPackByIdResponseSchema
@@ -607,21 +611,23 @@ export type DeleteMyBlockPackByIdResponse = z.infer<
 
 /* ============================== DeleteMyBlockPacksByIds ============================== */
 
-export const DeleteMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    blockPackIds: z.array(z.uuidv4()),
-  }),
-  affected: z.object({
-    rootShelfIds: z.array(z.uuidv4()),
-    parentSubShelfIds: z.array(z.uuidv4()),
-  }),
-});
+export const DeleteMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      blockPackIds: z.array(z.uuidv4()),
+    }),
+    affected: z.object({
+      rootShelfIds: z.array(z.uuidv4()),
+      parentSubShelfIds: z.array(z.uuidv4()),
+    }),
+  }
+);
 
 export type DeleteMyBlockPacksByIdsRequest = z.infer<
   typeof DeleteMyBlockPacksByIdsRequestSchema

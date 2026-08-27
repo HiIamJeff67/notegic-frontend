@@ -1,25 +1,23 @@
 # Frontend Architecture and Ownership
 
-This document describes the current Web application and the approved target architecture for the frontend monorepo. The target architecture is a Phase 1 decision; Desktop and Mobile implementation are intentionally deferred to later phases.
+This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration in NOT-90 is implemented; Desktop and Mobile remain planned boundaries without app implementations.
 
 ## Current repository
 
-The repository currently contains one Web application at the repository root:
+The repository currently contains one implemented Web workspace and the shared
+portable code used by future applications:
 
 ```text
-src/
-  components/       Web UI components
-  pages/            route-oriented page components
-  routes/           TanStack Router routes
-  providers/        Web application providers
-  hooks/            Web-facing React hooks
-  reducers/         state reducers under review for portability
-  i18n/             translation resources and Web initialization
-  global/           Web CSS, Tailwind, and editor styles
-  assets/           Web-owned images, icons, manifest, and favicon files
+apps/web/
+  src/              routes, pages, providers, UI, Web API/runtime adapters
+  assets/           Web-owned images and icons
+  public/           browser metadata and immutable public files
+  vite.config.ts    Web build, TanStack Start, and Nitro configuration
 shared/
-  api/              API, query, local-runtime, and server-function code
+  api/              portable API/query contracts and generated client artifacts
   graphql/          GraphQL schemas, documents, and codegen inputs
+  i18n/             translation resources, language types, and pure helpers
+  reducers/         portable metadata reducers
   blockpack/        reusable block-pack logic
   charts/           reusable chart logic
   constants/        shared constants
@@ -29,7 +27,11 @@ shared/
   util/             shared utilities
 ```
 
-`shared/api/` is transitional. It currently mixes portable API code with Web/TanStack Start server functions, browser storage, SQLocal/OPFS local persistence, and WebSocket lifecycle code. Phase 1 defines the ownership boundary; Phase 2 moves files into the workspace structure.
+`apps/web/src/api/` owns the current Web runtime adapters: TanStack Start
+server functions, React hooks/invokers, browser local persistence, Apollo
+client setup, WebSocket lifecycle, and browser request headers/cookies.
+`shared/api/` keeps the portable request, query, contract, GraphQL, and
+runtime-neutral WebSocket pieces.
 
 ## Target monorepo
 
@@ -79,7 +81,10 @@ Reducers may move to `shared/reducers/` when their state and actions are platfor
 
 ## Assets and styles
 
-There is no initial `shared/assets` directory. During Phase 2, the current `src/assets/` contents are copied into `apps/web/`; Desktop and Mobile keep their own copies and packaging rules. Web favicon, manifest, and browser metadata remain Web-owned.
+There is no `shared/assets` directory. The current Web assets are owned by
+`apps/web/assets/`; Desktop and Mobile will keep their own copies and
+packaging rules. Web favicon, manifest, and browser metadata remain
+Web-owned.
 
 The current global CSS, Tailwind configuration, and BlockNote/editor styles remain Web-owned. Platform-neutral design values may be extracted into `shared/design-tokens/`, but shared business logic must not import Web CSS or assume a specific styling framework.
 
@@ -90,7 +95,7 @@ The lowest common API boundary is an HTTP request/response contract:
 ```text
 shared/api/              request contracts, payloads, queries, mappings, domain rules
         │
-        ├── apps/web/server/      optional TanStack Start server-function adapter
+        ├── apps/web/src/api/     TanStack Start and browser runtime adapters
         ├── apps/desktop/server/  optional server-function adapter where integration is sound
         └── apps/mobile/client/   direct HTTP client and mobile runtime adapters
 ```
@@ -107,7 +112,16 @@ Shared code must not import from `apps/*`, Web-only globals, DOM APIs, or platfo
 
 ## Deployment boundary
 
-The applications remain in one GitHub repository. Cloudflare build configuration must select the relevant app and include the shared workspace, root manifests, lockfile, and code generation inputs in the build context. The current TanStack Start SSR/server deployment target is Cloudflare Workers/Workers Builds first. Cloudflare Pages is suitable for a static Web output only if the final Web build does not require SSR/server functions; it is not the default assumption for the current server-capable application.
+The applications remain in one GitHub repository. The root `build:web` and
+`build:web:cloudflare` commands select `apps/web` while retaining the shared
+workspace, root manifests, lockfile, and code generation inputs in the build
+context. The Cloudflare command uses Nitro's `cloudflare_module` preset and
+generates `apps/web/.output/server/wrangler.json`; deploy with
+`npm run deploy:web:cloudflare`. Cloudflare Workers/Workers Builds is the
+default for the current SSR/server-capable application. Cloudflare Pages
+remains a static-output option only when SSR/server functions are not required.
+The repository CI gates and Workers Builds monorepo settings are documented in
+the [Cloudflare Workers deployment runbook](../runbooks/cloudflare-workers-builds.md).
 
 The detailed contract, codegen, API, query, storage, and deployment decisions are documented in:
 

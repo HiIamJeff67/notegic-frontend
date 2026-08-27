@@ -4,6 +4,9 @@ This directory is the documentation entry point for the Notegic frontend
 monorepo. It describes the current Web application, the approved shared-code
 architecture, and the conventions contributors should follow.
 
+For installation and the shortest contributor path, start with the repository
+root [README](../README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 The frontend and backend remain separate repositories. Frontend documentation
 may link to backend contracts or backend design documents, but it must not
 describe backend implementation as if it belongs to this repository.
@@ -49,6 +52,6 @@ documentation.
 ## Architecture scope
 
 The frontend monorepo architecture is documented here after the Phase 1
-decision. Implementation remains phased: the current Web app remains at its
-existing paths until Phase 2. Desktop and Mobile are planned boundaries only
-and have no implementation yet.
+decision and the NOT-90 Web workspace migration. The current Web app lives
+under `apps/web`; portable resources and contracts live under `shared/`.
+Desktop and Mobile are planned boundaries only and have no implementation yet.

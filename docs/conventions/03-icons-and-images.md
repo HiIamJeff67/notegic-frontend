@@ -2,7 +2,7 @@
 
 ## Canonical workspace entity icons
 
-Use `src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same base icon must appear in navigation, context menus, linked-item pickers, Trash, empty states and future search results.
+Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same base icon must appear in navigation, context menus, linked-item pickers, Trash, empty states and future search results.
 
 | Entity | Canonical export | Notes |
 | --- | --- | --- |
@@ -25,7 +25,7 @@ Use `src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same
 ## Icon implementation
 
 - Use `lucide-react` for general-purpose icons and pass Tailwind size classes (`size-4`, `size-5`) in menus and controls.
-- Keep Notegic domain glyphs in `src/components/icons/`; they accept the shared `IconProps` contract and use `currentColor`.
+- Keep Notegic domain glyphs in `apps/web/src/components/icons/`; they accept the shared `IconProps` contract and use `currentColor`.
 - Do not introduce an icon library for a single glyph or embed unlabelled SVG markup in feature components.
 - Icon-only controls require an accessible name. Decorative icons next to visible text do not.
 
@@ -35,5 +35,5 @@ Use `src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same
 - Use a raw `img` for local static assets, Blob/object URLs, editor-rendered material content and progressive background layers. Set `alt`; use an empty `alt` only for decorative imagery.
 - Use `object-cover` for avatars, covers and thumbnails; preserve the source aspect ratio for document/material content.
 - User-selected application backgrounds belong in `BackgroundImagesProvider` and IndexedDB. Do not put user-uploaded background data in global CSS or static assets.
-- Local brand assets belong under `src/assets/`; public immutable files such as favicon assets belong under `public/`.
+- Local brand assets belong under `apps/web/assets/`; public immutable files such as favicon assets belong under `apps/web/public/`.
 - Image upload/crop flows use the existing Image dialog and `ImageCropper`; do not add a second cropper or image cache.

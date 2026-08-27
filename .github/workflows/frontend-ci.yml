@@ -1,0 +1,64 @@
+name: Notegic Frontend CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "refactor/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notegic-frontend-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Frontend quality (${{ matrix.gate }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - format
+          - lint
+          - typecheck (@notegic/web + shared)
+          - tests
+          - codegen (shared/api/graphql)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Run quality gate
+        env:
+          GATE: ${{ matrix.gate }}
+        run: |
+          case "$GATE" in
+            format) npm run format:check ;;
+            lint) npm run lint ;;
+            "typecheck (@notegic/web + shared)") npm run typecheck ;;
+            tests) npm test -- --runInBand ;;
+            "codegen (shared/api/graphql)") npm run codegen:check ;;
+            *) echo "Unknown quality gate: $GATE" >&2; exit 1 ;;
+          esac
+
+  web-build:
+    name: Web build (Node + Cloudflare Workers)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build Web SSR output
+        run: npm run build:web
+      - name: Build Web Cloudflare Workers output
+        run: npm run build:web:cloudflare

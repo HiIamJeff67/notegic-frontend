@@ -1,16 +1,16 @@
 fragment FragmentedBasicPrivateBlock on PrivateBlock {
-    id
-    blockPackId
-    parentBlockId
-    prevBlockId
-    nextBlockId
-    type
-    props
-    content
-    updatedAt
-    createdAt
+  id
+  blockPackId
+  parentBlockId
+  prevBlockId
+  nextBlockId
+  type
+  props
+  content
+  updatedAt
+  createdAt
 }
 
 fragment FragmentedPrivateBlock on PrivateBlock {
-    ...FragmentedBasicPrivateBlock
+  ...FragmentedBasicPrivateBlock
 }

@@ -114,9 +114,11 @@ export type MarkNotificationsReadRequest = z.infer<
   typeof MarkNotificationsReadRequestSchema
 >;
 
-export const MarkNotificationsReadResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({ updatedCount: z.number().int().nonnegative() }),
-});
+export const MarkNotificationsReadResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({ updatedCount: z.number().int().nonnegative() }),
+  }
+);
 export type MarkNotificationsReadResponse = z.infer<
   typeof MarkNotificationsReadResponseSchema
 >;

@@ -92,8 +92,7 @@ export class RealtimeError {
     return new NotegicException({
       code: this.BaseCode + 8,
       prefix: this.Prefix,
-      reason:
-        ExceptionReasonDictionary.client.realtime.missingErrorFrameFields,
+      reason: ExceptionReasonDictionary.client.realtime.missingErrorFrameFields,
       message: "Error frame missing code/message",
       status: StatusCodes.BAD_REQUEST,
     });
@@ -113,8 +112,7 @@ export class RealtimeError {
     return new NotegicException({
       code: this.BaseCode + 10,
       prefix: this.Prefix,
-      reason:
-        ExceptionReasonDictionary.client.realtime.unexpectedBinaryMessage,
+      reason: ExceptionReasonDictionary.client.realtime.unexpectedBinaryMessage,
       message: "Unexpected binary realtime smoke message",
       status: StatusCodes.BAD_REQUEST,
     });

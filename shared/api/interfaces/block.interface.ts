@@ -77,8 +77,8 @@ export type GetMyBlocksByIdsResponse = z.infer<
 
 /* ============================== GetMyBlocksByBlockPackId ============================== */
 
-export const GetMyBlocksByBlockPackIdRequestSchema = NotegicRequestSchema.extend(
-  {
+export const GetMyBlocksByBlockPackIdRequestSchema =
+  NotegicRequestSchema.extend({
     header: z
       .object({
         userAgent: z.string().min(1).optional(),
@@ -88,8 +88,7 @@ export const GetMyBlocksByBlockPackIdRequestSchema = NotegicRequestSchema.extend
     param: z.object({
       blockPackId: z.uuidv4(),
     }),
-  }
-);
+  });
 
 export type GetMyBlocksByBlockPackIdRequest = z.infer<
   typeof GetMyBlocksByBlockPackIdRequestSchema

@@ -393,23 +393,25 @@ export type RestoreMyMaterialByIdRequest = z.infer<
   typeof RestoreMyMaterialByIdRequestSchema
 >;
 
-export const RestoreMyMaterialByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    id: z.uuidv4(),
-    parentSubShelfId: z.uuidv4(),
-    name: z.string(),
-    size: z.number(),
-    contentType: z.enum(AllMaterialContentTypes),
-    parseMediaType: z.string(),
-    downloadURL: z.url().nullable().optional(),
-    deletedAt: z.coerce.date().nullable(),
-    updatedAt: z.coerce.date(),
-    createdAt: z.coerce.date(),
-  }),
-  embedded: z.object({
-    publicId: z.string(),
-  }),
-});
+export const RestoreMyMaterialByIdResponseSchema = NotegicResponseSchema.extend(
+  {
+    data: z.object({
+      id: z.uuidv4(),
+      parentSubShelfId: z.uuidv4(),
+      name: z.string(),
+      size: z.number(),
+      contentType: z.enum(AllMaterialContentTypes),
+      parseMediaType: z.string(),
+      downloadURL: z.url().nullable().optional(),
+      deletedAt: z.coerce.date().nullable(),
+      updatedAt: z.coerce.date(),
+      createdAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  }
+);
 
 export type RestoreMyMaterialByIdResponse = z.infer<
   typeof RestoreMyMaterialByIdResponseSchema
@@ -417,21 +419,23 @@ export type RestoreMyMaterialByIdResponse = z.infer<
 
 /* ============================== RestoreMyMaterialsByIds ============================== */
 
-export const RestoreMyMaterialsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    materialIds: z.array(z.uuidv4()).min(1).max(128),
-  }),
-  affected: z.object({
-    rootShelfIds: z.array(z.uuidv4()),
-    parentSubShelfIds: z.array(z.uuidv4()),
-  }),
-});
+export const RestoreMyMaterialsByIdsRequestSchema = NotegicRequestSchema.extend(
+  {
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      materialIds: z.array(z.uuidv4()).min(1).max(128),
+    }),
+    affected: z.object({
+      rootShelfIds: z.array(z.uuidv4()),
+      parentSubShelfIds: z.array(z.uuidv4()),
+    }),
+  }
+);
 
 export type RestoreMyMaterialsByIdsRequest = z.infer<
   typeof RestoreMyMaterialsByIdsRequestSchema
@@ -519,16 +523,15 @@ export type DeleteMyMaterialsByIdsRequest = z.infer<
   typeof DeleteMyMaterialsByIdsRequestSchema
 >;
 
-export const DeleteMyMaterialsByIdsResponseSchema = NotegicResponseSchema.extend(
-  {
+export const DeleteMyMaterialsByIdsResponseSchema =
+  NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
     }),
     embedded: z.object({
       publicId: z.string(),
     }),
-  }
-);
+  });
 
 export type DeleteMyMaterialsByIdsResponse = z.infer<
   typeof DeleteMyMaterialsByIdsResponseSchema

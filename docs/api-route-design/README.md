@@ -7,17 +7,18 @@ It does not duplicate backend route definitions or server implementation.
 
 | Frontend area | Responsibility |
 | --- | --- |
-| `shared/api/fetches/` | HTTP-facing fetch helpers for feature data |
-| `shared/api/functions/` | Current TanStack Start Web server/client adapter boundaries; transitional until Phase 2 |
-| `shared/api/invokers/` | Feature-level invocation wrappers |
-| `shared/api/hooks/` | React query and feature hooks |
-| `shared/api/graphql/` | Apollo client, generated GraphQL types, hooks, and local adapters |
-| `shared/api/websocket/` | WebSocket client and frame/type definitions |
+| `apps/web/src/api/fetches/` | Web HTTP-facing fetch/query helpers for feature data |
+| `apps/web/src/api/functions/` | TanStack Start Web server/client adapter boundaries |
+| `apps/web/src/api/invokers/` | Web feature-level invocation wrappers |
+| `apps/web/src/api/hooks/` | Web React Query and feature hooks |
+| `shared/api/graphql/` | GraphQL documents, generated types, conversions, and client-neutral operations |
+| `apps/web/src/api/graphql/` | Web Apollo client, React GraphQL hooks, and local adapters |
+| `shared/api/websocket/` | WebSocket frame/type definitions |
+| `apps/web/src/api/websocket-client.ts` | WebSocket connection lifecycle |
 | `shared/api/interfaces/` | Current frontend request and domain interfaces |
 
-These paths are transitional. Keep portable contracts, requests, queries, and
-domain logic independent from Web runtime adapters while the workspace
-migration is being developed.
+Keep portable contracts, requests, queries, and domain logic under `shared/`
+independent from the Web runtime adapters under `apps/web/src/api/`.
 
 ## Boundary and codegen decisions
 

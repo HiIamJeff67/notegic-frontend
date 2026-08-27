@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/apps/*/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -9,6 +10,7 @@
 !.yarn/versions
 
 .output/
+/apps/*/.wrangler/
 
 # testing
 /coverage
@@ -34,3 +36,5 @@ yarn-error.log*
 
 # temporary files
 tmp/
+# currently not supported
+CONTRIBUTING.md

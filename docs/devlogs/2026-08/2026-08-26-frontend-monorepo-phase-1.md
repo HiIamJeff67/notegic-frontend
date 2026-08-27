@@ -23,12 +23,13 @@ applications without assuming one specific Desktop or Mobile framework.
 
 ## Consequences
 
-Phase 2 can create `apps/web`, `apps/desktop`, `apps/mobile`, and more explicit
-shared workspace boundaries without changing the ownership decisions. Until
-then, current paths remain valid and new portable code should avoid Web-only
-dependencies. Cloudflare build configuration must include the relevant app,
-shared code, root manifests, lockfile, and codegen inputs from the same GitHub
-repository.
+NOT-90 has now created `apps/web` and made the Web/runtime boundary explicit:
+Web API adapters, local persistence, React hooks, Apollo setup, WebSocket
+lifecycle, styles, and assets are app-owned; i18n resources/types, portable
+reducers, API contracts, GraphQL documents/generated artifacts, and other
+runtime-neutral code remain shared. Cloudflare Workers builds use Nitro's
+`cloudflare_module` preset and the generated Wrangler config under
+`apps/web/.output/server/`. Desktop and Mobile remain planned boundaries only.
 
 ## Related issues
 

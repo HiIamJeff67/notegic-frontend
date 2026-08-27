@@ -14,19 +14,23 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./apps/web/src/*"],
+      "@assets/*": ["./apps/web/assets/*"],
       "@shared/*": ["./shared/*"],
-      "@widgets/*": ["./src/components/widgets/*"]
+      "@widgets/*": ["./apps/web/src/components/widgets/*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "src/components/**/*.tsx",
-    "shared/enums/*.enums.ts",
-    "src/reducers/*.reducer.ts",
-    "shared/types/modeType.typ.ets"
+    "apps/web/**/*.ts",
+    "apps/web/**/*.tsx",
+    "shared/**/*.ts",
+    "shared/**/*.tsx",
+    "test/**/*.ts",
+    "codegen.ts"
   ],
   "exclude": ["node_modules"]
 }

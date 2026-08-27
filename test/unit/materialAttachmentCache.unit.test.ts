@@ -1,4 +1,4 @@
-jest.mock("@shared/api/local/policy", () => ({
+jest.mock("@/api/local/policy", () => ({
   isLocalPreferenceEnabled: jest.fn(() => true),
 }));
 jest.mock("@shared/lib/indexedDBManipulator", () => ({
@@ -14,8 +14,8 @@ import {
   clearMaterialAttachmentCache,
   loadMaterialAttachment,
   saveMaterialAttachment,
-} from "@shared/api/local/material-attachment.cache";
-import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
+} from "@/api/local/material-attachment.cache";
+import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 
 const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);

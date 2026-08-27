@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@assets/*": ["./assets/*"],
+      "@shared/*": ["../../shared/*"],
+      "@widgets/*": ["./src/components/widgets/*"]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../../shared/**/*.ts",
+    "../../shared/**/*.tsx"
+  ],
+  "exclude": ["node_modules", ".output"]
+}
