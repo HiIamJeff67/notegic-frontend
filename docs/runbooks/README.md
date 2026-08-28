@@ -6,7 +6,8 @@ root without knowing the internal implementation of a backend microservice.
 
 ## Current commands
 
-The frontend repository exposes these root commands:
+The frontend repository exposes these root commands. Web build, dev, and
+typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 
 | Command | Purpose |
 | --- | --- |

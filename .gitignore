@@ -10,6 +10,7 @@
 !.yarn/versions
 
 .output/
+.turbo/
 /apps/*/.wrangler/
 
 # testing

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": [".nvmrc", "package-lock.json", "apps/*/.env*"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**", "dist/**"],
+      "env": [
+        "CLOUDFLARE_WORKER_NAME",
+        "NITRO_PRESET",
+        "VITE_API_DOMAIN_URL",
+        "VITE_APP_BASE_PATH",
+        "VITE_APPLICATION_VERSION",
+        "VITE_LOCAL_DATABASE_PATH",
+        "VITE_OAUTH_GOOGLE_CLIENT_ID",
+        "VITE_OAUTH_GOOGLE_REDIRECT_URL",
+        "VITE_OAUTH_X_CLIENT_ID",
+        "VITE_OAUTH_X_CONSUMER_KEY",
+        "VITE_OAUTH_X_REDIRECT_URL",
+        "VITE_PORT",
+        "VITE_REALTIME_BLOCK_PACK_CHANNEL_RELEASE_DELAY_MS",
+        "VITE_REALTIME_WEBSOCKET_URL"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    }
+  }
+}

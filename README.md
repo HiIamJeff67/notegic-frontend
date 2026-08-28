@@ -42,7 +42,7 @@ uses a server function as an implicit database connection or write path.
 ## Prerequisites
 
 - Node.js `22.16.0`, pinned in [`.nvmrc`](.nvmrc)
-- npm with workspace support
+- npm workspaces with Turborepo task orchestration
 - Access to the backend API for end-to-end local usage
 
 Install from the repository root:
@@ -51,8 +51,8 @@ Install from the repository root:
 npm install
 ```
 
-Create a local, untracked root `.env` with the API and realtime endpoints. A
-minimal local setup is:
+Create a local, untracked `apps/web/.env` with the Web API and realtime
+endpoints. A minimal local setup is:
 
 ```dotenv
 VITE_API_DOMAIN_URL=http://localhost
@@ -62,12 +62,13 @@ VITE_PORT=6776
 ```
 
 OAuth redirect/client variables are only needed when testing OAuth flows. Do
-not commit `.env` or any credential values.
+Do not commit `apps/web/.env` or any credential values.
 
 ## Root commands
 
-Run all commands from the repository root. They select the Web workspace while
-keeping the root lockfile, shared code, and code generation inputs in scope.
+Run root commands from the repository root. They use Turborepo to select the
+Web workspace while keeping the root lockfile, shared code, and code generation
+inputs in scope. You can also run Web-only commands inside `apps/web/`.
 
 | Command | Purpose |
 | --- | --- |
@@ -88,6 +89,13 @@ keeping the root lockfile, shared code, and code generation inputs in scope.
 | `npm run devlog:backfill` | Recreate historical snapshots from `origin/main` |
 | `npm run build:web:cloudflare` | Build the Web Cloudflare Workers output |
 | `npm run deploy:web:cloudflare` | Build and deploy the Worker with Wrangler |
+
+To work directly inside the Web workspace:
+
+```bash
+cd apps/web
+npm run dev
+```
 
 The normal local verification sequence is:
 

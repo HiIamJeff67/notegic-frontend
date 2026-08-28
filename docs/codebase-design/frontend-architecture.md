@@ -55,7 +55,11 @@ shared/
   design-tokens/    platform-neutral design values
 ```
 
-This is a monorepo boundary, not a requirement to create a package for every directory. Code belongs in `shared/` when it has multiple real consumers, represents a public/generated contract, or encodes an invariant that must be identical across applications. App-specific code remains in the owning app.
+This is a Turborepo workspace boundary, not a requirement to create a package
+for every directory. Code belongs in `shared/` when it has multiple real
+consumers, represents a public/generated contract, or encodes an invariant that
+must be identical across applications. App-specific code remains in the owning
+app.
 
 ## Ownership
 
@@ -112,8 +116,8 @@ Shared code must not import from `apps/*`, Web-only globals, DOM APIs, or platfo
 
 ## Deployment boundary
 
-The applications remain in one GitHub repository. The root `build:web` and
-`build:web:cloudflare` commands select `apps/web` while retaining the shared
+The applications remain in one GitHub repository. Turborepo runs the root
+`build:web` and `build:web:cloudflare` commands against `apps/web` while retaining the shared
 workspace, root manifests, lockfile, and code generation inputs in the build
 context. The Cloudflare command uses Nitro's `cloudflare_module` preset and
 generates `apps/web/.output/server/wrangler.json`; deploy with

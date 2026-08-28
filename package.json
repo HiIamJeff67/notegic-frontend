@@ -4,19 +4,20 @@
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
+  "packageManager": "npm@10.8.1",
   "workspaces": [
-    "apps/web"
+    "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @notegic/web",
-    "build": "npm run build --workspace @notegic/web",
-    "build:web": "npm run build --workspace @notegic/web",
-    "build:web:cloudflare": "NITRO_PRESET=cloudflare_module npm run build --workspace @notegic/web",
+    "dev": "turbo run dev --filter=@notegic/web",
+    "build": "turbo run build --filter=@notegic/web",
+    "build:web": "turbo run build --filter=@notegic/web",
+    "build:web:cloudflare": "NITRO_PRESET=cloudflare_module turbo run build --filter=@notegic/web",
     "deploy:web:cloudflare": "npm run build:web:cloudflare && npx wrangler@4.126.0 deploy --config apps/web/.output/server/wrangler.json",
-    "start": "npm run start --workspace @notegic/web",
-    "typecheck": "npm run typecheck --workspace @notegic/web",
-    "format:all": "biome format apps shared test scripts codegen.ts package.json tsconfig.json biome.json apps/web/tsconfig.json apps/web/vite.config.ts --write",
-    "format:check": "biome format apps shared test scripts codegen.ts package.json tsconfig.json biome.json apps/web/tsconfig.json apps/web/vite.config.ts",
+    "start": "turbo run start --filter=@notegic/web",
+    "typecheck": "turbo run typecheck --filter=@notegic/web",
+    "format:all": "biome format apps shared test scripts codegen.ts package.json tsconfig.json biome.json turbo.json apps/web/tsconfig.json apps/web/vite.config.ts --write",
+    "format:check": "biome format apps shared test scripts codegen.ts package.json tsconfig.json biome.json turbo.json apps/web/tsconfig.json apps/web/vite.config.ts",
     "lint": "biome lint .",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -151,6 +152,7 @@
     "tailwindcss": "^4.2.4",
     "ts-jest": "^29.4.1",
     "tsx": "^4.21.0",
+    "turbo": "^2.10.12",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5",
     "worker-loader": "^3.0.8"

@@ -33,11 +33,14 @@ export default defineConfig(({ mode }) => {
     new Set([
       "/node_modules/@sqlite.org/sqlite-wasm/dist/",
       `${normalizedBasePath}node_modules/@sqlite.org/sqlite-wasm/dist/`,
+      `/@fs${sqliteWasmDistDir}/`,
+      `${normalizedBasePath}@fs${sqliteWasmDistDir}/`,
     ])
   );
 
   return {
     root: webRoot,
+    envDir: webRoot,
     base: normalizedBasePath,
     server: {
       port: Number(env.VITE_PORT || 6776),
