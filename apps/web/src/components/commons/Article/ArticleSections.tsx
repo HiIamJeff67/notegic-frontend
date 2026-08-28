@@ -125,7 +125,7 @@ export const ArticleSubParagraph = ({
   <section
     data-article-level={level}
     className={cn(
-      "scroll-mt-8 flex w-full flex-col items-center before:mx-4 before:my-8 before:block before:h-px before:w-full before:bg-border/35 [&:first-of-type]:before:hidden",
+      "scroll-mt-8 flex w-full flex-col items-center [&+&]:before:mx-4 [&+&]:before:my-8 [&+&]:before:block [&+&]:before:h-px [&+&]:before:w-full [&+&]:before:bg-border/35",
       articleTone(level),
       className
     )}

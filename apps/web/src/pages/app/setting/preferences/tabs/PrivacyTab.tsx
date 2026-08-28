@@ -224,7 +224,12 @@ const PrivacyTab = ({ layout = "panel" }: PrivacyTabProps) => {
           }
         />
         {preferences.clipboardGuard && (
-          <div className="border-b border-border/50 py-[calc(var(--density-content-padding)*0.75)]">
+          <div
+            className={cn(
+              "py-[calc(var(--density-content-padding)*0.75)]",
+              layout === "panel" && "border-b border-border/50"
+            )}
+          >
             <div className="text-sm font-medium">
               {t("settingsPage.preferences.privacy.sensitivePatterns")}
             </div>
