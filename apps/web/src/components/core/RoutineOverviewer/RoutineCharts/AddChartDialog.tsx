@@ -89,11 +89,9 @@ const AddChartDialog = ({
                       const chartType: TwoDimensionalChartType =
                         definition.id === "routine:statusCount"
                           ? "pie"
-                          : definition.id === "routineTask:statusCount"
-                            ? "bar"
-                            : definition.chart.chartType.includes("AtCount")
-                              ? "line"
-                              : "column";
+                          : definition.chart.chartType.includes("AtCount")
+                            ? "line"
+                            : "column";
                       const data =
                         chartType === "pie"
                           ? piePreviewData

@@ -37,14 +37,16 @@ import {
 
 type RoutineTaskRecordRow = {
   id: UUID;
+  routineRecordId: UUID;
   routineTaskId: UUID;
   purpose: RoutineTaskPurpose;
   status: RoutineTaskRecordStatus;
   errorCode: string | null;
   errorReason: string | null;
   costUnit: number;
-  totalAttempts: number;
-  scheduledAt: Date;
+  attempts: number;
+  payloadSnapshot: unknown;
+  resultSnapshot: unknown;
   actualStartedAt: Date | null;
   actualEndedAt: Date | null;
 };
@@ -79,6 +81,7 @@ const RoutineTaskRecordTable = ({
         const node = edge.node as any;
         return {
           id: node.id,
+          routineRecordId: node.routineRecordId,
           routineTaskId: node.routineTaskId,
           purpose: node.purpose.replace("RoutineTaskPurpose_", ""),
           status: node.status.replace("RoutineTaskRecordStatus_", ""),
@@ -86,8 +89,9 @@ const RoutineTaskRecordTable = ({
             node.errorCode?.replace("RoutineTaskRecordErrorCode_", "") ?? null,
           errorReason: node.errorReason ?? null,
           costUnit: node.costUnit,
-          totalAttempts: node.totalAttempts,
-          scheduledAt: new Date(node.scheduledAt),
+          attempts: node.attempts,
+          payloadSnapshot: node.payloadSnapshot,
+          resultSnapshot: node.resultSnapshot,
           actualStartedAt:
             node.actualStartedAt === null
               ? null
@@ -123,7 +127,7 @@ const RoutineTaskRecordTable = ({
             query: "",
             after: reset ? undefined : (cursor ?? undefined),
             first: reset ? 20 : 10,
-            sortBy: SearchRoutineTaskRecordSortBy.ScheduledAt,
+            sortBy: SearchRoutineTaskRecordSortBy.Attempts,
             sortOrder: SearchSortOrder.Desc,
           },
         };
@@ -186,8 +190,16 @@ const RoutineTaskRecordTable = ({
   const filteredRecords = records.filter(record => {
     if (status !== "All" && record.status !== status) return false;
     if (purpose !== "All" && record.purpose !== purpose) return false;
-    if (scheduledAfter && record.scheduledAt < scheduledAfter) return false;
-    if (scheduledBefore && record.scheduledAt > scheduledBefore) return false;
+    if (
+      scheduledAfter &&
+      (!record.actualStartedAt || record.actualStartedAt < scheduledAfter)
+    )
+      return false;
+    if (
+      scheduledBefore &&
+      (!record.actualStartedAt || record.actualStartedAt > scheduledBefore)
+    )
+      return false;
     return true;
   });
 
@@ -322,7 +334,9 @@ const RoutineTaskRecordTable = ({
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
-                    {record.scheduledAt.toLocaleString(i18n.resolvedLanguage)}
+                    {record.actualStartedAt?.toLocaleString(
+                      i18n.resolvedLanguage
+                    ) ?? t("workspace.period.none")}
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
                     {record.actualEndedAt?.toLocaleString(

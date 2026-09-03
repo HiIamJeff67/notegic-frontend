@@ -1,3 +1,4 @@
+import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { CheckIcon, SquarePen } from "lucide-react";
@@ -9,7 +10,6 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ import RoutineCharts, {
   type RoutineOverviewChartComponentId,
 } from "./RoutineCharts/RoutineCharts";
 import RoutineOverviewerContentSkeleton from "./RoutineOverviewerContentSkeleton";
-
+import RoutineRecordTable from "./RoutineRecordTable/RoutineRecordTable";
 import RoutineScopeBar from "./RoutineScopeBar/RoutineScopeBar";
 import RoutineTable from "./RoutineTable/RoutineTable";
 import RoutineTaskRecordTable from "./RoutineTaskRecordTable/RoutineTaskRecordTable";
@@ -202,9 +202,7 @@ const RoutineOverviewerContent = ({
     <div className="flex h-full min-h-0 w-full flex-col items-start overflow-hidden bg-inset bg-cover bg-center bg-no-repeat">
       <header
         className="
-          fixed top-0 right-0 z-20 h-10
-          flex shrink-0 justify-between items-center
-          gap-2 bg-inset/75 backdrop-blur-md border-inset/10
+          fixed top-0 right-0 z-20 h-12
         "
         style={{
           left: headerLeft,
@@ -216,7 +214,7 @@ const RoutineOverviewerContent = ({
           showStationStatus={showStationScope}
         />
       </header>
-      <div className="custom-scrollbar flex h-full min-h-0 w-full flex-col overflow-x-hidden overflow-y-auto pt-10">
+      <div className="custom-scrollbar flex h-full min-h-0 w-full flex-col overflow-x-hidden overflow-y-auto pt-12">
         <div className="relative z-10 h-60 w-full shrink-0">
           {isHeaderBackgroundImageEditing ? (
             <Button
@@ -307,6 +305,7 @@ const RoutineOverviewerContent = ({
             timeHourUnit={chartTimeHourUnit}
           />
           <RoutineTable />
+          <RoutineRecordTable />
           <RoutineTaskTable />
           <RoutineTaskRecordTable />
         </div>

@@ -2,11 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
-import {
-  AllRoutinePeriods,
-  AllRoutineTaskPurposes,
-  AllRoutineTaskStatuses,
-} from "@shared/api/interfaces/enums";
+import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
 import { z } from "zod";
 import {
   RoutineTaskPayloadSchema,
@@ -15,7 +11,6 @@ import {
 import {
   VisualizePermissionRequestSchema,
   VisualizeResponseSchema,
-  VisualizeTimeBucketRequestSchema,
 } from "./visualize.interface";
 
 const CreateRoutineTaskBodySchema = z
@@ -26,8 +21,6 @@ const CreateRoutineTaskBodySchema = z
     payload: RoutineTaskPayloadSizeSchema,
     priority: z.int32().min(0).max(100),
     maxAttempts: z.int32().min(1).max(20),
-    period: z.enum(AllRoutinePeriods).nullable().optional(),
-    nextScheduledAt: z.coerce.date(),
   })
   .partial({
     priority: true,
@@ -49,18 +42,21 @@ const CreateRoutineTaskBodySchema = z
     }
   });
 
-/* ============================== Visualize Routine Task Charts ============================== */
+const RoutineTaskDefinitionSchema = z.object({
+  id: z.uuidv4(),
+  routineId: z.uuidv4(),
+  title: z.string(),
+  purpose: z.enum(AllRoutineTaskPurposes),
+  payload: z.any(),
+  costUnit: z.number(),
+  priority: z.int32(),
+  maxAttempts: z.int32(),
+  previousRoutineTaskIds: z.array(z.uuidv4()),
+  updatedAt: z.coerce.date(),
+  createdAt: z.coerce.date(),
+});
 
-export const VisualizeMyRoutineTaskStatusCountRequestSchema =
-  VisualizePermissionRequestSchema;
-export type VisualizeMyRoutineTaskStatusCountRequest = z.infer<
-  typeof VisualizeMyRoutineTaskStatusCountRequestSchema
->;
-export const VisualizeMyRoutineTaskStatusCountResponseSchema =
-  VisualizeResponseSchema;
-export type VisualizeMyRoutineTaskStatusCountResponse = z.infer<
-  typeof VisualizeMyRoutineTaskStatusCountResponseSchema
->;
+/* ============================== Visualize Routine Task Charts ============================== */
 
 export const VisualizeMyRoutineTaskPurposeCountRequestSchema =
   VisualizePermissionRequestSchema;
@@ -71,39 +67,6 @@ export const VisualizeMyRoutineTaskPurposeCountResponseSchema =
   VisualizeResponseSchema;
 export type VisualizeMyRoutineTaskPurposeCountResponse = z.infer<
   typeof VisualizeMyRoutineTaskPurposeCountResponseSchema
->;
-
-export const VisualizeMyRoutineTaskScheduledAtCountRequestSchema =
-  VisualizeTimeBucketRequestSchema;
-export type VisualizeMyRoutineTaskScheduledAtCountRequest = z.infer<
-  typeof VisualizeMyRoutineTaskScheduledAtCountRequestSchema
->;
-export const VisualizeMyRoutineTaskScheduledAtCountResponseSchema =
-  VisualizeResponseSchema;
-export type VisualizeMyRoutineTaskScheduledAtCountResponse = z.infer<
-  typeof VisualizeMyRoutineTaskScheduledAtCountResponseSchema
->;
-
-export const VisualizeMyRoutineTaskActualStartedAtCountRequestSchema =
-  VisualizeTimeBucketRequestSchema;
-export type VisualizeMyRoutineTaskActualStartedAtCountRequest = z.infer<
-  typeof VisualizeMyRoutineTaskActualStartedAtCountRequestSchema
->;
-export const VisualizeMyRoutineTaskActualStartedAtCountResponseSchema =
-  VisualizeResponseSchema;
-export type VisualizeMyRoutineTaskActualStartedAtCountResponse = z.infer<
-  typeof VisualizeMyRoutineTaskActualStartedAtCountResponseSchema
->;
-
-export const VisualizeMyRoutineTaskActualEndedAtCountRequestSchema =
-  VisualizeTimeBucketRequestSchema;
-export type VisualizeMyRoutineTaskActualEndedAtCountRequest = z.infer<
-  typeof VisualizeMyRoutineTaskActualEndedAtCountRequestSchema
->;
-export const VisualizeMyRoutineTaskActualEndedAtCountResponseSchema =
-  VisualizeResponseSchema;
-export type VisualizeMyRoutineTaskActualEndedAtCountResponse = z.infer<
-  typeof VisualizeMyRoutineTaskActualEndedAtCountResponseSchema
 >;
 
 /* ============================== GetMyRoutineTaskById ============================== */
@@ -126,25 +89,7 @@ export type GetMyRoutineTaskByIdRequest = z.input<
 >;
 
 export const GetMyRoutineTaskByIdResponseSchema = NotegicResponseSchema.extend({
-  data: z.object({
-    id: z.uuidv4(),
-    routineId: z.uuidv4(),
-    title: z.string(),
-    purpose: z.enum(AllRoutineTaskPurposes),
-    costUnit: z.number(),
-    payload: z.any(),
-    priority: z.int32(),
-    status: z.enum(AllRoutineTaskStatuses),
-    attempts: z.int32(),
-    maxAttempts: z.int32(),
-    period: z.enum(AllRoutinePeriods).nullable(),
-    nextScheduledAt: z.coerce.date(),
-    scheduledAt: z.coerce.date(),
-    actualStartedAt: z.coerce.date().nullable(),
-    actualEndedAt: z.coerce.date().nullable(),
-    updatedAt: z.coerce.date(),
-    createdAt: z.coerce.date(),
-  }),
+  data: RoutineTaskDefinitionSchema,
   embedded: z.object({
     publicId: z.string(),
   }),
@@ -176,26 +121,7 @@ export type GetAllMyRoutineTasksByRoutineIdsRequest = z.input<
 
 export const GetAllMyRoutineTasksByRoutineIdsResponseSchema =
   NotegicResponseSchema.extend({
-    data: z.array(
-      z.object({
-        id: z.uuidv4(),
-        routineId: z.uuidv4(),
-        title: z.string(),
-        purpose: z.enum(AllRoutineTaskPurposes),
-        costUnit: z.number(),
-        priority: z.int32(),
-        status: z.enum(AllRoutineTaskStatuses),
-        attempts: z.int32(),
-        maxAttempts: z.int32(),
-        period: z.enum(AllRoutinePeriods).nullable(),
-        nextScheduledAt: z.coerce.date(),
-        scheduledAt: z.coerce.date(),
-        actualStartedAt: z.coerce.date().nullable(),
-        actualEndedAt: z.coerce.date().nullable(),
-        updatedAt: z.coerce.date(),
-        createdAt: z.coerce.date(),
-      })
-    ),
+    data: z.array(RoutineTaskDefinitionSchema),
     embedded: z.object({
       publicId: z.string(),
     }),
@@ -227,27 +153,7 @@ export type GetAllMyRoutineTasksRequest = z.input<
 >;
 
 export const GetAllMyRoutineTasksResponseSchema = NotegicResponseSchema.extend({
-  data: z.array(
-    z.object({
-      id: z.uuidv4(),
-      routineId: z.uuidv4(),
-      title: z.string(),
-      purpose: z.enum(AllRoutineTaskPurposes),
-      costUnit: z.number(),
-      payload: z.any(),
-      priority: z.int32(),
-      status: z.enum(AllRoutineTaskStatuses),
-      attempts: z.int32(),
-      maxAttempts: z.int32(),
-      period: z.enum(AllRoutinePeriods).nullable(),
-      nextScheduledAt: z.coerce.date(),
-      scheduledAt: z.coerce.date(),
-      actualStartedAt: z.coerce.date().nullable(),
-      actualEndedAt: z.coerce.date().nullable(),
-      updatedAt: z.coerce.date(),
-      createdAt: z.coerce.date(),
-    })
-  ),
+  data: z.array(RoutineTaskDefinitionSchema),
   embedded: z.object({
     publicId: z.string(),
   }),
@@ -318,8 +224,6 @@ export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend(
           }, "Payload must be smaller than 16 MiB."),
           priority: z.int32().min(0),
           maxAttempts: z.int32().min(1).max(20),
-          period: z.enum(AllRoutinePeriods).nullable(),
-          nextScheduledAt: z.coerce.date(),
         })
         .partial(),
       setNull: z.record(z.string(), z.boolean()).optional(),
@@ -343,54 +247,6 @@ export const UpdateMyRoutineTaskByIdResponseSchema =
 
 export type UpdateMyRoutineTaskByIdResponse = z.infer<
   typeof UpdateMyRoutineTaskByIdResponseSchema
->;
-
-/* ============================== PauseMyRoutineTaskById ============================== */
-
-export const PauseMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
-  body: z.object({
-    routineTaskId: z.uuidv4(),
-  }),
-});
-
-export type PauseMyRoutineTaskByIdRequest = z.infer<
-  typeof PauseMyRoutineTaskByIdRequestSchema
->;
-
-export const PauseMyRoutineTaskByIdResponseSchema =
-  NotegicResponseSchema.extend({
-    data: z.object({
-      updatedAt: z.coerce.date(),
-    }),
-    embedded: z.object({
-      publicId: z.string(),
-    }),
-  });
-
-export type PauseMyRoutineTaskByIdResponse = z.infer<
-  typeof PauseMyRoutineTaskByIdResponseSchema
->;
-
-/* ============================== ResumeMyRoutineTaskById ============================== */
-
-export const ResumeMyRoutineTaskByIdRequestSchema =
-  PauseMyRoutineTaskByIdRequestSchema;
-
-export type ResumeMyRoutineTaskByIdRequest = z.infer<
-  typeof ResumeMyRoutineTaskByIdRequestSchema
->;
-
-export const ResumeMyRoutineTaskByIdResponseSchema =
-  PauseMyRoutineTaskByIdResponseSchema;
-
-export type ResumeMyRoutineTaskByIdResponse = z.infer<
-  typeof ResumeMyRoutineTaskByIdResponseSchema
 >;
 
 /* ============================== HardDeleteMyRoutineTaskById ============================== */

@@ -1,17 +1,7 @@
-import {
-  RoutineTaskRecordStatus,
-  RoutineTaskStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import {
-  Copy,
-  HistoryIcon,
-  Pause,
-  Play,
-  SquarePen,
-  Trash2,
-} from "lucide-react";
+import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
@@ -38,7 +28,6 @@ import { translateError } from "@shared/i18n/error";
 import {
   translateRoutineTaskPurpose,
   translateRoutineTaskRecordStatus,
-  translateRoutineTaskStatus,
 } from "@shared/i18n/workspace";
 
 interface RoutineTaskMenuItemProps {
@@ -46,29 +35,20 @@ interface RoutineTaskMenuItemProps {
 }
 
 const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
   const executionStatus = routineTask.executionStatus;
-  const isRunning =
-    executionStatus === RoutineTaskRecordStatus.Running ||
-    routineTask.status === RoutineTaskStatus.Running;
+  const isRunning = executionStatus === RoutineTaskRecordStatus.Running;
   const statusDotClassName =
-    routineTask.status === RoutineTaskStatus.Pause
-      ? "bg-amber-500"
-      : executionStatus === RoutineTaskRecordStatus.Success
-        ? "bg-green-500"
-        : executionStatus === RoutineTaskRecordStatus.Failed
-          ? "bg-red-500"
-          : executionStatus === RoutineTaskRecordStatus.Cancel
-            ? "bg-muted-foreground"
-            : "bg-muted-foreground";
-  const displayedStatus =
-    routineTask.status === RoutineTaskStatus.Pause
-      ? translateRoutineTaskStatus(routineTask.status, t)
-      : executionStatus
-        ? translateRoutineTaskRecordStatus(executionStatus, t)
-        : translateRoutineTaskStatus(routineTask.status, t);
+    executionStatus === RoutineTaskRecordStatus.Success
+      ? "bg-green-500"
+      : executionStatus === RoutineTaskRecordStatus.Failed
+        ? "bg-red-500"
+        : "bg-muted-foreground";
+  const displayedStatus = executionStatus
+    ? translateRoutineTaskRecordStatus(executionStatus, t)
+    : "—";
 
   return (
     <SidebarMenuSubItem>
@@ -122,20 +102,8 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
                   value: routineTask.priority,
                 },
                 {
-                  field: t("workspace.table.attempts"),
-                  value: `${routineTask.attempts} / ${routineTask.maxAttempts}`,
-                },
-                {
-                  field: t("workspace.table.next"),
-                  value: new Date(routineTask.nextScheduledAt).toLocaleString(
-                    i18n.resolvedLanguage
-                  ),
-                },
-                {
-                  field: t("workspace.menu.system"),
-                  value: new Date(routineTask.scheduledAt).toLocaleString(
-                    i18n.resolvedLanguage
-                  ),
+                  field: t("workspace.table.routineTasks"),
+                  value: routineTask.previousRoutineTaskIds.length,
                 },
               ]}
             />
@@ -185,30 +153,6 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
           <ContextMenuSeparator />
           <ContextMenuLabel>{t("workspace.menu.edit")}</ContextMenuLabel>
           <ContextMenuGroup>
-            {routineTask.status === RoutineTaskStatus.Idle ? (
-              <ContextMenuItem
-                onClick={() => {
-                  void stationRoutineManager
-                    .pauseRoutineTask(routineTask.id)
-                    .catch(error => toast.error(translateError(error, t)));
-                }}
-              >
-                <Pause className="mr-2 size-4" />
-                {t("workspace.menu.pause")}
-              </ContextMenuItem>
-            ) : null}
-            {routineTask.status === RoutineTaskStatus.Pause ? (
-              <ContextMenuItem
-                onClick={() => {
-                  void stationRoutineManager
-                    .resumeRoutineTask(routineTask.id)
-                    .catch(error => toast.error(translateError(error, t)));
-                }}
-              >
-                <Play className="mr-2 size-4" />
-                {t("workspace.menu.resume")}
-              </ContextMenuItem>
-            ) : null}
             <ContextMenuItem
               className="text-destructive focus:text-destructive"
               onClick={() =>

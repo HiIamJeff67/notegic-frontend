@@ -3,8 +3,8 @@ import {
   NOTEGIC_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS,
   NOTEGIC_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN,
   NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN,
-} from "@shared/blockpack/core/contract";
-import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
+} from "@shared/blockpack/contract";
+import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import type { UUID } from "crypto";
 import {
   Awareness,

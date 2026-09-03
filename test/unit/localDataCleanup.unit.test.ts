@@ -16,14 +16,14 @@ jest.mock("@/api/local/db", () => ({
     },
   },
 }));
-jest.mock("@shared/blockpack/core/localYjsDocumentStore", () => ({
+jest.mock("@shared/blockpack/localYjsDocumentStore", () => ({
   LocalYjsDocumentStore: {
     cleanup: jest.fn(),
   },
 }));
 
 import { cleanupLocalData } from "@/api/local/local-data.cleanup";
-import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
+import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
 

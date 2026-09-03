@@ -8,7 +8,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Suspense fallback={<StrictLoadingCover />}>
-      {sidebarManager.isMobile && <SidebarTrigger className="fixed m-2" />}
+      {sidebarManager.isMobile && (
+        <SidebarTrigger className="fixed top-2 left-2 z-50" />
+      )}
       <WidgetProvider>{children}</WidgetProvider>
     </Suspense>
   );

@@ -1,13 +1,10 @@
 import {
   AccessControlPermission,
   RoutinePeriod,
+  RoutinePhase,
   RoutineStatus,
 } from "@shared/api/interfaces/enums";
 import type {
-  LinkRoutineItemsByIdsRequest,
-  LinkRoutineItemsByIdsResponse,
-  LinkRoutineTagsByIdsRequest,
-  LinkRoutineTagsByIdsResponse,
   CreateRoutineByStationIdRequest,
   CreateRoutineByStationIdResponse,
   CreateRoutinesByStationIdsRequest,
@@ -25,8 +22,12 @@ import type {
   HardDeleteMyRoutinesByIdsResponse,
   LinkRoutineItemByIdRequest,
   LinkRoutineItemByIdResponse,
+  LinkRoutineItemsByIdsRequest,
+  LinkRoutineItemsByIdsResponse,
   LinkRoutineTagByIdRequest,
   LinkRoutineTagByIdResponse,
+  LinkRoutineTagsByIdsRequest,
+  LinkRoutineTagsByIdsResponse,
   RestoreMyRoutineByIdRequest,
   RestoreMyRoutineByIdResponse,
   RestoreMyRoutinesByIdsRequest,
@@ -36,6 +37,7 @@ import type {
   UpdateMyRoutinesByIdsRequest,
   UpdateMyRoutinesByIdsResponse,
 } from "@shared/api/interfaces/routine.interface";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Item,
@@ -49,7 +51,6 @@ import {
   User,
   UsersToStations,
 } from "@/api/local/schemas";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class RoutineLocalSynchronizer {
   private static getPassPermissionCheckSQL = (
@@ -84,6 +85,7 @@ export class RoutineLocalSynchronizer {
           title: response.data.title,
           description: response.data.description,
           status: response.data.status,
+          phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -100,6 +102,7 @@ export class RoutineLocalSynchronizer {
             title: response.data.title,
             description: response.data.description,
             status: response.data.status,
+            phase: response.data.phase,
             isPinned: response.data.isPinned,
             scheduledStartAt: response.data.scheduledStartAt,
             scheduledEndAt: response.data.scheduledEndAt,
@@ -188,6 +191,7 @@ export class RoutineLocalSynchronizer {
             stationId: routine.stationId,
             title: routine.title,
             status: routine.status,
+            phase: routine.phase,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -204,6 +208,7 @@ export class RoutineLocalSynchronizer {
             stationId: sql`excluded.station_id`,
             title: sql`excluded.title`,
             status: sql`excluded.status`,
+            phase: sql`excluded.phase`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
             scheduledEndAt: sql`excluded.scheduled_end_at`,
@@ -313,6 +318,7 @@ export class RoutineLocalSynchronizer {
       stationId: string;
       title: string;
       status: RoutineStatus;
+      phase: RoutinePhase | null;
       isPinned: boolean;
       scheduledStartAt: Date;
       scheduledEndAt: Date;
@@ -343,6 +349,7 @@ export class RoutineLocalSynchronizer {
             stationId: routine.stationId,
             title: routine.title,
             status: routine.status,
+            phase: routine.phase,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -359,6 +366,7 @@ export class RoutineLocalSynchronizer {
             stationId: sql`excluded.station_id`,
             title: sql`excluded.title`,
             status: sql`excluded.status`,
+            phase: sql`excluded.phase`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
             scheduledEndAt: sql`excluded.scheduled_end_at`,
@@ -470,7 +478,7 @@ export class RoutineLocalSynchronizer {
         stationId: request.body.stationId,
         title: request.body.title,
         description: request.body.description,
-        status: request.body.status ?? RoutineStatus.Scheduled,
+        status: RoutineStatus.Scheduled,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt:
           request.body.scheduledStartAt ?? response.data.createdAt,
@@ -504,7 +512,7 @@ export class RoutineLocalSynchronizer {
           stationId: routine.stationId,
           title: routine.title,
           description: routine.description,
-          status: routine.status ?? RoutineStatus.Scheduled,
+          status: RoutineStatus.Scheduled,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? response.data.createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? response.data.createdAt,
@@ -556,9 +564,6 @@ export class RoutineLocalSynchronizer {
           }),
           ...(request.body.values.description !== undefined && {
             description: request.body.values.description,
-          }),
-          ...(request.body.values.status !== undefined && {
-            status: request.body.values.status,
           }),
           ...(request.body.values.isPinned !== undefined && {
             isPinned: request.body.values.isPinned,
@@ -639,9 +644,6 @@ export class RoutineLocalSynchronizer {
             }),
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
-            }),
-            ...(routine.values.status !== undefined && {
-              status: routine.values.status,
             }),
             ...(routine.values.isPinned !== undefined && {
               isPinned: routine.values.isPinned,
@@ -820,6 +822,7 @@ export class RoutineLocalSynchronizer {
           title: response.data.title,
           description: response.data.description,
           status: response.data.status,
+          phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -849,6 +852,7 @@ export class RoutineLocalSynchronizer {
           title: sql`excluded.title`,
           description: sql`excluded.description`,
           status: sql`excluded.status`,
+          phase: sql`excluded.phase`,
           isPinned: sql`excluded.is_pinned`,
           scheduledStartAt: sql`excluded.scheduled_start_at`,
           scheduledEndAt: sql`excluded.scheduled_end_at`,

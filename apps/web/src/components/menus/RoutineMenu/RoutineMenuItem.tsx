@@ -1,8 +1,15 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { ItemType } from "@shared/api/interfaces/enums";
+import { translateError } from "@shared/i18n/error";
+import {
+  translateRoutinePeriod,
+  translateRoutinePhase,
+  translateRoutineStatus,
+} from "@shared/i18n/workspace";
 import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
+import { useNavigate } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import {
   Bookmark,
@@ -15,6 +22,7 @@ import {
   Pencil,
   SquarePen,
   Trash2,
+  Workflow,
 } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,11 +63,6 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useLoading, useModal, useShelfItem, useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
 
 interface RoutineMenuItemProps {
   station: StationNode;
@@ -68,6 +71,7 @@ interface RoutineMenuItemProps {
 
 const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
   const { i18n, t } = useTranslation();
+  const navigate = useNavigate();
   const loadingManager = useLoading();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
@@ -203,6 +207,12 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                       value: translateRoutineStatus(routine.status, t),
                     },
                     {
+                      field: t("workspace.table.phase"),
+                      value: routine.phase
+                        ? translateRoutinePhase(routine.phase, t)
+                        : t("workspace.period.none"),
+                    },
+                    {
                       field: t("workspace.payloadEditor.period"),
                       value: translateRoutinePeriod(routine.period, t),
                     },
@@ -258,6 +268,17 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
               >
                 <SquarePen className="mr-2 size-4" />
                 {t("workspace.menu.openInspector")}
+              </ContextMenuItem>
+              <ContextMenuItem
+                onClick={() =>
+                  navigate({
+                    to: "/app/routines/$routineId/dependency-graph-editor",
+                    params: { routineId: routine.id },
+                  })
+                }
+              >
+                <Workflow className="mr-2 size-4" />
+                {t("workspace.menu.orchestrateRoutineTasks")}
               </ContextMenuItem>
             </ContextMenuGroup>
             <ContextMenuSeparator />

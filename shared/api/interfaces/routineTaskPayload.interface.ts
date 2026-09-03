@@ -14,6 +14,12 @@ export const RoutineTaskPayloadSizeSchema = z.any().refine(value => {
   }
 }, "Payload must be smaller than 16 MiB.");
 
+const routineTaskObjectReferenceSchema = z.union([
+  z.uuidv4(),
+  z.string().regex(/^f_[0-9a-f]{32}$/i),
+]);
+const routineTaskFakeIdSchema = z.string().regex(/^f_[0-9a-f]{32}$/i);
+
 export const RoutineTaskPayloadSchema = z
   .object({
     purpose: z.enum(AllRoutineTaskPurposes),
@@ -74,36 +80,30 @@ export const RoutineTaskPayloadSchema = z
     }
 
     if (
-      purpose === RoutineTaskPurpose.CreateRootShelf &&
-      (typeof payload.name !== "string" || payload.name.trim().length === 0)
+      (purpose === RoutineTaskPurpose.GetSubShelf ||
+        purpose === RoutineTaskPurpose.DeleteSubShelf ||
+        purpose === RoutineTaskPurpose.UpdateSubShelf) &&
+      !uuidSchema.safeParse(payload.subShelfId).success
     ) {
-      addPayloadIssue(["name"], "Payload needs a root shelf name.");
-    }
-    if (
-      (purpose === RoutineTaskPurpose.UpdateRootShelf ||
-        purpose === RoutineTaskPurpose.ResetRootShelf) &&
-      !uuidSchema.safeParse(payload.rootShelfId).success
-    ) {
-      addPayloadIssue(["rootShelfId"], "Payload needs a valid root shelf.");
+      addPayloadIssue(["subShelfId"], "Payload needs a valid sub shelf.");
     }
     if (
       purpose === RoutineTaskPurpose.CreateSubShelf &&
-      (!uuidSchema.safeParse(payload.rootShelfId).success ||
+      (!routineTaskFakeIdSchema.safeParse(payload.fakeId).success ||
+        !uuidSchema.safeParse(payload.rootShelfId).success ||
+        (payload.prevSubShelfId !== undefined &&
+          payload.prevSubShelfId !== null &&
+          !routineTaskObjectReferenceSchema.safeParse(payload.prevSubShelfId)
+            .success) ||
         typeof payload.name !== "string" ||
         payload.name.trim().length === 0)
     ) {
       addPayloadIssue([], "Payload needs a root shelf and sub shelf name.");
     }
     if (
-      (purpose === RoutineTaskPurpose.UpdateSubShelf ||
-        purpose === RoutineTaskPurpose.ResetSubShelf) &&
-      !uuidSchema.safeParse(payload.subShelfId).success
-    ) {
-      addPayloadIssue(["subShelfId"], "Payload needs a valid sub shelf.");
-    }
-    if (
       purpose === RoutineTaskPurpose.CreateBlockPack &&
-      (!uuidSchema.safeParse(payload.targetSubShelfId).success ||
+      (!routineTaskObjectReferenceSchema.safeParse(payload.targetSubShelfId)
+        .success ||
         typeof payload.template?.name !== "string" ||
         payload.template.name.trim().length === 0 ||
         !Array.isArray(payload.template?.blocks) ||
@@ -144,43 +144,54 @@ export const RoutineTaskPayloadSchema = z
       });
     }
     if (
-      purpose === RoutineTaskPurpose.UpdateBlockPack &&
-      (!uuidSchema.safeParse(payload.blockPackId).success ||
-        !Array.isArray(payload.updatedBlocks) ||
-        payload.updatedBlocks.length === 0)
-    ) {
-      addPayloadIssue(
-        [],
-        "Payload needs a block pack and at least one updated block."
-      );
-    }
-    if (
-      purpose === RoutineTaskPurpose.ResetBlockPack &&
+      (purpose === RoutineTaskPurpose.GetBlockPack ||
+        purpose === RoutineTaskPurpose.DeleteBlockPack ||
+        purpose === RoutineTaskPurpose.UpdateBlockPack) &&
       !uuidSchema.safeParse(payload.blockPackId).success
     ) {
       addPayloadIssue(["blockPackId"], "Payload needs a valid block pack.");
     }
     if (
-      purpose === RoutineTaskPurpose.AppendBlock &&
-      (!uuidSchema.safeParse(payload.blockPackId).success ||
-        typeof payload.arborizedEditableBlock !== "object" ||
-        payload.arborizedEditableBlock === null)
+      purpose === RoutineTaskPurpose.UpdateBlockPack &&
+      (!Array.isArray(payload.blocks) ||
+        payload.blocks.length === 0 ||
+        payload.blocks.length > 1000)
     ) {
-      addPayloadIssue([], "Payload needs a block pack and block content.");
+      addPayloadIssue(["blocks"], "Payload needs between one and 1000 blocks.");
     }
     if (
-      purpose === RoutineTaskPurpose.UpdateBlock &&
-      (!uuidSchema.safeParse(payload.blockId).success ||
-        typeof payload.arborizedEditableBlock !== "object" ||
-        payload.arborizedEditableBlock === null)
+      purpose === RoutineTaskPurpose.UpdateBlockPack &&
+      Array.isArray(payload.blocks)
     ) {
-      addPayloadIssue([], "Payload needs a block and updated block content.");
+      payload.blocks.forEach((block: unknown, index: number) => {
+        const updatedBlock =
+          block !== null && typeof block === "object"
+            ? (block as Record<string, unknown>)
+            : {};
+        if (!uuidSchema.safeParse(updatedBlock.blockId).success) {
+          addPayloadIssue(
+            ["blocks", index, "blockId"],
+            "Block needs a valid block ID."
+          );
+        }
+        if (
+          typeof updatedBlock.arborizedEditableBlock !== "object" ||
+          updatedBlock.arborizedEditableBlock === null
+        ) {
+          addPayloadIssue(
+            ["blocks", index, "arborizedEditableBlock"],
+            "Block needs editable block content."
+          );
+        }
+      });
     }
     if (
-      purpose === RoutineTaskPurpose.ResetBlock &&
-      !uuidSchema.safeParse(payload.blockId).success
+      (purpose === RoutineTaskPurpose.GetRoutine ||
+        purpose === RoutineTaskPurpose.DeleteRoutine ||
+        purpose === RoutineTaskPurpose.UpdateRoutine) &&
+      !uuidSchema.safeParse(payload.routineId).success
     ) {
-      addPayloadIssue(["blockId"], "Payload needs a valid block.");
+      addPayloadIssue(["routineId"], "Payload needs a valid routine.");
     }
     if (
       purpose === RoutineTaskPurpose.CreateRoutine &&
@@ -191,9 +202,25 @@ export const RoutineTaskPayloadSchema = z
       addPayloadIssue([], "Payload needs a station and routine title.");
     }
     if (
-      purpose === RoutineTaskPurpose.UpdateRoutine &&
-      !uuidSchema.safeParse(payload.routineId).success
+      (purpose === RoutineTaskPurpose.GetMaterial ||
+        purpose === RoutineTaskPurpose.DeleteMaterial ||
+        purpose === RoutineTaskPurpose.UpdateMaterial) &&
+      !uuidSchema.safeParse(payload.materialId).success
     ) {
-      addPayloadIssue(["routineId"], "Payload needs a valid routine.");
+      addPayloadIssue(["materialId"], "Payload needs a valid material.");
+    }
+    if (
+      purpose === RoutineTaskPurpose.CreateMaterial &&
+      (!routineTaskObjectReferenceSchema.safeParse(payload.parentSubShelfId)
+        .success ||
+        typeof payload.name !== "string" ||
+        payload.name.trim().length === 0 ||
+        typeof payload.contentKey !== "string" ||
+        payload.contentKey.trim().length === 0)
+    ) {
+      addPayloadIssue(
+        [],
+        "Payload needs a parent sub shelf, material name, and content key."
+      );
     }
   });

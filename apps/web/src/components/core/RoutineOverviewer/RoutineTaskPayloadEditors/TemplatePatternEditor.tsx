@@ -1,6 +1,7 @@
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import SeparatableTable from "@/components/commons/SeparatableTable/SeparatableTable";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -105,30 +105,32 @@ const TemplatePatternEditor = ({
               : "h-24 min-h-24 shrink-0 overflow-hidden rounded-t-sm border bg-background"
           }
         >
-          <Table className="table-fixed !w-auto">
+          <SeparatableTable
+            className="w-full table-fixed"
+            separatedColumns={[1, 2, 3]}
+          >
             <TableHeader>
               <TableRow className="transition-none hover:bg-transparent">
-                <TableHead className="h-8 w-[84px] p-1 text-left">
+                <TableHead className="h-8 w-[18%] px-0.5 py-0 text-center">
                   {t("workspace.payloadEditor.token")}
                 </TableHead>
-                <TableHead className="h-8 w-[96px] p-1 text-left">
+                <TableHead className="h-8 w-[20%] px-0.5 py-0 text-center">
                   {t("workspace.payloadEditor.source")}
                 </TableHead>
-                <TableHead className="h-8 w-[88px] p-1 text-left">
+                <TableHead className="h-8 w-[20%] px-0.5 py-0 text-center">
                   {t("workspace.payloadEditor.target")}
                 </TableHead>
-                <TableHead className="h-8 w-[72px] p-1 text-left">
+                <TableHead className="h-8 px-0.5 py-0 text-center">
                   {t("workspace.payloadEditor.option")}
                 </TableHead>
-                <TableHead className="h-8 w-12 p-0"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Object.keys(pattern).length === 0 ? (
                 <TableRow className="transition-none hover:bg-transparent">
                   <TableCell
-                    colSpan={5}
-                    className="h-56 px-2 py-6 text-center text-xs text-muted-foreground"
+                    colSpan={4}
+                    className="h-14 px-2 py-2 text-center text-xs text-muted-foreground align-middle"
                   >
                     {t("workspace.payloadEditor.noPatternValues")}
                   </TableCell>
@@ -156,31 +158,31 @@ const TemplatePatternEditor = ({
                       className="transition-none hover:bg-transparent"
                     >
                       <TableCell
-                        className="w-[84px] min-w-[8ch] truncate p-1 text-xs"
+                        className="w-[18%] min-w-0 truncate px-0.5 py-0 text-center text-xs"
                         title={`{{${token}}}`}
                       >
                         {token}
                       </TableCell>
                       <TableCell
-                        className="min-w-0 truncate p-1 text-xs"
+                        className="min-w-0 truncate px-0.5 py-0 text-center text-xs"
                         title={binding.source}
                       >
                         {binding.source}
                       </TableCell>
                       <TableCell
-                        className="min-w-0 truncate p-1 text-xs"
+                        className="min-w-0 truncate px-0.5 py-0 text-center text-xs"
                         title={target}
                       >
                         {target || "—"}
                       </TableCell>
                       <TableCell
-                        className="min-w-0 truncate p-1 text-xs"
+                        className="min-w-0 px-0.5 py-0 text-center text-xs"
                         title={option}
                       >
-                        {option || "—"}
-                      </TableCell>
-                      <TableCell className="w-12 p-0">
-                        <div className="flex min-w-12 items-center justify-center gap-0">
+                        <div className="flex min-w-0 items-center justify-center gap-1">
+                          <span className="min-w-0 flex-1 truncate">
+                            {option || "—"}
+                          </span>
                           <Button
                             type="button"
                             variant="ghost"
@@ -223,7 +225,7 @@ const TemplatePatternEditor = ({
                 })
               )}
             </TableBody>
-          </Table>
+          </SeparatableTable>
         </div>
         <Button
           type="button"

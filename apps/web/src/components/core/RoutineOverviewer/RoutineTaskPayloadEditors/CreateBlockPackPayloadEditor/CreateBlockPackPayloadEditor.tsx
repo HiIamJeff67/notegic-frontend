@@ -1,5 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { NotegicBlockPackEditor } from "@shared/blockpack/core";
+import { NotegicBlockPackEditor } from "@shared/blockpack";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
@@ -15,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import type { RoutineTaskTemplatePattern } from "../TemplatePatternEditor";
 import CreateBlockPackPayloadEditorSidebar from "./CreateBlockPackPayloadEditorSidebar";
 import CreateBlockPackPayloadTemplateEditor from "./CreateBlockPackPayloadTemplateEditor";
@@ -27,14 +27,6 @@ export interface PatternBlock {
   type: string;
   label: string;
   props: Record<string, unknown>;
-}
-
-export interface SelectedBlockPayloadTarget {
-  id: string;
-  type: string;
-  props: unknown;
-  content: unknown;
-  contentText: string;
 }
 
 interface CreateBlockPackPayloadEditorProps {
@@ -81,16 +73,6 @@ const CreateBlockPackPayloadEditor = ({
         ? parsedInitialPayload.pattern
         : {}
     );
-  const [blockPackId, setBlockPackId] = useState<string>(
-    typeof parsedInitialPayload.blockPackId === "string"
-      ? parsedInitialPayload.blockPackId
-      : ""
-  );
-  const [blockId, setBlockId] = useState<string>(
-    typeof parsedInitialPayload.blockId === "string"
-      ? parsedInitialPayload.blockId
-      : ""
-  );
   const [rawPayload, setRawPayload] = useState<string>(
     JSON.stringify(parsedInitialPayload, null, 2)
   );
@@ -98,8 +80,6 @@ const CreateBlockPackPayloadEditor = ({
     new Set()
   );
   const [patternBlocks, setPatternBlocks] = useState<PatternBlock[]>([]);
-  const [selectedBlock, setSelectedBlock] =
-    useState<SelectedBlockPayloadTarget | null>(null);
   const [payloadPreview, setPayloadPreview] = useState<string>(
     JSON.stringify(parsedInitialPayload, null, 2)
   );
@@ -136,14 +116,8 @@ const CreateBlockPackPayloadEditor = ({
     []
   );
 
-  const usesBlockLiteEditor =
-    purpose === RoutineTaskPurpose.CreateBlockPack ||
-    purpose === RoutineTaskPurpose.AppendBlock ||
-    purpose === RoutineTaskPurpose.UpdateBlock;
-  const usesPayloadSidebar =
-    usesBlockLiteEditor || purpose === RoutineTaskPurpose.ResetBlock;
-  const isResetBlockPack = purpose === RoutineTaskPurpose.ResetBlockPack;
-  const isResetBlock = purpose === RoutineTaskPurpose.ResetBlock;
+  const usesBlockLiteEditor = purpose === RoutineTaskPurpose.CreateBlockPack;
+  const usesPayloadSidebar = usesBlockLiteEditor;
   const availablePatternBlocks = useMemo(() => {
     const patternBlocksFromEditor: PatternBlock[] = [];
     const blocks: any[] = [...editor.document];
@@ -246,17 +220,6 @@ const CreateBlockPackPayloadEditor = ({
         ? parsedInitialPayload.pattern
         : {}
     );
-    setBlockPackId(
-      typeof parsedInitialPayload.blockPackId === "string"
-        ? parsedInitialPayload.blockPackId
-        : ""
-    );
-    setBlockId(
-      typeof parsedInitialPayload.blockId === "string"
-        ? parsedInitialPayload.blockId
-        : ""
-    );
-    setSelectedBlock(null);
     setRawPayload(JSON.stringify(parsedInitialPayload, null, 2));
     setSelectedPatternIds(new Set());
     const nextPatternBlocks: PatternBlock[] = [];
@@ -292,23 +255,10 @@ const CreateBlockPackPayloadEditor = ({
             arborizedEditableBlock?: unknown;
           }>)
         : [];
-    const loadedBlocks =
-      purpose === RoutineTaskPurpose.CreateBlockPack
-        ? templateBlocks.map(
-            (rawBlock: { arborizedEditableBlock?: unknown }) =>
-              rawBlock.arborizedEditableBlock ?? rawBlock
-          )
-        : (purpose === RoutineTaskPurpose.AppendBlock ||
-              purpose === RoutineTaskPurpose.UpdateBlock) &&
-            parsedInitialPayload.arborizedEditableBlock
-          ? [parsedInitialPayload.arborizedEditableBlock]
-          : [
-              {
-                id: crypto.randomUUID(),
-                type: "paragraph",
-                content: [],
-              },
-            ];
+    const loadedBlocks = templateBlocks.map(
+      (rawBlock: { arborizedEditableBlock?: unknown }) =>
+        rawBlock.arborizedEditableBlock ?? rawBlock
+    );
     const blocks = loadedBlocks.filter(
       (block: { id?: unknown }) =>
         typeof block.id === "string" && block.id.trim().length > 0
@@ -334,49 +284,9 @@ const CreateBlockPackPayloadEditor = ({
   useEffect(() => {
     if (!isOpen || !usesBlockLiteEditor) return;
     return editor.onChange(() => {
-      if (
-        (purpose === RoutineTaskPurpose.AppendBlock ||
-          purpose === RoutineTaskPurpose.UpdateBlock) &&
-        editor.document.length > 1
-      ) {
-        editor.removeBlocks(editor.document.slice(1).map(block => block.id));
-      }
       setEditorVersion(version => version + 1);
     });
   }, [editor, isOpen, purpose, usesBlockLiteEditor]);
-
-  useEffect(() => {
-    if (
-      !isOpen ||
-      purpose !== RoutineTaskPurpose.UpdateBlock ||
-      !selectedBlock
-    ) {
-      return;
-    }
-
-    const block = {
-      id: selectedBlock.id,
-      type: selectedBlock.type
-        .replace(/^BlockType_/, "")
-        .replace(/^[A-Z]/, character => character.toLowerCase()),
-      props: selectedBlock.props ?? {},
-      content: Array.isArray(selectedBlock.content)
-        ? selectedBlock.content
-        : Array.isArray((selectedBlock.content as any)?.content)
-          ? (selectedBlock.content as any).content
-          : selectedBlock.contentText,
-      children: [],
-    };
-    editor.replaceBlocks(
-      editor.document.map(editorBlock => editorBlock.id),
-      [block as any]
-    );
-    originalBlockEditor.replaceBlocks(
-      originalBlockEditor.document.map(editorBlock => editorBlock.id),
-      [block as any]
-    );
-    setEditorVersion(version => version + 1);
-  }, [editor, originalBlockEditor, isOpen, purpose, selectedBlock]);
 
   const normalizeBlock = (block: any): any => {
     const uuidRegex =
@@ -436,23 +346,7 @@ const CreateBlockPackPayloadEditor = ({
       };
     }
 
-    if (purpose === RoutineTaskPurpose.AppendBlock) {
-      return {
-        blockPackId,
-        arborizedEditableBlock: firstBlock,
-        ...(Object.keys(templatePattern).length > 0 && {
-          pattern: templatePattern,
-        }),
-      };
-    }
-
-    return {
-      blockId,
-      arborizedEditableBlock: firstBlock,
-      ...(Object.keys(templatePattern).length > 0 && {
-        pattern: templatePattern,
-      }),
-    };
+    return {};
   };
 
   useEffect(() => {
@@ -463,16 +357,6 @@ const CreateBlockPackPayloadEditor = ({
       if (usesBlockLiteEditor) {
         const payload = JSON.stringify(await buildBlockPayload(), null, 2);
         if (!isCanceled) setPayloadPreview(payload);
-        return;
-      }
-
-      if (isResetBlockPack) {
-        setPayloadPreview(JSON.stringify({ blockPackId }, null, 2));
-        return;
-      }
-
-      if (isResetBlock) {
-        setPayloadPreview(JSON.stringify({ blockId }, null, 2));
         return;
       }
 
@@ -487,11 +371,7 @@ const CreateBlockPackPayloadEditor = ({
       isCanceled = true;
     };
   }, [
-    blockId,
-    blockPackId,
     editorVersion,
-    isResetBlock,
-    isResetBlockPack,
     isOpen,
     patternBlocks,
     rawPayload,
@@ -533,11 +413,6 @@ const CreateBlockPackPayloadEditor = ({
               setTemplateName={setTemplateName}
               templatePattern={templatePattern}
               setTemplatePattern={setTemplatePattern}
-              blockPackId={blockPackId}
-              setBlockPackId={setBlockPackId}
-              blockId={blockId}
-              setBlockId={setBlockId}
-              setSelectedBlock={setSelectedBlock}
               patternBlocks={livePatternBlocks}
               availablePatternBlocks={availablePatternBlocks}
               setPatternBlocks={setPatternBlocks}
@@ -595,32 +470,14 @@ const CreateBlockPackPayloadEditor = ({
           </div>
         ) : (
           <>
-            {isResetBlockPack ? (
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.payloadEditor.blockPackId")}</Label>
-                <Input
-                  value={blockPackId}
-                  onChange={event => setBlockPackId(event.currentTarget.value)}
-                />
-              </div>
-            ) : isResetBlock ? (
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.payloadEditor.blockId")}</Label>
-                <Input
-                  value={blockId}
-                  onChange={event => setBlockId(event.currentTarget.value)}
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.payloadEditor.rawJsonPayload")}</Label>
-                <Textarea
-                  value={rawPayload}
-                  onChange={event => setRawPayload(event.currentTarget.value)}
-                  className="min-h-64 font-mono text-xs"
-                />
-              </div>
-            )}
+            <div className="flex flex-col gap-2">
+              <Label>{t("workspace.payloadEditor.rawJsonPayload")}</Label>
+              <Textarea
+                value={rawPayload}
+                onChange={event => setRawPayload(event.currentTarget.value)}
+                className="min-h-64 font-mono text-xs"
+              />
+            </div>
             <DialogFooter>
               <span className="mr-auto self-center text-xs text-muted-foreground">
                 {t("workspace.payloadEditor.estimatedCost", {

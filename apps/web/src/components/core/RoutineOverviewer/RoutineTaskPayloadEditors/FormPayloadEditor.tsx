@@ -1,4 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import { cn } from "@shared/util/utils";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,7 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 
 interface FormPayloadEditorProps {
   isOpen: boolean;

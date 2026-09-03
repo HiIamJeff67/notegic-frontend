@@ -561,3 +561,11 @@ html[data-density] .article-sidebar [data-sidebar="menu-sub-button"] {
 .prism-code .token.variable {
   color: color-mix(in oklab, var(--foreground) 72%, var(--primary));
 }
+
+.routine-task-dependency-graph .react-flow__controls,
+.routine-task-dependency-graph .react-flow__minimap {
+  background-color: var(--inset);
+  border: 1px solid color-mix(in oklab, var(--foreground) 30%, transparent);
+  border-radius: var(--radius);
+  overflow: hidden;
+}

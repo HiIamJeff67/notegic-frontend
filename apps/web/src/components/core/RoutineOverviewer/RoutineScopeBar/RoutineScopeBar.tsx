@@ -1,3 +1,4 @@
+import { cn } from "@shared/util/utils";
 import { ChartNoAxesCombined, Tags } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,
@@ -13,6 +14,7 @@ import {
   StationIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   HoverCard,
@@ -20,6 +22,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
@@ -35,6 +38,7 @@ type RoutineScopeBarProps = {
 };
 
 type StatusPillProps = ComponentPropsWithoutRef<"div"> & {
+  disabled?: boolean;
   icon: ReactNode;
   presentCount: number;
   totalCount: number;
@@ -47,6 +51,7 @@ const RoutineScopeBar = ({
   showStationStatus = true,
 }: RoutineScopeBarProps) => {
   const { t } = useTranslation();
+  const sidebarManager = useSidebar();
   const stationRoutineManager = useStationRoutine();
 
   const [pendingStationIds, setPendingStationIds] = useState(
@@ -76,12 +81,13 @@ const RoutineScopeBar = ({
     <div
       className="
         @container
-        flex h-full w-full min-w-0 items-center justify-between gap-4
-        border-b border-border/40 bg-inset/75 px-3 backdrop-blur-md
+        flex h-full w-full min-w-0 items-center justify-between gap-3
+        border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md
       "
     >
       <div className="flex min-w-0 items-center gap-2">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        {sidebarManager.isMobile && <SidebarTrigger />}
+        <ButtonGroup className="shrink-0">
           {showStationStatus && (
             <HoverCard
               openDelay={250}
@@ -191,6 +197,7 @@ const RoutineScopeBar = ({
             </HoverCard>
           )}
           <StatusPill
+            disabled
             icon={<RoutineIcon className="size-3.5" />}
             presentCount={stationRoutineManager.visibleRoutines.length}
             totalCount={stationRoutineManager.statusSummary.totalRoutines}
@@ -340,12 +347,13 @@ const RoutineScopeBar = ({
             </HoverCardContent>
           </HoverCard>
           <StatusPill
+            disabled
             icon={<RoutineTaskIcon className="size-3.5" />}
             presentCount={stationRoutineManager.visibleRoutineTasks.length}
             totalCount={stationRoutineManager.statusSummary.totalRoutineTasks}
             title={t("workspace.scope.routineTasks")}
           />
-        </div>
+        </ButtonGroup>
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -357,7 +365,7 @@ const RoutineScopeBar = ({
                 variant="ghost"
                 size="icon"
                 aria-label={t("workspace.scope.addChart")}
-                className="size-7 rounded-sm"
+                className="size-7 rounded-sm @max-[480px]:hidden"
                 onClick={onOpenAddChart}
               >
                 <ChartNoAxesCombined className="size-4" />
@@ -377,12 +385,12 @@ const RoutineScopeBar = ({
               stationRoutineManager.setTimeRailScale(value);
             }
           }}
-          className="rounded-sm border border-border/60 bg-secondary p-0.5"
+          className="rounded-md border bg-background p-1 shadow-xs"
         >
           <ToggleGroupItem
             value="day"
             size="sm"
-            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground @max-[480px]:px-1 @max-[480px]:text-[10px]"
           >
             <span className="@max-[480px]:hidden">
               {t("workspace.scope.daily")}
@@ -394,7 +402,7 @@ const RoutineScopeBar = ({
           <ToggleGroupItem
             value="week"
             size="sm"
-            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground @max-[480px]:px-1 @max-[480px]:text-[10px]"
           >
             <span className="@max-[480px]:hidden">
               {t("workspace.scope.weekly")}
@@ -406,7 +414,7 @@ const RoutineScopeBar = ({
           <ToggleGroupItem
             value="month"
             size="sm"
-            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            className="h-7 rounded-sm bg-transparent px-2 text-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground @max-[480px]:px-1 @max-[480px]:text-[10px]"
           >
             <span className="@max-[480px]:hidden">
               {t("workspace.scope.monthly")}
@@ -422,13 +430,31 @@ const RoutineScopeBar = ({
 };
 
 const StatusPill = forwardRef<HTMLDivElement, StatusPillProps>(
-  ({ icon, presentCount, totalCount, title, ...props }, ref) => {
+  (
+    {
+      className,
+      disabled = false,
+      icon,
+      presentCount,
+      totalCount,
+      title,
+      ...props
+    },
+    ref
+  ) => {
     const { t } = useTranslation();
     return (
       <div
         ref={ref}
         {...props}
-        className="flex h-7 items-center gap-1 rounded-sm border border-border/50 bg-card px-2"
+        aria-disabled={disabled}
+        className={cn(
+          "flex h-7 items-center gap-1 rounded-md px-2 text-xs shadow-xs @max-[480px]:px-1 @max-[480px]:text-[10px]",
+          disabled
+            ? "cursor-default border-border/40 bg-muted/30 text-muted-foreground/60"
+            : "cursor-pointer border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          className
+        )}
         aria-label={t("workspace.scope.presentSummary", {
           title,
           shown: presentCount,

@@ -24,7 +24,7 @@ import {
   type ReactCustomBlockRenderProps,
   SuggestionMenuController,
 } from "@blocknote/react";
-import { NotegicBlockPackEditor } from "@shared/blockpack/core";
+import { NotegicBlockPackEditor } from "@shared/blockpack";
 import { format } from "date-fns";
 import { CalendarDaysIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";

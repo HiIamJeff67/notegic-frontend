@@ -1,21 +1,28 @@
+import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
+  RoutinePhase as GraphQLRoutinePhase,
   RoutineStatus as GraphQLRoutineStatus,
   SearchRoutineSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import {
   AllRoutineStatuses,
   RoutinePeriod,
   RoutineStatus,
-  RoutineTaskStatus,
+  RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
+import {
+  translateRoutinePhase,
+  translateRoutineStatus,
+  translateRoutineTaskRecordStatus,
+} from "@shared/i18n/workspace";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { UUID } from "crypto";
 import { Bookmark, SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
@@ -41,10 +48,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
-import {
-  translateRoutineStatus,
-  translateRoutineTaskStatus,
-} from "@shared/i18n/workspace";
 
 const RoutineTable = () => {
   const { i18n, t } = useTranslation();
@@ -99,6 +102,7 @@ const RoutineTable = () => {
             stationId: UUID;
             title: string;
             status: GraphQLRoutineStatus;
+            phase?: GraphQLRoutinePhase | null;
             isPinned: boolean;
             scheduledStartAt: Date | string | number;
             scheduledEndAt: Date | string | number;
@@ -141,6 +145,7 @@ const RoutineTable = () => {
                   : node.status === GraphQLRoutineStatus.RoutineStatusOverDue
                     ? RoutineStatus.OverDue
                     : RoutineStatus.Scheduled,
+            phase: fromGraphQLRoutinePhase(node.phase),
             isPinned: node.isPinned,
             scheduledStartAt: new Date(node.scheduledStartAt),
             scheduledEndAt: new Date(node.scheduledEndAt),
@@ -497,7 +502,14 @@ const RoutineTable = () => {
                     </span>
                   </TableCell>
                   <TableCell className="px-3 py-3">
-                    {translateRoutineStatus(routine.status, t)}
+                    <div className="flex flex-col gap-0.5">
+                      <span>{translateRoutineStatus(routine.status, t)}</span>
+                      {routine.phase && (
+                        <span className="text-xs text-muted-foreground">
+                          {translateRoutinePhase(routine.phase, t)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="px-3 py-3">
                     {isScheduled ? (
@@ -627,11 +639,11 @@ const RoutineTable = () => {
                                   >
                                     <span
                                       className={`size-2.5 shrink-0 rounded-full ${
-                                        routineTask.status ===
-                                        RoutineTaskStatus.Running
+                                        routineTask.executionStatus ===
+                                        RoutineTaskRecordStatus.Running
                                           ? "bg-[var(--decoration)]"
-                                          : routineTask.status ===
-                                              RoutineTaskStatus.Pause
+                                          : routineTask.executionStatus ===
+                                              RoutineTaskRecordStatus.Failed
                                             ? "bg-accent-foreground"
                                             : "bg-muted-foreground"
                                       }`}
@@ -640,10 +652,12 @@ const RoutineTable = () => {
                                       {routineTask.title}
                                     </span>
                                     <span className="shrink-0 text-xs text-muted-foreground">
-                                      {translateRoutineTaskStatus(
-                                        routineTask.status,
-                                        t
-                                      )}
+                                      {routineTask.executionStatus
+                                        ? translateRoutineTaskRecordStatus(
+                                            routineTask.executionStatus,
+                                            t
+                                          )
+                                        : "—"}
                                     </span>
                                   </div>
                                 ))}

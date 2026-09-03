@@ -3,12 +3,9 @@ import { cn } from "@shared/util/utils";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import * as React from "react";
 
-const ContextMenu = ({
-  modal = false,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Root>) => (
-  <ContextMenuPrimitive.Root modal={modal} {...props} />
-);
+const ContextMenu = (
+  props: React.ComponentProps<typeof ContextMenuPrimitive.Root>
+) => <ContextMenuPrimitive.Root {...props} />;
 
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 

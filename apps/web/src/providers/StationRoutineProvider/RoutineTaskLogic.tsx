@@ -1,24 +1,10 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineTaskStatus as GraphQLRoutineTaskStatus,
   SearchRoutineTaskSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import {
-  useCreateRoutineTaskByRoutineId,
-  useGetAllMyRoutineTasksByRoutineIds,
-  usePauseMyRoutineTaskById,
-  useResumeMyRoutineTaskById,
-  useUpdateMyRoutineTaskById,
-} from "@/api/hooks/routineTask.hook";
-import { useGetAllMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
-import {
-  RoutinePeriod,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
-  RoutineTaskStatus,
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
@@ -30,6 +16,14 @@ import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
+import {
+  useCreateRoutineTaskByRoutineId,
+  useGetAllMyRoutineTasksByRoutineIds,
+  useUpdateMyRoutineTaskById,
+} from "@/api/hooks/routineTask.hook";
+import { useGetAllMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
 
 interface UseRoutineTaskLogicProps {
   stationsRef: RefObject<LRUCache<UUID, StationNode>>;
@@ -42,11 +36,9 @@ export const useRoutineTaskLogic = ({
 }: UseRoutineTaskLogicProps) => {
   const { t } = useTranslation();
   const createRoutineTaskMutator = useCreateRoutineTaskByRoutineId();
-  const getAllRoutineTasksByRoutineIdsQuerier =
+  const { fetch: fetchAllRoutineTasksByRoutineIds } =
     useGetAllMyRoutineTasksByRoutineIds();
   const updateRoutineTaskMutator = useUpdateMyRoutineTaskById();
-  const pauseRoutineTaskMutator = usePauseMyRoutineTaskById();
-  const resumeRoutineTaskMutator = useResumeMyRoutineTaskById();
   const routineTaskRecordsQuerier =
     useGetAllMyRoutineTaskRecordsByRoutineTaskId();
 
@@ -79,7 +71,7 @@ export const useRoutineTaskLogic = ({
         return [];
       });
       if (routines.length === 0) return [];
-      const response = await getAllRoutineTasksByRoutineIdsQuerier.fetch({
+      const response = await fetchAllRoutineTasksByRoutineIds({
         header: getClientRequestHeaders(navigator.userAgent),
         param: {
           routineIds,
@@ -109,16 +101,10 @@ export const useRoutineTaskLogic = ({
           title: routineTask.title,
           purpose: routineTask.purpose,
           costUnit: routineTask.costUnit,
-          payload: existingRoutineTask?.payload ?? {},
+          payload: routineTask.payload,
           priority: routineTask.priority,
-          status: routineTask.status,
-          attempts: routineTask.attempts,
           maxAttempts: routineTask.maxAttempts,
-          period: routineTask.period,
-          nextScheduledAt: routineTask.nextScheduledAt,
-          scheduledAt: routineTask.scheduledAt,
-          actualStartedAt: routineTask.actualStartedAt,
-          actualEndedAt: routineTask.actualEndedAt,
+          previousRoutineTaskIds: routineTask.previousRoutineTaskIds as UUID[],
           updatedAt: routineTask.updatedAt,
           createdAt: routineTask.createdAt,
         };
@@ -149,7 +135,7 @@ export const useRoutineTaskLogic = ({
       forceUpdate();
       return routineTaskNodes;
     },
-    [forceUpdate, getAllRoutineTasksByRoutineIdsQuerier, stationsRef]
+    [fetchAllRoutineTasksByRoutineIds, forceUpdate, stationsRef]
   );
 
   const handleRealtimeRoutineTaskLifecycle = useCallback(
@@ -178,9 +164,7 @@ export const useRoutineTaskLogic = ({
       if (frame.status === "running") {
         const occurredAt = new Date(frame.occurredAt);
         for (const routineTaskNode of routineTaskNodes) {
-          routineTaskNode.status = RoutineTaskStatus.Running;
           routineTaskNode.executionStatus = RoutineTaskRecordStatus.Running;
-          routineTaskNode.actualStartedAt = occurredAt;
           routineTaskNode.updatedAt = occurredAt;
         }
         forceUpdate();
@@ -203,8 +187,6 @@ export const useRoutineTaskLogic = ({
         ) ?? recordResponse.data[0];
       for (const routineTaskNode of findRoutineTaskNodes()) {
         routineTaskNode.executionStatus = record?.status ?? null;
-        routineTaskNode.actualEndedAt =
-          record?.actualEndedAt ?? new Date(frame.occurredAt);
         routineTaskNode.updatedAt =
           record?.updatedAt ?? new Date(frame.occurredAt);
       }
@@ -273,14 +255,8 @@ export const useRoutineTaskLogic = ({
             purpose: string;
             costUnit: number;
             priority: number;
-            status: GraphQLRoutineTaskStatus;
-            attempts: number;
             maxAttempts: number;
-            period: GraphQLRoutinePeriod | null;
-            nextScheduledAt?: Date | string | number;
-            scheduledAt: Date | string | number;
-            actualStartedAt: Date | string | number | null;
-            actualEndedAt: Date | string | number | null;
+            previousRoutineTaskIds: UUID[];
             updatedAt: Date | string | number;
             createdAt: Date | string | number;
           };
@@ -309,34 +285,8 @@ export const useRoutineTaskLogic = ({
             payload: existingRoutineTask?.payload ?? {},
             costUnit: node.costUnit,
             priority: node.priority,
-            status:
-              node.status === GraphQLRoutineTaskStatus.RoutineTaskStatusWaiting
-                ? RoutineTaskStatus.Waiting
-                : node.status ===
-                    GraphQLRoutineTaskStatus.RoutineTaskStatusRunning
-                  ? RoutineTaskStatus.Running
-                  : node.status ===
-                      GraphQLRoutineTaskStatus.RoutineTaskStatusPause
-                    ? RoutineTaskStatus.Pause
-                    : RoutineTaskStatus.Idle,
-            attempts: node.attempts,
             maxAttempts: node.maxAttempts,
-            period:
-              node.period === GraphQLRoutinePeriod.RoutinePeriodDaily
-                ? RoutinePeriod.Daily
-                : node.period === GraphQLRoutinePeriod.RoutinePeriodWeekly
-                  ? RoutinePeriod.Weekly
-                  : node.period === GraphQLRoutinePeriod.RoutinePeriodMonthly
-                    ? RoutinePeriod.Monthly
-                    : null,
-            nextScheduledAt: new Date(node.nextScheduledAt ?? node.scheduledAt),
-            scheduledAt: new Date(node.scheduledAt),
-            actualStartedAt:
-              node.actualStartedAt === null
-                ? null
-                : new Date(node.actualStartedAt),
-            actualEndedAt:
-              node.actualEndedAt === null ? null : new Date(node.actualEndedAt),
+            previousRoutineTaskIds: node.previousRoutineTaskIds,
             updatedAt: new Date(node.updatedAt),
             createdAt: new Date(node.createdAt),
           };
@@ -452,8 +402,6 @@ export const useRoutineTaskLogic = ({
       routineId: UUID,
       title: string,
       purpose: RoutineTaskPurpose,
-      nextScheduledAt: Date,
-      period: RoutinePeriod | null = null,
       payload: unknown = {},
       priority: number = 0,
       maxAttempts: number = 1
@@ -482,8 +430,6 @@ export const useRoutineTaskLogic = ({
           payload,
           priority,
           maxAttempts,
-          nextScheduledAt,
-          period,
         },
       });
       if (response.success === false) throw response.exception;
@@ -499,14 +445,8 @@ export const useRoutineTaskLogic = ({
         ),
         payload,
         priority,
-        status: RoutineTaskStatus.Idle,
-        attempts: 0,
         maxAttempts,
-        period,
-        nextScheduledAt,
-        scheduledAt: nextScheduledAt,
-        actualStartedAt: null,
-        actualEndedAt: null,
+        previousRoutineTaskIds: [],
         updatedAt: response.data.createdAt,
         createdAt: response.data.createdAt,
       };
@@ -547,8 +487,6 @@ export const useRoutineTaskLogic = ({
         sourceRoutineTask.routineId,
         `${sourceRoutineTask.title} Copy`,
         sourceRoutineTask.purpose,
-        sourceRoutineTask.nextScheduledAt,
-        sourceRoutineTask.period,
         sourceRoutineTask.payload,
         sourceRoutineTask.priority,
         sourceRoutineTask.maxAttempts
@@ -643,18 +581,11 @@ export const useRoutineTaskLogic = ({
 
       for (const routineTaskNode of routineTaskNodes) {
         Object.assign(routineTaskNode, values);
-        if (
-          values.nextScheduledAt !== undefined &&
-          routineTaskNode.scheduledAt < values.nextScheduledAt
-        ) {
-          routineTaskNode.scheduledAt = values.nextScheduledAt;
-        }
         if (values.payload !== undefined) {
           routineTaskNode.costUnit = Math.ceil(
             new Blob([JSON.stringify(values.payload ?? {})]).size / 1024
           );
         }
-        if (setNull?.Period) routineTaskNode.period = null;
         routineTaskNode.updatedAt = response.data.updatedAt;
       }
       if (values.routineId !== undefined) {
@@ -705,112 +636,6 @@ export const useRoutineTaskLogic = ({
     [forceUpdate, stationsRef, updateRoutineTaskMutator]
   );
 
-  const pauseRoutineTask = useCallback(
-    async (routineTaskId: UUID): Promise<void> => {
-      const routineTaskNodes = new Set<RoutineTaskNode>();
-      for (const stationNode of stationsRef.current.values()) {
-        const stationRoutineTaskNode = stationNode.routineTasks.find(
-          stationRoutineTask => stationRoutineTask.id === routineTaskId
-        );
-        if (stationRoutineTaskNode)
-          routineTaskNodes.add(stationRoutineTaskNode);
-        for (const routineNode of stationNode.routines) {
-          const routineTaskNode = routineNode.routineTasks.find(
-            routineTask => routineTask.id === routineTaskId
-          );
-          if (routineTaskNode) routineTaskNodes.add(routineTaskNode);
-        }
-      }
-      if (routineTaskNodes.size === 0) {
-        throw new Error("routine task does not exist");
-      }
-
-      const snapshots = [...routineTaskNodes].map(routineTaskNode => ({
-        routineTaskNode,
-        status: routineTaskNode.status,
-        updatedAt: routineTaskNode.updatedAt,
-      }));
-      for (const routineTaskNode of routineTaskNodes) {
-        routineTaskNode.status = RoutineTaskStatus.Pause;
-        routineTaskNode.updatedAt = new Date();
-      }
-      forceUpdate();
-      try {
-        const response = await pauseRoutineTaskMutator.mutateAsync({
-          header: getClientRequestHeaders(navigator.userAgent),
-          body: { routineTaskId },
-        });
-        if (response.success === false) throw response.exception;
-
-        for (const routineTaskNode of routineTaskNodes) {
-          routineTaskNode.updatedAt = response.data.updatedAt;
-        }
-        forceUpdate();
-      } catch (error) {
-        for (const snapshot of snapshots) {
-          snapshot.routineTaskNode.status = snapshot.status;
-          snapshot.routineTaskNode.updatedAt = snapshot.updatedAt;
-        }
-        forceUpdate();
-        throw error;
-      }
-    },
-    [forceUpdate, pauseRoutineTaskMutator, stationsRef]
-  );
-
-  const resumeRoutineTask = useCallback(
-    async (routineTaskId: UUID): Promise<void> => {
-      const routineTaskNodes = new Set<RoutineTaskNode>();
-      for (const stationNode of stationsRef.current.values()) {
-        const stationRoutineTaskNode = stationNode.routineTasks.find(
-          stationRoutineTask => stationRoutineTask.id === routineTaskId
-        );
-        if (stationRoutineTaskNode)
-          routineTaskNodes.add(stationRoutineTaskNode);
-        for (const routineNode of stationNode.routines) {
-          const routineTaskNode = routineNode.routineTasks.find(
-            routineTask => routineTask.id === routineTaskId
-          );
-          if (routineTaskNode) routineTaskNodes.add(routineTaskNode);
-        }
-      }
-      if (routineTaskNodes.size === 0) {
-        throw new Error("routine task does not exist");
-      }
-
-      const snapshots = [...routineTaskNodes].map(routineTaskNode => ({
-        routineTaskNode,
-        status: routineTaskNode.status,
-        updatedAt: routineTaskNode.updatedAt,
-      }));
-      for (const routineTaskNode of routineTaskNodes) {
-        routineTaskNode.status = RoutineTaskStatus.Idle;
-        routineTaskNode.updatedAt = new Date();
-      }
-      forceUpdate();
-      try {
-        const response = await resumeRoutineTaskMutator.mutateAsync({
-          header: getClientRequestHeaders(navigator.userAgent),
-          body: { routineTaskId },
-        });
-        if (response.success === false) throw response.exception;
-
-        for (const routineTaskNode of routineTaskNodes) {
-          routineTaskNode.updatedAt = response.data.updatedAt;
-        }
-        forceUpdate();
-      } catch (error) {
-        for (const snapshot of snapshots) {
-          snapshot.routineTaskNode.status = snapshot.status;
-          snapshot.routineTaskNode.updatedAt = snapshot.updatedAt;
-        }
-        forceUpdate();
-        throw error;
-      }
-    },
-    [forceUpdate, resumeRoutineTaskMutator, stationsRef]
-  );
-
   return {
     selectedRoutineTaskId,
     selectRoutineTask,
@@ -829,9 +654,5 @@ export const useRoutineTaskLogic = ({
     isCreatingRoutineTask: createRoutineTaskMutator.isPending,
     updateRoutineTask,
     isUpdatingRoutineTask: updateRoutineTaskMutator.isPending,
-    pauseRoutineTask,
-    isPausingRoutineTask: pauseRoutineTaskMutator.isPending,
-    resumeRoutineTask,
-    isResumingRoutineTask: resumeRoutineTaskMutator.isPending,
   };
 };

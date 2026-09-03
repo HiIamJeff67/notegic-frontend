@@ -26,7 +26,7 @@ const UpdateBlockPackPayloadEditor = ({
 }: PayloadEditorProps) => {
   const { t } = useTranslation();
   const [blockPackId, setBlockPackId] = useState("");
-  const [updatedBlocks, setUpdatedBlocks] = useState("[]");
+  const [blocks, setBlocks] = useState("[]");
   const [pattern, setPattern] = useState<RoutineTaskTemplatePattern>({});
   const [error, setError] = useState("");
 
@@ -35,11 +35,11 @@ const UpdateBlockPackPayloadEditor = ({
     try {
       const payload = JSON.parse(initialPayload);
       setBlockPackId(payload.blockPackId ?? "");
-      setUpdatedBlocks(JSON.stringify(payload.updatedBlocks ?? [], null, 2));
+      setBlocks(JSON.stringify(payload.blocks ?? [], null, 2));
       setPattern(payload.pattern ?? {});
     } catch {
       setBlockPackId("");
-      setUpdatedBlocks("[]");
+      setBlocks("[]");
       setPattern({});
     }
     setError("");
@@ -50,18 +50,14 @@ const UpdateBlockPackPayloadEditor = ({
     payloadPreview = JSON.stringify(
       {
         blockPackId,
-        updatedBlocks: JSON.parse(updatedBlocks),
+        blocks: JSON.parse(blocks),
         ...(Object.keys(pattern).length > 0 && { pattern }),
       },
       null,
       2
     );
   } catch {
-    payloadPreview = JSON.stringify(
-      { blockPackId, updatedBlocks: [] },
-      null,
-      2
-    );
+    payloadPreview = JSON.stringify({ blockPackId, blocks: [] }, null, 2);
   }
 
   return (
@@ -75,7 +71,7 @@ const UpdateBlockPackPayloadEditor = ({
       onClose={onClose}
       onConfirm={payload => {
         try {
-          JSON.parse(updatedBlocks);
+          JSON.parse(blocks);
           onConfirm(payload);
         } catch {
           setError(t("workspace.payloadEditor.invalidUpdatedBlocks"));
@@ -92,9 +88,9 @@ const UpdateBlockPackPayloadEditor = ({
       <div className="flex flex-col gap-2">
         <Label>{t("workspace.payloadEditor.updatedBlocks")}</Label>
         <Textarea
-          value={updatedBlocks}
+          value={blocks}
           onChange={event => {
-            setUpdatedBlocks(event.target.value);
+            setBlocks(event.target.value);
             setError("");
           }}
           className="min-h-72 font-mono text-xs"

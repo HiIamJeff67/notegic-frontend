@@ -1,16 +1,16 @@
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
+  RoutinePhase as GraphQLRoutinePhase,
   RoutineStatus as GraphQLRoutineStatus,
   RoutineTaskPurpose as GraphQLRoutineTaskPurpose,
-  RoutineTaskStatus as GraphQLRoutineTaskStatus,
   SupportedIcon as GraphQLSupportedIcon,
   UserStatus as GraphQLUserStatus,
 } from "@shared/api/graphql/generated/graphql";
 import {
   RoutinePeriod,
+  RoutinePhase,
   RoutineStatus,
   RoutineTaskPurpose,
-  RoutineTaskStatus,
   SupportedIcon,
   UserStatus,
 } from "@shared/api/interfaces/enums";
@@ -28,6 +28,14 @@ const routineStatusToGraphQL: Record<RoutineStatus, GraphQLRoutineStatus> = {
   [RoutineStatus.OverDue]: GraphQLRoutineStatus.RoutineStatusOverDue,
 };
 
+const routinePhaseToGraphQL: Record<RoutinePhase, GraphQLRoutinePhase> = {
+  [RoutinePhase.Claimed]: GraphQLRoutinePhase.RoutinePhaseClaimed,
+  [RoutinePhase.Plan]: GraphQLRoutinePhase.RoutinePhasePlan,
+  [RoutinePhase.Execution]: GraphQLRoutinePhase.RoutinePhaseExecution,
+  [RoutinePhase.Recovery]: GraphQLRoutinePhase.RoutinePhaseRecovery,
+  [RoutinePhase.Analysis]: GraphQLRoutinePhase.RoutinePhaseAnalysis,
+};
+
 const routineTaskPurposeToGraphQL: Record<
   RoutineTaskPurpose,
   GraphQLRoutineTaskPurpose
@@ -39,18 +47,6 @@ const routineTaskPurposeToGraphQL: Record<
     ],
   ])
 ) as Record<RoutineTaskPurpose, GraphQLRoutineTaskPurpose>;
-
-const routineTaskStatusToGraphQL: Record<
-  RoutineTaskStatus,
-  GraphQLRoutineTaskStatus
-> = {
-  [RoutineTaskStatus.Idle]: GraphQLRoutineTaskStatus.RoutineTaskStatusIdle,
-  [RoutineTaskStatus.Waiting]:
-    GraphQLRoutineTaskStatus.RoutineTaskStatusWaiting,
-  [RoutineTaskStatus.Running]:
-    GraphQLRoutineTaskStatus.RoutineTaskStatusRunning,
-  [RoutineTaskStatus.Pause]: GraphQLRoutineTaskStatus.RoutineTaskStatusPause,
-};
 
 const supportedIconToGraphQL: Record<SupportedIcon, GraphQLSupportedIcon> = {
   [SupportedIcon.Books]: GraphQLSupportedIcon.SupportedIconBooks,
@@ -101,6 +97,14 @@ const graphQLRoutineStatusToLocal: Record<GraphQLRoutineStatus, RoutineStatus> =
     ])
   ) as Record<GraphQLRoutineStatus, RoutineStatus>;
 
+const graphQLRoutinePhaseToLocal: Record<GraphQLRoutinePhase, RoutinePhase> =
+  Object.fromEntries(
+    Object.entries(routinePhaseToGraphQL).map(([phase, graphqlPhase]) => [
+      graphqlPhase,
+      phase,
+    ])
+  ) as Record<GraphQLRoutinePhase, RoutinePhase>;
+
 const graphQLRoutineTaskPurposeToLocal: Record<
   GraphQLRoutineTaskPurpose,
   RoutineTaskPurpose
@@ -109,16 +113,6 @@ const graphQLRoutineTaskPurposeToLocal: Record<
     ([purpose, graphqlPurpose]) => [graphqlPurpose, purpose]
   )
 ) as Record<GraphQLRoutineTaskPurpose, RoutineTaskPurpose>;
-
-const graphQLRoutineTaskStatusToLocal: Record<
-  GraphQLRoutineTaskStatus,
-  RoutineTaskStatus
-> = Object.fromEntries(
-  Object.entries(routineTaskStatusToGraphQL).map(([status, graphqlStatus]) => [
-    graphqlStatus,
-    status,
-  ])
-) as Record<GraphQLRoutineTaskStatus, RoutineTaskStatus>;
 
 const graphQLSupportedIconToLocal: Record<GraphQLSupportedIcon, SupportedIcon> =
   Object.fromEntries(
@@ -146,6 +140,12 @@ export const toGraphQLRoutineStatus = (
 export const fromGraphQLRoutineStatus = (status: GraphQLRoutineStatus) =>
   graphQLRoutineStatusToLocal[status];
 
+export const toGraphQLRoutinePhase = (phase?: RoutinePhase | null) =>
+  phase ? routinePhaseToGraphQL[phase] : null;
+
+export const fromGraphQLRoutinePhase = (phase?: GraphQLRoutinePhase | null) =>
+  phase ? graphQLRoutinePhaseToLocal[phase] : null;
+
 export const toGraphQLRoutineTaskPurpose = (
   purpose?: RoutineTaskPurpose | string | null
 ) =>
@@ -156,17 +156,6 @@ export const toGraphQLRoutineTaskPurpose = (
 export const fromGraphQLRoutineTaskPurpose = (
   purpose: GraphQLRoutineTaskPurpose
 ) => graphQLRoutineTaskPurposeToLocal[purpose];
-
-export const toGraphQLRoutineTaskStatus = (
-  status?: RoutineTaskStatus | string | null
-) =>
-  status
-    ? routineTaskStatusToGraphQL[status as RoutineTaskStatus]
-    : GraphQLRoutineTaskStatus.RoutineTaskStatusIdle;
-
-export const fromGraphQLRoutineTaskStatus = (
-  status: GraphQLRoutineTaskStatus
-) => graphQLRoutineTaskStatusToLocal[status];
 
 export const toGraphQLSupportedIcon = (icon?: SupportedIcon | null) =>
   icon ? supportedIconToGraphQL[icon] : null;

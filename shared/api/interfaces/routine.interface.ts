@@ -4,6 +4,7 @@ import {
 } from "@shared/api/interfaces/context.interface";
 import {
   AllItemTypes,
+  AllRoutinePhases,
   AllRoutinePeriods,
   AllRoutineStatuses,
 } from "@shared/api/interfaces/enums";
@@ -86,6 +87,7 @@ export const GetMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     title: z.string(),
     description: z.string(),
     status: z.enum(AllRoutineStatuses),
+    phase: z.enum(AllRoutinePhases).nullable(),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
     scheduledEndAt: z.coerce.date(),
@@ -135,6 +137,7 @@ export const GetMyRoutinesByStationIdResponseSchema =
         stationId: z.uuidv4(),
         title: z.string(),
         status: z.enum(AllRoutineStatuses),
+        phase: z.enum(AllRoutinePhases).nullable(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -187,6 +190,7 @@ export const GetAllMyRoutinesByTimeRangeResponseSchema =
         stationId: z.uuidv4(),
         title: z.string(),
         status: z.enum(AllRoutineStatuses),
+        phase: z.enum(AllRoutinePhases).nullable(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -225,7 +229,6 @@ export const CreateRoutineByStationIdRequestSchema =
         stationId: z.uuidv4(),
         title: z.string().min(1).max(128),
         description: z.string().max(1024),
-        status: z.enum(AllRoutineStatuses),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -233,7 +236,6 @@ export const CreateRoutineByStationIdRequestSchema =
         timezone: z.string().max(64),
       })
       .partial({
-        status: true,
         isPinned: true,
         scheduledStartAt: true,
         scheduledEndAt: true,
@@ -279,7 +281,6 @@ export const CreateRoutinesByStationIdsRequestSchema =
             stationId: z.uuidv4(),
             title: z.string().min(1).max(128),
             description: z.string().max(1024),
-            status: z.enum(AllRoutineStatuses),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -287,7 +288,6 @@ export const CreateRoutinesByStationIdsRequestSchema =
             timezone: z.string().max(64),
           })
           .partial({
-            status: true,
             isPinned: true,
             scheduledStartAt: true,
             scheduledEndAt: true,
@@ -333,7 +333,6 @@ export const UpdateMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
         stationId: z.uuidv4(),
         title: z.string().min(1).max(128),
         description: z.string().max(1024),
-        status: z.enum(AllRoutineStatuses),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -380,7 +379,6 @@ export const UpdateMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
             stationId: z.uuidv4(),
             title: z.string().min(1).max(128),
             description: z.string().max(1024),
-            status: z.enum(AllRoutineStatuses),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -649,6 +647,7 @@ export const RestoreMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     title: z.string(),
     description: z.string(),
     status: z.enum(AllRoutineStatuses),
+    phase: z.enum(AllRoutinePhases).nullable(),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
     scheduledEndAt: z.coerce.date(),
@@ -694,6 +693,7 @@ export const RestoreMyRoutinesByIdsResponseSchema =
         title: z.string(),
         description: z.string(),
         status: z.enum(AllRoutineStatuses),
+        phase: z.enum(AllRoutinePhases).nullable(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),

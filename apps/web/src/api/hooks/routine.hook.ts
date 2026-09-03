@@ -8,11 +8,11 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { toGraphQLRoutinePeriod } from "@shared/api/graphql/conversions";
 import {
-  toGraphQLRoutinePeriod,
-  toGraphQLRoutineStatus,
-} from "@shared/api/graphql/conversions";
-import { FragmentedBasicPrivateSearchableRoutineFragmentDoc } from "@shared/api/graphql/generated/graphql";
+  FragmentedBasicPrivateSearchableRoutineFragmentDoc,
+  RoutineStatus as GraphQLRoutineStatus,
+} from "@shared/api/graphql/generated/graphql";
 import type {
   CreateRoutineByStationIdRequest,
   CreateRoutinesByStationIdsRequest,
@@ -475,7 +475,7 @@ export const useCreateRoutineByStationId = () => {
         id: response.data.id,
         stationId: request.body.stationId,
         title: request.body.title,
-        status: toGraphQLRoutineStatus(request.body.status),
+        status: GraphQLRoutineStatus.RoutineStatusScheduled,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt: request.body.scheduledEndAt ?? scheduledStartAt,
@@ -603,7 +603,7 @@ export const useCreateRoutinesByStationIds = () => {
           id: response.data.ids[index],
           stationId: routine.stationId,
           title: routine.title,
-          status: toGraphQLRoutineStatus(routine.status),
+          status: GraphQLRoutineStatus.RoutineStatusScheduled,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt,
           scheduledEndAt: routine.scheduledEndAt ?? scheduledStartAt,
@@ -732,9 +732,6 @@ export const useUpdateMyRoutineById = () => {
         ...(request.body.values.timezone !== undefined && {
           timezone: request.body.values.timezone,
         }),
-        ...(request.body.values.status !== undefined && {
-          status: toGraphQLRoutineStatus(request.body.values.status),
-        }),
         ...(request.body.values.period !== undefined && {
           period: toGraphQLRoutinePeriod(request.body.values.period),
         }),
@@ -849,9 +846,6 @@ export const useUpdateMyRoutinesByIds = () => {
           }),
           ...(routine.values.timezone !== undefined && {
             timezone: routine.values.timezone,
-          }),
-          ...(routine.values.status !== undefined && {
-            status: toGraphQLRoutineStatus(routine.values.status),
           }),
           ...(routine.values.period !== undefined && {
             period: toGraphQLRoutinePeriod(routine.values.period),

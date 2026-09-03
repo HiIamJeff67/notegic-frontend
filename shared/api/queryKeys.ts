@@ -186,52 +186,8 @@ export const queryKeys = {
   },
   routineTask: {
     all: () => ["routineTask"] as const,
-    visualizeMyStatusCount: (permission?: string) =>
-      ["routineTask", "visualizeMyStatusCount", permission] as const,
     visualizeMyPurposeCount: (permission?: string) =>
       ["routineTask", "visualizeMyPurposeCount", permission] as const,
-    visualizeMyScheduledAtCount: (
-      permission?: string,
-      timeHourUnit?: number,
-      startedAt?: Date,
-      endedAt?: Date
-    ) =>
-      [
-        "routineTask",
-        "visualizeMyScheduledAtCount",
-        permission,
-        timeHourUnit,
-        startedAt?.getTime(),
-        endedAt?.getTime(),
-      ] as const,
-    visualizeMyActualStartedAtCount: (
-      permission?: string,
-      timeHourUnit?: number,
-      startedAt?: Date,
-      endedAt?: Date
-    ) =>
-      [
-        "routineTask",
-        "visualizeMyActualStartedAtCount",
-        permission,
-        timeHourUnit,
-        startedAt?.getTime(),
-        endedAt?.getTime(),
-      ] as const,
-    visualizeMyActualEndedAtCount: (
-      permission?: string,
-      timeHourUnit?: number,
-      startedAt?: Date,
-      endedAt?: Date
-    ) =>
-      [
-        "routineTask",
-        "visualizeMyActualEndedAtCount",
-        permission,
-        timeHourUnit,
-        startedAt?.getTime(),
-        endedAt?.getTime(),
-      ] as const,
     myAll: (areDeleted: boolean = false) =>
       ["routineTask", "myAll", areDeleted] as const,
     oneById: (routineTaskId?: UUID, isDeleted: boolean = false) =>
@@ -247,6 +203,11 @@ export const queryKeys = {
           : undefined,
         areDeleted,
       ] as const,
+  },
+  routineTaskDependency: {
+    all: () => ["routineTaskDependency"] as const,
+    byRoutineId: (routineId?: UUID) =>
+      ["routineTaskDependency", "byRoutineId", routineId] as const,
   },
   routineTaskRecord: {
     all: () => ["routineTaskRecord"] as const,

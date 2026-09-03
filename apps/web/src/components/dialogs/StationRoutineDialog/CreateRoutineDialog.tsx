@@ -1,8 +1,4 @@
-import {
-  AllRoutinePeriods,
-  RoutinePeriod,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
+import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
@@ -187,7 +183,6 @@ const CreateRoutineDialog = ({
                 {
                   title: trimmedTitle,
                   description: description.trim(),
-                  status: RoutineStatus.Scheduled,
                   isPinned,
                   ...((hasCustomSchedule ||
                     period === RoutinePeriod.Weekly ||

@@ -1,17 +1,17 @@
 import {
-  AllRoutinePeriods,
-  RoutinePeriod,
   RoutineTaskPurpose,
+  RoutineTaskPurposeByAction,
   UserPlan,
 } from "@shared/api/interfaces/enums";
 import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
 import { PlanLimitations } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,11 +35,6 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutineTaskPurpose,
-} from "@shared/i18n/workspace";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTaskDialogSkeleton from "./CreateRoutineTaskDialogSkeleton";
 
@@ -65,7 +60,7 @@ const CreateRoutineTaskDialog = ({
   routineTitle,
   onCreated,
 }: CreateRoutineTaskDialogProps) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const payloadPreviewRef = useRef<HTMLPreElement>(null);
@@ -77,8 +72,6 @@ const CreateRoutineTaskDialog = ({
   const [payload, setPayload] = useState<string>("{}");
   const [priority, setPriority] = useState<string>("0");
   const [maxAttempts, setMaxAttempts] = useState<string>("1");
-  const [nextScheduledAt, setNextScheduledAt] = useState<Date | undefined>();
-  const [period, setPeriod] = useState<RoutinePeriod | null>(null);
   const [payloadError, setPayloadError] = useState<string>("");
   const [isPayloadEditorOpen, setIsPayloadEditorOpen] =
     useState<boolean>(false);
@@ -96,8 +89,6 @@ const CreateRoutineTaskDialog = ({
     setPayload("{}");
     setPriority("0");
     setMaxAttempts("1");
-    setNextScheduledAt(undefined);
-    setPeriod(null);
     setPayloadError("");
     setIsPayloadEditorOpen(false);
     setIsPayloadExpanded(false);
@@ -159,23 +150,12 @@ const CreateRoutineTaskDialog = ({
           payload: JSON.parse(payload),
           priority: Number(priority),
           maxAttempts: Number(maxAttempts),
-          period,
-          nextScheduledAt,
         },
       });
     } catch {
       return null;
     }
-  }, [
-    maxAttempts,
-    nextScheduledAt,
-    payload,
-    period,
-    priority,
-    purpose,
-    routineId,
-    title,
-  ]);
+  }, [maxAttempts, payload, priority, purpose, routineId, title]);
 
   const createRoutineTask = async () => {
     if (validation === null) {
@@ -196,8 +176,6 @@ const CreateRoutineTaskDialog = ({
         validation.data.body.routineId as UUID,
         validation.data.body.title,
         validation.data.body.purpose,
-        validation.data.body.nextScheduledAt,
-        validation.data.body.period ?? null,
         validation.data.body.payload,
         validation.data.body.priority ?? 0,
         validation.data.body.maxAttempts ?? 1
@@ -271,122 +249,30 @@ const CreateRoutineTaskDialog = ({
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="z-[160]">
-                      <SelectGroup>
-                        <SelectLabel>
-                          {t("workspace.fields.create")}
-                        </SelectLabel>
-                        <SelectItem value={RoutineTaskPurpose.CreateRootShelf}>
-                          {t("workspace.trash.rootShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.CreateSubShelf}>
-                          {t("workspace.trash.subShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.CreateBlockPack}>
-                          {t("workspace.trash.blockPack")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.CreateRoutine}>
-                          {t("workspace.trash.routine")}
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectSeparator />
-                      <SelectGroup>
-                        <SelectLabel>
-                          {t("workspace.fields.append")}
-                        </SelectLabel>
-                        <SelectItem value={RoutineTaskPurpose.AppendBlock}>
-                          {t("workspace.fields.block")}
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectSeparator />
-                      <SelectGroup>
-                        <SelectLabel>
-                          {t("workspace.fields.update")}
-                        </SelectLabel>
-                        <SelectItem value={RoutineTaskPurpose.UpdateRootShelf}>
-                          {t("workspace.trash.rootShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.UpdateSubShelf}>
-                          {t("workspace.trash.subShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.UpdateBlockPack}>
-                          {t("workspace.trash.blockPack")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.UpdateBlock}>
-                          {t("workspace.fields.block")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.UpdateRoutine}>
-                          {t("workspace.trash.routine")}
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectSeparator />
-                      <SelectGroup>
-                        <SelectLabel>{t("workspace.fields.reset")}</SelectLabel>
-                        <SelectItem value={RoutineTaskPurpose.ResetRootShelf}>
-                          {t("workspace.trash.rootShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.ResetSubShelf}>
-                          {t("workspace.trash.subShelf")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.ResetBlockPack}>
-                          {t("workspace.trash.blockPack")}
-                        </SelectItem>
-                        <SelectItem value={RoutineTaskPurpose.ResetBlock}>
-                          {t("workspace.fields.block")}
-                        </SelectItem>
-                      </SelectGroup>
+                      {Object.entries(RoutineTaskPurposeByAction).map(
+                        ([action, purposes], index) => (
+                          <SelectGroup key={action}>
+                            {index > 0 && <SelectSeparator />}
+                            <SelectLabel>
+                              {action === "Get"
+                                ? t("workspace.fields.get")
+                                : action === "Create"
+                                  ? t("workspace.fields.create")
+                                  : action === "Update"
+                                    ? t("workspace.fields.update")
+                                    : t("workspace.fields.delete")}
+                            </SelectLabel>
+                            {purposes.map(taskPurpose => (
+                              <SelectItem key={taskPurpose} value={taskPurpose}>
+                                {translateRoutineTaskPurpose(taskPurpose, t)}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="flex min-w-36 flex-1 flex-col gap-2">
-                  <Label>{t("workspace.fields.recurring")}</Label>
-                  <Select
-                    value={period ?? "OneShot"}
-                    onValueChange={value =>
-                      setPeriod(
-                        value === "OneShot" ? null : (value as RoutinePeriod)
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-full rounded-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[160]">
-                      <SelectItem value="OneShot">
-                        {t("workspace.fields.oneShot")}
-                      </SelectItem>
-                      {AllRoutinePeriods.map(routinePeriod => (
-                        <SelectItem key={routinePeriod} value={routinePeriod}>
-                          {translateRoutinePeriod(routinePeriod, t)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.fields.nextScheduledAt")}</Label>
-                <DatePicker
-                  value={nextScheduledAt}
-                  onValueChange={value => {
-                    if (!value) return;
-                    value.setSeconds(0, 0);
-                    setNextScheduledAt(value);
-                  }}
-                  placeholder={t("workspace.fields.selectNextExecutionTime")}
-                  className="bg-card/45 hover:bg-card/60"
-                  contentClassName="bg-card"
-                />
-                {nextScheduledAt && (
-                  <span className="text-xs text-muted-foreground">
-                    {t("workspace.inspector.nextExpectedRun", {
-                      date: nextScheduledAt.toLocaleString(
-                        i18n.resolvedLanguage
-                      ),
-                    })}
-                  </span>
-                )}
               </div>
 
               <div className="flex flex-col gap-2">

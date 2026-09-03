@@ -14,16 +14,47 @@ import {
   VisualizeRequestHeaderSchema,
 } from "./visualize.interface";
 
+const ExecutionItemStatuses = [
+  "updated",
+  "skipped",
+  "failed",
+  "retrieved",
+] as const;
+
+export const ExecutionItemResultSchema = z.object({
+  itemId: z.string().min(1),
+  status: z.enum(ExecutionItemStatuses),
+  reason: z.string().optional(),
+  data: z.json().optional(),
+});
+
+export type ExecutionItemResult = z.infer<typeof ExecutionItemResultSchema>;
+
+export const ExecutionResultSchema = z
+  .object({
+    retrieved: z.number().int().min(0).optional(),
+    updated: z.number().int().min(0).optional(),
+    skipped: z.number().int().min(0).optional(),
+    failed: z.number().int().min(0).optional(),
+    items: z.array(ExecutionItemResultSchema).optional(),
+    at: z.coerce.date().optional(),
+  })
+  .catchall(z.json());
+
+export type ExecutionResult = z.infer<typeof ExecutionResultSchema>;
+
 const RoutineTaskRecordSchema = z.object({
   id: z.uuidv4(),
+  routineRecordId: z.uuidv4(),
   routineTaskId: z.uuidv4(),
   purpose: z.enum(AllRoutineTaskPurposes),
   status: z.enum(AllRoutineTaskRecordStatuses),
   errorCode: z.enum(AllRoutineTaskRecordErrorCodes).nullable(),
   errorReason: z.string().nullable(),
   costUnit: z.number().int().min(0),
-  totalAttempts: z.number().int().min(0),
-  scheduledAt: z.coerce.date(),
+  attempts: z.number().int().min(0),
+  payloadSnapshot: z.any(),
+  resultSnapshot: ExecutionResultSchema,
   actualStartedAt: z.coerce.date().nullable(),
   actualEndedAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date(),

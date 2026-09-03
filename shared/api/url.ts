@@ -230,16 +230,8 @@ export const APIURLPathDictionary = {
     hardDeleteMyRoutineTagsByIds: "routine-tags/batch/permanently",
   },
   routineTask: {
-    visualizeMyRoutineTaskStatusCount:
-      "routine-tasks/visualizations/status-count",
     visualizeMyRoutineTaskPurposeCount:
       "routine-tasks/visualizations/purpose-count",
-    visualizeMyRoutineTaskScheduledAtCount:
-      "routine-tasks/visualizations/scheduled-at-count",
-    visualizeMyRoutineTaskActualStartedAtCount:
-      "routine-tasks/visualizations/actual-started-at-count",
-    visualizeMyRoutineTaskActualEndedAtCount:
-      "routine-tasks/visualizations/actual-ended-at-count",
     getMyRoutineTaskById: (routineTaskId: string) =>
       `routine-tasks/${routineTaskId}`,
     getAllMyRoutineTasksByRoutineIds: "routine-tasks/routines",
@@ -248,13 +240,19 @@ export const APIURLPathDictionary = {
       `routine-tasks/routine/${routineId}`,
     updateMyRoutineTaskById: (routineTaskId: string) =>
       `routine-tasks/${routineTaskId}`,
-    pauseMyRoutineTaskById: (routineTaskId: string) =>
-      `routine-tasks/${routineTaskId}/suspension`,
-    resumeMyRoutineTaskById: (routineTaskId: string) =>
-      `routine-tasks/${routineTaskId}/suspension`,
     hardDeleteMyRoutineTaskById: (routineTaskId: string) =>
       `routine-tasks/${routineTaskId}/permanently`,
     hardDeleteMyRoutineTasksByIds: "routine-tasks/batch/permanently",
+  },
+  routineTaskDependency: {
+    getByRoutineId: (routineId: string) =>
+      `routine-task-dependencies/routine/${routineId}`,
+    createByRoutineId: (routineId: string) =>
+      `routine-task-dependencies/routine/${routineId}`,
+    updateByRoutineId: (routineId: string) =>
+      `routine-task-dependencies/routine/${routineId}`,
+    deleteByRoutineId: (routineId: string) =>
+      `routine-task-dependencies/routine/${routineId}`,
   },
   routineTaskRecord: {
     visualizeMyRoutineTaskRecordStatusCount:

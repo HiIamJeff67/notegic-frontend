@@ -32,8 +32,10 @@ const RoutineTaskRecordDialogSkeleton = ({
       <DialogContent className="flex max-h-[82vh] w-[min(94vw,48rem)] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-md bg-card p-0 sm:max-w-[min(88vw,48rem)]">
         <DialogHeader className="shrink-0 border-b border-border bg-secondary px-6 py-5 pr-12">
           <DialogTitle>{t("workspace.records.title")}</DialogTitle>
-          <DialogDescription>
-            <Skeleton className="h-4 w-56" />
+          <DialogDescription asChild>
+            <div>
+              <Skeleton className="h-4 w-56" />
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">

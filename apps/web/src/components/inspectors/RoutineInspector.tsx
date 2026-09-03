@@ -1,12 +1,22 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
-import { RoutinePeriod, RoutineStatus } from "@shared/api/interfaces/enums";
+import {
+  RoutinePeriod,
+  RoutinePhase,
+  RoutineStatus,
+} from "@shared/api/interfaces/enums";
+import { translateError } from "@shared/i18n/error";
+import {
+  translateRoutinePeriod,
+  translateRoutinePhase,
+  translateRoutineStatus,
+} from "@shared/i18n/workspace";
 import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
 import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import MonthlyDayPicker from "@/components/commons/MonthlyDayPicker/MonthlyDayPicker";
@@ -30,11 +40,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
 interface RoutineInspectorProps {
@@ -57,6 +62,7 @@ const RoutineInspector = ({
     title: string;
     description: string;
     status: RoutineStatus;
+    phase: RoutinePhase | null;
     isPinned: boolean;
     scheduledStartAt: Date;
     scheduledEndAt: Date;
@@ -66,6 +72,7 @@ const RoutineInspector = ({
     title: "",
     description: "",
     status: RoutineStatus.Scheduled,
+    phase: null,
     isPinned: false,
     scheduledStartAt: new Date(),
     scheduledEndAt: new Date(),
@@ -101,6 +108,7 @@ const RoutineInspector = ({
       title: "",
       description: "",
       status: RoutineStatus.Scheduled,
+      phase: null,
       isPinned: false,
       scheduledStartAt,
       scheduledEndAt,
@@ -134,6 +142,7 @@ const RoutineInspector = ({
           title: response.data.title,
           description: response.data.description,
           status: response.data.status,
+          phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -176,6 +185,7 @@ const RoutineInspector = ({
           title: response.data.title,
           description: response.data.description,
           status: response.data.status,
+          phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -257,7 +267,6 @@ const RoutineInspector = ({
         {
           title,
           description: values.description.trim(),
-          status: values.status,
           isPinned: values.isPinned,
           scheduledStartAt,
           scheduledEndAt,
@@ -350,36 +359,18 @@ const RoutineInspector = ({
 
               <div className="flex flex-col gap-2">
                 <Label>{t("workspace.table.status")}</Label>
-                <ContainableSelect
-                  value={values.status}
-                  onValueChange={status =>
-                    setValues(current => ({
-                      ...current,
-                      status: status as RoutineStatus,
-                    }))
-                  }
-                  options={[
-                    {
-                      value: RoutineStatus.Scheduled,
-                      label: translateRoutineStatus(RoutineStatus.Scheduled, t),
-                    },
-                    {
-                      value: RoutineStatus.InProgress,
-                      label: translateRoutineStatus(
-                        RoutineStatus.InProgress,
-                        t
-                      ),
-                    },
-                    {
-                      value: RoutineStatus.Completed,
-                      label: translateRoutineStatus(RoutineStatus.Completed, t),
-                    },
-                    {
-                      value: RoutineStatus.OverDue,
-                      label: translateRoutineStatus(RoutineStatus.OverDue, t),
-                    },
-                  ]}
-                />
+                <div className="rounded-sm border border-border bg-muted px-3 py-2 text-sm">
+                  {translateRoutineStatus(values.status, t)}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label>{t("workspace.table.phase")}</Label>
+                <div className="rounded-sm border border-border bg-muted px-3 py-2 text-sm">
+                  {values.phase
+                    ? translateRoutinePhase(values.phase, t)
+                    : t("workspace.period.none")}
+                </div>
               </div>
 
               <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3">

@@ -1,13 +1,9 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import CreateBlockPackPayloadEditor from "./CreateBlockPackPayloadEditor/CreateBlockPackPayloadEditor";
-import CreateRootShelfPayloadEditor from "./CreateRootShelfPayloadEditor/CreateRootShelfPayloadEditor";
 import CreateRoutinePayloadEditor from "./CreateRoutinePayloadEditor/CreateRoutinePayloadEditor";
 import CreateSubShelfPayloadEditor from "./CreateSubShelfPayloadEditor/CreateSubShelfPayloadEditor";
-import ResetBlockPackPayloadEditor from "./ResetBlockPackPayloadEditor/ResetBlockPackPayloadEditor";
-import ResetRootShelfPayloadEditor from "./ResetRootShelfPayloadEditor/ResetRootShelfPayloadEditor";
-import ResetSubShelfPayloadEditor from "./ResetSubShelfPayloadEditor/ResetSubShelfPayloadEditor";
+import JsonRoutineTaskPayloadEditor from "./JsonRoutineTaskPayloadEditor";
 import UpdateBlockPackPayloadEditor from "./UpdateBlockPackPayloadEditor/UpdateBlockPackPayloadEditor";
-import UpdateRootShelfPayloadEditor from "./UpdateRootShelfPayloadEditor/UpdateRootShelfPayloadEditor";
 import UpdateRoutinePayloadEditor from "./UpdateRoutinePayloadEditor/UpdateRoutinePayloadEditor";
 import UpdateSubShelfPayloadEditor from "./UpdateSubShelfPayloadEditor/UpdateSubShelfPayloadEditor";
 
@@ -21,33 +17,31 @@ interface RoutineTaskPayloadEditorProps {
 
 const RoutineTaskPayloadEditor = (props: RoutineTaskPayloadEditorProps) => {
   switch (props.purpose) {
-    case RoutineTaskPurpose.CreateRootShelf:
-      return <CreateRootShelfPayloadEditor {...props} />;
-    case RoutineTaskPurpose.UpdateRootShelf:
-      return <UpdateRootShelfPayloadEditor {...props} />;
-    case RoutineTaskPurpose.ResetRootShelf:
-      return <ResetRootShelfPayloadEditor {...props} />;
+    case RoutineTaskPurpose.GetSubShelf:
+    case RoutineTaskPurpose.DeleteSubShelf:
+    case RoutineTaskPurpose.GetBlockPack:
+    case RoutineTaskPurpose.DeleteBlockPack:
+    case RoutineTaskPurpose.GetRoutine:
+    case RoutineTaskPurpose.DeleteRoutine:
+    case RoutineTaskPurpose.GetMaterial:
+    case RoutineTaskPurpose.CreateMaterial:
+    case RoutineTaskPurpose.UpdateMaterial:
+    case RoutineTaskPurpose.DeleteMaterial:
+      return <JsonRoutineTaskPayloadEditor {...props} />;
     case RoutineTaskPurpose.CreateSubShelf:
       return <CreateSubShelfPayloadEditor {...props} />;
     case RoutineTaskPurpose.UpdateSubShelf:
       return <UpdateSubShelfPayloadEditor {...props} />;
-    case RoutineTaskPurpose.ResetSubShelf:
-      return <ResetSubShelfPayloadEditor {...props} />;
     case RoutineTaskPurpose.CreateBlockPack:
-    case RoutineTaskPurpose.AppendBlock:
-    case RoutineTaskPurpose.UpdateBlock:
-    case RoutineTaskPurpose.ResetBlock:
       return <CreateBlockPackPayloadEditor {...props} />;
     case RoutineTaskPurpose.UpdateBlockPack:
       return <UpdateBlockPackPayloadEditor {...props} />;
-    case RoutineTaskPurpose.ResetBlockPack:
-      return <ResetBlockPackPayloadEditor {...props} />;
     case RoutineTaskPurpose.CreateRoutine:
       return <CreateRoutinePayloadEditor {...props} />;
     case RoutineTaskPurpose.UpdateRoutine:
       return <UpdateRoutinePayloadEditor {...props} />;
     default:
-      return <CreateBlockPackPayloadEditor {...props} />;
+      return <JsonRoutineTaskPayloadEditor {...props} />;
   }
 };
 

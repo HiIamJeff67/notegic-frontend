@@ -1,5 +1,3 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetAllMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -10,6 +8,8 @@ import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetAllMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -176,6 +176,7 @@ const TimeRails = () => {
             title: routine.title,
             description: existingRoutine?.description ?? "",
             status: routine.status,
+            phase: existingRoutine?.phase ?? null,
             isPinned: routine.isPinned,
             scheduledStartAt: new Date(routine.scheduledStartAt),
             scheduledEndAt: new Date(routine.scheduledEndAt),

@@ -1,19 +1,19 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import {
-  AllRoutinePeriods,
-  RoutinePeriod,
   RoutineTaskPurpose,
+  RoutineTaskPurposeByAction,
   UserPlan,
 } from "@shared/api/interfaces/enums";
 import { PlanLimitations } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,12 +33,6 @@ import {
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutineTaskPurpose,
-  translateRoutineTaskStatus,
-} from "@shared/i18n/workspace";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
 const RoutineTaskPayloadEditor = lazy(
@@ -59,13 +53,10 @@ const RoutineTaskInspector = ({
   isOpen,
   onClose,
 }: RoutineTaskInspectorProps) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const getRoutineTaskQuerier = useGetMyRoutineTaskById();
-
-  const routineTaskNode =
-    stationRoutineManager.getRoutineTaskById(routineTaskId);
 
   const [isLoadingRoutineTaskDetail, setIsLoadingRoutineTaskDetail] =
     useState(false);
@@ -75,9 +66,6 @@ const RoutineTaskInspector = ({
     payload: string;
     priority: number;
     maxAttempts: number;
-    nextScheduledAt: Date;
-    scheduledAt: Date;
-    period: RoutinePeriod | null;
     costUnit: number;
   }>({
     title: "",
@@ -85,9 +73,6 @@ const RoutineTaskInspector = ({
     payload: "{}",
     priority: 0,
     maxAttempts: 1,
-    nextScheduledAt: new Date(),
-    scheduledAt: new Date(),
-    period: null,
     costUnit: 0,
   });
   const [isPayloadEditorOpen, setIsPayloadEditorOpen] =
@@ -102,9 +87,6 @@ const RoutineTaskInspector = ({
       payload: "{}",
       priority: 0,
       maxAttempts: 1,
-      nextScheduledAt: new Date(),
-      scheduledAt: new Date(),
-      period: null,
       costUnit: 0,
     });
     setIsPayloadEditorOpen(false);
@@ -131,14 +113,9 @@ const RoutineTaskInspector = ({
           costUnit: response.data.costUnit,
           payload: response.data.payload,
           priority: response.data.priority,
-          status: response.data.status,
-          attempts: response.data.attempts,
           maxAttempts: response.data.maxAttempts,
-          period: response.data.period,
-          nextScheduledAt: response.data.nextScheduledAt,
-          scheduledAt: response.data.scheduledAt,
-          actualStartedAt: response.data.actualStartedAt,
-          actualEndedAt: response.data.actualEndedAt,
+          previousRoutineTaskIds: response.data
+            .previousRoutineTaskIds as UUID[],
           updatedAt: response.data.updatedAt,
           createdAt: response.data.createdAt,
         };
@@ -149,9 +126,6 @@ const RoutineTaskInspector = ({
           payload: JSON.stringify(response.data.payload ?? {}, null, 2),
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
-          nextScheduledAt: response.data.nextScheduledAt,
-          scheduledAt: response.data.scheduledAt,
-          period: response.data.period,
           costUnit: response.data.costUnit,
         });
       })
@@ -205,21 +179,13 @@ const RoutineTaskInspector = ({
       return;
     }
     try {
-      await stationRoutineManager.updateRoutineTask(
-        routineTaskId,
-        {
-          title,
-          purpose: values.purpose,
-          payload,
-          priority: values.priority,
-          maxAttempts: values.maxAttempts,
-          nextScheduledAt: values.nextScheduledAt,
-          ...(values.period === null ? {} : { period: values.period }),
-        },
-        {
-          Period: values.period === null,
-        }
-      );
+      await stationRoutineManager.updateRoutineTask(routineTaskId, {
+        title,
+        purpose: values.purpose,
+        payload,
+        priority: values.priority,
+        maxAttempts: values.maxAttempts,
+      });
       void userManager.fetchUserAccount();
       toast.success(t("workspace.routineTask.updated"));
       onClose();
@@ -294,63 +260,27 @@ const RoutineTaskInspector = ({
                   }
                   valueLabel={translateRoutineTaskPurpose(values.purpose, t)}
                 >
-                  <SelectGroup>
-                    <SelectLabel>{t("workspace.fields.create")}</SelectLabel>
-                    <SelectItem value={RoutineTaskPurpose.CreateRootShelf}>
-                      {t("workspace.trash.rootShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.CreateSubShelf}>
-                      {t("workspace.trash.subShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.CreateBlockPack}>
-                      {t("workspace.trash.blockPack")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.CreateRoutine}>
-                      {t("workspace.trash.routine")}
-                    </SelectItem>
-                  </SelectGroup>
-                  <SelectSeparator />
-                  <SelectGroup>
-                    <SelectLabel>{t("workspace.fields.append")}</SelectLabel>
-                    <SelectItem value={RoutineTaskPurpose.AppendBlock}>
-                      {t("workspace.fields.block")}
-                    </SelectItem>
-                  </SelectGroup>
-                  <SelectSeparator />
-                  <SelectGroup>
-                    <SelectLabel>{t("workspace.fields.update")}</SelectLabel>
-                    <SelectItem value={RoutineTaskPurpose.UpdateRootShelf}>
-                      {t("workspace.trash.rootShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.UpdateSubShelf}>
-                      {t("workspace.trash.subShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.UpdateBlockPack}>
-                      {t("workspace.trash.blockPack")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.UpdateBlock}>
-                      {t("workspace.fields.block")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.UpdateRoutine}>
-                      {t("workspace.trash.routine")}
-                    </SelectItem>
-                  </SelectGroup>
-                  <SelectSeparator />
-                  <SelectGroup>
-                    <SelectLabel>{t("workspace.fields.reset")}</SelectLabel>
-                    <SelectItem value={RoutineTaskPurpose.ResetRootShelf}>
-                      {t("workspace.trash.rootShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.ResetSubShelf}>
-                      {t("workspace.trash.subShelf")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.ResetBlockPack}>
-                      {t("workspace.trash.blockPack")}
-                    </SelectItem>
-                    <SelectItem value={RoutineTaskPurpose.ResetBlock}>
-                      {t("workspace.fields.block")}
-                    </SelectItem>
-                  </SelectGroup>
+                  {Object.entries(RoutineTaskPurposeByAction).map(
+                    ([action, purposes], index) => (
+                      <SelectGroup key={action}>
+                        {index > 0 && <SelectSeparator />}
+                        <SelectLabel>
+                          {action === "Get"
+                            ? t("workspace.fields.get")
+                            : action === "Create"
+                              ? t("workspace.fields.create")
+                              : action === "Update"
+                                ? t("workspace.fields.update")
+                                : t("workspace.fields.delete")}
+                        </SelectLabel>
+                        {purposes.map(taskPurpose => (
+                          <SelectItem key={taskPurpose} value={taskPurpose}>
+                            {translateRoutineTaskPurpose(taskPurpose, t)}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )
+                  )}
                 </ContainableSelect>
               </div>
 
@@ -396,60 +326,6 @@ const RoutineTaskInspector = ({
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label>{t("workspace.fields.nextScheduledAt")}</Label>
-                <DatePicker
-                  value={values.nextScheduledAt}
-                  onValueChange={nextScheduledAt => {
-                    if (!nextScheduledAt) return;
-                    nextScheduledAt.setSeconds(0, 0);
-                    setValues(current => ({
-                      ...current,
-                      nextScheduledAt,
-                    }));
-                  }}
-                  placeholder={t("workspace.fields.selectNextExecutionTime")}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {t("workspace.inspector.nextExpectedRun", {
-                    date: values.nextScheduledAt.toLocaleString(
-                      i18n.resolvedLanguage
-                    ),
-                  })}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {t("workspace.inspector.systemClaimableTime", {
-                    date: values.scheduledAt.toLocaleString(
-                      i18n.resolvedLanguage
-                    ),
-                  })}
-                </span>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.fields.recurring")}</Label>
-                <ContainableSelect
-                  value={values.period ?? "OneShot"}
-                  onValueChange={period =>
-                    setValues(current => ({
-                      ...current,
-                      period:
-                        period === "OneShot" ? null : (period as RoutinePeriod),
-                    }))
-                  }
-                  options={[
-                    {
-                      value: "OneShot",
-                      label: t("workspace.fields.oneShot"),
-                    },
-                    ...AllRoutinePeriods.map(routinePeriod => ({
-                      value: routinePeriod,
-                      label: translateRoutinePeriod(routinePeriod, t),
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
                 <Label htmlFor="routine-task-inspector-payload">
                   {t("workspace.fields.payload")}
                 </Label>
@@ -486,16 +362,6 @@ const RoutineTaskInspector = ({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3 text-sm">
-                <span className="text-muted-foreground">
-                  {t("workspace.inspector.currentStatus")}
-                </span>
-                <span className="font-medium">
-                  {routineTaskNode
-                    ? translateRoutineTaskStatus(routineTaskNode.status, t)
-                    : t("workspace.fields.loading")}
-                </span>
-              </div>
               <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3 text-sm">
                 <span className="text-muted-foreground">
                   {t("workspace.inspector.costUnit")}

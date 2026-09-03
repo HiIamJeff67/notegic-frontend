@@ -114,6 +114,7 @@ export type ModalPropsMap = {
   RoutineTaskRecordDialog: {
     routineTitle: string;
     routineTaskIds: UUID[];
+    routineRecordId?: UUID;
   };
   SelectBackgroundImageDialog: {
     cropperAspectRatio: number;

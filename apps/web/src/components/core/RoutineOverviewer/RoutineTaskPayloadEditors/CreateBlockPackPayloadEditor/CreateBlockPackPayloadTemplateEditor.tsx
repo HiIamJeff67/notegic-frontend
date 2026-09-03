@@ -109,38 +109,8 @@ const CreateBlockPackPayloadTemplateEditor = ({
 
   return (
     <main className="flex max-h-[72vh] min-h-0 flex-col overflow-hidden bg-card">
-      <div
-        className={
-          purpose === RoutineTaskPurpose.UpdateBlock
-            ? "grid min-h-0 flex-1 grid-rows-[minmax(160px,0.8fr)_minmax(220px,1.2fr)] overflow-hidden"
-            : "min-h-0 flex-1 overflow-y-auto overflow-x-visible py-6 pr-6 pl-16"
-        }
-      >
-        {purpose === RoutineTaskPurpose.UpdateBlock && (
-          <section className="min-h-0 overflow-y-auto border-b bg-secondary py-4 pr-6 pl-16">
-            <div className="mb-2 text-muted-foreground text-xs">
-              {t("workspace.payloadEditor.currentBlock")}
-            </div>
-            <BlockNoteView
-              editor={originalBlockEditor}
-              editable={false}
-              sideMenu={false}
-              className="caret-muted-foreground [&_.bn-editor]:px-8"
-            />
-          </section>
-        )}
-        <section
-          className={
-            purpose === RoutineTaskPurpose.UpdateBlock
-              ? "min-h-0 overflow-y-auto overflow-x-visible py-4 pr-6 pl-16"
-              : ""
-          }
-        >
-          {purpose === RoutineTaskPurpose.UpdateBlock && (
-            <div className="mb-2 text-muted-foreground text-xs">
-              {t("workspace.payloadEditor.nextBlock")}
-            </div>
-          )}
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-visible py-6 pr-6 pl-16">
+        <section>
           <BlockNoteView
             editor={editor}
             sideMenu={false}

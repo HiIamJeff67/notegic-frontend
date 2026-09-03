@@ -6,7 +6,7 @@ import {
 import {
   getNotegicBlockNoteXmlFragment,
   NotegicBlockPackEditor,
-} from "@shared/blockpack/core";
+} from "@shared/blockpack";
 import { WebURLPathDictionary } from "@shared/constants";
 import { randomColor } from "@shared/util/random";
 import { createContext, useCallback, useEffect, useMemo } from "react";

@@ -6,7 +6,7 @@ jest.mock("@shared/lib/indexedDBManipulator", () => ({
   },
 }));
 
-import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
+import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
 

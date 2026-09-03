@@ -1,9 +1,10 @@
 import {
   RoutinePeriod,
+  RoutinePhase,
+  RoutineRecordStatus,
   RoutineStatus,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
-  RoutineTaskStatus,
 } from "@shared/api/interfaces/enums";
 import type { TFunction } from "i18next";
 
@@ -41,22 +42,6 @@ export const translateRoutineStatus = (
   }
 };
 
-export const translateRoutineTaskStatus = (
-  status: RoutineTaskStatus,
-  t: TFunction
-): string => {
-  switch (status) {
-    case RoutineTaskStatus.Waiting:
-      return t("workspace.status.waiting");
-    case RoutineTaskStatus.Running:
-      return t("workspace.status.running");
-    case RoutineTaskStatus.Pause:
-      return t("workspace.status.paused");
-    default:
-      return t("workspace.status.idle");
-  }
-};
-
 export const translateRoutineTaskRecordStatus = (
   status: RoutineTaskRecordStatus,
   t: TFunction
@@ -66,10 +51,54 @@ export const translateRoutineTaskRecordStatus = (
       return t("workspace.status.success");
     case RoutineTaskRecordStatus.Failed:
       return t("workspace.status.failed");
+    case RoutineTaskRecordStatus.Blocked:
+      return t("workspace.status.blocked");
+    case RoutineTaskRecordStatus.Ready:
+      return t("workspace.status.ready");
     case RoutineTaskRecordStatus.Cancel:
       return t("workspace.status.cancelled");
     default:
       return t("workspace.status.running");
+  }
+};
+
+export const translateRoutineRecordStatus = (
+  status: RoutineRecordStatus,
+  t: TFunction
+): string => {
+  switch (status) {
+    case RoutineRecordStatus.Pending:
+      return t("workspace.status.waiting");
+    case RoutineRecordStatus.Running:
+      return t("workspace.status.running");
+    case RoutineRecordStatus.Success:
+      return t("workspace.status.success");
+    case RoutineRecordStatus.Failed:
+      return t("workspace.status.failed");
+    case RoutineRecordStatus.Blocked:
+      return t("workspace.status.blocked");
+    case RoutineRecordStatus.Canceled:
+      return t("workspace.status.cancelled");
+    default:
+      return t("workspace.status.waiting");
+  }
+};
+
+export const translateRoutinePhase = (
+  phase: RoutinePhase,
+  t: TFunction
+): string => {
+  switch (phase) {
+    case RoutinePhase.Claimed:
+      return t("workspace.phase.claimed");
+    case RoutinePhase.Plan:
+      return t("workspace.phase.plan");
+    case RoutinePhase.Execution:
+      return t("workspace.phase.execution");
+    case RoutinePhase.Recovery:
+      return t("workspace.phase.recovery");
+    case RoutinePhase.Analysis:
+      return t("workspace.phase.analysis");
   }
 };
 
@@ -94,26 +123,24 @@ export const translateRoutineTaskPurpose = (
   t: TFunction
 ): string => {
   const [action, target] = purpose
-    .match(/^(Create|Append|Update|Reset)(.+)$/)
+    .match(/^(Get|Create|Update|Delete)(.+)$/)
     ?.slice(1) ?? ["", purpose];
   const actionLabel =
-    action === "Create"
-      ? t("workspace.fields.create")
-      : action === "Append"
-        ? t("workspace.fields.append")
+    action === "Get"
+      ? t("workspace.fields.get")
+      : action === "Create"
+        ? t("workspace.fields.create")
         : action === "Update"
           ? t("workspace.fields.update")
-          : t("workspace.fields.reset");
+          : t("workspace.fields.delete");
   const targetLabel =
-    target === "RootShelf"
-      ? t("workspace.trash.rootShelf")
-      : target === "SubShelf"
-        ? t("workspace.trash.subShelf")
-        : target === "BlockPack"
-          ? t("workspace.trash.blockPack")
-          : target === "Routine"
-            ? t("workspace.trash.routine")
-            : t("workspace.fields.block");
+    target === "SubShelf"
+      ? t("workspace.trash.subShelf")
+      : target === "BlockPack"
+        ? t("workspace.trash.blockPack")
+        : target === "Routine"
+          ? t("workspace.trash.routine")
+          : t("workspace.trash.material");
 
   return `${actionLabel} · ${targetLabel}`;
 };

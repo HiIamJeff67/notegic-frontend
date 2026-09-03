@@ -1,5 +1,5 @@
 import { estimateMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
-import { LocalYjsDocumentStore } from "@shared/blockpack/core";
+import { LocalYjsDocumentStore } from "@shared/blockpack";
 import { AllLanguageData } from "@shared/constants";
 import {
   DashboardWidthFrameCountStep,

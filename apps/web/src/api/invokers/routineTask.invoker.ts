@@ -10,14 +10,8 @@ import {
   GetMyRoutineTaskById,
   HardDeleteMyRoutineTaskById,
   HardDeleteMyRoutineTasksByIds,
-  PauseMyRoutineTaskById,
-  ResumeMyRoutineTaskById,
   UpdateMyRoutineTaskById,
-  VisualizeMyRoutineTaskActualEndedAtCount,
-  VisualizeMyRoutineTaskActualStartedAtCount,
   VisualizeMyRoutineTaskPurposeCount,
-  VisualizeMyRoutineTaskScheduledAtCount,
-  VisualizeMyRoutineTaskStatusCount,
 } from "@/api/functions/routineTask.serverFn";
 import {
   CreateRoutineTaskByRoutineIdRequest,
@@ -44,52 +38,17 @@ import {
   HardDeleteMyRoutineTasksByIdsRequestSchema,
   HardDeleteMyRoutineTasksByIdsResponse,
   HardDeleteMyRoutineTasksByIdsResponseSchema,
-  PauseMyRoutineTaskByIdRequest,
-  PauseMyRoutineTaskByIdRequestSchema,
-  PauseMyRoutineTaskByIdResponse,
-  PauseMyRoutineTaskByIdResponseSchema,
-  ResumeMyRoutineTaskByIdRequest,
-  ResumeMyRoutineTaskByIdRequestSchema,
-  ResumeMyRoutineTaskByIdResponse,
-  ResumeMyRoutineTaskByIdResponseSchema,
   UpdateMyRoutineTaskByIdRequest,
   UpdateMyRoutineTaskByIdRequestSchema,
   UpdateMyRoutineTaskByIdResponse,
   UpdateMyRoutineTaskByIdResponseSchema,
-  type VisualizeMyRoutineTaskActualEndedAtCountRequest,
-  VisualizeMyRoutineTaskActualEndedAtCountRequestSchema,
-  type VisualizeMyRoutineTaskActualEndedAtCountResponse,
-  VisualizeMyRoutineTaskActualEndedAtCountResponseSchema,
-  type VisualizeMyRoutineTaskActualStartedAtCountRequest,
-  VisualizeMyRoutineTaskActualStartedAtCountRequestSchema,
-  type VisualizeMyRoutineTaskActualStartedAtCountResponse,
-  VisualizeMyRoutineTaskActualStartedAtCountResponseSchema,
   type VisualizeMyRoutineTaskPurposeCountRequest,
   VisualizeMyRoutineTaskPurposeCountRequestSchema,
   type VisualizeMyRoutineTaskPurposeCountResponse,
   VisualizeMyRoutineTaskPurposeCountResponseSchema,
-  type VisualizeMyRoutineTaskScheduledAtCountRequest,
-  VisualizeMyRoutineTaskScheduledAtCountRequestSchema,
-  type VisualizeMyRoutineTaskScheduledAtCountResponse,
-  VisualizeMyRoutineTaskScheduledAtCountResponseSchema,
-  type VisualizeMyRoutineTaskStatusCountRequest,
-  VisualizeMyRoutineTaskStatusCountRequestSchema,
-  type VisualizeMyRoutineTaskStatusCountResponse,
-  VisualizeMyRoutineTaskStatusCountResponseSchema,
 } from "@shared/api/interfaces/routineTask.interface";
 import { ZodError } from "zod";
 import { invokeVisualizeQuery } from "./visualize.invoker";
-
-export const queryFnVisualizeMyRoutineTaskStatusCount = (
-  request: VisualizeMyRoutineTaskStatusCountRequest
-): Promise<VisualizeMyRoutineTaskStatusCountResponse> =>
-  invokeVisualizeQuery(
-    request,
-    VisualizeMyRoutineTaskStatusCountRequestSchema,
-    VisualizeMyRoutineTaskStatusCountResponseSchema,
-    VisualizeMyRoutineTaskStatusCount,
-    "queryFnVisualizeMyRoutineTaskStatusCount"
-  );
 
 export const queryFnVisualizeMyRoutineTaskPurposeCount = (
   request: VisualizeMyRoutineTaskPurposeCountRequest
@@ -100,39 +59,6 @@ export const queryFnVisualizeMyRoutineTaskPurposeCount = (
     VisualizeMyRoutineTaskPurposeCountResponseSchema,
     VisualizeMyRoutineTaskPurposeCount,
     "queryFnVisualizeMyRoutineTaskPurposeCount"
-  );
-
-export const queryFnVisualizeMyRoutineTaskScheduledAtCount = (
-  request: VisualizeMyRoutineTaskScheduledAtCountRequest
-): Promise<VisualizeMyRoutineTaskScheduledAtCountResponse> =>
-  invokeVisualizeQuery(
-    request,
-    VisualizeMyRoutineTaskScheduledAtCountRequestSchema,
-    VisualizeMyRoutineTaskScheduledAtCountResponseSchema,
-    VisualizeMyRoutineTaskScheduledAtCount,
-    "queryFnVisualizeMyRoutineTaskScheduledAtCount"
-  );
-
-export const queryFnVisualizeMyRoutineTaskActualStartedAtCount = (
-  request: VisualizeMyRoutineTaskActualStartedAtCountRequest
-): Promise<VisualizeMyRoutineTaskActualStartedAtCountResponse> =>
-  invokeVisualizeQuery(
-    request,
-    VisualizeMyRoutineTaskActualStartedAtCountRequestSchema,
-    VisualizeMyRoutineTaskActualStartedAtCountResponseSchema,
-    VisualizeMyRoutineTaskActualStartedAtCount,
-    "queryFnVisualizeMyRoutineTaskActualStartedAtCount"
-  );
-
-export const queryFnVisualizeMyRoutineTaskActualEndedAtCount = (
-  request: VisualizeMyRoutineTaskActualEndedAtCountRequest
-): Promise<VisualizeMyRoutineTaskActualEndedAtCountResponse> =>
-  invokeVisualizeQuery(
-    request,
-    VisualizeMyRoutineTaskActualEndedAtCountRequestSchema,
-    VisualizeMyRoutineTaskActualEndedAtCountResponseSchema,
-    VisualizeMyRoutineTaskActualEndedAtCount,
-    "queryFnVisualizeMyRoutineTaskActualEndedAtCount"
   );
 
 export const queryFnGetMyRoutineTaskById = async (
@@ -264,64 +190,6 @@ export const mutationFnUpdateMyRoutineTaskById = async (
   } catch (error) {
     console.error(
       "error happening in mutationFnUpdateMyRoutineTaskById",
-      error
-    );
-    if (error instanceof ZodError) {
-      throw new NotegicValidationError(
-        ValidationClientException.ZodParsingFailed(error)
-      );
-    } else if (error instanceof NotegicAPIError) {
-      switch (error.unWrap.reason) {
-        default:
-          throw error;
-      }
-    } else if (error instanceof TypeError) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-    }
-    throw error;
-  }
-};
-
-export const mutationFnPauseMyRoutineTaskById = async (
-  request: PauseMyRoutineTaskByIdRequest
-): Promise<PauseMyRoutineTaskByIdResponse> => {
-  try {
-    const validatedRequest = PauseMyRoutineTaskByIdRequestSchema.parse(request);
-    const response = await PauseMyRoutineTaskById({
-      data: validatedRequest,
-    });
-    return PauseMyRoutineTaskByIdResponseSchema.parse(response);
-  } catch (error) {
-    console.error("error happening in mutationFnPauseMyRoutineTaskById", error);
-    if (error instanceof ZodError) {
-      throw new NotegicValidationError(
-        ValidationClientException.ZodParsingFailed(error)
-      );
-    } else if (error instanceof NotegicAPIError) {
-      switch (error.unWrap.reason) {
-        default:
-          throw error;
-      }
-    } else if (error instanceof TypeError) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-    }
-    throw error;
-  }
-};
-
-export const mutationFnResumeMyRoutineTaskById = async (
-  request: ResumeMyRoutineTaskByIdRequest
-): Promise<ResumeMyRoutineTaskByIdResponse> => {
-  try {
-    const validatedRequest =
-      ResumeMyRoutineTaskByIdRequestSchema.parse(request);
-    const response = await ResumeMyRoutineTaskById({
-      data: validatedRequest,
-    });
-    return ResumeMyRoutineTaskByIdResponseSchema.parse(response);
-  } catch (error) {
-    console.error(
-      "error happening in mutationFnResumeMyRoutineTaskById",
       error
     );
     if (error instanceof ZodError) {

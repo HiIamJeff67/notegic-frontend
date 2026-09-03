@@ -1,4 +1,8 @@
-import { RoutinePeriod, RoutineStatus } from "@shared/api/interfaces/enums";
+import {
+  RoutinePeriod,
+  RoutinePhase,
+  RoutineStatus,
+} from "@shared/api/interfaces/enums";
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { RoutinesToItems } from "./routinesToItems.schema";
@@ -19,6 +23,7 @@ export const Routine = sqliteTable(
       .$type<RoutineStatus>()
       .notNull()
       .default(RoutineStatus.Scheduled),
+    phase: text("phase").$type<RoutinePhase>(),
     isPinned: integer("is_pinned", { mode: "boolean" })
       .notNull()
       .default(false),

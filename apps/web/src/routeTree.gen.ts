@@ -38,6 +38,7 @@ import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.
 import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
 import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
 import { Route as AuthRedirectErrorRouteImport } from './routes/_auth.redirect.error'
+import { Route as AppRoutinesRoutineIdDependencyGraphEditorRouteImport } from './routes/app.routines.$routineId.dependency-graph-editor'
 
 const TutorialRoute = TutorialRouteImport.update({
   id: '/tutorial',
@@ -185,6 +186,12 @@ const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
   path: '/redirect/error',
   getParentRoute: () => AuthRoute,
 } as any)
+const AppRoutinesRoutineIdDependencyGraphEditorRoute =
+  AppRoutinesRoutineIdDependencyGraphEditorRouteImport.update({
+    id: '/$routineId/dependency-graph-editor',
+    path: '/$routineId/dependency-graph-editor',
+    getParentRoute: () => AppRoutinesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/material-viewer/': typeof AppMaterialViewerIndexRoute
   '/app/routines/': typeof AppRoutinesIndexRoute
+  '/app/routines/$routineId/dependency-graph-editor': typeof AppRoutinesRoutineIdDependencyGraphEditorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -241,6 +249,7 @@ export interface FileRoutesByTo {
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/material-viewer': typeof AppMaterialViewerIndexRoute
   '/app/routines': typeof AppRoutinesIndexRoute
+  '/app/routines/$routineId/dependency-graph-editor': typeof AppRoutinesRoutineIdDependencyGraphEditorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -273,6 +282,7 @@ export interface FileRoutesById {
   '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/material-viewer/': typeof AppMaterialViewerIndexRoute
   '/app/routines/': typeof AppRoutinesIndexRoute
+  '/app/routines/$routineId/dependency-graph-editor': typeof AppRoutinesRoutineIdDependencyGraphEditorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/app/dashboard/'
     | '/app/material-viewer/'
     | '/app/routines/'
+    | '/app/routines/$routineId/dependency-graph-editor'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/app/dashboard'
     | '/app/material-viewer'
     | '/app/routines'
+    | '/app/routines/$routineId/dependency-graph-editor'
   id:
     | '__root__'
     | '/'
@@ -362,6 +374,7 @@ export interface FileRouteTypes {
     | '/app/dashboard/'
     | '/app/material-viewer/'
     | '/app/routines/'
+    | '/app/routines/$routineId/dependency-graph-editor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -579,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRedirectErrorRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/app/routines/$routineId/dependency-graph-editor': {
+      id: '/app/routines/$routineId/dependency-graph-editor'
+      path: '/$routineId/dependency-graph-editor'
+      fullPath: '/app/routines/$routineId/dependency-graph-editor'
+      preLoaderRoute: typeof AppRoutinesRoutineIdDependencyGraphEditorRouteImport
+      parentRoute: typeof AppRoutinesRoute
+    }
   }
 }
 
@@ -643,11 +663,14 @@ const AppMaterialViewerRouteWithChildren =
 interface AppRoutinesRouteChildren {
   AppRoutinesStationIdRoute: typeof AppRoutinesStationIdRoute
   AppRoutinesIndexRoute: typeof AppRoutinesIndexRoute
+  AppRoutinesRoutineIdDependencyGraphEditorRoute: typeof AppRoutinesRoutineIdDependencyGraphEditorRoute
 }
 
 const AppRoutinesRouteChildren: AppRoutinesRouteChildren = {
   AppRoutinesStationIdRoute: AppRoutinesStationIdRoute,
   AppRoutinesIndexRoute: AppRoutinesIndexRoute,
+  AppRoutinesRoutineIdDependencyGraphEditorRoute:
+    AppRoutinesRoutineIdDependencyGraphEditorRoute,
 }
 
 const AppRoutinesRouteWithChildren = AppRoutinesRoute._addFileChildren(

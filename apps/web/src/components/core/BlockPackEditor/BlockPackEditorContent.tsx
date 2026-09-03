@@ -1,5 +1,6 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
+import { translateError } from "@shared/i18n/error";
 import {
   convertBlocksToDOCX,
   convertBlocksToHTML,
@@ -31,23 +32,27 @@ import {
 } from "@/components/ui/menubar";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useShelfItem } from "@/hooks";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
-import { translateError } from "@shared/i18n/error";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { ContentType } from "@shared/enums/contentType.enum";
 import toast from "@shared/lib/toast";
-import { cn } from "@shared/util/utils";
-import { ChevronDownIcon } from "lucide-react";
-import type { CSSProperties, Dispatch } from "react";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
   BlockPackMeta,
   BlockPackMetaAction,
 } from "@shared/reducers/blockPackMeta.reducer";
+import { cn } from "@shared/util/utils";
+import { ChevronDownIcon, Download, Import } from "lucide-react";
+import type { CSSProperties, Dispatch } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useLocalPreferences } from "@/hooks/localPreferences";
 
 interface BlockPackEditorContentProps {
   blockPackMeta: BlockPackMeta;
@@ -224,7 +229,7 @@ const BlockPackEditorContent = ({
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-start bg-cover bg-center bg-no-repeat">
-      <header className="w-full h-14 flex shrink-0 justify-between items-center px-4 gap-2 bg-canvas/15 backdrop-blur-md border-b border-canvas/10">
+      <header className="flex h-12 w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
@@ -333,20 +338,26 @@ const BlockPackEditorContent = ({
             rootShelfId={blockPackMeta.rootId}
             isEditorReady={state === "ready" || state === "readOnly"}
           />
-          <Menubar className="h-9 gap-0 bg-muted/25 p-1">
+          <Menubar>
             <MenubarMenu>
-              <MenubarTrigger
-                data-density-static
-                className="h-7 px-3 py-0 text-sm leading-none"
-              >
-                {isImporting ? (
-                  <Spinner />
-                ) : (
-                  <span className="leading-none">
-                    {t("workspace.viewer.import")}
-                  </span>
-                )}
-              </MenubarTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <MenubarTrigger
+                    data-density-static
+                    className="h-7 w-7 justify-center px-0 py-0 text-sm leading-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+                    aria-label={t("workspace.viewer.import")}
+                  >
+                    {isImporting ? (
+                      <Spinner />
+                    ) : (
+                      <Import className="size-3.5" />
+                    )}
+                  </MenubarTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {t("workspace.viewer.import")}
+                </TooltipContent>
+              </Tooltip>
               <MenubarContent align="end" side="bottom">
                 <DropFileZone
                   disabled={!editor}
@@ -361,18 +372,24 @@ const BlockPackEditorContent = ({
               </MenubarContent>
             </MenubarMenu>
             <MenubarMenu>
-              <MenubarTrigger
-                data-density-static
-                className="h-7 px-3 py-0 text-sm leading-none"
-              >
-                {isExporting ? (
-                  <Spinner />
-                ) : (
-                  <span className="leading-none">
-                    {t("workspace.viewer.export")}
-                  </span>
-                )}
-              </MenubarTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <MenubarTrigger
+                    data-density-static
+                    className="h-7 w-7 justify-center px-0 py-0 text-sm leading-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+                    aria-label={t("workspace.viewer.export")}
+                  >
+                    {isExporting ? (
+                      <Spinner />
+                    ) : (
+                      <Download className="size-3.5" />
+                    )}
+                  </MenubarTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {t("workspace.viewer.export")}
+                </TooltipContent>
+              </Tooltip>
               <MenubarContent align="end" side="bottom">
                 <MenubarItem
                   onClick={async () => {

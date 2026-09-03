@@ -3,10 +3,14 @@ export default {
   testEnvironment: "node",
   watchman: false,
   roots: ["<rootDir>/apps/web/src", "<rootDir>/shared", "<rootDir>/test"],
-  testMatch: ["**/__tests__/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
+  testMatch: [
+    "**/__tests__/**/*.[jt]s?(x)",
+    "**/*.test.[jt]s?(x)",
+    "**/*.spec.[jt]s?(x)",
+  ],
   testPathIgnorePatterns: ["<rootDir>/test/performance/"],
   transform: {
-    "^.+\\.ts$": "ts-jest",
+    "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/apps/web/src/$1",

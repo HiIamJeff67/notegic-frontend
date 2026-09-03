@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/hover-card";
 import {
   translateRoutinePeriod,
+  translateRoutinePhase,
   translateRoutineStatus,
 } from "@shared/i18n/workspace";
 
@@ -111,6 +112,12 @@ const RoutineTrain = ({
             {
               field: t("workspace.table.status"),
               value: translateRoutineStatus(routine.status, t),
+            },
+            {
+              field: t("workspace.table.phase"),
+              value: routine.phase
+                ? translateRoutinePhase(routine.phase, t)
+                : t("workspace.period.none"),
             },
             {
               field: t("workspace.payloadEditor.period"),

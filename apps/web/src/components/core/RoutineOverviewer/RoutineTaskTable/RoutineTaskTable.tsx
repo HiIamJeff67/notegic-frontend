@@ -1,22 +1,14 @@
 import {
-  RoutinePeriod as GraphQLRoutinePeriod,
-  RoutineTaskStatus as GraphQLRoutineTaskStatus,
   SearchRoutineTaskSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
-import {
-  AllRoutineTaskStatuses,
-  RoutinePeriod,
-  RoutineTaskPurpose,
-  RoutineTaskStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +27,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
-import {
-  translateRoutineTaskPurpose,
-  translateRoutineTaskStatus,
-} from "@shared/i18n/workspace";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 
 const RoutineTaskTable = () => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const [executeSearchRoutineTasks, routineTaskSearch] =
     useSearchRoutineTasksLazyQuery({
@@ -65,11 +54,8 @@ const RoutineTaskTable = () => {
     useState<boolean>(false);
   const isSearchingRoutineTasksRef = useRef<boolean>(false);
   const hasExecutedInitialSearchRef = useRef<boolean>(false);
-  const [status, setStatus] = useState<RoutineTaskStatus | "All">("All");
   const [purpose, setPurpose] = useState<RoutineTaskPurpose | "All">("All");
   const [routineId, setRoutineId] = useState<UUID | "All" | "Unlinked">("All");
-  const [scheduledAfter, setScheduledAfter] = useState<Date | undefined>();
-  const [scheduledBefore, setScheduledBefore] = useState<Date | undefined>();
   const effectiveStationIds =
     stationRoutineManager.viewMode === "station" &&
     stationRoutineManager.activeStationId
@@ -97,14 +83,8 @@ const RoutineTaskTable = () => {
             purpose: string;
             costUnit: number;
             priority: number;
-            status: GraphQLRoutineTaskStatus;
-            attempts: number;
             maxAttempts: number;
-            period: GraphQLRoutinePeriod | null;
-            nextScheduledAt?: Date | string | number;
-            scheduledAt: Date | string | number;
-            actualStartedAt: Date | string | number | null;
-            actualEndedAt: Date | string | number | null;
+            previousRoutineTaskIds: UUID[];
             updatedAt: Date | string | number;
             createdAt: Date | string | number;
           };
@@ -134,34 +114,8 @@ const RoutineTaskTable = () => {
             payload: {},
             costUnit: node.costUnit,
             priority: node.priority,
-            status:
-              node.status === GraphQLRoutineTaskStatus.RoutineTaskStatusWaiting
-                ? RoutineTaskStatus.Waiting
-                : node.status ===
-                    GraphQLRoutineTaskStatus.RoutineTaskStatusRunning
-                  ? RoutineTaskStatus.Running
-                  : node.status ===
-                      GraphQLRoutineTaskStatus.RoutineTaskStatusPause
-                    ? RoutineTaskStatus.Pause
-                    : RoutineTaskStatus.Idle,
-            attempts: node.attempts,
             maxAttempts: node.maxAttempts,
-            period:
-              node.period === GraphQLRoutinePeriod.RoutinePeriodDaily
-                ? RoutinePeriod.Daily
-                : node.period === GraphQLRoutinePeriod.RoutinePeriodWeekly
-                  ? RoutinePeriod.Weekly
-                  : node.period === GraphQLRoutinePeriod.RoutinePeriodMonthly
-                    ? RoutinePeriod.Monthly
-                    : null,
-            nextScheduledAt: new Date(node.nextScheduledAt ?? node.scheduledAt),
-            scheduledAt: new Date(node.scheduledAt),
-            actualStartedAt:
-              node.actualStartedAt === null
-                ? null
-                : new Date(node.actualStartedAt),
-            actualEndedAt:
-              node.actualEndedAt === null ? null : new Date(node.actualEndedAt),
+            previousRoutineTaskIds: node.previousRoutineTaskIds,
             updatedAt: new Date(node.updatedAt),
             createdAt: new Date(node.createdAt),
             linkedRoutineIds,
@@ -301,7 +255,6 @@ const RoutineTaskTable = () => {
 
   const filteredRoutineTasks = useMemo(() => {
     return routineTasks.filter(routineTask => {
-      if (status !== "All" && routineTask.status !== status) return false;
       if (purpose !== "All" && routineTask.purpose !== purpose) return false;
 
       const selectedRoutineTagIds = new Set(
@@ -340,12 +293,6 @@ const RoutineTaskTable = () => {
         return false;
       }
 
-      if (scheduledAfter && routineTask.nextScheduledAt < scheduledAfter) {
-        return false;
-      }
-      if (scheduledBefore && routineTask.nextScheduledAt > scheduledBefore) {
-        return false;
-      }
       return true;
     });
   }, [
@@ -353,11 +300,8 @@ const RoutineTaskTable = () => {
     routineTagPresenceSignature,
     routineTasks,
     purpose,
-    scheduledAfter,
-    scheduledBefore,
     stationRoutineManager.presence.showUntaggedRoutines,
     stationRoutineManager.routineTags.length,
-    status,
   ]);
 
   return (
@@ -375,29 +319,6 @@ const RoutineTaskTable = () => {
           </span>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 @max-[1040px]:grid @max-[1040px]:w-full @max-[1040px]:grid-cols-[repeat(auto-fit,minmax(6.75rem,1fr))] @max-[1040px]:justify-start">
-          <Select
-            value={status}
-            onValueChange={value =>
-              setStatus(value as RoutineTaskStatus | "All")
-            }
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-32 min-w-0 rounded-sm text-xs @max-[1040px]:w-full"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="All">
-                {t("workspace.table.allStatus")}
-              </SelectItem>
-              {AllRoutineTaskStatuses.map(routineTaskStatus => (
-                <SelectItem key={routineTaskStatus} value={routineTaskStatus}>
-                  {translateRoutineTaskStatus(routineTaskStatus, t)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Select
             value={purpose}
             onValueChange={value =>
@@ -447,18 +368,6 @@ const RoutineTaskTable = () => {
               ))}
             </SelectContent>
           </Select>
-          <DatePicker
-            value={scheduledAfter}
-            onValueChange={setScheduledAfter}
-            placeholder={t("workspace.table.nextAfter")}
-            className="h-8 w-40 min-w-0 text-xs @max-[1040px]:w-full @max-[520px]:justify-center @max-[520px]:px-0 @max-[520px]:[&_span]:hidden"
-          />
-          <DatePicker
-            value={scheduledBefore}
-            onValueChange={setScheduledBefore}
-            placeholder={t("workspace.table.nextBefore")}
-            className="h-8 w-40 min-w-0 text-xs @max-[1040px]:w-full @max-[520px]:justify-center @max-[520px]:px-0 @max-[520px]:[&_span]:hidden"
-          />
         </div>
       </div>
 
@@ -472,7 +381,7 @@ const RoutineTaskTable = () => {
           void searchRoutineTasks(false);
         }}
       >
-        <Table className="table-fixed text-xs">
+        <Table className="w-full table-fixed border-collapse text-xs">
           <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight">
             <TableRow>
               <TableHead className="h-9 w-[19%] px-2">
@@ -481,20 +390,11 @@ const RoutineTaskTable = () => {
               <TableHead className="h-9 w-[10%] px-2">
                 {t("workspace.table.station")}
               </TableHead>
-              <TableHead className="h-9 w-[9%] px-2">
-                {t("workspace.table.status")}
-              </TableHead>
               <TableHead className="h-9 w-[13%] px-2">
                 {t("workspace.table.purpose")}
               </TableHead>
               <TableHead className="h-9 w-[17%] px-2">
                 {t("workspace.table.routine")}
-              </TableHead>
-              <TableHead className="h-9 w-[15%] px-2">
-                {t("workspace.table.next")}
-              </TableHead>
-              <TableHead className="h-9 w-[9%] px-2">
-                {t("workspace.table.attempts")}
               </TableHead>
               <TableHead className="h-9 w-[8%] px-2" />
             </TableRow>
@@ -527,9 +427,6 @@ const RoutineTaskTable = () => {
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
-                    {translateRoutineTaskStatus(routineTask.status, t)}
-                  </TableCell>
-                  <TableCell className="px-2 py-2.5">
                     <span className="break-words">
                       {translateRoutineTaskPurpose(routineTask.purpose, t)}
                     </span>
@@ -551,16 +448,6 @@ const RoutineTaskTable = () => {
                         ))
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell className="px-2 py-2.5">
-                    <span className="break-words">
-                      {routineTask.nextScheduledAt.toLocaleString(
-                        i18n.resolvedLanguage
-                      )}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-2 py-2.5 tabular-nums">
-                    {routineTask.attempts} / {routineTask.maxAttempts}
                   </TableCell>
                   <TableCell className="px-2 py-2.5 text-right">
                     <Button
@@ -584,7 +471,7 @@ const RoutineTaskTable = () => {
             {filteredRoutineTasks.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={6}
                   className="h-28 text-center text-sm text-muted-foreground"
                 >
                   {isSearchingRoutineTasks

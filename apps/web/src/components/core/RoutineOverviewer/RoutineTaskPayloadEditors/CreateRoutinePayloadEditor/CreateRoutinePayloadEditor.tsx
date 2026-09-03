@@ -1,11 +1,12 @@
 import {
   AllRoutinePeriods,
-  AllRoutineStatuses,
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
+import { translateRoutinePeriod } from "@shared/i18n/workspace";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  translateRoutinePeriod,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
 import FormPayloadEditor from "../FormPayloadEditor";
 import { StationPicker } from "../PayloadSearchPickers";
 import TemplatePatternEditor, {
@@ -47,7 +44,6 @@ const CreateRoutinePayloadEditor = ({
   const [title, setTitle] = useState("");
   const [pattern, setPattern] = useState<RoutineTaskTemplatePattern>({});
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Scheduled");
   const [isPinned, setIsPinned] = useState(false);
   const [scheduledStartAt, setScheduledStartAt] = useState("");
   const [scheduledEndAt, setScheduledEndAt] = useState("");
@@ -64,7 +60,6 @@ const CreateRoutinePayloadEditor = ({
       setTitle(payload.title ?? "");
       setPattern(payload.pattern ?? {});
       setDescription(payload.description ?? "");
-      setStatus(payload.status ?? "Scheduled");
       setIsPinned(Boolean(payload.isPinned));
       setScheduledStartAt(
         payload.scheduledStartAt
@@ -85,7 +80,6 @@ const CreateRoutinePayloadEditor = ({
       setTitle("");
       setPattern({});
       setDescription("");
-      setStatus("Scheduled");
       setIsPinned(false);
       setScheduledStartAt("");
       setScheduledEndAt("");
@@ -108,7 +102,6 @@ const CreateRoutinePayloadEditor = ({
             pattern,
           }),
           description,
-          status,
           isPinned,
           scheduledStartAt: scheduledStartAt
             ? new Date(scheduledStartAt).toISOString()
@@ -134,21 +127,6 @@ const CreateRoutinePayloadEditor = ({
             onChange={event => setTitle(event.target.value)}
             placeholder={t("workspace.payloadEditor.routineTitleExample")}
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label>{t("workspace.table.status")}</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="z-[190]">
-              {AllRoutineStatuses.map(routineStatus => (
-                <SelectItem key={routineStatus} value={routineStatus}>
-                  {translateRoutineStatus(routineStatus, t)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
       <TemplatePatternEditor
@@ -207,10 +185,7 @@ const CreateRoutinePayloadEditor = ({
         </div>
         <div className="flex flex-col gap-2">
           <Label>{t("workspace.inspector.timezone")}</Label>
-          <Input
-            value={timezone}
-            onChange={event => setTimezone(event.target.value)}
-          />
+          <TimezoneSelector value={timezone} onValueChange={setTimezone} />
         </div>
       </div>
       <label className="flex items-center gap-2 text-sm">

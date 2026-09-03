@@ -7,6 +7,8 @@ export * from "./routinesToTags.schema";
 export * from "./routinesToTasks.schema";
 export * from "./routineTag.schema";
 export * from "./routineTask.schema";
+export * from "./routineTaskDependency.schema";
+export * from "./routineTaskDependencyGraphDraft.schema";
 export * from "./station.schema";
 export * from "./subShelf.schema";
 export * from "./test.schema";

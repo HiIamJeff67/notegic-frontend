@@ -24,8 +24,8 @@ import {
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
 import { RealtimeClient } from "@/api/websocket-client";
-import { RealtimeYjsProvider } from "@shared/blockpack/core";
-import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
+import { RealtimeYjsProvider } from "@shared/blockpack";
+import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import {

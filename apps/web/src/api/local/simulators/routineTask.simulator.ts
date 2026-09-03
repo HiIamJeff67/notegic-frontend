@@ -86,15 +86,10 @@ export class RoutineTaskLocalSimulator {
         title: RoutineTask.title,
         purpose: RoutineTask.purpose,
         costUnit: RoutineTask.costUnit,
+        payload: RoutineTask.payload,
         priority: RoutineTask.priority,
-        status: RoutineTask.status,
-        attempts: RoutineTask.attempts,
         maxAttempts: RoutineTask.maxAttempts,
-        period: RoutineTask.period,
-        nextScheduledAt: RoutineTask.nextScheduledAt,
-        scheduledAt: RoutineTask.scheduledAt,
-        actualStartedAt: RoutineTask.actualStartedAt,
-        actualEndedAt: RoutineTask.actualEndedAt,
+        previousRoutineTaskIds: RoutineTask.previousRoutineTaskIds,
         updatedAt: RoutineTask.updatedAt,
         createdAt: RoutineTask.createdAt,
       })
@@ -112,11 +107,7 @@ export class RoutineTaskLocalSimulator {
           )
         )
       )
-      .orderBy(
-        asc(RoutineTask.scheduledAt),
-        desc(RoutineTask.priority),
-        asc(RoutineTask.id)
-      );
+      .orderBy(desc(RoutineTask.priority), asc(RoutineTask.id));
   };
 
   static simulateGetAllMyRoutineTasks = async (
@@ -139,14 +130,8 @@ export class RoutineTaskLocalSimulator {
         costUnit: RoutineTask.costUnit,
         payload: RoutineTask.payload,
         priority: RoutineTask.priority,
-        status: RoutineTask.status,
-        attempts: RoutineTask.attempts,
         maxAttempts: RoutineTask.maxAttempts,
-        period: RoutineTask.period,
-        nextScheduledAt: RoutineTask.nextScheduledAt,
-        scheduledAt: RoutineTask.scheduledAt,
-        actualStartedAt: RoutineTask.actualStartedAt,
-        actualEndedAt: RoutineTask.actualEndedAt,
+        previousRoutineTaskIds: RoutineTask.previousRoutineTaskIds,
         updatedAt: RoutineTask.updatedAt,
         createdAt: RoutineTask.createdAt,
       })
@@ -163,10 +148,6 @@ export class RoutineTaskLocalSimulator {
           )
         )
       )
-      .orderBy(
-        asc(RoutineTask.scheduledAt),
-        desc(RoutineTask.priority),
-        asc(RoutineTask.id)
-      );
+      .orderBy(desc(RoutineTask.priority), asc(RoutineTask.id));
   };
 }

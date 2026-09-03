@@ -1,8 +1,6 @@
 import {
-  RoutinePeriod,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
-  RoutineTaskStatus,
 } from "@shared/api/interfaces/enums";
 import type { UUID } from "crypto";
 
@@ -17,15 +15,9 @@ export interface RoutineTaskNode {
   costUnit: number;
   payload: any;
   priority: number;
-  status: RoutineTaskStatus;
+  previousRoutineTaskIds: UUID[];
   executionStatus?: RoutineTaskRecordStatus | null;
-  attempts: number;
   maxAttempts: number;
-  period: RoutinePeriod | null;
-  nextScheduledAt: Date;
-  scheduledAt: Date;
-  actualStartedAt: Date | null;
-  actualEndedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
 }
@@ -39,18 +31,12 @@ export const getDefaultRoutineTaskNode = (
   routineId,
   stationId,
   title: "Untitled",
-  purpose: RoutineTaskPurpose.AppendBlock,
+  purpose: RoutineTaskPurpose.GetBlockPack,
   costUnit: 0,
   payload: {},
   priority: 0,
-  status: RoutineTaskStatus.Idle,
-  attempts: 0,
+  previousRoutineTaskIds: [],
   maxAttempts: 1,
-  period: null,
-  nextScheduledAt: new Date(),
-  scheduledAt: new Date(),
-  actualStartedAt: null,
-  actualEndedAt: null,
   updatedAt: new Date(),
   createdAt: new Date(),
 });

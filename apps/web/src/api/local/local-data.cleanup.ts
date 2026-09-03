@@ -1,7 +1,7 @@
 import { localDB } from "@/api/local/db";
 import { cleanupMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
 import { User } from "@/api/local/schemas";
-import { LocalYjsDocumentStore } from "@shared/blockpack/core/localYjsDocumentStore";
+import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import type {
   ImageInfo,

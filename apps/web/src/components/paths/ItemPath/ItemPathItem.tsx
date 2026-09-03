@@ -1,4 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -6,6 +7,11 @@ import { ChevronRightIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
+import {
+  BlockPackIcon,
+  MaterialIcon,
+  SubShelfIcon,
+} from "@/components/icons/WorkspaceEntityIcons";
 import {
   BreadcrumbItem,
   BreadcrumbSeparator,
@@ -17,7 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppRouter, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface ItemPathItemProps {
   key?: any;
@@ -75,7 +80,8 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
             {subShelfNode.name}
           </DropdownMenuTrigger>
           {(Object.entries(subShelfNode.children).length !== 0 ||
-            Object.entries(subShelfNode.blockPackNodes).length !== 0) && (
+            Object.entries(subShelfNode.blockPackNodes).length !== 0 ||
+            Object.entries(subShelfNode.materialNodes).length !== 0) && (
             <DropdownMenuContent>
               {Object.entries(subShelfNode.children).map(([id, child]) => {
                 return (
@@ -91,6 +97,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
                       shelfItemManager.toggleSubShelf(child);
                     }}
                   >
+                    <SubShelfIcon />
                     <ChevronRightIcon />
                     <span>{child.name}</span>
                   </DropdownMenuItem>
@@ -105,6 +112,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
                         handleBlockPackOnClick(blockPackNode, subShelfNode)
                       }
                     >
+                      <BlockPackIcon />
                       {blockPackNode.name}
                     </DropdownMenuItem>
                   );
@@ -119,6 +127,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
                         handleMaterialOnClick(materialNode, subShelfNode)
                       }
                     >
+                      <MaterialIcon />
                       {materialNode.name}
                     </DropdownMenuItem>
                   );

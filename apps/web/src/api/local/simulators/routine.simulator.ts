@@ -1,4 +1,5 @@
 import {
+  toGraphQLRoutinePhase,
   toGraphQLRoutinePeriod,
   toGraphQLRoutineStatus,
 } from "@shared/api/graphql/conversions";
@@ -111,6 +112,7 @@ export class RoutineLocalSimulator {
         stationId: Routine.stationId,
         title: Routine.title,
         status: Routine.status,
+        phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -252,6 +254,7 @@ export class RoutineLocalSimulator {
             stationId: routine.stationId,
             title: routine.title,
             status,
+            phase: toGraphQLRoutinePhase(routine.phase),
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -310,6 +313,7 @@ export class RoutineLocalSimulator {
         title: Routine.title,
         description: Routine.description,
         status: Routine.status,
+        phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -372,6 +376,7 @@ export class RoutineLocalSimulator {
         stationId: Routine.stationId,
         title: Routine.title,
         status: Routine.status,
+        phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -474,6 +479,7 @@ export class RoutineLocalSimulator {
         stationId: Routine.stationId,
         title: Routine.title,
         status: Routine.status,
+        phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -603,7 +609,7 @@ export class RoutineLocalSimulator {
         stationId: request.body.stationId,
         title: request.body.title,
         description: request.body.description,
-        status: request.body.status ?? RoutineStatus.Scheduled,
+        status: RoutineStatus.Scheduled,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt: request.body.scheduledStartAt ?? createdAt,
         scheduledEndAt: request.body.scheduledEndAt ?? createdAt,
@@ -684,7 +690,8 @@ export class RoutineLocalSimulator {
           stationId: routine.stationId,
           title: routine.title,
           description: routine.description,
-          status: routine.status ?? RoutineStatus.Scheduled,
+          status: RoutineStatus.Scheduled,
+          phase: null,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? createdAt,
@@ -785,9 +792,6 @@ export class RoutineLocalSimulator {
           }),
           ...(request.body.values.description !== undefined && {
             description: request.body.values.description,
-          }),
-          ...(request.body.values.status !== undefined && {
-            status: request.body.values.status,
           }),
           ...(request.body.values.isPinned !== undefined && {
             isPinned: request.body.values.isPinned,
@@ -902,9 +906,6 @@ export class RoutineLocalSimulator {
             }),
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
-            }),
-            ...(routine.values.status !== undefined && {
-              status: routine.values.status,
             }),
             ...(routine.values.isPinned !== undefined && {
               isPinned: routine.values.isPinned,

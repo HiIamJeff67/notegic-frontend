@@ -1,18 +1,11 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
+  RoutinePhase as GraphQLRoutinePhase,
   RoutineStatus as GraphQLRoutineStatus,
   SearchRoutineSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
-import {
-  useCreateRoutineByStationId,
-  useDeleteMyRoutineById,
-  useLinkRoutineItemById,
-  useLinkRoutineTagById,
-  useUpdateMyRoutineById,
-} from "@/api/hooks/routine.hook";
 import {
   ItemType,
   RoutinePeriod,
@@ -27,6 +20,15 @@ import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
+import {
+  useCreateRoutineByStationId,
+  useDeleteMyRoutineById,
+  useLinkRoutineItemById,
+  useLinkRoutineTagById,
+  useUpdateMyRoutineById,
+} from "@/api/hooks/routine.hook";
 
 interface UseRoutineLogicProps {
   inputRef: RefObject<HTMLInputElement | null>;
@@ -106,6 +108,7 @@ export const useRoutineLogic = ({
           stationId: UUID;
           title: string;
           status: GraphQLRoutineStatus;
+          phase?: GraphQLRoutinePhase | null;
           isPinned: boolean;
           scheduledStartAt: Date | string | number;
           scheduledEndAt: Date | string | number;
@@ -152,6 +155,7 @@ export const useRoutineLogic = ({
                 : node.status === GraphQLRoutineStatus.RoutineStatusOverDue
                   ? RoutineStatus.OverDue
                   : RoutineStatus.Scheduled,
+          phase: fromGraphQLRoutinePhase(node.phase),
           isPinned: node.isPinned,
           scheduledStartAt: new Date(node.scheduledStartAt),
           scheduledEndAt: new Date(node.scheduledEndAt),
@@ -372,7 +376,6 @@ export const useRoutineLogic = ({
       values: {
         title: string;
         description: string;
-        status?: RoutineStatus;
         isPinned?: boolean;
         scheduledStartAt?: Date;
         scheduledEndAt?: Date;
@@ -388,7 +391,6 @@ export const useRoutineLogic = ({
           stationId,
           title: values.title,
           description: values.description,
-          status: values.status,
           isPinned: values.isPinned,
           scheduledStartAt: values.scheduledStartAt,
           scheduledEndAt: values.scheduledEndAt,
@@ -405,7 +407,8 @@ export const useRoutineLogic = ({
         stationId,
         title: values.title,
         description: values.description,
-        status: values.status ?? RoutineStatus.Scheduled,
+        status: RoutineStatus.Scheduled,
+        phase: null,
         isPinned: values.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt:
@@ -804,7 +807,6 @@ export const useRoutineLogic = ({
       const duplicatedRoutine = await createRoutine(sourceRoutine.stationId, {
         title: `${sourceRoutine.title} Copy`,
         description: sourceRoutine.description,
-        status: sourceRoutine.status,
         isPinned: sourceRoutine.isPinned,
         scheduledStartAt: sourceRoutine.scheduledStartAt,
         scheduledEndAt: sourceRoutine.scheduledEndAt,

@@ -32,6 +32,17 @@ const TimezoneSelector = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [portalContainer, setPortalContainer] = useState<Element | null>(null);
+  const getTimezoneOffset = (timezone: string): string => {
+    const offset = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      timeZoneName: "longOffset",
+    })
+      .formatToParts(new Date())
+      .find(part => part.type === "timeZoneName")?.value;
+
+    if (!offset || offset === "GMT") return "UTC+00:00";
+    return offset.replace(/^GMT/, "UTC");
+  };
 
   const filteredTimezones = SupportedTimezones.filter(timezone => {
     const query = searchQuery.trim().toLowerCase();
@@ -127,6 +138,7 @@ const TimezoneSelector = ({
                     {value === timezone && <CheckIcon className="size-4" />}
                   </span>
                   <span className="truncate">
+                    {getTimezoneOffset(timezone)}{" "}
                     {formatTimezoneDisplayName(timezone, i18n.resolvedLanguage)}{" "}
                     {`(${timezone})`}
                   </span>

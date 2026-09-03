@@ -35,35 +35,11 @@ export const CHART_DEFINITIONS = {
     section: "routine",
     chart: { domain: "routine", chartType: "scheduledEndAtCount" },
   },
-  "routineTask:statusCount": {
-    id: "routineTask:statusCount",
-    titleKey: "workspace.charts.statusCounts",
-    section: "routineTask",
-    chart: { domain: "routineTask", chartType: "statusCount" },
-  },
   "routineTask:purposeCount": {
     id: "routineTask:purposeCount",
     titleKey: "workspace.charts.purposeCounts",
     section: "routineTask",
     chart: { domain: "routineTask", chartType: "purposeCount" },
-  },
-  "routineTask:scheduledAtCount": {
-    id: "routineTask:scheduledAtCount",
-    titleKey: "workspace.charts.scheduledTimes",
-    section: "routineTask",
-    chart: { domain: "routineTask", chartType: "scheduledAtCount" },
-  },
-  "routineTask:actualStartedAtCount": {
-    id: "routineTask:actualStartedAtCount",
-    titleKey: "workspace.charts.actualStarts",
-    section: "routineTask",
-    chart: { domain: "routineTask", chartType: "actualStartedAtCount" },
-  },
-  "routineTask:actualEndedAtCount": {
-    id: "routineTask:actualEndedAtCount",
-    titleKey: "workspace.charts.actualEnds",
-    section: "routineTask",
-    chart: { domain: "routineTask", chartType: "actualEndedAtCount" },
   },
 } as const;
 
@@ -165,8 +141,6 @@ const RoutineCharts = ({
                   onChartChange({ ...chart, chartType })
                 }
                 onRemove={() => onChartRemove(chart.id)}
-                queryRange={queryRange}
-                timeHourUnit={timeHourUnit}
               />
             );
           })}
