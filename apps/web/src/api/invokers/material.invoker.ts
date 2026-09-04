@@ -7,7 +7,7 @@ import {
   CreateMyMaterial,
   DeleteMyMaterialById,
   DeleteMyMaterialsByIds,
-  GetAllMyMaterialsByRootShelfId,
+  GetMyMaterialsByRootShelfId,
   GetMyMaterialAndItsParentById,
   GetMyMaterialById,
   GetMyMaterialsByParentSubShelfId,
@@ -29,10 +29,10 @@ import {
   DeleteMyMaterialsByIdsRequestSchema,
   type DeleteMyMaterialsByIdsResponse,
   DeleteMyMaterialsByIdsResponseSchema,
-  type GetAllMyMaterialsByRootShelfIdRequest,
-  GetAllMyMaterialsByRootShelfIdRequestSchema,
-  type GetAllMyMaterialsByRootShelfIdResponse,
-  GetAllMyMaterialsByRootShelfIdResponseSchema,
+  type GetMyMaterialsByRootShelfIdRequest,
+  GetMyMaterialsByRootShelfIdRequestSchema,
+  type GetMyMaterialsByRootShelfIdResponse,
+  GetMyMaterialsByRootShelfIdResponseSchema,
   type GetMyMaterialAndItsParentByIdRequest,
   GetMyMaterialAndItsParentByIdRequestSchema,
   type GetMyMaterialAndItsParentByIdResponse,
@@ -153,19 +153,19 @@ export const queryFnGetMyMaterialsByParentSubShelfId = async (
   }
 };
 
-export const queryFnGetAllMyMaterialsByRootShelfId = async (
-  request: GetAllMyMaterialsByRootShelfIdRequest
-): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
+export const queryFnGetMyMaterialsByRootShelfId = async (
+  request: GetMyMaterialsByRootShelfIdRequest
+): Promise<GetMyMaterialsByRootShelfIdResponse> => {
   try {
     const validatedRequest =
-      GetAllMyMaterialsByRootShelfIdRequestSchema.parse(request);
-    const response = await GetAllMyMaterialsByRootShelfId({
+      GetMyMaterialsByRootShelfIdRequestSchema.parse(request);
+    const response = await GetMyMaterialsByRootShelfId({
       data: validatedRequest,
     });
-    return GetAllMyMaterialsByRootShelfIdResponseSchema.parse(response);
+    return GetMyMaterialsByRootShelfIdResponseSchema.parse(response);
   } catch (error) {
     console.error(
-      "error happening in queryFnGetAllMyMaterialsByRootShelfId",
+      "error happening in queryFnGetMyMaterialsByRootShelfId",
       error
     );
     if (error instanceof ZodError) {

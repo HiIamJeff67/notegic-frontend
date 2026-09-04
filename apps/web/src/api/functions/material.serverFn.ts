@@ -7,8 +7,8 @@ import {
   DeleteMyMaterialByIdResponse,
   DeleteMyMaterialsByIdsRequest,
   DeleteMyMaterialsByIdsResponse,
-  GetAllMyMaterialsByRootShelfIdRequest,
-  GetAllMyMaterialsByRootShelfIdResponse,
+  GetMyMaterialsByRootShelfIdRequest,
+  GetMyMaterialsByRootShelfIdResponse,
   GetMyMaterialAndItsParentByIdRequest,
   GetMyMaterialAndItsParentByIdResponse,
   GetMyMaterialByIdRequest,
@@ -166,14 +166,12 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
     }
   );
 
-export const GetAllMyMaterialsByRootShelfId = createServerFn({
+export const GetMyMaterialsByRootShelfId = createServerFn({
   method: "GET",
 })
-  .inputValidator((data: GetAllMyMaterialsByRootShelfIdRequest) => data)
+  .inputValidator((data: GetMyMaterialsByRootShelfIdRequest) => data)
   .handler(
-    async ({
-      data: request,
-    }): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
+    async ({ data: request }): Promise<GetMyMaterialsByRootShelfIdResponse> => {
       const { rootShelfId, areDeleted = false } = request.param;
       const params = new URLSearchParams({
         areDeleted: String(areDeleted),
@@ -184,7 +182,7 @@ export const GetAllMyMaterialsByRootShelfId = createServerFn({
         getRequestHeader("User-Agent") ??
         "unknown";
       const response = await fetch(
-        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.getAllMyMaterialsByRootShelfId(rootShelfId)}?${params}`,
+        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.getMyMaterialsByRootShelfId(rootShelfId)}?${params}`,
         {
           method: "GET",
           headers: {
@@ -204,7 +202,7 @@ export const GetAllMyMaterialsByRootShelfId = createServerFn({
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMyMaterialsByRootShelfIdResponse;
+        (await response.json()) as GetMyMaterialsByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

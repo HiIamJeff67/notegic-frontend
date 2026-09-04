@@ -1,9 +1,14 @@
-import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
+import { translateError } from "@shared/i18n/error";
+import {
+  translateRoutineTaskPurpose,
+  translateRoutineTaskRecordStatus,
+} from "@shared/i18n/workspace";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -22,13 +27,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
 import { useModal, useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutineTaskPurpose,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
 
 interface RoutineTaskMenuItemProps {
   routineTask: RoutineTaskNode;
@@ -39,13 +38,6 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
   const executionStatus = routineTask.executionStatus;
-  const isRunning = executionStatus === RoutineTaskRecordStatus.Running;
-  const statusDotClassName =
-    executionStatus === RoutineTaskRecordStatus.Success
-      ? "bg-green-500"
-      : executionStatus === RoutineTaskRecordStatus.Failed
-        ? "bg-red-500"
-        : "bg-muted-foreground";
   const displayedStatus = executionStatus
     ? translateRoutineTaskRecordStatus(executionStatus, t)
     : "—";
@@ -66,13 +58,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
                   stationRoutineManager.selectRoutineTask(routineTask.id)
                 }
               >
-                {isRunning ? (
-                  <Spinner className="size-3 shrink-0 text-sky-500" />
-                ) : (
-                  <span
-                    className={`size-2 shrink-0 rounded-full ${statusDotClassName}`}
-                  />
-                )}
+                <RoutineTaskStatusDot status={executionStatus} />
                 <span>{routineTask.title}</span>
               </SidebarMenuSubButton>
             </ContextMenuTrigger>

@@ -1,11 +1,11 @@
 import {
-  GetAllMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdRequest,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackByIdRequest,
   GetMyBlockPacksByParentSubShelfIdRequest,
 } from "@shared/api/interfaces/blockPack.interface";
 import {
-  queryFnGetAllMyBlockPacksByRootShelfId,
+  queryFnGetMyBlockPacksByRootShelfId,
   queryFnGetMyBlockPackAndItsParentById,
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
@@ -95,13 +95,13 @@ export const prefetchGetMyBlockPacksByParentSubShelfId = (
   };
 };
 
-export const prefetchGetAllMyBlockPacksByRootShelfId = (
+export const prefetchGetMyBlockPacksByRootShelfId = (
   initialQueryClient?: QueryClient
 ) => {
   const queryClient = initialQueryClient ?? getQueryClient();
 
   const prefetchQuery = async (
-    prefetchRequest: GetAllMyBlockPacksByRootShelfIdRequest
+    prefetchRequest: GetMyBlockPacksByRootShelfIdRequest
   ): Promise<void> => {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.blockPack.manyByRootShelfId(
@@ -109,7 +109,7 @@ export const prefetchGetAllMyBlockPacksByRootShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetAllMyBlockPacksByRootShelfId(prefetchRequest),
+        await queryFnGetMyBlockPacksByRootShelfId(prefetchRequest),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };

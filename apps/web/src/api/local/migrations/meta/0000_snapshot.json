@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7ddbcb70-aa8e-4e7b-a53c-59c5414d37ac",
+  "id": "0ff686c9-829a-4df5-8573-fd6100985f96",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "BlockPackTable": {
@@ -64,7 +64,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.331Z\"'"
+          "default": "'\"2026-09-04T09:19:31.534Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -72,7 +72,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.331Z\"'"
+          "default": "'\"2026-09-04T09:19:31.534Z\"'"
         }
       },
       "indexes": {
@@ -141,7 +141,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.512Z\"'"
+          "default": "'\"2026-09-04T09:19:31.911Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -149,7 +149,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.512Z\"'"
+          "default": "'\"2026-09-04T09:19:31.911Z\"'"
         }
       },
       "indexes": {
@@ -228,7 +228,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.335Z\"'"
+          "default": "'\"2026-09-04T09:19:31.547Z\"'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -243,7 +243,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.335Z\"'"
+          "default": "'\"2026-09-04T09:19:31.547Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -251,7 +251,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.335Z\"'"
+          "default": "'\"2026-09-04T09:19:31.547Z\"'"
         }
       },
       "indexes": {},
@@ -322,7 +322,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "scheduled_end_at": {
           "name": "scheduled_end_at",
@@ -330,7 +330,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "period": {
           "name": "period",
@@ -360,7 +360,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -368,7 +368,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {
@@ -416,7 +416,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {
@@ -478,7 +478,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {
@@ -540,7 +540,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.509Z\"'"
+          "default": "'\"2026-09-04T09:19:31.905Z\"'"
         }
       },
       "indexes": {
@@ -625,7 +625,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -633,7 +633,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {},
@@ -684,6 +684,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "phase": {
+          "name": "phase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "cost_unit": {
           "name": "cost_unit",
           "type": "integer",
@@ -729,7 +736,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.509Z\"'"
+          "default": "'\"2026-09-04T09:19:31.905Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -737,7 +744,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.509Z\"'"
+          "default": "'\"2026-09-04T09:19:31.905Z\"'"
         }
       },
       "indexes": {
@@ -801,7 +808,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-09-02T00:00:00.000Z\"'"
+          "default": "'\"2026-09-04T09:19:31.915Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -809,7 +816,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-09-02T00:00:00.000Z\"'"
+          "default": "'\"2026-09-04T09:19:31.915Z\"'"
         }
       },
       "indexes": {
@@ -845,6 +852,57 @@
           "name": "RoutineDependencyTable_routine_task_id_previous_routine_task_id_pk"
         }
       },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "RoutineTaskDependencyGraphDraftTable": {
+      "name": "RoutineTaskDependencyGraphDraftTable",
+      "columns": {
+        "routine_id": {
+          "name": "routine_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nodes": {
+          "name": "nodes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "edges": {
+          "name": "edges",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2026-09-04T09:19:31.924Z\"'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "RoutineTaskDependencyGraphDraftTable_routine_id_RoutineTable_id_fk": {
+          "name": "RoutineTaskDependencyGraphDraftTable_routine_id_RoutineTable_id_fk",
+          "tableFrom": "RoutineTaskDependencyGraphDraftTable",
+          "tableTo": "RoutineTable",
+          "columnsFrom": ["routine_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -909,7 +967,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.905Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -917,7 +975,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.905Z\"'"
         }
       },
       "indexes": {},
@@ -979,7 +1037,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.512Z\"'"
+          "default": "'\"2026-09-04T09:19:31.910Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -987,7 +1045,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.512Z\"'"
+          "default": "'\"2026-09-04T09:19:31.910Z\"'"
         }
       },
       "indexes": {
@@ -1057,7 +1115,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.514Z\"'"
+          "default": "'\"2026-09-04T09:19:31.927Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -1065,7 +1123,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.514Z\"'"
+          "default": "'\"2026-09-04T09:19:31.927Z\"'"
         }
       },
       "indexes": {},
@@ -1140,7 +1198,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.517Z\"'"
+          "default": "'\"2026-09-04T09:19:31.931Z\"'"
         }
       },
       "indexes": {
@@ -1218,7 +1276,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -1226,7 +1284,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {
@@ -1282,7 +1340,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.519Z\"'"
+          "default": "'\"2026-09-04T09:19:31.933Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -1290,7 +1348,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.519Z\"'"
+          "default": "'\"2026-09-04T09:19:31.933Z\"'"
         }
       },
       "indexes": {
@@ -1365,7 +1423,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -1373,7 +1431,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-08-31T17:06:40.510Z\"'"
+          "default": "'\"2026-09-04T09:19:31.906Z\"'"
         }
       },
       "indexes": {
@@ -1415,57 +1473,6 @@
           "name": "UsersToStationsTable_user_public_id_station_id_pk"
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "RoutineTaskDependencyGraphDraftTable": {
-      "name": "RoutineTaskDependencyGraphDraftTable",
-      "columns": {
-        "routine_id": {
-          "name": "routine_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nodes": {
-          "name": "nodes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
-        },
-        "edges": {
-          "name": "edges",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'\"2026-09-02T00:00:00.000Z\"'"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "RoutineTaskDependencyGraphDraftTable_routine_id_RoutineTable_id_fk": {
-          "name": "RoutineTaskDependencyGraphDraftTable_routine_id_RoutineTable_id_fk",
-          "tableFrom": "RoutineTaskDependencyGraphDraftTable",
-          "tableTo": "RoutineTable",
-          "columnsFrom": ["routine_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     }

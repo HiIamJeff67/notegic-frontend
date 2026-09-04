@@ -142,9 +142,9 @@ export type GetMyBlockPacksByParentSubShelfIdResponse = z.infer<
   typeof GetMyBlockPacksByParentSubShelfIdResponseSchema
 >;
 
-/* ============================== GetAllMyBlockPacksByRootShelfId ============================== */
+/* ============================== GetMyBlockPacksByRootShelfId ============================== */
 
-export const GetAllMyBlockPacksByRootShelfIdRequestSchema =
+export const GetMyBlockPacksByRootShelfIdRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -158,11 +158,11 @@ export const GetAllMyBlockPacksByRootShelfIdRequestSchema =
     }),
   });
 
-export type GetAllMyBlockPacksByRootShelfIdRequest = z.input<
-  typeof GetAllMyBlockPacksByRootShelfIdRequestSchema
+export type GetMyBlockPacksByRootShelfIdRequest = z.input<
+  typeof GetMyBlockPacksByRootShelfIdRequestSchema
 >;
 
-export const GetAllMyBlockPacksByRootShelfIdResponseSchema =
+export const GetMyBlockPacksByRootShelfIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(
       z.object({
@@ -182,8 +182,8 @@ export const GetAllMyBlockPacksByRootShelfIdResponseSchema =
     }),
   });
 
-export type GetAllMyBlockPacksByRootShelfIdResponse = z.infer<
-  typeof GetAllMyBlockPacksByRootShelfIdResponseSchema
+export type GetMyBlockPacksByRootShelfIdResponse = z.infer<
+  typeof GetMyBlockPacksByRootShelfIdResponseSchema
 >;
 
 /* ============================== CreateBlockPack ============================== */

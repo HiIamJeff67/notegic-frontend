@@ -6,8 +6,8 @@ CREATE TABLE `BlockPackTable` (
 	`header_background_url` text,
 	`block_count` integer DEFAULT 0 NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.331Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.331Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.534Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.534Z"' NOT NULL,
 	FOREIGN KEY (`parent_sub_shelf_id`) REFERENCES `SubShelfTable`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
@@ -18,8 +18,8 @@ CREATE TABLE `ItemTable` (
 	`root_shelf_id` text NOT NULL,
 	`type` text NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.512Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.512Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.911Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.911Z"' NOT NULL,
 	FOREIGN KEY (`parent_sub_shelf_id`) REFERENCES `SubShelfTable`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`root_shelf_id`) REFERENCES `RootShelfTable`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -31,10 +31,10 @@ CREATE TABLE `RootShelfTable` (
 	`name` text DEFAULT 'undefined' NOT NULL,
 	`sub_shelf_count` integer DEFAULT 0 NOT NULL,
 	`item_count` integer DEFAULT 0 NOT NULL,
-	`last_analyzed_count` integer DEFAULT '"2026-08-31T17:06:40.335Z"' NOT NULL,
+	`last_analyzed_count` integer DEFAULT '"2026-09-04T09:19:31.547Z"' NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.335Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.335Z"' NOT NULL
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.547Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.547Z"' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `RoutineTable` (
@@ -45,13 +45,13 @@ CREATE TABLE `RoutineTable` (
 	`status` text DEFAULT 'Scheduled' NOT NULL,
 	`phase` text,
 	`is_pinned` integer DEFAULT false NOT NULL,
-	`scheduled_start_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`scheduled_end_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`scheduled_start_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
+	`scheduled_end_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	`period` text,
 	`timezone` text DEFAULT 'UTC' NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	FOREIGN KEY (`station_id`) REFERENCES `StationTable`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -59,7 +59,7 @@ CREATE INDEX `routine_station_idx` ON `RoutineTable` (`station_id`);--> statemen
 CREATE TABLE `RoutinesToItemsTable` (
 	`routine_id` text NOT NULL,
 	`item_id` text NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	FOREIGN KEY (`routine_id`) REFERENCES `RoutineTable`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`item_id`) REFERENCES `ItemTable`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -69,7 +69,7 @@ CREATE INDEX `routines_to_items_item_idx` ON `RoutinesToItemsTable` (`item_id`);
 CREATE TABLE `RoutinesToTags` (
 	`routine_id` text NOT NULL,
 	`tag_id` text NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	FOREIGN KEY (`routine_id`) REFERENCES `RoutineTable`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`tag_id`) REFERENCES `RoutineTag`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -79,7 +79,7 @@ CREATE INDEX `routines_to_tags_tag_idx` ON `RoutinesToTags` (`tag_id`);--> state
 CREATE TABLE `RoutinesToTasksTable` (
 	`routine_id` text NOT NULL,
 	`task_id` text NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.509Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.905Z"' NOT NULL,
 	FOREIGN KEY (`routine_id`) REFERENCES `RoutineTable`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`task_id`) REFERENCES `RoutineTaskTable`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -92,8 +92,8 @@ CREATE TABLE `RoutineTag` (
 	`name` text DEFAULT 'undefined' NOT NULL,
 	`color` text(7) DEFAULT '#FFFFFF' NOT NULL,
 	`icon` text,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	FOREIGN KEY (`owner_public_id`) REFERENCES `UserTable`(`public_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -102,13 +102,14 @@ CREATE TABLE `RoutineTaskTable` (
 	`routine_id` text NOT NULL,
 	`title` text DEFAULT 'undefined' NOT NULL,
 	`purpose` text NOT NULL,
+	`phase` text,
 	`cost_unit` integer DEFAULT 0 NOT NULL,
 	`payload` text NOT NULL,
 	`priority` integer DEFAULT 0 NOT NULL,
 	`max_attempts` integer DEFAULT 1 NOT NULL,
 	`previous_routine_task_ids` text DEFAULT '[]' NOT NULL,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.509Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.509Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.905Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.905Z"' NOT NULL,
 	FOREIGN KEY (`routine_id`) REFERENCES `RoutineTable`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -118,8 +119,8 @@ CREATE TABLE `RoutineDependencyTable` (
 	`previous_routine_task_id` text NOT NULL,
 	`description` text DEFAULT '' NOT NULL,
 	`progress` integer DEFAULT 0 NOT NULL,
-	`updated_at` integer DEFAULT '2026-09-02T00:00:00.000Z' NOT NULL,
-	`created_at` integer DEFAULT '2026-09-02T00:00:00.000Z' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.915Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.915Z"' NOT NULL,
 	PRIMARY KEY(`routine_task_id`, `previous_routine_task_id`),
 	FOREIGN KEY (`routine_task_id`) REFERENCES `RoutineTaskTable`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`previous_routine_task_id`) REFERENCES `RoutineTaskTable`(`id`) ON UPDATE no action ON DELETE cascade
@@ -130,7 +131,7 @@ CREATE TABLE `RoutineTaskDependencyGraphDraftTable` (
 	`routine_id` text PRIMARY KEY NOT NULL,
 	`nodes` text DEFAULT '[]' NOT NULL,
 	`edges` text DEFAULT '[]' NOT NULL,
-	`updated_at` integer DEFAULT '"2026-09-02T00:00:00.000Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.924Z"' NOT NULL,
 	FOREIGN KEY (`routine_id`) REFERENCES `RoutineTable`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -142,8 +143,8 @@ CREATE TABLE `StationTable` (
 	`header_background_url` text,
 	`routine_count` integer DEFAULT 0 NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.905Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.905Z"' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `SubShelfTable` (
@@ -153,8 +154,8 @@ CREATE TABLE `SubShelfTable` (
 	`prev_sub_shelf_id` text,
 	`path` text DEFAULT '[]' NOT NULL,
 	`deleted_at` integer,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.512Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.512Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.910Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.910Z"' NOT NULL,
 	FOREIGN KEY (`root_shelf_id`) REFERENCES `RootShelfTable`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`prev_sub_shelf_id`) REFERENCES `SubShelfTable`(`id`) ON UPDATE cascade ON DELETE cascade
 );
@@ -165,8 +166,8 @@ CREATE TABLE `TestTable` (
 	`id` text PRIMARY KEY NOT NULL,
 	`title` text DEFAULT 'unknown' NOT NULL,
 	`content` text,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.514Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.514Z"' NOT NULL
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.927Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.927Z"' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `TransactionTable` (
@@ -178,7 +179,7 @@ CREATE TABLE `TransactionTable` (
 	`affected` text,
 	`retry_count` integer DEFAULT 0 NOT NULL,
 	`last_error` text,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.517Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.931Z"' NOT NULL,
 	FOREIGN KEY (`owner_public_id`) REFERENCES `UserTable`(`public_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -190,8 +191,8 @@ CREATE TABLE `UserTable` (
 	`email` text NOT NULL,
 	`status` text DEFAULT 'Online' NOT NULL,
 	`is_logged_in` integer DEFAULT true NOT NULL,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `UserTable_name_unique` ON `UserTable` (`name`);--> statement-breakpoint
@@ -201,8 +202,8 @@ CREATE TABLE `UsersToShelvesTable` (
 	`user_public_id` text NOT NULL,
 	`root_shelf_id` text NOT NULL,
 	`permission` text NOT NULL,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.519Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.519Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.933Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.933Z"' NOT NULL,
 	PRIMARY KEY(`user_public_id`, `root_shelf_id`),
 	FOREIGN KEY (`user_public_id`) REFERENCES `UserTable`(`public_id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`root_shelf_id`) REFERENCES `RootShelfTable`(`id`) ON UPDATE no action ON DELETE no action
@@ -214,8 +215,8 @@ CREATE TABLE `UsersToStationsTable` (
 	`user_public_id` text NOT NULL,
 	`station_id` text NOT NULL,
 	`permission` text NOT NULL,
-	`updated_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
-	`created_at` integer DEFAULT '"2026-08-31T17:06:40.510Z"' NOT NULL,
+	`updated_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
+	`created_at` integer DEFAULT '"2026-09-04T09:19:31.906Z"' NOT NULL,
 	PRIMARY KEY(`user_public_id`, `station_id`),
 	FOREIGN KEY (`user_public_id`) REFERENCES `UserTable`(`public_id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`station_id`) REFERENCES `StationTable`(`id`) ON UPDATE no action ON DELETE no action

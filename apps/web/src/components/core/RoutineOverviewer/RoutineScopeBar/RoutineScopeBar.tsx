@@ -87,7 +87,7 @@ const RoutineScopeBar = ({
     >
       <div className="flex min-w-0 items-center gap-2">
         {sidebarManager.isMobile && <SidebarTrigger />}
-        <ButtonGroup className="shrink-0">
+        <ButtonGroup className="shrink-0 overflow-hidden rounded-md border border-border">
           {showStationStatus && (
             <HoverCard
               openDelay={250}

@@ -3,10 +3,12 @@ import {
   AllAccessControlPermissions,
 } from "@shared/api/interfaces/enums";
 import type {
-  GetAllMyRoutineTasksByRoutineIdsRequest,
   GetAllMyRoutineTasksRequest,
   GetMyRoutineTaskByIdRequest,
+  GetMyRoutineTasksByRoutineIdRequest,
+  GetMyRoutineTasksByRoutineIdsRequest,
 } from "@shared/api/interfaces/routineTask.interface";
+import { and, asc, desc, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Routine,
@@ -15,7 +17,6 @@ import {
   User,
   UsersToStations,
 } from "@/api/local/schemas";
-import { and, asc, desc, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 
 export class RoutineTaskLocalSimulator {
   private static getPassPermissionCheckSQL = (
@@ -68,8 +69,8 @@ export class RoutineTaskLocalSimulator {
     return routineTasks[0]?.RoutineTaskTable ?? null;
   };
 
-  static simulateGetAllMyRoutineTasksByRoutineIds = async (
-    request: GetAllMyRoutineTasksByRoutineIdsRequest
+  static simulateGetMyRoutineTasksByRoutineIds = async (
+    request: GetMyRoutineTasksByRoutineIdsRequest
   ) => {
     if (request.param.areDeleted === true) return [];
 
@@ -85,6 +86,7 @@ export class RoutineTaskLocalSimulator {
         routineId: RoutineTask.routineId,
         title: RoutineTask.title,
         purpose: RoutineTask.purpose,
+        phase: RoutineTask.phase,
         costUnit: RoutineTask.costUnit,
         payload: RoutineTask.payload,
         priority: RoutineTask.priority,
@@ -110,6 +112,18 @@ export class RoutineTaskLocalSimulator {
       .orderBy(desc(RoutineTask.priority), asc(RoutineTask.id));
   };
 
+  static simulateGetMyRoutineTasksByRoutineId = async (
+    request: GetMyRoutineTasksByRoutineIdRequest
+  ) => {
+    return RoutineTaskLocalSimulator.simulateGetMyRoutineTasksByRoutineIds({
+      ...request,
+      param: {
+        routineIds: [request.param.routineId],
+        areDeleted: request.param.areDeleted,
+      },
+    });
+  };
+
   static simulateGetAllMyRoutineTasks = async (
     request?: GetAllMyRoutineTasksRequest
   ) => {
@@ -127,6 +141,7 @@ export class RoutineTaskLocalSimulator {
         routineId: RoutineTask.routineId,
         title: RoutineTask.title,
         purpose: RoutineTask.purpose,
+        phase: RoutineTask.phase,
         costUnit: RoutineTask.costUnit,
         payload: RoutineTask.payload,
         priority: RoutineTask.priority,

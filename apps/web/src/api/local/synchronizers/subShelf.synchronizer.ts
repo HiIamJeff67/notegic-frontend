@@ -10,7 +10,7 @@ import {
   DeleteMySubShelfByIdResponse,
   DeleteMySubShelvesByIdsRequest,
   DeleteMySubShelvesByIdsResponse,
-  GetAllMySubShelvesByRootShelfIdResponse,
+  GetMySubShelvesByRootShelfIdResponse,
   GetMySubShelfByIdResponse,
   GetMySubShelvesAndItemsByPrevSubShelfIdResponse,
   GetMySubShelvesByPrevSubShelfIdResponse,
@@ -123,8 +123,8 @@ export class SubShelfLocalSynchronizer {
       });
   };
 
-  static syncGetAllMySubShelvesByRootShelfId = async (
-    response: GetAllMySubShelvesByRootShelfIdResponse
+  static syncGetMySubShelvesByRootShelfId = async (
+    response: GetMySubShelvesByRootShelfIdResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
 

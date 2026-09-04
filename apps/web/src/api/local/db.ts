@@ -1,8 +1,8 @@
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { CurrentEnvironment } from "@shared/constants/project";
 import { Environment } from "@shared/types/environment.type";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";
+import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { LocalDBMigrator } from "./migrator";
 import { isOPFSMissingFileError, recoverOPFSError } from "./recover";
 import * as schema from "./schemas";
@@ -236,8 +236,6 @@ const ensureReady = async (
     await wrappedAll(`SELECT 1 FROM "TestTable" LIMIT 1`); // the test table should be always exist for testing
     await wrappedAll(`SELECT 1 FROM "TransactionTable" LIMIT 1`); // the transaction table should be always exist for synchronization
     await wrappedAll(`SELECT 1 FROM "StationTable" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "RoutineTable" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "RoutineDependencyTable" LIMIT 1`);
     await wrappedAll(`SELECT 1 FROM "RoutineTag" LIMIT 1`);
     await wrappedAll(`SELECT 1 FROM "ItemTable" LIMIT 1`);
     await wrappedAll(`SELECT 1 FROM "UsersToStationsTable" LIMIT 1`);

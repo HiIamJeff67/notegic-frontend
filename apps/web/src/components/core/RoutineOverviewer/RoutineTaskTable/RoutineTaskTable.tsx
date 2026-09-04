@@ -2,13 +2,14 @@ import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
-import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { RoutinePhase, RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +28,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
 
 const RoutineTaskTable = () => {
   const { t } = useTranslation();
@@ -81,6 +81,7 @@ const RoutineTaskTable = () => {
             routineId: UUID;
             title: string;
             purpose: string;
+            phase: RoutinePhase | null;
             costUnit: number;
             priority: number;
             maxAttempts: number;
@@ -111,6 +112,9 @@ const RoutineTaskTable = () => {
               "RoutineTaskPurpose_",
               ""
             ) as RoutineTaskPurpose,
+            phase: node.phase
+              ? (node.phase.replace("RoutinePhase_", "") as RoutinePhase)
+              : null,
             payload: {},
             costUnit: node.costUnit,
             priority: node.priority,

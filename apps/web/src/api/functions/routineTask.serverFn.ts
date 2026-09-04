@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyRoutineTaskPurposeCountRequest,
@@ -7,12 +6,12 @@ import type {
 import {
   CreateRoutineTaskByRoutineIdRequest,
   CreateRoutineTaskByRoutineIdResponse,
-  GetAllMyRoutineTasksByRoutineIdsRequest,
-  GetAllMyRoutineTasksByRoutineIdsResponse,
   GetAllMyRoutineTasksRequest,
   GetAllMyRoutineTasksResponse,
   GetMyRoutineTaskByIdRequest,
   GetMyRoutineTaskByIdResponse,
+  GetMyRoutineTasksByRoutineIdRequest,
+  GetMyRoutineTasksByRoutineIdResponse,
   HardDeleteMyRoutineTaskByIdRequest,
   HardDeleteMyRoutineTaskByIdResponse,
   HardDeleteMyRoutineTasksByIdsRequest,
@@ -28,6 +27,7 @@ import {
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineTaskPurposeCount = createServerFn({
@@ -102,25 +102,25 @@ export const GetMyRoutineTaskById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetAllMyRoutineTasksByRoutineIds = createServerFn({
+export const GetMyRoutineTasksByRoutineId = createServerFn({
   method: "GET",
 })
-  .inputValidator((data: GetAllMyRoutineTasksByRoutineIdsRequest) => data)
+  .inputValidator((data: GetMyRoutineTasksByRoutineIdRequest) => data)
   .handler(
     async ({
       data: request,
-    }): Promise<GetAllMyRoutineTasksByRoutineIdsResponse> => {
-      const params = new URLSearchParams();
-      for (const routineId of request.param.routineIds) {
-        params.append("routineIds", routineId);
-      }
-      params.set("areDeleted", String(request.param.areDeleted ?? false));
+    }): Promise<GetMyRoutineTasksByRoutineIdResponse> => {
+      const params = new URLSearchParams({
+        areDeleted: String(request.param.areDeleted ?? false),
+      });
       const url =
         import.meta.env.VITE_API_DOMAIN_URL +
         "/" +
         CurrentAPIBaseURL +
         "/" +
-        APIURLPathDictionary.routineTask.getAllMyRoutineTasksByRoutineIds +
+        APIURLPathDictionary.routineTask.getMyRoutineTasksByRoutineId(
+          request.param.routineId
+        ) +
         "?" +
         params.toString();
       const inboundCookie = getRequestHeader("cookie");
@@ -146,7 +146,7 @@ export const GetAllMyRoutineTasksByRoutineIds = createServerFn({
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMyRoutineTasksByRoutineIdsResponse;
+        (await response.json()) as GetMyRoutineTasksByRoutineIdResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

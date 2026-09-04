@@ -10,7 +10,6 @@ import {
   AllRoutineStatuses,
   RoutinePeriod,
   RoutineStatus,
-  RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
 import {
   translateRoutinePhase,
@@ -24,6 +23,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -637,16 +637,9 @@ const RoutineTable = () => {
                                     key={routineTask.id}
                                     className="flex min-w-0 items-center gap-2 text-sm"
                                   >
-                                    <span
-                                      className={`size-2.5 shrink-0 rounded-full ${
-                                        routineTask.executionStatus ===
-                                        RoutineTaskRecordStatus.Running
-                                          ? "bg-[var(--decoration)]"
-                                          : routineTask.executionStatus ===
-                                              RoutineTaskRecordStatus.Failed
-                                            ? "bg-accent-foreground"
-                                            : "bg-muted-foreground"
-                                      }`}
+                                    <RoutineTaskStatusDot
+                                      className="size-2.5"
+                                      status={routineTask.executionStatus}
                                     />
                                     <span className="min-w-0 flex-1 truncate">
                                       {routineTask.title}

@@ -19,8 +19,8 @@ import type {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetAllMyBlockPacksByRootShelfIdRequest,
-  GetAllMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
@@ -52,7 +52,7 @@ import {
   mutationFnRestoreMyBlockPacksByIds,
   mutationFnUpdateMyBlockPackById,
   mutationFnUpdateMyBlockPacksByIds,
-  queryFnGetAllMyBlockPacksByRootShelfId,
+  queryFnGetMyBlockPacksByRootShelfId,
   queryFnGetMyBlockPackAndItsParentById,
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
@@ -325,17 +325,17 @@ export const useGetMyBlockPacksByParentSubShelfId = (
   return { ...query, fetch };
 };
 
-export const useGetAllMyBlockPacksByRootShelfId = (
-  hookRequest?: GetAllMyBlockPacksByRootShelfIdRequest,
+export const useGetMyBlockPacksByRootShelfId = (
+  hookRequest?: GetMyBlockPacksByRootShelfIdRequest,
   options?: Partial<
-    UseQueryOptions<GetAllMyBlockPacksByRootShelfIdResponse, Error>
+    UseQueryOptions<GetMyBlockPacksByRootShelfIdResponse, Error>
   >
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyBlockPacksByRootShelfIdRequest
-  ): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
+    request?: GetMyBlockPacksByRootShelfIdRequest
+  ): Promise<GetMyBlockPacksByRootShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
@@ -347,12 +347,12 @@ export const useGetAllMyBlockPacksByRootShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetAllMyBlockPacksByRootShelfId(request);
+      const response = await queryFnGetMyBlockPacksByRootShelfId(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
-      await BlockPackLocalSynchronizer.syncGetAllMyBlockPacksByRootShelfId(
+      await BlockPackLocalSynchronizer.syncGetMyBlockPacksByRootShelfId(
         response
       );
       return response;
@@ -362,7 +362,7 @@ export const useGetAllMyBlockPacksByRootShelfId = (
         error instanceof NotegicFetchError
       ) {
         const existingBlockPacks =
-          await BlockPackLocalSimulator.simulateGetAllMyBlockPacksByRootShelfId(
+          await BlockPackLocalSimulator.simulateGetMyBlockPacksByRootShelfId(
             request
           );
         return {
@@ -370,14 +370,14 @@ export const useGetAllMyBlockPacksByRootShelfId = (
           data: existingBlockPacks,
           exception: error.unWrap,
           embedded: { publicId: "" },
-        } as GetAllMyBlockPacksByRootShelfIdResponse;
+        } as GetMyBlockPacksByRootShelfIdResponse;
       }
 
       throw error;
     }
   };
 
-  const query = useQuery<GetAllMyBlockPacksByRootShelfIdResponse, Error>({
+  const query = useQuery<GetMyBlockPacksByRootShelfIdResponse, Error>({
     queryKey: queryKeys.blockPack.manyByRootShelfId(
       hookRequest?.param.rootShelfId as UUID | undefined,
       hookRequest?.param.areDeleted ?? false
@@ -391,8 +391,8 @@ export const useGetAllMyBlockPacksByRootShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyBlockPacksByRootShelfIdRequest
-  ): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
+    callbackRequest: GetMyBlockPacksByRootShelfIdRequest
+  ): Promise<GetMyBlockPacksByRootShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.manyByRootShelfId(
         callbackRequest.param.rootShelfId as UUID | undefined,

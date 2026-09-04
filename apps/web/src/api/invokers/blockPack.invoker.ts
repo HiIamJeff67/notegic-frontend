@@ -9,7 +9,7 @@ import {
   CreateBlockPacks,
   DeleteMyBlockPackById,
   DeleteMyBlockPacksByIds,
-  GetAllMyBlockPacksByRootShelfId,
+  GetMyBlockPacksByRootShelfId,
   GetMyBlockPackAndItsParentById,
   GetMyBlockPackById,
   GetMyBlockPacksByParentSubShelfId,
@@ -41,10 +41,10 @@ import {
   DeleteMyBlockPacksByIdsRequestSchema,
   type DeleteMyBlockPacksByIdsResponse,
   DeleteMyBlockPacksByIdsResponseSchema,
-  type GetAllMyBlockPacksByRootShelfIdRequest,
-  GetAllMyBlockPacksByRootShelfIdRequestSchema,
-  GetAllMyBlockPacksByRootShelfIdResponse,
-  GetAllMyBlockPacksByRootShelfIdResponseSchema,
+  type GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdRequestSchema,
+  GetMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdResponseSchema,
   type GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackAndItsParentByIdRequestSchema,
   GetMyBlockPackAndItsParentByIdResponse,
@@ -176,19 +176,19 @@ export const queryFnGetMyBlockPacksByParentSubShelfId = async (
   }
 };
 
-export const queryFnGetAllMyBlockPacksByRootShelfId = async (
-  request: GetAllMyBlockPacksByRootShelfIdRequest
-): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
+export const queryFnGetMyBlockPacksByRootShelfId = async (
+  request: GetMyBlockPacksByRootShelfIdRequest
+): Promise<GetMyBlockPacksByRootShelfIdResponse> => {
   try {
     const validatedRequest =
-      GetAllMyBlockPacksByRootShelfIdRequestSchema.parse(request);
-    const response = await GetAllMyBlockPacksByRootShelfId({
+      GetMyBlockPacksByRootShelfIdRequestSchema.parse(request);
+    const response = await GetMyBlockPacksByRootShelfId({
       data: validatedRequest,
     });
-    return GetAllMyBlockPacksByRootShelfIdResponseSchema.parse(response);
+    return GetMyBlockPacksByRootShelfIdResponseSchema.parse(response);
   } catch (error) {
     console.error(
-      "error happening in queryFnGetAllMyBlockPacksByRootShelfId",
+      "error happening in queryFnGetMyBlockPacksByRootShelfId",
       error
     );
     if (error instanceof ZodError) {

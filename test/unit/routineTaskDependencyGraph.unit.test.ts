@@ -37,6 +37,28 @@ describe("RoutineTask dependency graph adapters", () => {
     expect(getRoutineTaskDependencyEdges([])).toEqual([]);
   });
 
+  test("preserves dependency metadata on graph edges", () => {
+    const edges = getRoutineTaskDependencyEdges([
+      {
+        ...dependency("task-a", "task-b"),
+        description: "Run after source task",
+        progress: 75,
+      },
+    ]);
+
+    expect(edges[0]).toEqual(
+      expect.objectContaining({
+        id: "task-a->task-b",
+        source: "task-a",
+        target: "task-b",
+        data: {
+          description: "Run after source task",
+          progress: 75,
+        },
+      })
+    );
+  });
+
   test("rejects self edges and edges that close a cycle", () => {
     const edges: Edge[] = [
       { id: "a->b", source: "a", target: "b" },

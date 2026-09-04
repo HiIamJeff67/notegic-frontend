@@ -11,7 +11,7 @@ import {
   CreateRoutinesByStationIds,
   DeleteMyRoutineById,
   DeleteMyRoutinesByIds,
-  GetAllMyRoutinesByTimeRange,
+  GetMyRoutinesByTimeRange,
   GetMyRoutineById,
   GetMyRoutinesByStationId,
   HardDeleteMyRoutineById,
@@ -57,10 +57,10 @@ import {
   DeleteMyRoutinesByIdsRequestSchema,
   DeleteMyRoutinesByIdsResponse,
   DeleteMyRoutinesByIdsResponseSchema,
-  GetAllMyRoutinesByTimeRangeRequest,
-  GetAllMyRoutinesByTimeRangeRequestSchema,
-  GetAllMyRoutinesByTimeRangeResponse,
-  GetAllMyRoutinesByTimeRangeResponseSchema,
+  GetMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeRequestSchema,
+  GetMyRoutinesByTimeRangeResponse,
+  GetMyRoutinesByTimeRangeResponseSchema,
   GetMyRoutineByIdRequest,
   GetMyRoutineByIdRequestSchema,
   GetMyRoutineByIdResponse,
@@ -224,21 +224,18 @@ export const queryFnGetMyRoutinesByStationId = async (
   }
 };
 
-export const queryFnGetAllMyRoutinesByTimeRange = async (
-  request: GetAllMyRoutinesByTimeRangeRequest
-): Promise<GetAllMyRoutinesByTimeRangeResponse> => {
+export const queryFnGetMyRoutinesByTimeRange = async (
+  request: GetMyRoutinesByTimeRangeRequest
+): Promise<GetMyRoutinesByTimeRangeResponse> => {
   try {
     const validatedRequest =
-      GetAllMyRoutinesByTimeRangeRequestSchema.parse(request);
-    const response = await GetAllMyRoutinesByTimeRange({
+      GetMyRoutinesByTimeRangeRequestSchema.parse(request);
+    const response = await GetMyRoutinesByTimeRange({
       data: validatedRequest,
     });
-    return GetAllMyRoutinesByTimeRangeResponseSchema.parse(response);
+    return GetMyRoutinesByTimeRangeResponseSchema.parse(response);
   } catch (error) {
-    console.error(
-      "error happening in queryFnGetAllMyRoutinesByTimeRange",
-      error
-    );
+    console.error("error happening in queryFnGetMyRoutinesByTimeRange", error);
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)

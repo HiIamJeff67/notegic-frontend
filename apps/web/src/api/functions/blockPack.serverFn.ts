@@ -9,8 +9,8 @@ import {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetAllMyBlockPacksByRootShelfIdRequest,
-  GetAllMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
@@ -168,17 +168,17 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
     }
   );
 
-export const GetAllMyBlockPacksByRootShelfId = createServerFn({
+export const GetMyBlockPacksByRootShelfId = createServerFn({
   method: "GET",
 })
-  .inputValidator((data: GetAllMyBlockPacksByRootShelfIdRequest) => data)
+  .inputValidator((data: GetMyBlockPacksByRootShelfIdRequest) => data)
   .handler(
     async ({
       data: request,
-    }): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
+    }): Promise<GetMyBlockPacksByRootShelfIdResponse> => {
       const { rootShelfId, areDeleted = false } = request.param;
       const params = new URLSearchParams({ areDeleted: String(areDeleted) });
-      let url = `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.blockPack.getAllMyBlockPacksByRootShelfId(rootShelfId)}?${params}`;
+      let url = `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.blockPack.getMyBlockPacksByRootShelfId(rootShelfId)}?${params}`;
       const inboundCookie = getRequestHeader("cookie");
       const userAgent =
         request.header?.userAgent ??
@@ -202,7 +202,7 @@ export const GetAllMyBlockPacksByRootShelfId = createServerFn({
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMyBlockPacksByRootShelfIdResponse;
+        (await response.json()) as GetMyBlockPacksByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

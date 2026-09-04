@@ -15,7 +15,7 @@ export function IsExceptionCode(exceptionCode: ExceptionCode): boolean {
   return exceptionCode >= MinExceptionCode && exceptionCode <= MaxExceptionCode;
 }
 
-export const NotegicExceptionSchema = z.object({
+const NotegicInternalExceptionSchema = z.object({
   code: z.number().int().positive(),
   prefix: z.string(),
   reason: z.string(),
@@ -25,6 +25,19 @@ export const NotegicExceptionSchema = z.object({
   origin: z.string().optional(),
   retryable: z.boolean().optional(),
 });
+
+const NotegicPublicExceptionSchema = z.object({
+  reason: z.string(),
+  domain: z.string(),
+  operation: z.string(),
+  message: z.string(),
+  retryable: z.boolean(),
+});
+
+export const NotegicExceptionSchema = z.union([
+  NotegicInternalExceptionSchema,
+  NotegicPublicExceptionSchema,
+]);
 
 export type NotegicExceptionFields = z.infer<typeof NotegicExceptionSchema>;
 
@@ -40,14 +53,22 @@ export class NotegicException {
 
   constructor(obj: any) {
     const validated = NotegicExceptionSchema.parse(obj);
-    this.code = validated.code;
-    this.prefix = validated.prefix;
     this.reason = validated.reason;
     this.message = validated.message;
-    this.status = validated.status;
-    this.details = validated.details;
-    this.origin = validated.origin;
     this.retryable = validated.retryable;
+
+    if ("code" in validated) {
+      this.code = validated.code;
+      this.prefix = validated.prefix;
+      this.status = validated.status;
+      this.details = validated.details;
+      this.origin = validated.origin;
+      return;
+    }
+
+    this.code = 500;
+    this.prefix = validated.domain;
+    this.status = 500;
   }
 
   static nullable(value: any): value is null | undefined {

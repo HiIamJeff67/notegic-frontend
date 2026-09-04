@@ -279,138 +279,143 @@ const CreateRoutineTaskDialog = ({
                 <Label htmlFor="routine-task-payload">
                   {t("workspace.fields.payload")}
                 </Label>
-                <div
-                  id="routine-task-payload"
-                  role="button"
-                  tabIndex={0}
-                  aria-invalid={payloadError.length > 0}
-                  className={`group relative cursor-pointer overflow-hidden border bg-card/45 ${
-                    isPayloadOverflowing ? "rounded-b-none" : "rounded-b-sm"
-                  }`}
-                  style={{ height: payloadTextareaHeight }}
-                  onClick={async () => {
-                    try {
-                      const clipboardText =
-                        await navigator.clipboard.readText();
-                      setPayload(
-                        JSON.stringify(JSON.parse(clipboardText), null, 2)
-                      );
-                      setPayloadError("");
-                      toast.success(
-                        t("workspace.payload.importedFromClipboard")
-                      );
-                    } catch {
-                      const message = t(
-                        "workspace.payload.clipboardMustContainValidJson"
-                      );
-                      setPayloadError(message);
-                      toast.error(message);
-                    }
-                  }}
-                  onPaste={event => {
-                    event.preventDefault();
-                    try {
-                      setPayload(
-                        JSON.stringify(
-                          JSON.parse(event.clipboardData.getData("text")),
-                          null,
-                          2
-                        )
-                      );
-                      setPayloadError("");
-                      toast.success(
-                        t("workspace.payload.importedFromClipboard")
-                      );
-                    } catch {
-                      const message = t(
-                        "workspace.payload.pastedMustBeValidJson"
-                      );
-                      setPayloadError(message);
-                      toast.error(message);
-                    }
-                  }}
-                  onDragOver={event => {
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "copy";
-                  }}
-                  onDrop={event => {
-                    event.preventDefault();
-                    const droppedFile = event.dataTransfer.files[0];
-                    if (droppedFile) {
-                      void droppedFile
-                        .text()
-                        .then(droppedText => {
-                          setPayload(
-                            JSON.stringify(JSON.parse(droppedText), null, 2)
-                          );
-                          setPayloadError("");
-                          toast.success(
-                            t("workspace.payload.importedFromFile")
-                          );
-                        })
-                        .catch(() => {
-                          const message = t(
-                            "workspace.payload.droppedFileMustContainValidJson"
-                          );
-                          setPayloadError(message);
-                          toast.error(message);
-                        });
-                      return;
-                    }
-
-                    try {
-                      setPayload(
-                        JSON.stringify(
-                          JSON.parse(event.dataTransfer.getData("text")),
-                          null,
-                          2
-                        )
-                      );
-                      setPayloadError("");
-                      toast.success(t("workspace.payload.imported"));
-                    } catch {
-                      const message = t(
-                        "workspace.payload.droppedContentMustBeValidJson"
-                      );
-                      setPayloadError(message);
-                      toast.error(message);
-                    }
-                  }}
-                >
-                  <pre
-                    ref={payloadPreviewRef}
-                    className={`h-full whitespace-pre-wrap break-words p-3 font-mono text-xs ${
-                      isPayloadExpanded ? "overflow-hidden" : "overflow-y-auto"
+                <div className="flex flex-col">
+                  <div
+                    id="routine-task-payload"
+                    role="button"
+                    tabIndex={0}
+                    aria-invalid={payloadError.length > 0}
+                    className={`group relative cursor-pointer overflow-hidden border bg-card/45 ${
+                      isPayloadOverflowing ? "rounded-b-none" : "rounded-b-sm"
                     }`}
+                    style={{ height: payloadTextareaHeight }}
+                    onClick={async () => {
+                      try {
+                        const clipboardText =
+                          await navigator.clipboard.readText();
+                        setPayload(
+                          JSON.stringify(JSON.parse(clipboardText), null, 2)
+                        );
+                        setPayloadError("");
+                        toast.success(
+                          t("workspace.payload.importedFromClipboard")
+                        );
+                      } catch {
+                        const message = t(
+                          "workspace.payload.clipboardMustContainValidJson"
+                        );
+                        setPayloadError(message);
+                        toast.error(message);
+                      }
+                    }}
+                    onPaste={event => {
+                      event.preventDefault();
+                      try {
+                        setPayload(
+                          JSON.stringify(
+                            JSON.parse(event.clipboardData.getData("text")),
+                            null,
+                            2
+                          )
+                        );
+                        setPayloadError("");
+                        toast.success(
+                          t("workspace.payload.importedFromClipboard")
+                        );
+                      } catch {
+                        const message = t(
+                          "workspace.payload.pastedMustBeValidJson"
+                        );
+                        setPayloadError(message);
+                        toast.error(message);
+                      }
+                    }}
+                    onDragOver={event => {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "copy";
+                    }}
+                    onDrop={event => {
+                      event.preventDefault();
+                      const droppedFile = event.dataTransfer.files[0];
+                      if (droppedFile) {
+                        void droppedFile
+                          .text()
+                          .then(droppedText => {
+                            setPayload(
+                              JSON.stringify(JSON.parse(droppedText), null, 2)
+                            );
+                            setPayloadError("");
+                            toast.success(
+                              t("workspace.payload.importedFromFile")
+                            );
+                          })
+                          .catch(() => {
+                            const message = t(
+                              "workspace.payload.droppedFileMustContainValidJson"
+                            );
+                            setPayloadError(message);
+                            toast.error(message);
+                          });
+                        return;
+                      }
+
+                      try {
+                        setPayload(
+                          JSON.stringify(
+                            JSON.parse(event.dataTransfer.getData("text")),
+                            null,
+                            2
+                          )
+                        );
+                        setPayloadError("");
+                        toast.success(t("workspace.payload.imported"));
+                      } catch {
+                        const message = t(
+                          "workspace.payload.droppedContentMustBeValidJson"
+                        );
+                        setPayloadError(message);
+                        toast.error(message);
+                      }
+                    }}
                   >
-                    {payload}
-                  </pre>
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-card/35 px-6 text-center text-foreground text-xs opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100 group-focus:opacity-100">
-                    <span className="rounded-sm bg-card/70 px-3 py-1.5 shadow-sm">
-                      {t("workspace.payload.importHint")}
-                    </span>
+                    <pre
+                      ref={payloadPreviewRef}
+                      className={`h-full whitespace-pre-wrap break-words p-3 font-mono text-xs ${
+                        isPayloadExpanded
+                          ? "overflow-hidden"
+                          : "overflow-y-auto"
+                      }`}
+                    >
+                      {payload}
+                    </pre>
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-card/35 px-6 text-center text-foreground text-xs opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100 group-focus:opacity-100">
+                      <span className="rounded-sm bg-card/70 px-3 py-1.5 shadow-sm">
+                        {t("workspace.payload.importHint")}
+                      </span>
+                    </div>
                   </div>
+                  {isPayloadOverflowing && (
+                    <button
+                      type="button"
+                      className="flex h-8 items-center justify-center gap-1 rounded-b-sm border border-t-0 bg-card/45 text-xs text-muted-foreground transition-colors hover:bg-card/65 hover:text-foreground"
+                      onClick={() =>
+                        setIsPayloadExpanded(
+                          previousIsPayloadExpanded =>
+                            !previousIsPayloadExpanded
+                        )
+                      }
+                    >
+                      {isPayloadExpanded ? (
+                        <ChevronUpIcon className="size-3.5" />
+                      ) : (
+                        <ChevronDownIcon className="size-3.5" />
+                      )}
+                      {isPayloadExpanded
+                        ? t("workspace.payload.collapse")
+                        : t("workspace.payload.expand")}
+                    </button>
+                  )}
                 </div>
-                {isPayloadOverflowing && (
-                  <button
-                    type="button"
-                    className="flex h-8 items-center justify-center gap-1 rounded-b-sm border border-t-0 bg-card/45 text-xs text-muted-foreground transition-colors hover:bg-card/65 hover:text-foreground"
-                    onClick={() =>
-                      setIsPayloadExpanded(
-                        previousIsPayloadExpanded => !previousIsPayloadExpanded
-                      )
-                    }
-                  >
-                    {isPayloadExpanded ? (
-                      <ChevronUpIcon className="size-3.5" />
-                    ) : (
-                      <ChevronDownIcon className="size-3.5" />
-                    )}
-                    {isPayloadExpanded
-                      ? t("workspace.payload.collapse")
-                      : t("workspace.payload.expand")}
-                  </button>
-                )}
                 <div className="flex items-start justify-between gap-3 rounded-sm border bg-card/45 px-3 py-2">
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="text-xs text-muted-foreground">

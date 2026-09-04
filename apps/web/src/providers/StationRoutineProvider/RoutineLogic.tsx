@@ -35,7 +35,7 @@ interface UseRoutineLogicProps {
   stationsRef: RefObject<LRUCache<UUID, StationNode>>;
   routineTagsRef: RefObject<LRUCache<UUID, RoutineTagNode>>;
   forceUpdate: () => void;
-  getAllRoutineTasksByRoutineIds: (routineIds: UUID[]) => Promise<unknown>;
+  getMyRoutineTasksByRoutineIds: (routineIds: UUID[]) => Promise<unknown>;
 }
 
 export const useRoutineLogic = ({
@@ -43,7 +43,7 @@ export const useRoutineLogic = ({
   stationsRef,
   routineTagsRef,
   forceUpdate,
-  getAllRoutineTasksByRoutineIds,
+  getMyRoutineTasksByRoutineIds,
 }: UseRoutineLogicProps) => {
   const createRoutineMutator = useCreateRoutineByStationId();
   const deleteRoutineMutator = useDeleteMyRoutineById();
@@ -346,7 +346,7 @@ export const useRoutineLogic = ({
         routineNode.isOpen = true;
         forceUpdate();
         if (routineNode.routineTaskIds.length > 0) {
-          await getAllRoutineTasksByRoutineIds([routineId]);
+          await getMyRoutineTasksByRoutineIds([routineId]);
         }
       }
 
@@ -367,7 +367,7 @@ export const useRoutineLogic = ({
       routineNode.isExpanded = true;
       forceUpdate();
     },
-    [forceUpdate, getAllRoutineTasksByRoutineIds, stationsRef]
+    [forceUpdate, getMyRoutineTasksByRoutineIds, stationsRef]
   );
 
   const createRoutine = useCallback(

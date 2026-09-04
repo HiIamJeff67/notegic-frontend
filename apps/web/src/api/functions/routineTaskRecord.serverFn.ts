@@ -1,8 +1,8 @@
 import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse,
+  GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
+  GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
   VisualizeMyRoutineTaskRecordActualEndedAtCountRequest,
   VisualizeMyRoutineTaskRecordActualEndedAtCountResponse,
   VisualizeMyRoutineTaskRecordActualStartedAtCountRequest,
@@ -105,16 +105,14 @@ export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
       )
   );
 
-export const GetAllMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
+export const GetMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
   method: "GET",
 })
-  .inputValidator(
-    (data: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest) => data
-  )
+  .inputValidator((data: GetMyRoutineTaskRecordsByRoutineTaskIdRequest) => data)
   .handler(
     async ({
       data: request,
-    }): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
+    }): Promise<GetMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
       const params = new URLSearchParams();
       if (request.param.limit !== undefined) {
         params.set("limit", String(request.param.limit));
@@ -124,7 +122,7 @@ export const GetAllMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
         "/" +
         CurrentAPIBaseURL +
         "/" +
-        APIURLPathDictionary.routineTaskRecord.getAllMyRoutineTaskRecordsByRoutineTaskId(
+        APIURLPathDictionary.routineTaskRecord.getMyRoutineTaskRecordsByRoutineTaskId(
           request.param.routineTaskId
         ) +
         "?" +
@@ -152,7 +150,7 @@ export const GetAllMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse;
+        (await response.json()) as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

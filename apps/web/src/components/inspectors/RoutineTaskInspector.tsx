@@ -110,6 +110,7 @@ const RoutineTaskInspector = ({
           stationId: parentRoutine?.stationId ?? ("" as UUID),
           title: response.data.title,
           purpose: response.data.purpose,
+          phase: response.data.phase,
           costUnit: response.data.costUnit,
           payload: response.data.payload,
           priority: response.data.priority,

@@ -4,7 +4,7 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
-  GetAllMyRoutineTaskRecordsByRoutineTaskId,
+  GetMyRoutineTaskRecordsByRoutineTaskId,
   VisualizeMyRoutineTaskRecordActualEndedAtCount,
   VisualizeMyRoutineTaskRecordActualStartedAtCount,
   VisualizeMyRoutineTaskRecordPurposeCount,
@@ -12,10 +12,10 @@ import {
   VisualizeMyRoutineTaskRecordStatusCount,
 } from "@/api/functions/routineTaskRecord.serverFn";
 import {
-  type GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema,
-  type GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse,
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema,
+  type GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
+  GetMyRoutineTaskRecordsByRoutineTaskIdRequestSchema,
+  type GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
+  GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema,
   type VisualizeMyRoutineTaskRecordActualEndedAtCountRequest,
   type VisualizeMyRoutineTaskRecordActualEndedAtCountResponse,
   VisualizeMyRoutineTaskRecordActualEndedAtCountResponseSchema,
@@ -92,21 +92,19 @@ export const queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount = (
     "queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount"
   );
 
-export const queryFnGetAllMyRoutineTaskRecordsByRoutineTaskId = async (
-  request: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
-): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
+export const queryFnGetMyRoutineTaskRecordsByRoutineTaskId = async (
+  request: GetMyRoutineTaskRecordsByRoutineTaskIdRequest
+): Promise<GetMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
   try {
     const validatedRequest =
-      GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema.parse(request);
-    const response = await GetAllMyRoutineTaskRecordsByRoutineTaskId({
+      GetMyRoutineTaskRecordsByRoutineTaskIdRequestSchema.parse(request);
+    const response = await GetMyRoutineTaskRecordsByRoutineTaskId({
       data: validatedRequest,
     });
-    return GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema.parse(
-      response
-    );
+    return GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema.parse(response);
   } catch (error) {
     console.error(
-      "error happening in queryFnGetAllMyRoutineTaskRecordsByRoutineTaskId",
+      "error happening in queryFnGetMyRoutineTaskRecordsByRoutineTaskId",
       error
     );
     if (error instanceof ZodError) {

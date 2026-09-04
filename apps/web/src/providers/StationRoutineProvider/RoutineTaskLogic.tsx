@@ -3,6 +3,7 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import {
+  RoutinePhase,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
@@ -20,10 +21,11 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import {
   useCreateRoutineTaskByRoutineId,
-  useGetAllMyRoutineTasksByRoutineIds,
+  useGetAllMyRoutineTasks,
+  useGetMyRoutineTasksByRoutineId,
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
-import { useGetAllMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
+import { useGetMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
 
 interface UseRoutineTaskLogicProps {
   stationsRef: RefObject<LRUCache<UUID, StationNode>>;
@@ -36,11 +38,11 @@ export const useRoutineTaskLogic = ({
 }: UseRoutineTaskLogicProps) => {
   const { t } = useTranslation();
   const createRoutineTaskMutator = useCreateRoutineTaskByRoutineId();
-  const { fetch: fetchAllRoutineTasksByRoutineIds } =
-    useGetAllMyRoutineTasksByRoutineIds();
+  const { fetch: fetchAllRoutineTasks } = useGetAllMyRoutineTasks();
+  const { fetch: fetchMyRoutineTasksByRoutineId } =
+    useGetMyRoutineTasksByRoutineId();
   const updateRoutineTaskMutator = useUpdateMyRoutineTaskById();
-  const routineTaskRecordsQuerier =
-    useGetAllMyRoutineTaskRecordsByRoutineTaskId();
+  const routineTaskRecordsQuerier = useGetMyRoutineTaskRecordsByRoutineTaskId();
 
   const [selectedRoutineTaskId, selectRoutineTask] = useState<UUID | null>(
     null
@@ -59,7 +61,7 @@ export const useRoutineTaskLogic = ({
     nextFetchPolicy: "network-only",
   });
 
-  const getAllRoutineTasksByRoutineIds = useCallback(
+  const getMyRoutineTasksByRoutineIds = useCallback(
     async (routineIds: UUID[]): Promise<RoutineTaskNode[]> => {
       const routines = routineIds.flatMap(routineId => {
         for (const stationNode of stationsRef.current.values()) {
@@ -71,18 +73,32 @@ export const useRoutineTaskLogic = ({
         return [];
       });
       if (routines.length === 0) return [];
-      const response = await fetchAllRoutineTasksByRoutineIds({
-        header: getClientRequestHeaders(navigator.userAgent),
-        param: {
-          routineIds,
-        },
-      });
+      const response =
+        routineIds.length === 1
+          ? await fetchMyRoutineTasksByRoutineId({
+              header: getClientRequestHeaders(navigator.userAgent),
+              param: {
+                routineId: routineIds[0],
+                areDeleted: false,
+              },
+            })
+          : await fetchAllRoutineTasks({
+              header: getClientRequestHeaders(navigator.userAgent),
+              param: {
+                areDeleted: false,
+              },
+            });
       if (response.success === false) throw response.exception;
+
+      const routineIdSet = new Set(routineIds);
+      const routineTasks = response.data.filter(routineTask =>
+        routineIdSet.has(routineTask.routineId as UUID)
+      );
 
       const routineById = new Map(
         routines.map(routine => [routine.id, routine])
       );
-      const routineTaskNodes = response.data.flatMap(routineTask => {
+      const routineTaskNodes = routineTasks.flatMap(routineTask => {
         const routineNode = routineById.get(routineTask.routineId as UUID);
         if (!routineNode) return [];
         const stationNode = stationsRef.current.get(routineNode.stationId);
@@ -100,6 +116,7 @@ export const useRoutineTaskLogic = ({
           stationId: routineNode.stationId,
           title: routineTask.title,
           purpose: routineTask.purpose,
+          phase: routineTask.phase,
           costUnit: routineTask.costUnit,
           payload: routineTask.payload,
           priority: routineTask.priority,
@@ -135,7 +152,12 @@ export const useRoutineTaskLogic = ({
       forceUpdate();
       return routineTaskNodes;
     },
-    [fetchAllRoutineTasksByRoutineIds, forceUpdate, stationsRef]
+    [
+      fetchAllRoutineTasks,
+      fetchMyRoutineTasksByRoutineId,
+      forceUpdate,
+      stationsRef,
+    ]
   );
 
   const handleRealtimeRoutineTaskLifecycle = useCallback(
@@ -171,7 +193,7 @@ export const useRoutineTaskLogic = ({
         return;
       }
 
-      await getAllRoutineTasksByRoutineIds([frame.routineId as UUID]);
+      await getMyRoutineTasksByRoutineIds([frame.routineId as UUID]);
       const recordResponse = await routineTaskRecordsQuerier.fetch({
         header: getClientRequestHeaders(navigator.userAgent),
         param: {
@@ -194,7 +216,7 @@ export const useRoutineTaskLogic = ({
     },
     [
       forceUpdate,
-      getAllRoutineTasksByRoutineIds,
+      getMyRoutineTasksByRoutineIds,
       routineTaskRecordsQuerier,
       stationsRef,
     ]
@@ -253,6 +275,7 @@ export const useRoutineTaskLogic = ({
             routineId: UUID;
             title: string;
             purpose: string;
+            phase: RoutinePhase | null;
             costUnit: number;
             priority: number;
             maxAttempts: number;
@@ -282,6 +305,9 @@ export const useRoutineTaskLogic = ({
               "RoutineTaskPurpose_",
               ""
             ) as RoutineTaskPurpose,
+            phase: node.phase
+              ? (node.phase.replace("RoutinePhase_", "") as RoutinePhase)
+              : null,
             payload: existingRoutineTask?.payload ?? {},
             costUnit: node.costUnit,
             priority: node.priority,
@@ -440,6 +466,7 @@ export const useRoutineTaskLogic = ({
         stationId: routineNode.stationId,
         title,
         purpose,
+        phase: null,
         costUnit: Math.ceil(
           new Blob([JSON.stringify(payload ?? {})]).size / 1024
         ),
@@ -643,7 +670,7 @@ export const useRoutineTaskLogic = ({
     searchRoutineTasksData,
     isSearchingRoutineTasks,
     fetchMoreRoutineTasks,
-    getAllRoutineTasksByRoutineIds,
+    getMyRoutineTasksByRoutineIds,
     handleRealtimeRoutineTaskLifecycle,
     searchRoutineTasksByRoutineIds,
     loadMoreRoutineTaskCandidates,

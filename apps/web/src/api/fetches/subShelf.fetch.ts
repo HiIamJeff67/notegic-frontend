@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
 import type {
-  GetAllMySubShelvesByRootShelfIdRequest,
-  GetAllMySubShelvesByRootShelfIdResponse,
+  GetMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdResponse,
   GetMySubShelfByIdRequest,
   GetMySubShelfByIdResponse,
   GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
@@ -10,7 +10,7 @@ import type {
   GetMySubShelvesByPrevSubShelfIdResponse,
 } from "@shared/api/interfaces/subShelf.interface";
 import {
-  queryFnGetAllMySubShelvesByRootShelfId,
+  queryFnGetMySubShelvesByRootShelfId,
   queryFnGetMySubShelfById,
   queryFnGetMySubShelvesAndItemsByPrevSubShelfId,
   queryFnGetMySubShelvesByPrevSubShelfId,
@@ -57,11 +57,11 @@ export const fetchGetMySubShelvesByPrevSubShelfId = async (
   return response as GetMySubShelvesByPrevSubShelfIdResponse;
 };
 
-export const fetchGetAllMySubShelvesByRootShelfId = async (
-  fetchRequest: GetAllMySubShelvesByRootShelfIdRequest,
+export const fetchGetMySubShelvesByRootShelfId = async (
+  fetchRequest: GetMySubShelvesByRootShelfIdRequest,
   initialQueryClient?: QueryClient,
   options?: Partial<FetchQueryOptions>
-): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
+): Promise<GetMySubShelvesByRootShelfIdResponse> => {
   const queryClient = initialQueryClient ?? getQueryClient();
 
   const response = await queryClient.fetchQuery({
@@ -69,12 +69,12 @@ export const fetchGetAllMySubShelvesByRootShelfId = async (
       fetchRequest.param.rootShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetAllMySubShelvesByRootShelfId(fetchRequest),
+      await queryFnGetMySubShelvesByRootShelfId(fetchRequest),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
 
-  return response as GetAllMySubShelvesByRootShelfIdResponse;
+  return response as GetMySubShelvesByRootShelfIdResponse;
 };
 
 export const fetchGetMySubShelvesAndItemsByPrevSubShelfId = async (

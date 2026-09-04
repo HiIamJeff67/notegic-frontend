@@ -4,8 +4,8 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
 import {
-  type GetAllMyMaterialsByRootShelfIdRequest,
-  type GetAllMyMaterialsByRootShelfIdResponse,
+  type GetMyMaterialsByRootShelfIdRequest,
+  type GetMyMaterialsByRootShelfIdResponse,
   type GetMyMaterialAndItsParentByIdRequest,
   type GetMyMaterialAndItsParentByIdResponse,
   type GetMyMaterialByIdRequest,
@@ -24,7 +24,7 @@ import {
   mutationFnRestoreMyMaterialById,
   mutationFnRestoreMyMaterialsByIds,
   mutationFnUpdateMyMaterialById,
-  queryFnGetAllMyMaterialsByRootShelfId,
+  queryFnGetMyMaterialsByRootShelfId,
   queryFnGetMyMaterialAndItsParentById,
   queryFnGetMyMaterialById,
   queryFnGetMyMaterialsByParentSubShelfId,
@@ -211,24 +211,22 @@ export const useGetMyMaterialsByParentSubShelfId = (
   return { ...query, fetch };
 };
 
-export const useGetAllMyMaterialsByRootShelfId = (
-  hookRequest?: GetAllMyMaterialsByRootShelfIdRequest,
-  options?: Partial<
-    UseQueryOptions<GetAllMyMaterialsByRootShelfIdResponse, Error>
-  >
+export const useGetMyMaterialsByRootShelfId = (
+  hookRequest?: GetMyMaterialsByRootShelfIdRequest,
+  options?: Partial<UseQueryOptions<GetMyMaterialsByRootShelfIdResponse, Error>>
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyMaterialsByRootShelfIdRequest
-  ): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
+    request?: GetMyMaterialsByRootShelfIdRequest
+  ): Promise<GetMyMaterialsByRootShelfIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
 
-    const response = await queryFnGetAllMyMaterialsByRootShelfId(request);
+    const response = await queryFnGetMyMaterialsByRootShelfId(request);
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken
@@ -236,7 +234,7 @@ export const useGetAllMyMaterialsByRootShelfId = (
     return response;
   };
 
-  const query = useQuery<GetAllMyMaterialsByRootShelfIdResponse, Error>({
+  const query = useQuery<GetMyMaterialsByRootShelfIdResponse, Error>({
     queryKey: queryKeys.material.manyByRootShelfId(
       hookRequest?.param.rootShelfId as UUID | undefined,
       hookRequest?.param.areDeleted ?? false
@@ -250,8 +248,8 @@ export const useGetAllMyMaterialsByRootShelfId = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyMaterialsByRootShelfIdRequest
-  ): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
+    callbackRequest: GetMyMaterialsByRootShelfIdRequest
+  ): Promise<GetMyMaterialsByRootShelfIdResponse> => {
     return queryClient.fetchQuery({
       queryKey: queryKeys.material.manyByRootShelfId(
         callbackRequest.param.rootShelfId as UUID | undefined,

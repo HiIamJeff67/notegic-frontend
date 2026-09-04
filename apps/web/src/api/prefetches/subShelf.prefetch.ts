@@ -1,10 +1,10 @@
 import {
-  GetAllMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdRequest,
   GetMySubShelfByIdRequest,
   GetMySubShelvesByPrevSubShelfIdRequest,
 } from "@shared/api/interfaces/subShelf.interface";
 import {
-  queryFnGetAllMySubShelvesByRootShelfId,
+  queryFnGetMySubShelvesByRootShelfId,
   queryFnGetMySubShelfById,
   queryFnGetMySubShelvesByPrevSubShelfId,
 } from "@/api/invokers/subShelf.invoker";
@@ -63,13 +63,13 @@ export const prefetchGetMySubShelvesByPrevSubShelfId = (
   };
 };
 
-export const prefetchGetAllMySubShelvesByRootShelfId = (
+export const prefetchGetMySubShelvesByRootShelfId = (
   initialQueryClient?: QueryClient
 ) => {
   const queryClient = initialQueryClient ?? getQueryClient();
 
   const prefetchQuery = async (
-    prefetchRequest: GetAllMySubShelvesByRootShelfIdRequest
+    prefetchRequest: GetMySubShelvesByRootShelfIdRequest
   ): Promise<void> => {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.subShelf.manyByRootShelfId(
@@ -77,7 +77,7 @@ export const prefetchGetAllMySubShelvesByRootShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetAllMySubShelvesByRootShelfId(prefetchRequest),
+        await queryFnGetMySubShelvesByRootShelfId(prefetchRequest),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };

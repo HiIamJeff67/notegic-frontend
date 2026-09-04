@@ -63,7 +63,7 @@ const RoutineTaskRecordSchema = z.object({
 
 export type RoutineTaskRecord = z.infer<typeof RoutineTaskRecordSchema>;
 
-export const GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
+export const GetMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -77,11 +77,11 @@ export const GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
     }),
   });
 
-export type GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest = z.infer<
-  typeof GetAllMyRoutineTaskRecordsByRoutineTaskIdRequestSchema
+export type GetMyRoutineTaskRecordsByRoutineTaskIdRequest = z.infer<
+  typeof GetMyRoutineTaskRecordsByRoutineTaskIdRequestSchema
 >;
 
-export const GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema =
+export const GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(RoutineTaskRecordSchema),
     embedded: z.object({
@@ -89,8 +89,8 @@ export const GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema =
     }),
   });
 
-export type GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse = z.infer<
-  typeof GetAllMyRoutineTaskRecordsByRoutineTaskIdResponseSchema
+export type GetMyRoutineTaskRecordsByRoutineTaskIdResponse = z.infer<
+  typeof GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema
 >;
 
 const RoutineTaskRecordVisualizeParamSchema = z.object({

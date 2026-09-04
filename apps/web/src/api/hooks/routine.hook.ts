@@ -18,8 +18,8 @@ import type {
   CreateRoutinesByStationIdsRequest,
   DeleteMyRoutineByIdRequest,
   DeleteMyRoutinesByIdsRequest,
-  GetAllMyRoutinesByTimeRangeRequest,
-  GetAllMyRoutinesByTimeRangeResponse,
+  GetMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeResponse,
   GetMyRoutineByIdRequest,
   GetMyRoutineByIdResponse,
   GetMyRoutinesByStationIdRequest,
@@ -62,7 +62,7 @@ import {
   mutationFnRestoreMyRoutinesByIds,
   mutationFnUpdateMyRoutineById,
   mutationFnUpdateMyRoutinesByIds,
-  queryFnGetAllMyRoutinesByTimeRange,
+  queryFnGetMyRoutinesByTimeRange,
   queryFnGetMyRoutineById,
   queryFnGetMyRoutinesByStationId,
   queryFnVisualizeMyRoutinePeriodCount,
@@ -308,15 +308,15 @@ export const useGetMyRoutinesByStationId = (
   return { ...query, fetch };
 };
 
-export const useGetAllMyRoutinesByTimeRange = (
-  hookRequest?: GetAllMyRoutinesByTimeRangeRequest,
-  options?: Partial<UseQueryOptions<GetAllMyRoutinesByTimeRangeResponse, Error>>
+export const useGetMyRoutinesByTimeRange = (
+  hookRequest?: GetMyRoutinesByTimeRangeRequest,
+  options?: Partial<UseQueryOptions<GetMyRoutinesByTimeRangeResponse, Error>>
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyRoutinesByTimeRangeRequest
-  ): Promise<GetAllMyRoutinesByTimeRangeResponse> => {
+    request?: GetMyRoutinesByTimeRangeRequest
+  ): Promise<GetMyRoutinesByTimeRangeResponse> => {
     if (!request) {
       throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
@@ -328,12 +328,12 @@ export const useGetAllMyRoutinesByTimeRange = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetAllMyRoutinesByTimeRange(request);
+      const response = await queryFnGetMyRoutinesByTimeRange(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
-      await RoutineLocalSynchronizer.syncGetAllMyRoutinesByTimeRange(response);
+      await RoutineLocalSynchronizer.syncGetMyRoutinesByTimeRange(response);
       return response;
     } catch (error) {
       if (
@@ -341,22 +341,20 @@ export const useGetAllMyRoutinesByTimeRange = (
         error instanceof NotegicFetchError
       ) {
         const routines =
-          await RoutineLocalSimulator.simulateGetAllMyRoutinesByTimeRange(
-            request
-          );
+          await RoutineLocalSimulator.simulateGetMyRoutinesByTimeRange(request);
         return {
           success: false,
           data: routines,
           exception: error.unWrap,
           embedded: { publicId: "" },
-        } as GetAllMyRoutinesByTimeRangeResponse;
+        } as GetMyRoutinesByTimeRangeResponse;
       }
 
       throw error;
     }
   };
 
-  const query = useQuery<GetAllMyRoutinesByTimeRangeResponse, Error>({
+  const query = useQuery<GetMyRoutinesByTimeRangeResponse, Error>({
     queryKey: queryKeys.routine.manyByTimeRange(
       hookRequest?.param.from as Date | undefined,
       hookRequest?.param.to as Date | undefined,
@@ -372,8 +370,8 @@ export const useGetAllMyRoutinesByTimeRange = (
   });
 
   const fetch = async (
-    callbackRequest: GetAllMyRoutinesByTimeRangeRequest
-  ): Promise<GetAllMyRoutinesByTimeRangeResponse> => {
+    callbackRequest: GetMyRoutinesByTimeRangeRequest
+  ): Promise<GetMyRoutinesByTimeRangeResponse> => {
     const requestedFrom = new Date(
       callbackRequest.param.from as string | number | Date
     );
@@ -419,8 +417,7 @@ export const useGetAllMyRoutinesByTimeRange = (
       });
 
     if (coveredCachedQuery?.state.data) {
-      return coveredCachedQuery.state
-        .data as GetAllMyRoutinesByTimeRangeResponse;
+      return coveredCachedQuery.state.data as GetMyRoutinesByTimeRangeResponse;
     }
 
     return queryClient.fetchQuery({

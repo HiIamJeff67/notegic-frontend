@@ -9,8 +9,8 @@ import {
   DeleteMySubShelfByIdResponse,
   DeleteMySubShelvesByIdsRequest,
   DeleteMySubShelvesByIdsResponse,
-  GetAllMySubShelvesByRootShelfIdRequest,
-  GetAllMySubShelvesByRootShelfIdResponse,
+  GetMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdResponse,
   GetMySubShelfByIdRequest,
   GetMySubShelfByIdResponse,
   GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
@@ -123,17 +123,17 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
     }
   );
 
-export const GetAllMySubShelvesByRootShelfId = createServerFn({
+export const GetMySubShelvesByRootShelfId = createServerFn({
   method: "GET",
 })
-  .inputValidator((data: GetAllMySubShelvesByRootShelfIdRequest) => data)
+  .inputValidator((data: GetMySubShelvesByRootShelfIdRequest) => data)
   .handler(
     async ({
       data: request,
-    }): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
+    }): Promise<GetMySubShelvesByRootShelfIdResponse> => {
       const { rootShelfId, areDeleted = false } = request.param;
       const params = new URLSearchParams({ areDeleted: String(areDeleted) });
-      let url = `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.subShelf.getAllMySubShelvesByRootShelfId(rootShelfId)}?${params}`;
+      let url = `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.subShelf.getMySubShelvesByRootShelfId(rootShelfId)}?${params}`;
       const inboundCookie = getRequestHeader("cookie");
       const userAgent =
         request.header?.userAgent ??
@@ -157,7 +157,7 @@ export const GetAllMySubShelvesByRootShelfId = createServerFn({
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMySubShelvesByRootShelfIdResponse;
+        (await response.json()) as GetMySubShelvesByRootShelfIdResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

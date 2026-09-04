@@ -5,8 +5,8 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
-  GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse,
+  GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
+  GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
   VisualizeMyRoutineTaskRecordActualEndedAtCountRequest,
   VisualizeMyRoutineTaskRecordActualEndedAtCountResponse,
   VisualizeMyRoutineTaskRecordActualStartedAtCountRequest,
@@ -19,7 +19,7 @@ import type {
   VisualizeMyRoutineTaskRecordStatusCountResponse,
 } from "@shared/api/interfaces/routineTaskRecord.interface";
 import {
-  queryFnGetAllMyRoutineTaskRecordsByRoutineTaskId,
+  queryFnGetMyRoutineTaskRecordsByRoutineTaskId,
   queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
   queryFnVisualizeMyRoutineTaskRecordActualStartedAtCount,
   queryFnVisualizeMyRoutineTaskRecordPurposeCount,
@@ -136,17 +136,17 @@ export const useVisualizeMyRoutineTaskRecordActualEndedAtCount = (
     options
   );
 
-export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
-  hookRequest?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest,
+export const useGetMyRoutineTaskRecordsByRoutineTaskId = (
+  hookRequest?: GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
   options?: Partial<
-    UseQueryOptions<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse, Error>
+    UseQueryOptions<GetMyRoutineTaskRecordsByRoutineTaskIdResponse, Error>
   >
 ) => {
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
-  ): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
+    request?: GetMyRoutineTaskRecordsByRoutineTaskIdRequest
+  ): Promise<GetMyRoutineTaskRecordsByRoutineTaskIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
         ValidationClientException.ReceivedUndefinedRequest()
@@ -159,7 +159,7 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
       }
 
       const response =
-        await queryFnGetAllMyRoutineTaskRecordsByRoutineTaskId(request);
+        await queryFnGetMyRoutineTaskRecordsByRoutineTaskId(request);
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
@@ -175,32 +175,31 @@ export const useGetAllMyRoutineTaskRecordsByRoutineTaskId = (
           data: [],
           exception: error.unWrap,
           embedded: { publicId: "" },
-        } as GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse;
+        } as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
       }
 
       throw error;
     }
   };
 
-  const query = useQuery<
-    GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse,
-    Error
-  >({
-    queryKey: queryKeys.routineTaskRecord.recentByRoutineTaskId(
-      hookRequest?.param.routineTaskId as UUID | undefined,
-      hookRequest?.param.limit
-    ),
-    queryFn: async () => perform(hookRequest),
-    staleTime: UseQueryDefaultOptions.staleTime,
-    refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
-    refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
-    ...options,
-    enabled: hookRequest ? (options?.enabled ?? true) : false,
-  });
+  const query = useQuery<GetMyRoutineTaskRecordsByRoutineTaskIdResponse, Error>(
+    {
+      queryKey: queryKeys.routineTaskRecord.recentByRoutineTaskId(
+        hookRequest?.param.routineTaskId as UUID | undefined,
+        hookRequest?.param.limit
+      ),
+      queryFn: async () => perform(hookRequest),
+      staleTime: UseQueryDefaultOptions.staleTime,
+      refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
+      refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
+      ...options,
+      enabled: hookRequest ? (options?.enabled ?? true) : false,
+    }
+  );
 
   const fetch = async (
-    callbackRequest: GetAllMyRoutineTaskRecordsByRoutineTaskIdRequest
-  ): Promise<GetAllMyRoutineTaskRecordsByRoutineTaskIdResponse> =>
+    callbackRequest: GetMyRoutineTaskRecordsByRoutineTaskIdRequest
+  ): Promise<GetMyRoutineTaskRecordsByRoutineTaskIdResponse> =>
     queryClient.fetchQuery({
       queryKey: queryKeys.routineTaskRecord.recentByRoutineTaskId(
         callbackRequest.param.routineTaskId as UUID,

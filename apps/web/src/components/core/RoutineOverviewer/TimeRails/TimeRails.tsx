@@ -9,7 +9,7 @@ import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetAllMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
+import { useGetMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,7 +36,7 @@ const TimeRails = () => {
   const { i18n, t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
-  const timeRangeRoutinesQuerier = useGetAllMyRoutinesByTimeRange(undefined, {
+  const timeRangeRoutinesQuerier = useGetMyRoutinesByTimeRange(undefined, {
     enabled: false,
   });
 

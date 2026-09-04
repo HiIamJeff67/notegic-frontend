@@ -4,7 +4,7 @@ import {
   CreateBlockPacksRequest,
   DeleteMyBlockPackByIdRequest,
   DeleteMyBlockPacksByIdsRequest,
-  GetAllMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdRequest,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackByIdRequest,
   GetMyBlockPacksByParentSubShelfIdRequest,
@@ -201,8 +201,8 @@ export class BlockPackLocalSimulator {
     );
   };
 
-  static simulateGetAllMyBlockPacksByRootShelfId = async (
-    request: GetAllMyBlockPacksByRootShelfIdRequest
+  static simulateGetMyBlockPacksByRootShelfId = async (
+    request: GetMyBlockPacksByRootShelfIdRequest
   ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 

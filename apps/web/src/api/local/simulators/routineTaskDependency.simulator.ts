@@ -5,7 +5,7 @@ import type {
   GetRoutineTaskDependenciesByRoutineIdRequest,
   UpdateRoutineTaskDependencyByRoutineIdRequest,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
-import { and, eq, exists, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Routine,
@@ -62,7 +62,7 @@ export class RoutineTaskDependencyLocalSimulator {
       .select()
       .from(RoutineTaskDependency)
       .where(
-        or(
+        and(
           inArray(RoutineTaskDependency.routineTaskId, taskIds),
           inArray(RoutineTaskDependency.previousRoutineTaskId, taskIds)
         )

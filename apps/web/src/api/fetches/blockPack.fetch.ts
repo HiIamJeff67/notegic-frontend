@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
 import type {
-  GetAllMyBlockPacksByRootShelfIdRequest,
-  GetAllMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
@@ -10,7 +10,7 @@ import type {
   GetMyBlockPacksByParentSubShelfIdResponse,
 } from "@shared/api/interfaces/blockPack.interface";
 import {
-  queryFnGetAllMyBlockPacksByRootShelfId,
+  queryFnGetMyBlockPacksByRootShelfId,
   queryFnGetMyBlockPackAndItsParentById,
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
@@ -79,11 +79,11 @@ export const fetchGetMyBlockPacksByParentSubShelfId = async (
   return response as GetMyBlockPacksByParentSubShelfIdResponse;
 };
 
-export const fetchGetAllMyBlockPacksByRootShelfId = async (
-  fetchRequest: GetAllMyBlockPacksByRootShelfIdRequest,
+export const fetchGetMyBlockPacksByRootShelfId = async (
+  fetchRequest: GetMyBlockPacksByRootShelfIdRequest,
   initialQueryClient?: QueryClient,
   options?: Partial<FetchQueryOptions>
-): Promise<GetAllMyBlockPacksByRootShelfIdResponse> => {
+): Promise<GetMyBlockPacksByRootShelfIdResponse> => {
   const queryClient = initialQueryClient ?? getQueryClient();
 
   const response = await queryClient.fetchQuery({
@@ -91,10 +91,10 @@ export const fetchGetAllMyBlockPacksByRootShelfId = async (
       fetchRequest.param.rootShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetAllMyBlockPacksByRootShelfId(fetchRequest),
+      await queryFnGetMyBlockPacksByRootShelfId(fetchRequest),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
 
-  return response as GetAllMyBlockPacksByRootShelfIdResponse;
+  return response as GetMyBlockPacksByRootShelfIdResponse;
 };

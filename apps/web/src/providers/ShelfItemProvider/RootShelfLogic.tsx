@@ -14,7 +14,7 @@ import {
   useTransferMyRootShelfOwnership,
   useUpdateMyRootShelfById,
 } from "@/api/hooks/rootShelf.hook";
-import { useGetAllMySubShelvesByRootShelfId } from "@/api/hooks/subShelf.hook";
+import { useGetMySubShelvesByRootShelfId } from "@/api/hooks/subShelf.hook";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { MaxSearchLimit } from "@shared/constants";
 import { AnalysisStatus } from "@shared/enums";
@@ -55,7 +55,7 @@ export const useRootShelfLogic = ({
 }: UseRootShelfLogicProps) => {
   const { t } = useTranslation();
   const apolloClient = useApolloClient();
-  const getAllSubShelvesQuerier = useGetAllMySubShelvesByRootShelfId();
+  const getAllSubShelvesQuerier = useGetMySubShelvesByRootShelfId();
   const createRootShelfMutator = useCreateRootShelf();
   const updateRootShelfMutator = useUpdateMyRootShelfById();
   const deleteRootShelfMutator = useDeleteMyRootShelfById();

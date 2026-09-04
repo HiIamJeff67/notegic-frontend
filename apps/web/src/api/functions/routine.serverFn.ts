@@ -19,8 +19,8 @@ import {
   DeleteMyRoutineByIdResponse,
   DeleteMyRoutinesByIdsRequest,
   DeleteMyRoutinesByIdsResponse,
-  GetAllMyRoutinesByTimeRangeRequest,
-  GetAllMyRoutinesByTimeRangeResponse,
+  GetMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeResponse,
   GetMyRoutineByIdRequest,
   GetMyRoutineByIdResponse,
   GetMyRoutinesByStationIdRequest,
@@ -227,10 +227,10 @@ export const GetMyRoutinesByStationId = createServerFn({ method: "GET" })
     }
   );
 
-export const GetAllMyRoutinesByTimeRange = createServerFn({ method: "GET" })
-  .inputValidator((data: GetAllMyRoutinesByTimeRangeRequest) => data)
+export const GetMyRoutinesByTimeRange = createServerFn({ method: "GET" })
+  .inputValidator((data: GetMyRoutinesByTimeRangeRequest) => data)
   .handler(
-    async ({ data: request }): Promise<GetAllMyRoutinesByTimeRangeResponse> => {
+    async ({ data: request }): Promise<GetMyRoutinesByTimeRangeResponse> => {
       const params = new URLSearchParams();
       params.set(
         "from",
@@ -249,7 +249,7 @@ export const GetAllMyRoutinesByTimeRange = createServerFn({ method: "GET" })
         "/" +
         CurrentAPIBaseURL +
         "/" +
-        APIURLPathDictionary.routine.getAllMyRoutinesByTimeRange +
+        APIURLPathDictionary.routine.getMyRoutinesByTimeRange +
         "?" +
         params.toString();
       const inboundCookie = getRequestHeader("cookie");
@@ -275,7 +275,7 @@ export const GetAllMyRoutinesByTimeRange = createServerFn({ method: "GET" })
       }
       forwardUpstreamSetCookies(response);
       const formattedResponse =
-        (await response.json()) as GetAllMyRoutinesByTimeRangeResponse;
+        (await response.json()) as GetMyRoutinesByTimeRangeResponse;
       if (formattedResponse.exception != null) {
         throw new NotegicAPIError(
           new NotegicException(formattedResponse.exception)

@@ -90,9 +90,9 @@ export type GetMySubShelvesByPrevSubShelfIdResponse = z.infer<
   typeof GetMySubShelvesByPrevSubShelfIdResponseSchema
 >;
 
-/* ============================== GetAllMySubShelvesByRootShelfId ============================== */
+/* ============================== GetMySubShelvesByRootShelfId ============================== */
 
-export const GetAllMySubShelvesByRootShelfIdRequestSchema =
+export const GetMySubShelvesByRootShelfIdRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -106,11 +106,11 @@ export const GetAllMySubShelvesByRootShelfIdRequestSchema =
     }),
   });
 
-export type GetAllMySubShelvesByRootShelfIdRequest = z.input<
-  typeof GetAllMySubShelvesByRootShelfIdRequestSchema
+export type GetMySubShelvesByRootShelfIdRequest = z.input<
+  typeof GetMySubShelvesByRootShelfIdRequestSchema
 >;
 
-export const GetAllMySubShelvesByRootShelfIdResponseSchema =
+export const GetMySubShelvesByRootShelfIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(
       z.object({
@@ -129,8 +129,8 @@ export const GetAllMySubShelvesByRootShelfIdResponseSchema =
     }),
   });
 
-export type GetAllMySubShelvesByRootShelfIdResponse = z.infer<
-  typeof GetAllMySubShelvesByRootShelfIdResponseSchema
+export type GetMySubShelvesByRootShelfIdResponse = z.infer<
+  typeof GetMySubShelvesByRootShelfIdResponseSchema
 >;
 
 /* ============================== GetMySubShelvesAndItemsByPrevSubShelfId ============================== */

@@ -1,16 +1,20 @@
 import { isValidUUID } from "@shared/types/uuidv4.type";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import type { UUID } from "crypto";
+import { prefetchRoutineTaskDependencyGraph } from "@/api/prefetches/routineTaskDependencyGraph.prefetch";
 import RoutineTaskDependencyGraphEditorPage from "@/pages/app/routines/RoutineTaskDependencyGraphEditorPage";
 
 export const Route = createFileRoute(
   "/app/routines/$routineId/dependency-graph-editor"
 )({
   ssr: false,
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     if (!isValidUUID(params.routineId)) throw notFound();
 
-    return { routineId: params.routineId as UUID };
+    const routineId = params.routineId as UUID;
+    await prefetchRoutineTaskDependencyGraph(routineId);
+
+    return { routineId };
   },
   component: RoutineTaskDependencyGraphEditorRoute,
 });

@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
 import type {
-  GetAllMyMaterialsByRootShelfIdRequest,
-  GetAllMyMaterialsByRootShelfIdResponse,
+  GetMyMaterialsByRootShelfIdRequest,
+  GetMyMaterialsByRootShelfIdResponse,
   GetMyMaterialAndItsParentByIdRequest,
   GetMyMaterialAndItsParentByIdResponse,
   GetMyMaterialByIdRequest,
@@ -10,7 +10,7 @@ import type {
   GetMyMaterialsByParentSubShelfIdResponse,
 } from "@shared/api/interfaces/material.interface";
 import {
-  queryFnGetAllMyMaterialsByRootShelfId,
+  queryFnGetMyMaterialsByRootShelfId,
   queryFnGetMyMaterialAndItsParentById,
   queryFnGetMyMaterialById,
   queryFnGetMyMaterialsByParentSubShelfId,
@@ -75,22 +75,21 @@ export const fetchGetMyMaterialsByParentSubShelfId = async (
   return response as GetMyMaterialsByParentSubShelfIdResponse;
 };
 
-export const fetchGetAllMyMaterialsByRootShelfId = async (
-  fetchRequest: GetAllMyMaterialsByRootShelfIdRequest,
+export const fetchGetMyMaterialsByRootShelfId = async (
+  fetchRequest: GetMyMaterialsByRootShelfIdRequest,
   initialQueryClient?: QueryClient,
   options?: Partial<FetchQueryOptions>
-): Promise<GetAllMyMaterialsByRootShelfIdResponse> => {
+): Promise<GetMyMaterialsByRootShelfIdResponse> => {
   const queryClient = initialQueryClient ?? getQueryClient();
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.material.manyByRootShelfId(
       fetchRequest.param.rootShelfId as UUID
     ),
-    queryFn: async () =>
-      await queryFnGetAllMyMaterialsByRootShelfId(fetchRequest),
+    queryFn: async () => await queryFnGetMyMaterialsByRootShelfId(fetchRequest),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
 
-  return response as GetAllMyMaterialsByRootShelfIdResponse;
+  return response as GetMyMaterialsByRootShelfIdResponse;
 };

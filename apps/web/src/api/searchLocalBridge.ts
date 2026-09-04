@@ -1,6 +1,6 @@
 import { useLazyQuery, useQuery } from "@apollo/client/react";
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { isNetworkFallbackError } from "./graphql/hooks/error";
 
 type LocalSearchAdapter = {
@@ -26,13 +26,11 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
   const latestSyncedSignatureRef = useRef<string>("");
 
   const syncOnce = useCallback(
-    (data?: TData) => {
+    async (data?: TData): Promise<void> => {
       const nextSignature = adapter.signature(data);
       if (nextSignature === latestSyncedSignatureRef.current) return;
+      await adapter.sync(data);
       latestSyncedSignatureRef.current = nextSignature;
-      void adapter
-        .sync(data)
-        .catch(error => console.error(adapter.syncErrorMessage, error));
     },
     [adapter]
   );
@@ -57,8 +55,8 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
       const executeOptions = args[0];
       const queryPromise = (execute as any)(...args);
       const handledPromise = queryPromise
-        .then((queryResult: any) => {
-          syncOnce(queryResult.data);
+        .then(async (queryResult: any) => {
+          await syncOnce(queryResult.data);
           return queryResult;
         })
         .catch(async (error: unknown) => {
@@ -82,7 +80,7 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
     (async fetchMoreOptions => {
       try {
         const fetchResult = await resultRef.current.fetchMore(fetchMoreOptions);
-        syncOnce(fetchResult.data as TData);
+        await syncOnce(fetchResult.data as TData);
         return fetchResult;
       } catch (error) {
         if (!isNetworkFallbackError(error)) throw error;

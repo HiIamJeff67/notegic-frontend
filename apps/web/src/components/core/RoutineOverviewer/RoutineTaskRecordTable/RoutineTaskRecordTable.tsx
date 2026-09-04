@@ -2,18 +2,23 @@ import {
   SearchRoutineTaskRecordSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRoutineTaskRecordsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
 import {
   AllRoutineTaskPurposes,
   AllRoutineTaskRecordStatuses,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
+import {
+  translateRoutineTaskPurpose,
+  translateRoutineTaskRecordStatus,
+} from "@shared/i18n/workspace";
 import type { UUID } from "crypto";
 import { HistoryIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchRoutineTaskRecordsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   Select,
   SelectContent,
@@ -30,10 +35,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
-import {
-  translateRoutineTaskPurpose,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
 
 type RoutineTaskRecordRow = {
   id: UUID;
@@ -326,7 +327,12 @@ const RoutineTaskRecordTable = ({
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
-                    {translateRoutineTaskRecordStatus(record.status, t)}
+                    <span className="inline-flex min-w-0 items-center gap-1.5">
+                      <RoutineTaskStatusDot status={record.status} />
+                      <span className="truncate">
+                        {translateRoutineTaskRecordStatus(record.status, t)}
+                      </span>
+                    </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
                     <span className="line-clamp-2">

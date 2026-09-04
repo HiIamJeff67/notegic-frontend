@@ -160,9 +160,9 @@ export type GetMyRoutinesByStationIdResponse = z.infer<
   typeof GetMyRoutinesByStationIdResponseSchema
 >;
 
-/* ============================== GetAllMyRoutinesByTimeRange ============================== */
+/* ============================== GetMyRoutinesByTimeRange ============================== */
 
-export const GetAllMyRoutinesByTimeRangeRequestSchema =
+export const GetMyRoutinesByTimeRangeRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -178,11 +178,11 @@ export const GetAllMyRoutinesByTimeRangeRequestSchema =
     }),
   });
 
-export type GetAllMyRoutinesByTimeRangeRequest = z.input<
-  typeof GetAllMyRoutinesByTimeRangeRequestSchema
+export type GetMyRoutinesByTimeRangeRequest = z.input<
+  typeof GetMyRoutinesByTimeRangeRequestSchema
 >;
 
-export const GetAllMyRoutinesByTimeRangeResponseSchema =
+export const GetMyRoutinesByTimeRangeResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(
       z.object({
@@ -209,8 +209,8 @@ export const GetAllMyRoutinesByTimeRangeResponseSchema =
     }),
   });
 
-export type GetAllMyRoutinesByTimeRangeResponse = z.infer<
-  typeof GetAllMyRoutinesByTimeRangeResponseSchema
+export type GetMyRoutinesByTimeRangeResponse = z.infer<
+  typeof GetMyRoutinesByTimeRangeResponseSchema
 >;
 
 /* ============================== CreateRoutineByStationId ============================== */

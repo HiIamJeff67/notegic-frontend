@@ -1,17 +1,8 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   SupportedIcon as GraphQLSupportedIcon,
   SearchSortOrder,
   SearchStationSortBy,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStations";
-import {
-  useCreateStation,
-  useDeleteMyStationById,
-  useLeaveMyStation,
-  useTransferMyStationOwnership,
-  useUpdateMyStationById,
-} from "@/api/hooks/station.hook";
 import {
   AccessControlPermission,
   SupportedIcon,
@@ -23,6 +14,15 @@ import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStations";
+import {
+  useCreateStation,
+  useDeleteMyStationById,
+  useLeaveMyStation,
+  useTransferMyStationOwnership,
+  useUpdateMyStationById,
+} from "@/api/hooks/station.hook";
 
 interface UseStationLogicProps {
   inputRef: RefObject<HTMLInputElement | null>;
@@ -30,7 +30,7 @@ interface UseStationLogicProps {
   routineTagsRef: RefObject<LRUCache<UUID, RoutineTagNode>>;
   forceUpdate: () => void;
   expandRoutinesByStationId: (stationId: UUID) => Promise<void>;
-  getAllRoutineTasksByRoutineIds: (routineIds: UUID[]) => Promise<unknown>;
+  getMyRoutineTasksByRoutineIds: (routineIds: UUID[]) => Promise<unknown>;
   selectedRoutineId: UUID | null;
   selectRoutine: (routineId: UUID | null) => void;
 }
@@ -41,7 +41,7 @@ export const useStationLogic = ({
   routineTagsRef,
   forceUpdate,
   expandRoutinesByStationId,
-  getAllRoutineTasksByRoutineIds,
+  getMyRoutineTasksByRoutineIds,
   selectedRoutineId,
   selectRoutine,
 }: UseStationLogicProps) => {
@@ -88,7 +88,7 @@ export const useStationLogic = ({
       forceUpdate();
       if (!stationNode.isExpanded) {
         await expandRoutinesByStationId(stationId);
-        await getAllRoutineTasksByRoutineIds(
+        await getMyRoutineTasksByRoutineIds(
           stationNode.routines.map(routine => routine.id)
         );
         stationNode.isExpanded = true;
@@ -98,7 +98,7 @@ export const useStationLogic = ({
     [
       expandRoutinesByStationId,
       forceUpdate,
-      getAllRoutineTasksByRoutineIds,
+      getMyRoutineTasksByRoutineIds,
       stationsRef,
     ]
   );

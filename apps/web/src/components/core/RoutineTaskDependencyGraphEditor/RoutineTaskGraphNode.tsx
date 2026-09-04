@@ -12,6 +12,7 @@ import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks";
 
@@ -69,10 +70,13 @@ const RoutineTaskGraphNode = ({
       <div className="mt-1 truncate text-xs text-muted-foreground">
         {translateRoutineTaskPurpose(data.purpose, t)}
       </div>
-      <div className="mt-2 text-[11px] text-muted-foreground">
-        {data.executionStatus
-          ? translateRoutineTaskRecordStatus(data.executionStatus, t)
-          : t("workspace.status.waiting")}
+      <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+        <RoutineTaskStatusDot status={data.executionStatus} />
+        <span className="truncate">
+          {data.executionStatus
+            ? translateRoutineTaskRecordStatus(data.executionStatus, t)
+            : t("workspace.status.waiting")}
+        </span>
         {data.routinePhase
           ? ` · ${translateRoutinePhase(data.routinePhase, t)}`
           : ""}

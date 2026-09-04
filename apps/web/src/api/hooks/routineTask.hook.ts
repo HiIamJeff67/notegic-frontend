@@ -8,12 +8,12 @@ import { NotegicValidationError } from "@shared/api/exceptions/errors/validation
 import { toGraphQLRoutineTaskPurpose } from "@shared/api/graphql/conversions";
 import type {
   CreateRoutineTaskByRoutineIdRequest,
-  GetAllMyRoutineTasksByRoutineIdsRequest,
-  GetAllMyRoutineTasksByRoutineIdsResponse,
   GetAllMyRoutineTasksRequest,
   GetAllMyRoutineTasksResponse,
   GetMyRoutineTaskByIdRequest,
   GetMyRoutineTaskByIdResponse,
+  GetMyRoutineTasksByRoutineIdRequest,
+  GetMyRoutineTasksByRoutineIdResponse,
   HardDeleteMyRoutineTaskByIdRequest,
   HardDeleteMyRoutineTasksByIdsRequest,
   UpdateMyRoutineTaskByIdRequest,
@@ -37,8 +37,8 @@ import {
   mutationFnHardDeleteMyRoutineTasksByIds,
   mutationFnUpdateMyRoutineTaskById,
   queryFnGetAllMyRoutineTasks,
-  queryFnGetAllMyRoutineTasksByRoutineIds,
   queryFnGetMyRoutineTaskById,
+  queryFnGetMyRoutineTasksByRoutineId,
   queryFnVisualizeMyRoutineTaskPurposeCount,
 } from "@/api/invokers/routineTask.invoker";
 import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
@@ -137,18 +137,18 @@ export const useGetMyRoutineTaskById = (
   return { ...query, fetch };
 };
 
-export const useGetAllMyRoutineTasksByRoutineIds = (
-  hookRequest?: GetAllMyRoutineTasksByRoutineIdsRequest,
+export const useGetMyRoutineTasksByRoutineId = (
+  hookRequest?: GetMyRoutineTasksByRoutineIdRequest,
   options?: Partial<
-    UseQueryOptions<GetAllMyRoutineTasksByRoutineIdsResponse, Error>
+    UseQueryOptions<GetMyRoutineTasksByRoutineIdResponse, Error>
   >
 ) => {
   const queryClient = getQueryClient();
 
   const perform = useCallback(
     async (
-      request?: GetAllMyRoutineTasksByRoutineIdsRequest
-    ): Promise<GetAllMyRoutineTasksByRoutineIdsResponse> => {
+      request?: GetMyRoutineTasksByRoutineIdRequest
+    ): Promise<GetMyRoutineTasksByRoutineIdResponse> => {
       if (!request) {
         throw new NotegicValidationError(
           ValidationClientException.ReceivedUndefinedRequest()
@@ -160,12 +160,12 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        const response = await queryFnGetAllMyRoutineTasksByRoutineIds(request);
+        const response = await queryFnGetMyRoutineTasksByRoutineId(request);
         SessionStorageManipulator.ensureItem(
           SessionStorageKey.csrfToken,
           response.refreshableTokens?.newCSRFToken
         );
-        await RoutineTaskLocalSynchronizer.syncGetAllMyRoutineTasksByRoutineIds(
+        await RoutineTaskLocalSynchronizer.syncGetMyRoutineTasksByRoutineId(
           response
         );
         return response;
@@ -175,7 +175,7 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
           error instanceof NotegicFetchError
         ) {
           const routineTasks =
-            await RoutineTaskLocalSimulator.simulateGetAllMyRoutineTasksByRoutineIds(
+            await RoutineTaskLocalSimulator.simulateGetMyRoutineTasksByRoutineId(
               request
             );
           return {
@@ -183,7 +183,7 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
             data: routineTasks,
             exception: error.unWrap,
             embedded: { publicId: "" },
-          } as GetAllMyRoutineTasksByRoutineIdsResponse;
+          } as GetMyRoutineTasksByRoutineIdResponse;
         }
 
         throw error;
@@ -192,9 +192,9 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
     []
   );
 
-  const query = useQuery<GetAllMyRoutineTasksByRoutineIdsResponse, Error>({
-    queryKey: queryKeys.routineTask.manyByRoutineIds(
-      hookRequest?.param.routineIds as UUID[] | undefined,
+  const query = useQuery<GetMyRoutineTasksByRoutineIdResponse, Error>({
+    queryKey: queryKeys.routineTask.manyByRoutineId(
+      hookRequest?.param.routineId as UUID | undefined,
       hookRequest?.param.areDeleted ?? false
     ),
     queryFn: async () => perform(hookRequest),
@@ -207,11 +207,11 @@ export const useGetAllMyRoutineTasksByRoutineIds = (
 
   const fetch = useCallback(
     async (
-      callbackRequest: GetAllMyRoutineTasksByRoutineIdsRequest
-    ): Promise<GetAllMyRoutineTasksByRoutineIdsResponse> =>
+      callbackRequest: GetMyRoutineTasksByRoutineIdRequest
+    ): Promise<GetMyRoutineTasksByRoutineIdResponse> =>
       queryClient.fetchQuery({
-        queryKey: queryKeys.routineTask.manyByRoutineIds(
-          callbackRequest.param.routineIds as UUID[],
+        queryKey: queryKeys.routineTask.manyByRoutineId(
+          callbackRequest.param.routineId as UUID,
           callbackRequest.param.areDeleted ?? false
         ),
         queryFn: async () => perform(callbackRequest),

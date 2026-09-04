@@ -2,7 +2,10 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
-import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
+import {
+  AllRoutinePhases,
+  AllRoutineTaskPurposes,
+} from "@shared/api/interfaces/enums";
 import { z } from "zod";
 import {
   RoutineTaskPayloadSchema,
@@ -47,6 +50,7 @@ const RoutineTaskDefinitionSchema = z.object({
   routineId: z.uuidv4(),
   title: z.string(),
   purpose: z.enum(AllRoutineTaskPurposes),
+  phase: z.enum(AllRoutinePhases).nullable(),
   payload: z.any(),
   costUnit: z.number(),
   priority: z.int32(),
@@ -99,9 +103,41 @@ export type GetMyRoutineTaskByIdResponse = z.infer<
   typeof GetMyRoutineTaskByIdResponseSchema
 >;
 
-/* ============================== GetAllMyRoutineTasksByRoutineIds ============================== */
+/* ============================== GetMyRoutineTasksByRoutineId ============================== */
 
-export const GetAllMyRoutineTasksByRoutineIdsRequestSchema =
+export const GetMyRoutineTasksByRoutineIdRequestSchema =
+  NotegicRequestSchema.extend({
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    param: z.object({
+      routineId: z.uuidv4(),
+      areDeleted: z.boolean().optional().default(false),
+    }),
+  });
+
+export type GetMyRoutineTasksByRoutineIdRequest = z.input<
+  typeof GetMyRoutineTasksByRoutineIdRequestSchema
+>;
+
+export const GetMyRoutineTasksByRoutineIdResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.array(RoutineTaskDefinitionSchema),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  });
+
+export type GetMyRoutineTasksByRoutineIdResponse = z.infer<
+  typeof GetMyRoutineTasksByRoutineIdResponseSchema
+>;
+
+/* ============================== GetMyRoutineTasksByRoutineIds ============================== */
+
+export const GetMyRoutineTasksByRoutineIdsRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -115,11 +151,11 @@ export const GetAllMyRoutineTasksByRoutineIdsRequestSchema =
     }),
   });
 
-export type GetAllMyRoutineTasksByRoutineIdsRequest = z.input<
-  typeof GetAllMyRoutineTasksByRoutineIdsRequestSchema
+export type GetMyRoutineTasksByRoutineIdsRequest = z.input<
+  typeof GetMyRoutineTasksByRoutineIdsRequestSchema
 >;
 
-export const GetAllMyRoutineTasksByRoutineIdsResponseSchema =
+export const GetMyRoutineTasksByRoutineIdsResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(RoutineTaskDefinitionSchema),
     embedded: z.object({
@@ -127,8 +163,8 @@ export const GetAllMyRoutineTasksByRoutineIdsResponseSchema =
     }),
   });
 
-export type GetAllMyRoutineTasksByRoutineIdsResponse = z.infer<
-  typeof GetAllMyRoutineTasksByRoutineIdsResponseSchema
+export type GetMyRoutineTasksByRoutineIdsResponse = z.infer<
+  typeof GetMyRoutineTasksByRoutineIdsResponseSchema
 >;
 
 /* ============================== GetAllMyRoutineTasks ============================== */

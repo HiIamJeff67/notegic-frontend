@@ -166,8 +166,8 @@ export const StationRoutineProvider = ({
     stationsRef,
     routineTagsRef,
     forceUpdate,
-    getAllRoutineTasksByRoutineIds:
-      routineTaskLogic.getAllRoutineTasksByRoutineIds,
+    getMyRoutineTasksByRoutineIds:
+      routineTaskLogic.getMyRoutineTasksByRoutineIds,
   });
   const stationLogic = useStationLogic({
     inputRef,
@@ -175,8 +175,8 @@ export const StationRoutineProvider = ({
     routineTagsRef,
     forceUpdate,
     expandRoutinesByStationId: routineLogic.expandRoutinesByStationId,
-    getAllRoutineTasksByRoutineIds:
-      routineTaskLogic.getAllRoutineTasksByRoutineIds,
+    getMyRoutineTasksByRoutineIds:
+      routineTaskLogic.getMyRoutineTasksByRoutineIds,
     selectedRoutineId: routineLogic.selectedRoutineId,
     selectRoutine: routineLogic.selectRoutine,
   });

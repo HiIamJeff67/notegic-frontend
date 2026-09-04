@@ -5,7 +5,7 @@ import {
   CreateSubShelvesByRootShelfIdsRequest,
   DeleteMySubShelfByIdRequest,
   DeleteMySubShelvesByIdsRequest,
-  GetAllMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdRequest,
   GetMySubShelfByIdRequest,
   GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   GetMySubShelvesByPrevSubShelfIdRequest,
@@ -143,8 +143,8 @@ export class SubShelfLocalSimulator {
     );
   };
 
-  static simulateGetAllMySubShelvesByRootShelfId = async (
-    request: GetAllMySubShelvesByRootShelfIdRequest
+  static simulateGetMySubShelvesByRootShelfId = async (
+    request: GetMySubShelvesByRootShelfIdRequest
   ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 

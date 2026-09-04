@@ -19,7 +19,7 @@ import type {
   CreateRoutinesByStationIdsRequest,
   DeleteMyRoutineByIdRequest,
   DeleteMyRoutinesByIdsRequest,
-  GetAllMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeRequest,
   GetMyRoutineByIdRequest,
   GetMyRoutinesByStationIdRequest,
   HardDeleteMyRoutineByIdRequest,
@@ -462,8 +462,8 @@ export class RoutineLocalSimulator {
     }));
   };
 
-  static simulateGetAllMyRoutinesByTimeRange = async (
-    request: GetAllMyRoutinesByTimeRangeRequest
+  static simulateGetMyRoutinesByTimeRange = async (
+    request: GetMyRoutinesByTimeRangeRequest
   ) => {
     if (!localDB.isReady) await localDB.ensureReady();
     const loggedInUser = await localDB.query.User.findFirst({

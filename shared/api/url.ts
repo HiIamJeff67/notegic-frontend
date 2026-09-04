@@ -79,7 +79,7 @@ export const APIURLPathDictionary = {
     getMySubShelfById: (subShelfId: string) => `sub-shelves/${subShelfId}`,
     getMySubShelvesByPrevSubShelfId: (prevSubShelfId: string) =>
       `sub-shelves/prev-sub-shelf/${prevSubShelfId}`,
-    getAllMySubShelvesByRootShelfId: (rootShelfId: string) =>
+    getMySubShelvesByRootShelfId: (rootShelfId: string) =>
       `sub-shelves/root-shelf/${rootShelfId}`,
     getMySubShelvesAndItemsByPrevSubShelfId: (prevSubShelfId: string) =>
       `sub-shelves/prev-sub-shelf/${prevSubShelfId}/items`,
@@ -104,7 +104,7 @@ export const APIURLPathDictionary = {
       `materials/${materialId}/parent`,
     getMyMaterialsByParentSubShelfId: (parentSubShelfId: string) =>
       `materials/sub-shelf/${parentSubShelfId}`,
-    getAllMyMaterialsByRootShelfId: (rootShelfId: string) =>
+    getMyMaterialsByRootShelfId: (rootShelfId: string) =>
       `materials/root-shelf/${rootShelfId}`,
     createMyMaterial: (parentSubShelfId: string) =>
       `materials/sub-shelf/${parentSubShelfId}`,
@@ -126,7 +126,7 @@ export const APIURLPathDictionary = {
       `block-packs/${blockPackId}/parent`,
     getMyBlockPacksByParentSubShelfId: (parentSubShelfId: string) =>
       `block-packs/sub-shelf/${parentSubShelfId}`,
-    getAllMyBlockPacksByRootShelfId: (rootShelfId: string) =>
+    getMyBlockPacksByRootShelfId: (rootShelfId: string) =>
       `block-packs/root-shelf/${rootShelfId}`,
     createBlockPack: (parentSubShelfId: string) =>
       `block-packs/sub-shelf/${parentSubShelfId}`,
@@ -192,7 +192,7 @@ export const APIURLPathDictionary = {
     getMyRoutineById: (routineId: string) => `routines/${routineId}`,
     getMyRoutinesByStationId: (stationId: string) =>
       `routines/station/${stationId}`,
-    getAllMyRoutinesByTimeRange: "routines",
+    getMyRoutinesByTimeRange: "routines",
     createRoutineByStationId: (stationId: string) =>
       `routines/station/${stationId}`,
     createRoutinesByStationIds: "routines/batch",
@@ -234,7 +234,8 @@ export const APIURLPathDictionary = {
       "routine-tasks/visualizations/purpose-count",
     getMyRoutineTaskById: (routineTaskId: string) =>
       `routine-tasks/${routineTaskId}`,
-    getAllMyRoutineTasksByRoutineIds: "routine-tasks/routines",
+    getMyRoutineTasksByRoutineId: (routineId: string) =>
+      `routine-tasks/routine/${routineId}`,
     getAllMyRoutineTasks: "routine-tasks",
     createRoutineTaskByRoutineId: (routineId: string) =>
       `routine-tasks/routine/${routineId}`,
@@ -265,7 +266,7 @@ export const APIURLPathDictionary = {
       "routine-task-records/visualizations/actual-started-at-count",
     visualizeMyRoutineTaskRecordActualEndedAtCount:
       "routine-task-records/visualizations/actual-ended-at-count",
-    getAllMyRoutineTaskRecordsByRoutineTaskId: (routineTaskId: string) =>
+    getMyRoutineTaskRecordsByRoutineTaskId: (routineTaskId: string) =>
       `routine-task-records/routine-task/${routineTaskId}`,
   },
 };

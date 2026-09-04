@@ -9,7 +9,7 @@ import {
   CreateSubShelvesByRootShelfIds,
   DeleteMySubShelfById,
   DeleteMySubShelvesByIds,
-  GetAllMySubShelvesByRootShelfId,
+  GetMySubShelvesByRootShelfId,
   GetMySubShelfById,
   GetMySubShelvesAndItemsByPrevSubShelfId,
   GetMySubShelvesByPrevSubShelfId,
@@ -41,10 +41,10 @@ import {
   DeleteMySubShelvesByIdsRequestSchema,
   type DeleteMySubShelvesByIdsResponse,
   DeleteMySubShelvesByIdsResponseSchema,
-  type GetAllMySubShelvesByRootShelfIdRequest,
-  GetAllMySubShelvesByRootShelfIdRequestSchema,
-  type GetAllMySubShelvesByRootShelfIdResponse,
-  GetAllMySubShelvesByRootShelfIdResponseSchema,
+  type GetMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdRequestSchema,
+  type GetMySubShelvesByRootShelfIdResponse,
+  GetMySubShelvesByRootShelfIdResponseSchema,
   type GetMySubShelfByIdRequest,
   GetMySubShelfByIdRequestSchema,
   type GetMySubShelfByIdResponse,
@@ -142,19 +142,19 @@ export const queryFnGetMySubShelvesByPrevSubShelfId = async (
   }
 };
 
-export const queryFnGetAllMySubShelvesByRootShelfId = async (
-  request: GetAllMySubShelvesByRootShelfIdRequest
-): Promise<GetAllMySubShelvesByRootShelfIdResponse> => {
+export const queryFnGetMySubShelvesByRootShelfId = async (
+  request: GetMySubShelvesByRootShelfIdRequest
+): Promise<GetMySubShelvesByRootShelfIdResponse> => {
   try {
     const validatedRequest =
-      GetAllMySubShelvesByRootShelfIdRequestSchema.parse(request);
-    const response = await GetAllMySubShelvesByRootShelfId({
+      GetMySubShelvesByRootShelfIdRequestSchema.parse(request);
+    const response = await GetMySubShelvesByRootShelfId({
       data: validatedRequest,
     });
-    return GetAllMySubShelvesByRootShelfIdResponseSchema.parse(response);
+    return GetMySubShelvesByRootShelfIdResponseSchema.parse(response);
   } catch (error) {
     console.error(
-      "error happening in queryFnGetAllMySubShelvesByRootShelfId",
+      "error happening in queryFnGetMySubShelvesByRootShelfId",
       error
     );
     if (error instanceof ZodError) {

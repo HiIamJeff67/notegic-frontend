@@ -652,8 +652,8 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
       {
         method: "GET",
         path: "/block-packs/root-shelf/{root-shelf-id}",
-        operation: "getAllMyBlockPacksByRootShelfId",
-        summary: "Get All My Block Packs By Root Shelf Id",
+        operation: "getMyBlockPacksByRootShelfId",
+        summary: "Get My Block Packs By Root Shelf Id",
         parameters: [
           {
             name: "User-Agent",
@@ -4085,8 +4085,8 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
       {
         method: "GET",
         path: "/materials/root-shelf/{root-shelf-id}",
-        operation: "getAllMyMaterialsByRootShelfId",
-        summary: "Get All My Materials By Root Shelf Id",
+        operation: "getMyMaterialsByRootShelfId",
+        summary: "Get My Materials By Root Shelf Id",
         parameters: [
           {
             name: "User-Agent",
@@ -11026,9 +11026,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
       },
       {
         method: "GET",
-        path: "/routine-tasks/routines",
-        operation: "getAllMyRoutineTasksByRoutineIds",
-        summary: "Get All My Routine Tasks By Routine Ids",
+        path: "/routine-tasks/routine/{routine-id}",
+        operation: "getMyRoutineTasksByRoutineId",
+        summary: "Get My Routine Tasks By Routine Id",
         parameters: [
           {
             name: "User-Agent",
@@ -11045,11 +11045,11 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: true,
           },
           {
-            name: "routineIds",
-            location: "query",
+            name: "routine-id",
+            location: "path",
             required: true,
-            type: "string (uuid)[]",
-            example: ["00000000-0000-4000-8000-000000000001"],
+            type: "string (uuid)",
+            example: "00000000-0000-4000-8000-000000000001",
           },
         ],
         requestExample: null,
@@ -11192,8 +11192,8 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: "curl --request GET 'http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "GET http://localhost/api/development/v1/routine-tasks/routines?areDeleted=true&routineIds=00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
+          curl: "curl --request GET 'http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
+          http: "GET http://localhost/api/development/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
           json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
         },
         tag: "routine-tasks",
@@ -12149,8 +12149,8 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
       {
         method: "GET",
         path: "/routines",
-        operation: "getAllMyRoutinesByTimeRange",
-        summary: "Get All My Routines By Time Range",
+        operation: "getMyRoutinesByTimeRange",
+        summary: "Get My Routines By Time Range",
         parameters: [
           {
             name: "User-Agent",
@@ -20427,8 +20427,8 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
       {
         method: "GET",
         path: "/sub-shelves/root-shelf/{root-shelf-id}",
-        operation: "getAllMySubShelvesByRootShelfId",
-        summary: "Get All My Sub Shelves By Root Shelf Id",
+        operation: "getMySubShelvesByRootShelfId",
+        summary: "Get My Sub Shelves By Root Shelf Id",
         parameters: [
           {
             name: "User-Agent",

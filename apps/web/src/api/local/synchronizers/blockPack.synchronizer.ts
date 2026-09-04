@@ -7,7 +7,7 @@ import {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetAllMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdResponse,
@@ -188,8 +188,8 @@ export class BlockPackLocalSynchronizer {
       });
   };
 
-  static syncGetAllMyBlockPacksByRootShelfId = async (
-    response: GetAllMyBlockPacksByRootShelfIdResponse
+  static syncGetMyBlockPacksByRootShelfId = async (
+    response: GetMyBlockPacksByRootShelfIdResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
     const blockPacks = response.data.map(blockPack => ({

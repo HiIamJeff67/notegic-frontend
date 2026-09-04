@@ -1,27 +1,13 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateRoutineTaskByRoutineId,
-  GetAllMyRoutineTasks,
-  GetAllMyRoutineTasksByRoutineIds,
-  GetMyRoutineTaskById,
-  HardDeleteMyRoutineTaskById,
-  HardDeleteMyRoutineTasksByIds,
-  UpdateMyRoutineTaskById,
-  VisualizeMyRoutineTaskPurposeCount,
-} from "@/api/functions/routineTask.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   CreateRoutineTaskByRoutineIdRequest,
   CreateRoutineTaskByRoutineIdRequestSchema,
   CreateRoutineTaskByRoutineIdResponse,
   CreateRoutineTaskByRoutineIdResponseSchema,
-  GetAllMyRoutineTasksByRoutineIdsRequest,
-  GetAllMyRoutineTasksByRoutineIdsRequestSchema,
-  GetAllMyRoutineTasksByRoutineIdsResponse,
-  GetAllMyRoutineTasksByRoutineIdsResponseSchema,
   GetAllMyRoutineTasksRequest,
   GetAllMyRoutineTasksRequestSchema,
   GetAllMyRoutineTasksResponse,
@@ -30,6 +16,10 @@ import {
   GetMyRoutineTaskByIdRequestSchema,
   GetMyRoutineTaskByIdResponse,
   GetMyRoutineTaskByIdResponseSchema,
+  GetMyRoutineTasksByRoutineIdRequest,
+  GetMyRoutineTasksByRoutineIdRequestSchema,
+  GetMyRoutineTasksByRoutineIdResponse,
+  GetMyRoutineTasksByRoutineIdResponseSchema,
   HardDeleteMyRoutineTaskByIdRequest,
   HardDeleteMyRoutineTaskByIdRequestSchema,
   HardDeleteMyRoutineTaskByIdResponse,
@@ -48,6 +38,16 @@ import {
   VisualizeMyRoutineTaskPurposeCountResponseSchema,
 } from "@shared/api/interfaces/routineTask.interface";
 import { ZodError } from "zod";
+import {
+  CreateRoutineTaskByRoutineId,
+  GetAllMyRoutineTasks,
+  GetMyRoutineTaskById,
+  GetMyRoutineTasksByRoutineId,
+  HardDeleteMyRoutineTaskById,
+  HardDeleteMyRoutineTasksByIds,
+  UpdateMyRoutineTaskById,
+  VisualizeMyRoutineTaskPurposeCount,
+} from "@/api/functions/routineTask.serverFn";
 import { invokeVisualizeQuery } from "./visualize.invoker";
 
 export const queryFnVisualizeMyRoutineTaskPurposeCount = (
@@ -88,19 +88,19 @@ export const queryFnGetMyRoutineTaskById = async (
   }
 };
 
-export const queryFnGetAllMyRoutineTasksByRoutineIds = async (
-  request: GetAllMyRoutineTasksByRoutineIdsRequest
-): Promise<GetAllMyRoutineTasksByRoutineIdsResponse> => {
+export const queryFnGetMyRoutineTasksByRoutineId = async (
+  request: GetMyRoutineTasksByRoutineIdRequest
+): Promise<GetMyRoutineTasksByRoutineIdResponse> => {
   try {
     const validatedRequest =
-      GetAllMyRoutineTasksByRoutineIdsRequestSchema.parse(request);
-    const response = await GetAllMyRoutineTasksByRoutineIds({
+      GetMyRoutineTasksByRoutineIdRequestSchema.parse(request);
+    const response = await GetMyRoutineTasksByRoutineId({
       data: validatedRequest,
     });
-    return GetAllMyRoutineTasksByRoutineIdsResponseSchema.parse(response);
+    return GetMyRoutineTasksByRoutineIdResponseSchema.parse(response);
   } catch (error) {
     console.error(
-      "error happening in queryFnGetAllMyRoutineTasksByRoutineIds",
+      "error happening in queryFnGetMyRoutineTasksByRoutineId",
       error
     );
     if (error instanceof ZodError) {

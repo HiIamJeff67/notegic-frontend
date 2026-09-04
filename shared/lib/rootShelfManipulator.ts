@@ -1,4 +1,4 @@
-import { GetAllMySubShelvesByRootShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
+import { GetMySubShelvesByRootShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
 import {
   BytesOfArrayHeader,
   BytesOfDate,
@@ -86,7 +86,7 @@ export class RootShelfManipulator {
 
   public static initializeSubShelfNodeTreeByResponse(
     newRootShelfNode: RootShelfNode,
-    responseOfSubShelves: GetAllMySubShelvesByRootShelfIdResponse
+    responseOfSubShelves: GetMySubShelvesByRootShelfIdResponse
   ): RootShelfNode {
     let i = 0,
       prevSubShelfNodes: Record<UUID, SubShelfNode> = {},

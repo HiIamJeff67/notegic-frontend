@@ -13,7 +13,7 @@ import type {
   DeleteMyRoutineByIdResponse,
   DeleteMyRoutinesByIdsRequest,
   DeleteMyRoutinesByIdsResponse,
-  GetAllMyRoutinesByTimeRangeResponse,
+  GetMyRoutinesByTimeRangeResponse,
   GetMyRoutineByIdResponse,
   GetMyRoutinesByStationIdResponse,
   HardDeleteMyRoutineByIdRequest,
@@ -176,8 +176,8 @@ export class RoutineLocalSynchronizer {
     });
   };
 
-  static syncGetAllMyRoutinesByTimeRange = async (
-    response: GetAllMyRoutinesByTimeRangeResponse
+  static syncGetMyRoutinesByTimeRange = async (
+    response: GetMyRoutinesByTimeRangeResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
     if (response.data.length === 0) return;
@@ -309,7 +309,7 @@ export class RoutineLocalSynchronizer {
   static syncGetMyRoutinesByStationId = async (
     response: GetMyRoutinesByStationIdResponse
   ): Promise<void> => {
-    await RoutineLocalSynchronizer.syncGetAllMyRoutinesByTimeRange(response);
+    await RoutineLocalSynchronizer.syncGetMyRoutinesByTimeRange(response);
   };
 
   static syncSearchRoutines = async (

@@ -141,9 +141,9 @@ export type GetMyMaterialsByParentSubShelfIdResponse = z.infer<
   typeof GetMyMaterialsByParentSubShelfIdResponseSchema
 >;
 
-/* ============================== GetAllMyMaterialsByRootShelfId ============================== */
+/* ============================== GetMyMaterialsByRootShelfId ============================== */
 
-export const GetAllMyMaterialsByRootShelfIdRequestSchema =
+export const GetMyMaterialsByRootShelfIdRequestSchema =
   NotegicRequestSchema.extend({
     header: z
       .object({
@@ -157,11 +157,11 @@ export const GetAllMyMaterialsByRootShelfIdRequestSchema =
     }),
   });
 
-export type GetAllMyMaterialsByRootShelfIdRequest = z.input<
-  typeof GetAllMyMaterialsByRootShelfIdRequestSchema
+export type GetMyMaterialsByRootShelfIdRequest = z.input<
+  typeof GetMyMaterialsByRootShelfIdRequestSchema
 >;
 
-export const GetAllMyMaterialsByRootShelfIdResponseSchema =
+export const GetMyMaterialsByRootShelfIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.array(
       z.object({
@@ -182,8 +182,8 @@ export const GetAllMyMaterialsByRootShelfIdResponseSchema =
     }),
   });
 
-export type GetAllMyMaterialsByRootShelfIdResponse = z.infer<
-  typeof GetAllMyMaterialsByRootShelfIdResponseSchema
+export type GetMyMaterialsByRootShelfIdResponse = z.infer<
+  typeof GetMyMaterialsByRootShelfIdResponseSchema
 >;
 
 /* ============================== CreateMyMaterial ============================== */
