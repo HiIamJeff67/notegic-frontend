@@ -4,8 +4,9 @@ This directory is the documentation entry point for the Notegic frontend
 monorepo. It describes the current Web application, the approved shared-code
 architecture, and the conventions contributors should follow.
 
-For installation and the shortest contributor path, start with the repository
-root [README](../README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+For the product overview, start with the repository root [README](../README.md).
+For Web installation and the shortest contributor path, use the
+[Web README](../apps/web/README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 The frontend and backend remain separate repositories. Frontend documentation
 may link to backend contracts or backend design documents, but it must not

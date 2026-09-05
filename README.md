@@ -1,152 +1,44 @@
+<a><img src="apps/web/assets/logo/header-image.png" alt="Notegic" /></a>
+
 # Notegic Frontend
 
-Notegic's frontend monorepo. The Web application is implemented today;
-Desktop and Mobile are planned application boundaries that will consume the
-portable TypeScript code under `shared/` when those apps are introduced.
+Notegic is a workspace for turning notes, reference materials, and recurring
+work into an organized, connected workflow. This repository contains the
+applications that people use to create, manage, and collaborate on that work.
+
+## Highlights
+
+- Organize content into shelves, folders, materials, and block packs.
+- Write and share structured documents with live collaboration.
+- Plan routines, tasks, dependencies, and their progress.
+- Personalize dashboards, preferences, and account settings.
+- Manage notifications, connected sign-in methods, and API keys.
+
+## Applications
+
+| Application | Status | Details |
+| --- | --- | --- |
+| [Web](apps/web/README.md) | Available | Browser experience, local setup, supported features, and Web-specific architecture. |
+| Desktop | Planned | Its README will live at `apps/desktop/README.md` when the application is introduced. |
+| Mobile | Planned | Its README will live at `apps/mobile/README.md` when the application is introduced. |
 
 ## Repository structure
 
 ```text
 apps/
-  web/        TanStack Start Web app, browser adapters, Web assets, and styles
-  desktop/    Planned desktop app boundary; no implementation yet
-  mobile/     Planned mobile app boundary; no implementation yet
-shared/       Portable TypeScript API, i18n, reducers, types, and packages
-test/         Frontend tests
-scripts/      Frontend developer tooling, including the devlog generator
-docs/         Architecture, API, conventions, runbooks, and devlogs
+  web/              Current browser application
+  desktop/          Future desktop application boundary
+  mobile/           Future mobile application boundary
+shared/             Code and contracts shared by applications
+docs/               Product, architecture, and operating documentation
+test/               Frontend verification
+scripts/            Repository tooling
 ```
 
-`shared/` owns code with multiple real consumers, public/generated contracts,
-or cross-platform invariants. It must not require the DOM, Web CSS, browser or
-native storage, or TanStack Start for every consumer.
-
-The current boundaries are:
-
-- `apps/web/src/api/` owns Web runtime concerns: TanStack Start `serverFn`,
-  browser persistence, Apollo setup, React hooks, request headers, cookies,
-  and WebSocket lifecycle.
-- `shared/api/` owns portable request semantics, query configuration,
-  GraphQL documents/generated artifacts, conversions, and realtime contracts.
-- `shared/i18n/` owns translation resources, language types, and pure helpers.
-  Each app supplies its own storage/lifecycle adapter.
-- `shared/reducers/` owns platform-neutral state transitions.
-- Assets stay app-owned. The current Web copy is under `apps/web/assets/`;
-  there is no initial `shared/assets/` directory.
-- Web global styles, Tailwind, and editor styles stay under `apps/web/`.
-
-Desktop and Web may use TanStack Start `serverFn` where their runtime
-integration is appropriate. Mobile may use direct HTTP requests. No client
-uses a server function as an implicit database connection or write path.
-
-## Prerequisites
-
-- Node.js `22.16.0`, pinned in [`.nvmrc`](.nvmrc)
-- npm workspaces with Turborepo task orchestration
-- Access to the backend API for end-to-end local usage
-
-Install from the repository root:
-
-```bash
-npm install
-```
-
-Create a local, untracked `apps/web/.env` with the Web API and realtime
-endpoints. A minimal local setup is:
-
-```dotenv
-VITE_API_DOMAIN_URL=http://localhost
-VITE_REALTIME_WEBSOCKET_URL=ws://localhost
-VITE_APP_BASE_PATH=/development/v1
-VITE_PORT=6776
-```
-
-OAuth redirect/client variables are only needed when testing OAuth flows. Do
-Do not commit `apps/web/.env` or any credential values.
-
-## Root commands
-
-Run root commands from the repository root. They use Turborepo to select the
-Web workspace while keeping the root lockfile, shared code, and code generation
-inputs in scope. You can also run Web-only commands inside `apps/web/`.
-
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the Web development server |
-| `npm run build:web` | Build the Web SSR application for Node |
-| `npm run start` | Start the previously built Node SSR output |
-| `npm run typecheck` | Typecheck `@notegic/web` and its shared imports |
-| `npm test -- --runInBand` | Run the frontend test suite |
-| `npm run format:check` | Check formatting without changing files |
-| `npm run format:all` | Apply Biome formatting to frontend source/config files |
-| `npm run lint` | Run Biome lint checks |
-| `npm run codegen` | Generate GraphQL client artifacts |
-| `npm run codegen:check` | Regenerate artifacts and fail on tracked drift |
-| `npm run generate-local-migrations` | Generate local Drizzle migrations |
-| `npm run devlog` | Generate today's current-change and Git-history snapshot |
-| `npm run install-hooks` | Enable the repository pre-commit checks |
-| `npm run devlog:fetch` | Refresh local GitHub remote refs |
-| `npm run devlog:backfill` | Recreate historical snapshots from `origin/main` |
-| `npm run build:web:cloudflare` | Build the Web Cloudflare Workers output |
-| `npm run deploy:web:cloudflare` | Build and deploy the Worker with Wrangler |
-
-To work directly inside the Web workspace:
-
-```bash
-cd apps/web
-npm run dev
-```
-
-The normal local verification sequence is:
-
-```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm test -- --runInBand
-npm run codegen:check
-npm run build:web
-```
-
-## Generated files
-
-Do not hand-edit generated output. Run `npm run codegen` after changing
-GraphQL schemas or documents; generated client output is written to
-`shared/api/graphql/generated/`. TanStack route output under
-`apps/web/src/routeTree.gen.ts` is generated by the Web build.
-
-## Deployment
-
-The current Web app renders SSR and uses server functions, so its deployment
-target is Cloudflare Workers/Workers Builds. Cloudflare Pages is only suitable
-if the Web app is intentionally changed to a static output that no longer
-requires SSR or server functions.
-
-Workers Builds uses this repository's root directory, installs from the root
-lockfile, runs `npm run build:web:cloudflare`, and deploys the generated
-`apps/web/.output/server/wrangler.json`. Shared changes are included in the
-watch paths and must trigger Web validation/deployment. Production uses `main`;
-non-production builds use a separate preview Worker.
-
-See [the Cloudflare Workers runbook](docs/runbooks/cloudflare-workers-builds.md)
-for the exact root/build/deploy commands, watch paths, and environment
-variables. Do not put Cloudflare credentials in the repository.
-
-## Documentation
-
-- [Contributing](CONTRIBUTING.md) — local workflow and pull request checklist
-- [Frontend architecture](docs/codebase-design/frontend-architecture.md) —
-  ownership and dependency direction
-- [API and code generation](docs/api-route-design/README.md) — request,
-  GraphQL, and runtime boundaries
-- [System design](docs/system-design/) — storage, synchronization, and
-  platform boundaries
-- [Runbooks](docs/runbooks/README.md) — repeatable commands and deployment
-- [Conventions](docs/conventions/README.md) — naming and implementation rules
-- [Shared code](shared/README.md) — what belongs in `shared/`
-- [Development logs](docs/devlogs/README.md) — historical snapshots and
-  architecture records
-- [Full documentation map](docs/README.md)
+For application-specific setup, commands, technical decisions, and folder
+structure, start with the relevant README under `apps/`. Shared-code guidance
+is available in [shared/README.md](shared/README.md), and the broader
+documentation map is in [docs/README.md](docs/README.md).
 
 ## License
 
@@ -161,9 +53,9 @@ This section is automatically maintained from the current change and recent loca
 
 ### Recent snapshots
 
+- [2026-09/2026-09-05](docs/devlogs/2026-09/2026-09-05.md)
 - [2026-09/2026-09-04](docs/devlogs/2026-09/2026-09-04.md)
 - [2026-09/2026-09-03](docs/devlogs/2026-09/2026-09-03.md)
 - [2026-08/2026-08-28](docs/devlogs/2026-08/2026-08-28.md)
 - [2026-08/2026-08-27](docs/devlogs/2026-08/2026-08-27.md)
-- [2026-08/2026-08-26](docs/devlogs/2026-08/2026-08-26.md)
 <!-- DEVLOG:END -->
