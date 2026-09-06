@@ -3,8 +3,16 @@ import { RealtimeError } from "./exceptions/client/realtime.exception";
 
 const API_VERSION = "v1";
 
-export const CurrentAPIBaseURL = `api/development/${API_VERSION}`;
-export const CurrentRealtimeBaseURL = `realtime/development/${API_VERSION}`;
+const configuredAPIBaseURL = import.meta.env.VITE_API_BASE_PATH?.trim();
+const configuredRealtimeBaseURL =
+  import.meta.env.VITE_REALTIME_BASE_PATH?.trim();
+
+export const CurrentAPIBaseURL =
+  configuredAPIBaseURL ||
+  (import.meta.env.PROD ? API_VERSION : `api/development/${API_VERSION}`);
+export const CurrentRealtimeBaseURL =
+  configuredRealtimeBaseURL ||
+  (import.meta.env.PROD ? API_VERSION : `realtime/development/${API_VERSION}`);
 
 export const withoutPathParams = <T extends Record<string, unknown>>(
   body: T,
@@ -276,4 +284,18 @@ export const getRealtimeWebSocketURL = (endpoint?: string): string => {
   if (!url) throw new NotegicAPIError(RealtimeError.MissingWebSocketURL());
   const basePath = endpoint ?? CurrentRealtimeBaseURL;
   return `${url.replace(/\/+$/, "")}/${basePath.replace(/^\/+/, "")}`;
+};
+
+export const getRealtimeHTTPURL = (): string => {
+  const configuredURL = import.meta.env.VITE_REALTIME_HTTP_URL?.trim();
+  if (configuredURL) return configuredURL.replace(/\/+$/, "");
+
+  const websocketURL = import.meta.env.VITE_REALTIME_WEBSOCKET_URL?.trim();
+  if (!websocketURL)
+    throw new NotegicAPIError(RealtimeError.MissingWebSocketURL());
+
+  return websocketURL
+    .replace(/^wss:/, "https:")
+    .replace(/^ws:/, "http:")
+    .replace(/\/+$/, "");
 };

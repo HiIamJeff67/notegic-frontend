@@ -1,3 +1,4 @@
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import {
@@ -43,8 +44,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useLoading, useModal, useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
+import { useLoading, useMobile, useModal, useStationRoutine } from "@/hooks";
 
 interface RoutineTagMenuItemProps {
   routineTag: RoutineTagNode;
@@ -53,6 +53,7 @@ interface RoutineTagMenuItemProps {
 const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
   const { i18n, t } = useTranslation();
   const loadingManager = useLoading();
+  const isMobile = useMobile();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
   const availableRoutines = stationRoutineManager.routines;
@@ -118,7 +119,11 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCard
+              open={isMobile ? false : undefined}
+              openDelay={250}
+              closeDelay={100}
+            >
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>

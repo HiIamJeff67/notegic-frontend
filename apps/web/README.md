@@ -50,6 +50,9 @@ Create an untracked `apps/web/.env` with the local API and realtime endpoints:
 VITE_API_DOMAIN_URL=http://localhost
 VITE_REALTIME_WEBSOCKET_URL=ws://localhost
 VITE_APP_BASE_PATH=/development/v1
+
+# Production builds use https://client.notegic.com/v1 and
+# wss://realtime.notegic.com/v1; configure these in the deployment environment.
 VITE_PORT=6776
 ```
 

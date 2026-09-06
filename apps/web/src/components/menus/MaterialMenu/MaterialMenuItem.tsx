@@ -1,4 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { MaterialNode } from "@shared/types/itemNodes.type";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -21,8 +22,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { useAppRouter, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
+import { useAppRouter, useMobile, useShelfItem } from "@/hooks";
 
 interface MaterialMenuItemProps {
   parent: SubShelfNode;
@@ -31,6 +31,7 @@ interface MaterialMenuItemProps {
 
 const MaterialMenuItem = ({ parent, current }: MaterialMenuItemProps) => {
   const router = useAppRouter();
+  const isMobile = useMobile();
   const { i18n, t } = useTranslation();
   const shelfItemManager = useShelfItem();
 
@@ -51,7 +52,11 @@ const MaterialMenuItem = ({ parent, current }: MaterialMenuItemProps) => {
 
   return (
     <ContextMenu>
-      <HoverCard openDelay={250} closeDelay={100}>
+      <HoverCard
+        open={isMobile ? false : undefined}
+        openDelay={250}
+        closeDelay={100}
+      >
         <HoverCardTrigger asChild>
           <ContextMenuTrigger asChild>
             <SidebarMenuButton

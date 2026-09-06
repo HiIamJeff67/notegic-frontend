@@ -3,8 +3,36 @@
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 import { cn } from "@shared/util/utils";
 import * as React from "react";
+import { useMobile } from "@/hooks/useMobile";
 
-const HoverCard = HoverCardPrimitive.Root;
+const HoverCard = ({
+  open,
+  ...props
+}: React.ComponentProps<typeof HoverCardPrimitive.Root>) => {
+  const isMobile = useMobile();
+  const [canHover, setCanHover] = React.useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(hover: hover)").matches;
+  });
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(hover: hover)");
+    const handleChange = () => setCanHover(mediaQuery.matches);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return (
+    <HoverCardPrimitive.Root
+      {...props}
+      open={isMobile || !canHover ? false : open}
+    />
+  );
+};
 
 const HoverCardTrigger = HoverCardPrimitive.Trigger;
 

@@ -13,6 +13,7 @@ import {
   APIURLPathDictionary,
   CurrentAPIBaseURL,
   CurrentRealtimeBaseURL,
+  getRealtimeHTTPURL,
 } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
@@ -120,7 +121,7 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
         getRequestHeader("User-Agent") ??
         "unknown";
       const response = await fetch(
-        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentRealtimeBaseURL}/${APIURLPathDictionary.realtime.getBlockPackParticipants(request.param.blockPackId as UUID)}`,
+        `${getRealtimeHTTPURL()}/${CurrentRealtimeBaseURL}/${APIURLPathDictionary.realtime.getBlockPackParticipants(request.param.blockPackId as UUID)}`,
         {
           method: "GET",
           headers: {

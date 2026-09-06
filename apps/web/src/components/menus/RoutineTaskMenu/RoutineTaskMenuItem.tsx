@@ -27,7 +27,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useModal, useStationRoutine } from "@/hooks";
+import { useMobile, useModal, useStationRoutine } from "@/hooks";
 
 interface RoutineTaskMenuItemProps {
   routineTask: RoutineTaskNode;
@@ -35,6 +35,7 @@ interface RoutineTaskMenuItemProps {
 
 const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   const { t } = useTranslation();
+  const isMobile = useMobile();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
   const executionStatus = routineTask.executionStatus;
@@ -45,7 +46,11 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   return (
     <SidebarMenuSubItem>
       <ContextMenu>
-        <HoverCard openDelay={250} closeDelay={100}>
+        <HoverCard
+          open={isMobile ? false : undefined}
+          openDelay={250}
+          closeDelay={100}
+        >
           <HoverCardTrigger asChild>
             <ContextMenuTrigger asChild>
               <SidebarMenuSubButton

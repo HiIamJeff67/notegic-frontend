@@ -14,8 +14,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, webRoot, "");
   const nitroPreset = env.NITRO_PRESET || "node_server";
   const cloudflareWorkerName = env.CLOUDFLARE_WORKER_NAME?.trim();
-  const rawBasePath = env.VITE_APP_BASE_PATH || "/development/v1";
-  const normalizedBasePath = `/${rawBasePath.replace(/^\/+|\/+$/g, "")}/`;
+  const rawBasePath =
+    env.VITE_APP_BASE_PATH || (mode === "production" ? "/" : "/development/v1");
+  const normalizedBasePath =
+    rawBasePath === "/" ? "/" : `/${rawBasePath.replace(/^\/+|\/+$/g, "")}/`;
   const sqliteWasmDistDir = join(
     repositoryRoot,
     "node_modules",

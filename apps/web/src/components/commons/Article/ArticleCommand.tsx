@@ -285,8 +285,13 @@ const ArticleCommand = ({ articleRef, onSelect }: ArticleCommandProps) => {
             readOnly
             placeholder="⌘ + K / Ctrl + K"
             aria-label="Search article"
-            onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}
+            onKeyDown={event => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setOpen(true);
+              }
+            }}
           />
         </Command>
       </SidebarMenuItem>

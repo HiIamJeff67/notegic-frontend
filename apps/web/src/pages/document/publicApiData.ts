@@ -10638,6 +10638,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 id: "00000000-0000-4000-8000-000000000001",
                 maxAttempts: 0,
                 payload: {},
+                phase: "Claimed",
                 previousRoutineTaskIds: [
                   "00000000-0000-4000-8000-000000000001",
                 ],
@@ -10702,6 +10703,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
+              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -10811,6 +10813,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
+              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -10849,6 +10852,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 required: true,
                 example: {},
                 children: [],
+              },
+              {
+                name: "phase",
+                type: '"Claimed" | "Plan" | "Execution" | "Recovery" | "Analysis"',
+                required: false,
+                enum: ["Claimed", "Plan", "Execution", "Recovery", "Analysis"],
+                example: "Claimed",
               },
               {
                 name: "previousRoutineTaskIds",
@@ -10958,6 +10968,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             id: "00000000-0000-4000-8000-000000000001",
             maxAttempts: 0,
             payload: {},
+            phase: "Claimed",
             previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
             priority: 0,
             purpose: "GetSubShelf",
@@ -11067,6 +11078,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 id: "00000000-0000-4000-8000-000000000001",
                 maxAttempts: 0,
                 payload: {},
+                phase: "Claimed",
                 previousRoutineTaskIds: [
                   "00000000-0000-4000-8000-000000000001",
                 ],
@@ -11131,6 +11143,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
+              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -22792,7 +22805,8 @@ export const gatewayRules = [
     summary:
       "The OpenAPI operation extensions schema metadata and schema metadata identify the source contracts used to generate each schema.",
     bullets: [
-      "Base path: `/api/development/v1` for the current Beta namespace.",
+      "Local base path: `/api/development/v1`.",
+      "Production base path: `/v1` at `https://api.notegic.com`.",
       "Request and response media type: `application/json`.",
       "Path resource identifiers are UUID strings unless the operation schema says otherwise.",
       "Times use RFC 3339 date-time strings.",

@@ -1,5 +1,6 @@
 import { MaxShelfDepth } from "@shared/constants";
 import { DNDType } from "@shared/enums";
+import { translateError } from "@shared/i18n/error";
 import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
 import toast from "@shared/lib/toast";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -13,7 +14,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
@@ -54,9 +55,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useLoading, useShelfItem } from "@/hooks";
+import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { translateError } from "@shared/i18n/error";
 
 interface SubShelfMenuItemProps {
   summary: ShelfTreeSummary;
@@ -74,9 +74,11 @@ const SubShelfMenuItem = ({
   depth,
 }: SubShelfMenuItemProps) => {
   const loadingManager = useLoading();
+  const isMobile = useMobile();
   const { i18n, t } = useTranslation();
   const modalManager = useModal();
   const shelfItemManager = useShelfItem();
+  const [isItemsMenuOpen, setIsItemsMenuOpen] = useState(false);
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -194,8 +196,18 @@ const SubShelfMenuItem = ({
         }}
         style={{ opacity: isDragging ? 0.5 : 1 }}
       >
-        <ContextMenu>
-          <HoverCard openDelay={250} closeDelay={100}>
+        <ContextMenu
+          onOpenChange={open => {
+            if (!open) {
+              setIsItemsMenuOpen(false);
+            }
+          }}
+        >
+          <HoverCard
+            open={isMobile ? false : undefined}
+            openDelay={250}
+            closeDelay={100}
+          >
             <HoverCardTrigger asChild>
               <ContextMenuTrigger asChild>
                 <CollapsibleTrigger asChild>
@@ -257,8 +269,25 @@ const SubShelfMenuItem = ({
           <ContextMenuContent>
             <ContextMenuLabel>{t("workspace.menu.add")}</ContextMenuLabel>
             <ContextMenuGroup>
-              <ContextMenuSub>
-                <ContextMenuSubTrigger>
+              <ContextMenuSub
+                open={isMobile ? isItemsMenuOpen : undefined}
+                onOpenChange={
+                  isMobile
+                    ? open => {
+                        if (open) {
+                          setIsItemsMenuOpen(true);
+                        }
+                      }
+                    : undefined
+                }
+              >
+                <ContextMenuSubTrigger
+                  onPointerMove={event => {
+                    if (isMobile) {
+                      event.preventDefault();
+                    }
+                  }}
+                >
                   <PackagePlus className="mr-2 size-4" />
                   {t("workspace.menu.items")}
                 </ContextMenuSubTrigger>

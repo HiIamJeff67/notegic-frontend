@@ -219,7 +219,7 @@ const TutorialPage = () => {
               { label: "Home", href: "/" },
               { label: "Document", href: "/document" },
             ]}
-            className="min-w-0 flex-1"
+            className="min-w-0 flex-1 pt-10 lg:pt-0"
           >
             <ArticleContent>
               <ArticleParagraph id="tutorial">
@@ -278,7 +278,7 @@ const TutorialPage = () => {
                   <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
                     <code>
                       {
-                        "curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.app/api/development/v1/root-shelves"
+                        "curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.com/v1/root-shelves"
                       }
                     </code>
                   </pre>

@@ -1,6 +1,5 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSendAuthCode } from "@/api/hooks/auth.hook";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -8,6 +7,8 @@ import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSendAuthCode } from "@/api/hooks/auth.hook";
 import {
   Article,
   ArticleContent,
@@ -21,7 +22,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouter, useNetwork, useSettingsDisplay, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
 import ApiKeysTab from "./tabs/ApiKeysTab";
@@ -163,6 +163,7 @@ const AccountSettingsPage = ({
     <div
       className={cn(
         "relative h-full min-h-0 [&_.flex.flex-col.gap-5]:gap-[var(--density-content-gap)] [&_.flex.flex-col.gap-6]:gap-[var(--density-content-gap)]",
+        sidebarManager.isMobile && "pt-10",
         displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
       )}
     >

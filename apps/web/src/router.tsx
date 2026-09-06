@@ -3,8 +3,11 @@ import { createApolloClient } from "@/api/apollo-client";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-const rawBasePath = import.meta.env.VITE_APP_BASE_PATH || "/development/v1";
-const routerBasePath = `/${rawBasePath.replace(/^\/+|\/+$/g, "")}`;
+const rawBasePath =
+  import.meta.env.VITE_APP_BASE_PATH ||
+  (import.meta.env.PROD ? "/" : "/development/v1");
+const routerBasePath =
+  rawBasePath === "/" ? "/" : `/${rawBasePath.replace(/^\/+|\/+$/g, "")}`;
 
 export function getRouter() {
   const apolloClient = createApolloClient();

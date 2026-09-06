@@ -7,12 +7,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const sidebarManager = useSidebar();
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
-      {sidebarManager.isMobile && (
-        <SidebarTrigger className="fixed top-2 left-2 z-50" />
-      )}
-      <WidgetProvider>{children}</WidgetProvider>
-    </Suspense>
+    <div className="relative z-0 h-full">
+      <Suspense fallback={<StrictLoadingCover />}>
+        {sidebarManager.isMobile && (
+          <SidebarTrigger className="fixed top-2 left-2 z-[60] border-none bg-transparent" />
+        )}
+        <WidgetProvider>{children}</WidgetProvider>
+      </Suspense>
+    </div>
   );
 };
 

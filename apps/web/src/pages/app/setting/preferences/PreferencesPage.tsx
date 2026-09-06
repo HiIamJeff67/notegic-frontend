@@ -63,6 +63,7 @@ const PreferencesPage = ({
     <div
       className={cn(
         "relative h-full min-h-0",
+        sidebarManager.isMobile && "pt-10",
         displayMode === "sheet" ? "bg-sidebar" : "bg-canvas"
       )}
     >

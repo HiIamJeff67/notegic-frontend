@@ -18,6 +18,7 @@ import {
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { Input } from "@/components/ui/input";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type TrashItemType =
@@ -64,6 +65,7 @@ const TrashPage = ({
   onQueryChange: (query: string) => void;
 }) => {
   const { i18n, t } = useTranslation();
+  const sidebarManager = useSidebar();
   const [query, setQuery] = useState(initialQuery);
   const [selectedType, setSelectedType] = useState<TrashItemType | "all">(
     "all"
@@ -119,17 +121,21 @@ const TrashPage = ({
         new Date(left.deletedAt ?? 0).getTime()
     );
   return (
-    <main className="h-full min-h-0 overflow-y-auto bg-canvas px-4 py-8 sm:px-6 lg:px-10">
+    <main
+      className={
+        sidebarManager.isMobile
+          ? "h-full min-h-0 overflow-y-auto bg-canvas px-4 pt-12 pb-8 sm:px-6 lg:px-10"
+          : "h-full min-h-0 overflow-y-auto bg-canvas px-4 py-8 sm:px-6 lg:px-10"
+      }
+    >
+      {sidebarManager.isMobile && (
+        <SidebarTrigger className="fixed top-2 left-2 z-40 border-none bg-transparent" />
+      )}
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 pb-10">
         <header className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <Trash2Icon className="size-5" />
-            <span className="font-mono text-xs tracking-[0.16em]">
-              {t("workspace.trash.eyebrow")}
-            </span>
-          </div>
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">
+              <Trash2Icon className="size-6" />
               {t("workspace.trash.title")}
             </h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">

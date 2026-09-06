@@ -12,9 +12,12 @@ const backendRoot = path.resolve(projectRoot, "../notegic-backend");
 const defaults = {
   gateway: path.join(
     backendRoot,
-    "contracts/api-gateway/v1/public/openapi/openapi.json"
+    "contracts/gateway/api-gateway/v1/public/openapi/openapi.json"
   ),
-  gatewayRules: path.join(backendRoot, "contracts/api-gateway/v1/public/rules"),
+  gatewayRules: path.join(
+    backendRoot,
+    "contracts/gateway/api-gateway/v1/public/rules"
+  ),
   output: path.join(
     projectRoot,
     "apps/web/src/pages/document/publicApiData.ts"

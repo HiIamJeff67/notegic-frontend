@@ -1,4 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
@@ -48,8 +49,13 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useAppRouter, useLoading, useModal, useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
+import {
+  useAppRouter,
+  useLoading,
+  useMobile,
+  useModal,
+  useStationRoutine,
+} from "@/hooks";
 
 interface StationMenuItemProps {
   station: StationNode;
@@ -58,6 +64,7 @@ interface StationMenuItemProps {
 const StationMenuItem = ({ station }: StationMenuItemProps) => {
   const { t } = useTranslation();
   const loadingManager = useLoading();
+  const isMobile = useMobile();
   const modalManager = useModal();
   const router = useAppRouter();
   const stationRoutineManager = useStationRoutine();
@@ -121,7 +128,11 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCard
+              open={isMobile ? false : undefined}
+              openDelay={250}
+              closeDelay={100}
+            >
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>
@@ -321,7 +332,11 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
           (station.routineCount > 0 || routineTaskCount > 0) && (
             <SidebarMenuBadge className="gap-0.5">
               {station.routineCount > 0 && (
-                <HoverCard openDelay={250} closeDelay={100}>
+                <HoverCard
+                  open={isMobile ? false : undefined}
+                  openDelay={250}
+                  closeDelay={100}
+                >
                   <HoverCardTrigger asChild>
                     <span className="pointer-events-auto flex min-w-4 items-center justify-center px-0.5">
                       {station.routineCount}
@@ -347,7 +362,11 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                 </span>
               )}
               {routineTaskCount > 0 && (
-                <HoverCard openDelay={250} closeDelay={100}>
+                <HoverCard
+                  open={isMobile ? false : undefined}
+                  openDelay={250}
+                  closeDelay={100}
+                >
                   <HoverCardTrigger asChild>
                     <span className="pointer-events-auto flex min-w-4 items-center justify-center px-0.5">
                       {routineTaskCount}

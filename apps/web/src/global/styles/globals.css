@@ -481,7 +481,7 @@ html[data-density] [data-sidebar="menu-sub-button"] {
 .article-sidebar [data-sidebar="menu-sub-button"] {
   height: auto !important;
   min-height: var(--density-menu-item-height) !important;
-  align-items: flex-start;
+  padding-block: 0.375rem;
   overflow: visible !important;
   white-space: normal !important;
   overflow-wrap: anywhere;

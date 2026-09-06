@@ -18,11 +18,9 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AppRoutinesRouteImport } from './routes/app.routines'
-import { Route as AppPlaygroundRouteImport } from './routes/app.playground'
 import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppBlockPackEditorRouteImport } from './routes/app.block-pack-editor'
-import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AuthForgetPasswordRouteImport } from './routes/_auth.forgetPassword'
@@ -84,11 +82,6 @@ const AppRoutinesRoute = AppRoutinesRouteImport.update({
   path: '/routines',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPlaygroundRoute = AppPlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppMaterialViewerRoute = AppMaterialViewerRouteImport.update({
   id: '/material-viewer',
   path: '/material-viewer',
@@ -102,11 +95,6 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppBlockPackEditorRoute = AppBlockPackEditorRouteImport.update({
   id: '/block-pack-editor',
   path: '/block-pack-editor',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -203,11 +191,9 @@ export interface FileRoutesByFullPath {
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/app/admin': typeof AppAdminRoute
   '/app/block-pack-editor': typeof AppBlockPackEditorRouteWithChildren
   '/app/dashboard': typeof AppDashboardRouteWithChildren
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
-  '/app/playground': typeof AppPlaygroundRoute
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
@@ -234,8 +220,6 @@ export interface FileRoutesByTo {
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/app/admin': typeof AppAdminRoute
-  '/app/playground': typeof AppPlaygroundRoute
   '/app/trash': typeof AppTrashRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
@@ -263,11 +247,9 @@ export interface FileRoutesById {
   '/_auth/forgetPassword': typeof AuthForgetPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/app/admin': typeof AppAdminRoute
   '/app/block-pack-editor': typeof AppBlockPackEditorRouteWithChildren
   '/app/dashboard': typeof AppDashboardRouteWithChildren
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
-  '/app/playground': typeof AppPlaygroundRoute
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/_auth/redirect/error': typeof AuthRedirectErrorRoute
@@ -296,11 +278,9 @@ export interface FileRouteTypes {
     | '/forgetPassword'
     | '/login'
     | '/register'
-    | '/app/admin'
     | '/app/block-pack-editor'
     | '/app/dashboard'
     | '/app/material-viewer'
-    | '/app/playground'
     | '/app/routines'
     | '/app/trash'
     | '/redirect/error'
@@ -327,8 +307,6 @@ export interface FileRouteTypes {
     | '/forgetPassword'
     | '/login'
     | '/register'
-    | '/app/admin'
-    | '/app/playground'
     | '/app/trash'
     | '/redirect/error'
     | '/redirect/google'
@@ -355,11 +333,9 @@ export interface FileRouteTypes {
     | '/_auth/forgetPassword'
     | '/_auth/login'
     | '/_auth/register'
-    | '/app/admin'
     | '/app/block-pack-editor'
     | '/app/dashboard'
     | '/app/material-viewer'
-    | '/app/playground'
     | '/app/routines'
     | '/app/trash'
     | '/_auth/redirect/error'
@@ -452,13 +428,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRoutinesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/playground': {
-      id: '/app/playground'
-      path: '/playground'
-      fullPath: '/app/playground'
-      preLoaderRoute: typeof AppPlaygroundRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/material-viewer': {
       id: '/app/material-viewer'
       path: '/material-viewer'
@@ -478,13 +447,6 @@ declare module '@tanstack/react-router' {
       path: '/block-pack-editor'
       fullPath: '/app/block-pack-editor'
       preLoaderRoute: typeof AppBlockPackEditorRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin': {
-      id: '/app/admin'
-      path: '/admin'
-      fullPath: '/app/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
     '/_auth/register': {
@@ -678,11 +640,9 @@ const AppRoutinesRouteWithChildren = AppRoutinesRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRoute
   AppBlockPackEditorRoute: typeof AppBlockPackEditorRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRouteWithChildren
   AppMaterialViewerRoute: typeof AppMaterialViewerRouteWithChildren
-  AppPlaygroundRoute: typeof AppPlaygroundRoute
   AppRoutinesRoute: typeof AppRoutinesRouteWithChildren
   AppTrashRoute: typeof AppTrashRoute
   AppSettingAccountRoute: typeof AppSettingAccountRoute
@@ -690,11 +650,9 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRoute,
   AppBlockPackEditorRoute: AppBlockPackEditorRouteWithChildren,
   AppDashboardRoute: AppDashboardRouteWithChildren,
   AppMaterialViewerRoute: AppMaterialViewerRouteWithChildren,
-  AppPlaygroundRoute: AppPlaygroundRoute,
   AppRoutinesRoute: AppRoutinesRouteWithChildren,
   AppTrashRoute: AppTrashRoute,
   AppSettingAccountRoute: AppSettingAccountRoute,

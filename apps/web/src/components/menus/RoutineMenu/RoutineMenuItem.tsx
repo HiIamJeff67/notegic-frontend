@@ -62,7 +62,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useLoading, useModal, useShelfItem, useStationRoutine } from "@/hooks";
+import {
+  useLoading,
+  useMobile,
+  useModal,
+  useShelfItem,
+  useStationRoutine,
+} from "@/hooks";
 
 interface RoutineMenuItemProps {
   station: StationNode;
@@ -71,6 +77,7 @@ interface RoutineMenuItemProps {
 
 const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
   const { i18n, t } = useTranslation();
+  const isMobile = useMobile();
   const navigate = useNavigate();
   const loadingManager = useLoading();
   const modalManager = useModal();
@@ -156,7 +163,11 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCard
+              open={isMobile ? false : undefined}
+              openDelay={250}
+              closeDelay={100}
+            >
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>

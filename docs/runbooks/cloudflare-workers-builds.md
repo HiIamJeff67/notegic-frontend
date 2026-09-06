@@ -46,9 +46,11 @@ Builds. Values are deliberately not committed because Vite embeds `VITE_*`
 values in the browser bundle.
 
 ```text
-VITE_API_DOMAIN_URL
-VITE_REALTIME_WEBSOCKET_URL
-VITE_APP_BASE_PATH
+VITE_API_DOMAIN_URL=https://client.notegic.com
+VITE_API_BASE_PATH=v1
+VITE_REALTIME_WEBSOCKET_URL=wss://realtime.notegic.com
+VITE_REALTIME_BASE_PATH=v1
+VITE_APP_BASE_PATH=/
 VITE_OAUTH_GOOGLE_CLIENT_ID
 VITE_OAUTH_GOOGLE_REDIRECT_URL
 VITE_OAUTH_X_CLIENT_ID
@@ -56,6 +58,10 @@ VITE_OAUTH_X_CONSUMER_KEY
 VITE_OAUTH_X_REDIRECT_URL
 VITE_REALTIME_BLOCK_PACK_CHANNEL_RELEASE_DELAY_MS
 ```
+
+Production requests therefore use `https://client.notegic.com/v1`, while
+realtime connections use `wss://realtime.notegic.com/v1`. The public API-key
+integration uses `https://api.notegic.com/v1` and is not used by the Web app.
 
 `CLOUDFLARE_WORKER_NAME` is consumed while Nitro generates
 `apps/web/.output/server/wrangler.json`; it is not a runtime secret.

@@ -624,7 +624,10 @@ const DocumentPage = () => {
           items={navigationItems}
           scrollContainerRef={articleRef}
         />
-        <Article scrollRef={articleRef} className="min-w-0 flex-1">
+        <Article
+          scrollRef={articleRef}
+          className="min-w-0 flex-1 pt-10 lg:pt-0"
+        >
           <ArticleContent>
             <ArticleParagraph id="overview">
               <ArticleParagraphHeader>
@@ -749,17 +752,19 @@ const DocumentPage = () => {
                   </ArticleSubParagraphHeader>
                   <ArticleSubParagraphContent>
                     <p>
-                      OpenAPI 3.1 describes the HTTP routes at
+                      OpenAPI 3.1 describes the HTTP routes at the local
+                      development base path
                       <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
                         /api/development/v1
                       </code>
-                      . The same directory bundles operation examples, curl
-                      scripts, and Postman imports. Requests use an X-API-Key
-                      header for server-to-server authentication.
+                      . Production uses `https://api.notegic.com/v1`. The same
+                      directory bundles operation examples, curl scripts, and
+                      Postman imports. Requests use an X-API-Key header for
+                      server-to-server authentication.
                     </p>
                     <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
                       <code>{`GET  http://localhost/api/development/v1
-GET  https://api.notegic.app/api/development/v1
+GET  https://api.notegic.com/v1
 Content-Type: application/json`}</code>
                     </pre>
                   </ArticleSubParagraphContent>

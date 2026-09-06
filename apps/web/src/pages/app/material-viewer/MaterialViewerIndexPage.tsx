@@ -1,16 +1,18 @@
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { GraduationCapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 const MaterialViewerIndexPage = () => {
   const loadingManager = useLoading();
   const { t } = useTranslation();
   const shelfItemManager = useShelfItem();
+  const sidebarManager = useSidebar();
 
   const [newShelfName, setNewShelfName] = useState<string>("");
 
@@ -31,7 +33,16 @@ const MaterialViewerIndexPage = () => {
   }, [newShelfName, loadingManager, t, shelfItemManager]);
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center gap-4">
+    <div
+      className={
+        sidebarManager.isMobile
+          ? "flex h-full w-full flex-col items-center justify-center gap-4 pt-10"
+          : "flex h-full w-full flex-col items-center justify-center gap-4"
+      }
+    >
+      {sidebarManager.isMobile && (
+        <SidebarTrigger className="fixed top-2 left-2 z-40 border-none bg-transparent" />
+      )}
       <div className="w-full text-center font-bold text-4xl mb-2 px-2">
         {t("workspace.pages.writeSomething")}
       </div>

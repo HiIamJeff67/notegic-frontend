@@ -8,6 +8,7 @@
       "env": [
         "CLOUDFLARE_WORKER_NAME",
         "NITRO_PRESET",
+        "VITE_API_BASE_PATH",
         "VITE_API_DOMAIN_URL",
         "VITE_APP_BASE_PATH",
         "VITE_APPLICATION_VERSION",
@@ -19,6 +20,7 @@
         "VITE_OAUTH_X_REDIRECT_URL",
         "VITE_PORT",
         "VITE_REALTIME_BLOCK_PACK_CHANNEL_RELEASE_DELAY_MS",
+        "VITE_REALTIME_BASE_PATH",
         "VITE_REALTIME_WEBSOCKET_URL"
       ]
     },

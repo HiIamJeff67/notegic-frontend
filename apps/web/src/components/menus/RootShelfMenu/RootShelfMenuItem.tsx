@@ -1,5 +1,6 @@
 import { SearchRootShelfEdge } from "@shared/api/graphql/generated/graphql";
 import { DNDType } from "@shared/enums";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
@@ -47,9 +48,8 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useLoading, useShelfItem } from "@/hooks";
+import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { translateError } from "@shared/i18n/error";
 
 interface RootShelfMenuItemProps {
   rootShelfEdge: SearchRootShelfEdge;
@@ -61,6 +61,7 @@ const RootShelfMenuItem = ({
   index,
 }: RootShelfMenuItemProps) => {
   const loadingManager = useLoading();
+  const isMobile = useMobile();
   const { i18n, t } = useTranslation();
   const modalManager = useModal();
   const shelfItemManager = useShelfItem();
@@ -144,7 +145,11 @@ const RootShelfMenuItem = ({
               )}
             </div>
           ) : (
-            <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCard
+              open={isMobile ? false : undefined}
+              openDelay={250}
+              closeDelay={100}
+            >
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>

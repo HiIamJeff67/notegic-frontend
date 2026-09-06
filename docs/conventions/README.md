@@ -24,6 +24,7 @@ recurring patterns into explicit rules for new work.
 | [04-file-and-folder-naming.md](04-file-and-folder-naming.md) | TypeScript file names, folder names, route names, and role suffixes |
 | [05-helpers-and-abstractions.md](05-helpers-and-abstractions.md) | Helper functions, shared utilities, abstraction boundaries, and directness |
 | [06-react-hooks.md](06-react-hooks.md) | Hook ownership, lifecycle boundaries, local logic, and hook-specific reuse |
+| [07-version-control.md](07-version-control.md) | Commit messages and generated development logs |
 
 ## Priority order
 

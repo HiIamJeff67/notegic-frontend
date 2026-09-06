@@ -1,3 +1,4 @@
+import notegicLogo from "@assets/logo/transparent-background.svg";
 import { cn } from "@shared/util/utils";
 import {
   BookOpenIcon,
@@ -8,13 +9,13 @@ import {
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import notegicLogo from "@assets/logo/transparent-background.svg";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import {
+  Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -27,6 +28,7 @@ import {
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarSeparator,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
@@ -355,17 +357,17 @@ export const ArticleSidebar = ({
   };
 
   return (
-    <aside
-      aria-label={t("workspace.accessibility.articleNavigation")}
-      className={cn(
-        "article-sidebar hidden h-full min-h-0 w-64 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:block",
-        className
-      )}
-    >
-      <SidebarProvider
-        open
-        onOpenChange={() => undefined}
-        className="flex h-full min-h-0 w-full flex-col"
+    <SidebarProvider open onOpenChange={() => undefined} className="contents">
+      <SidebarTrigger
+        className="fixed top-2 left-2 z-40 border-none bg-transparent shadow-none hover:bg-transparent lg:hidden"
+        aria-label={t("workspace.accessibility.articleNavigation")}
+      />
+      <Sidebar
+        aria-label={t("workspace.accessibility.articleNavigation")}
+        className={cn(
+          "article-sidebar h-full min-h-0 shrink-0 border-sidebar-border bg-sidebar text-sidebar-foreground",
+          className
+        )}
       >
         <SidebarHeader>
           <SidebarMenu>
@@ -456,7 +458,7 @@ export const ArticleSidebar = ({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
-      </SidebarProvider>
-    </aside>
+      </Sidebar>
+    </SidebarProvider>
   );
 };
