@@ -2,7 +2,12 @@ export default {
   preset: "ts-jest",
   testEnvironment: "node",
   watchman: false,
-  roots: ["<rootDir>/apps/web/src", "<rootDir>/shared", "<rootDir>/test"],
+  roots: [
+    "<rootDir>/apps/web/src",
+    "<rootDir>/apps/web/test",
+    "<rootDir>/shared",
+    "<rootDir>/test",
+  ],
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/*.test.[jt]s?(x)",

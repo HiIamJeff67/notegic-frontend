@@ -51,6 +51,11 @@ export default defineConfig(({ mode }) => {
         "Cross-Origin-Opener-Policy": "same-origin",
       },
     },
+    optimizeDeps: {
+      // TanStack Start discovers client-only virtual modules while the first page
+      // is loading. Serving the initial optimized set avoids a stale chunk URL.
+      holdUntilCrawlEnd: false,
+    },
     resolve: {
       tsconfigPaths: true,
     },
