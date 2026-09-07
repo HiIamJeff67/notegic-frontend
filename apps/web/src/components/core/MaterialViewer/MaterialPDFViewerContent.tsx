@@ -221,12 +221,14 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
 
     try {
       if (pdfDocumentRef.current) {
-        void pdfDocumentRef.current.destroy();
+        void pdfDocumentRef.current.cleanup();
         pdfDocumentRef.current = null;
       }
 
       const pdf = await pdfjs.getDocument(
-        typeof source === "string" ? source : { data: source.slice() }
+        typeof source === "string"
+          ? { url: source }
+          : { data: Array.from(source) }
       ).promise;
       const data = await pdf.getData();
 
@@ -572,7 +574,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
     return () => {
       renderTaskRef.current?.cancel();
       if (pdfDocumentRef.current) {
-        void pdfDocumentRef.current.destroy();
+        void pdfDocumentRef.current.cleanup();
         pdfDocumentRef.current = null;
       }
     };

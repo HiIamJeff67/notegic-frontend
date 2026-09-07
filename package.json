@@ -42,6 +42,10 @@
     "licenses:collect": "node scripts/getThirdPartyLicenses.mjs",
     "licenses:all": "npm run licenses:json && npm run licenses:collect"
   },
+  "overrides": {
+    "@tiptap/extension-bubble-menu": "3.30.2",
+    "@tiptap/extension-floating-menu": "3.30.2"
+  },
   "dependencies": {
     "@apollo/client": "^4.0.2",
     "@apollo/client-integration-tanstack-start": "^0.14.5-rc.0",
@@ -85,7 +89,7 @@
     "@tanstack/react-router": "^1.168.25",
     "@tanstack/react-start": "^1.167.50",
     "@tanstack/router-cli": "^1.166.37",
-    "@tanstack/router-core": "1.169.1",
+    "@tanstack/router-core": "1.171.28",
     "@types/lodash": "^4.17.20",
     "@types/three": "^0.177.0",
     "@unpic/react": "^1.0.2",
@@ -128,6 +132,9 @@
     "tailwind-merge": "^3.3.0",
     "three": "^0.177.0",
     "vite": "^8.0.10",
+    "y-prosemirror": "^1.3.7",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.27",
     "zod": "^4.0.15"
   },
   "devDependencies": {
