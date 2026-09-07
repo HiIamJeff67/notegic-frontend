@@ -120,7 +120,18 @@ export default defineConfig(({ mode }) => {
               deployConfig: true,
               nodeCompat: true,
               wrangler: cloudflareWorkerName
-                ? { name: cloudflareWorkerName }
+                ? {
+                    name: cloudflareWorkerName,
+                    observability: {
+                      enabled: true,
+                      head_sampling_rate: 1,
+                      logs: {
+                        enabled: true,
+                        head_sampling_rate: 1,
+                        invocation_logs: true,
+                      },
+                    },
+                  }
                 : undefined,
             }
           : undefined,
