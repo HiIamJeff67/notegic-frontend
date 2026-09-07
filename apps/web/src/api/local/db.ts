@@ -7,6 +7,8 @@ import { LocalDBMigrator } from "./migrator";
 import { isOPFSMissingFileError, recoverOPFSError } from "./recover";
 import * as schema from "./schemas";
 
+const isClient = typeof window !== "undefined";
+
 // extract hot reloadable data with the sqlocal drizzle instance
 const hotReloadable = import.meta.hot?.data as
   | {
@@ -15,14 +17,15 @@ const hotReloadable = import.meta.hot?.data as
   | undefined;
 // create the sqlocal drizzle using either the data from HMR hot reload whose type is defined on the above
 // or the new sqlocal drizzle instance created here
-const sqlocalDrizzle =
-  hotReloadable?.sqlocalDrizzle ??
-  new SQLocalDrizzle({
-    databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
-    onInit: () => [],
-  });
+const sqlocalDrizzle = isClient
+  ? (hotReloadable?.sqlocalDrizzle ??
+    new SQLocalDrizzle({
+      databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
+      onInit: () => [],
+    }))
+  : undefined;
 
-if (import.meta.hot) {
+if (import.meta.hot && sqlocalDrizzle) {
   // store the sqlocal drizzle instance to the HMR data for next hot reload
   import.meta.hot.data.sqlocalDrizzle = sqlocalDrizzle;
 
@@ -42,19 +45,17 @@ if (import.meta.hot) {
   });
 }
 
-const { driver: sqlocalDriver, batchDriver: sqlocalBatchDriver } =
-  sqlocalDrizzle;
-const rawDriver: typeof sqlocalDriver = async (...args) => {
-  if (!isLocalPreferenceEnabled("localVault")) {
+const rawDriver: SQLocalDrizzle["driver"] = async (...args) => {
+  if (!sqlocalDrizzle || !isLocalPreferenceEnabled("localVault")) {
     return { rows: [], columns: [] };
   }
-  return await sqlocalDriver(...args);
+  return await sqlocalDrizzle.driver(...args);
 };
-const rawBatchDriver: typeof sqlocalBatchDriver = async (...args) => {
-  if (!isLocalPreferenceEnabled("localVault")) {
+const rawBatchDriver: SQLocalDrizzle["batchDriver"] = async (...args) => {
+  if (!sqlocalDrizzle || !isLocalPreferenceEnabled("localVault")) {
     return args[0].map(() => ({ rows: [], columns: [] }));
   }
-  return await sqlocalBatchDriver(...args);
+  return await sqlocalDrizzle.batchDriver(...args);
 };
 let _SQLOperationChain: Promise<void> = Promise.resolve(); // the chain that make sure the sql operations are executed in sequences
 let _SQLOperationSequence = 0;
@@ -85,6 +86,7 @@ const recoverableRun = async <T>(operation: () => Promise<T>) => {
         retryError
       );
 
+      if (!sqlocalDrizzle) throw retryError;
       await recoverOPFSError(sqlocalDrizzle);
       return await operation();
     }
@@ -148,14 +150,16 @@ let isReady = false;
 
 // automatically reset the isReady signal to false every 60 seconds
 const LOCAL_DB_READY_REVALIDATE_MS = 60_000;
-const isLocalDBReadyInvalidationInterval = setInterval(() => {
-  isReady = false;
-}, LOCAL_DB_READY_REVALIDATE_MS);
+const isLocalDBReadyInvalidationInterval = isClient
+  ? setInterval(() => {
+      isReady = false;
+    }, LOCAL_DB_READY_REVALIDATE_MS)
+  : undefined;
 markLocalDBNotReady = () => {
   isReady = false;
 };
 
-if (import.meta.hot) {
+if (import.meta.hot && isLocalDBReadyInvalidationInterval) {
   import.meta.hot.dispose(() => {
     clearInterval(isLocalDBReadyInvalidationInterval);
   });
@@ -200,7 +204,7 @@ const setVersion = async (version: number): Promise<void> => {
 const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
-  if (!isLocalPreferenceEnabled("localVault")) {
+  if (!isClient || !isLocalPreferenceEnabled("localVault")) {
     return { appliedTags: [], finalVersion: 0 };
   }
 
@@ -219,7 +223,7 @@ const ensureMigrated = async (
 const ensureReady = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
-  if (!isLocalPreferenceEnabled("localVault")) {
+  if (!isClient || !isLocalPreferenceEnabled("localVault")) {
     return { appliedTags: [], finalVersion: 0 };
   }
 
@@ -255,7 +259,11 @@ const ensureReady = async (
 };
 
 const download = async (): Promise<File> => {
-  if (CurrentEnvironment !== Environment.Development) {
+  if (
+    !isClient ||
+    !sqlocalDrizzle ||
+    CurrentEnvironment !== Environment.Development
+  ) {
     throw new Error(
       "local db export is only available in development environment"
     );
@@ -283,15 +291,15 @@ localDB.transaction = wrappedTransaction;
 
 Object.defineProperties(localDB, {
   isMigrated: {
-    get: () => isLocalPreferenceEnabled("localVault") && isMigrated,
+    get: () => isClient && isLocalPreferenceEnabled("localVault") && isMigrated,
     enumerable: true,
   },
   isEnabled: {
-    get: () => isLocalPreferenceEnabled("localVault"),
+    get: () => isClient && isLocalPreferenceEnabled("localVault"),
     enumerable: true,
   },
   isReady: {
-    get: () => isLocalPreferenceEnabled("localVault") && isReady,
+    get: () => isClient && isLocalPreferenceEnabled("localVault") && isReady,
     enumerable: true,
   },
   getLatestMigrationVersion: {
@@ -329,11 +337,13 @@ Object.defineProperties(localDB, {
 // run the getVersion() initially to check and set `isMigrated` and `isReady` to false
 // if there's any error which indicate the migration does not happened yet
 // or set the `isMigrated` to true to indicate the migration has happened and the database version is up to date
-void getVersion()
-  .then(version => {
-    isMigrated = version === localDBMigrator.getLatestMigrationVersion();
-  })
-  .catch(() => {
-    isMigrated = false;
-    isReady = false;
-  });
+if (isClient) {
+  void getVersion()
+    .then(version => {
+      isMigrated = version === localDBMigrator.getLatestMigrationVersion();
+    })
+    .catch(() => {
+      isMigrated = false;
+      isReady = false;
+    });
+}
