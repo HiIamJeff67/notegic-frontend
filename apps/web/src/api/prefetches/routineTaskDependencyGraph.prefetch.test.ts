@@ -57,7 +57,12 @@ describe("RoutineTask dependency graph route prefetch", () => {
   test("prefetches tasks and dependencies and synchronizes both responses", async () => {
     const routineId = "11111111-1111-4111-8111-111111111111" as UUID;
     const prefetchQuery = jest.fn(
-      async ({ queryFn }: { queryFn: () => Promise<unknown> }) => queryFn()
+      async ({
+        queryFn,
+      }: {
+        queryKey: readonly unknown[];
+        queryFn: () => Promise<unknown>;
+      }) => queryFn()
     );
 
     await prefetchRoutineTaskDependencyGraph(routineId, {

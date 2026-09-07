@@ -13,7 +13,11 @@ export default {
     "**/*.test.[jt]s?(x)",
     "**/*.spec.[jt]s?(x)",
   ],
-  testPathIgnorePatterns: ["<rootDir>/test/performance/"],
+  testPathIgnorePatterns: [
+    "<rootDir>/test/performance/",
+    // Playwright suites run through `playwright test`, not Jest.
+    "<rootDir>/apps/web/test/e2e/",
+  ],
   transform: {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
   },
