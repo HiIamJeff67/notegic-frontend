@@ -12,6 +12,7 @@ import {
 } from "react";
 import * as THREE from "three";
 import { usePerformance, useScreen } from "@/hooks";
+import GridBackground from "../GridBackground/GridBackground";
 import { TerrainGridFloor } from "./TerrainGridFloor";
 import { TerrainPointCloud } from "./TerrainPointCloud";
 import { type TerrainAlgorithm, terrainSeeds } from "./terrain.data";
@@ -91,7 +92,7 @@ export const TerrainBackground = ({
   } | null>(null);
 
   useEffect(() => {
-    if (!isCapabilityDetected) return;
+    if (!isCapabilityDetected || capability === "Severely") return;
 
     let frame = 0;
     let idleHandle: number | undefined;
@@ -111,14 +112,14 @@ export const TerrainBackground = ({
       }
 
       const settings = {
-        Severely: { pointCount: 40_000, pointSize: 0.062 },
-        Bad: { pointCount: 72_000, pointSize: 0.052 },
-        Normal: { pointCount: 120_000, pointSize: 0.044 },
-        Well: { pointCount: 184_000, pointSize: 0.038 },
-        Great: { pointCount: 256_000, pointSize: 0.033 },
+        Severely: { pointCount: 12_000, pointSize: 0.062 },
+        Bad: { pointCount: 24_000, pointSize: 0.052 },
+        Normal: { pointCount: 60_000, pointSize: 0.044 },
+        Well: { pointCount: 96_000, pointSize: 0.038 },
+        Great: { pointCount: 144_000, pointSize: 0.033 },
       }[capability];
       const algorithm: TerrainAlgorithm =
-        capability === "Severely" || capability === "Bad" ? "sparse" : "dense";
+        capability === "Bad" ? "sparse" : "dense";
 
       setTerrain(
         currentTerrain => currentTerrain ?? { ...settings, algorithm, seed }
@@ -143,6 +144,10 @@ export const TerrainBackground = ({
       if (timeoutHandle !== undefined) window.clearTimeout(timeoutHandle);
     };
   }, [capability, isCapabilityDetected]);
+
+  if (isCapabilityDetected && capability === "Severely") {
+    return <GridBackground className="min-h-screen">{children}</GridBackground>;
+  }
 
   return (
     <div
