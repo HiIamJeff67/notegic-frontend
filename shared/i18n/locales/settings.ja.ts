@@ -112,6 +112,16 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         yearlyPlan: "Notegic {{plan}} 年額プラン",
         paymentNotice:
           "UI とバックエンドのデータモデルは準備済みです。外部決済フローのデプロイ後に、支払い、購読、プラン変更 API を接続します。",
+        betaTitle: "クローズドベータ中",
+        betaDescription:
+          "Notegic のテストと改善のため、有料プランは現在停止しています。クローズドベータ中はサブスクリプション不要で利用できます。",
+        plansPausedTitle: "有料プランは後日開始予定です",
+        plansPausedDescription:
+          "クローズドベータ中は価格表示およびプラン変更を利用できません。",
+        supportTitle: "Notegic を支援する",
+        supportDescription:
+          "Notegic はクローズドベータ中、無料で利用できます。開発を支援したい場合は、コーヒーをごちそうしていただけます。完全に任意です。",
+        supportAction: "コーヒーをごちそうする",
         rootShelves: "ルートシェルフ",
         materials: "素材",
         materialSize: "素材サイズ",

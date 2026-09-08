@@ -104,6 +104,15 @@ export const TraditionalChineseSettingsTranslation = {
         yearlyPlan: "Notegic {{plan}}年繳方案",
         paymentNotice:
           "目前已完成介面與後端資料模型對齊；付款、訂閱建立與方案變更 API 會在外部付款流程部署後接上。",
+        betaTitle: "封閉測試中",
+        betaDescription:
+          "Notegic 正在持續測試與改善，因此暫不開放付費方案；封閉測試期間無須訂閱即可使用。",
+        plansPausedTitle: "付費方案即將推出",
+        plansPausedDescription: "封閉測試期間不顯示價格，也暫不開放方案變更。",
+        supportTitle: "支持 Notegic",
+        supportDescription:
+          "Notegic 在封閉測試期間免費使用。若你想支持開發，可以請我喝杯咖啡；完全自由選擇。",
+        supportAction: "請我喝杯咖啡",
         rootShelves: "根層架",
         materials: "素材",
         materialSize: "素材大小",

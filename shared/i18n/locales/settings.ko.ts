@@ -110,6 +110,16 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         yearlyPlan: "Notegic {{plan}} 연간 플랜",
         paymentNotice:
           "UI와 백엔드 데이터 모델이 준비되었습니다. 외부 결제 흐름 배포 후 결제, 구독 및 요금제 변경 API를 연결합니다.",
+        betaTitle: "클로즈드 베타 진행 중",
+        betaDescription:
+          "Notegic을 테스트하고 개선하는 동안 유료 요금제는 일시 중지됩니다. 클로즈드 베타 기간에는 구독 없이 이용할 수 있습니다.",
+        plansPausedTitle: "유료 요금제는 추후 제공됩니다",
+        plansPausedDescription:
+          "클로즈드 베타 기간에는 가격과 요금제 변경을 이용할 수 없습니다.",
+        supportTitle: "Notegic 지원하기",
+        supportDescription:
+          "Notegic은 클로즈드 베타 기간 동안 무료입니다. 개발을 지원하고 싶다면 커피 한 잔을 보내 주세요. 전적으로 선택 사항입니다.",
+        supportAction: "커피 한 잔 보내기",
         rootShelves: "루트 선반",
         materials: "자료",
         materialSize: "자료 크기",

@@ -111,6 +111,16 @@ export const EnglishSettingsTranslation = {
         yearlyPlan: "Notegic yearly {{plan}} plan",
         paymentNotice:
           "The interface and backend data model are ready. Payments, subscriptions, and plan-change APIs will be connected after the external payment flow is deployed.",
+        betaTitle: "Closed beta",
+        betaDescription:
+          "Paid plans are paused while we test and improve Notegic. No subscription is required during the closed beta.",
+        plansPausedTitle: "Paid plans are coming later",
+        plansPausedDescription:
+          "Pricing and plan changes are unavailable during the closed beta.",
+        supportTitle: "Support Notegic",
+        supportDescription:
+          "Notegic is free during the closed beta. If you would like to support its development, you can buy me a coffee—completely optional.",
+        supportAction: "Buy me a coffee",
         rootShelves: "Root shelves",
         materials: "Materials",
         materialSize: "Material size",
