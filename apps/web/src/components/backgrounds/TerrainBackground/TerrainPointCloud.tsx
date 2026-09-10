@@ -28,7 +28,7 @@ export const TerrainPointCloud = ({
       if (settled) return;
       settled = true;
       setTargetPositions(
-        (current) =>
+        current =>
           current ?? createTerrainPositions(seed, pointCount, algorithm)
       );
     }, 1_500);
@@ -46,7 +46,7 @@ export const TerrainPointCloud = ({
       settled = true;
       window.clearTimeout(fallbackTimer);
       setTargetPositions(
-        (current) =>
+        current =>
           current ?? createTerrainPositions(seed, pointCount, algorithm)
       );
     };
