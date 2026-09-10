@@ -21,14 +21,26 @@ const createTransactionalClient = () => {
   const committedQueries: string[] = [];
   let pendingQueries: string[] = [];
   let failOnQuery: string | null = null;
+  let reportedVersion: number | null = null;
 
   const client: LocalDBMigratorClient = {
     transaction: async operation => {
       pendingQueries = [];
+      let pendingVersion = 0;
       const transaction = {
         run: async (query: string) => {
           if (query === failOnQuery) throw new Error("migration failed");
           pendingQueries.push(query);
+          const versionAssignment = query.match(
+            /^PRAGMA user_version = (\d+)$/
+          );
+          if (versionAssignment) {
+            pendingVersion = Number(versionAssignment[1]);
+            return [];
+          }
+          if (query === "PRAGMA user_version") {
+            return [{ user_version: reportedVersion ?? pendingVersion }];
+          }
         },
       };
 
@@ -48,6 +60,9 @@ const createTransactionalClient = () => {
     committedQueries,
     failOnQuery: (query: string | null) => {
       failOnQuery = query;
+    },
+    reportVersion: (version: number | null) => {
+      reportedVersion = version;
     },
   };
 };
@@ -70,8 +85,10 @@ describe("LocalDBMigrator", () => {
     expect(database.committedQueries).toEqual([
       "CREATE TABLE initial",
       "PRAGMA user_version = 1",
+      "PRAGMA user_version",
       "ALTER TABLE initial ADD COLUMN name",
       "PRAGMA user_version = 2",
+      "PRAGMA user_version",
     ]);
   });
 
@@ -90,6 +107,7 @@ describe("LocalDBMigrator", () => {
     expect(database.committedQueries).toEqual([
       "CREATE TABLE initial",
       "PRAGMA user_version = 1",
+      "PRAGMA user_version",
     ]);
   });
 
@@ -115,8 +133,10 @@ describe("LocalDBMigrator", () => {
     expect(database.committedQueries).toEqual([
       "CREATE TABLE initial",
       "PRAGMA user_version = 1",
+      "PRAGMA user_version",
       "ALTER TABLE initial ADD COLUMN name",
       "PRAGMA user_version = 2",
+      "PRAGMA user_version",
     ]);
   });
 
@@ -141,7 +161,21 @@ describe("LocalDBMigrator", () => {
       "CREATE TABLE initial",
       "CREATE TABLE current",
       "PRAGMA user_version = 2",
+      "PRAGMA user_version",
     ]);
+  });
+
+  it("rolls back when the version flag does not persist", async () => {
+    const database = createTransactionalClient();
+    database.reportVersion(0);
+    const migrator = new LocalDBMigrator(database.client, [
+      migration(0, "0000_initial", "CREATE TABLE initial;"),
+    ]);
+
+    await expect(
+      migrator.bootstrapCurrentSchema("CREATE TABLE initial;", 1)
+    ).rejects.toThrow("local database migration stopped at version 0");
+    expect(database.committedQueries).toEqual([]);
   });
 
   it("splits bootstrap SQL without splitting semicolons inside quoted values", () => {

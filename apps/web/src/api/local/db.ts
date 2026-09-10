@@ -388,6 +388,19 @@ const getVersion = async (): Promise<number> => {
   return Math.max(0, Math.trunc(Number(result?.user_version ?? 0)));
 };
 
+const verifyMigrationVersion = async (
+  migrationResult: Awaited<ReturnType<LocalDBMigrator["ensureMigrated"]>>,
+  targetVersion: number
+) => {
+  const verifiedVersion = await getVersion();
+  if (verifiedVersion !== targetVersion) {
+    throw new Error(
+      `local database migration stopped at version ${verifiedVersion}; expected ${targetVersion}.`
+    );
+  }
+  return { ...migrationResult, finalVersion: verifiedVersion };
+};
+
 const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
@@ -414,28 +427,38 @@ const ensureMigrated = async (
         localDBDiagnostics.transition("bootstrapping", {
           currentVersion,
           targetVersion,
+          error: null,
         });
         await recoverOPFSError(sqlocalDrizzle);
-        return await localDBMigrator.bootstrapCurrentSchema(
-          currentLocalSchemaSql,
+        return await verifyMigrationVersion(
+          await localDBMigrator.bootstrapCurrentSchema(
+            currentLocalSchemaSql,
+            targetVersion
+          ),
           targetVersion
         );
       }
 
       localDBDiagnostics.transition(
         currentVersion < targetVersion ? "migrating" : "verifying",
-        { currentVersion, targetVersion }
+        { currentVersion, targetVersion, error: null }
       );
-      return await localDBMigrator.ensureMigrated({
-        currentVersion,
-        targetVersion,
-      });
+      return await verifyMigrationVersion(
+        await localDBMigrator.ensureMigrated({
+          currentVersion,
+          targetVersion,
+        }),
+        targetVersion
+      );
     });
     isMigrated =
       migrationResult.finalVersion ===
       localDBMigrator.getLatestMigrationVersion();
     localDBDiagnostics.transition("verifying", {
       currentVersion: migrationResult.finalVersion,
+      targetVersion:
+        options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion(),
+      error: null,
     });
     migrationError = null;
     return migrationResult;
@@ -466,16 +489,15 @@ const ensureReady = async (
       targetVersion,
     });
 
-    const verifiedVersion = await getVersion();
-    if (verifiedVersion !== targetVersion) {
+    if (migrationResult.finalVersion !== targetVersion) {
       throw new Error(
-        `local database verification stopped at version ${verifiedVersion}; expected ${targetVersion}.`
+        `local database verification stopped at version ${migrationResult.finalVersion}; expected ${targetVersion}.`
       );
     }
 
     isReady = true;
     localDBDiagnostics.transition("ready", {
-      currentVersion: verifiedVersion,
+      currentVersion: migrationResult.finalVersion,
       targetVersion,
       error: null,
     });

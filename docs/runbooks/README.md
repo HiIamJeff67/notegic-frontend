@@ -53,6 +53,60 @@ running the same migration concurrently. A database at version `0` is treated
 as uninitialized: the OPFS database file is explicitly reset before the current
 bootstrap is applied. Table existence is not used to infer migration state.
 
+### Startup sequence
+
+The Web app must receive a non-empty `VITE_LOCAL_DATABASE_PATH` at build time.
+It is a database filename/path, not a secret; configure it in the Cloudflare
+build environment as well as local development. The path is used by SQLocal to
+open the SQLite database in browser OPFS.
+
+On startup, local database initialization follows this sequence:
+
+1. Create the SQLocal worker and wait for its OPFS/SQLite connection.
+2. Acquire the browser-wide migration lock so multiple tabs cannot initialize
+   the same database concurrently.
+3. Read SQLite `PRAGMA user_version`. This value is the only migration source
+   of truth; table existence is not checked to infer the schema version.
+4. If the version is `0` and the target is newer, delete the OPFS database file
+   and bootstrap the complete current schema from `bootstrap.sql`.
+5. If the version is between `0` and the target, apply each pending Drizzle SQL
+   migration in order.
+6. For both bootstrap and incremental migration, execute schema statements,
+   write `PRAGMA user_version`, and read it back inside the same transaction.
+   A mismatch throws before commit, so schema changes and the version flag are
+   rolled back together.
+7. Read the committed version while still holding the migration lock. Only an
+   exact match with the target version marks the database `ready` and allows
+   transaction synchronization to continue.
+
+The observable diagnostic phases are `worker-connection-pending`,
+`worker-connected`, `reading-version`, `bootstrapping`, `migrating`,
+`verifying`, `ready`, `failed`, and `disabled`. Worker-level diagnostics also
+report OPFS/SQLite initialization, nested-worker errors, and individual query
+failures. A failure must leave the database at its previous committed version;
+the next startup retries from that version. If a version-`0` database is
+encountered, the next startup deliberately rebuilds it from `bootstrap.sql`.
+
+### Schema-change checklist
+
+When changing the local schema:
+
+1. Update the Drizzle schema source.
+2. Run `npm run generate-local-migrations` to generate the new incremental SQL
+   and refresh the complete bootstrap export.
+3. Review the generated SQL, migration journal, and bootstrap diff. Do not
+   rewrite or delete an incremental migration that has shipped.
+4. Run `npm test -- --runInBand apps/web/src/api/local/migrator.test.ts`,
+   `npm run typecheck`, and `npm run lint`.
+5. Test an existing database upgrade and a fresh database bootstrap before
+   deployment.
+
+If initialization remains failed after a code fix, inspect the persisted local
+database diagnostics first. Clearing site data is a destructive last-resort
+manual recovery because it removes the browser's local unsynchronized data;
+the application should not use table-presence checks as an automatic substitute
+for the version flag.
+
 Cloudflare Workers deployment is documented in
 [Cloudflare Workers deployment](cloudflare-workers-builds.md).
 

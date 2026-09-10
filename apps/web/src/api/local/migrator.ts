@@ -92,18 +92,43 @@ export class LocalDBMigrator {
     this.migrations = migrations;
   }
 
+  private runStatementsWithVersion = async (
+    statements: string[],
+    targetVersion: number
+  ): Promise<void> => {
+    await this.localDB.transaction(async transaction => {
+      for (const statement of statements) {
+        await transaction.run(normalizeStatement(statement));
+      }
+
+      await transaction.run(`PRAGMA user_version = ${targetVersion}`);
+      const result = await transaction.run(`PRAGMA user_version`);
+      const row = Array.isArray(result) ? result[0] : undefined;
+      const persistedVersion = normalizeVersionNumber(
+        Number(
+          row !== null && typeof row === "object"
+            ? (row as { user_version?: unknown }).user_version
+            : undefined
+        )
+      );
+      if (persistedVersion !== targetVersion) {
+        throw new Error(
+          `local database migration stopped at version ${persistedVersion}; expected ${targetVersion}.`
+        );
+      }
+    });
+  };
+
   public bootstrapCurrentSchema = async (
     sqlContent: string,
     targetVersion: number,
     tag = "bootstrap-current"
   ): Promise<MigrationResult> => {
     const safeTargetVersion = normalizeVersionNumber(targetVersion);
-    await this.localDB.transaction(async transaction => {
-      for (const statement of splitSqlStatements(sqlContent)) {
-        await transaction.run(normalizeStatement(statement));
-      }
-      await transaction.run(`PRAGMA user_version = ${safeTargetVersion}`);
-    });
+    await this.runStatementsWithVersion(
+      splitSqlStatements(sqlContent),
+      safeTargetVersion
+    );
 
     return { appliedTags: [tag], finalVersion: safeTargetVersion };
   };
@@ -148,14 +173,10 @@ export class LocalDBMigrator {
 
       const appliedTags: string[] = [];
       for (const migration of pendingMigrations) {
-        await this.localDB.transaction(async transaction => {
-          for (const statement of migration.statements) {
-            await transaction.run(normalizeStatement(statement));
-          }
-          await transaction.run(
-            `PRAGMA user_version = ${migration.versionNumber + 1}`
-          );
-        });
+        await this.runStatementsWithVersion(
+          migration.statements,
+          migration.versionNumber + 1
+        );
         appliedTags.push(migration.tag);
       }
 
