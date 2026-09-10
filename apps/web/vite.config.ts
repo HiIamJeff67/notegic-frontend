@@ -116,6 +116,7 @@ export default defineConfig(({ mode }) => {
         routeRules: {
           "/assets/**": {
             headers: {
+              "Cross-Origin-Embedder-Policy": "require-corp",
               "Cross-Origin-Resource-Policy": "same-origin",
             },
           },
