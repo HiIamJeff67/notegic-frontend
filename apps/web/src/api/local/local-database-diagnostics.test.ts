@@ -38,4 +38,26 @@ describe("local database diagnostics", () => {
     expect(state.currentVersion).toBe(2);
     expect(state.targetVersion).toBe(4);
   });
+
+  it("keeps the latest worker events for failure diagnosis", () => {
+    const diagnostics = createLocalDBDiagnostics(
+      createStorage(),
+      "diagnostics",
+      "worker-connection-pending"
+    );
+
+    diagnostics.recordWorkerEvent({
+      stage: "worker-module-evaluated",
+      details: { crossOriginIsolated: true },
+      updatedAt: 1,
+    });
+
+    expect(diagnostics.getState().workerEvents).toEqual([
+      {
+        stage: "worker-module-evaluated",
+        details: { crossOriginIsolated: true },
+        updatedAt: 1,
+      },
+    ]);
+  });
 });

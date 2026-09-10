@@ -6,6 +6,7 @@ import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import currentLocalSchemaSql from "./bootstrap.sql?raw";
 import {
   createLocalDBDiagnostics,
+  isLocalDBWorkerDiagnosticMessage,
   type LocalDBDiagnostics,
 } from "./local-database-diagnostics";
 import { getOrderedMigrations } from "./migration-catalog";
@@ -80,6 +81,10 @@ const failSQLocalConnection = (error: unknown) => {
   console.error("SQLocal worker failed to initialize.", connectionError);
   rejectSQLocalConnectionReady(connectionError);
 };
+const handleSQLocalWorkerMessage = (event: MessageEvent<unknown>) => {
+  if (!isLocalDBWorkerDiagnosticMessage(event.data)) return;
+  localDBDiagnostics.recordWorkerEvent(event.data.event);
+};
 const markSQLocalConnectionReady = () => {
   if (!settleSQLocalConnection()) return;
   localDBDiagnostics.transition("worker-connected", { error: null });
@@ -103,7 +108,26 @@ const sqlocalWorker = isClient
   : undefined;
 
 if (isClient && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
+  sqlocalWorker.addEventListener("message", handleSQLocalWorkerMessage);
   sqlocalWorker.addEventListener("error", event => {
+    localDBDiagnostics.recordWorkerEvent({
+      stage: "main-worker-error",
+      details: {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error:
+          event.error instanceof Error
+            ? {
+                name: event.error.name,
+                message: event.error.message,
+                stack: event.error.stack,
+              }
+            : undefined,
+      },
+      updatedAt: Date.now(),
+    });
     const message =
       "message" in event && typeof event.message === "string"
         ? event.message
@@ -111,11 +135,22 @@ if (isClient && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
     failSQLocalConnection(new Error(message));
   });
   sqlocalWorker.addEventListener("messageerror", () => {
+    localDBDiagnostics.recordWorkerEvent({
+      stage: "main-worker-message-error",
+      updatedAt: Date.now(),
+    });
     failSQLocalConnection(
       new Error("worker message could not be deserialized")
     );
   });
   sqlocalWorkerConnectionTimeout = window.setTimeout(() => {
+    localDBDiagnostics.recordWorkerEvent({
+      stage: "main-worker-timeout",
+      details: {
+        timeoutMs: LOCAL_DB_WORKER_CONNECTION_TIMEOUT_MS,
+      },
+      updatedAt: Date.now(),
+    });
     failSQLocalConnection(
       new Error(
         `SQLocal worker connection timed out after ${LOCAL_DB_WORKER_CONNECTION_TIMEOUT_MS}ms.`
