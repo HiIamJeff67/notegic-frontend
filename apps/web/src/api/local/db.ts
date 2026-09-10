@@ -3,63 +3,101 @@ import { Environment } from "@shared/types/environment.type";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
+import currentLocalSchemaSql from "./bootstrap.sql?raw";
+import { getOrderedMigrations } from "./migration-catalog";
 import { LocalDBMigrator } from "./migrator";
 import { isOPFSMissingFileError, recoverOPFSError } from "./recover";
 import * as schema from "./schemas";
 
 const isClient = typeof window !== "undefined";
 
+const runWithMigrationLock = async <T>(
+  operation: () => Promise<T>
+): Promise<T> => {
+  if (!isClient || !navigator.locks) return await operation();
+  return await navigator.locks.request(
+    "notegic-local-database-migration",
+    { mode: "exclusive" },
+    operation
+  );
+};
+
 // extract hot reloadable data with the sqlocal drizzle instance
 const hotReloadable = import.meta.hot?.data as
   | {
       sqlocalDrizzle?: SQLocalDrizzle;
+      sqlocalConnectionReady?: Promise<void>;
     }
   | undefined;
+let resolveSQLocalConnectionReady = () => {};
+const sqlocalConnectionReady = isClient
+  ? (hotReloadable?.sqlocalConnectionReady ??
+    new Promise<void>(resolve => {
+      resolveSQLocalConnectionReady = resolve;
+    }))
+  : Promise.resolve();
+const hasReusableHotReloadState =
+  hotReloadable?.sqlocalDrizzle && hotReloadable.sqlocalConnectionReady;
 // create the sqlocal drizzle using either the data from HMR hot reload whose type is defined on the above
 // or the new sqlocal drizzle instance created here
 const sqlocalDrizzle = isClient
-  ? (hotReloadable?.sqlocalDrizzle ??
-    new SQLocalDrizzle({
-      databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
-      onInit: () => [],
-    }))
+  ? hasReusableHotReloadState
+    ? hotReloadable.sqlocalDrizzle
+    : new SQLocalDrizzle({
+        databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
+        onInit: () => [],
+        onConnect: () => resolveSQLocalConnectionReady(),
+      })
   : undefined;
 
 if (import.meta.hot && sqlocalDrizzle) {
   // store the sqlocal drizzle instance to the HMR data for next hot reload
   import.meta.hot.data.sqlocalDrizzle = sqlocalDrizzle;
+  import.meta.hot.data.sqlocalConnectionReady = sqlocalConnectionReady;
 
   // destroy the sqlocal drizzle instance before full reload to avoid remaining worker connections
   import.meta.hot.on("vite:beforeFullReload", () => {
-    void sqlocalDrizzle.destroy().catch(error => {
-      console.warn(
-        "Failed to destroy local SQL worker before full reload.",
-        error
-      );
-    });
+    void sqlocalConnectionReady
+      .then(() => _SQLOperationChain)
+      .then(() => sqlocalDrizzle.destroy())
+      .catch(error => {
+        console.warn(
+          "Failed to destroy local SQL worker before full reload.",
+          error
+        );
+      });
   });
 
   // place the sqlocal drizzle instance for the next hot reload
-  import.meta.hot.dispose((data: { sqlocalDrizzle?: SQLocalDrizzle }) => {
-    data.sqlocalDrizzle = sqlocalDrizzle;
-  });
+  import.meta.hot.dispose(
+    (data: {
+      sqlocalDrizzle?: SQLocalDrizzle;
+      sqlocalConnectionReady?: Promise<void>;
+    }) => {
+      data.sqlocalDrizzle = sqlocalDrizzle;
+      data.sqlocalConnectionReady = sqlocalConnectionReady;
+    }
+  );
 }
 
 const rawDriver: SQLocalDrizzle["driver"] = async (...args) => {
   if (!sqlocalDrizzle || !isLocalPreferenceEnabled("localVault")) {
     return { rows: [], columns: [] };
   }
+  await sqlocalConnectionReady;
   return await sqlocalDrizzle.driver(...args);
 };
 const rawBatchDriver: SQLocalDrizzle["batchDriver"] = async (...args) => {
   if (!sqlocalDrizzle || !isLocalPreferenceEnabled("localVault")) {
     return args[0].map(() => ({ rows: [], columns: [] }));
   }
+  await sqlocalConnectionReady;
   return await sqlocalDrizzle.batchDriver(...args);
 };
 let _SQLOperationChain: Promise<void> = Promise.resolve(); // the chain that make sure the sql operations are executed in sequences
 let _SQLOperationSequence = 0;
 let markLocalDBNotReady = () => {};
+type OperationRecoveryMode = "recoverable" | "nonRecoverable";
 
 // run with OPFS error handling
 const recoverableRun = async <T>(operation: () => Promise<T>) => {
@@ -95,9 +133,15 @@ const recoverableRun = async <T>(operation: () => Promise<T>) => {
 
 // use this function to make sure the sql operations are execute in sequences,
 // so that no miss order issues or multiple sql executing at the same interval
-const runOperations = async <T>(operation: () => Promise<T>): Promise<T> => {
+const runOperations = async <T>(
+  operation: () => Promise<T>,
+  recoveryMode: OperationRecoveryMode = "recoverable"
+): Promise<T> => {
   const execute = async () => {
-    const result = await recoverableRun(operation);
+    const result =
+      recoveryMode === "recoverable"
+        ? await recoverableRun(operation)
+        : await operation();
     return result;
   };
 
@@ -140,13 +184,35 @@ const wrappedTransaction = (async (
         async () => await rawTransaction(...args)
       )) as typeof rawTransaction;
 
-const localDBMigrator = new LocalDBMigrator({
-  run: async query => await wrappedRun(query),
-  all: async query => await wrappedAll(query),
-});
+const localDBMigrator = new LocalDBMigrator(
+  {
+    transaction: async operation =>
+      await runOperations(
+        async () =>
+          !sqlocalDrizzle
+            ? await operation({
+                run: async () => {
+                  throw new Error("local database is unavailable");
+                },
+              })
+            : await sqlocalConnectionReady.then(() =>
+                sqlocalDrizzle.transaction(
+                  async transaction =>
+                    await operation({
+                      run: async query =>
+                        await transaction.query({ sql: query, params: [] }),
+                    })
+                )
+              ),
+        "nonRecoverable"
+      ),
+  },
+  getOrderedMigrations()
+);
 
 let isMigrated = false;
 let isReady = false;
+let migrationError: unknown = null;
 
 // automatically reset the isReady signal to false every 60 seconds
 const LOCAL_DB_READY_REVALIDATE_MS = 60_000;
@@ -174,6 +240,7 @@ type LocalDB = typeof drizzleDB & {
   readonly isMigrated: boolean;
   readonly isEnabled: boolean;
   readonly isReady: boolean;
+  readonly migrationError: unknown | null;
   getLatestMigrationVersion: () => number;
   ensureMigrated: (
     options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
@@ -182,7 +249,6 @@ type LocalDB = typeof drizzleDB & {
     options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
   ) => ReturnType<LocalDBMigrator["ensureMigrated"]>;
   getVersion: () => Promise<number>;
-  setVersion: (version: number) => Promise<void>;
   download: () => Promise<File>;
 };
 
@@ -195,12 +261,6 @@ const getVersion = async (): Promise<number> => {
   return Math.max(0, Math.trunc(Number(result?.user_version ?? 0)));
 };
 
-const setVersion = async (version: number): Promise<void> => {
-  const safeVersion = Math.max(0, Math.trunc(version));
-  await wrappedRun(`PRAGMA user_version = ${safeVersion}`);
-  isMigrated = safeVersion === localDBMigrator.getLatestMigrationVersion();
-};
-
 const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
@@ -208,16 +268,39 @@ const ensureMigrated = async (
     return { appliedTags: [], finalVersion: 0 };
   }
 
-  const migrationResult = await localDBMigrator.ensureMigrated({
-    currentVersion: options?.currentVersion ?? (await getVersion()),
-    targetVersion:
-      options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion(),
-  });
-  await setVersion(migrationResult.finalVersion);
-  isMigrated =
-    migrationResult.finalVersion ===
-    localDBMigrator.getLatestMigrationVersion();
-  return migrationResult;
+  try {
+    const migrationResult = await runWithMigrationLock(async () => {
+      const targetVersion =
+        options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
+      const currentVersion = await getVersion();
+
+      if (currentVersion === 0 && targetVersion > 0) {
+        if (!sqlocalDrizzle) {
+          throw new Error("local database is unavailable for bootstrap");
+        }
+        await recoverOPFSError(sqlocalDrizzle);
+        return await localDBMigrator.bootstrapCurrentSchema(
+          currentLocalSchemaSql,
+          targetVersion
+        );
+      }
+
+      return await localDBMigrator.ensureMigrated({
+        currentVersion,
+        targetVersion,
+      });
+    });
+    isMigrated =
+      migrationResult.finalVersion ===
+      localDBMigrator.getLatestMigrationVersion();
+    migrationError = null;
+    return migrationResult;
+  } catch (error) {
+    isMigrated = false;
+    isReady = false;
+    migrationError = error;
+    throw error;
+  }
 };
 
 const ensureReady = async (
@@ -227,32 +310,12 @@ const ensureReady = async (
     return { appliedTags: [], finalVersion: 0 };
   }
 
-  const currentVersion = options?.currentVersion ?? (await getVersion());
   const targetVersion =
     options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
 
   const migrationResult = await ensureMigrated({
-    currentVersion,
     targetVersion,
   });
-
-  try {
-    await wrappedAll(`SELECT 1 FROM "TestTable" LIMIT 1`); // the test table should be always exist for testing
-    await wrappedAll(`SELECT 1 FROM "TransactionTable" LIMIT 1`); // the transaction table should be always exist for synchronization
-    await wrappedAll(`SELECT 1 FROM "StationTable" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "RoutineTag" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "ItemTable" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "UsersToStationsTable" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "RoutinesToTags" LIMIT 1`);
-    await wrappedAll(`SELECT 1 FROM "RoutinesToItemsTable" LIMIT 1`);
-  } catch {
-    const fallbackMigrationResult = await ensureMigrated({
-      currentVersion: 0,
-      targetVersion,
-    });
-    isReady = true;
-    return fallbackMigrationResult;
-  }
 
   isReady = true;
   return migrationResult;
@@ -302,6 +365,13 @@ Object.defineProperties(localDB, {
     get: () => isClient && isLocalPreferenceEnabled("localVault") && isReady,
     enumerable: true,
   },
+  migrationError: {
+    get: () =>
+      isClient && isLocalPreferenceEnabled("localVault")
+        ? migrationError
+        : null,
+    enumerable: true,
+  },
   getLatestMigrationVersion: {
     value: () => localDBMigrator.getLatestMigrationVersion(),
     writable: false,
@@ -322,28 +392,9 @@ Object.defineProperties(localDB, {
     writable: false,
     enumerable: true,
   },
-  setVersion: {
-    value: setVersion,
-    writable: false,
-    enumerable: true,
-  },
   download: {
     value: download,
     writable: false,
     enumerable: true,
   },
 });
-
-// run the getVersion() initially to check and set `isMigrated` and `isReady` to false
-// if there's any error which indicate the migration does not happened yet
-// or set the `isMigrated` to true to indicate the migration has happened and the database version is up to date
-if (isClient) {
-  void getVersion()
-    .then(version => {
-      isMigrated = version === localDBMigrator.getLatestMigrationVersion();
-    })
-    .catch(() => {
-      isMigrated = false;
-      isReady = false;
-    });
-}

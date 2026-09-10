@@ -26,12 +26,32 @@ typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 | `npm run codegen:watch` | Watch and regenerate GraphQL artifacts |
 | `npm run devlog` | Generate today's change snapshot and refresh the README index |
 | `npm run install-hooks` | Enable the repository pre-commit checks |
-| `npm run generate-local-migrations` | Generate local Drizzle migrations |
+| `npm run generate-local-migrations` | Generate the incremental Drizzle migration and refresh the current-schema bootstrap |
+| `npm run generate-local-bootstrap` | Export the current local SQLite schema for fresh-database bootstrap |
 | `npm run licenses:all` | Collect third-party license artifacts |
 
 Commands are documented from the current `package.json`; update this page when
 the root scripts change. Do not add backend Docker or microservice commands
 here; link to the backend runbook instead.
+
+## Local database migration workflow
+
+The local SQLite schema uses two generated artifacts:
+
+- `apps/web/src/api/local/migrations/` contains the immutable, incremental
+  Drizzle migrations. Never rewrite or delete a migration that has shipped.
+- `apps/web/src/api/local/bootstrap.sql` contains the complete current schema
+  exported by `drizzle-kit export`. Fresh databases use this file to reach the
+  current version directly.
+
+After changing a local schema, run `npm run generate-local-migrations`. This
+generates any new incremental migration and refreshes `bootstrap.sql` in one
+step. Existing databases apply pending migrations in order. Each migration's
+SQL statements and its `PRAGMA user_version` update run in one transaction; a
+failure rolls back both. The browser migration lock prevents multiple tabs from
+running the same migration concurrently. A database at version `0` is treated
+as uninitialized: the OPFS database file is explicitly reset before the current
+bootstrap is applied. Table existence is not used to infer migration state.
 
 Cloudflare Workers deployment is documented in
 [Cloudflare Workers deployment](cloudflare-workers-builds.md).

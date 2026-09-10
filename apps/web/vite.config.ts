@@ -112,6 +112,7 @@ export default defineConfig(({ mode }) => {
       viteReact(),
       nitro({
         preset: nitroPreset,
+        serverDir: join(webRoot, "server"),
         // The SSR output imports Node's AsyncLocalStorage. Keep the generated
         // Wrangler config on a date where nodejs_compat is active.
         compatibilityDate: "2026-09-07",

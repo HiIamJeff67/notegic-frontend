@@ -1003,57 +1003,21 @@ export const TransactionSynchronizerProvider = ({
         safelySetStatus("analyzing");
 
         const latestMigrationVersion = localDB.getLatestMigrationVersion();
-        let currentStoredVersion = await localDB.getVersion();
+        safelySetStatus("migrating");
+        const migrationResult = await localDB.ensureReady({
+          targetVersion: latestMigrationVersion,
+        });
 
-        if (currentStoredVersion === 0 && latestMigrationVersion > 0) {
-          safelySetStatus("migrating");
-          await localDB.ensureMigrated({
-            currentVersion: 0,
-            targetVersion: latestMigrationVersion,
-          });
-          currentStoredVersion = await localDB.getVersion();
+        if (migrationResult.finalVersion !== latestMigrationVersion) {
+          throw new Error(
+            `Local database migration stopped at version ${migrationResult.finalVersion}; expected ${latestMigrationVersion}.`
+          );
         }
 
-        let missingTablesDetected = false;
-        const safelyResolveTransactionCount = async (): Promise<number> => {
-          try {
-            return await getTransactionCount();
-          } catch {
-            missingTablesDetected = true;
-            currentStoredVersion = 0;
-            return 0;
-          }
-        };
-
-        const transactionCountBeforeMigration =
-          await safelyResolveTransactionCount();
-
-        if (
-          missingTablesDetected ||
-          currentStoredVersion !== latestMigrationVersion
-        ) {
-          if (transactionCountBeforeMigration > 0) {
-            safelySetStatus("synchronizing");
-            await synchronizeTransactions();
-          }
-
-          const transactionCountAfterSync =
-            await safelyResolveTransactionCount();
-          if (transactionCountAfterSync > 0) {
-            safelySetStatus("unsynchronized");
-            return;
-          }
-
-          safelySetStatus("migrating");
-          await localDB.ensureMigrated({
-            currentVersion: currentStoredVersion,
-            targetVersion: latestMigrationVersion,
-          });
-        } else {
-          if (transactionCountBeforeMigration > 0) {
-            safelySetStatus("synchronizing");
-            await synchronizeTransactions();
-          }
+        const transactionCount = await getTransactionCount();
+        if (transactionCount > 0) {
+          safelySetStatus("synchronizing");
+          await synchronizeTransactions();
         }
 
         hasBootstrappedRef.current = true;

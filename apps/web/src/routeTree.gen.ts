@@ -9,53 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TutorialRouteImport } from './routes/tutorial'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as EulaRouteImport } from './routes/eula'
-import { Route as DocumentRouteImport } from './routes/document'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppTrashRouteImport } from './routes/app.trash'
-import { Route as AppRoutinesRouteImport } from './routes/app.routines'
-import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
-import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
-import { Route as AppBlockPackEditorRouteImport } from './routes/app.block-pack-editor'
-import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
-import { Route as AuthLoginRouteImport } from './routes/_auth.login'
+import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as DocumentRouteImport } from './routes/document'
+import { Route as EulaRouteImport } from './routes/eula'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as TutorialRouteImport } from './routes/tutorial'
 import { Route as AuthForgetPasswordRouteImport } from './routes/_auth.forgetPassword'
-import { Route as AppRoutinesIndexRouteImport } from './routes/app.routines.index'
-import { Route as AppMaterialViewerIndexRouteImport } from './routes/app.material-viewer.index'
-import { Route as AppDashboardIndexRouteImport } from './routes/app.dashboard.index'
-import { Route as AppBlockPackEditorIndexRouteImport } from './routes/app.block-pack-editor.index'
-import { Route as AppSettingPreferencesRouteImport } from './routes/app.setting.preferences'
-import { Route as AppSettingAccountRouteImport } from './routes/app.setting.account'
-import { Route as AppRoutinesStationIdRouteImport } from './routes/app.routines.$stationId'
-import { Route as AppMaterialViewerMaterialIdRouteImport } from './routes/app.material-viewer.$materialId'
-import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.block-pack-editor.$blockPackId'
-import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
-import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
+import { Route as AuthLoginRouteImport } from './routes/_auth.login'
+import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
+import { Route as AppBlockPackEditorRouteImport } from './routes/app.block-pack-editor'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
+import { Route as AppRoutinesRouteImport } from './routes/app.routines'
+import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AuthRedirectErrorRouteImport } from './routes/_auth.redirect.error'
+import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
+import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
+import { Route as AppBlockPackEditorIndexRouteImport } from './routes/app.block-pack-editor.index'
+import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.block-pack-editor.$blockPackId'
+import { Route as AppDashboardIndexRouteImport } from './routes/app.dashboard.index'
+import { Route as AppMaterialViewerIndexRouteImport } from './routes/app.material-viewer.index'
+import { Route as AppMaterialViewerMaterialIdRouteImport } from './routes/app.material-viewer.$materialId'
+import { Route as AppRoutinesIndexRouteImport } from './routes/app.routines.index'
+import { Route as AppRoutinesStationIdRouteImport } from './routes/app.routines.$stationId'
+import { Route as AppSettingAccountRouteImport } from './routes/app.setting.account'
+import { Route as AppSettingPreferencesRouteImport } from './routes/app.setting.preferences'
 import { Route as AppRoutinesRoutineIdDependencyGraphEditorRouteImport } from './routes/app.routines.$routineId.dependency-graph-editor'
 
-const TutorialRoute = TutorialRouteImport.update({
-  id: '/tutorial',
-  path: '/tutorial',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EulaRoute = EulaRouteImport.update({
-  id: '/eula',
-  path: '/eula',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentRoute = DocumentRouteImport.update({
-  id: '/document',
-  path: '/document',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -63,43 +52,29 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const DocumentRoute = DocumentRouteImport.update({
+  id: '/document',
+  path: '/document',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const EulaRoute = EulaRouteImport.update({
+  id: '/eula',
+  path: '/eula',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppTrashRoute = AppTrashRouteImport.update({
-  id: '/trash',
-  path: '/trash',
-  getParentRoute: () => AppRoute,
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoutinesRoute = AppRoutinesRouteImport.update({
-  id: '/routines',
-  path: '/routines',
-  getParentRoute: () => AppRoute,
+const TutorialRoute = TutorialRouteImport.update({
+  id: '/tutorial',
+  path: '/tutorial',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppMaterialViewerRoute = AppMaterialViewerRouteImport.update({
-  id: '/material-viewer',
-  path: '/material-viewer',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBlockPackEditorRoute = AppBlockPackEditorRouteImport.update({
-  id: '/block-pack-editor',
-  path: '/block-pack-editor',
-  getParentRoute: () => AppRoute,
-} as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
+const AuthForgetPasswordRoute = AuthForgetPasswordRouteImport.update({
+  id: '/forgetPassword',
+  path: '/forgetPassword',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -107,61 +82,39 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthForgetPasswordRoute = AuthForgetPasswordRouteImport.update({
-  id: '/forgetPassword',
-  path: '/forgetPassword',
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => AuthRoute,
 } as any)
-const AppRoutinesIndexRoute = AppRoutinesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRoutinesRoute,
-} as any)
-const AppMaterialViewerIndexRoute = AppMaterialViewerIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppMaterialViewerRoute,
-} as any)
-const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppDashboardRoute,
-} as any)
-const AppBlockPackEditorIndexRoute = AppBlockPackEditorIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppBlockPackEditorRoute,
-} as any)
-const AppSettingPreferencesRoute = AppSettingPreferencesRouteImport.update({
-  id: '/setting/preferences',
-  path: '/setting/preferences',
+const AppBlockPackEditorRoute = AppBlockPackEditorRouteImport.update({
+  id: '/block-pack-editor',
+  path: '/block-pack-editor',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSettingAccountRoute = AppSettingAccountRouteImport.update({
-  id: '/setting/account',
-  path: '/setting/account',
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
-const AppRoutinesStationIdRoute = AppRoutinesStationIdRouteImport.update({
-  id: '/$stationId',
-  path: '/$stationId',
-  getParentRoute: () => AppRoutinesRoute,
+const AppMaterialViewerRoute = AppMaterialViewerRouteImport.update({
+  id: '/material-viewer',
+  path: '/material-viewer',
+  getParentRoute: () => AppRoute,
 } as any)
-const AppMaterialViewerMaterialIdRoute =
-  AppMaterialViewerMaterialIdRouteImport.update({
-    id: '/$materialId',
-    path: '/$materialId',
-    getParentRoute: () => AppMaterialViewerRoute,
-  } as any)
-const AppBlockPackEditorBlockPackIdRoute =
-  AppBlockPackEditorBlockPackIdRouteImport.update({
-    id: '/$blockPackId',
-    path: '/$blockPackId',
-    getParentRoute: () => AppBlockPackEditorRoute,
-  } as any)
-const AuthRedirectXRoute = AuthRedirectXRouteImport.update({
-  id: '/redirect/x',
-  path: '/redirect/x',
+const AppRoutinesRoute = AppRoutinesRouteImport.update({
+  id: '/routines',
+  path: '/routines',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTrashRoute = AppTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
+  getParentRoute: () => AppRoute,
+} as any)
+const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
+  id: '/redirect/error',
+  path: '/redirect/error',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthRedirectGoogleRoute = AuthRedirectGoogleRouteImport.update({
@@ -169,10 +122,57 @@ const AuthRedirectGoogleRoute = AuthRedirectGoogleRouteImport.update({
   path: '/redirect/google',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
-  id: '/redirect/error',
-  path: '/redirect/error',
+const AuthRedirectXRoute = AuthRedirectXRouteImport.update({
+  id: '/redirect/x',
+  path: '/redirect/x',
   getParentRoute: () => AuthRoute,
+} as any)
+const AppBlockPackEditorIndexRoute = AppBlockPackEditorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBlockPackEditorRoute,
+} as any)
+const AppBlockPackEditorBlockPackIdRoute =
+  AppBlockPackEditorBlockPackIdRouteImport.update({
+    id: '/$blockPackId',
+    path: '/$blockPackId',
+    getParentRoute: () => AppBlockPackEditorRoute,
+  } as any)
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDashboardRoute,
+} as any)
+const AppMaterialViewerIndexRoute = AppMaterialViewerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppMaterialViewerRoute,
+} as any)
+const AppMaterialViewerMaterialIdRoute =
+  AppMaterialViewerMaterialIdRouteImport.update({
+    id: '/$materialId',
+    path: '/$materialId',
+    getParentRoute: () => AppMaterialViewerRoute,
+  } as any)
+const AppRoutinesIndexRoute = AppRoutinesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoutinesRoute,
+} as any)
+const AppRoutinesStationIdRoute = AppRoutinesStationIdRouteImport.update({
+  id: '/$stationId',
+  path: '/$stationId',
+  getParentRoute: () => AppRoutinesRoute,
+} as any)
+const AppSettingAccountRoute = AppSettingAccountRouteImport.update({
+  id: '/setting/account',
+  path: '/setting/account',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingPreferencesRoute = AppSettingPreferencesRouteImport.update({
+  id: '/setting/preferences',
+  path: '/setting/preferences',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppRoutinesRoutineIdDependencyGraphEditorRoute =
   AppRoutinesRoutineIdDependencyGraphEditorRouteImport.update({
@@ -365,39 +365,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tutorial': {
-      id: '/tutorial'
-      path: '/tutorial'
-      fullPath: '/tutorial'
-      preLoaderRoute: typeof TutorialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/eula': {
-      id: '/eula'
-      path: '/eula'
-      fullPath: '/eula'
-      preLoaderRoute: typeof EulaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/document': {
-      id: '/document'
-      path: '/document'
-      fullPath: '/document'
-      preLoaderRoute: typeof DocumentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -407,53 +379,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/trash': {
-      id: '/app/trash'
-      path: '/trash'
-      fullPath: '/app/trash'
-      preLoaderRoute: typeof AppTrashRouteImport
-      parentRoute: typeof AppRoute
+    '/document': {
+      id: '/document'
+      path: '/document'
+      fullPath: '/document'
+      preLoaderRoute: typeof DocumentRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/routines': {
-      id: '/app/routines'
-      path: '/routines'
-      fullPath: '/app/routines'
-      preLoaderRoute: typeof AppRoutinesRouteImport
-      parentRoute: typeof AppRoute
+    '/eula': {
+      id: '/eula'
+      path: '/eula'
+      fullPath: '/eula'
+      preLoaderRoute: typeof EulaRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/material-viewer': {
-      id: '/app/material-viewer'
-      path: '/material-viewer'
-      fullPath: '/app/material-viewer'
-      preLoaderRoute: typeof AppMaterialViewerRouteImport
-      parentRoute: typeof AppRoute
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/dashboard': {
-      id: '/app/dashboard'
-      path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
+    '/tutorial': {
+      id: '/tutorial'
+      path: '/tutorial'
+      fullPath: '/tutorial'
+      preLoaderRoute: typeof TutorialRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/block-pack-editor': {
-      id: '/app/block-pack-editor'
-      path: '/block-pack-editor'
-      fullPath: '/app/block-pack-editor'
-      preLoaderRoute: typeof AppBlockPackEditorRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_auth/register': {
-      id: '/_auth/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
+    '/_auth/forgetPassword': {
+      id: '/_auth/forgetPassword'
+      path: '/forgetPassword'
+      fullPath: '/forgetPassword'
+      preLoaderRoute: typeof AuthForgetPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/login': {
@@ -463,81 +428,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/forgetPassword': {
-      id: '/_auth/forgetPassword'
-      path: '/forgetPassword'
-      fullPath: '/forgetPassword'
-      preLoaderRoute: typeof AuthForgetPasswordRouteImport
+    '/_auth/register': {
+      id: '/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/app/routines/': {
-      id: '/app/routines/'
-      path: '/'
-      fullPath: '/app/routines/'
-      preLoaderRoute: typeof AppRoutinesIndexRouteImport
-      parentRoute: typeof AppRoutinesRoute
-    }
-    '/app/material-viewer/': {
-      id: '/app/material-viewer/'
-      path: '/'
-      fullPath: '/app/material-viewer/'
-      preLoaderRoute: typeof AppMaterialViewerIndexRouteImport
-      parentRoute: typeof AppMaterialViewerRoute
-    }
-    '/app/dashboard/': {
-      id: '/app/dashboard/'
-      path: '/'
-      fullPath: '/app/dashboard/'
-      preLoaderRoute: typeof AppDashboardIndexRouteImport
-      parentRoute: typeof AppDashboardRoute
-    }
-    '/app/block-pack-editor/': {
-      id: '/app/block-pack-editor/'
-      path: '/'
-      fullPath: '/app/block-pack-editor/'
-      preLoaderRoute: typeof AppBlockPackEditorIndexRouteImport
-      parentRoute: typeof AppBlockPackEditorRoute
-    }
-    '/app/setting/preferences': {
-      id: '/app/setting/preferences'
-      path: '/setting/preferences'
-      fullPath: '/app/setting/preferences'
-      preLoaderRoute: typeof AppSettingPreferencesRouteImport
+    '/app/block-pack-editor': {
+      id: '/app/block-pack-editor'
+      path: '/block-pack-editor'
+      fullPath: '/app/block-pack-editor'
+      preLoaderRoute: typeof AppBlockPackEditorRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/setting/account': {
-      id: '/app/setting/account'
-      path: '/setting/account'
-      fullPath: '/app/setting/account'
-      preLoaderRoute: typeof AppSettingAccountRouteImport
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/routines/$stationId': {
-      id: '/app/routines/$stationId'
-      path: '/$stationId'
-      fullPath: '/app/routines/$stationId'
-      preLoaderRoute: typeof AppRoutinesStationIdRouteImport
-      parentRoute: typeof AppRoutinesRoute
+    '/app/material-viewer': {
+      id: '/app/material-viewer'
+      path: '/material-viewer'
+      fullPath: '/app/material-viewer'
+      preLoaderRoute: typeof AppMaterialViewerRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/app/material-viewer/$materialId': {
-      id: '/app/material-viewer/$materialId'
-      path: '/$materialId'
-      fullPath: '/app/material-viewer/$materialId'
-      preLoaderRoute: typeof AppMaterialViewerMaterialIdRouteImport
-      parentRoute: typeof AppMaterialViewerRoute
+    '/app/routines': {
+      id: '/app/routines'
+      path: '/routines'
+      fullPath: '/app/routines'
+      preLoaderRoute: typeof AppRoutinesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/app/block-pack-editor/$blockPackId': {
-      id: '/app/block-pack-editor/$blockPackId'
-      path: '/$blockPackId'
-      fullPath: '/app/block-pack-editor/$blockPackId'
-      preLoaderRoute: typeof AppBlockPackEditorBlockPackIdRouteImport
-      parentRoute: typeof AppBlockPackEditorRoute
+    '/app/trash': {
+      id: '/app/trash'
+      path: '/trash'
+      fullPath: '/app/trash'
+      preLoaderRoute: typeof AppTrashRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_auth/redirect/x': {
-      id: '/_auth/redirect/x'
-      path: '/redirect/x'
-      fullPath: '/redirect/x'
-      preLoaderRoute: typeof AuthRedirectXRouteImport
+    '/_auth/redirect/error': {
+      id: '/_auth/redirect/error'
+      path: '/redirect/error'
+      fullPath: '/redirect/error'
+      preLoaderRoute: typeof AuthRedirectErrorRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/redirect/google': {
@@ -547,12 +484,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRedirectGoogleRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/redirect/error': {
-      id: '/_auth/redirect/error'
-      path: '/redirect/error'
-      fullPath: '/redirect/error'
-      preLoaderRoute: typeof AuthRedirectErrorRouteImport
+    '/_auth/redirect/x': {
+      id: '/_auth/redirect/x'
+      path: '/redirect/x'
+      fullPath: '/redirect/x'
+      preLoaderRoute: typeof AuthRedirectXRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/app/block-pack-editor/': {
+      id: '/app/block-pack-editor/'
+      path: '/'
+      fullPath: '/app/block-pack-editor/'
+      preLoaderRoute: typeof AppBlockPackEditorIndexRouteImport
+      parentRoute: typeof AppBlockPackEditorRoute
+    }
+    '/app/block-pack-editor/$blockPackId': {
+      id: '/app/block-pack-editor/$blockPackId'
+      path: '/$blockPackId'
+      fullPath: '/app/block-pack-editor/$blockPackId'
+      preLoaderRoute: typeof AppBlockPackEditorBlockPackIdRouteImport
+      parentRoute: typeof AppBlockPackEditorRoute
+    }
+    '/app/dashboard/': {
+      id: '/app/dashboard/'
+      path: '/'
+      fullPath: '/app/dashboard/'
+      preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppDashboardRoute
+    }
+    '/app/material-viewer/': {
+      id: '/app/material-viewer/'
+      path: '/'
+      fullPath: '/app/material-viewer/'
+      preLoaderRoute: typeof AppMaterialViewerIndexRouteImport
+      parentRoute: typeof AppMaterialViewerRoute
+    }
+    '/app/material-viewer/$materialId': {
+      id: '/app/material-viewer/$materialId'
+      path: '/$materialId'
+      fullPath: '/app/material-viewer/$materialId'
+      preLoaderRoute: typeof AppMaterialViewerMaterialIdRouteImport
+      parentRoute: typeof AppMaterialViewerRoute
+    }
+    '/app/routines/': {
+      id: '/app/routines/'
+      path: '/'
+      fullPath: '/app/routines/'
+      preLoaderRoute: typeof AppRoutinesIndexRouteImport
+      parentRoute: typeof AppRoutinesRoute
+    }
+    '/app/routines/$stationId': {
+      id: '/app/routines/$stationId'
+      path: '/$stationId'
+      fullPath: '/app/routines/$stationId'
+      preLoaderRoute: typeof AppRoutinesStationIdRouteImport
+      parentRoute: typeof AppRoutinesRoute
+    }
+    '/app/setting/account': {
+      id: '/app/setting/account'
+      path: '/setting/account'
+      fullPath: '/app/setting/account'
+      preLoaderRoute: typeof AppSettingAccountRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/setting/preferences': {
+      id: '/app/setting/preferences'
+      path: '/setting/preferences'
+      fullPath: '/app/setting/preferences'
+      preLoaderRoute: typeof AppSettingPreferencesRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/routines/$routineId/dependency-graph-editor': {
       id: '/app/routines/$routineId/dependency-graph-editor'

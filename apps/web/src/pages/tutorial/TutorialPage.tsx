@@ -22,171 +22,111 @@ import { useAppRouterActions } from "@/hooks/useAppRouter";
 const domainTutorials = [
   {
     id: "root-shelves",
-    title: "Root Shelves",
-    summary:
-      "A root shelf is the top-level workspace boundary for a collection of Notegic content.",
-    structure: "Root shelf → sub shelves → Block Packs → blocks",
-    details:
-      "Use a root shelf when a team, project, or personal area needs its own members, ownership, and permissions. Keep broad access decisions at this level so every nested resource inherits a clear context.",
+    key: "rootShelves",
   },
   {
     id: "sub-shelves",
-    title: "Sub Shelves",
-    summary:
-      "Sub shelves divide a root shelf into smaller, navigable areas without creating another top-level workspace.",
-    structure: "Root shelf → sub shelf → ordered items",
-    details:
-      "Use sub shelves for projects, subjects, or stages of work. Their ordering and traversal endpoints let a client render the same hierarchy users see in Notegic.",
+    key: "subShelves",
   },
   {
     id: "materials",
-    title: "Materials",
-    summary:
-      "Materials are source files and references that support the content stored in a shelf or document.",
-    structure: "Material → metadata + content reference + parent location",
-    details:
-      "Treat materials as inputs rather than documents themselves. Keep their metadata stable, attach them to the appropriate parent, and use recovery endpoints when a user needs to restore one.",
+    key: "materials",
   },
   {
     id: "block-packs",
-    title: "Block Packs",
-    summary:
-      "A Block Pack is a collaborative document container made from one or more blocks.",
-    structure: "Block Pack → ordered blocks → realtime editing session",
-    details:
-      "Use the Block Pack API for lifecycle and permissions. The separate private realtime ticket flow is responsible for collaborative editing; API keys should remain on your server.",
+    key: "blockPacks",
   },
   {
     id: "blocks",
-    title: "Blocks",
-    summary: "Blocks are the small content units that make up a Block Pack.",
-    structure: "Block Pack → block id → content + ordering metadata",
-    details:
-      "Address blocks through their containing Block Pack when possible. This keeps authorization and ordering decisions tied to the document boundary.",
+    key: "blocks",
   },
   {
     id: "stations",
-    title: "Stations",
-    summary:
-      "Stations are execution-oriented workspaces where routines and their resources come together.",
-    structure: "Station → members + permissions + routine links",
-    details:
-      "Use a station to model where work runs. Manage membership and permission changes before creating automation that depends on the station.",
+    key: "stations",
   },
   {
     id: "routines",
-    title: "Routines",
-    summary:
-      "A routine describes a repeatable automation flow and its schedule.",
-    structure: "Routine → schedule → routine tasks",
-    details:
-      "A routine is the definition, not a single execution. Keep the routine stable and use its task links and lifecycle operations to inspect or change the work it schedules.",
+    key: "routines",
   },
   {
     id: "routine-tasks",
-    title: "Routine Tasks",
-    summary:
-      "Routine tasks are executable steps created from a routine and claimed by the scheduler.",
-    structure: "Routine → task payload → worker claim → result",
-    details:
-      "A task can remain idle until it is eligible to run. The monthly execution quota is consumed when the backend claims the task, so clients must not reject a task based on a local payload estimate.",
+    key: "routineTasks",
   },
   {
     id: "routine-tags",
-    title: "Routine Tags",
-    summary:
-      "Routine tags are lightweight labels for grouping and finding routine tasks.",
-    structure: "Tag → linked routine tasks → filtered task view",
-    details:
-      "Use tags for user-facing organization and filtering. They are independent resources, so deleting a tag should not be treated as deleting the tasks it labels.",
+    key: "routineTags",
   },
 ] as const;
 
-const navigationItems = [
+const navigationKeys = [
   {
     id: "tutorial",
-    title: "Tutorial overview",
-    description: "API-key integrations and the Notegic resource model.",
+    titleKey: "navigation.overview",
+    descriptionKey: "navigation.overviewDescription",
     weight: 5,
   },
   {
     id: "api-keys",
-    title: "API keys",
-    description: "Generate and safely use an integration key.",
+    titleKey: "navigation.apiKeys",
+    descriptionKey: "navigation.apiKeysDescription",
     weight: 5,
   },
   {
     id: "api-key-management",
-    title: "Key management",
-    description: "Review, rotate, and revoke keys.",
+    titleKey: "navigation.keyManagement",
+    descriptionKey: "navigation.keyManagementDescription",
     weight: 4,
   },
   {
     id: "notegic-model",
-    title: "Notegic structure",
-    description: "The resource hierarchy at a glance.",
+    titleKey: "navigation.model",
+    descriptionKey: "navigation.modelDescription",
     weight: 5,
   },
   ...domainTutorials.map(domain => ({
     id: domain.id,
-    title: domain.title,
-    description: domain.summary,
+    titleKey: `domains.${domain.key}.title`,
+    descriptionKey: `domains.${domain.key}.summary`,
     weight: 3 as const,
   })),
   {
     id: "integration-patterns",
-    title: "Integration patterns",
-    description: "Keep API keys on the server and call the public gateway.",
+    titleKey: "navigation.integrationPatterns",
+    descriptionKey: "navigation.integrationPatternsDescription",
     weight: 4,
   },
   {
     id: "q-and-a",
-    title: "Q&A",
-    description: "Answers to common Notegic integration questions.",
+    titleKey: "navigation.qa",
+    descriptionKey: "navigation.qaDescription",
     weight: 4,
   },
-] satisfies ArticleNavigationItem[];
+] as const;
 
-const tutorialQuestions = [
+const tutorialQuestionKeys = [
   {
-    question: "What is a Block Pack?",
-    answer:
-      "A Block Pack is a collaborative document container made from ordered blocks. Use the API for lifecycle and permissions, and use the realtime flow for collaborative editing.",
+    key: "blockPack",
   },
   {
-    question: "Where should I store an API key?",
-    answer:
-      "Store it in a backend, worker, CLI secret manager, or deployment secret. Do not put it in frontend environment variables, browser storage, URLs, logs, or WebSocket frames.",
+    key: "apiKeyStorage",
   },
   {
-    question: "Should I use one API key for every environment?",
-    answer:
-      "No. Create separate keys for development, staging, and production so each environment can be rotated or revoked independently.",
+    key: "separateEnvironments",
   },
   {
-    question: "What is the difference between a Root Shelf and a Sub Shelf?",
-    answer:
-      "A Root Shelf is a top-level workspace boundary for ownership, membership, and permissions. A Sub Shelf organizes content inside that boundary without creating another workspace.",
+    key: "shelfDifference",
   },
   {
-    question: "When should I use a Station?",
-    answer:
-      "Use a Station when you need an execution-oriented workspace that brings members, permissions, and routines together.",
+    key: "station",
   },
   {
-    question: "What is the difference between a Routine and a Routine Task?",
-    answer:
-      "A Routine is the repeatable automation definition and schedule. A Routine Task is an executable step created from that definition and claimed by the scheduler.",
+    key: "routineDifference",
   },
   {
-    question: "When is routine quota consumed?",
-    answer:
-      "Quota is consumed when the backend claims a Routine Task for execution. A client should not reject a task based only on a local estimate of its payload cost.",
+    key: "routineQuota",
   },
   {
-    question: "What should I do if an API key may have leaked?",
-    answer:
-      "Revoke it immediately, create a replacement key, update the server-side secret, and review logs or deployments for places where the old secret may have been exposed.",
+    key: "leakedApiKey",
   },
 ] as const;
 
@@ -195,16 +135,27 @@ const TutorialPage = () => {
   const router = useAppRouterActions();
   const title = t("workspace.navigation.tutorial");
   const articleRef = useRef<HTMLElement>(null);
+  const translateTutorial = (
+    key: string,
+    options?: Record<string, unknown>
+  ): string => t(`tutorial.${key}` as never, options) as string;
+  const navigationItems = navigationKeys.map(item => ({
+    id: item.id,
+    title: translateTutorial(item.titleKey),
+    description: translateTutorial(item.descriptionKey),
+    weight: item.weight,
+  })) satisfies ArticleNavigationItem[];
+  const headerLinks = [
+    { label: translateTutorial("navigation.home"), href: "/" },
+    { label: translateTutorial("navigation.document"), href: "/document" },
+  ];
 
   return (
     <div className="h-svh min-h-0 overflow-hidden bg-canvas">
       <ArticleDisplayProvider
         mode="pagination"
         initialPageId="tutorial"
-        headerLinks={[
-          { label: "Home", href: "/" },
-          { label: "Document", href: "/document" },
-        ]}
+        headerLinks={headerLinks}
       >
         <div className="flex h-full min-h-0">
           <ArticleSidebar
@@ -215,10 +166,7 @@ const TutorialPage = () => {
             scrollRef={articleRef}
             mode="pagination"
             initialPageId="tutorial"
-            headerLinks={[
-              { label: "Home", href: "/" },
-              { label: "Document", href: "/document" },
-            ]}
+            headerLinks={headerLinks}
             className="min-w-0 flex-1 pt-10 lg:pt-0"
           >
             <ArticleContent>
@@ -228,16 +176,11 @@ const TutorialPage = () => {
                     {title}
                   </h1>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    A practical guide to API-key integrations and the Notegic
-                    resource model.
+                    {translateTutorial("overview.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
-                  <p>
-                    Start with the API key workflow, then use the Notegic
-                    structure guide to understand which resource family your
-                    integration should call.
-                  </p>
+                  <p>{translateTutorial("overview.intro")}</p>
                 </ArticleParagraphContent>
               </ArticleParagraph>
 
@@ -246,34 +189,28 @@ const TutorialPage = () => {
               <ArticleParagraph id="api-keys">
                 <ArticleParagraphHeader>
                   <h2 className="text-2xl font-semibold tracking-tight">
-                    Generate your first API key
+                    {translateTutorial("apiKeys.title")}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    API keys authenticate server-to-server calls to the public
-                    API Gateway.
+                    {translateTutorial("apiKeys.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
-                  <p>
-                    An API key is not a replacement for the browser session and
-                    must never be shipped to frontend code.
-                  </p>
+                  <p>{translateTutorial("apiKeys.intro")}</p>
                   <ol className="list-decimal space-y-2 pl-5">
-                    <li>Open Account settings and select API keys.</li>
-                    <li>
-                      Create a named key for one integration or environment.
-                    </li>
-                    <li>
-                      Copy the complete secret immediately; it is displayed only
-                      once.
-                    </li>
-                    <li>
-                      Store it in a server secret manager and send it as
-                      <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                        X-API-Key
-                      </code>
-                      on each request.
-                    </li>
+                    {[1, 2, 3, 4].map(step => (
+                      <li key={step}>
+                        {translateTutorial(`apiKeys.step${step}`)}
+                        {step === 4 && (
+                          <>
+                            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                              X-API-Key
+                            </code>
+                            {translateTutorial("apiKeys.step4Suffix")}
+                          </>
+                        )}
+                      </li>
+                    ))}
                   </ol>
                   <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
                     <code>
@@ -290,22 +227,19 @@ const TutorialPage = () => {
               <ArticleParagraph id="api-key-management">
                 <ArticleParagraphHeader>
                   <h2 className="text-2xl font-semibold tracking-tight">
-                    Manage and revoke keys
+                    {translateTutorial("keyManagement.title")}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Key metadata is visible after creation, but the secret is
-                    never returned again.
+                    {translateTutorial("keyManagement.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
                   <ul className="list-disc space-y-2 pl-5">
-                    <li>
-                      Use separate keys for production and development
-                      environments.
-                    </li>
-                    <li>Rotate a key when an owner or environment changes.</li>
-                    <li>Revoke immediately if a secret may have leaked.</li>
-                    <li>Keep raw secrets out of logs, URLs, and metrics.</li>
+                    {[1, 2, 3, 4].map(item => (
+                      <li key={item}>
+                        {translateTutorial(`keyManagement.item${item}`)}
+                      </li>
+                    ))}
                   </ul>
                 </ArticleParagraphContent>
               </ArticleParagraph>
@@ -315,24 +249,18 @@ const TutorialPage = () => {
               <ArticleParagraph id="notegic-model">
                 <ArticleParagraphHeader>
                   <h2 className="text-2xl font-semibold tracking-tight">
-                    Understand the Notegic structure
+                    {translateTutorial("model.title")}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Notegic separates organization, content, and execution so
-                    integrations can request only the resource family they need.
+                    {translateTutorial("model.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
                   <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
-                    <code>
-                      {
-                        "Root shelf\n├─ Sub shelves\n│  ├─ Materials\n│  └─ Block Packs\n│     └─ Blocks\n└─ Station\n   └─ Routine\n      ├─ Routine tasks\n      └─ Routine tags"
-                      }
-                    </code>
+                    <code>{translateTutorial("model.diagram")}</code>
                   </pre>
                   <p>
-                    Each resource section below explains its boundary and links
-                    to the public API reference in the{" "}
+                    {translateTutorial("model.intro")}{" "}
                     <a
                       className="underline"
                       href="/document#gateway"
@@ -341,67 +269,66 @@ const TutorialPage = () => {
                         router.push("/document#gateway");
                       }}
                     >
-                      document page
+                      {translateTutorial("model.documentLink")}
                     </a>
                     .
                   </p>
                 </ArticleParagraphContent>
               </ArticleParagraph>
 
-              {domainTutorials.map(domain => (
-                <Fragment key={domain.id}>
-                  <ArticleParagraphSeparator />
-                  <ArticleParagraph id={domain.id}>
-                    <ArticleParagraphHeader>
-                      <h2 className="text-2xl font-semibold tracking-tight">
-                        {domain.title}
-                      </h2>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        {domain.summary}
-                      </p>
-                    </ArticleParagraphHeader>
-                    <ArticleParagraphContent>
-                      <p>{domain.details}</p>
-                      <p className="font-mono text-xs leading-6 text-muted-foreground">
-                        Structure: {domain.structure}
-                      </p>
-                      <a
-                        className="underline"
-                        href={"/document#gateway-" + domain.id}
-                        onClick={event => {
-                          event.preventDefault();
-                          router.push("/document#gateway-" + domain.id);
-                        }}
-                      >
-                        View {domain.title} API operations
-                      </a>
-                    </ArticleParagraphContent>
-                  </ArticleParagraph>
-                </Fragment>
-              ))}
+              {domainTutorials.map(domain => {
+                const domainPath = `domains.${domain.key}`;
+                const domainTitle = translateTutorial(`${domainPath}.title`);
+                return (
+                  <Fragment key={domain.id}>
+                    <ArticleParagraphSeparator />
+                    <ArticleParagraph id={domain.id}>
+                      <ArticleParagraphHeader>
+                        <h2 className="text-2xl font-semibold tracking-tight">
+                          {domainTitle}
+                        </h2>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          {translateTutorial(`${domainPath}.summary`)}
+                        </p>
+                      </ArticleParagraphHeader>
+                      <ArticleParagraphContent>
+                        <p>{translateTutorial(`${domainPath}.details`)}</p>
+                        <p className="font-mono text-xs leading-6 text-muted-foreground">
+                          {translateTutorial("domains.structure")}:{" "}
+                          {translateTutorial(`${domainPath}.structure`)}
+                        </p>
+                        <a
+                          className="underline"
+                          href={`/document#gateway-${domain.id}`}
+                          onClick={event => {
+                            event.preventDefault();
+                            router.push(`/document#gateway-${domain.id}`);
+                          }}
+                        >
+                          {translateTutorial("domains.viewApiOperations", {
+                            title: domainTitle,
+                          })}
+                        </a>
+                      </ArticleParagraphContent>
+                    </ArticleParagraph>
+                  </Fragment>
+                );
+              })}
 
               <ArticleParagraphSeparator />
 
               <ArticleParagraph id="integration-patterns">
                 <ArticleParagraphHeader>
                   <h2 className="text-2xl font-semibold tracking-tight">
-                    Integration patterns
+                    {translateTutorial("integration.title")}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Keep API keys on the server and call the public gateway.
+                    {translateTutorial("integration.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
-                  <p>
-                    Keep the API key in your backend, worker, or CLI process.
-                    Your service calls the API Gateway, validates responses, and
-                    exposes only the data your own client needs.
-                  </p>
-                  <p>
-                    The Notegic web app uses ClientGateway with HttpOnly JWT
-                    cookies. Do not add an API key to browser storage, a URL,
-                    frontend environment variables, or a WebSocket frame.
-                  </p>
+                  <p>{translateTutorial("integration.paragraph1")}</p>
+                  <p>{translateTutorial("integration.paragraph2")}</p>
                 </ArticleParagraphContent>
               </ArticleParagraph>
 
@@ -409,21 +336,24 @@ const TutorialPage = () => {
 
               <ArticleParagraph id="q-and-a">
                 <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">Q&A</h2>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    {translateTutorial("qa.title")}
+                  </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Common questions about Notegic resources and integrations.
+                    {translateTutorial("qa.subtitle")}
                   </p>
                 </ArticleParagraphHeader>
                 <ArticleParagraphContent>
                   <Accordion type="single" collapsible className="w-full">
-                    {tutorialQuestions.map((item, index) => (
-                      <AccordionItem
-                        key={item.question}
-                        value={`question-${index}`}
-                      >
-                        <AccordionTrigger>{item.question}</AccordionTrigger>
+                    {tutorialQuestionKeys.map((item, index) => (
+                      <AccordionItem key={item.key} value={`question-${index}`}>
+                        <AccordionTrigger>
+                          {translateTutorial(
+                            `qa.questions.${item.key}.question`
+                          )}
+                        </AccordionTrigger>
                         <AccordionContent className="leading-6 text-muted-foreground">
-                          {item.answer}
+                          {translateTutorial(`qa.questions.${item.key}.answer`)}
                         </AccordionContent>
                       </AccordionItem>
                     ))}
