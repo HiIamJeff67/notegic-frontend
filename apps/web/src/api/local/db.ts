@@ -51,17 +51,78 @@ const hotReloadable = import.meta.hot?.data as
   | {
       sqlocalDrizzle?: SQLocalDrizzle;
       sqlocalConnectionReady?: Promise<void>;
+      sqlocalWorker?: Worker;
     }
   | undefined;
+const LOCAL_DB_WORKER_CONNECTION_TIMEOUT_MS = 15_000;
 let resolveSQLocalConnectionReady = () => {};
-const sqlocalConnectionReady = isClient
-  ? (hotReloadable?.sqlocalConnectionReady ??
-    new Promise<void>(resolve => {
+let rejectSQLocalConnectionReady = (_error: unknown) => {};
+let sqlocalConnectionReady = Promise.resolve();
+let sqlocalConnectionSettled = false;
+let sqlocalWorkerConnectionTimeout: number | undefined;
+const settleSQLocalConnection = () => {
+  if (sqlocalConnectionSettled) return false;
+  sqlocalConnectionSettled = true;
+  if (sqlocalWorkerConnectionTimeout !== undefined) {
+    window.clearTimeout(sqlocalWorkerConnectionTimeout);
+  }
+  return true;
+};
+const failSQLocalConnection = (error: unknown) => {
+  if (!settleSQLocalConnection()) return;
+  const connectionError =
+    error instanceof Error
+      ? error
+      : new Error(`SQLocal worker failed to initialize: ${String(error)}`);
+  localDBDiagnostics.transition("failed", {
+    error: connectionError.message,
+  });
+  console.error("SQLocal worker failed to initialize.", connectionError);
+  rejectSQLocalConnectionReady(connectionError);
+};
+const markSQLocalConnectionReady = () => {
+  if (!settleSQLocalConnection()) return;
+  localDBDiagnostics.transition("worker-connected", { error: null });
+  resolveSQLocalConnectionReady();
+};
+if (isClient) {
+  sqlocalConnectionReady =
+    hotReloadable?.sqlocalConnectionReady ??
+    new Promise<void>((resolve, reject) => {
       resolveSQLocalConnectionReady = resolve;
-    }))
-  : Promise.resolve();
+      rejectSQLocalConnectionReady = reject;
+    });
+}
 const hasReusableHotReloadState =
   hotReloadable?.sqlocalDrizzle && hotReloadable.sqlocalConnectionReady;
+const sqlocalWorker = isClient
+  ? (hotReloadable?.sqlocalWorker ??
+    new Worker(new URL("./sqlocal.worker.ts", import.meta.url), {
+      type: "module",
+    }))
+  : undefined;
+
+if (isClient && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
+  sqlocalWorker.addEventListener("error", event => {
+    const message =
+      "message" in event && typeof event.message === "string"
+        ? event.message
+        : "unknown worker error";
+    failSQLocalConnection(new Error(message));
+  });
+  sqlocalWorker.addEventListener("messageerror", () => {
+    failSQLocalConnection(
+      new Error("worker message could not be deserialized")
+    );
+  });
+  sqlocalWorkerConnectionTimeout = window.setTimeout(() => {
+    failSQLocalConnection(
+      new Error(
+        `SQLocal worker connection timed out after ${LOCAL_DB_WORKER_CONNECTION_TIMEOUT_MS}ms.`
+      )
+    );
+  }, LOCAL_DB_WORKER_CONNECTION_TIMEOUT_MS);
+}
 // create the sqlocal drizzle using either the data from HMR hot reload whose type is defined on the above
 // or the new sqlocal drizzle instance created here
 const sqlocalDrizzle = isClient
@@ -70,9 +131,9 @@ const sqlocalDrizzle = isClient
     : new SQLocalDrizzle({
         databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
         onInit: () => [],
+        processor: sqlocalWorker,
         onConnect: () => {
-          localDBDiagnostics.transition("worker-connected", { error: null });
-          resolveSQLocalConnectionReady();
+          markSQLocalConnectionReady();
         },
       })
   : undefined;
@@ -81,6 +142,7 @@ if (import.meta.hot && sqlocalDrizzle) {
   // store the sqlocal drizzle instance to the HMR data for next hot reload
   import.meta.hot.data.sqlocalDrizzle = sqlocalDrizzle;
   import.meta.hot.data.sqlocalConnectionReady = sqlocalConnectionReady;
+  import.meta.hot.data.sqlocalWorker = sqlocalWorker;
 
   // destroy the sqlocal drizzle instance before full reload to avoid remaining worker connections
   import.meta.hot.on("vite:beforeFullReload", () => {
@@ -100,9 +162,11 @@ if (import.meta.hot && sqlocalDrizzle) {
     (data: {
       sqlocalDrizzle?: SQLocalDrizzle;
       sqlocalConnectionReady?: Promise<void>;
+      sqlocalWorker?: Worker;
     }) => {
       data.sqlocalDrizzle = sqlocalDrizzle;
       data.sqlocalConnectionReady = sqlocalConnectionReady;
+      data.sqlocalWorker = sqlocalWorker;
     }
   );
 }
