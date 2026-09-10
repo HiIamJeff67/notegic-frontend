@@ -189,7 +189,7 @@ export const createLocalDBDiagnostics = (
   };
 
   persist();
-  console.info("[LocalDB] phase", state);
+  console.debug("[LocalDB] phase", state);
 
   const transition = (
     phase: LocalDBPhase,
@@ -205,7 +205,7 @@ export const createLocalDBDiagnostics = (
       updatedAt: Date.now(),
     };
     persist();
-    console.info("[LocalDB] phase", state);
+    console.debug("[LocalDB] phase", state);
     return state;
   };
 
@@ -216,7 +216,7 @@ export const createLocalDBDiagnostics = (
     if (workerEvents.length > 100) workerEvents.shift();
     state = { ...state, workerEvents: [...workerEvents] };
     persist();
-    console.info("[LocalDB] worker", event);
+    console.debug("[LocalDB] worker", event);
     return event;
   };
 

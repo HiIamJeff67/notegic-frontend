@@ -229,7 +229,7 @@ self.onmessage = message => {
     }
   }
 
-  void processor.postMessage(message);
+  void processor.postMessage(data);
 };
 
 processor.onmessage = (message, transfer) => {
