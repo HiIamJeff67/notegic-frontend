@@ -113,6 +113,13 @@ export default defineConfig(({ mode }) => {
       nitro({
         preset: nitroPreset,
         serverDir: join(webRoot, "server"),
+        routeRules: {
+          "/assets/**": {
+            headers: {
+              "Cross-Origin-Resource-Policy": "same-origin",
+            },
+          },
+        },
         // The SSR output imports Node's AsyncLocalStorage. Keep the generated
         // Wrangler config on a date where nodejs_compat is active.
         compatibilityDate: "2026-09-07",
