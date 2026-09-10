@@ -4,12 +4,36 @@ import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import currentLocalSchemaSql from "./bootstrap.sql?raw";
+import {
+  createLocalDBDiagnostics,
+  type LocalDBDiagnostics,
+} from "./local-database-diagnostics";
 import { getOrderedMigrations } from "./migration-catalog";
 import { LocalDBMigrator } from "./migrator";
 import { isOPFSMissingFileError, recoverOPFSError } from "./recover";
 import * as schema from "./schemas";
 
 const isClient = typeof window !== "undefined";
+
+const localDBDiagnosticsStorageKey = `notegic-local-db-diagnostics:${String(
+  import.meta.env.VITE_LOCAL_DATABASE_PATH ?? "default"
+)}`;
+const localDBDiagnosticsStorage = (() => {
+  if (!isClient) return null;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+})();
+const localDBDiagnostics = createLocalDBDiagnostics(
+  localDBDiagnosticsStorage,
+  localDBDiagnosticsStorageKey,
+  isClient ? "worker-connection-pending" : "disabled"
+);
+
+const getLocalDBErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 const runWithMigrationLock = async <T>(
   operation: () => Promise<T>
@@ -46,7 +70,10 @@ const sqlocalDrizzle = isClient
     : new SQLocalDrizzle({
         databasePath: import.meta.env.VITE_LOCAL_DATABASE_PATH,
         onInit: () => [],
-        onConnect: () => resolveSQLocalConnectionReady(),
+        onConnect: () => {
+          localDBDiagnostics.transition("worker-connected", { error: null });
+          resolveSQLocalConnectionReady();
+        },
       })
   : undefined;
 
@@ -241,6 +268,7 @@ type LocalDB = typeof drizzleDB & {
   readonly isEnabled: boolean;
   readonly isReady: boolean;
   readonly migrationError: unknown | null;
+  getDiagnostics: () => LocalDBDiagnostics;
   getLatestMigrationVersion: () => number;
   ensureMigrated: (
     options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
@@ -265,6 +293,7 @@ const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
   if (!isClient || !isLocalPreferenceEnabled("localVault")) {
+    localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
   }
 
@@ -272,12 +301,21 @@ const ensureMigrated = async (
     const migrationResult = await runWithMigrationLock(async () => {
       const targetVersion =
         options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
+      localDBDiagnostics.transition("reading-version", {
+        currentVersion: null,
+        targetVersion,
+        error: null,
+      });
       const currentVersion = await getVersion();
 
       if (currentVersion === 0 && targetVersion > 0) {
         if (!sqlocalDrizzle) {
           throw new Error("local database is unavailable for bootstrap");
         }
+        localDBDiagnostics.transition("bootstrapping", {
+          currentVersion,
+          targetVersion,
+        });
         await recoverOPFSError(sqlocalDrizzle);
         return await localDBMigrator.bootstrapCurrentSchema(
           currentLocalSchemaSql,
@@ -285,6 +323,10 @@ const ensureMigrated = async (
         );
       }
 
+      localDBDiagnostics.transition(
+        currentVersion < targetVersion ? "migrating" : "verifying",
+        { currentVersion, targetVersion }
+      );
       return await localDBMigrator.ensureMigrated({
         currentVersion,
         targetVersion,
@@ -293,12 +335,18 @@ const ensureMigrated = async (
     isMigrated =
       migrationResult.finalVersion ===
       localDBMigrator.getLatestMigrationVersion();
+    localDBDiagnostics.transition("verifying", {
+      currentVersion: migrationResult.finalVersion,
+    });
     migrationError = null;
     return migrationResult;
   } catch (error) {
     isMigrated = false;
     isReady = false;
     migrationError = error;
+    localDBDiagnostics.transition("failed", {
+      error: getLocalDBErrorMessage(error),
+    });
     throw error;
   }
 };
@@ -307,18 +355,40 @@ const ensureReady = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
   if (!isClient || !isLocalPreferenceEnabled("localVault")) {
+    localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
   }
 
   const targetVersion =
     options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
 
-  const migrationResult = await ensureMigrated({
-    targetVersion,
-  });
+  try {
+    const migrationResult = await ensureMigrated({
+      targetVersion,
+    });
 
-  isReady = true;
-  return migrationResult;
+    const verifiedVersion = await getVersion();
+    if (verifiedVersion !== targetVersion) {
+      throw new Error(
+        `local database verification stopped at version ${verifiedVersion}; expected ${targetVersion}.`
+      );
+    }
+
+    isReady = true;
+    localDBDiagnostics.transition("ready", {
+      currentVersion: verifiedVersion,
+      targetVersion,
+      error: null,
+    });
+    return migrationResult;
+  } catch (error) {
+    isReady = false;
+    localDBDiagnostics.transition("failed", {
+      targetVersion,
+      error: getLocalDBErrorMessage(error),
+    });
+    throw error;
+  }
 };
 
 const download = async (): Promise<File> => {
@@ -370,6 +440,11 @@ Object.defineProperties(localDB, {
       isClient && isLocalPreferenceEnabled("localVault")
         ? migrationError
         : null,
+    enumerable: true,
+  },
+  getDiagnostics: {
+    value: () => localDBDiagnostics.getState(),
+    writable: false,
     enumerable: true,
   },
   getLatestMigrationVersion: {
