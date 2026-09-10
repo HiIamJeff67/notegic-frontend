@@ -193,7 +193,7 @@ export const TerrainBackground = ({
               <TerrainPointCloud
                 color={isDark ? "#ffffff" : "#111111"}
                 pointCount={terrain.pointCount}
-                pointSize={isDark ? terrain.pointSize : terrain.pointSize * 3.5}
+                pointSize={terrain.pointSize}
                 seed={terrain.seed}
                 algorithm={terrain.algorithm}
               />
@@ -205,8 +205,8 @@ export const TerrainBackground = ({
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background: isDark
-            ? "radial-gradient(ellipse clamp(260px, 42vw, 620px) clamp(160px, 30vh, 300px) at 50% 48%, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.78) 36%, rgba(0, 0, 0, 0.34) 72%, transparent 100%)"
-            : "radial-gradient(ellipse clamp(260px, 42vw, 620px) clamp(160px, 30vh, 300px) at 50% 48%, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.78) 36%, rgba(255, 255, 255, 0.34) 72%, transparent 100%)",
+            ? "radial-gradient(ellipse clamp(260px, 42vw, 620px) clamp(160px, 30vh, 300px) at 50% 48%, rgba(0, 0, 0, 0.64) 0%, rgba(0, 0, 0, 0.42) 36%, rgba(0, 0, 0, 0.16) 72%, transparent 100%)"
+            : "radial-gradient(ellipse clamp(260px, 42vw, 620px) clamp(160px, 30vh, 300px) at 50% 48%, rgba(255, 255, 255, 0.64) 0%, rgba(255, 255, 255, 0.42) 36%, rgba(255, 255, 255, 0.16) 72%, transparent 100%)",
         }}
       />
       <div className="relative z-10">{children}</div>

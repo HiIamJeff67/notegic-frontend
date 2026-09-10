@@ -2,7 +2,7 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 
-import type { TerrainAlgorithm } from "./terrain.data";
+import { createTerrainPositions, type TerrainAlgorithm } from "./terrain.data";
 
 export const TerrainPointCloud = ({
   color,
@@ -23,16 +23,38 @@ export const TerrainPointCloud = ({
   );
 
   useEffect(() => {
+    let settled = false;
+    const fallbackTimer = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      setTargetPositions(
+        (current) =>
+          current ?? createTerrainPositions(seed, pointCount, algorithm)
+      );
+    }, 1_500);
     const worker = new Worker(new URL("./terrain.worker.ts", import.meta.url), {
       type: "module",
     });
 
     worker.onmessage = ({ data }: MessageEvent<ArrayBuffer>) => {
+      settled = true;
+      window.clearTimeout(fallbackTimer);
       setTargetPositions(new Float32Array(data));
+    };
+    worker.onerror = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(fallbackTimer);
+      setTargetPositions(
+        (current) =>
+          current ?? createTerrainPositions(seed, pointCount, algorithm)
+      );
     };
     worker.postMessage({ algorithm, pointCount, seed });
 
     return () => {
+      settled = true;
+      window.clearTimeout(fallbackTimer);
       worker.terminate();
       setTargetPositions(null);
     };
@@ -111,11 +133,12 @@ export const TerrainPointCloud = ({
   if (!geometry) return null;
 
   return (
-    <points geometry={geometry}>
+    <points frustumCulled={false} geometry={geometry} renderOrder={1}>
       <pointsMaterial
         color={color}
+        depthTest={false}
         depthWrite={false}
-        size={pointSize * 16}
+        size={Math.max(pointSize * 48, 2)}
         sizeAttenuation={false}
       />
     </points>
