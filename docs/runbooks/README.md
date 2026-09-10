@@ -50,8 +50,11 @@ step. Existing databases apply pending migrations in order. Each migration's
 SQL statements and its `PRAGMA user_version` update run in one transaction; a
 failure rolls back both. The browser migration lock prevents multiple tabs from
 running the same migration concurrently. A database at version `0` is treated
-as uninitialized: the OPFS database file is explicitly reset before the current
-bootstrap is applied. Table existence is not used to infer migration state.
+as a bootstrap candidate only when it contains no application tables. An empty
+database uses the current bootstrap export; a version-`0` database that already
+contains schema objects fails safely instead of deleting the OPFS file. Table
+existence is used only as a destructive-operation guard, never to infer a
+successful migration version.
 
 ### Startup sequence
 
@@ -67,8 +70,10 @@ On startup, local database initialization follows this sequence:
    the same database concurrently.
 3. Read SQLite `PRAGMA user_version`. This value is the only migration source
    of truth; table existence is not checked to infer the schema version.
-4. If the version is `0` and the target is newer, delete the OPFS database file
-   and bootstrap the complete current schema from `bootstrap.sql`.
+4. If the version is `0` and the target is newer, confirm that the database has
+   no application tables, then bootstrap the complete current schema from
+   `bootstrap.sql`. An existing schema with version `0` fails safely and is not
+   automatically deleted.
 5. If the version is between `0` and the target, apply each pending Drizzle SQL
    migration in order.
 6. For both bootstrap and incremental migration, execute schema statements,
@@ -84,8 +89,9 @@ The observable diagnostic phases are `worker-connection-pending`,
 `verifying`, `ready`, `failed`, and `disabled`. Worker-level diagnostics also
 report OPFS/SQLite initialization, nested-worker errors, and individual query
 failures. A failure must leave the database at its previous committed version;
-the next startup retries from that version. If a version-`0` database is
-encountered, the next startup deliberately rebuilds it from `bootstrap.sql`.
+the next startup retries from that version. An empty version-`0` database is
+bootstrapped from `bootstrap.sql`; a non-empty version-`0` database requires
+explicit investigation before any destructive recovery.
 
 ### Schema-change checklist
 

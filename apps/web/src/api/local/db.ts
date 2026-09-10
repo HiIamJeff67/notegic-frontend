@@ -379,13 +379,15 @@ type LocalDB = typeof drizzleDB & {
   download: () => Promise<File>;
 };
 
-// get the version from the local database using SQLite PRAGMA user_version,
-// return 0 if the database is not migrated yet, the migration version will be the prefix of the largest migration file name + 1
+// Get the version from the raw SQLite PRAGMA user_version result. Drizzle's
+// sqlite-proxy `get` returns the first row as an array for raw SQL.
 const getVersion = async (): Promise<number> => {
-  const result = await wrappedGet<{ user_version?: number }>(
-    `PRAGMA user_version`
-  );
-  return Math.max(0, Math.trunc(Number(result?.user_version ?? 0)));
+  const result = await wrappedGet<[number]>(`PRAGMA user_version`);
+  const version = result?.[0];
+  if (!Number.isInteger(version) || version < 0) {
+    throw new Error("Invalid local database user_version result.");
+  }
+  return version;
 };
 
 const verifyMigrationVersion = async (
@@ -429,7 +431,18 @@ const ensureMigrated = async (
           targetVersion,
           error: null,
         });
-        await recoverOPFSError(sqlocalDrizzle);
+        const tableCountResult = await wrappedGet<[number]>(
+          "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
+        );
+        const tableCount = tableCountResult?.[0];
+        if (!Number.isInteger(tableCount) || tableCount < 0) {
+          throw new Error("Invalid local database table count result.");
+        }
+        if (tableCount > 0) {
+          throw new Error(
+            "local database contains schema objects but has user_version 0; refusing destructive bootstrap."
+          );
+        }
         return await verifyMigrationVersion(
           await localDBMigrator.bootstrapCurrentSchema(
             currentLocalSchemaSql,
