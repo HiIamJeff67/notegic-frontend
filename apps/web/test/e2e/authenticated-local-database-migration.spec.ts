@@ -6,6 +6,10 @@ const testAccount = {
   password: "Test1234!",
 };
 
+const authenticatedE2EEnabled =
+  process.env.E2E_RUN_AUTHENTICATED === "true" &&
+  Boolean(process.env.VITE_API_DOMAIN_URL);
+
 let hasRegisteredTestAccount = false;
 
 const localDatabaseErrorPattern =
@@ -72,6 +76,10 @@ const deleteTestAccount = async (page: Page) => {
 test("forwards both auth cookies through the local SSR response", async ({
   page,
 }) => {
+  test.skip(
+    !authenticatedE2EEnabled,
+    "set E2E_RUN_AUTHENTICATED=true with VITE_API_DOMAIN_URL to run authenticated E2E"
+  );
   await page.goto("/login");
   await waitForClientHydration(page);
   await page.getByLabel("Account").fill(testAccount.name);
@@ -93,6 +101,13 @@ test("forwards both auth cookies through the local SSR response", async ({
 
 test.describe
   .serial("authenticated local database migration", () => {
+    test.beforeEach(() => {
+      test.skip(
+        !authenticatedE2EEnabled,
+        "set E2E_RUN_AUTHENTICATED=true with VITE_API_DOMAIN_URL to run authenticated E2E"
+      );
+    });
+
     test("registers the fixed test account", async ({ page }) => {
       await ensureTestAccountRegistered(page);
     });
