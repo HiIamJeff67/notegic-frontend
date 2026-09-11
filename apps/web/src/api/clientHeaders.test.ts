@@ -1,4 +1,5 @@
 import {
+  getClientCSRFToken,
   getClientMutationHeaders,
   getClientRequestHeaders,
 } from "@/api/clientHeaders";
@@ -65,6 +66,15 @@ test("reads only the current-session CSRF token", () => {
     userAgent: "test-agent",
     csrfToken: "current-token",
   });
+});
+
+test("returns the current-session CSRF token for browser API clients", () => {
+  SessionStorageManipulator.ensureItem(
+    SessionStorageKey.csrfToken,
+    "current-token"
+  );
+
+  expect(getClientCSRFToken()).toBe("current-token");
 });
 
 test("does not guess a token from arbitrary scoped storage", () => {

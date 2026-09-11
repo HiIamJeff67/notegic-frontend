@@ -1,9 +1,11 @@
 import { HttpLink } from "@apollo/client";
+import { SetContextLink } from "@apollo/client/link/context";
 import { ErrorLink } from "@apollo/client/link/error";
 import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
+import { getClientCSRFToken } from "@/api/clientHeaders";
 import { CurrentAPIBaseURL } from "@shared/api/url";
 
 export const createApolloClient = () => {
@@ -12,6 +14,17 @@ export const createApolloClient = () => {
   const httpLink = new HttpLink({
     uri: `${apiDomainURL}/${CurrentAPIBaseURL}/graphql/`,
     credentials: "include", // for including the cookies
+  });
+
+  const csrfLink = new SetContextLink(previousContext => {
+    const csrfToken = getClientCSRFToken();
+
+    return {
+      headers: {
+        ...previousContext.headers,
+        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+      },
+    };
   });
 
   const errorLink = new ErrorLink(({ error, forward, operation }) => {
@@ -173,7 +186,7 @@ export const createApolloClient = () => {
   });
 
   return new ApolloClient({
-    link: errorLink.concat(httpLink),
+    link: csrfLink.concat(errorLink).concat(httpLink),
     cache: cache,
   });
 };

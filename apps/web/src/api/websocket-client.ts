@@ -307,6 +307,9 @@ export class RealtimeClient {
       this.socket = socket;
 
       socket.onopen = () => {
+        logRealtimeClient("socket opened", {
+          reconnectAttempt: this.reconnectAttempt,
+        });
         this.options.onState?.("open");
       };
 
@@ -319,7 +322,21 @@ export class RealtimeClient {
         this.options.onError?.(event);
       };
 
-      socket.onclose = () => {
+      socket.onclose = event => {
+        const closeDetails = {
+          code: event.code,
+          reason: event.reason,
+          wasClean: event.wasClean,
+          reconnectAttempt: this.reconnectAttempt,
+        };
+        if (!event.wasClean || event.code !== 1000) {
+          console.warn(
+            "[RealtimeClient] socket closed unexpectedly",
+            closeDetails
+          );
+        } else {
+          logRealtimeClient("socket closed", closeDetails);
+        }
         if (this.socket === socket) this.socket = null;
         this.clearConnectorState();
         if (this.shouldReconnect) this.scheduleReconnect();
