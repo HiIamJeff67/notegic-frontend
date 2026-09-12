@@ -354,7 +354,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
           <div className="flex w-full items-center gap-1 px-1 py-1">
             <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1">
               <AvatarIcon
-                avatarURL=""
+                avatarURL={userManager.userData?.avatarURL || null}
                 fallbackText={
                   userManager.userData?.displayName ||
                   userManager.userData?.name ||
@@ -434,7 +434,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <MenubarMenu>
               <MenubarTrigger className="h-full my-1 flex flex-1 flex-row min-w-0 gap-2 bg-transparent hover:bg-transparent">
                 <AvatarIcon
-                  avatarURL=""
+                  avatarURL={userManager.userData?.avatarURL || null}
                   fallbackText={
                     userManager.userData?.displayName ||
                     userManager.userData?.name ||

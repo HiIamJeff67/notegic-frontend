@@ -1,4 +1,6 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import MaterialViewerFrame from "./MaterialViewerFrame";
 
@@ -11,18 +13,31 @@ const MaterialVideoViewerContent = ({
   meta,
   materialContentType,
 }: MaterialVideoViewerContentProps) => {
+  const { t } = useTranslation();
+  const [isVideoAvailable, setIsVideoAvailable] = useState(true);
+  const contentURL = meta.localContentURL ?? meta.downloadURL;
+
+  useEffect(() => {
+    setIsVideoAvailable(true);
+  }, [contentURL]);
+
   return (
     <MaterialViewerFrame
       meta={meta}
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
     >
-      {(meta.localContentURL ?? meta.downloadURL) && (
+      {contentURL && isVideoAvailable ? (
         <video
-          src={meta.localContentURL ?? meta.downloadURL ?? undefined}
+          src={contentURL}
           controls
           className="max-h-[70vh] w-full"
+          onError={() => setIsVideoAvailable(false)}
         />
+      ) : (
+        <div className="text-muted-foreground text-sm">
+          {t("workspace.viewer.noFile")}
+        </div>
       )}
     </MaterialViewerFrame>
   );

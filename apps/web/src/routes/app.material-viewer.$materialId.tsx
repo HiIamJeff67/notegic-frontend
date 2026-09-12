@@ -1,5 +1,9 @@
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyMaterialAndItsParentById } from "@/api/hooks/material.hook";
+import {
+  useCreateMaterialObjectTicket,
+  useGetMyMaterialAndItsParentById,
+  useResolveMaterialObjectTicket,
+} from "@/api/hooks/material.hook";
 import { isValidUUID } from "@shared/types/uuidv4.type";
 import {
   createFileRoute,
@@ -60,7 +64,10 @@ function MaterialViewerRoute() {
   });
 
   const materialQuerier = useGetMyMaterialAndItsParentById();
+  const createObjectTicketMutator = useCreateMaterialObjectTicket();
   const [materialMeta, setMaterialMeta] = useState<MaterialMeta | null>(null);
+  const [objectTicket, setObjectTicket] = useState<string | null>(null);
+  const objectURLQuery = useResolveMaterialObjectTicket(objectTicket);
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
 
@@ -95,12 +102,26 @@ function MaterialViewerRoute() {
           size: response.data.size,
           contentType: response.data.contentType,
           parseMediaType: response.data.parseMediaType,
-          downloadURL: response.data.downloadURL ?? null,
+          objectKey: response.data.objectKey,
+          downloadURL: null,
           path: (response.data.parentSubShelfPath ?? []) as UUID[],
           deletedAt: response.data.deletedAt,
           updatedAt: response.data.updatedAt,
           createdAt: response.data.createdAt,
         });
+
+        setObjectTicket(null);
+        try {
+          const ticketResponse = await createObjectTicketMutator.mutateAsync({
+            header: getClientRequestHeaders(navigator.userAgent),
+            body: { objectKey: response.data.objectKey },
+          });
+          if (isActive) {
+            setObjectTicket(ticketResponse.data.objectTicket);
+          }
+        } catch {
+          // Metadata remains available while the file is unavailable offline.
+        }
       } catch {
         if (!isActive) return;
         setIsNotFound(true);
@@ -117,10 +138,19 @@ function MaterialViewerRoute() {
       isActive = false;
     };
   }, [
+    createObjectTicketMutator,
     loaderData.materialId,
     loaderData.parentSubShelfId,
     loaderData.rootShelfId,
   ]);
+
+  useEffect(() => {
+    const objectURL = objectURLQuery.data?.data.objectURL;
+    if (!objectURL) return;
+    setMaterialMeta(current =>
+      current ? { ...current, downloadURL: objectURL } : current
+    );
+  }, [objectURLQuery.data?.data.objectURL]);
 
   if (isLoading) return <StrictLoadingCover />;
   if (isNotFound || !materialMeta)

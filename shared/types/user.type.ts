@@ -82,7 +82,7 @@ export const UserDataSchema = z.object({
   role: z.enum(UserRole),
   plan: z.enum(UserPlan),
   status: z.enum(UserStatus),
-  avatarURL: z.string().nullable(),
+  avatarURL: z.union([z.url(), z.literal("")]),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

@@ -9,6 +9,7 @@ export interface MaterialMeta {
   size: number;
   contentType: string;
   parseMediaType: string;
+  objectKey: string;
   downloadURL: string | null;
   localContentURL?: string | null;
   path: UUID[];
@@ -29,6 +30,7 @@ export const getDefaultMaterialMeta = (
   size: 0,
   contentType: "text/plain",
   parseMediaType: "",
+  objectKey: "",
   downloadURL: null,
   path: [],
   deletedAt: null,

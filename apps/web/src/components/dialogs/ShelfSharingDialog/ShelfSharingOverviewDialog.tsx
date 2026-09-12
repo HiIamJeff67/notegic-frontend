@@ -1,11 +1,7 @@
 import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
+import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -184,8 +180,8 @@ const ShelfSharingOverviewDialog = ({
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage
-                            src={row.avatarURL ?? undefined}
+                          <PublicAvatarImage
+                            avatarURL={row.avatarURL}
                             alt={row.displayName}
                           />
                           <AvatarFallback className="text-xs">

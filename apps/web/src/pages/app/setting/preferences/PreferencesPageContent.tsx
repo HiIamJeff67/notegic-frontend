@@ -1,4 +1,3 @@
-import { estimateMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
 import { LocalYjsDocumentStore } from "@shared/blockpack";
 import { AllLanguageData } from "@shared/constants";
 import {
@@ -19,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useTheme } from "@/hooks";
+import { useMaterialAttachmentCache, useTheme } from "@/hooks";
 import type { Density, EditorWidth } from "@/hooks/localPreferences";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
@@ -286,6 +285,7 @@ const OfflineSettings = () => {
     updatePreference,
   } = useLocalPreferences();
   const backgroundImages = useBackgroundImages();
+  const { estimate } = useMaterialAttachmentCache();
   const { activeBlockPackChannelCount } = useRealtime();
   const { getTerminalTransactionCount, clearTerminalTransactions } =
     useTransactionSynchronizer();
@@ -307,7 +307,7 @@ const OfflineSettings = () => {
       await Promise.all([
         backgroundImages.getCacheEstimate(),
         LocalYjsDocumentStore.estimate(userData?.publicId ?? null),
-        estimateMaterialAttachmentCache(),
+        estimate(),
       ]);
     setBackgroundCache({
       totalBytes: backgroundEstimate.totalBytes,
@@ -316,7 +316,12 @@ const OfflineSettings = () => {
     setYjsCache(yjsEstimate);
     setAttachmentCache(attachmentEstimate);
     setTerminalTransactionCount(await getTerminalTransactionCount());
-  }, [backgroundImages, getTerminalTransactionCount, userData?.publicId]);
+  }, [
+    backgroundImages,
+    estimate,
+    getTerminalTransactionCount,
+    userData?.publicId,
+  ]);
 
   useEffect(() => {
     void refreshCacheUsage();

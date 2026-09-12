@@ -1,5 +1,4 @@
 import { useApolloClient } from "@apollo/client/react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   SearchItemsDocument,
   SearchRootShelvesDocument,
@@ -8,10 +7,6 @@ import {
   RealtimePermission,
   RealtimePermissionSchema,
 } from "@shared/api/interfaces/enums";
-import {
-  mutationFnCreateMyBlockPackChannelTicket,
-  mutationFnCreateMyRealtimeConnectionTicket,
-} from "@/api/invokers/realtime.invoker";
 import { mergeRealtimeNotificationIntoCache } from "@shared/api/notificationCache";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -23,7 +18,6 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
-import { RealtimeClient } from "@/api/websocket-client";
 import { RealtimeYjsProvider } from "@shared/blockpack";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast";
@@ -38,6 +32,13 @@ import {
 } from "react";
 import * as Y from "yjs";
 import type { z } from "zod";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import {
+  mutationFnCreateMyBlockPackChannelTicket,
+  mutationFnCreateMyRealtimeConnectionTicket,
+} from "@/api/invokers/realtime.invoker";
+import { localDB } from "@/api/local/db";
+import { RealtimeClient } from "@/api/websocket-client";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
@@ -359,6 +360,11 @@ export const RealtimeProvider = ({
         return response.data;
       },
       onState: setRootState,
+      onAuthFailure: () => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("notegic:auth-required"));
+        }
+      },
       onReady: nextConnectionId => {
         setConnectionId(nextConnectionId);
       },
@@ -485,11 +491,13 @@ export const RealtimeProvider = ({
             try {
               const rejectedUpdate =
                 await channel.provider.snapshotLocalDocument();
-              await LocalYjsDocumentStore.saveRejectedDraft(
-                userData?.publicId ?? null,
-                channel.blockPackId,
-                rejectedUpdate
-              );
+              if (!localDB.isReadOnly) {
+                await LocalYjsDocumentStore.saveRejectedDraft(
+                  userData?.publicId ?? null,
+                  channel.blockPackId,
+                  rejectedUpdate
+                );
+              }
               rejectedDraftBlockPackIdsRef.current.add(channel.blockPackId);
               if (channelsRef.current.get(channel.blockPackId) !== channel) {
                 return;
@@ -701,11 +709,13 @@ export const RealtimeProvider = ({
         if (previousChannel.provider.hasUnconfirmedLocalChanges()) {
           const rejectedUpdate =
             await previousChannel.provider.snapshotLocalDocument();
-          await LocalYjsDocumentStore.saveRejectedDraft(
-            userData?.publicId ?? null,
-            blockPackId,
-            rejectedUpdate
-          );
+          if (!localDB.isReadOnly) {
+            await LocalYjsDocumentStore.saveRejectedDraft(
+              userData?.publicId ?? null,
+              blockPackId,
+              rejectedUpdate
+            );
+          }
           rejectedDraftBlockPackIdsRef.current.add(blockPackId);
           previousChannel.hasRejectedDraft = true;
         }

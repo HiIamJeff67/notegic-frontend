@@ -1,11 +1,5 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
-import { useLogout } from "@/api/hooks/auth.hook";
-import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
-import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
-import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
-import { clearMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
 import { WebURLPathDictionary } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
@@ -16,8 +10,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useLogout } from "@/api/hooks/auth.hook";
+import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
+import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
+import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
 import i18n from "@/i18n";
+import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 interface UserContextType {
   userData: UserData | null;
@@ -72,6 +72,53 @@ export const UserProvider = ({
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
   const hasAttemptedInitialUserDataFetchRef = useRef(false);
 
+  const logout = useCallback(async () => {
+    if (logoutInFlightRef.current) {
+      await logoutInFlightRef.current;
+      return;
+    }
+
+    const task = (async () => {
+      setUserData(null);
+      setUser(null);
+      setUserInfo(null);
+      setUserAccount(null);
+
+      const userAgent = navigator.userAgent;
+      try {
+        if (isOnline) {
+          await logoutMutator.mutateAsync({
+            header: getClientRequestHeaders(userAgent),
+          });
+        }
+      } finally {
+        await clearMaterialAttachmentCache();
+      }
+    })();
+
+    logoutInFlightRef.current = task;
+    try {
+      await task;
+    } finally {
+      logoutInFlightRef.current = null;
+    }
+  }, [isOnline, logoutMutator]);
+
+  const expireSession = useCallback(async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("failed to notify the server about session expiry", error);
+    } finally {
+      if (
+        !router.isSamePath(router.getCurrentPath(), WebURLPathDictionary.home)
+      ) {
+        toast.error(i18n.t("workspace.notifications.sessionExpired"));
+        router.push(WebURLPathDictionary.auth.login);
+      }
+    }
+  }, [logout, router]);
+
   const fetchUserData = useCallback(
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
@@ -109,15 +156,10 @@ export const UserProvider = ({
         !(error instanceof NotegicAPIError) ||
         error.unWrap.reason !== FetchClientExceptions.NetworkRequired().reason
       ) {
-        if (
-          !router.isSamePath(router.getCurrentPath(), WebURLPathDictionary.home)
-        ) {
-          toast.error(i18n.t("workspace.notifications.sessionExpired"));
-          router.push(WebURLPathDictionary.auth.login);
-        }
+        void expireSession();
       }
     });
-  }, [autoFetchUserData, fetchUserData, router, userData]);
+  }, [autoFetchUserData, expireSession, fetchUserData, userData]);
 
   const updateUserData = (fields: Partial<UserData>): boolean => {
     if (!isOnline) return false;
@@ -146,20 +188,12 @@ export const UserProvider = ({
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
-            if (
-              !router.isSamePath(
-                router.getCurrentPath(),
-                WebURLPathDictionary.home
-              )
-            ) {
-              toast.error(i18n.t("workspace.notifications.sessionExpired"));
-              router.push(WebURLPathDictionary.auth.login);
-            }
+            await expireSession();
           }
           return;
         }
       }),
-    [router, loadingManager]
+    [expireSession, getMeQuerier, isOnline, loadingManager]
   );
 
   const updateUser = (fields: Partial<User>): boolean => {
@@ -189,20 +223,12 @@ export const UserProvider = ({
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
-            if (
-              !router.isSamePath(
-                router.getCurrentPath(),
-                WebURLPathDictionary.home
-              )
-            ) {
-              toast.error(i18n.t("workspace.notifications.sessionExpired"));
-              router.push(WebURLPathDictionary.auth.login);
-            }
+            await expireSession();
           }
           return;
         }
       }),
-    [router, loadingManager]
+    [expireSession, getMyInfoQuerier, isOnline, loadingManager]
   );
 
   const updateUserInfo = (fields: Partial<UserInfo>): boolean => {
@@ -232,20 +258,12 @@ export const UserProvider = ({
             error.unWrap.reason !==
               FetchClientExceptions.NetworkRequired().reason
           ) {
-            if (
-              !router.isSamePath(
-                router.getCurrentPath(),
-                WebURLPathDictionary.home
-              )
-            ) {
-              toast.error(i18n.t("workspace.notifications.sessionExpired"));
-              router.push(WebURLPathDictionary.auth.login);
-            }
+            await expireSession();
           }
           return;
         }
       }),
-    [router, loadingManager]
+    [expireSession, getMyAccountQuerier, isOnline, loadingManager]
   );
 
   const updateUserAccount = (fields: Partial<UserAccount>): boolean => {
@@ -255,38 +273,22 @@ export const UserProvider = ({
     return userAccount !== null;
   };
 
-  const logout = useCallback(async () => {
-    if (logoutInFlightRef.current) {
-      await logoutInFlightRef.current;
-      return;
-    }
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-    // to make sure the logout procedure is only done once
-    const task = (async () => {
-      setUserData(null);
-      setUser(null);
-      setUserInfo(null);
-      setUserAccount(null);
-
-      const userAgent = navigator.userAgent;
-      try {
-        if (isOnline) {
-          await logoutMutator.mutateAsync({
-            header: getClientRequestHeaders(userAgent),
-          });
-        }
-      } finally {
-        await clearMaterialAttachmentCache();
-      }
-    })();
-
-    logoutInFlightRef.current = task;
-    try {
-      await task;
-    } finally {
-      logoutInFlightRef.current = null;
-    }
-  }, [isOnline, logoutMutator]);
+    const handleAuthenticationRequired = () => {
+      void expireSession();
+    };
+    window.addEventListener(
+      "notegic:auth-required",
+      handleAuthenticationRequired
+    );
+    return () =>
+      window.removeEventListener(
+        "notegic:auth-required",
+        handleAuthenticationRequired
+      );
+  }, [expireSession]);
 
   const contextValue: UserContextType = {
     userData: userData,

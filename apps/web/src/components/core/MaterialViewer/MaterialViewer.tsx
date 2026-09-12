@@ -1,15 +1,11 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import {
-  loadMaterialAttachment,
-  saveMaterialAttachment,
-} from "@/api/local/material-attachment.cache";
-import { Suspense, useEffect, useMemo, useReducer, useState } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import { useLocalPreferences, useShelfItem } from "@/hooks";
-import {
   MaterialMeta,
   materialMetaReducer,
 } from "@shared/reducers/materialMeta.reducer";
+import { Suspense, useEffect, useMemo, useReducer } from "react";
+import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import { useShelfItem } from "@/hooks";
 import MaterialAudioViewerContent from "./MaterialAudioViewerContent";
 import MaterialImageViewerContent from "./MaterialImageViewerContent";
 import MaterialPDFViewerContent from "./MaterialPDFViewerContent";
@@ -23,56 +19,11 @@ interface MaterialViewerProps {
 
 const MaterialViewer = ({ materialMeta }: MaterialViewerProps) => {
   const shelfItemManager = useShelfItem();
-  const { preferences } = useLocalPreferences();
-
   const [meta, dispatchMeta] = useReducer(materialMetaReducer, materialMeta);
-  const [localContentURL, setLocalContentURL] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isActive = true;
-    let objectURL: string | null = null;
-
-    if (!preferences.cacheAttachments || !meta.downloadURL) {
-      setLocalContentURL(null);
-      return;
-    }
-
-    void (async () => {
-      try {
-        const cachedContent = await loadMaterialAttachment(
-          meta.id,
-          meta.updatedAt
-        );
-        let content = cachedContent;
-        if (!content) {
-          const response = await fetch(meta.downloadURL as string);
-          if (!response.ok) {
-            throw new Error("Failed to fetch material content.");
-          }
-          content = await response.blob();
-          await saveMaterialAttachment(meta.id, meta.updatedAt, content);
-        }
-
-        objectURL = URL.createObjectURL(content);
-        if (!isActive) {
-          URL.revokeObjectURL(objectURL);
-          return;
-        }
-        setLocalContentURL(objectURL);
-      } catch {
-        if (isActive) setLocalContentURL(null);
-      }
-    })();
-
-    return () => {
-      isActive = false;
-      if (objectURL) URL.revokeObjectURL(objectURL);
-    };
-  }, [meta.downloadURL, meta.id, meta.updatedAt, preferences.cacheAttachments]);
 
   const viewerMeta = useMemo(
-    () => ({ ...meta, localContentURL }),
-    [localContentURL, meta]
+    () => ({ ...meta, localContentURL: null }),
+    [meta]
   );
 
   const materialContentType = useMemo(() => {

@@ -25,13 +25,13 @@ import AddShelfCollaboratorDialog, {
 import ShelfSharingOverviewDialog, {
   type ShelfSharingOverviewRow,
 } from "@/components/dialogs/ShelfSharingDialog/ShelfSharingOverviewDialog";
+import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import {
   Avatar,
   AvatarBadge,
   AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
-  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -530,8 +530,8 @@ const BlockPackParticipantsDropdown = ({
                     )?.avatarURL ?? null;
                   return (
                     <Avatar key={participant.userPublicId} size="default">
-                      <AvatarImage
-                        src={avatarURL ?? undefined}
+                      <PublicAvatarImage
+                        avatarURL={avatarURL}
                         alt={displayName}
                       />
                       <AvatarFallback className="text-[10px]">
@@ -616,8 +616,8 @@ const BlockPackParticipantsDropdown = ({
                     className="flex items-center gap-3 rounded-md px-2 py-2"
                   >
                     <Avatar>
-                      <AvatarImage
-                        src={avatarURL ?? undefined}
+                      <PublicAvatarImage
+                        avatarURL={avatarURL}
                         alt={displayName}
                       />
                       <AvatarFallback className="text-xs">

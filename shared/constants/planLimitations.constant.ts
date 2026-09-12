@@ -4,7 +4,6 @@ export type PlanLimitation = {
   maxRootShelfCount: number;
   maxBlockPackCount: number;
   maxBlockCount: number;
-  maxSyncBlockCount: number;
   maxMaterialCount: number;
   maxWorkflowCount: number;
   maxAdditionalItemCount: number;
@@ -17,6 +16,7 @@ export type PlanLimitation = {
   maxRoutineCountPerStation: number;
   maxRoutineTaskCostUnitCount: number;
   maxRoutineTaskAttempts: number;
+  maxRealtimeRoomSubscriberCount: number;
 };
 
 export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
@@ -24,7 +24,6 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRootShelfCount: 10,
     maxBlockPackCount: 20,
     maxBlockCount: 1000,
-    maxSyncBlockCount: 10,
     maxMaterialCount: 10,
     maxWorkflowCount: 2,
     maxAdditionalItemCount: 5,
@@ -37,12 +36,12 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRoutineCountPerStation: 20,
     maxRoutineTaskCostUnitCount: 100,
     maxRoutineTaskAttempts: 3,
+    maxRealtimeRoomSubscriberCount: 5,
   },
   [UserPlan.Pro]: {
     maxRootShelfCount: 50,
     maxBlockPackCount: 100,
     maxBlockCount: 5000,
-    maxSyncBlockCount: 50,
     maxMaterialCount: 50,
     maxWorkflowCount: 10,
     maxAdditionalItemCount: 50,
@@ -55,12 +54,12 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRoutineCountPerStation: 50,
     maxRoutineTaskCostUnitCount: 300,
     maxRoutineTaskAttempts: 10,
+    maxRealtimeRoomSubscriberCount: 15,
   },
   [UserPlan.Premium]: {
     maxRootShelfCount: 150,
     maxBlockPackCount: 300,
     maxBlockCount: 15000,
-    maxSyncBlockCount: 150,
     maxMaterialCount: 150,
     maxWorkflowCount: 30,
     maxAdditionalItemCount: 150,
@@ -73,12 +72,12 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRoutineCountPerStation: 100,
     maxRoutineTaskCostUnitCount: 600,
     maxRoutineTaskAttempts: 10,
+    maxRealtimeRoomSubscriberCount: 30,
   },
   [UserPlan.Ultimate]: {
     maxRootShelfCount: 300,
     maxBlockPackCount: 200,
     maxBlockCount: 30000,
-    maxSyncBlockCount: 300,
     maxMaterialCount: 300,
     maxWorkflowCount: 60,
     maxAdditionalItemCount: 300,
@@ -91,12 +90,12 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRoutineCountPerStation: 300,
     maxRoutineTaskCostUnitCount: 1200,
     maxRoutineTaskAttempts: 20,
+    maxRealtimeRoomSubscriberCount: 60,
   },
   [UserPlan.Enterprise]: {
     maxRootShelfCount: 1000,
     maxBlockPackCount: 2000,
     maxBlockCount: 100000,
-    maxSyncBlockCount: 1000,
     maxMaterialCount: 1000,
     maxWorkflowCount: 100,
     maxAdditionalItemCount: 1000,
@@ -109,5 +108,6 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxRoutineCountPerStation: 500,
     maxRoutineTaskCostUnitCount: 6000,
     maxRoutineTaskAttempts: 20,
+    maxRealtimeRoomSubscriberCount: 250,
   },
 };

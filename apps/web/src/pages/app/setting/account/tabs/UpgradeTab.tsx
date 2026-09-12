@@ -37,6 +37,29 @@ type PlanOption = {
   limitations: PlanLimitation;
 };
 
+type LimitationLabelKey =
+  | "settingsPage.account.upgrade.rootShelves"
+  | "settingsPage.account.upgrade.blockPacks"
+  | "settingsPage.account.upgrade.blocks"
+  | "settingsPage.account.upgrade.materials"
+  | "settingsPage.account.upgrade.workflows"
+  | "settingsPage.account.upgrade.additionalItems"
+  | "settingsPage.account.upgrade.subShelvesPerRootShelf"
+  | "settingsPage.account.upgrade.itemsPerRootShelf"
+  | "settingsPage.account.upgrade.blocksPerBlockPack"
+  | "settingsPage.account.upgrade.materialSize"
+  | "settingsPage.account.upgrade.stations"
+  | "settingsPage.account.upgrade.routineTags"
+  | "settingsPage.account.upgrade.routinesPerStation"
+  | "settingsPage.account.upgrade.taskCostUnits"
+  | "settingsPage.account.upgrade.taskAttempts"
+  | "settingsPage.account.upgrade.realtimeRoomSubscribers";
+
+type LimitationDefinition = {
+  key: keyof PlanLimitation;
+  labelKey: LimitationLabelKey;
+};
+
 const planOptions: PlanOption[] = [
   {
     plan: UserPlan.Free,
@@ -80,11 +103,85 @@ const planOptions: PlanOption[] = [
   },
 ];
 
+const limitationDefinitions: LimitationDefinition[] = [
+  {
+    key: "maxRootShelfCount",
+    labelKey: "settingsPage.account.upgrade.rootShelves",
+  },
+  {
+    key: "maxBlockPackCount",
+    labelKey: "settingsPage.account.upgrade.blockPacks",
+  },
+  { key: "maxBlockCount", labelKey: "settingsPage.account.upgrade.blocks" },
+  {
+    key: "maxMaterialCount",
+    labelKey: "settingsPage.account.upgrade.materials",
+  },
+  {
+    key: "maxWorkflowCount",
+    labelKey: "settingsPage.account.upgrade.workflows",
+  },
+  {
+    key: "maxAdditionalItemCount",
+    labelKey: "settingsPage.account.upgrade.additionalItems",
+  },
+  {
+    key: "maxSubShelfCountPerRootShelf",
+    labelKey: "settingsPage.account.upgrade.subShelvesPerRootShelf",
+  },
+  {
+    key: "maxItemCountPerRootShelf",
+    labelKey: "settingsPage.account.upgrade.itemsPerRootShelf",
+  },
+  {
+    key: "maxBlockCountPerBlockPack",
+    labelKey: "settingsPage.account.upgrade.blocksPerBlockPack",
+  },
+  {
+    key: "maxMaterialSize",
+    labelKey: "settingsPage.account.upgrade.materialSize",
+  },
+  {
+    key: "maxStationCount",
+    labelKey: "settingsPage.account.upgrade.stations",
+  },
+  {
+    key: "maxRoutineTagCount",
+    labelKey: "settingsPage.account.upgrade.routineTags",
+  },
+  {
+    key: "maxRoutineCountPerStation",
+    labelKey: "settingsPage.account.upgrade.routinesPerStation",
+  },
+  {
+    key: "maxRoutineTaskCostUnitCount",
+    labelKey: "settingsPage.account.upgrade.taskCostUnits",
+  },
+  {
+    key: "maxRoutineTaskAttempts",
+    labelKey: "settingsPage.account.upgrade.taskAttempts",
+  },
+  {
+    key: "maxRealtimeRoomSubscriberCount",
+    labelKey: "settingsPage.account.upgrade.realtimeRoomSubscribers",
+  },
+];
+
 const formatBytes = (bytes: number) => {
   if (bytes >= 1024 * 1024 * 1024) {
     return `${Math.round(bytes / 1024 / 1024 / 1024)} GB`;
   }
   return `${Math.round(bytes / 1024 / 1024)} MB`;
+};
+
+const formatLimitation = (
+  key: keyof PlanLimitation,
+  value: number,
+  locale: string
+) => {
+  if (key === "maxMaterialSize") return formatBytes(value);
+
+  return value.toLocaleString(locale);
 };
 
 interface UpgradeTabProps {
@@ -111,7 +208,7 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
       }
     >
       <div className="flex w-full flex-col gap-5">
-        <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))] gap-4">
+        <section>
           <div className="relative overflow-hidden rounded-md border border-border bg-background/45 p-5 shadow-inner">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent" />
             <div className="pr-28">
@@ -163,79 +260,70 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
                 );
               })}
             </div>
-          </div>
 
-          <div className="rounded-md border border-primary/30 bg-primary/5 p-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-              <ShieldCheckIcon className="size-4" />
-              {t("settingsPage.account.upgrade.betaTitle")}
-            </div>
-            <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-              {t("settingsPage.account.upgrade.betaDescription")}
-            </p>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden rounded-md">
-          <div className="pointer-events-none grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-3 blur-[2px] select-none">
-            {planOptions.map(option => {
-              const active = currentPlan === option.plan;
-
-              return (
-                <div
-                  key={option.plan}
-                  className={`flex min-h-[210px] flex-col justify-between rounded-md border p-4 ${option.tone}`}
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="text-lg font-semibold">
-                          {t(option.labelKey)}
-                        </div>
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {t(option.noteKey)}
-                        </div>
-                      </div>
-                      {active && (
-                        <span className="rounded-sm border border-border bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
-                          {t("settingsPage.account.upgrade.active")}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-4 min-h-10 text-xs text-muted-foreground">
-                      {t(option.bestForKey)}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 space-y-2">
-                    {[
-                      `${option.limitations.maxRootShelfCount.toLocaleString(i18n.resolvedLanguage)} ${t("settingsPage.account.upgrade.rootShelves")}`,
-                      `${option.limitations.maxBlockCount.toLocaleString(i18n.resolvedLanguage)} ${t("settingsPage.account.upgrade.blocks")}`,
-                      `${formatBytes(option.limitations.maxMaterialSize)} ${t("settingsPage.account.upgrade.materialSize")}`,
-                    ].map(highlight => (
-                      <div
-                        key={highlight}
-                        className="flex items-center gap-2 text-xs text-muted-foreground"
-                      >
-                        <CheckIcon className="size-3.5 text-primary" />
-                        <span>{highlight}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center bg-background/35 p-6 text-center backdrop-blur-[1px]">
-            <div className="max-w-sm rounded-md border border-primary/30 bg-background/90 p-5 shadow-lg">
-              <div className="text-sm font-semibold">
-                {t("settingsPage.account.upgrade.plansPausedTitle")}
+            <div className="mt-5 rounded-sm border border-primary/25 bg-primary/5 p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ShieldCheckIcon className="size-4 text-primary" />
+                {t("settingsPage.account.upgrade.betaEntitlementTitle")}
               </div>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {t("settingsPage.account.upgrade.plansPausedDescription")}
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {t("settingsPage.account.upgrade.betaEntitlementDescription")}
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-3">
+          {planOptions.map(option => {
+            const active = currentPlan === option.plan;
+
+            return (
+              <div
+                key={option.plan}
+                className={`flex min-h-[210px] flex-col justify-between rounded-md border p-4 ${option.tone}`}
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-lg font-semibold">
+                        {t(option.labelKey)}
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {t(option.noteKey)}
+                      </div>
+                    </div>
+                    {active && (
+                      <span className="rounded-sm border border-border bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                        {t("settingsPage.account.upgrade.active")}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-4 min-h-10 text-xs text-muted-foreground">
+                    {t(option.bestForKey)}
+                  </p>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border pt-4">
+                  {limitationDefinitions.map(({ key, labelKey }) => (
+                    <div
+                      key={key}
+                      className="flex items-center gap-2 text-xs text-muted-foreground"
+                    >
+                      <CheckIcon className="size-3.5 text-primary" />
+                      <span>
+                        {formatLimitation(
+                          key,
+                          option.limitations[key],
+                          i18n.resolvedLanguage ?? i18n.language
+                        )}{" "}
+                        {t(labelKey)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </section>
 
         <section className="flex flex-col items-start justify-between gap-4 rounded-md border border-border bg-background/45 p-5 sm:flex-row sm:items-center">

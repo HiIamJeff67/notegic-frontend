@@ -1,8 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
 import { format } from "date-fns";
@@ -10,6 +9,10 @@ import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
+import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
+import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -49,7 +52,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useLoading } from "@/hooks";
 import { useUser } from "@/hooks/useUser";
-import { translateError } from "@shared/i18n/error";
 
 interface ProfileTabProps {
   layout?: "panel" | "page";
@@ -67,6 +69,74 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   const [editingImageField, setEditingImageField] =
     useState<ProfileImageField | null>(null);
   const [editingImageURL, setEditingImageURL] = useState("");
+  const [uploadImageDialogOpen, setUploadImageDialogOpen] = useState(false);
+  const [cropImageDialogOpen, setCropImageDialogOpen] = useState(false);
+  const [imageForCrop, setImageForCrop] = useState<{
+    field: ProfileImageField;
+    url: string;
+    revoke: () => void;
+  } | null>(null);
+
+  const clearImageForCrop = useCallback(() => {
+    imageForCrop?.revoke();
+    setImageForCrop(null);
+    setCropImageDialogOpen(false);
+  }, [imageForCrop]);
+
+  const uploadProfileImage = useCallback(
+    async (field: ProfileImageField, croppedBlob: Blob): Promise<void> => {
+      const fileName =
+        field === "avatarURL" ? "avatar.png" : "cover-background.png";
+      const file = new File([croppedBlob], fileName, {
+        type: croppedBlob.type || "image/png",
+      });
+
+      await updateUserInfoMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: {
+          values: {},
+          setNull: {},
+          ...(field === "avatarURL"
+            ? { avatarFile: file }
+            : { coverBackgroundFile: file }),
+        },
+      });
+      await userManager.fetchUserInfo();
+      toast.success(t("settingsPage.account.messages.profileUpdated"));
+    },
+    [t, updateUserInfoMutator, userManager]
+  );
+
+  const handleProfileImageUpload = useCallback(
+    async (files: File[]): Promise<void> => {
+      const file = files[0];
+      if (!file || !editingImageField) return;
+
+      clearImageForCrop();
+      const url = URL.createObjectURL(file);
+      setImageForCrop({
+        field: editingImageField,
+        url,
+        revoke: () => URL.revokeObjectURL(url),
+      });
+      setCropImageDialogOpen(true);
+    },
+    [clearImageForCrop, editingImageField]
+  );
+
+  const handleProfileImageCropComplete = useCallback(
+    async (croppedBlob: Blob): Promise<void> => {
+      if (!imageForCrop) return;
+
+      try {
+        await uploadProfileImage(imageForCrop.field, croppedBlob);
+        clearImageForCrop();
+      } catch (error) {
+        toast.error(translateError(error, t));
+      }
+    },
+    [clearImageForCrop, imageForCrop, t, uploadProfileImage]
+  );
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -86,8 +156,8 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
     userInfoForm.reset(userManager.userInfo ?? FakeUserInfo);
   }, [userManager, userInfoForm]);
 
-  const coverBackgroundURL = userInfoForm.watch("coverBackgroundURL");
   const avatarURL = userInfoForm.watch("avatarURL");
+  const coverBackgroundURL = userInfoForm.watch("coverBackgroundURL");
 
   const backgroundStyle = useMemo(
     () => ({
@@ -139,8 +209,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
             header: getClientRequestHeaders(userAgent),
             body: {
               values: {
-                avatarURL: userInfo.avatarURL,
-                coverBackgroundURL: userInfo.coverBackgroundURL,
                 header: userInfo.header,
                 introduction: userInfo.introduction,
                 gender: userInfo.gender,
@@ -148,8 +216,8 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 birthDate: userInfo.birthDate,
               },
               setNull: {
-                avatarURL: userInfo.avatarURL === null,
-                coverBackgroundURL: userInfo.coverBackgroundURL === null,
+                avatarObjectKey: userInfo.avatarURL === null,
+                coverBackgroundObjectKey: userInfo.coverBackgroundURL === null,
                 header: userInfo.header === null,
                 introduction: userInfo.introduction === null,
                 gender: userInfo.gender === null,
@@ -159,12 +227,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
             },
           });
 
-          userManager.updateUserData({
-            ...(userInfo.avatarURL !== undefined && {
-              avatarURL: userInfo.avatarURL,
-            }),
-          });
-          userManager.updateUserInfo(userInfo);
+          await userManager.fetchUserInfo();
           toast.success(t("settingsPage.account.messages.profileUpdated"));
         } catch (error) {
           toast.error(translateError(error, t));
@@ -225,7 +288,11 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
           <Dialog
             open={editingImageField !== null}
             onOpenChange={open => {
-              if (!open) setEditingImageField(null);
+              if (!open) {
+                setEditingImageField(null);
+                setUploadImageDialogOpen(false);
+                clearImageForCrop();
+              }
             }}
           >
             <DialogContent>
@@ -245,6 +312,31 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 onChange={event => setEditingImageURL(event.target.value)}
                 placeholder="https://example.com/image.png"
               />
+              <UploadImageDialog
+                open={uploadImageDialogOpen}
+                onOpenChange={setUploadImageDialogOpen}
+                maxCount={1}
+                title={
+                  editingImageField === "avatarURL"
+                    ? t("settingsPage.account.personal.changeAvatarTitle")
+                    : t("settingsPage.account.personal.changeCoverTitle")
+                }
+                onUpload={handleProfileImageUpload}
+                onCancel={() => setUploadImageDialogOpen(false)}
+              />
+              {imageForCrop !== null && (
+                <CropImageDialog
+                  open={cropImageDialogOpen}
+                  onOpenChange={open => {
+                    setCropImageDialogOpen(open);
+                    if (!open) clearImageForCrop();
+                  }}
+                  imageURL={imageForCrop.url}
+                  aspectRatio={imageForCrop.field === "avatarURL" ? 1 : 3}
+                  onComplete={handleProfileImageCropComplete}
+                  onCancel={clearImageForCrop}
+                />
+              )}
               <div className="flex justify-between gap-2">
                 <Button
                   variant="ghost"
@@ -263,6 +355,13 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 </Button>
                 <Button
                   type="button"
+                  variant="secondary"
+                  onClick={() => setUploadImageDialogOpen(true)}
+                >
+                  {t("workspace.dialogs.upload")}
+                </Button>
+                <Button
+                  type="button"
                   onClick={() => {
                     const imageURL = editingImageURL.trim();
 
@@ -277,15 +376,12 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                       }
                     }
 
-                    if (editingImageField) {
-                      userInfoForm.setValue(
-                        editingImageField,
-                        imageURL || null,
-                        {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        }
-                      );
+                    if (!editingImageField) return;
+                    if (!imageURL) {
+                      userInfoForm.setValue(editingImageField, null, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
                     }
                     setEditingImageField(null);
                   }}
