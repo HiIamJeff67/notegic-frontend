@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMySettingRequest,
@@ -9,7 +8,9 @@ import {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader } from "@tanstack/react-start/server";
+import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
+import { getRetryAt } from "@/api/retry";
 
 const requestUpstream = async (
   request: GetMySettingRequest | UpdateMySettingRequest,
@@ -32,9 +33,15 @@ const requestUpstream = async (
       },
       ...(method === "PUT" ? { body: JSON.stringify(request.body) } : {}),
       credentials: "include",
+      signal: getRequest().signal,
     }
   );
 
+  if (response.status === 429) {
+    return {
+      rateLimitedUntil: getRetryAt(response.headers.get("Retry-After")),
+    };
+  }
   if (!isJsonResponse(response)) throw new Error("error.encounterUnknownError");
   forwardUpstreamSetCookies(response);
   const formattedResponse = await response.json();
@@ -50,12 +57,16 @@ export const GetMySetting = createServerFn({ method: "GET" })
   .inputValidator((data: GetMySettingRequest) => data)
   .handler(
     async ({ data }) =>
-      (await requestUpstream(data, "GET")) as GetMySettingResponse
+      (await requestUpstream(data, "GET")) as
+        | GetMySettingResponse
+        | { rateLimitedUntil: number }
   );
 
 export const UpdateMySetting = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMySettingRequest) => data)
   .handler(
     async ({ data }) =>
-      (await requestUpstream(data, "PUT")) as UpdateMySettingResponse
+      (await requestUpstream(data, "PUT")) as
+        | UpdateMySettingResponse
+        | { rateLimitedUntil: number }
   );

@@ -17,7 +17,11 @@ typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 | `npm run build:web:cloudflare` | Build the Web application with Nitro's Cloudflare Workers preset |
 | `npm run deploy:web:cloudflare` | Build and deploy the Web Worker with Wrangler |
 | `npm run typecheck` | Typecheck the Web workspace |
-| `npm run test` | Run Jest tests |
+| `npm run test` | Local gate: format, lint, typecheck, codegen drift, Jest, development browser E2E |
+| `npm run test:unit -- <path>` | Run targeted Jest tests (serially) |
+| `npm run test:e2e` | Run all local browser E2E tests against the development server |
+| `npm run test:environment` | Run only environment-parity browser smoke tests |
+| `npm run test:security` | Audit production dependencies against the npm advisory database |
 | `npm run format:all` | Run Biome formatting/checking with write enabled |
 | `npm run format:check` | Check formatting without changing files |
 | `npm run lint` | Run Biome lint checks |
@@ -106,7 +110,7 @@ When changing the local schema:
    and refresh the complete bootstrap export.
 3. Review the generated SQL, migration journal, and bootstrap diff. Do not
    rewrite or delete an incremental migration that has shipped.
-4. Run `npm test -- --runInBand apps/web/src/api/local/migrator.test.ts`,
+4. Run `npm run test:unit -- apps/web/src/api/local/migrator.test.ts`,
    `npm run typecheck`, and `npm run lint`.
 5. Test an existing database upgrade and a fresh database bootstrap before
    deployment.

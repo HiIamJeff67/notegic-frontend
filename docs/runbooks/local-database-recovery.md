@@ -65,7 +65,7 @@ startup must reach schema verification and resynchronization before `ready`.
 Run the following from the repository root:
 
 ```bash
-npm test -- --runInBand apps/web/src/api/local/recovery.test.ts apps/web/src/api/local/migrator.test.ts apps/web/src/api/local/cleanup.test.ts
+npm run test:unit -- apps/web/src/api/local/recovery.test.ts apps/web/src/api/local/migrator.test.ts apps/web/src/api/local/cleanup.test.ts
 npm run typecheck
 npx playwright install chromium
 npm run test:e2e -- apps/web/test/e2e/local-database-startup.spec.ts

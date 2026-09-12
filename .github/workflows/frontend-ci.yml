@@ -3,9 +3,7 @@ name: Notegic Frontend CI
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - "refactor/**"
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -16,56 +14,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Frontend quality (${{ matrix.gate }})
+  environment:
+    name: Frontend environment parity
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        gate:
-          - format
-          - lint
-          - typecheck (@notegic/web + shared)
-          - tests
-          - codegen (shared/api/graphql)
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Run quality gate
-        env:
-          GATE: ${{ matrix.gate }}
-        run: |
-          case "$GATE" in
-            format) npm run format:check ;;
-            lint) npm run lint ;;
-            "typecheck (@notegic/web + shared)") npm run typecheck ;;
-            tests) npm test -- --runInBand ;;
-            "codegen (shared/api/graphql)") npm run codegen:check ;;
-            *) echo "Unknown quality gate: $GATE" >&2; exit 1 ;;
-          esac
-
-  web-build:
-    name: Web build (Node + Cloudflare Workers)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Build Web SSR output
-        run: npm run build:web
-      - name: Build Web Cloudflare Workers output
-        run: npm run build:web:cloudflare
-
-  e2e:
-    name: Web public navigation E2E
-    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VITE_APP_BASE_PATH: /
+      E2E_RUN_AUTHENTICATED: "false"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -74,19 +29,14 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run public navigation tests
-        run: npm run test:e2e
-
-  security:
-    name: Frontend dependency audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        run: npx playwright install --with-deps chromium --only-shell
+      - name: Runtime smoke tests against development server
+        run: npm run test:environment
+      - name: Build Web SSR output
+        run: npm run build:web
+      - name: Runtime smoke tests against production SSR output
+        env:
+          E2E_PRODUCTION: "true"
+        run: npm run test:environment
+      - name: Build Web Cloudflare Workers output
+        run: npm run build:web:cloudflare

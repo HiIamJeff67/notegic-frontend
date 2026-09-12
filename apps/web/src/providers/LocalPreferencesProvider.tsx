@@ -280,18 +280,27 @@ export const LocalPreferencesProvider = ({
     preferences.tactileFeedback,
   ]);
 
-  const updatePreference: UpdatePreference = (key, value) => {
-    setPreferences(prev => ({
-      ...prev,
-      [key]: value,
-    }));
+  const updatePreference: UpdatePreference = React.useCallback((key, value) => {
+    setPreferences(prev =>
+      Object.is(prev[key], value)
+        ? prev
+        : {
+            ...prev,
+            [key]: value,
+          }
+    );
     preferenceChangeListeners.current.forEach(listener => listener(key, value));
-  };
+  }, []);
 
-  const subscribePreferenceChanges = (listener: PreferenceChangeListener) => {
-    preferenceChangeListeners.current.add(listener);
-    return () => preferenceChangeListeners.current.delete(listener);
-  };
+  const subscribePreferenceChanges = React.useCallback(
+    (listener: PreferenceChangeListener) => {
+      preferenceChangeListeners.current.add(listener);
+      return () => {
+        preferenceChangeListeners.current.delete(listener);
+      };
+    },
+    []
+  );
 
   const resetPreferences = () => {
     setPreferences(defaultLocalPreferences);

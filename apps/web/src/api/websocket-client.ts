@@ -65,6 +65,10 @@ const logRealtimeClient = (message: string, data?: Record<string, unknown>) => {
   }
 };
 
+const MAX_REALTIME_RECONNECT_ATTEMPTS = 5;
+const REALTIME_RECONNECT_BASE_DELAY_MS = 1_000;
+const REALTIME_RECONNECT_MAX_DELAY_MS = 10_000;
+
 const serverDetachedChannelCodes = new Set<RealtimeErrorFrame["code"]>([
   "permission_revoked",
   "resource_unavailable",
@@ -700,8 +704,20 @@ export class RealtimeClient {
   }
 
   private scheduleReconnect() {
+    if (this.reconnectAttempt >= MAX_REALTIME_RECONNECT_ATTEMPTS) {
+      this.shouldReconnect = false;
+      this.options.onState?.("error");
+      this.options.onError?.(
+        new Error("Realtime connection retry limit reached.")
+      );
+      return;
+    }
+
     this.options.onState?.("reconnecting");
-    const delay = Math.min(500 * 2 ** this.reconnectAttempt, 10_000);
+    const delay = Math.min(
+      REALTIME_RECONNECT_BASE_DELAY_MS * 2 ** this.reconnectAttempt,
+      REALTIME_RECONNECT_MAX_DELAY_MS
+    );
     this.reconnectAttempt += 1;
     this.reconnectTimeout = setTimeout(() => {
       this.reconnectTimeout = null;

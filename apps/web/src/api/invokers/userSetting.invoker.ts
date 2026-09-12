@@ -4,10 +4,6 @@ import { ValidationClientException } from "@shared/api/exceptions/client/validat
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  GetMySetting,
-  UpdateMySetting,
-} from "@/api/functions/userSetting.serverFn";
-import {
   GetMySettingRequest,
   GetMySettingRequestSchema,
   GetMySettingResponse,
@@ -18,14 +14,55 @@ import {
   UpdateMySettingResponseSchema,
 } from "@shared/api/interfaces/userSetting.interface";
 import { ZodError } from "zod";
+import {
+  GetMySetting,
+  UpdateMySetting,
+} from "@/api/functions/userSetting.serverFn";
+import { getRetryAt } from "@/api/retry";
+
+// Shared by settings reads and writes in this browser, never by SSR users.
+let rateLimitedUntil = 0;
+
+export class UserSettingsRateLimitError extends Error {
+  constructor(public readonly retryAt: number) {
+    super("User settings requests are temporarily paused after HTTP 429");
+  }
+}
+
+const fetchUserSettings: typeof fetch = async (input, init) => {
+  if (Date.now() < rateLimitedUntil)
+    throw new UserSettingsRateLimitError(rateLimitedUntil);
+  const response = await fetch(input, init);
+  if (response.status === 429) {
+    const retryAt = getRetryAt(response.headers.get("Retry-After"));
+    if (typeof window !== "undefined")
+      rateLimitedUntil = Math.max(rateLimitedUntil, retryAt);
+    throw new UserSettingsRateLimitError(retryAt);
+  }
+  return response;
+};
 
 export const queryFnGetMySetting = async (
-  request: GetMySettingRequest
+  request: GetMySettingRequest,
+  signal?: AbortSignal
 ): Promise<GetMySettingResponse> => {
   try {
-    return GetMySettingResponseSchema.parse(
-      await GetMySetting({ data: GetMySettingRequestSchema.parse(request) })
-    );
+    if (Date.now() < rateLimitedUntil)
+      throw new UserSettingsRateLimitError(rateLimitedUntil);
+    const response = await GetMySetting({
+      data: GetMySettingRequestSchema.parse(request),
+      signal,
+      fetch: fetchUserSettings,
+    });
+    if ("rateLimitedUntil" in response) {
+      if (typeof window !== "undefined")
+        rateLimitedUntil = Math.max(
+          rateLimitedUntil,
+          response.rateLimitedUntil
+        );
+      throw new UserSettingsRateLimitError(response.rateLimitedUntil);
+    }
+    return GetMySettingResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
@@ -44,11 +81,21 @@ export const mutationFnUpdateMySetting = async (
   request: UpdateMySettingRequest
 ): Promise<UpdateMySettingResponse> => {
   try {
-    return UpdateMySettingResponseSchema.parse(
-      await UpdateMySetting({
-        data: UpdateMySettingRequestSchema.parse(request),
-      })
-    );
+    if (Date.now() < rateLimitedUntil)
+      throw new UserSettingsRateLimitError(rateLimitedUntil);
+    const response = await UpdateMySetting({
+      data: UpdateMySettingRequestSchema.parse(request),
+      fetch: fetchUserSettings,
+    });
+    if ("rateLimitedUntil" in response) {
+      if (typeof window !== "undefined")
+        rateLimitedUntil = Math.max(
+          rateLimitedUntil,
+          response.rateLimitedUntil
+        );
+      throw new UserSettingsRateLimitError(response.rateLimitedUntil);
+    }
+    return UpdateMySettingResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(

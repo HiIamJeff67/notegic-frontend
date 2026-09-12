@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("starts the local database without migration errors", async ({ page }) => {
+test("@environment starts the local database without migration errors", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     const originalPostMessage = Worker.prototype.postMessage;
     const sendPostMessage = originalPostMessage as (
@@ -72,7 +74,7 @@ test("starts the local database without migration errors", async ({ page }) => {
   await pages[1].close();
 });
 
-test("survives a reload while the SQLocal worker is connecting", async ({
+test("@environment survives a reload while the SQLocal worker is connecting", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -135,14 +137,12 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
 
   await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
-    const { localDB } = await importModule(
-      "/development/v1/src/api/local/db.ts"
-    );
+    const { localDB } = await importModule("/src/api/local/db.ts");
     const { eq, LocalYjsDocumentStore } = await importModule(
-      "/development/v1/test/e2e/local-database-test-support.ts"
+      "/test/e2e/local-database-test-support.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
-      "/development/v1/src/api/local/schemas/index.ts"
+      "/src/api/local/schemas/index.ts"
     );
 
     const userPublicId = "e2e-local-db-user";
@@ -194,14 +194,12 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
 
   const preserved = await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
-    const { localDB } = await importModule(
-      "/development/v1/src/api/local/db.ts"
-    );
+    const { localDB } = await importModule("/src/api/local/db.ts");
     const { eq, LocalYjsDocumentStore } = await importModule(
-      "/development/v1/test/e2e/local-database-test-support.ts"
+      "/test/e2e/local-database-test-support.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
-      "/development/v1/src/api/local/schemas/index.ts"
+      "/src/api/local/schemas/index.ts"
     );
     const userPublicId = "e2e-local-db-user";
     const user = await localDB.query.User.findFirst({

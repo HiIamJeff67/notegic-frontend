@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = 4173;
-const baseURL = `http://127.0.0.1:${port}/development/v1`;
+const production = process.env.E2E_PRODUCTION === "true";
+const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: "./apps/web/test/e2e",
@@ -13,10 +14,16 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command:
-      "npm run dev --workspace=@notegic/web -- --host 127.0.0.1 --port 4173",
+    command: production
+      ? "npm run start --workspace=@notegic/web"
+      : "npm run dev --workspace=@notegic/web -- --host 127.0.0.1 --port 4173 --strictPort",
+    env: {
+      VITE_APP_BASE_PATH: "/",
+      PORT: String(port),
+      HOST: "127.0.0.1",
+    },
     url: `${baseURL}/`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
   projects: [

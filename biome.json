@@ -10,7 +10,8 @@
     "includes": [
       "**",
       "!apps/web/src/routeTree.gen.ts",
-      "!shared/api/graphql/generated/**"
+      "!shared/api/graphql/generated/**",
+      "!apps/web/src/api/local/migrations/meta/**"
     ]
   },
   "formatter": {

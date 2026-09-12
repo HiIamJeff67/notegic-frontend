@@ -1,5 +1,4 @@
 import {
-  Language,
   UserSettingDensity,
   UserSettingStartSurface,
 } from "@shared/api/interfaces/enums";
@@ -70,13 +69,16 @@ export const UserSettingsProvider = ({
   const { isOnline } = useNetwork();
   const { updatePreference, subscribePreferenceChanges } =
     useLocalPreferences();
-  const updateSetting = useUpdateMySetting();
-  const ignoredLanguageCode = useRef<Language | null>(null);
+  const { mutate: updateSetting } = useUpdateMySetting();
+  const userPublicId = userData?.publicId;
+  const localRevision = useRef(0);
+  const currentSettings = useRef<Partial<UserSetting>>({});
+  const pendingLanguageChanges = useRef(new Map<string, number>());
   const applyingRemoteSettings = useRef(false);
 
   useEffect(() => {
     const listener: PreferenceChangeListener = (key, value) => {
-      if (applyingRemoteSettings.current || !userData) return;
+      if (applyingRemoteSettings.current || !userPublicId) return;
       let values: Partial<UserSetting> | null = null;
       switch (key) {
         case "density":
@@ -133,87 +135,107 @@ export const UserSettingsProvider = ({
         }
       }
       if (!values) return;
+      if (
+        Object.entries(values).every(
+          ([field, next]) =>
+            currentSettings.current[field as keyof UserSetting] === next
+        )
+      )
+        return;
+      localRevision.current++;
+      Object.assign(currentSettings.current, values);
       void UserSettingLocalSynchronizer.syncUpdateMySetting(
-        userData.publicId,
+        userPublicId,
         values
       ).catch(error => {
         console.error("Failed to cache user settings.", error);
       });
       if (!isOnline) return;
-      updateSetting.mutate({
+      updateSetting({
         header: getClientMutationHeaders(),
         body: { values },
       });
     };
 
     return subscribePreferenceChanges(listener);
-  }, [isOnline, subscribePreferenceChanges, updateSetting, userData]);
+  }, [isOnline, subscribePreferenceChanges, updateSetting, userPublicId]);
 
   useEffect(() => {
-    if (!userData) return;
-
+    if (!userPublicId) return;
+    currentSettings.current = {};
+    const revision = localRevision.current;
     let cancelled = false;
-    void UserSettingLocalSynchronizer.getMySetting(userData.publicId)
-      .then(setting => {
-        if (cancelled || !setting) return;
-        const language = LanguageKeyMap[setting.language]?.code ?? "en";
-        applyingRemoteSettings.current = true;
-        ignoredLanguageCode.current = setting.language;
-        void i18n.changeLanguage(language);
+    const controller = new AbortController();
+    const applySetting = (setting: UserSetting) => {
+      if (cancelled || revision !== localRevision.current) return;
+      currentSettings.current = { ...setting };
+      const language = LanguageKeyMap[setting.language]?.code ?? "en";
+      if (i18n.language !== language) {
+        const pending = pendingLanguageChanges.current;
+        pending.set(language, (pending.get(language) ?? 0) + 1);
+        void i18n
+          .changeLanguage(language)
+          .catch(error => {
+            console.error("Failed to apply user language.", error);
+          })
+          .finally(() => {
+            const remaining = (pending.get(language) ?? 1) - 1;
+            if (remaining) pending.set(language, remaining);
+            else pending.delete(language);
+          });
+      }
+      applyingRemoteSettings.current = true;
+      try {
         applyRemoteSettings(setting, updatePreference);
+      } finally {
         applyingRemoteSettings.current = false;
-      })
-      .catch(error => {
+      }
+    };
+    void (async () => {
+      try {
+        const setting =
+          await UserSettingLocalSynchronizer.getMySetting(userPublicId);
+        if (setting) applySetting(setting);
+      } catch (error) {
         console.error("Failed to load cached user settings.", error);
-      });
-
-    if (!isOnline) {
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    void queryFnGetMySetting({
-      header: getClientRequestHeaders(),
-    })
-      .then(response => {
-        if (cancelled) return;
-        void UserSettingLocalSynchronizer.syncGetMySetting(response).catch(
-          error => {
-            console.error("Failed to cache user settings.", error);
-          }
+      }
+      if (cancelled || !isOnline) return;
+      try {
+        const response = await queryFnGetMySetting(
+          { header: getClientRequestHeaders() },
+          controller.signal
         );
-        const language = LanguageKeyMap[response.data.language]?.code ?? "en";
-        applyingRemoteSettings.current = true;
-        ignoredLanguageCode.current = response.data.language;
-        void i18n.changeLanguage(language);
-        applyRemoteSettings(response.data, updatePreference);
-        applyingRemoteSettings.current = false;
-      })
-      .catch(() => undefined);
+        if (cancelled || revision !== localRevision.current) return;
+        applySetting(response.data);
+        await UserSettingLocalSynchronizer.syncGetMySetting(response);
+      } catch {
+        // Keep local preferences; a failed load must not start another request.
+      }
+    })();
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
-  }, [isOnline, updatePreference, userData]);
+  }, [isOnline, updatePreference, userPublicId]);
 
   useEffect(() => {
     const onLanguageChanged = (language: string) => {
       const languageValue = AllLanguageData.find(
         item => item.code === language
       )?.key;
-      if (!languageValue || !userData) return;
-      if (ignoredLanguageCode.current === languageValue) {
-        ignoredLanguageCode.current = null;
-        return;
-      }
-      void UserSettingLocalSynchronizer.syncUpdateMySetting(userData.publicId, {
+      if (!languageValue || !userPublicId) return;
+      if (pendingLanguageChanges.current.has(language)) return;
+      if (currentSettings.current.language === languageValue) return;
+      localRevision.current++;
+      currentSettings.current.language = languageValue;
+      void UserSettingLocalSynchronizer.syncUpdateMySetting(userPublicId, {
         language: languageValue,
       }).catch(error => {
         console.error("Failed to cache user language.", error);
       });
       if (!isOnline) return;
-      updateSetting.mutate({
+      updateSetting({
         header: getClientMutationHeaders(),
         body: { values: { language: languageValue } },
       });
@@ -221,7 +243,7 @@ export const UserSettingsProvider = ({
 
     i18n.on("languageChanged", onLanguageChanged);
     return () => i18n.off("languageChanged", onLanguageChanged);
-  }, [isOnline, updateSetting, userData]);
+  }, [isOnline, updateSetting, userPublicId]);
 
   return children;
 };

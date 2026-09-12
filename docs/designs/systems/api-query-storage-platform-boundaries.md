@@ -47,6 +47,39 @@ under `apps/web/src/api/` and `apps/web/src/`:
 These are not a prescription for the future Desktop or Mobile runtime. They
 are the explicit current Web ownership boundary.
 
+## Web user-settings synchronization
+
+`UserSettingsProvider` loads cached settings before one remote read per mounted
+user/connectivity lifecycle. Preference callbacks have stable identities;
+hydration and same-value events never write settings back. A local edit makes
+an outstanding snapshot obsolete. Cleanup aborts the read and ignores late
+results; the server-function adapter forwards the request's abort signal to
+the gateway. Language hydration tracks pending changes so asynchronous
+`languageChanged` events are not mistaken for user edits.
+
+Settings mutations explicitly disable automatic retries. Both gateway and web
+adapters use the domain-neutral `apps/web/src/api/retry.ts` entry point
+`getRetryAt(retryAfter, now?)` to calculate the retry deadline. Other API domains
+can reuse this calculation; cooldown state and scheduling remain caller-owned.
+Both gateway and web
+HTTP 429 responses pause settings GET and PUT in the current browser runtime
+for at least 60 seconds, or longer when `Retry-After` specifies a later time
+(delta-seconds or HTTP date). The cooldown survives provider remounts, but is
+not persisted across page reloads or shared between tabs. It is not global
+server state and cannot pause another SSR user's requests. No timer replays
+failed reads or writes when the cooldown expires. Local preferences remain
+available; a failed/cooldown-blocked save must not be interpreted as a remote
+save or queued for replay.
+
+The shared query retry policy also rejects explicit non-retryable API errors,
+HTTP 4xx errors and aborts. Its bounded retry/backoff for other failures remains
+unchanged; unrelated endpoints do not share the settings cooldown.
+
+Regression checks: `npm run test:unit`. The settings lifecycle integration
+suite bundles the real React providers with mocked network/storage boundaries
+and runs in headless Chromium, including StrictMode. Install its browser once
+with `npx playwright install chromium --only-shell`; no live account is used.
+
 ## Future application responsibilities
 
 Each app owns its framework/runtime integration, request and authentication

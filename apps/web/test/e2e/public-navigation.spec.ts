@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("visitors can reach the login and registration forms", async ({
+test("@environment visitors can reach the login and registration forms", async ({
   page,
 }) => {
   await page.goto("/");
@@ -20,7 +20,9 @@ test("visitors can reach the login and registration forms", async ({
   await expect(page.getByLabel("Confirm Password")).toBeVisible();
 });
 
-test("visitors can open the published API documentation", async ({ page }) => {
+test("@environment visitors can open the published API documentation", async ({
+  page,
+}) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 
