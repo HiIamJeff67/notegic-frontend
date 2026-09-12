@@ -4,6 +4,10 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
 import {
+  type CreateMaterialObjectTicketRequest,
+  type CreateMaterialObjectTicketResponse,
+  type ResolveMaterialObjectTicketRequest,
+  type ResolveMaterialObjectTicketResponse,
   type GetMyMaterialsByRootShelfIdRequest,
   type GetMyMaterialsByRootShelfIdResponse,
   type GetMyMaterialAndItsParentByIdRequest,
@@ -24,6 +28,8 @@ import {
   mutationFnRestoreMyMaterialById,
   mutationFnRestoreMyMaterialsByIds,
   mutationFnUpdateMyMaterialById,
+  mutationFnCreateMaterialObjectTicket,
+  queryFnResolveMaterialObjectTicket,
   queryFnGetMyMaterialsByRootShelfId,
   queryFnGetMyMaterialAndItsParentById,
   queryFnGetMyMaterialById,
@@ -43,6 +49,69 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
+
+const materialObjectTicketStaleTime = 60 * 1000;
+
+export const useCreateMaterialObjectTicket = () =>
+  useMutation<
+    CreateMaterialObjectTicketResponse,
+    Error,
+    CreateMaterialObjectTicketRequest
+  >({
+    mutationFn: mutationFnCreateMaterialObjectTicket,
+    onSuccess: response => {
+      SessionStorageManipulator.ensureItem(
+        SessionStorageKey.csrfToken,
+        response.refreshableTokens?.newCSRFToken
+      );
+    },
+  });
+
+export const useResolveMaterialObjectTicket = (
+  objectTicket?: string | null,
+  options?: Partial<UseQueryOptions<ResolveMaterialObjectTicketResponse, Error>>
+) => {
+  const queryClient = getQueryClient();
+  const request = objectTicket
+    ? ({ body: { objectTicket } } satisfies ResolveMaterialObjectTicketRequest)
+    : undefined;
+  const perform = async (): Promise<ResolveMaterialObjectTicketResponse> => {
+    if (!request) throw new Error("Material object ticket is unavailable.");
+    const response = await queryFnResolveMaterialObjectTicket(request);
+    SessionStorageManipulator.ensureItem(
+      SessionStorageKey.csrfToken,
+      response.refreshableTokens?.newCSRFToken
+    );
+    return response;
+  };
+  const query = useQuery({
+    queryKey: queryKeys.material.objectTicket(objectTicket),
+    queryFn: perform,
+    staleTime: materialObjectTicketStaleTime,
+    retry: false,
+    ...options,
+    enabled: Boolean(objectTicket) && (options?.enabled ?? true),
+  });
+  const fetch = async (
+    callbackRequest: ResolveMaterialObjectTicketRequest
+  ): Promise<ResolveMaterialObjectTicketResponse> => {
+    const response = await queryClient.fetchQuery({
+      queryKey: queryKeys.material.objectTicket(
+        callbackRequest.body.objectTicket
+      ),
+      queryFn: () => queryFnResolveMaterialObjectTicket(callbackRequest),
+      staleTime: materialObjectTicketStaleTime,
+      retry: false,
+      ...options,
+    });
+    SessionStorageManipulator.ensureItem(
+      SessionStorageKey.csrfToken,
+      response.refreshableTokens?.newCSRFToken
+    );
+    return response;
+  };
+  return { ...query, fetch };
+};
 
 export const useGetMyMaterialById = (
   hookRequest?: GetMyMaterialByIdRequest,

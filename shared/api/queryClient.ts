@@ -1,11 +1,16 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { ExceptionReasonDictionary } from "@shared/api/exceptions";
+import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { QueryClient } from "@tanstack/react-query";
 
 let browserQueryClient: QueryClient | undefined;
 
 export const makeQueryClient = (): QueryClient => {
   const retryPolicy = (failureCount: number, error: unknown): boolean => {
+    if (isAuthenticationFailure(error)) {
+      return false;
+    }
+
     if (error instanceof NotegicFetchError) {
       const reason = error.unWrap.reason;
       if (

@@ -4,6 +4,7 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import {
+  CreateMaterialObjectTicket,
   CreateMyMaterial,
   DeleteMyMaterialById,
   DeleteMyMaterialsByIds,
@@ -15,8 +16,13 @@ import {
   RestoreMyMaterialById,
   RestoreMyMaterialsByIds,
   UpdateMyMaterialById,
+  ResolveMaterialObjectTicket,
 } from "@/api/functions/material.serverFn";
 import {
+  type CreateMaterialObjectTicketRequest,
+  CreateMaterialObjectTicketRequestSchema,
+  type CreateMaterialObjectTicketResponse,
+  CreateMaterialObjectTicketResponseSchema,
   type CreateMyMaterialRequest,
   CreateMyMaterialRequestSchema,
   type CreateMyMaterialResponse,
@@ -61,8 +67,25 @@ import {
   UpdateMyMaterialByIdRequestSchema,
   type UpdateMyMaterialByIdResponse,
   UpdateMyMaterialByIdResponseSchema,
+  type ResolveMaterialObjectTicketRequest,
+  ResolveMaterialObjectTicketRequestSchema,
+  type ResolveMaterialObjectTicketResponse,
+  ResolveMaterialObjectTicketResponseSchema,
 } from "@shared/api/interfaces/material.interface";
 import { ZodError } from "zod";
+
+const parseMaterialObjectTicketError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw new NotegicValidationError(
+      ValidationClientException.ZodParsingFailed(error)
+    );
+  }
+  if (error instanceof NotegicAPIError) throw error;
+  if (error instanceof TypeError) {
+    throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+  }
+  throw error;
+};
 
 export const queryFnGetMyMaterialById = async (
   request: GetMyMaterialByIdRequest
@@ -374,5 +397,31 @@ export const mutationFnDeleteMyMaterialsByIds = async (
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
+  }
+};
+
+export const mutationFnCreateMaterialObjectTicket = async (
+  request: CreateMaterialObjectTicketRequest
+): Promise<CreateMaterialObjectTicketResponse> => {
+  try {
+    const response = await CreateMaterialObjectTicket({
+      data: CreateMaterialObjectTicketRequestSchema.parse(request),
+    });
+    return CreateMaterialObjectTicketResponseSchema.parse(response);
+  } catch (error) {
+    return parseMaterialObjectTicketError(error);
+  }
+};
+
+export const queryFnResolveMaterialObjectTicket = async (
+  request: ResolveMaterialObjectTicketRequest
+): Promise<ResolveMaterialObjectTicketResponse> => {
+  try {
+    const response = await ResolveMaterialObjectTicket({
+      data: ResolveMaterialObjectTicketRequestSchema.parse(request),
+    });
+    return ResolveMaterialObjectTicketResponseSchema.parse(response);
+  } catch (error) {
+    return parseMaterialObjectTicketError(error);
   }
 };

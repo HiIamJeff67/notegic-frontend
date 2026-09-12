@@ -178,7 +178,7 @@ export const GetMySubShelvesAndItemsByPrevSubShelfIdResponseSchema =
           size: z.int64(),
           contentType: z.enum(AllMaterialContentTypes),
           parseMediaType: z.string(),
-          downloadURL: z.url().nullable().optional(),
+          objectKey: z.string(),
           deletedAt: z.coerce.date().nullable(),
           updatedAt: z.coerce.date(),
           createdAt: z.coerce.date(),

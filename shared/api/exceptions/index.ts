@@ -144,12 +144,30 @@ export class NotegicAPIError extends NotegicError {
     super(exception.reason, true, exception.message);
     this.name = "APIError";
     this.exception = exception;
+    if (
+      typeof window !== "undefined" &&
+      isAuthenticationFailureReason(exception.reason)
+    ) {
+      window.dispatchEvent(new CustomEvent("notegic:auth-required"));
+    }
   }
 
   get unWrap(): NotegicException {
     return this.exception;
   }
 }
+
+const authenticationFailureReasons = new Set([
+  "Unauthorized",
+  "InvalidDelegation",
+  "InvalidSession",
+  "InvalidCSRFToken",
+  "SessionUnavailable",
+  "RefreshFailed",
+]);
+
+export const isAuthenticationFailureReason = (reason: string): boolean =>
+  authenticationFailureReasons.has(reason);
 
 /* ============================== Some Reasons and Dictionaries ============================== */
 

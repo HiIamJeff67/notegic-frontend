@@ -107,6 +107,8 @@ export const APIURLPathDictionary = {
     deleteMySubShelvesByIds: "sub-shelves/batch",
   },
   material: {
+    createObjectTicket: "materials/object-ticket",
+    resolveObjectTicket: "materials/object-ticket/resolve",
     getMyMaterialById: (materialId: string) => `materials/${materialId}`,
     getMyMaterialAndItsParentById: (materialId: string) =>
       `materials/${materialId}/parent`,

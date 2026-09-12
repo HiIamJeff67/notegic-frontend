@@ -39,15 +39,15 @@ export const UpdateMyInfoRequestSchema = NotegicRequestSchema.extend({
     .optional(),
   body: z.object({
     values: z.object({
-      avatarURL: z.url().nullable(),
-      coverBackgroundURL: z.url().nullable(),
-      header: z.string().min(0).max(64).nullable(),
-      introduction: z.string().min(0).max(256).nullable(),
-      gender: z.enum(UserGender),
-      country: z.enum(Country).nullable(),
-      birthDate: z.coerce.date().max(new Date()),
+      header: z.string().min(0).max(64).nullable().optional(),
+      introduction: z.string().min(0).max(256).nullable().optional(),
+      gender: z.enum(UserGender).optional(),
+      country: z.enum(Country).nullable().optional(),
+      birthDate: z.coerce.date().max(new Date()).optional(),
     }),
     setNull: z.record(z.string(), z.boolean()).optional(),
+    avatarFile: z.file().optional(),
+    coverBackgroundFile: z.file().optional(),
   }),
 });
 

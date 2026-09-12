@@ -5,6 +5,61 @@ import {
 import { AllMaterialContentTypes } from "@shared/api/interfaces/enums";
 import z from "zod";
 
+const MaterialObjectTicketRequestHeaderSchema = z
+  .object({
+    userAgent: z.string().min(1).optional(),
+    csrfToken: z.string().optional(),
+  })
+  .optional();
+
+export const CreateMaterialObjectTicketRequestSchema =
+  NotegicRequestSchema.extend({
+    header: MaterialObjectTicketRequestHeaderSchema,
+    body: z.object({
+      objectKey: z.string().min(1).max(512),
+    }),
+  });
+
+export type CreateMaterialObjectTicketRequest = z.infer<
+  typeof CreateMaterialObjectTicketRequestSchema
+>;
+
+export const CreateMaterialObjectTicketResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      objectTicket: z.string().min(1),
+      expiresAt: z.coerce.date(),
+    }),
+  });
+
+export type CreateMaterialObjectTicketResponse = z.infer<
+  typeof CreateMaterialObjectTicketResponseSchema
+>;
+
+export const ResolveMaterialObjectTicketRequestSchema =
+  NotegicRequestSchema.extend({
+    header: MaterialObjectTicketRequestHeaderSchema,
+    body: z.object({
+      objectTicket: z.string().min(1),
+    }),
+  });
+
+export type ResolveMaterialObjectTicketRequest = z.infer<
+  typeof ResolveMaterialObjectTicketRequestSchema
+>;
+
+export const ResolveMaterialObjectTicketResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      objectURL: z.url(),
+      expiresAt: z.coerce.date(),
+    }),
+  });
+
+export type ResolveMaterialObjectTicketResponse = z.infer<
+  typeof ResolveMaterialObjectTicketResponseSchema
+>;
+
 /* ============================== GetMyMaterialById ============================== */
 
 export const GetMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
@@ -32,7 +87,7 @@ export const GetMyMaterialByIdResponseSchema = NotegicResponseSchema.extend({
     size: z.number(),
     contentType: z.enum(AllMaterialContentTypes),
     parseMediaType: z.string(),
-    downloadURL: z.url().nullable().optional(),
+    objectKey: z.string(),
     deletedAt: z.coerce.date().nullable(),
     updatedAt: z.coerce.date(),
     createdAt: z.coerce.date(),
@@ -74,7 +129,7 @@ export const GetMyMaterialAndItsParentByIdResponseSchema =
       size: z.number(),
       contentType: z.enum(AllMaterialContentTypes),
       parseMediaType: z.string(),
-      downloadURL: z.url().nullable().optional(),
+      objectKey: z.string(),
       deletedAt: z.coerce.date().nullable(),
       updatedAt: z.coerce.date(),
       createdAt: z.coerce.date(),
@@ -126,7 +181,7 @@ export const GetMyMaterialsByParentSubShelfIdResponseSchema =
         size: z.number(),
         contentType: z.enum(AllMaterialContentTypes),
         parseMediaType: z.string(),
-        downloadURL: z.url().nullable().optional(),
+        objectKey: z.string(),
         deletedAt: z.coerce.date().nullable(),
         updatedAt: z.coerce.date(),
         createdAt: z.coerce.date(),
@@ -171,7 +226,7 @@ export const GetMyMaterialsByRootShelfIdResponseSchema =
         size: z.number(),
         contentType: z.enum(AllMaterialContentTypes),
         parseMediaType: z.string(),
-        downloadURL: z.url().nullable().optional(),
+        objectKey: z.string(),
         deletedAt: z.coerce.date().nullable(),
         updatedAt: z.coerce.date(),
         createdAt: z.coerce.date(),
@@ -402,7 +457,7 @@ export const RestoreMyMaterialByIdResponseSchema = NotegicResponseSchema.extend(
       size: z.number(),
       contentType: z.enum(AllMaterialContentTypes),
       parseMediaType: z.string(),
-      downloadURL: z.url().nullable().optional(),
+      objectKey: z.string(),
       deletedAt: z.coerce.date().nullable(),
       updatedAt: z.coerce.date(),
       createdAt: z.coerce.date(),
@@ -451,7 +506,7 @@ export const RestoreMyMaterialsByIdsResponseSchema =
         size: z.number(),
         contentType: z.enum(AllMaterialContentTypes),
         parseMediaType: z.string(),
-        downloadURL: z.url().nullable().optional(),
+        objectKey: z.string(),
         deletedAt: z.coerce.date().nullable(),
         updatedAt: z.coerce.date(),
         createdAt: z.coerce.date(),

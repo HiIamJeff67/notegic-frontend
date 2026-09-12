@@ -2,6 +2,8 @@ import {
   ExceptionCode,
   ExceptionPrefix,
   ExceptionSubDomainCodeShiftAmount,
+  isAuthenticationFailureReason,
+  NotegicAPIError,
   NotegicException,
 } from "@shared/api/exceptions";
 import { StatusCodes } from "http-status-codes";
@@ -112,3 +114,7 @@ export class AuthExceptions extends DatabaseException {
     });
   };
 }
+
+export const isAuthenticationFailure = (error: unknown): boolean =>
+  error instanceof NotegicAPIError &&
+  isAuthenticationFailureReason(error.unWrap.reason);

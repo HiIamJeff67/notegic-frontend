@@ -1,4 +1,9 @@
 import { useApolloClient } from "@apollo/client/react";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
+import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import { type QueryKey, useMutation } from "@tanstack/react-query";
 import {
   mutationFnDeleteMe,
   mutationFnForgetPassword,
@@ -13,11 +18,6 @@ import {
   mutationFnValidateEmail,
 } from "@/api/invokers/auth.invoker";
 import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
-import { getQueryClient } from "@shared/api/queryClient";
-import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import { type QueryKey, useMutation } from "@tanstack/react-query";
 
 export const useRegister = () => {
   const queryClient = getQueryClient();
@@ -110,6 +110,11 @@ export const useLogout = () => {
       await AuthLocalSynchronizer.syncLogout(response);
       queryClient.removeQueries();
       apolloClient.clearStore();
+    },
+    onSettled: async () => {
+      SessionStorageManipulator.removeItem(SessionStorageKey.csrfToken);
+      queryClient.removeQueries();
+      await apolloClient.clearStore();
     },
   });
 

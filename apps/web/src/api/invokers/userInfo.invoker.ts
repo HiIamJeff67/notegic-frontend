@@ -3,7 +3,8 @@ import { NotegicValidationError } from "@shared/api/exceptions/errors/validation
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { GetMyInfo, UpdateMyInfo } from "@/api/functions/userInfo.serverFn";
+import { UpdateMyInfo } from "@/api/functions/userInfo.clientFn";
+import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
 import {
   type GetMyInfoRequest,
   GetMyInfoRequestSchema,
@@ -46,7 +47,7 @@ export const mutationFnUpdateMyInfo = async (
 ): Promise<UpdateMyInfoResponse> => {
   try {
     const validatedRequest = UpdateMyInfoRequestSchema.parse(request);
-    const response = await UpdateMyInfo({ data: validatedRequest });
+    const response = await UpdateMyInfo(validatedRequest);
     return UpdateMyInfoResponseSchema.parse(response);
   } catch (error) {
     console.error("error happening in mutationFnUpdateMyInfo", error);

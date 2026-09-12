@@ -1,12 +1,16 @@
 import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
+  CreateMaterialObjectTicketRequest,
+  CreateMaterialObjectTicketResponse,
   CreateMyMaterialRequest,
   CreateMyMaterialResponse,
   DeleteMyMaterialByIdRequest,
   DeleteMyMaterialByIdResponse,
   DeleteMyMaterialsByIdsRequest,
   DeleteMyMaterialsByIdsResponse,
+  ResolveMaterialObjectTicketRequest,
+  ResolveMaterialObjectTicketResponse,
   GetMyMaterialsByRootShelfIdRequest,
   GetMyMaterialsByRootShelfIdResponse,
   GetMyMaterialAndItsParentByIdRequest,
@@ -34,6 +38,47 @@ import {
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+
+const forwardMaterialObjectTicketRequest = async <TResponse>(
+  request: {
+    header?: { userAgent?: string; csrfToken?: string };
+    body: object;
+  },
+  path: string
+): Promise<TResponse> => {
+  const inboundCookie = getRequestHeader("cookie");
+  const userAgent =
+    request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+  const response = await fetch(
+    `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${path}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": userAgent,
+        ...(request.header?.csrfToken
+          ? { "X-CSRF-Token": request.header.csrfToken }
+          : {}),
+        ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+      },
+      body: JSON.stringify(request.body),
+      credentials: "include",
+    }
+  );
+  if (!isJsonResponse(response)) {
+    throw new Error("error.encounterUnknownError");
+  }
+  forwardUpstreamSetCookies(response);
+  const formattedResponse = (await response.json()) as TResponse & {
+    exception?: Record<string, unknown> | null;
+  };
+  if (formattedResponse.exception != null) {
+    throw new NotegicAPIError(
+      new NotegicException(formattedResponse.exception as never)
+    );
+  }
+  return formattedResponse;
+};
 
 export const GetMyMaterialById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyMaterialByIdRequest) => data)
@@ -531,4 +576,24 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
 
       return formattedResponse;
     }
+  );
+
+export const CreateMaterialObjectTicket = createServerFn({ method: "POST" })
+  .inputValidator((data: CreateMaterialObjectTicketRequest) => data)
+  .handler(
+    ({ data: request }): Promise<CreateMaterialObjectTicketResponse> =>
+      forwardMaterialObjectTicketRequest(
+        request,
+        APIURLPathDictionary.material.createObjectTicket
+      )
+  );
+
+export const ResolveMaterialObjectTicket = createServerFn({ method: "POST" })
+  .inputValidator((data: ResolveMaterialObjectTicketRequest) => data)
+  .handler(
+    ({ data: request }): Promise<ResolveMaterialObjectTicketResponse> =>
+      forwardMaterialObjectTicketRequest(
+        request,
+        APIURLPathDictionary.material.resolveObjectTicket
+      )
   );
