@@ -195,7 +195,7 @@ export const useItemLogic = ({
           size: 0,
           contentType: "text/plain",
           parseMediaType: "",
-          downloadURL: null,
+          objectKey: "",
           deletedAt: null,
           updatedAt: responseOfCreatingMaterial.data.createdAt,
           createdAt: responseOfCreatingMaterial.data.createdAt,

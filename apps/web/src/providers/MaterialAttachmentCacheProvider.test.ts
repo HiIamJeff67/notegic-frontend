@@ -9,14 +9,14 @@ jest.mock("@shared/lib/indexedDBManipulator", () => ({
   },
 }));
 
+import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
+import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import {
   cleanupMaterialAttachmentCache,
   clearMaterialAttachmentCache,
   loadMaterialAttachment,
   saveMaterialAttachment,
-} from "@/api/local/material-attachment.cache";
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
+} from "@/providers/MaterialAttachmentCacheProvider";
 
 const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);
 const setItem = jest.mocked(IndexedDBManipulator.setItem);

@@ -25,7 +25,11 @@ independent from the Web runtime adapters under `apps/web/src/api/`.
 | Document | Scope |
 | --- | --- |
 | [Frontend contracts and codegen](frontend-contracts-and-codegen.md) | Backend contract ownership, GraphQL inputs, generated output, and codegen workflow |
-| [API, query, storage, and platform boundaries](../system-design/api-query-storage-platform-boundaries.md) | Shared responsibilities and app/runtime adapters |
+| [API, query, storage, and platform boundaries](../systems/api-query-storage-platform-boundaries.md) | Shared responsibilities and app/runtime adapters |
+
+## Design artifacts
+
+- [API architecture design](api-architecture-design.drawio)
 
 ## Contract rule
 

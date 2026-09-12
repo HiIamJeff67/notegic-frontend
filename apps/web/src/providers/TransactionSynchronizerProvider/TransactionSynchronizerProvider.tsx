@@ -1,3 +1,5 @@
+import { and, asc, eq, gte, InferSelectModel, inArray, lt } from "drizzle-orm";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   useCreateBlockPacks,
@@ -59,8 +61,6 @@ import { localDB } from "@/api/local/db";
 import { Transaction, User } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { and, asc, eq, gte, InferSelectModel, inArray, lt } from "drizzle-orm";
-import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useNetwork } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
@@ -451,7 +451,12 @@ export const TransactionSynchronizerProvider = ({
   const isSynchronizingRef = useRef<boolean>(false);
 
   const getTransactionCount = useCallback(async (): Promise<number> => {
-    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+    if (
+      !areLocalPreferencesReady ||
+      !localVault ||
+      !localDB.isEnabled ||
+      localDB.isReadOnly
+    ) {
       return 0;
     }
     if (
@@ -486,7 +491,12 @@ export const TransactionSynchronizerProvider = ({
   }, [areLocalPreferencesReady, localVault, offlineQueue]);
 
   const getTerminalTransactionCount = useCallback(async (): Promise<number> => {
-    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+    if (
+      !areLocalPreferencesReady ||
+      !localVault ||
+      !localDB.isEnabled ||
+      localDB.isReadOnly
+    ) {
       return 0;
     }
     if (!localDB.isReady) await localDB.ensureReady();
@@ -514,7 +524,12 @@ export const TransactionSynchronizerProvider = ({
   }, [areLocalPreferencesReady, localVault]);
 
   const clearTerminalTransactions = useCallback(async (): Promise<void> => {
-    if (!areLocalPreferencesReady || !localVault || !localDB.isEnabled) {
+    if (
+      !areLocalPreferencesReady ||
+      !localVault ||
+      !localDB.isEnabled ||
+      localDB.isReadOnly
+    ) {
       return;
     }
     if (!localDB.isReady) await localDB.ensureReady();
@@ -626,7 +641,8 @@ export const TransactionSynchronizerProvider = ({
       !areLocalPreferencesReady ||
       !localVault ||
       !isOnline ||
-      !localDB.isEnabled
+      !localDB.isEnabled ||
+      localDB.isReadOnly
     ) {
       return;
     }
@@ -983,6 +999,10 @@ export const TransactionSynchronizerProvider = ({
       setStatus("synchronized");
       return;
     }
+    if (localDB.isReadOnly) {
+      setStatus("unsynchronized");
+      return;
+    }
 
     const bootstrap = async () => {
       if (hasBootstrappedRef.current || isBootstrappingRef.current) return;
@@ -1014,13 +1034,19 @@ export const TransactionSynchronizerProvider = ({
           );
         }
 
+        localDB.transitionDiagnostics("checking-transaction-queue");
         const transactionCount = await getTransactionCount();
         if (transactionCount > 0) {
           safelySetStatus("synchronizing");
+          localDB.transitionDiagnostics("resynchronizing");
           await synchronizeTransactions();
         }
 
         hasBootstrappedRef.current = true;
+        localDB.transitionDiagnostics("ready", {
+          result: "success",
+          recoverability: "success",
+        });
       } catch (error) {
         console.error(
           "failed to bootstrap transaction synchronization:",

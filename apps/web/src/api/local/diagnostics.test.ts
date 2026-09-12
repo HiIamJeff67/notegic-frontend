@@ -1,7 +1,7 @@
 import {
   createLocalDBDiagnostics,
   type LocalDBDiagnostics,
-} from "./local-database-diagnostics";
+} from "./diagnostics";
 
 const createStorage = () => {
   const values = new Map<string, string>();
@@ -37,6 +37,8 @@ describe("local database diagnostics", () => {
     expect(state.previousPhase).toBe("migrating");
     expect(state.currentVersion).toBe(2);
     expect(state.targetVersion).toBe(4);
+    expect(state.result).toBe("success");
+    expect(state.pendingCount).toBe(0);
   });
 
   it("keeps the latest worker events for failure diagnosis", () => {
@@ -59,5 +61,30 @@ describe("local database diagnostics", () => {
         updatedAt: 1,
       },
     ]);
+  });
+
+  it("notifies subscribers when a phase changes", () => {
+    const diagnostics = createLocalDBDiagnostics(
+      createStorage(),
+      "diagnostics",
+      "worker-connection-pending"
+    );
+    const listener = jest.fn();
+    const unsubscribe = diagnostics.subscribe(listener);
+
+    diagnostics.transition("manual-recovery", {
+      result: "manual-recovery",
+      recoverability: "manual-recovery",
+      errorCode: "LOCAL_DB_RUNTIME_FAILURE",
+      errorMessage: "worker failed",
+    });
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+    diagnostics.transition("ready", {
+      result: "success",
+      recoverability: "success",
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

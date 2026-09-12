@@ -75,9 +75,8 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "ClientGateway の API キー contract がデプロイされるとキー管理を利用できます。",
       },
       upgrade: {
-        title: "プランをアップグレード",
-        description:
-          "プランの上限を比較し、適したワークスペース規模を選びます。",
+        title: "プラン上限",
+        description: "パブリックベータで利用できるプラン上限を確認します。",
         accountPlan: "アカウントプラン",
         active: "有効",
         status: "状態",
@@ -112,20 +111,26 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         yearlyPlan: "Notegic {{plan}} 年額プラン",
         paymentNotice:
           "UI とバックエンドのデータモデルは準備済みです。外部決済フローのデプロイ後に、支払い、購読、プラン変更 API を接続します。",
-        betaTitle: "クローズドベータ中",
-        betaDescription:
-          "Notegic のテストと改善のため、有料プランは現在停止しています。クローズドベータ中はサブスクリプション不要で利用できます。",
-        plansPausedTitle: "有料プランは後日開始予定です",
-        plansPausedDescription:
-          "クローズドベータ中は価格表示およびプラン変更を利用できません。",
         supportTitle: "Notegic を支援する",
         supportDescription:
-          "Notegic はクローズドベータ中、無料で利用できます。開発を支援したい場合は、コーヒーをごちそうしていただけます。完全に任意です。",
+          "Notegic はパブリックベータ中です。製品改善に伴い、データがリセットまたは削除される場合があります。支援は完全に任意で、プランは変更されません。",
         supportAction: "コーヒーをごちそうする",
+        betaEntitlementTitle: "データ削除を伴うパブリックベータ",
+        betaEntitlementDescription:
+          "ベータ期間中の新規アカウントには Pro レベルの上限が適用されます。データはリセットまたは削除される場合があり、支援によってプランは変わりません。",
         rootShelves: "ルートシェルフ",
+        blockPacks: "ブロックパック",
         materials: "素材",
+        additionalItems: "追加アイテム",
+        subShelvesPerRootShelf: "ルートシェルフごとのサブシェルフ",
+        itemsPerRootShelf: "ルートシェルフごとのアイテム",
+        blocksPerBlockPack: "ブロックパックごとのブロック",
         materialSize: "素材サイズ",
         stations: "ステーション",
+        routineTags: "ルーティンタグ",
+        routinesPerStation: "ステーションごとのルーティン",
+        taskAttempts: "ルーティンタスクの試行回数",
+        realtimeRoomSubscribers: "リアルタイムルームの参加者",
         freeNote: "はじめに",
         freeBestFor: "個人利用と小規模データベース",
         proNote: "安定した拡張",

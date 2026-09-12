@@ -1,5 +1,6 @@
 import type { UUID } from "crypto";
 import RoutineTaskDependencyGraphEditor from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphEditor";
+import { RoutineTaskDependencyGraphDraftProvider } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 
 interface RoutineTaskDependencyGraphEditorPageProps {
   routineId: UUID;
@@ -8,7 +9,12 @@ interface RoutineTaskDependencyGraphEditorPageProps {
 const RoutineTaskDependencyGraphEditorPage = ({
   routineId,
 }: RoutineTaskDependencyGraphEditorPageProps) => (
-  <RoutineTaskDependencyGraphEditor routineId={routineId} />
+  <RoutineTaskDependencyGraphDraftProvider
+    key={routineId}
+    routineId={routineId}
+  >
+    <RoutineTaskDependencyGraphEditor routineId={routineId} />
+  </RoutineTaskDependencyGraphDraftProvider>
 );
 
 export default RoutineTaskDependencyGraphEditorPage;

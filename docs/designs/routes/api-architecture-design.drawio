@@ -1,5 +1,5 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36">
-  <diagram name="第1頁" id="m_Hs1AJgEOYSMR9rUCcY">
+  <diagram name="Page 1" id="m_Hs1AJgEOYSMR9rUCcY">
     <mxGraphModel dx="1471" dy="1631" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -99,7 +99,7 @@
         <mxCell id="RoSgpbQDArmf0p5dOoAb-25" parent="RoSgpbQDArmf0p5dOoAb-8" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;Database&lt;/font&gt;" vertex="1">
           <mxGeometry height="70.58823529411765" width="400" x="60" y="381.1764705882353" as="geometry" />
         </mxCell>
-        <mxCell id="RoSgpbQDArmf0p5dOoAb-52" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Client&lt;/h1&gt;&lt;div&gt;- 將錯誤包裝到 useLanguage 的 t() 翻譯函數內得到最終完整錯誤訊息再透過 toast 輸出&lt;/div&gt;" vertex="1">
+        <mxCell id="RoSgpbQDArmf0p5dOoAb-52" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Client&lt;/h1&gt;&lt;div&gt;- Wrap errors with the useLanguage t() translation function to produce the final complete error message, then display it through a toast.&lt;/div&gt;" vertex="1">
           <mxGeometry height="105" width="180" x="640" y="-660" as="geometry" />
         </mxCell>
         <mxCell id="AjWPsFjQNDLMv6rMPjqg-17" connectable="0" parent="1" style="group" value="" vertex="1">

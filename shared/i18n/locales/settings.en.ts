@@ -75,9 +75,8 @@ export const EnglishSettingsTranslation = {
           "Key management will be available when the ClientGateway API-key contract is deployed.",
       },
       upgrade: {
-        title: "Upgrade plan",
-        description:
-          "Compare plan limits and choose the right workspace scale.",
+        title: "Plan limits",
+        description: "Review the limits available during the public beta.",
         accountPlan: "Account plan",
         active: "Active",
         status: "Status",
@@ -111,20 +110,26 @@ export const EnglishSettingsTranslation = {
         yearlyPlan: "Notegic yearly {{plan}} plan",
         paymentNotice:
           "The interface and backend data model are ready. Payments, subscriptions, and plan-change APIs will be connected after the external payment flow is deployed.",
-        betaTitle: "Closed beta",
-        betaDescription:
-          "Paid plans are paused while we test and improve Notegic. No subscription is required during the closed beta.",
-        plansPausedTitle: "Paid plans are coming later",
-        plansPausedDescription:
-          "Pricing and plan changes are unavailable during the closed beta.",
         supportTitle: "Support Notegic",
         supportDescription:
-          "Notegic is free during the closed beta. If you would like to support its development, you can buy me a coffee—completely optional.",
+          "Notegic is in public beta. Data may be reset or deleted as we improve the product. Support is optional and does not change your plan.",
         supportAction: "Buy me a coffee",
+        betaEntitlementTitle: "Destructive public beta",
+        betaEntitlementDescription:
+          "New accounts receive Pro-level limits during the beta. Beta data may be reset or deleted, and optional support does not change your plan.",
         rootShelves: "Root shelves",
+        blockPacks: "Block packs",
         materials: "Materials",
+        additionalItems: "Additional items",
+        subShelvesPerRootShelf: "Sub-shelves per root shelf",
+        itemsPerRootShelf: "Items per root shelf",
+        blocksPerBlockPack: "Blocks per block pack",
         materialSize: "Material size",
         stations: "Stations",
+        routineTags: "Routine tags",
+        routinesPerStation: "Routines per station",
+        taskAttempts: "Routine-task attempts",
+        realtimeRoomSubscribers: "Realtime room subscribers",
         freeNote: "Getting started",
         freeBestFor: "Personal trials and small databases",
         proNote: "Steady growth",

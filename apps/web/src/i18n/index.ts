@@ -1,5 +1,3 @@
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
 import {
   isSupportedLanguage,
   resources,
@@ -18,16 +16,8 @@ i18n.use(initReactI18next).init({
 });
 
 export const syncStoredLanguage = () => {
-  const storedLanguage = LocalStorageManipulator.getItemByKey(
-    LocalStorageKey.language
-  );
-  const code =
-    typeof storedLanguage === "string"
-      ? storedLanguage
-      : (storedLanguage as { code?: unknown } | null)?.code;
-
-  if (isSupportedLanguage(code)) {
-    void i18n.changeLanguage(code);
+  if (isSupportedLanguage(i18n.language)) {
+    document.documentElement.lang = i18n.language;
   }
 };
 
@@ -36,7 +26,6 @@ if (typeof window !== "undefined") {
     if (!isSupportedLanguage(language)) return;
 
     document.documentElement.lang = language;
-    LocalStorageManipulator.setItem(LocalStorageKey.language, language);
   });
 }
 

@@ -7,6 +7,12 @@ import { IndexedDBKey } from "@shared/types/indexedDB.type";
 import type { UUID } from "crypto";
 
 export class LocalYjsDocumentStore {
+  private static readOnly = false;
+
+  static setReadOnly(value: boolean): void {
+    LocalYjsDocumentStore.readOnly = value;
+  }
+
   static async load(
     userPublicId: string | null,
     blockPackId: UUID
@@ -28,6 +34,9 @@ export class LocalYjsDocumentStore {
     stateVector: Uint8Array,
     needsFlush: boolean
   ): Promise<void> {
+    if (LocalYjsDocumentStore.readOnly) {
+      throw new Error("local database is in read-only recovery mode");
+    }
     if (!userPublicId) return;
 
     const nextContent: BlockPackYjsDocumentCacheContent = {
@@ -76,6 +85,9 @@ export class LocalYjsDocumentStore {
   }
 
   static async clear(userPublicId: string | null): Promise<void> {
+    if (LocalYjsDocumentStore.readOnly) {
+      throw new Error("local database is in read-only recovery mode");
+    }
     if (!userPublicId) return;
     const [
       isRemoved,
@@ -108,6 +120,9 @@ export class LocalYjsDocumentStore {
     userPublicId: string | null,
     blockPackId: UUID
   ): Promise<void> {
+    if (LocalYjsDocumentStore.readOnly) {
+      throw new Error("local database is in read-only recovery mode");
+    }
     if (!userPublicId) return;
     const isSaved = await IndexedDBManipulator.updateItem(
       IndexedDBKey.blockPackYjsDocuments,
@@ -131,6 +146,9 @@ export class LocalYjsDocumentStore {
     userPublicId: string | null,
     cutoff: Date
   ): Promise<void> {
+    if (LocalYjsDocumentStore.readOnly) {
+      throw new Error("local database is in read-only recovery mode");
+    }
     if (!userPublicId) return;
     const isSaved = await IndexedDBManipulator.updateItem(
       IndexedDBKey.blockPackYjsDocuments,
@@ -157,6 +175,9 @@ export class LocalYjsDocumentStore {
     blockPackId: UUID,
     update: Uint8Array
   ): Promise<void> {
+    if (LocalYjsDocumentStore.readOnly) {
+      throw new Error("local database is in read-only recovery mode");
+    }
     if (!userPublicId) return;
     const draft: BlockPackYjsRejectedDraft = {
       blockPackId,

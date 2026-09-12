@@ -36,14 +36,15 @@ import {
   useGetRoutineTaskDependenciesByRoutineId,
   useUpdateRoutineTaskDependencyByRoutineId,
 } from "@/api/hooks/routineTaskDependency.hook";
-import {
-  loadRoutineTaskDependencyGraphDraft,
-  saveRoutineTaskDependencyGraphDraft,
-} from "@/api/local/routine-task-dependency-graph-draft";
 import type { RoutineTaskDependencyGraphDraftEdge } from "@/api/local/schemas";
 import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { useModal, useStationRoutine, useTheme } from "@/hooks";
+import {
+  useModal,
+  useRoutineTaskDependencyGraphDraft,
+  useStationRoutine,
+  useTheme,
+} from "@/hooks";
 import RoutineTaskDependencyGraphCanvas from "./RoutineTaskDependencyGraphCanvas";
 import RoutineTaskDependencyGraphToolbar from "./RoutineTaskDependencyGraphToolbar";
 import RoutineTaskDependencyInspector from "./RoutineTaskDependencyInspector";
@@ -61,6 +62,11 @@ const RoutineTaskDependencyGraphEditor = ({
   const sidebarManager = useSidebar();
   const themeManager = useTheme();
   const stationRoutineManager = useStationRoutine();
+  const {
+    draft: localDraft,
+    loadDraft,
+    saveDraft,
+  } = useRoutineTaskDependencyGraphDraft();
   const routineQuery = useGetMyRoutineById();
   const routineTasksQuery = useGetMyRoutineTasksByRoutineId();
   const routineTaskDependenciesQuery =
@@ -82,9 +88,6 @@ const RoutineTaskDependencyGraphEditor = ({
   >(undefined);
   const [isRetryingSync, setIsRetryingSync] = useState(false);
   const [reloadVersion, setReloadVersion] = useState(0);
-  const [localDraft, setLocalDraft] = useState<
-    Awaited<ReturnType<typeof loadRoutineTaskDependencyGraphDraft>> | undefined
-  >(undefined);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [dependencyDescription, setDependencyDescription] = useState("");
   const [dependencyProgress, setDependencyProgress] = useState(0);
@@ -101,7 +104,6 @@ const RoutineTaskDependencyGraphEditor = ({
     const loadRoutineTasks = async () => {
       setIsLoading(true);
       setRoutineTasks([]);
-      setLocalDraft(undefined);
       setSelectedEdgeId(null);
       try {
         await stationRoutineManager.initializeStationRoutineData();
@@ -127,11 +129,10 @@ const RoutineTaskDependencyGraphEditor = ({
           param: { routineId },
         });
         const fetchedDependencies: RoutineTaskDependency[] = response.data;
-        const draft = await loadRoutineTaskDependencyGraphDraft(routineId);
+        const draft = await loadDraft();
         if (!cancelled) {
           setRoutineTasks(routineTasksResponse.data);
           setRoutineTaskDependencies(fetchedDependencies);
-          setLocalDraft(draft);
           const invalidDraftEdge = draft?.edges.find(
             edge => edge.syncStatus === "invalid"
           );
@@ -161,7 +162,7 @@ const RoutineTaskDependencyGraphEditor = ({
     return () => {
       cancelled = true;
     };
-  }, [routineId, reloadVersion]);
+  }, [loadDraft, reloadVersion, routineId]);
 
   const graphNodes = useMemo<RoutineTaskGraphNodeType[]>(
     () =>
@@ -345,20 +346,12 @@ const RoutineTaskDependencyGraphEditor = ({
           };
         }
       );
-      await saveRoutineTaskDependencyGraphDraft(routineId, {
+      await saveDraft({
         nodes: nodes.map(node => ({
           id: node.id,
           position: node.position,
         })),
         edges: syncedEdges,
-      });
-      setLocalDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: syncedEdges,
-        updatedAt: new Date(),
       });
     } catch (error) {
       const message =
@@ -397,12 +390,10 @@ const RoutineTaskDependencyGraphEditor = ({
           position: node.position,
         })),
         edges: failedDraftEdges,
-        updatedAt: new Date(),
       };
       setEdges(nextEdges);
-      setLocalDraft(nextDraft);
       try {
-        await saveRoutineTaskDependencyGraphDraft(routineId, nextDraft);
+        await saveDraft(nextDraft);
       } catch {
         // Keep the attempted edge visible so the user can correct it in place.
       }
@@ -460,20 +451,12 @@ const RoutineTaskDependencyGraphEditor = ({
             operation: "delete",
           });
         }
-        await saveRoutineTaskDependencyGraphDraft(routineId, {
+        await saveDraft({
           nodes: nodes.map(node => ({
             id: node.id,
             position: node.position,
           })),
           edges: syncedEdges,
-        });
-        setLocalDraft({
-          nodes: nodes.map(node => ({
-            id: node.id,
-            position: node.position,
-          })),
-          edges: syncedEdges,
-          updatedAt: new Date(),
         });
       } catch (error) {
         const message =
@@ -509,12 +492,10 @@ const RoutineTaskDependencyGraphEditor = ({
             position: node.position,
           })),
           edges: failedDraftEdges,
-          updatedAt: new Date(),
         };
         setEdges(nextEdges);
-        setLocalDraft(nextDraft);
         try {
-          await saveRoutineTaskDependencyGraphDraft(routineId, nextDraft);
+          await saveDraft(nextDraft);
         } catch {
           // Keep the edge removed so the user can continue correcting the graph.
         }
@@ -661,20 +642,12 @@ const RoutineTaskDependencyGraphEditor = ({
     }
 
     try {
-      await saveRoutineTaskDependencyGraphDraft(routine.id, {
+      await saveDraft({
         nodes: nodes.map(node => ({
           id: node.id,
           position: node.position,
         })),
         edges: nextDraftEdges,
-      });
-      setLocalDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: nextDraftEdges,
-        updatedAt: new Date(),
       });
       toast[failedCount === 0 ? "success" : "error"](
         t(
@@ -816,20 +789,12 @@ const RoutineTaskDependencyGraphEditor = ({
           };
         }
       );
-      await saveRoutineTaskDependencyGraphDraft(routineId, {
+      await saveDraft({
         nodes: nodes.map(node => ({
           id: node.id,
           position: node.position,
         })),
         edges: draftEdges,
-      });
-      setLocalDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: draftEdges,
-        updatedAt: new Date(),
       });
     } catch (error) {
       const message =
@@ -875,7 +840,6 @@ const RoutineTaskDependencyGraphEditor = ({
           position: node.position,
         })),
         edges: failedDraftEdges,
-        updatedAt: new Date(),
       };
       setEdges(currentEdges =>
         currentEdges.map(edge =>
@@ -890,9 +854,8 @@ const RoutineTaskDependencyGraphEditor = ({
             : edge
         )
       );
-      setLocalDraft(nextDraft);
       try {
-        await saveRoutineTaskDependencyGraphDraft(routineId, nextDraft);
+        await saveDraft(nextDraft);
       } catch {
         // Keep the edited values visible so the user can correct them in place.
       }

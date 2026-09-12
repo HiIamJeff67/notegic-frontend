@@ -1,9 +1,9 @@
+import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
 import {
   RealtimePermission,
   RealtimePermissionSchema,
 } from "@shared/api/interfaces/enums";
 import { getRealtimeWebSocketURL } from "@shared/api/url";
-import type { z } from "zod";
 import {
   encodeRealtimeBinaryFrame,
   encodeRealtimePingFrame,
@@ -25,6 +25,7 @@ import {
   type RealtimeRoutineTaskLifecycleFrame,
   type RealtimeSubscribedFrame,
 } from "@shared/api/websocket/types";
+import type { z } from "zod";
 
 type RealtimeClientOptions = {
   getConnectionTicket: () => Promise<RealtimeConnectionTicket>;
@@ -54,6 +55,7 @@ type RealtimeClientOptions = {
   onResourceEvent?: (frame: RealtimeResourceEventFrame) => void;
   onNotification?: (frame: RealtimeNotificationFrame) => void;
   onRoutineTaskLifecycle?: (frame: RealtimeRoutineTaskLifecycleFrame) => void;
+  onAuthFailure?: () => void;
   onError?: (error: unknown) => void;
 };
 
@@ -344,6 +346,11 @@ export class RealtimeClient {
       };
     } catch (error) {
       this.options.onState?.("error");
+      if (isAuthenticationFailure(error)) {
+        this.stop();
+        this.options.onAuthFailure?.();
+        return;
+      }
       this.options.onError?.(error);
       if (this.shouldReconnect) this.scheduleReconnect();
     }
@@ -532,6 +539,11 @@ export class RealtimeClient {
         channel.pendingRequestId = null;
       }
       this.channelByRequestId.delete(requestId);
+      if (isAuthenticationFailure(error)) {
+        this.stop();
+        this.options.onAuthFailure?.();
+        return;
+      }
       this.options.onChannelStatus?.(channel.blockPackId, "error");
       this.options.onError?.(error);
     }

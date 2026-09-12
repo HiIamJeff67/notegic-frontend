@@ -5,8 +5,8 @@ boundaries or runtime concerns.
 
 ## Existing design artifacts
 
-- [Block editor event handling flow](../block-editor-event-handling-flow-chart.drawio)
-- [API architecture design](../api-architecture-design.drawio)
+- [Block editor event handling flow](block-editor-event-handling-flow-chart.drawio)
+- [API architecture design](../routes/api-architecture-design.drawio)
 - [API, query, storage, and platform boundaries](api-query-storage-platform-boundaries.md)
 
 ## Topics for this repository

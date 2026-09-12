@@ -106,8 +106,8 @@ Browser-only APIs, CSS, Web assets, and route/UI code belong here under
 
 ## Further reading
 
-- [Frontend architecture](../../docs/codebase-design/frontend-architecture.md)
-- [Frontend contracts and code generation](../../docs/api-route-design/frontend-contracts-and-codegen.md)
-- [API, query, storage, and platform boundaries](../../docs/system-design/api-query-storage-platform-boundaries.md)
+- [Frontend architecture](../../docs/designs/codebases/frontend-architecture.md)
+- [Frontend contracts and code generation](../../docs/designs/routes/frontend-contracts-and-codegen.md)
+- [API, query, storage, and platform boundaries](../../docs/designs/systems/api-query-storage-platform-boundaries.md)
 - [Cloudflare Workers deployment](../../docs/runbooks/cloudflare-workers-builds.md)
 - [Frontend documentation map](../../docs/README.md)

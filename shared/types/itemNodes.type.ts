@@ -10,7 +10,7 @@ export interface MaterialNode {
   size: number;
   contentType: string;
   parseMediaType: string;
-  downloadURL: string | null;
+  objectKey: string;
   deletedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;

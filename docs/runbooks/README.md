@@ -85,13 +85,17 @@ On startup, local database initialization follows this sequence:
    transaction synchronization to continue.
 
 The observable diagnostic phases are `worker-connection-pending`,
-`worker-connected`, `reading-version`, `bootstrapping`, `migrating`,
-`verifying`, `ready`, `failed`, and `disabled`. Worker-level diagnostics also
-report OPFS/SQLite initialization, nested-worker errors, and individual query
-failures. A failure must leave the database at its previous committed version;
-the next startup retries from that version. An empty version-`0` database is
-bootstrapped from `bootstrap.sql`; a non-empty version-`0` database requires
-explicit investigation before any destructive recovery.
+`worker-connected`, `migration-lock-pending`, `migration-lock-acquired`,
+`reading-version`, `bootstrapping`, `migrating`, `verifying-schema`, `ready`,
+`failed`, `needs-action`, and `manual-recovery`. Recovery-only phases include
+operation draining, Yjs flushing, rebuildability checks, export, and storage
+clearing. Worker-level diagnostics also report OPFS/SQLite initialization,
+nested-worker errors, and individual query failures. A failure must leave the
+database at its previous committed version; the next startup retries from that
+version. An empty version-`0` database is bootstrapped from `bootstrap.sql`; a
+non-empty version-`0` database requires explicit investigation before any
+destructive recovery. See [Frontend Local Database Recovery](local-database-recovery.md)
+for the user-facing recovery and export contract.
 
 ### Schema-change checklist
 

@@ -22,5 +22,5 @@ The GraphQL source and frontend codegen inputs currently live under
 `shared/api/graphql/generated/`. The backend public contracts remain the
 source of truth; the frontend consumes them and generates client artifacts.
 Generated output is never edited by hand. See
-[GraphQL conventions](graphql/README.md) and [frontend contracts and codegen](../docs/api-route-design/frontend-contracts-and-codegen.md)
+[GraphQL conventions](graphql/README.md) and [frontend contracts and codegen](../docs/designs/routes/frontend-contracts-and-codegen.md)
 for the workflow.

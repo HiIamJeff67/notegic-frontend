@@ -125,9 +125,9 @@ generates `apps/web/.output/server/wrangler.json`; deploy with
 default for the current SSR/server-capable application. Cloudflare Pages
 remains a static-output option only when SSR/server functions are not required.
 The repository CI gates and Workers Builds monorepo settings are documented in
-the [Cloudflare Workers deployment runbook](../runbooks/cloudflare-workers-builds.md).
+the [Cloudflare Workers deployment runbook](../../runbooks/cloudflare-workers-builds.md).
 
 The detailed contract, codegen, API, query, storage, and deployment decisions are documented in:
 
-- [Frontend contracts and codegen](../api-route-design/frontend-contracts-and-codegen.md)
-- [API, query, storage, and platform boundaries](../system-design/api-query-storage-platform-boundaries.md)
+- [Frontend contracts and codegen](../routes/frontend-contracts-and-codegen.md)
+- [API, query, storage, and platform boundaries](../systems/api-query-storage-platform-boundaries.md)

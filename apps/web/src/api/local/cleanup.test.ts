@@ -1,6 +1,7 @@
 jest.mock("@shared/lib/indexedDBManipulator", () => ({
   IndexedDBManipulator: {
     getItemByKey: jest.fn(),
+    updateItem: jest.fn(),
     setItem: jest.fn(),
     removeItem: jest.fn(),
   },
@@ -16,26 +17,49 @@ jest.mock("@/api/local/db", () => ({
     },
   },
 }));
-jest.mock("@shared/blockpack/localYjsDocumentStore", () => ({
-  LocalYjsDocumentStore: {
-    cleanup: jest.fn(),
-  },
-}));
 
-import { cleanupLocalData } from "@/api/local/local-data.cleanup";
-import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
+import { cleanupLocalData } from "@/api/local/cleanup";
 
 const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);
+const updateItem = jest.mocked(IndexedDBManipulator.updateItem);
 const setItem = jest.mocked(IndexedDBManipulator.setItem);
 const removeItem = jest.mocked(IndexedDBManipulator.removeItem);
-const cleanupYjs = jest.mocked(LocalYjsDocumentStore.cleanup);
 
 describe("local data cleanup", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2026-08-20T00:00:00.000Z"));
+    let yjsCache = {
+      header: { totalSize: 3 },
+      contents: [
+        {
+          blockPackId: "expired",
+          update: new Uint8Array(1),
+          stateVector: new Uint8Array(1),
+          byteSize: 1,
+          needsFlush: false,
+          updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+        },
+        {
+          blockPackId: "pending",
+          update: new Uint8Array(1),
+          stateVector: new Uint8Array(1),
+          byteSize: 1,
+          needsFlush: true,
+          updatedAt: new Date("2026-07-01T00:00:00.000Z"),
+        },
+        {
+          blockPackId: "recent",
+          update: new Uint8Array(1),
+          stateVector: new Uint8Array(1),
+          byteSize: 1,
+          needsFlush: false,
+          updatedAt: new Date("2026-08-01T00:00:00.000Z"),
+        },
+      ],
+    };
     getItemByKey.mockImplementation(async key => {
       if (key === IndexedDBKey.backgroundImages) {
         return {
@@ -102,38 +126,18 @@ describe("local data cleanup", () => {
         } as never;
       }
       if (key === IndexedDBKey.blockPackYjsDocuments) {
-        return {
-          header: { totalSize: 3 },
-          contents: [
-            {
-              blockPackId: "expired",
-              update: new Uint8Array(1),
-              byteSize: 1,
-              needsFlush: false,
-              updatedAt: new Date("2026-07-01T00:00:00.000Z"),
-            },
-            {
-              blockPackId: "pending",
-              update: new Uint8Array(1),
-              byteSize: 1,
-              needsFlush: true,
-              updatedAt: new Date("2026-07-01T00:00:00.000Z"),
-            },
-            {
-              blockPackId: "recent",
-              update: new Uint8Array(1),
-              byteSize: 1,
-              needsFlush: false,
-              updatedAt: new Date("2026-08-01T00:00:00.000Z"),
-            },
-          ],
-        } as never;
+        return yjsCache as never;
       }
       return null as never;
     });
+    updateItem.mockImplementation(async (key, updater) => {
+      if (key === IndexedDBKey.blockPackYjsDocuments) {
+        yjsCache = updater(yjsCache as never) as typeof yjsCache;
+      }
+      return true;
+    });
     setItem.mockResolvedValue(true);
     removeItem.mockResolvedValue(true);
-    cleanupYjs.mockReset();
   });
 
   afterEach(() => {
@@ -160,9 +164,16 @@ describe("local data cleanup", () => {
         ]),
       })
     );
-    expect(cleanupYjs).toHaveBeenCalledWith(
-      "user-a",
-      new Date("2026-07-21T00:00:00.000Z")
+    await expect(
+      getItemByKey(IndexedDBKey.blockPackYjsDocuments, "user-a")
+    ).resolves.toEqual(
+      expect.objectContaining({
+        header: { totalSize: 2 },
+        contents: expect.arrayContaining([
+          expect.objectContaining({ blockPackId: "pending", needsFlush: true }),
+          expect.objectContaining({ blockPackId: "recent" }),
+        ]),
+      })
     );
   });
 });

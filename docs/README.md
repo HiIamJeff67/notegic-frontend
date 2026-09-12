@@ -24,22 +24,25 @@ describe backend implementation as if it belongs to this repository.
 
 ## Document map
 
-| Directory | Scope |
+| Area | Scope |
 | --- | --- |
-| [codebase-design](codebase-design/) | Current Web structure, target monorepo, ownership, and dependency direction |
-| [api-route-design](api-route-design/) | Frontend transport entry points and client-facing API concerns |
-| [system-design](system-design/) | Editor, synchronization, local data, and cross-platform design notes |
+| [designs](designs/README.md) | Current route, codebase, and system design decisions |
 | [conventions](conventions/) | Naming, UI, styling, icons, generated code, and implementation conventions |
 | [runbooks](runbooks/) | Local development, verification, code generation, and troubleshooting procedures |
 | [devlogs](devlogs/) | Dated frontend development and architecture records |
 
-## Existing diagrams
+## Design map
 
-These diagrams are existing frontend design artifacts. They remain at their
-current paths until a dedicated documentation migration moves them:
+- [Routes](designs/routes/README.md) documents frontend transport entry points,
+  contracts, and client-facing API concerns.
+- [Codebases](designs/codebases/README.md) documents Web structure, target
+  monorepo ownership, and dependency direction.
+- [Systems](designs/systems/README.md) documents editor, synchronization,
+  local data, and cross-platform boundaries.
 
-- [API architecture design](api-architecture-design.drawio)
-- [Block editor event handling flow](block-editor-event-handling-flow-chart.drawio)
+Keep current design decisions in `designs/`, contributor rules in
+`conventions/`, repeatable procedures in `runbooks/`, and dated implementation
+context in `devlogs/`.
 
 ## Repository boundary
 

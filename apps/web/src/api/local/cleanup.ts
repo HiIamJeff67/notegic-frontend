@@ -1,6 +1,3 @@
-import { localDB } from "@/api/local/db";
-import { cleanupMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
-import { User } from "@/api/local/schemas";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import type {
@@ -9,6 +6,9 @@ import type {
 } from "@shared/types/imageInfo.type";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
 import { eq } from "drizzle-orm";
+import { localDB } from "@/api/local/db";
+import { User } from "@/api/local/schemas";
+import { cleanupMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 const getStoredTime = (value: Date | undefined, fallback = 0): number => {
   const time = value ? new Date(value).getTime() : fallback;
@@ -18,6 +18,8 @@ const getStoredTime = (value: Date | undefined, fallback = 0): number => {
 export const cleanupLocalData = async (
   cleanupAfterDays: number
 ): Promise<void> => {
+  if (localDB.isReadOnly) return;
+
   const retentionDays = Math.max(1, Math.floor(cleanupAfterDays));
   const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
   await cleanupMaterialAttachmentCache(cutoff);
@@ -99,7 +101,7 @@ export const cleanupLocalData = async (
       }
     }
   } catch (error) {
-    console.error("Failed to resolve local Yjs cleanup namespace.", error);
+    console.error("Failed to clean up local database records.", error);
   }
   await LocalYjsDocumentStore.cleanup(userPublicId, new Date(cutoff));
 };

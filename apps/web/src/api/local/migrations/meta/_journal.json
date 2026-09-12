@@ -8,6 +8,13 @@
       "when": 1788513571957,
       "tag": "0000_naive_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789108085253,
+      "tag": "0001_solid_the_spike",
+      "breakpoints": true
     }
   ]
 }

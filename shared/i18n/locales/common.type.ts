@@ -115,6 +115,66 @@ export interface CommonTranslation {
     };
     localDatabaseError: string;
   };
+  localDBRecovery: {
+    title: string;
+    description: string;
+    technicalDetails: string;
+    phases: {
+      workerConnectionPending: string;
+      workerConnected: string;
+      migrationLockPending: string;
+      migrationLockAcquired: string;
+      readingVersion: string;
+      freezingLocalWrites: string;
+      waitingForLocalOperations: string;
+      checkingTransactionQueue: string;
+      flushingYjs: string;
+      checkingRebuildability: string;
+      exportingLocalData: string;
+      clearingLocalStorage: string;
+      rebuilding: string;
+      bootstrapping: string;
+      migrating: string;
+      verifying: string;
+      verifyingSchema: string;
+      resynchronizing: string;
+      ready: string;
+      failed: string;
+      needsAction: string;
+      manualRecovery: string;
+    };
+    labels: {
+      currentPhase: string;
+      recoveryResult: string;
+      recoverability: string;
+      databaseVersion: string;
+      targetVersion: string;
+    };
+    results: {
+      success: string;
+      retryable: string;
+      needsAction: string;
+      safeToRebuild: string;
+      manualRecovery: string;
+    };
+    actions: {
+      retry: string;
+      reconnect: string;
+      exportDiagnostics: string;
+      exportLocalData: string;
+      checkRebuildEligibility: string;
+      continueReadOnly: string;
+      rebuildLocalData: string;
+    };
+    confirmExport: string;
+    errors: {
+      retryFailed: string;
+      exportFailed: string;
+      readOnlyUnavailable: string;
+      rebuildFailed: string;
+      preflightFailed: string;
+    };
+  };
   settings: {
     accountSettings: string;
     preferences: string;

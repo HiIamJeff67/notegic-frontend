@@ -77,7 +77,7 @@ export class RootShelfManipulator {
       (materialNode.name?.length ?? 0) * 2 +
       (materialNode.contentType?.length ?? 0) * 2 +
       (materialNode.parseMediaType?.length ?? 0) * 2 +
-      (materialNode.downloadURL?.length ?? 0) * 2 +
+      materialNode.objectKey.length * 2 +
       3 * BytesOfDate // deletedAt/updatedAt/createdAt
     );
   }

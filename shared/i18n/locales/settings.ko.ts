@@ -74,9 +74,8 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "ClientGateway API 키 contract가 배포되면 키 관리를 사용할 수 있습니다.",
       },
       upgrade: {
-        title: "요금제 업그레이드",
-        description:
-          "요금제 한도를 비교하고 알맞은 작업 공간 규모를 선택합니다.",
+        title: "요금제 한도",
+        description: "공개 베타에서 사용할 수 있는 요금제 한도를 확인합니다.",
         accountPlan: "계정 요금제",
         active: "활성",
         status: "상태",
@@ -110,20 +109,26 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         yearlyPlan: "Notegic {{plan}} 연간 플랜",
         paymentNotice:
           "UI와 백엔드 데이터 모델이 준비되었습니다. 외부 결제 흐름 배포 후 결제, 구독 및 요금제 변경 API를 연결합니다.",
-        betaTitle: "클로즈드 베타 진행 중",
-        betaDescription:
-          "Notegic을 테스트하고 개선하는 동안 유료 요금제는 일시 중지됩니다. 클로즈드 베타 기간에는 구독 없이 이용할 수 있습니다.",
-        plansPausedTitle: "유료 요금제는 추후 제공됩니다",
-        plansPausedDescription:
-          "클로즈드 베타 기간에는 가격과 요금제 변경을 이용할 수 없습니다.",
         supportTitle: "Notegic 지원하기",
         supportDescription:
-          "Notegic은 클로즈드 베타 기간 동안 무료입니다. 개발을 지원하고 싶다면 커피 한 잔을 보내 주세요. 전적으로 선택 사항입니다.",
+          "Notegic은 공개 베타 중입니다. 제품을 개선하는 과정에서 데이터가 재설정되거나 삭제될 수 있습니다. 지원은 전적으로 선택 사항이며 요금제는 변경되지 않습니다.",
         supportAction: "커피 한 잔 보내기",
+        betaEntitlementTitle: "데이터 삭제형 공개 베타",
+        betaEntitlementDescription:
+          "베타 기간에 새로 만든 계정에는 Pro 수준의 한도가 적용됩니다. 데이터는 초기화되거나 삭제될 수 있으며, 후원은 요금제를 변경하지 않습니다.",
         rootShelves: "루트 선반",
+        blockPacks: "블록 팩",
         materials: "자료",
+        additionalItems: "추가 항목",
+        subShelvesPerRootShelf: "루트 선반당 하위 선반",
+        itemsPerRootShelf: "루트 선반당 항목",
+        blocksPerBlockPack: "블록 팩당 블록",
         materialSize: "자료 크기",
         stations: "스테이션",
+        routineTags: "루틴 태그",
+        routinesPerStation: "스테이션당 루틴",
+        taskAttempts: "루틴 작업 시도 횟수",
+        realtimeRoomSubscribers: "실시간 룸 구독자",
         freeNote: "시작 수집",
         freeBestFor: "개인 체험 및 소규모 데이터베이스",
         proNote: "안정적 확장",

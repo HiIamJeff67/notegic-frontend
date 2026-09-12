@@ -95,7 +95,7 @@ export class SubShelfManipulator {
         size: material.size,
         contentType: material.contentType,
         parseMediaType: material.parseMediaType,
-        downloadURL: material.downloadURL ?? null,
+        objectKey: material.objectKey,
         deletedAt: material.deletedAt,
         updatedAt: material.updatedAt,
         createdAt: material.createdAt,

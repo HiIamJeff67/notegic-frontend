@@ -1,5 +1,3 @@
-import { cleanupLocalData } from "@/api/local/local-data.cleanup";
-import { clearMaterialAttachmentCache } from "@/api/local/material-attachment.cache";
 import { WebURLPathDictionary } from "@shared/constants";
 import {
   DashboardWidthFrameCountStep,
@@ -9,6 +7,8 @@ import {
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import React, { createContext, useEffect, useState } from "react";
+import { cleanupLocalData } from "@/api/local/cleanup";
+import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 export type PreferencePage =
   | "appearance"
@@ -100,13 +100,39 @@ export const defaultLocalPreferences: LocalPreferences = {
 };
 
 export const getPreferredStartPath = (preferences: LocalPreferences) => {
-  if (preferences.startSurface === "dashboard") {
-    return WebURLPathDictionary.app.dashboard._;
-  }
   if (preferences.startSurface === "routines") {
     return WebURLPathDictionary.app.routines._;
   }
   return WebURLPathDictionary.app.dashboard._;
+};
+
+const localPreferenceStorageKeys = [
+  "tactileFeedback",
+  "editorWidth",
+  "manualDashboardWidth",
+  "dashboardWidthFrameCount",
+  "editorFontSize",
+  "spellcheck",
+  "blockDragHandle",
+  "localVault",
+  "offlineQueue",
+  "cacheAttachments",
+  "cleanupAfterDays",
+  "clipboardGuard",
+  "clipboardGuardPatterns",
+  "desktopNotifications",
+] as const satisfies ReadonlyArray<keyof LocalPreferences>;
+
+const getLocalPreferenceStorageValue = (
+  preferences: Partial<LocalPreferences>
+): Partial<LocalPreferences> => {
+  const value: Partial<LocalPreferences> = {};
+  for (const key of localPreferenceStorageKeys) {
+    if (preferences[key] !== undefined) {
+      Object.assign(value, { [key]: preferences[key] });
+    }
+  }
+  return value;
 };
 
 export type LocalPreferencesContextValue = {
@@ -156,26 +182,24 @@ export const LocalPreferencesProvider = ({
 
     if (saved && typeof saved === "object" && !Array.isArray(saved)) {
       const savedPreferences = saved as Partial<LocalPreferences>;
+      const storedLocalPreferences =
+        getLocalPreferenceStorageValue(savedPreferences);
       setPreferences({
         ...defaultLocalPreferences,
-        ...savedPreferences,
-        manualDashboardWidth: savedPreferences.manualDashboardWidth === true,
-        startSurface:
-          savedPreferences.startSurface === "routines" ||
-          savedPreferences.startSurface === "dashboard"
-            ? savedPreferences.startSurface
-            : defaultLocalPreferences.startSurface,
+        ...storedLocalPreferences,
+        manualDashboardWidth:
+          storedLocalPreferences.manualDashboardWidth === true,
         dashboardWidthFrameCount:
-          typeof savedPreferences.dashboardWidthFrameCount === "number" &&
-          savedPreferences.dashboardWidthFrameCount >=
+          typeof storedLocalPreferences.dashboardWidthFrameCount === "number" &&
+          storedLocalPreferences.dashboardWidthFrameCount >=
             MinDashboardWidthFrameCount &&
-          savedPreferences.dashboardWidthFrameCount <=
+          storedLocalPreferences.dashboardWidthFrameCount <=
             MaxDashboardWidthFrameCount &&
-          (savedPreferences.dashboardWidthFrameCount -
+          (storedLocalPreferences.dashboardWidthFrameCount -
             MinDashboardWidthFrameCount) %
             DashboardWidthFrameCountStep ===
             0
-            ? savedPreferences.dashboardWidthFrameCount
+            ? storedLocalPreferences.dashboardWidthFrameCount
             : defaultLocalPreferences.dashboardWidthFrameCount,
       });
     }
@@ -204,7 +228,7 @@ export const LocalPreferencesProvider = ({
     if (!isReady) return;
     LocalStorageManipulator.setItem(
       LocalStorageKey.localPreferences,
-      preferences
+      getLocalPreferenceStorageValue(preferences)
     );
   }, [isReady, preferences]);
 

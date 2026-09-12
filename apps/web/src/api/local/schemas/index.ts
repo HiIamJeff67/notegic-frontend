@@ -14,5 +14,6 @@ export * from "./subShelf.schema";
 export * from "./test.schema";
 export * from "./transaction.schema";
 export * from "./user.schema";
+export * from "./userSetting.schema";
 export * from "./usersToShelves.schema";
 export * from "./usersToStations.schema";

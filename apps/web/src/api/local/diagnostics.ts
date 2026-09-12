@@ -3,12 +3,33 @@ export type LocalDBPhase =
   | "worker-starting"
   | "worker-connection-pending"
   | "worker-connected"
+  | "migration-lock-pending"
+  | "migration-lock-acquired"
   | "reading-version"
+  | "freezing-local-writes"
+  | "waiting-for-local-operations"
+  | "checking-transaction-queue"
+  | "flushing-yjs"
+  | "checking-rebuildability"
+  | "exporting-local-data"
+  | "clearing-local-storage"
+  | "rebuild-in-progress"
   | "bootstrapping"
   | "migrating"
   | "verifying"
+  | "verifying-schema"
+  | "resynchronizing"
   | "ready"
-  | "failed";
+  | "failed"
+  | "needs-action"
+  | "manual-recovery";
+
+export type LocalDBResult =
+  | "success"
+  | "retryable"
+  | "needs-action"
+  | "safe-to-rebuild"
+  | "manual-recovery";
 
 export type LocalDBWorkerDiagnosticStage =
   | "worker-module-evaluated"
@@ -54,8 +75,15 @@ export type LocalDBWorkerDiagnosticMessage = {
 export type LocalDBDiagnostics = {
   phase: LocalDBPhase;
   previousPhase: LocalDBPhase | null;
+  result: LocalDBResult;
+  recoverability: LocalDBResult;
   currentVersion: number | null;
   targetVersion: number | null;
+  pendingCount: number;
+  terminalFailureCount: number;
+  activeOperationCount: number;
+  errorCode: string | null;
+  errorMessage: string | null;
   error: string | null;
   updatedAt: number;
   workerEvents: LocalDBWorkerDiagnostic[];
@@ -98,12 +126,36 @@ const isLocalDBPhase = (value: unknown): value is LocalDBPhase =>
     "worker-starting",
     "worker-connection-pending",
     "worker-connected",
+    "migration-lock-pending",
+    "migration-lock-acquired",
     "reading-version",
+    "freezing-local-writes",
+    "waiting-for-local-operations",
+    "checking-transaction-queue",
+    "flushing-yjs",
+    "checking-rebuildability",
+    "exporting-local-data",
+    "clearing-local-storage",
+    "rebuild-in-progress",
     "bootstrapping",
     "migrating",
     "verifying",
+    "verifying-schema",
+    "resynchronizing",
     "ready",
     "failed",
+    "needs-action",
+    "manual-recovery",
+  ].includes(value);
+
+const isLocalDBResult = (value: unknown): value is LocalDBResult =>
+  typeof value === "string" &&
+  [
+    "success",
+    "retryable",
+    "needs-action",
+    "safe-to-rebuild",
+    "manual-recovery",
   ].includes(value);
 
 const isLocalDBWorkerDiagnosticStage = (
@@ -129,7 +181,18 @@ const readPersistedDiagnostics = (
   storageKey: string
 ): Pick<
   LocalDBDiagnostics,
-  "phase" | "currentVersion" | "targetVersion" | "error" | "workerEvents"
+  | "phase"
+  | "result"
+  | "recoverability"
+  | "currentVersion"
+  | "targetVersion"
+  | "pendingCount"
+  | "terminalFailureCount"
+  | "activeOperationCount"
+  | "errorCode"
+  | "errorMessage"
+  | "error"
+  | "workerEvents"
 > | null => {
   if (!storage) return null;
 
@@ -142,6 +205,16 @@ const readPersistedDiagnostics = (
 
     return {
       phase: persisted.phase,
+      result: isLocalDBResult(persisted.result)
+        ? persisted.result
+        : persisted.phase === "failed"
+          ? "manual-recovery"
+          : "success",
+      recoverability: isLocalDBResult(persisted.recoverability)
+        ? persisted.recoverability
+        : persisted.phase === "failed"
+          ? "manual-recovery"
+          : "success",
       currentVersion:
         typeof persisted.currentVersion === "number"
           ? persisted.currentVersion
@@ -150,6 +223,26 @@ const readPersistedDiagnostics = (
         typeof persisted.targetVersion === "number"
           ? persisted.targetVersion
           : null,
+      pendingCount:
+        typeof persisted.pendingCount === "number"
+          ? Math.max(0, Math.trunc(persisted.pendingCount))
+          : 0,
+      terminalFailureCount:
+        typeof persisted.terminalFailureCount === "number"
+          ? Math.max(0, Math.trunc(persisted.terminalFailureCount))
+          : 0,
+      activeOperationCount:
+        typeof persisted.activeOperationCount === "number"
+          ? Math.max(0, Math.trunc(persisted.activeOperationCount))
+          : 0,
+      errorCode:
+        typeof persisted.errorCode === "string" ? persisted.errorCode : null,
+      errorMessage:
+        typeof persisted.errorMessage === "string"
+          ? persisted.errorMessage
+          : typeof persisted.error === "string"
+            ? persisted.error
+            : null,
       error: typeof persisted.error === "string" ? persisted.error : null,
       workerEvents: Array.isArray(persisted.workerEvents)
         ? persisted.workerEvents.filter(isLocalDBWorkerDiagnostic).slice(-100)
@@ -169,8 +262,15 @@ export const createLocalDBDiagnostics = (
   let state: LocalDBDiagnostics = {
     phase: initialPhase,
     previousPhase: persisted?.phase ?? null,
+    result: persisted?.result ?? "success",
+    recoverability: persisted?.recoverability ?? "success",
     currentVersion: persisted?.currentVersion ?? null,
     targetVersion: persisted?.targetVersion ?? null,
+    pendingCount: persisted?.pendingCount ?? 0,
+    terminalFailureCount: persisted?.terminalFailureCount ?? 0,
+    activeOperationCount: persisted?.activeOperationCount ?? 0,
+    errorCode: persisted?.errorCode ?? null,
+    errorMessage: persisted?.errorMessage ?? null,
     error: persisted?.error ?? null,
     updatedAt: Date.now(),
     workerEvents: persisted?.workerEvents ?? [],
@@ -194,7 +294,19 @@ export const createLocalDBDiagnostics = (
   const transition = (
     phase: LocalDBPhase,
     details: Partial<
-      Pick<LocalDBDiagnostics, "currentVersion" | "targetVersion" | "error">
+      Pick<
+        LocalDBDiagnostics,
+        | "result"
+        | "recoverability"
+        | "currentVersion"
+        | "targetVersion"
+        | "pendingCount"
+        | "terminalFailureCount"
+        | "activeOperationCount"
+        | "errorCode"
+        | "errorMessage"
+        | "error"
+      >
     > = {}
   ): LocalDBDiagnostics => {
     state = {
@@ -206,7 +318,18 @@ export const createLocalDBDiagnostics = (
     };
     persist();
     console.debug("[LocalDB] phase", state);
+    notify();
     return state;
+  };
+
+  const listeners = new Set<() => void>();
+  const subscribe = (listener: () => void) => {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  };
+
+  const notify = () => {
+    for (const listener of listeners) listener();
   };
 
   const recordWorkerEvent = (
@@ -217,11 +340,13 @@ export const createLocalDBDiagnostics = (
     state = { ...state, workerEvents: [...workerEvents] };
     persist();
     console.debug("[LocalDB] worker", event);
+    notify();
     return event;
   };
 
   return {
     getState: (): LocalDBDiagnostics => ({ ...state }),
+    subscribe,
     transition,
     recordWorkerEvent,
   };
