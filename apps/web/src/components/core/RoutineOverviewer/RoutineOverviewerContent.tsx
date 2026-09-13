@@ -128,7 +128,7 @@ const RoutineOverviewerContent = ({
     );
   }, []);
 
-  const setChartsAndPersist = (
+  const updateCharts = (
     getNextCharts: (
       currentCharts: RoutineOverviewChart[]
     ) => RoutineOverviewChart[]
@@ -150,7 +150,7 @@ const RoutineOverviewerContent = ({
   };
 
   const addChart = (chart: NewRoutineOverviewChart) => {
-    setChartsAndPersist(currentCharts => {
+    updateCharts(currentCharts => {
       const componentId = getChartDefinitionId(chart);
       if (!componentId) return currentCharts;
 
@@ -167,7 +167,7 @@ const RoutineOverviewerContent = ({
   };
 
   const updateChart = (nextChart: RoutineOverviewChart) => {
-    setChartsAndPersist(currentCharts => {
+    updateCharts(currentCharts => {
       const nextComponentId = getChartDefinitionId(nextChart);
       if (!nextComponentId) return currentCharts;
 
@@ -185,7 +185,7 @@ const RoutineOverviewerContent = ({
   };
 
   const removeChart = (chartId: string) => {
-    setChartsAndPersist(currentCharts =>
+    updateCharts(currentCharts =>
       currentCharts.filter(chart => chart.id !== chartId)
     );
   };

@@ -561,17 +561,17 @@ export const TransactionSynchronizerProvider = ({
       onJobFinished: () => void
     ) => {
       if (mergedResult.syncJobs.length === 0) {
-        const noopAndParseFailed = Array.from(
+        const discardedSequences = Array.from(
           new Set([
             ...mergedResult.noopSequences,
             ...mergedResult.parseFailedSequences,
           ])
         );
-        if (noopAndParseFailed.length > 0) {
+        if (discardedSequences.length > 0) {
           if (!localDB.isReady) await localDB.ensureReady();
           await localDB
             .delete(Transaction)
-            .where(inArray(Transaction.sequence, noopAndParseFailed));
+            .where(inArray(Transaction.sequence, discardedSequences));
         }
         return;
       }

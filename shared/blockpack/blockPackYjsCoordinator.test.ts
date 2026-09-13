@@ -5,14 +5,14 @@ jest.mock("@shared/blockpack/localYjsDocumentStore", () => ({
   },
 }));
 
+import { BlockPackYjsCoordinator } from "@shared/blockpack/blockPackYjsCoordinator";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
-import { RealtimeYjsProvider } from "@shared/blockpack/realtimeYjsProvider";
 import * as Y from "yjs";
 
 const load = jest.mocked(LocalYjsDocumentStore.load);
 const remove = jest.mocked(LocalYjsDocumentStore.remove);
 
-describe("RealtimeYjsProvider", () => {
+describe("BlockPackYjsCoordinator", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     remove.mockResolvedValue();
@@ -26,7 +26,7 @@ describe("RealtimeYjsProvider", () => {
       })
     );
 
-    const provider = new RealtimeYjsProvider(
+    const provider = new BlockPackYjsCoordinator(
       new Y.Doc(),
       "block-pack-id" as never,
       "user-id"

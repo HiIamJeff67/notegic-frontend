@@ -18,7 +18,7 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
-import { RealtimeYjsProvider } from "@shared/blockpack";
+import { BlockPackYjsCoordinator } from "@shared/blockpack";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
@@ -60,7 +60,7 @@ export type RealtimeBlockPackChannel = {
   status: RealtimeBlockPackChannelStatus;
   connectorChannelId: number | null;
   doc: Y.Doc;
-  provider: RealtimeYjsProvider;
+  provider: BlockPackYjsCoordinator;
   error: string | null;
   lifecycleErrorCode: RealtimeErrorCode | null;
   documentQuotaPolicyVersion: number | null;
@@ -614,7 +614,7 @@ export const RealtimeProvider = ({
       retainCount = 0
     ): RealtimeChannelStore => {
       const doc = new Y.Doc();
-      const provider = new RealtimeYjsProvider(
+      const provider = new BlockPackYjsCoordinator(
         doc,
         blockPackId,
         userData?.publicId ?? null

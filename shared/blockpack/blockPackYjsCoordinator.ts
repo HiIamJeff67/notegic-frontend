@@ -14,7 +14,7 @@ import {
 } from "y-protocols/awareness";
 import * as Y from "yjs";
 
-export class RealtimeYjsProvider {
+export class BlockPackYjsCoordinator {
   readonly awareness: Awareness;
 
   private send:

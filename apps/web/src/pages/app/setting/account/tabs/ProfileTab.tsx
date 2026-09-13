@@ -74,17 +74,17 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   const [coverBackgroundBlobURL, setCoverBackgroundBlobURL] = useState<
     string | null
   >(null);
-  const [imageForCrop, setImageForCrop] = useState<{
+  const [croppableImage, setCroppableImage] = useState<{
     field: ProfileImageField;
     url: string;
     revoke: () => void;
   } | null>(null);
 
-  const clearImageForCrop = useCallback(() => {
-    imageForCrop?.revoke();
-    setImageForCrop(null);
+  const clearCroppableImage = useCallback(() => {
+    croppableImage?.revoke();
+    setCroppableImage(null);
     setCropImageDialogOpen(false);
-  }, [imageForCrop]);
+  }, [croppableImage]);
 
   const uploadProfileImage = useCallback(
     async (field: ProfileImageField, croppedBlob: Blob): Promise<void> => {
@@ -115,30 +115,30 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
       const file = files[0];
       if (!file || !editingImageField) return;
 
-      clearImageForCrop();
+      clearCroppableImage();
       const url = URL.createObjectURL(file);
-      setImageForCrop({
+      setCroppableImage({
         field: editingImageField,
         url,
         revoke: () => URL.revokeObjectURL(url),
       });
       setCropImageDialogOpen(true);
     },
-    [clearImageForCrop, editingImageField]
+    [clearCroppableImage, editingImageField]
   );
 
   const handleProfileImageCropComplete = useCallback(
     async (croppedBlob: Blob): Promise<void> => {
-      if (!imageForCrop) return;
+      if (!croppableImage) return;
 
       try {
-        await uploadProfileImage(imageForCrop.field, croppedBlob);
-        clearImageForCrop();
+        await uploadProfileImage(croppableImage.field, croppedBlob);
+        clearCroppableImage();
       } catch (error) {
         toast.error(translateError(error, t));
       }
     },
-    [clearImageForCrop, imageForCrop, t, uploadProfileImage]
+    [clearCroppableImage, croppableImage, t, uploadProfileImage]
   );
 
   useEffect(() => {
@@ -322,7 +322,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               if (!open) {
                 setEditingImageField(null);
                 setUploadImageDialogOpen(false);
-                clearImageForCrop();
+                clearCroppableImage();
               }
             }}
           >
@@ -355,17 +355,17 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 onUpload={handleProfileImageUpload}
                 onCancel={() => setUploadImageDialogOpen(false)}
               />
-              {imageForCrop !== null && (
+              {croppableImage !== null && (
                 <CropImageDialog
                   open={cropImageDialogOpen}
                   onOpenChange={open => {
                     setCropImageDialogOpen(open);
-                    if (!open) clearImageForCrop();
+                    if (!open) clearCroppableImage();
                   }}
-                  imageURL={imageForCrop.url}
-                  aspectRatio={imageForCrop.field === "avatarURL" ? 1 : 3}
+                  imageURL={croppableImage.url}
+                  aspectRatio={croppableImage.field === "avatarURL" ? 1 : 3}
                   onComplete={handleProfileImageCropComplete}
-                  onCancel={clearImageForCrop}
+                  onCancel={clearCroppableImage}
                 />
               )}
               <div className="flex items-center justify-between gap-2">

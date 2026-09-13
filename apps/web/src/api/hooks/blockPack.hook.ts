@@ -1,16 +1,13 @@
 import type { UUID } from "node:crypto";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
   NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { AccessControlPermission } from "@shared/api/interfaces/enums";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
-  MoveMyBlockPacksByParentSubShelfIdsRequest,
-  MoveMyBlockPacksByParentSubShelfIdsResponse,
   CreateBlockPackRequest,
   CreateBlockPackResponse,
   CreateBlockPacksRequest,
@@ -19,18 +16,20 @@ import type {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetMyBlockPacksByRootShelfIdRequest,
-  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdRequest,
   GetMyBlockPacksByParentSubShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdResponse,
   MoveMyBlockPackByIdRequest,
   MoveMyBlockPackByIdResponse,
   MoveMyBlockPacksByParentSubShelfIdRequest,
   MoveMyBlockPacksByParentSubShelfIdResponse,
+  MoveMyBlockPacksByParentSubShelfIdsRequest,
+  MoveMyBlockPacksByParentSubShelfIdsResponse,
   RestoreMyBlockPackByIdRequest,
   RestoreMyBlockPackByIdResponse,
   RestoreMyBlockPacksByIdsRequest,
@@ -40,31 +39,11 @@ import type {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
-import {
-  mutationFnMoveMyBlockPacksByParentSubShelfIds,
-  mutationFnCreateBlockPack,
-  mutationFnCreateBlockPacks,
-  mutationFnDeleteMyBlockPackById,
-  mutationFnDeleteMyBlockPacksByIds,
-  mutationFnMoveMyBlockPackById,
-  mutationFnMoveMyBlockPacksByParentSubShelfId,
-  mutationFnRestoreMyBlockPackById,
-  mutationFnRestoreMyBlockPacksByIds,
-  mutationFnUpdateMyBlockPackById,
-  mutationFnUpdateMyBlockPacksByIds,
-  queryFnGetMyBlockPacksByRootShelfId,
-  queryFnGetMyBlockPackAndItsParentById,
-  queryFnGetMyBlockPackById,
-  queryFnGetMyBlockPacksByParentSubShelfId,
-} from "@/api/invokers/blockPack.invoker";
-import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
-import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
+import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -72,6 +51,25 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import {
+  mutationFnCreateBlockPack,
+  mutationFnCreateBlockPacks,
+  mutationFnDeleteMyBlockPackById,
+  mutationFnDeleteMyBlockPacksByIds,
+  mutationFnMoveMyBlockPackById,
+  mutationFnMoveMyBlockPacksByParentSubShelfId,
+  mutationFnMoveMyBlockPacksByParentSubShelfIds,
+  mutationFnRestoreMyBlockPackById,
+  mutationFnRestoreMyBlockPacksByIds,
+  mutationFnUpdateMyBlockPackById,
+  mutationFnUpdateMyBlockPacksByIds,
+  queryFnGetMyBlockPackAndItsParentById,
+  queryFnGetMyBlockPackById,
+  queryFnGetMyBlockPacksByParentSubShelfId,
+  queryFnGetMyBlockPacksByRootShelfId,
+} from "@/api/invokers/blockPack.invoker";
+import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
+import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
 
 export const useGetMyBlockPackById = (
   hookRequest?: GetMyBlockPackByIdRequest,
@@ -187,21 +185,21 @@ export const useGetMyBlockPackAndItsParentById = (
         error instanceof NotegicAPIError ||
         error instanceof NotegicFetchError
       ) {
-        const existingBlockPackAndItsParent =
+        const existingBlockPackData =
           await BlockPackLocalSimulator.simulateGetMyBlockPackAndItsParentById(
             request
           );
         return {
           success: false,
-          data: existingBlockPackAndItsParent
+          data: existingBlockPackData
             ? {
-                ...existingBlockPackAndItsParent,
+                ...existingBlockPackData,
                 permission:
-                  "permission" in existingBlockPackAndItsParent
-                    ? existingBlockPackAndItsParent.permission
+                  "permission" in existingBlockPackData
+                    ? existingBlockPackData.permission
                     : AccessControlPermission.Read,
               }
-            : existingBlockPackAndItsParent,
+            : existingBlockPackData,
           exception: error.unWrap,
           embedded: { publicId: "" },
         } as unknown as GetMyBlockPackAndItsParentByIdResponse;

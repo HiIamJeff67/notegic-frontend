@@ -28,7 +28,7 @@ type PlanOption = {
     | "settingsPage.account.upgrade.premiumNote"
     | "settingsPage.account.upgrade.ultimateNote"
     | "settingsPage.account.upgrade.enterpriseNote";
-  bestForKey:
+  bestUseCaseKey:
     | "settingsPage.account.upgrade.freeBestFor"
     | "settingsPage.account.upgrade.proBestFor"
     | "settingsPage.account.upgrade.premiumBestFor"
@@ -66,7 +66,7 @@ const planOptions: PlanOption[] = [
     labelKey: "settingsPage.account.upgrade.free",
     tone: "border-border bg-background/35",
     noteKey: "settingsPage.account.upgrade.freeNote",
-    bestForKey: "settingsPage.account.upgrade.freeBestFor",
+    bestUseCaseKey: "settingsPage.account.upgrade.freeBestFor",
     limitations: PlanLimitations[UserPlan.Free],
   },
   {
@@ -74,7 +74,7 @@ const planOptions: PlanOption[] = [
     labelKey: "settingsPage.account.upgrade.pro",
     tone: "border-border bg-background/35",
     noteKey: "settingsPage.account.upgrade.proNote",
-    bestForKey: "settingsPage.account.upgrade.proBestFor",
+    bestUseCaseKey: "settingsPage.account.upgrade.proBestFor",
     limitations: PlanLimitations[UserPlan.Pro],
   },
   {
@@ -82,7 +82,7 @@ const planOptions: PlanOption[] = [
     labelKey: "settingsPage.account.upgrade.premium",
     tone: "border-border bg-background/35",
     noteKey: "settingsPage.account.upgrade.premiumNote",
-    bestForKey: "settingsPage.account.upgrade.premiumBestFor",
+    bestUseCaseKey: "settingsPage.account.upgrade.premiumBestFor",
     limitations: PlanLimitations[UserPlan.Premium],
   },
   {
@@ -90,7 +90,7 @@ const planOptions: PlanOption[] = [
     labelKey: "settingsPage.account.upgrade.ultimate",
     tone: "border-border bg-background/35",
     noteKey: "settingsPage.account.upgrade.ultimateNote",
-    bestForKey: "settingsPage.account.upgrade.ultimateBestFor",
+    bestUseCaseKey: "settingsPage.account.upgrade.ultimateBestFor",
     limitations: PlanLimitations[UserPlan.Ultimate],
   },
   {
@@ -98,7 +98,7 @@ const planOptions: PlanOption[] = [
     labelKey: "settingsPage.account.upgrade.enterprise",
     tone: "border-border bg-background/35",
     noteKey: "settingsPage.account.upgrade.enterpriseNote",
-    bestForKey: "settingsPage.account.upgrade.enterpriseBestFor",
+    bestUseCaseKey: "settingsPage.account.upgrade.enterpriseBestFor",
     limitations: PlanLimitations[UserPlan.Enterprise],
   },
 ];
@@ -217,7 +217,7 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
                   {t(currentOption.labelKey)}
                 </h3>
                 <p className="mt-1 max-w-md text-sm text-muted-foreground">
-                  {t(currentOption.bestForKey)}
+                  {t(currentOption.bestUseCaseKey)}
                 </p>
               </div>
             </div>
@@ -299,7 +299,7 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
                     )}
                   </div>
                   <p className="mt-4 min-h-10 text-xs text-muted-foreground">
-                    {t(option.bestForKey)}
+                    {t(option.bestUseCaseKey)}
                   </p>
                 </div>
 
