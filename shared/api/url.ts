@@ -43,8 +43,8 @@ export const APIURLPathDictionary = {
     updateMe: "users/me",
   },
   userInfo: {
-    getMyInfo: "me/info",
-    updateMyInfo: "me/info",
+    getMyInfo: "me/info/",
+    updateMyInfo: "me/info/",
   },
   userSetting: {
     getMySetting: "me/settings/",

@@ -1,0 +1,6 @@
+interface:
+  display_name: "GitHub Delivery"
+  short_description: "Commit, validate, and push changes safely"
+  default_prompt: "Use $github-delivery to prepare and deliver the current repository changes."
+policy:
+  allow_implicit_invocation: false

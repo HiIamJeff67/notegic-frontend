@@ -360,11 +360,6 @@ export const RealtimeProvider = ({
         return response.data;
       },
       onState: setRootState,
-      onAuthFailure: () => {
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("notegic:auth-required"));
-        }
-      },
       onReady: nextConnectionId => {
         setConnectionId(nextConnectionId);
       },
