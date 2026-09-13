@@ -337,7 +337,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   onCancel={clearImageForCrop}
                 />
               )}
-              <div className="flex justify-between gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <Button
                   variant="ghost"
                   type="button"
@@ -353,41 +353,43 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 >
                   {t("settingsPage.account.personal.removeImage")}
                 </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setUploadImageDialogOpen(true)}
-                >
-                  {t("workspace.dialogs.upload")}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    const imageURL = editingImageURL.trim();
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setUploadImageDialogOpen(true)}
+                  >
+                    {t("workspace.dialogs.upload")}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const imageURL = editingImageURL.trim();
 
-                    if (imageURL) {
-                      try {
-                        new URL(imageURL);
-                      } catch {
-                        toast.error(
-                          t("settingsPage.account.messages.invalidImageUrl")
-                        );
-                        return;
+                      if (imageURL) {
+                        try {
+                          new URL(imageURL);
+                        } catch {
+                          toast.error(
+                            t("settingsPage.account.messages.invalidImageUrl")
+                          );
+                          return;
+                        }
                       }
-                    }
 
-                    if (!editingImageField) return;
-                    if (!imageURL) {
-                      userInfoForm.setValue(editingImageField, null, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      });
-                    }
-                    setEditingImageField(null);
-                  }}
-                >
-                  {t("settingsPage.account.personal.apply")}
-                </Button>
+                      if (!editingImageField) return;
+                      if (!imageURL) {
+                        userInfoForm.setValue(editingImageField, null, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }
+                      setEditingImageField(null);
+                    }}
+                  >
+                    {t("settingsPage.account.personal.apply")}
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>

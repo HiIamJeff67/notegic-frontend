@@ -115,7 +115,11 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
         )}
         {error && <div className="text-destructive text-sm">{error}</div>}
         <div className="w-full flex justify-end gap-2 mt-4">
-          <Button variant="secondary" disabled={isUploading} onClick={onCancel}>
+          <Button
+            variant="destructive"
+            disabled={isUploading}
+            onClick={onCancel}
+          >
             {t("workspace.widgets.cancel")}
           </Button>
           <Button
