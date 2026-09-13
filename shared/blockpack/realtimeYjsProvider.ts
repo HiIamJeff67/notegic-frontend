@@ -84,6 +84,7 @@ export class RealtimeYjsProvider {
 
   async clearLocalDocument() {
     this.setReadOnly(true);
+    await this.hydrationPromise;
     await this.persistencePromise;
     await LocalYjsDocumentStore.remove(this.userPublicId, this.blockPackId);
   }

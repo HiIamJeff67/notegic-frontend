@@ -460,10 +460,28 @@ export const RealtimeProvider = ({
       onChannelBinary: (blockPackId, frame) => {
         const channel = channelsRef.current.get(blockPackId as UUID);
         if (!channel) return;
-        if (frame.type === RealtimeBinaryFrameType.YjsDocument) {
-          channel.provider.applyDocumentUpdate(frame.payload);
-        } else if (frame.type === RealtimeBinaryFrameType.Awareness) {
-          channel.provider.applyAwarenessUpdate(frame.payload);
+
+        try {
+          if (frame.type === RealtimeBinaryFrameType.YjsDocument) {
+            channel.provider.applyDocumentUpdate(frame.payload);
+          } else if (frame.type === RealtimeBinaryFrameType.Awareness) {
+            channel.provider.applyAwarenessUpdate(frame.payload);
+          }
+        } catch (error) {
+          console.error(
+            "[RealtimeProvider] failed to apply realtime update",
+            error
+          );
+          clientRef.current?.unregisterBlockPackChannel(blockPackId);
+          channel.error = "Failed to apply realtime document update.";
+          channel.connectorChannelId = null;
+          channel.status = "error";
+          channel.provider.setReadOnly(true);
+          channel.provider.disconnect();
+          showSyncError(
+            i18n.t("workspace.notifications.realtimeResyncRequired")
+          );
+          rerender();
         }
       },
       onResourceEvent: handleResourceEvent,
@@ -721,6 +739,9 @@ export const RealtimeProvider = ({
         }
         previousChannel.provider.setReadOnly(true);
         previousChannel.provider.disconnect();
+        if (!localDB.isReadOnly) {
+          await previousChannel.provider.clearLocalDocument();
+        }
         await previousChannel.provider.destroy();
         previousChannel.doc.destroy();
         previousChannel.isDisposed = true;
