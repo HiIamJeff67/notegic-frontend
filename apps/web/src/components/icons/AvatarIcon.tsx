@@ -45,6 +45,7 @@ export const AvatarIcon = ({
         <Image
           src={avatarURL ?? ""}
           alt={alt}
+          crossOrigin="anonymous"
           width={80}
           height={80}
           className="w-full h-full object-cover"

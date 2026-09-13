@@ -1,29 +1,30 @@
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMeRequest,
   GetMeResponse,
   GetUserDataRequest,
   GetUserDataResponse,
 } from "@shared/api/interfaces/user.interface";
-import {
-  mutationFnUpdateMe,
-  queryFnGetMe,
-  queryFnGetUserData,
-} from "@/api/invokers/user.invoker";
-import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import {
+  PresignedObjectURLStaleTime,
+  UseQueryDefaultOptions,
+} from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import {
+  mutationFnUpdateMe,
+  queryFnGetMe,
+  queryFnGetUserData,
+} from "@/api/invokers/user.invoker";
+import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 
 export const useGetUserData = (
   hookRequest?: GetUserDataRequest,
@@ -56,7 +57,7 @@ export const useGetUserData = (
   const query = useQuery<GetUserDataResponse, Error>({
     queryKey: queryKeys.user.data(),
     queryFn: async () => perform(hookRequest),
-    staleTime: UseQueryDefaultOptions.staleTime,
+    staleTime: PresignedObjectURLStaleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
     ...options,

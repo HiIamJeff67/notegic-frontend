@@ -18,6 +18,28 @@ below reflect the current repository and are the default for new files.
   as `ApiKeysTab` and `LRUCache` are preserved; do not rename unrelated legacy
   files during a feature change.
 
+## Naming economy and compound names
+
+- Prefer the shortest name that remains unambiguous in its owning module and
+  call site. Pure algorithms, data structures, and runtime-neutral libraries
+  may use compact Unix-like names when the package boundary supplies context;
+  business workflows, public API modules, services, and primary components
+  must state the complete domain meaning, but must not become sentence-like.
+- Do not use `...For...` merely to append context, ownership, or a consumer to
+  a name. Prefer the actual concept (`cropImage`, `pendingCropImage`, or
+  another domain term) or keep the operation inline. `...For...` is reserved
+  for established external vocabulary, protocol names, or proper nouns.
+- Treat `...And...` as a design warning. Two independent actions should be
+  separate functions coordinated by the caller. Keep `And` only when the
+  operations are inseparable, have one coherent responsibility, and should
+  succeed or fail together as one named operation.
+- `...With...` is acceptable for established options, configuration, variants,
+  or fluent APIs, but use it sparingly. Do not turn unrelated behavior into a
+  configurable helper with flags or options merely to share a name.
+- If a helper name is long because it describes obvious mechanics, or reading
+  the name makes the code look clearer when expanded at the call site, keep the
+  logic local or split genuinely separate responsibilities before naming them.
+
 ## Source file rules
 
 | Area | New file pattern | Examples from the repository |

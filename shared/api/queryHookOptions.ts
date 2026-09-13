@@ -1,5 +1,7 @@
 import { FetchQueryOptions, UseQueryOptions } from "@tanstack/react-query";
 
+export const PresignedObjectURLStaleTime = 5 * 60 * 1000;
+
 // ! Do NOT directly expand this in the prefetchQuery as the default FetchQueryOptions
 export const PrefetchQueryDefaultOptions: Partial<
   FetchQueryOptions<any, Error>

@@ -63,6 +63,30 @@ handle-everything.ts
 The helper name should make its input, output, and responsibility apparent
 without opening the implementation.
 
+### Naming economy and compound names
+
+- Prefer the shortest name that is unambiguous in its owning feature and call
+  site. Pure algorithms, data structures, and runtime-neutral libraries may
+  use compact names when package context supplies meaning; business workflows,
+  public API modules, services, and primary components need complete domain
+  names, but not sentence-like names.
+- Do not use `...For...` merely to append context or a consumer. Prefer the
+  actual concept (`cropImage` or `pendingCropImage`) or keep the operation
+  inline. Reserve `...For...` for established external vocabulary, protocol
+  names, or proper nouns. Names such as `imageForCrop` and
+  `clearImageForCrop` are warning signs: check whether a clearer concept name,
+  an inline operation, or a separate lifecycle operation is appropriate.
+- Treat `...And...` as a design warning. If the two actions are independent,
+  split them and let the caller coordinate their order. Keep `And` only when
+  the actions are inseparable, strongly related, and should be treated as one
+  operation with one success/failure boundary.
+- `...With...` is acceptable for established options, configuration, variants,
+  or fluent APIs, but use it sparingly. Do not add flags or options to a helper
+  just to make unrelated behaviors share one implementation.
+- If the helper name itself tells a reviewer that the code is obvious and
+  should be expanded, do not extract it. A name is not a reason to hide a
+  readable block.
+
 ## Placement and ownership
 
 Use the narrowest ownership boundary that satisfies the real callers:
@@ -132,6 +156,10 @@ Before adding or approving a helper, ask:
 - Is the concept used more than once, or does inline code genuinely obscure the
   main workflow?
 - Is the name more informative than the code it replaces?
+- Does the name avoid an unnecessary `For` or `And`, and use `With` only for an
+  established option/configuration concept?
+- Does the name match the responsibility count, or is it hiding two actions
+  that should be coordinated by the caller?
 - Does it belong to the narrowest reasonable feature or module?
 - Did we check for an existing implementation first?
 - Would a local function or inline expression be clearer?

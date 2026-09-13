@@ -71,6 +71,9 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   const [editingImageURL, setEditingImageURL] = useState("");
   const [uploadImageDialogOpen, setUploadImageDialogOpen] = useState(false);
   const [cropImageDialogOpen, setCropImageDialogOpen] = useState(false);
+  const [coverBackgroundBlobURL, setCoverBackgroundBlobURL] = useState<
+    string | null
+  >(null);
   const [imageForCrop, setImageForCrop] = useState<{
     field: ProfileImageField;
     url: string;
@@ -139,12 +142,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   );
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (userManager.userInfo) return;
-      await userManager.fetchUserInfo();
-    };
-
-    fetchUserInfo();
+    void userManager.fetchUserInfo();
   }, []);
 
   const userInfoForm: UseFormReturn<UserInfo> = useForm({
@@ -159,14 +157,47 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   const avatarURL = userInfoForm.watch("avatarURL");
   const coverBackgroundURL = userInfoForm.watch("coverBackgroundURL");
 
+  useEffect(() => {
+    if (!coverBackgroundURL) {
+      setCoverBackgroundBlobURL(null);
+      return;
+    }
+
+    let cancelled = false;
+    let blobURL: string | null = null;
+
+    void fetch(coverBackgroundURL, {
+      cache: "no-store",
+      mode: "cors",
+      referrerPolicy: "no-referrer",
+    })
+      .then(response => {
+        if (!response.ok) throw new Error("Cover background request failed.");
+        return response.blob();
+      })
+      .then(blob => {
+        if (cancelled) return;
+        blobURL = URL.createObjectURL(blob);
+        setCoverBackgroundBlobURL(blobURL);
+      })
+      .catch(() => {
+        if (!cancelled) setCoverBackgroundBlobURL(null);
+      });
+
+    return () => {
+      cancelled = true;
+      if (blobURL) URL.revokeObjectURL(blobURL);
+    };
+  }, [coverBackgroundURL]);
+
   const backgroundStyle = useMemo(
     () => ({
       minHeight: 180,
-      background: coverBackgroundURL
-        ? `url(${coverBackgroundURL}) center/cover no-repeat`
+      background: coverBackgroundBlobURL
+        ? `url(${coverBackgroundBlobURL}) center/cover no-repeat`
         : "var(--foreground)",
     }),
-    [coverBackgroundURL]
+    [coverBackgroundBlobURL]
   );
 
   const avatarFallbackText =

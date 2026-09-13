@@ -1,25 +1,26 @@
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMyInfoRequest,
   GetMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
-import {
-  mutationFnUpdateMyInfo,
-  queryFnGetMyInfo,
-} from "@/api/invokers/userInfo.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import {
+  PresignedObjectURLStaleTime,
+  UseQueryDefaultOptions,
+} from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import {
+  mutationFnUpdateMyInfo,
+  queryFnGetMyInfo,
+} from "@/api/invokers/userInfo.invoker";
 
 export const useGetMyInfo = (
   hookRequest?: GetMyInfoRequest,
@@ -51,7 +52,7 @@ export const useGetMyInfo = (
   const query = useQuery<GetMyInfoResponse, Error>({
     queryKey: queryKeys.userInfo.my(),
     queryFn: async () => perform(hookRequest),
-    staleTime: UseQueryDefaultOptions.staleTime,
+    staleTime: PresignedObjectURLStaleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
     ...options,
@@ -64,7 +65,7 @@ export const useGetMyInfo = (
     return queryClient.fetchQuery({
       queryKey: queryKeys.userInfo.my(),
       queryFn: async () => perform(callbackRequest),
-      staleTime: UseQueryDefaultOptions.staleTime,
+      staleTime: PresignedObjectURLStaleTime,
       ...options,
     });
   };

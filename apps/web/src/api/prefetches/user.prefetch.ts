@@ -2,11 +2,14 @@ import {
   GetMeRequest,
   GetUserDataRequest,
 } from "@shared/api/interfaces/user.interface";
-import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
-import { PrefetchQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import {
+  PrefetchQueryDefaultOptions,
+  PresignedObjectURLStaleTime,
+} from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { QueryClient } from "@tanstack/react-query";
+import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
 
 export const prefetchGetUserData = (initialQueryClient?: QueryClient) => {
   const queryClient = initialQueryClient ?? getQueryClient();
@@ -17,7 +20,7 @@ export const prefetchGetUserData = (initialQueryClient?: QueryClient) => {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.user.data(true),
       queryFn: async () => await queryFnGetUserData(prefetchRequest),
-      staleTime: PrefetchQueryDefaultOptions.staleTime as number,
+      staleTime: PresignedObjectURLStaleTime,
     });
   };
 
