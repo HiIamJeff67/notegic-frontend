@@ -20,6 +20,8 @@ interface UploadImageDialogProps {
   title?: string;
   onUpload: (files: File[]) => void | Promise<void>;
   onCancel: () => void | Promise<void>;
+  removable?: boolean;
+  onRemove?: () => void | Promise<void>;
 }
 
 const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
@@ -29,11 +31,14 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
   title,
   onUpload,
   onCancel,
+  removable = false,
+  onRemove,
 }) => {
   const { t } = useTranslation();
   const [uploadedImages, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isRemoving, setIsRemoving] = useState<boolean>(false);
 
   const handleOnDrop = (files: File[]) => {
     if (files.length > maxCount) {
@@ -59,6 +64,22 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
       setIsUploading(false);
     }
   };
+
+  const handleOnRemove = async () => {
+    if (!onRemove) return;
+
+    try {
+      setIsRemoving(true);
+      await onRemove();
+      setSelectedFiles([]);
+      setError("");
+      onOpenChange(false);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  const isBusy = isUploading || isRemoving;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,19 +136,25 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
         )}
         {error && <div className="text-destructive text-sm">{error}</div>}
         <div className="w-full flex justify-end gap-2 mt-4">
-          <Button
-            variant="destructive"
-            disabled={isUploading}
-            onClick={onCancel}
-          >
+          {removable && onRemove && (
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive hover:text-destructive"
+              disabled={isBusy}
+              onClick={handleOnRemove}
+            >
+              {t("settingsPage.account.personal.removeImage")}
+            </Button>
+          )}
+          <Button variant="destructive" disabled={isBusy} onClick={onCancel}>
             {t("workspace.widgets.cancel")}
           </Button>
           <Button
             variant="default"
             onClick={handleOnUpload}
-            disabled={uploadedImages.length === 0 || isUploading}
+            disabled={uploadedImages.length === 0 || isBusy}
           >
-            {isUploading && <Spinner />}
+            {isBusy && <Spinner />}
             {t("workspace.dialogs.upload")}
           </Button>
         </div>

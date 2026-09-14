@@ -14,9 +14,7 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         avatar: "头像",
         changeAvatarTitle: "更改头像",
         changeCoverTitle: "更改背景图片",
-        imageDescription: "粘贴公开图片网址，然后保存个人资料以应用更改。",
         removeImage: "移除图片",
-        apply: "应用",
         headline: "个人标题",
         introduction: "个人简介",
         gender: "性别",
@@ -233,7 +231,6 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         emailReset: "邮箱已重置。",
         passwordChanged: "密码已更改。",
         accountDeleted: "账户已删除。",
-        invalidImageUrl: "请输入有效的图片网址。",
       },
     },
     preferences: {

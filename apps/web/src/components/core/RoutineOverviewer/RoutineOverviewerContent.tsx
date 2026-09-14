@@ -1,4 +1,7 @@
-import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
+import {
+  dashboardHeaderBackgroundImageNoneId,
+  dashboardHeaderBackgroundImageOptions,
+} from "@assets/backgrounds";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { CheckIcon, SquarePen } from "lucide-react";
@@ -10,6 +13,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import { Button } from "@/components/ui/button";
@@ -246,14 +250,19 @@ const RoutineOverviewerContent = ({
               ref={headerBackgroundImageRef}
               className="relative z-10 h-full w-full shrink-0 overflow-hidden"
             >
-              <img
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 size-full object-cover"
-                decoding="async"
-                fetchPriority="high"
-                src={defaultHeaderBackgroundImage}
-              />
+              {backgroundImagesManager.defaultBackgroundImageId ===
+              dashboardHeaderBackgroundImageNoneId ? (
+                <GridBackground />
+              ) : (
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 size-full object-cover"
+                  decoding="async"
+                  fetchPriority="high"
+                  src={defaultHeaderBackgroundImage}
+                />
+              )}
               {isHeaderBackgroundImageEditing && (
                 <ModifyImageHover
                   className="absolute"

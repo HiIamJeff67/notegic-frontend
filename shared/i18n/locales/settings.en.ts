@@ -12,10 +12,7 @@ export const EnglishSettingsTranslation = {
         avatar: "Avatar",
         changeAvatarTitle: "Change avatar",
         changeCoverTitle: "Change cover image",
-        imageDescription:
-          "Paste a public image URL, then save your profile to apply it.",
         removeImage: "Remove image",
-        apply: "Apply",
         headline: "Profile headline",
         introduction: "Introduction",
         gender: "Gender",
@@ -248,7 +245,6 @@ export const EnglishSettingsTranslation = {
         emailReset: "Email reset.",
         passwordChanged: "Password changed.",
         accountDeleted: "Account deleted.",
-        invalidImageUrl: "Enter a valid image URL.",
       },
     },
     preferences: {

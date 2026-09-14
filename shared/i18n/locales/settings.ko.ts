@@ -14,10 +14,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         avatar: "아바타",
         changeAvatarTitle: "아바타 변경",
         changeCoverTitle: "커버 이미지 변경",
-        imageDescription:
-          "공개 이미지 URL을 붙여넣고 프로필을 저장해 변경 사항을 적용하세요.",
         removeImage: "이미지 제거",
-        apply: "적용",
         headline: "프로필 제목",
         introduction: "자기소개",
         gender: "성별",
@@ -242,7 +239,6 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         emailReset: "이메일을 재설정했습니다.",
         passwordChanged: "비밀번호를 변경했습니다.",
         accountDeleted: "계정을 삭제했습니다.",
-        invalidImageUrl: "올바른 이미지 URL을 입력하세요.",
       },
     },
     preferences: {

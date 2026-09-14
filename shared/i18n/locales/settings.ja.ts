@@ -14,10 +14,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         avatar: "アバター",
         changeAvatarTitle: "アバターを変更",
         changeCoverTitle: "カバー画像を変更",
-        imageDescription:
-          "公開画像 URL を貼り付け、プロフィールを保存して変更を適用します。",
         removeImage: "画像を削除",
-        apply: "適用",
         headline: "プロフィール見出し",
         introduction: "自己紹介",
         gender: "性別",
@@ -250,7 +247,6 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         emailReset: "メールアドレスをリセットしました。",
         passwordChanged: "パスワードを変更しました。",
         accountDeleted: "アカウントを削除しました。",
-        invalidImageUrl: "有効な画像 URL を入力してください。",
       },
     },
     preferences: {

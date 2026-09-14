@@ -1,8 +1,13 @@
+import {
+  dashboardHeaderBackgroundImageNoneId,
+  dashboardHeaderBackgroundImageOptions,
+} from "@assets/backgrounds";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
-import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
+import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { translateError } from "@shared/i18n/error";
 import { ModalProps } from "@/providers/ModalProvider";
 import CropImageDialog from "./CropImageDialog";
 import UploadImageDialog from "./UploadImageDialog";
@@ -134,7 +138,10 @@ const SelectBackgroundImageDialog = ({
     async (id: string) => {
       setSelectedBackgroundImageId(id);
       try {
-        if (id.startsWith("default-")) {
+        if (
+          id === dashboardHeaderBackgroundImageNoneId ||
+          id.startsWith("default-")
+        ) {
           backgroundImagesManager.setDefaultBackgroundImageById(id);
           await backgroundImagesManager.setCurrentBackgroundImageByFile(null);
         } else {
@@ -162,7 +169,10 @@ const SelectBackgroundImageDialog = ({
 
         await backgroundImagesManager.remove([id as UUID]);
         setSelectedBackgroundImageId(fallbackId);
-        if (fallbackId.startsWith("default-")) {
+        if (
+          fallbackId === dashboardHeaderBackgroundImageNoneId ||
+          fallbackId.startsWith("default-")
+        ) {
           backgroundImagesManager.setDefaultBackgroundImageById(fallbackId);
           await backgroundImagesManager.setCurrentBackgroundImageByFile(null);
         } else {
@@ -234,15 +244,23 @@ const SelectBackgroundImageDialog = ({
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto max-h-[60vh] w-full mt-4 p-2">
           {[
+            {
+              id: dashboardHeaderBackgroundImageNoneId,
+              thumbnailURL: null,
+              isDefault: true,
+              isNone: true,
+            },
             ...dashboardHeaderBackgroundImageOptions.map(image => ({
               id: image.id,
               thumbnailURL: image.src,
               isDefault: true,
+              isNone: false,
             })),
             ...thumbnails.map(thumb => ({
               id: thumb.id,
               thumbnailURL: thumb.thumbnailURL,
               isDefault: false,
+              isNone: false,
             })),
           ].map(image => (
             <div
@@ -257,9 +275,15 @@ const SelectBackgroundImageDialog = ({
                     }
                     `}
             >
-              {image.isDefault ? (
+              {image.isNone ? (
+                <GridBackground className="flex items-center justify-center">
+                  <span className="rounded bg-background/75 px-2 py-1 text-xs text-foreground">
+                    {t("common.delete")}
+                  </span>
+                </GridBackground>
+              ) : image.isDefault ? (
                 <img
-                  src={image.thumbnailURL}
+                  src={image.thumbnailURL ?? undefined}
                   alt={t("workspace.dialogs.backgroundThumbnail")}
                   className="w-full h-full object-cover"
                 />
@@ -269,7 +293,7 @@ const SelectBackgroundImageDialog = ({
                   hasParent
                 >
                   <img
-                    src={image.thumbnailURL}
+                    src={image.thumbnailURL ?? undefined}
                     alt={t("workspace.dialogs.backgroundThumbnail")}
                     className="w-full h-full object-cover"
                   />
@@ -284,6 +308,8 @@ const SelectBackgroundImageDialog = ({
             className="w-20"
             disabled={
               selectedBackgroundImageId === null ||
+              selectedBackgroundImageId ===
+                dashboardHeaderBackgroundImageNoneId ||
               selectedBackgroundImageId.startsWith("default-")
             }
             onClick={handleCropImageOnSelect}

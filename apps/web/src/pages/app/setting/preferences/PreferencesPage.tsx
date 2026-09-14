@@ -17,7 +17,7 @@ import {
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { useAppRouterActions, useSettingsDisplay } from "@/hooks";
+import { useAppRouterActions, useScreen, useSettingsDisplay } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
   AppearanceSettings,
@@ -37,6 +37,7 @@ const PreferencesPage = ({
 }) => {
   const { isReady } = useLocalPreferences();
   const router = useAppRouterActions();
+  const { width: screenWidth } = useScreen();
   const { openSheet, closeSheet } = useSettingsDisplay();
   const sidebarManager = useSidebar();
   const { t } = useTranslation();
@@ -70,40 +71,42 @@ const PreferencesPage = ({
       {sidebarManager.isMobile && (
         <SidebarTrigger className="fixed top-2 right-2 z-40" />
       )}
-      <Button
-        data-density-static
-        type="button"
-        variant="default"
-        size="icon"
-        className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
-        aria-label={
-          displayMode === "sheet"
-            ? t("settingsPage.openAsPage")
-            : t("settingsPage.openInSheet")
-        }
-        title={
-          displayMode === "sheet"
-            ? t("settingsPage.openAsPage")
-            : t("settingsPage.openInSheet")
-        }
-        onClick={() => {
-          LocalStorageManipulator.setItem(
-            LocalStorageKey.settingsDisplayMode,
-            displayMode === "sheet" ? "page" : "sheet"
-          );
-
-          if (displayMode === "sheet") {
-            closeSheet();
-            router.push(WebURLPathDictionary.app.setting.preferences);
-            return;
+      {screenWidth >= 1024 && (
+        <Button
+          data-density-static
+          type="button"
+          variant="default"
+          size="icon"
+          className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
+          aria-label={
+            displayMode === "sheet"
+              ? t("settingsPage.openAsPage")
+              : t("settingsPage.openInSheet")
           }
+          title={
+            displayMode === "sheet"
+              ? t("settingsPage.openAsPage")
+              : t("settingsPage.openInSheet")
+          }
+          onClick={() => {
+            LocalStorageManipulator.setItem(
+              LocalStorageKey.settingsDisplayMode,
+              displayMode === "sheet" ? "page" : "sheet"
+            );
 
-          openSheet("preferences");
-          router.push(WebURLPathDictionary.app.dashboard._);
-        }}
-      >
-        {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
-      </Button>
+            if (displayMode === "sheet") {
+              closeSheet();
+              router.push(WebURLPathDictionary.app.setting.preferences);
+              return;
+            }
+
+            openSheet("preferences");
+            router.push(WebURLPathDictionary.app.dashboard._);
+          }}
+        >
+          {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
+        </Button>
+      )}
       <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
@@ -113,7 +116,7 @@ const PreferencesPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 pb-[calc(var(--density-content-padding)+2rem)] [&>[role=separator]]:my-10">
+        <ArticleContent className="m-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:my-10">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}

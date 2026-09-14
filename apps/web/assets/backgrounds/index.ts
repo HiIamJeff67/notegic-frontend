@@ -26,6 +26,8 @@ export const dashboardHeaderBackgroundImages = [
   templeSky,
 ];
 
+export const dashboardHeaderBackgroundImageNoneId = "none";
+
 export const dashboardHeaderBackgroundImageOptions =
   dashboardHeaderBackgroundImages.map((src, index) => ({
     id: `default-${index}`,

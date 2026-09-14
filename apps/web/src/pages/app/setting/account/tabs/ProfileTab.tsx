@@ -19,13 +19,6 @@ import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormField,
@@ -68,7 +61,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
 
   const [editingImageField, setEditingImageField] =
     useState<ProfileImageField | null>(null);
-  const [editingImageURL, setEditingImageURL] = useState("");
   const [uploadImageDialogOpen, setUploadImageDialogOpen] = useState(false);
   const [cropImageDialogOpen, setCropImageDialogOpen] = useState(false);
   const [coverBackgroundBlobURL, setCoverBackgroundBlobURL] = useState<
@@ -134,6 +126,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
       try {
         await uploadProfileImage(croppableImage.field, croppedBlob);
         clearCroppableImage();
+        setEditingImageField(null);
       } catch (error) {
         toast.error(translateError(error, t));
       }
@@ -153,6 +146,10 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   useEffect(() => {
     userInfoForm.reset(userManager.userInfo ?? FakeUserInfo);
   }, [userManager, userInfoForm]);
+
+  const {
+    formState: { isDirty, isSubmitting },
+  } = userInfoForm;
 
   const avatarURL = userInfoForm.watch("avatarURL");
   const coverBackgroundURL = userInfoForm.watch("coverBackgroundURL");
@@ -288,7 +285,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               className="absolute inset-0 bg-black/30"
               onClick={() => {
                 setEditingImageField("coverBackgroundURL");
-                setEditingImageURL(coverBackgroundURL ?? "");
+                setUploadImageDialogOpen(true);
               }}
               hoverText={t("settingsPage.account.personal.changeCover")}
             />
@@ -297,7 +294,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 className="w-32 h-32 rounded-full border-4 border-border shadow-lg bg-background flex items-center justify-center overflow-hidden relative cursor-pointer"
                 onClick={() => {
                   setEditingImageField("avatarURL");
-                  setEditingImageURL(avatarURL ?? "");
+                  setUploadImageDialogOpen(true);
                 }}
               >
                 <AvatarIcon
@@ -316,114 +313,55 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
             <div style={{ height: 120 }} />
           </div>
 
-          <Dialog
-            open={editingImageField !== null}
+          <UploadImageDialog
+            open={uploadImageDialogOpen}
             onOpenChange={open => {
-              if (!open) {
+              setUploadImageDialogOpen(open);
+              if (!open && croppableImage === null) {
                 setEditingImageField(null);
-                setUploadImageDialogOpen(false);
-                clearCroppableImage();
               }
             }}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingImageField === "avatarURL"
-                    ? t("settingsPage.account.personal.changeAvatarTitle")
-                    : t("settingsPage.account.personal.changeCoverTitle")}
-                </DialogTitle>
-                <DialogDescription>
-                  {t("settingsPage.account.personal.imageDescription")}
-                </DialogDescription>
-              </DialogHeader>
-              <Input
-                type="url"
-                value={editingImageURL}
-                onChange={event => setEditingImageURL(event.target.value)}
-                placeholder="https://example.com/image.png"
-              />
-              <UploadImageDialog
-                open={uploadImageDialogOpen}
-                onOpenChange={setUploadImageDialogOpen}
-                maxCount={1}
-                title={
-                  editingImageField === "avatarURL"
-                    ? t("settingsPage.account.personal.changeAvatarTitle")
-                    : t("settingsPage.account.personal.changeCoverTitle")
+            maxCount={1}
+            title={
+              editingImageField === "avatarURL"
+                ? t("settingsPage.account.personal.changeAvatarTitle")
+                : t("settingsPage.account.personal.changeCoverTitle")
+            }
+            onUpload={handleProfileImageUpload}
+            onCancel={() => {
+              setUploadImageDialogOpen(false);
+              setEditingImageField(null);
+            }}
+            removable
+            onRemove={() => {
+              if (editingImageField) {
+                userInfoForm.setValue(editingImageField, null, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              setEditingImageField(null);
+            }}
+          />
+          {croppableImage !== null && (
+            <CropImageDialog
+              open={cropImageDialogOpen}
+              onOpenChange={open => {
+                setCropImageDialogOpen(open);
+                if (!open) {
+                  clearCroppableImage();
+                  setEditingImageField(null);
                 }
-                onUpload={handleProfileImageUpload}
-                onCancel={() => setUploadImageDialogOpen(false)}
-              />
-              {croppableImage !== null && (
-                <CropImageDialog
-                  open={cropImageDialogOpen}
-                  onOpenChange={open => {
-                    setCropImageDialogOpen(open);
-                    if (!open) clearCroppableImage();
-                  }}
-                  imageURL={croppableImage.url}
-                  aspectRatio={croppableImage.field === "avatarURL" ? 1 : 3}
-                  onComplete={handleProfileImageCropComplete}
-                  onCancel={clearCroppableImage}
-                />
-              )}
-              <div className="flex items-center justify-between gap-2">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => {
-                    if (editingImageField) {
-                      userInfoForm.setValue(editingImageField, null, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      });
-                    }
-                    setEditingImageField(null);
-                  }}
-                >
-                  {t("settingsPage.account.personal.removeImage")}
-                </Button>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setUploadImageDialogOpen(true)}
-                  >
-                    {t("workspace.dialogs.upload")}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      const imageURL = editingImageURL.trim();
-
-                      if (imageURL) {
-                        try {
-                          new URL(imageURL);
-                        } catch {
-                          toast.error(
-                            t("settingsPage.account.messages.invalidImageUrl")
-                          );
-                          return;
-                        }
-                      }
-
-                      if (!editingImageField) return;
-                      if (!imageURL) {
-                        userInfoForm.setValue(editingImageField, null, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        });
-                      }
-                      setEditingImageField(null);
-                    }}
-                  >
-                    {t("settingsPage.account.personal.apply")}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              }}
+              imageURL={croppableImage.url}
+              aspectRatio={croppableImage.field === "avatarURL" ? 1 : 3}
+              onComplete={handleProfileImageCropComplete}
+              onCancel={() => {
+                clearCroppableImage();
+                setEditingImageField(null);
+              }}
+            />
+          )}
 
           <div
             className={`flex flex-col gap-6 ${
@@ -638,18 +576,22 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 layout === "panel" ? "border-t border-border/50" : ""
               }`}
             >
-              <Button variant="default" type="submit" className="max-w-2/5">
-                {t("settingsPage.account.personal.saveProfile")}
+              <Button
+                variant="default"
+                type="submit"
+                className="max-w-2/5"
+                disabled={!isDirty || isSubmitting}
+              >
+                {t("common.save")}
               </Button>
               <Button
                 variant="destructive"
                 type="button"
                 className="max-w-2/5"
-                onClick={() =>
-                  userInfoForm.reset(userManager.userInfo ?? FakeUserInfo)
-                }
+                disabled={!isDirty || isSubmitting}
+                onClick={() => userInfoForm.reset()}
               >
-                {t("settingsPage.account.personal.resetChanges")}
+                {t("workspace.fields.reset")}
               </Button>
             </div>
             <div className="w-full h-2 shrink-0" />

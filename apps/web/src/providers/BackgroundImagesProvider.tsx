@@ -1,3 +1,7 @@
+import {
+  dashboardHeaderBackgroundImageNoneId,
+  dashboardHeaderBackgroundImageOptions,
+} from "@assets/backgrounds";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import {
@@ -10,7 +14,6 @@ import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { generateUUID } from "@shared/types/uuidv4.type";
 import type { UUID } from "crypto";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
 
 const BackgroundImageCacheMaxBytes = 1024 * 1024 * 1024;
 
@@ -69,9 +72,11 @@ export const BackgroundImagesProvider = ({
         );
       if (
         savedDefaultBackgroundImageId &&
-        dashboardHeaderBackgroundImageOptions.some(
-          image => image.id === savedDefaultBackgroundImageId
-        )
+        (savedDefaultBackgroundImageId ===
+          dashboardHeaderBackgroundImageNoneId ||
+          dashboardHeaderBackgroundImageOptions.some(
+            image => image.id === savedDefaultBackgroundImageId
+          ))
       ) {
         setDefaultBackgroundImageId(savedDefaultBackgroundImageId);
       }
@@ -89,7 +94,10 @@ export const BackgroundImagesProvider = ({
   }, []);
 
   const setDefaultBackgroundImageById = useCallback((id: string) => {
-    if (!dashboardHeaderBackgroundImageOptions.some(image => image.id === id)) {
+    if (
+      id !== dashboardHeaderBackgroundImageNoneId &&
+      !dashboardHeaderBackgroundImageOptions.some(image => image.id === id)
+    ) {
       return;
     }
     setDefaultBackgroundImageId(id);

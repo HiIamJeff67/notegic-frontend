@@ -14,9 +14,7 @@ export const TraditionalChineseSettingsTranslation = {
         avatar: "大頭貼",
         changeAvatarTitle: "變更大頭貼",
         changeCoverTitle: "變更背景圖片",
-        imageDescription: "貼上公開圖片網址，完成後再儲存個人資料以套用變更。",
         removeImage: "移除圖片",
-        apply: "套用",
         headline: "個人標題",
         introduction: "自我介紹",
         gender: "性別",
@@ -230,7 +228,6 @@ export const TraditionalChineseSettingsTranslation = {
         emailReset: "電子郵件已重置。",
         passwordChanged: "密碼已變更。",
         accountDeleted: "帳戶已刪除。",
-        invalidImageUrl: "請輸入有效的圖片網址。",
       },
     },
     preferences: {

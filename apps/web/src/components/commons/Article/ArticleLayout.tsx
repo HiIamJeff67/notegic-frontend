@@ -2,6 +2,7 @@ import { cn } from "@shared/util/utils";
 import type { HTMLAttributes, RefObject } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useScreen } from "@/hooks/useScreen";
 import {
   ArticleDisplayContext,
   type ArticleDisplayMode,
@@ -69,6 +70,7 @@ export const ArticleContent = ({
   ...props
 }: HTMLAttributes<HTMLElement>) => {
   const { preferences } = useLocalPreferences();
+  const { height: screenHeight } = useScreen();
   const display = useContext(ArticleDisplayContext);
   const articleRef = useContext(ArticleScrollContext);
   const contentRef = useRef<HTMLElement>(null);
@@ -116,9 +118,13 @@ export const ArticleContent = ({
       const bottomPadding = Number.parseFloat(
         getComputedStyle(content).paddingBottom
       );
+      const viewportHeight = Math.min(
+        article.clientHeight,
+        screenHeight > 0 ? screenHeight : article.clientHeight
+      );
       const height = Math.max(
         0,
-        article.clientHeight -
+        viewportHeight -
           lastSection.getBoundingClientRect().height -
           (Number.isNaN(bottomPadding) ? 0 : bottomPadding)
       );
@@ -138,7 +144,7 @@ export const ArticleContent = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", updateTrailingSpace);
     };
-  }, [articleRef, display?.mode]);
+  }, [articleRef, display?.mode, screenHeight]);
 
   return (
     <main

@@ -1,4 +1,8 @@
 import {
+  dashboardHeaderBackgroundImageNoneId,
+  dashboardHeaderBackgroundImageOptions,
+} from "@assets/backgrounds";
+import {
   DashboardWidthFrameCountStep,
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
@@ -15,7 +19,7 @@ import {
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { DropTargetMonitor } from "react-dnd";
 import { useTranslation } from "react-i18next";
-import { dashboardHeaderBackgroundImageOptions } from "@assets/backgrounds";
+import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import PlaceableBackground from "@/components/backgrounds/PlaceableBackground/PlaceableBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import Draggable from "@/components/commons/Draggable/Draggable";
@@ -480,14 +484,19 @@ const DashboardPage = () => {
           ref={headerBackgroundImageRef}
           className={`!w-full !h-60 shrink-0 relative z-${DashboardElementZIndexes.headerBackgroundImage}`}
         >
-          <img
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 size-full object-cover"
-            decoding="async"
-            fetchPriority="high"
-            src={defaultHeaderBackgroundImage}
-          />
+          {backgroundImagesManager.defaultBackgroundImageId ===
+          dashboardHeaderBackgroundImageNoneId ? (
+            <GridBackground />
+          ) : (
+            <img
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 size-full object-cover"
+              decoding="async"
+              fetchPriority="high"
+              src={defaultHeaderBackgroundImage}
+            />
+          )}
           {isEditing && (
             <ModifyImageHover
               className="absolute"

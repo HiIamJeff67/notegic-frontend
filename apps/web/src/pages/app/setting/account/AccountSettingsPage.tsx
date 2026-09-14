@@ -21,7 +21,13 @@ import {
 } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { useAppRouter, useNetwork, useSettingsDisplay, useUser } from "@/hooks";
+import {
+  useAppRouter,
+  useNetwork,
+  useScreen,
+  useSettingsDisplay,
+  useUser,
+} from "@/hooks";
 import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
 import ApiKeysTab from "./tabs/ApiKeysTab";
@@ -40,6 +46,7 @@ const AccountSettingsPage = ({
   const { t } = useTranslation();
   const userManager = useUser();
   const { isOnline } = useNetwork();
+  const { width: screenWidth } = useScreen();
   const sidebarManager = useSidebar();
   const { openSheet, closeSheet } = useSettingsDisplay();
   const sendAuthCodeMutator = useSendAuthCode();
@@ -170,40 +177,42 @@ const AccountSettingsPage = ({
       {sidebarManager.isMobile && (
         <SidebarTrigger className="fixed top-2 right-2 z-40" />
       )}
-      <Button
-        data-density-static
-        type="button"
-        variant="default"
-        size="icon"
-        className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
-        aria-label={
-          displayMode === "sheet"
-            ? t("settingsPage.openAsPage")
-            : t("settingsPage.openInSheet")
-        }
-        title={
-          displayMode === "sheet"
-            ? t("settingsPage.openAsPage")
-            : t("settingsPage.openInSheet")
-        }
-        onClick={() => {
-          LocalStorageManipulator.setItem(
-            LocalStorageKey.settingsDisplayMode,
-            displayMode === "sheet" ? "page" : "sheet"
-          );
-
-          if (displayMode === "sheet") {
-            closeSheet();
-            router.push(WebURLPathDictionary.app.setting.account);
-            return;
+      {screenWidth >= 1024 && (
+        <Button
+          data-density-static
+          type="button"
+          variant="default"
+          size="icon"
+          className="absolute top-0 left-0 z-20 m-2 size-7 p-0 select-none bg-transparent text-foreground hover:bg-primary"
+          aria-label={
+            displayMode === "sheet"
+              ? t("settingsPage.openAsPage")
+              : t("settingsPage.openInSheet")
           }
+          title={
+            displayMode === "sheet"
+              ? t("settingsPage.openAsPage")
+              : t("settingsPage.openInSheet")
+          }
+          onClick={() => {
+            LocalStorageManipulator.setItem(
+              LocalStorageKey.settingsDisplayMode,
+              displayMode === "sheet" ? "page" : "sheet"
+            );
 
-          openSheet("account");
-          router.push(WebURLPathDictionary.app.dashboard._);
-        }}
-      >
-        {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
-      </Button>
+            if (displayMode === "sheet") {
+              closeSheet();
+              router.push(WebURLPathDictionary.app.setting.account);
+              return;
+            }
+
+            openSheet("account");
+            router.push(WebURLPathDictionary.app.dashboard._);
+          }}
+        >
+          {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
+        </Button>
+      )}
       <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
@@ -213,7 +222,7 @@ const AccountSettingsPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 pb-[calc(var(--density-content-padding)+2rem)] [&>[role=separator]]:my-10">
+        <ArticleContent className="m-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:my-10">
           <ArticleParagraph id="personal">
             <ArticleParagraphHeader>
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
