@@ -7,7 +7,10 @@ export const getClientCSRFToken = (): string | null => {
   return SessionStorageManipulator.getItemByKey(SessionStorageKey.csrfToken);
 };
 
-export const getClientRequestHeaders = (userAgent?: string) => {
+export const getClientRequestHeaders = (
+  userAgent?: string,
+  turnstileToken?: string | null
+) => {
   const csrfToken = getClientCSRFToken();
 
   return {
@@ -15,6 +18,7 @@ export const getClientRequestHeaders = (userAgent?: string) => {
       userAgent ??
       (typeof navigator !== "undefined" ? navigator.userAgent : "unknown"),
     ...(csrfToken ? { csrfToken } : {}),
+    ...(turnstileToken ? { turnstileToken } : {}),
   };
 };
 

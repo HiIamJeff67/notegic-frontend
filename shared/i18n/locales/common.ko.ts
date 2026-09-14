@@ -73,6 +73,9 @@ export const KoreanCommonTranslation: CommonTranslation = {
     pleaseInputStrongPassword: "강력한 비밀번호를",
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch:
       "비밀번호와 비밀번호 확인이 일치하는지 확인해 주세요.",
+    turnstileRequired: "사람인지 확인을 완료해 주세요",
+    turnstileUnavailable:
+      "사람 확인을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요",
   },
   themes: {
     theme: "테마",

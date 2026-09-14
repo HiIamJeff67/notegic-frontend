@@ -38,7 +38,7 @@ import {
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@/api/invokers/realtime.invoker";
 import { localDB } from "@/api/local/db";
-import { RealtimeClient } from "@/api/websocket-client";
+import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";

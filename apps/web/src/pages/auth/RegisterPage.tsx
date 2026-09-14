@@ -1,9 +1,15 @@
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useRegister } from "@/api/hooks/auth.hook";
+import {
+  clearTurnstileToken,
+  isTurnstileEnabled,
+  setTurnstileToken,
+} from "@/api/turnstile";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
+import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
-import { CSRFTokenGenerator } from "@shared/lib/tokenGenerator";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
@@ -24,12 +30,28 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const turnstileRequired = isTurnstileEnabled();
+  const [turnstileToken, setTurnstileTokenValue] = useState<string | null>(
+    null
+  );
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const [isRegisterPending, startRegisterTransition] = useTransition();
 
   useRegisterLoadingDependencies(() => isRegisterPending);
 
+  const resetTurnstile = useCallback(() => {
+    clearTurnstileToken();
+    setTurnstileTokenValue(null);
+    setTurnstileResetKey(value => value + 1);
+  }, []);
+
   const handleRegisterOnSubmit = useCallback(async (): Promise<void> => {
+    if (turnstileRequired && !turnstileToken) {
+      toast.error(t("auth.turnstileRequired"));
+      return;
+    }
+
     const register = async () => {
       if (password !== confirmPassword) {
         throw new Error(
@@ -39,7 +61,7 @@ const RegisterPage = () => {
 
       const userAgent = navigator.userAgent;
       await registerMutator.mutateAsync({
-        header: getClientRequestHeaders(userAgent),
+        header: getClientRequestHeaders(userAgent, turnstileToken),
         body: {
           name: name,
           email: email,
@@ -61,6 +83,7 @@ const RegisterPage = () => {
         await register().catch(error => {
           setPassword("");
           setConfirmPassword("");
+          resetTurnstile();
           toast.error(translateError(error, t));
         })
     );
@@ -73,7 +96,28 @@ const RegisterPage = () => {
     userManager,
     registerMutator,
     router,
+    resetTurnstile,
+    turnstileRequired,
+    turnstileToken,
   ]);
+
+  const handleGoogleRegister = useCallback(() => {
+    if (turnstileRequired && !turnstileToken) {
+      toast.error(t("auth.turnstileRequired"));
+      return;
+    }
+    if (turnstileToken) setTurnstileToken(turnstileToken);
+
+    const state = createPendingOAuthState("register");
+    if (state === null) {
+      toast.error(t("error.encounterUnknownError"));
+      return;
+    }
+
+    router.forceNavigate(
+      WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
+    );
+  }, [router, t, turnstileRequired, turnstileToken]);
 
   return (
     <GridBackground>
@@ -120,6 +164,15 @@ const RegisterPage = () => {
           ]}
           submitButtonText={t("auth.register")}
           onSubmit={handleRegisterOnSubmit}
+          submitButtonDisabled={turnstileRequired && !turnstileToken}
+          verification={
+            turnstileRequired ? (
+              <CloudflareTurnstile
+                key={turnstileResetKey}
+                onTokenChange={setTurnstileTokenValue}
+              />
+            ) : null
+          }
           switchButtons={[
             {
               description: t("auth.alreadyHaveAnAccount"),
@@ -133,16 +186,8 @@ const RegisterPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleRegister"),
-              onClick: () =>
-                router.forceNavigate(
-                  WebURLPathDictionary.oauth.google(
-                    getOAuthGoogleSearchParamsString({
-                      csrfToken: CSRFTokenGenerator.generate(),
-                      action: "register",
-                      from: router.getCurrentPath(),
-                    })
-                  )
-                ),
+              onClick: handleGoogleRegister,
+              disabled: turnstileRequired && !turnstileToken,
             },
           ]}
           statusDetail={t("workspace.pages.systemReady")}

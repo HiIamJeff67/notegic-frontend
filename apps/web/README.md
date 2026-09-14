@@ -50,6 +50,7 @@ Create an untracked `apps/web/.env` with the local API and realtime endpoints:
 VITE_API_DOMAIN_URL=http://localhost
 VITE_REALTIME_WEBSOCKET_URL=ws://localhost
 VITE_APP_BASE_PATH=/development/v1
+VITE_OAUTH_STATE_TTL_MS=300000
 
 # Production builds use https://client.notegic.com/v1 and
 # wss://realtime.notegic.com/v1; configure these in the deployment environment.
@@ -58,6 +59,8 @@ VITE_PORT=6776
 
 OAuth variables are needed only while testing an OAuth flow. Never commit this
 file or credential values.
+
+`VITE_OAUTH_STATE_TTL_MS` controls the OAuth state lifetime in milliseconds.
 
 Run the application from the repository root:
 

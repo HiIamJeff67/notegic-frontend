@@ -1,13 +1,14 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdateMe } from "@/api/hooks/user.hook";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
 import { FakeUser } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { User, UserSchema } from "@shared/types/user.type";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useUpdateMe } from "@/api/hooks/user.hook";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,6 @@ import {
 } from "@/components/ui/select";
 import { useLoading } from "@/hooks";
 import { useUser } from "@/hooks/useUser";
-import { translateError } from "@shared/i18n/error";
 
 interface AccountTabProps {
   layout?: "panel" | "page";
@@ -65,6 +65,10 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
   useEffect(() => {
     userForm.reset(user);
   }, [user, userForm]);
+
+  const {
+    formState: { isDirty, isSubmitting },
+  } = userForm;
 
   const statusOptions = useMemo(
     () =>
@@ -293,13 +297,19 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
               layout === "panel" ? "border-t border-border/50" : ""
             }`}
           >
-            <Button variant="default" type="submit" className="max-w-2/5">
+            <Button
+              variant="default"
+              type="submit"
+              className="max-w-2/5"
+              disabled={!isDirty || isSubmitting}
+            >
               {t("settingsPage.account.fields.saveAccount")}
             </Button>
             <Button
               variant="destructive"
               type="button"
               className="max-w-2/5"
+              disabled={!isDirty || isSubmitting}
               onClick={() => userForm.reset(user)}
             >
               {t("settingsPage.account.fields.resetChanges")}

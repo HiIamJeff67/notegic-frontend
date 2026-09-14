@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMyInfoRequest,
@@ -8,6 +7,7 @@ import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 export const GetMyInfo = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyInfoRequest) => data)

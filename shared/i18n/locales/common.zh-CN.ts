@@ -70,6 +70,8 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     pleaseInputValidAuthCode: "请输入有效的验证码",
     pleaseInputStrongPassword: "请输入一个强密码",
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch: "请确保密码和确认密码",
+    turnstileRequired: "请完成真人验证",
+    turnstileUnavailable: "真人验证暂时无法使用，请稍后再试",
   },
   themes: {
     theme: "主题",

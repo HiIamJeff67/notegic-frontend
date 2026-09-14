@@ -1,9 +1,16 @@
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLoginViaGoogle, useRegisterViaGoogle } from "@/api/hooks/auth.hook";
+import { OAUTH_STATE_TTL_MS } from "@/api/oauthState";
+import {
+  clearTurnstileToken,
+  getTurnstileToken,
+  isTurnstileEnabled,
+} from "@/api/turnstile";
 import { useBindGoogleAccount } from "@/api/hooks/userAccount.hook";
 import { WebURLPathDictionary } from "@shared/constants";
+import { consumePendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
-import { RedirectState } from "@shared/types/redirectState.type";
+import type { OAuthAction } from "@shared/types/redirectState.type";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,34 +40,39 @@ function GoogleRedirectPage() {
   const hasRendered = useRef(false);
 
   const performGoogleOAuthAction = useCallback(
-    async (
-      action: "register" | "login" | "binding",
-      code: string
-    ): Promise<void> => {
-      const header = getClientRequestHeaders(navigator.userAgent);
+    async (action: OAuthAction, code: string): Promise<void> => {
+      const turnstileToken = action === "binding" ? null : getTurnstileToken();
+      const header = getClientRequestHeaders(
+        navigator.userAgent,
+        turnstileToken
+      );
 
-      switch (action) {
-        case "register": {
-          await registerViaGoogleMutator.mutateAsync({
-            header,
-            body: { authorizationCode: code },
-          });
-          return;
+      try {
+        switch (action) {
+          case "register": {
+            await registerViaGoogleMutator.mutateAsync({
+              header,
+              body: { authorizationCode: code },
+            });
+            return;
+          }
+          case "login": {
+            await loginViaGoogleMutator.mutateAsync({
+              header,
+              body: { authorizationCode: code },
+            });
+            return;
+          }
+          case "binding": {
+            await bindGoogleAccountMutator.mutateAsync({
+              header,
+              body: { authorizationCode: code },
+            });
+            return;
+          }
         }
-        case "login": {
-          await loginViaGoogleMutator.mutateAsync({
-            header,
-            body: { authorizationCode: code },
-          });
-          return;
-        }
-        case "binding": {
-          await bindGoogleAccountMutator.mutateAsync({
-            header,
-            body: { authorizationCode: code },
-          });
-          return;
-        }
+      } finally {
+        if (action !== "binding") clearTurnstileToken();
       }
     },
     [bindGoogleAccountMutator, loginViaGoogleMutator, registerViaGoogleMutator]
@@ -72,30 +84,54 @@ function GoogleRedirectPage() {
     const error = searchParams.get("error");
     const state = searchParams.get("state");
 
-    if (code === null || error !== null) {
+    const pending = consumePendingOAuthState(
+      state,
+      Date.now(),
+      OAUTH_STATE_TTL_MS
+    );
+    if (pending === null) {
       toast.error(
         t("workspace.notifications.googleAuthError", {
-          error: error ?? t("error.encounterUnknownError"),
+          error: t("error.encounterUnknownError"),
         })
       );
       router.push(
         WebURLPathDictionary.auth.redirect.error(
-          t("workspace.pages.googleAuthFailed"),
-          translateError(error, t)
+          t("workspace.pages.googleRedirectFailed"),
+          t("error.encounterUnknownError")
         )
       );
       return;
     }
 
     try {
-      let action: "register" | "login" | "binding" = "login";
+      const { action } = pending;
 
-      if (state) {
-        const decoded = state.startsWith("{") ? state : atob(state);
-        const parsedState = JSON.parse(decoded) as RedirectState;
-        if (parsedState.action) {
-          action = parsedState.action;
-        }
+      if (error !== null) {
+        toast.error(
+          t("workspace.notifications.googleAuthError", {
+            error: error,
+          })
+        );
+        router.push(
+          WebURLPathDictionary.auth.redirect.error(
+            t("workspace.pages.googleAuthFailed"),
+            translateError(error, t)
+          )
+        );
+        return;
+      }
+
+      if (code === null) {
+        throw new Error(t("error.encounterUnknownError"));
+      }
+
+      if (
+        action !== "binding" &&
+        isTurnstileEnabled() &&
+        !getTurnstileToken()
+      ) {
+        throw new Error(t("auth.turnstileRequired"));
       }
 
       await performGoogleOAuthAction(action, code);

@@ -73,6 +73,9 @@ export const EnglishCommonTranslation: CommonTranslation = {
     pleaseInputStrongPassword: "Please input a strong password",
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch:
       "Please make sure the password and confirm password are the same",
+    turnstileRequired: "Please complete the human verification",
+    turnstileUnavailable:
+      "Human verification is temporarily unavailable. Please try again",
   },
   themes: {
     theme: "Theme",

@@ -5,8 +5,8 @@ import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
-import { getClientCSRFToken } from "@/api/clientHeaders";
 import { CurrentAPIBaseURL } from "@shared/api/url";
+import { getClientCSRFToken } from "@/api/clientHeaders";
 
 export const createApolloClient = () => {
   const apiDomainURL = import.meta.env.VITE_API_DOMAIN_URL || "";

@@ -68,6 +68,8 @@ export interface CommonTranslation {
     pleaseInputValidAuthCode: string;
     pleaseInputStrongPassword: string;
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch: string;
+    turnstileRequired: string;
+    turnstileUnavailable: string;
   };
   themes: {
     theme: string;

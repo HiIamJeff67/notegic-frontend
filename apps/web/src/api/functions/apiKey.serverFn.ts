@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
@@ -12,6 +11,7 @@ import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 export const CreateMyAPIKey = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMyAPIKeyRequest) => data)

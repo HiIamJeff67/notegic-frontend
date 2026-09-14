@@ -6,6 +6,7 @@ import {
 } from "@/components/icons/OAuthIcon";
 import "@/global/styles/panel.css";
 import { toCamelCase } from "@shared/util/stringCaseConversions";
+import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -51,6 +52,8 @@ interface AuthPanelProps {
   onSubmit: () => Promise<void>;
   switchButtons?: AuthSwitchButton[];
   oauthButtons?: AuthOAuthButton[];
+  verification?: ReactNode;
+  submitButtonDisabled?: boolean;
   statusDetail?: string;
   isLoading?: boolean;
 }
@@ -63,6 +66,8 @@ const AuthPanel = ({
   onSubmit,
   switchButtons,
   oauthButtons,
+  verification,
+  submitButtonDisabled = false,
   statusDetail,
   isLoading = false,
 }: AuthPanelProps) => {
@@ -199,9 +204,11 @@ const AuthPanel = ({
               </div>
             ))}
 
+            {verification}
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={submitButtonDisabled || isLoading}
               className="
                 relative button-gradient border border-green-400 rounded-md px-8 py-4
                 text-green-400 font-mono text-base leading-normal font-bold tracking-wider cursor-pointer

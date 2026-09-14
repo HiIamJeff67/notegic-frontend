@@ -239,6 +239,8 @@ export const ExceptionReasonDictionary = {
       "PermissionDeniedDueToInvalidRequestOriginDomain",
     permissionDeniedDueToTooManyRequests:
       "PermissionDeniedDueToTooManyRequests",
+    turnstileVerificationFailed: "TurnstileVerificationFailed",
+    turnstileProviderUnavailable: "TurnstileProviderUnavailable",
   },
   user: {
     ...DatabaseExceptionReasons,

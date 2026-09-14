@@ -3,8 +3,8 @@ import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
+import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
-import { CSRFTokenGenerator } from "@shared/lib/tokenGenerator";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -364,17 +364,19 @@ const BindingTab = ({
       >
         <SettingMenuButton
           variant="outline"
-          onClick={() =>
+          onClick={() => {
+            const state = createPendingOAuthState("binding");
+            if (state === null) {
+              toast.error(t("error.encounterUnknownError"));
+              return;
+            }
+
             router.forceNavigate(
               WebURLPathDictionary.oauth.google(
-                getOAuthGoogleSearchParamsString({
-                  csrfToken: CSRFTokenGenerator.generate(),
-                  action: "binding",
-                  from: router.getCurrentPath(),
-                })
+                getOAuthGoogleSearchParamsString(state)
               )
-            )
-          }
+            );
+          }}
         >
           {t("settingsPage.account.binding.bind")}
         </SettingMenuButton>

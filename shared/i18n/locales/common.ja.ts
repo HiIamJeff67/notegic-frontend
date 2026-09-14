@@ -73,6 +73,9 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     pleaseInputStrongPassword: "強力なパスワードを入力してください",
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch:
       "パスワードと確認用パスワードが一致していることを確認してください。",
+    turnstileRequired: "人間であることの確認を完了してください",
+    turnstileUnavailable:
+      "人間確認を一時的に利用できません。後でもう一度お試しください",
   },
   themes: {
     theme: "テーマ",

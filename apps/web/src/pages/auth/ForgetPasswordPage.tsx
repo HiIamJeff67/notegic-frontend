@@ -1,5 +1,6 @@
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useForgetPassword, useSendAuthCode } from "@/api/hooks/auth.hook";
+import { clearTurnstileToken, isTurnstileEnabled } from "@/api/turnstile";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import {
@@ -16,6 +17,7 @@ import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { translateError } from "@shared/i18n/error";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 
 const ForgetPasswordPage = () => {
   const router = useAppRouter();
@@ -29,6 +31,9 @@ const ForgetPasswordPage = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [sendAuthCodeTimeCounter, setSendAuthCodeTimeCounter] =
     useState<number>(0);
+  const turnstileRequired = isTurnstileEnabled();
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const [isSendAuthCodePending, startSendAuthCodeTransition] = useTransition();
   const [isResetPasswordPending, startResetPasswordTransition] =
@@ -38,6 +43,12 @@ const ForgetPasswordPage = () => {
     () => isSendAuthCodePending,
     () => isResetPasswordPending
   );
+
+  const resetTurnstile = useCallback(() => {
+    clearTurnstileToken();
+    setTurnstileToken(null);
+    setTurnstileResetKey(value => value + 1);
+  }, []);
 
   useEffect(() => {
     if (sendAuthCodeTimeCounter === 0) return;
@@ -54,35 +65,46 @@ const ForgetPasswordPage = () => {
     return () => clearInterval(timer);
   }, [sendAuthCodeTimeCounter]);
 
-  const handleSendAuthCodeOnClick = useCallback(
-    async (): Promise<void> =>
-      startSendAuthCodeTransition(async () => {
-        try {
-          const userAgent = navigator.userAgent;
-          const responseOfSendingAuthCode =
-            await sendAuthCodeMutator.mutateAsync({
-              header: getClientRequestHeaders(userAgent),
-              body: {
-                email: email,
-              },
-            });
+  const handleSendAuthCodeOnClick = useCallback(async (): Promise<void> => {
+    if (turnstileRequired && !turnstileToken) {
+      toast.error(t("auth.turnstileRequired"));
+      return;
+    }
 
-          const blockUntil = new Date(
-            responseOfSendingAuthCode.data.blockAuthCodeUntil
-          );
-          const blockTime = Math.floor(
-            (blockUntil.getTime() - new Date().getTime()) / 1000
-          );
-          setSendAuthCodeTimeCounter(
-            Math.max(AuthCodeBlockedSecond, blockTime)
-          );
-        } catch (error) {
-          setSendAuthCodeTimeCounter(0);
-          toast.error(translateError(error, t));
-        }
-      }),
-    [email, t, sendAuthCodeMutator]
-  );
+    startSendAuthCodeTransition(async () => {
+      try {
+        const userAgent = navigator.userAgent;
+        const responseOfSendingAuthCode = await sendAuthCodeMutator.mutateAsync(
+          {
+            header: getClientRequestHeaders(userAgent, turnstileToken),
+            body: {
+              email: email,
+            },
+          }
+        );
+
+        const blockUntil = new Date(
+          responseOfSendingAuthCode.data.blockAuthCodeUntil
+        );
+        const blockTime = Math.floor(
+          (blockUntil.getTime() - new Date().getTime()) / 1000
+        );
+        setSendAuthCodeTimeCounter(Math.max(AuthCodeBlockedSecond, blockTime));
+        resetTurnstile();
+      } catch (error) {
+        setSendAuthCodeTimeCounter(0);
+        resetTurnstile();
+        toast.error(translateError(error, t));
+      }
+    });
+  }, [
+    email,
+    resetTurnstile,
+    sendAuthCodeMutator,
+    t,
+    turnstileRequired,
+    turnstileToken,
+  ]);
 
   const handleResetPasswordOnSubmit = useCallback(
     async function (): Promise<void> {
@@ -165,7 +187,9 @@ const ForgetPasswordPage = () => {
                         "syntax.separator"
                       )}${t("auth.authCode")}`,
                 onClick: async () => handleSendAuthCodeOnClick(),
-                disabled: sendAuthCodeTimeCounter > 0,
+                disabled:
+                  sendAuthCodeTimeCounter > 0 ||
+                  (turnstileRequired && !turnstileToken),
               },
             },
             {
@@ -187,6 +211,14 @@ const ForgetPasswordPage = () => {
           ]}
           submitButtonText={t("auth.resetPassword")}
           onSubmit={handleResetPasswordOnSubmit}
+          verification={
+            turnstileRequired ? (
+              <CloudflareTurnstile
+                key={turnstileResetKey}
+                onTokenChange={setTurnstileToken}
+              />
+            ) : null
+          }
           switchButtons={[
             {
               description: t("auth.haveNotRegisterAnAccount"),

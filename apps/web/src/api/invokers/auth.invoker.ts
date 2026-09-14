@@ -83,6 +83,12 @@ export const mutationFnRegister = async (
       );
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
         case ExceptionReasonDictionary.user.duplicateName:
           throw error.setPresentation("error.apiError.register.duplicateName");
 
@@ -117,6 +123,12 @@ export const mutationFnRegisterViaGoogle = async (
       );
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
         case ExceptionReasonDictionary.user.notFound:
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
       }
@@ -144,6 +156,12 @@ export const mutationFnLogin = async (
       );
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
         case ExceptionReasonDictionary.user.notFound:
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
       }
@@ -170,6 +188,12 @@ export const mutationFnLoginViaGoogle = async (
       throw new Error(`validation failed: ${errorMessage}`);
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
         case ExceptionReasonDictionary.user.notFound:
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
       }
@@ -227,6 +251,12 @@ export const mutationFnSendAuthCode = async (
       );
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
         case ExceptionReasonDictionary.user.notFound:
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 

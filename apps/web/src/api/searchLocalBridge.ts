@@ -2,20 +2,12 @@ import { useLazyQuery, useQuery } from "@apollo/client/react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import { isNetworkFallbackError } from "./graphql/hooks/error";
-
-type LocalSearchAdapter = {
-  fieldName: string;
-  sync: (data?: any) => Promise<void>;
-  simulate: (input: any) => Promise<any>;
-  signature: (data?: any) => string;
-  syncErrorMessage: string;
-  simulateErrorMessage: string;
-};
+import type { SearchLocalAdapter } from "./searchLocalAdapters";
 
 export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
   document: any,
   options: useLazyQuery.Options<TData, TVariables> | undefined,
-  adapter: LocalSearchAdapter
+  adapter: SearchLocalAdapter
 ): useLazyQuery.ResultTuple<TData, TVariables> => {
   const [execute, result] = useLazyQuery<TData, TVariables>(document, {
     notifyOnNetworkStatusChange: true,
@@ -103,7 +95,7 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
   document: any,
   variables: TVariables,
   options: useQuery.Options<TData, TVariables> | undefined,
-  adapter: LocalSearchAdapter
+  adapter: SearchLocalAdapter
 ) => {
   const queryResult = useQuery<TData, TVariables>(document, {
     variables,

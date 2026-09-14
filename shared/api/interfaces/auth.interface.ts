@@ -10,6 +10,7 @@ export const RegisterRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
+      turnstileToken: z.string().min(1).optional(),
     })
     .optional(),
   body: z.object({
@@ -50,6 +51,7 @@ export const RegisterViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
+      turnstileToken: z.string().min(1).optional(),
     })
     .optional(),
   body: z.object({
@@ -82,6 +84,7 @@ export const LoginRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
+      turnstileToken: z.string().min(1).optional(),
     })
     .optional(),
   body: z.object({
@@ -118,6 +121,7 @@ export const LoginViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
       userAgent: z.string().min(1).optional(),
+      turnstileToken: z.string().min(1).optional(),
     })
     .optional(),
   body: z.object({
@@ -174,6 +178,7 @@ export const SendAuthCodeRequestSchema = NotegicRequestSchema.extend({
     .object({
       userAgent: z.string().min(1).optional(),
       csrfToken: z.string().optional(),
+      turnstileToken: z.string().min(1).optional(),
     })
     .optional(),
   body: z.object({

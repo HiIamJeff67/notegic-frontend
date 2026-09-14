@@ -1,9 +1,10 @@
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogin } from "@/api/hooks/auth.hook";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import { WebURLPathDictionary } from "@shared/constants";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
+import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
-import { CSRFTokenGenerator } from "@shared/lib/tokenGenerator";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
@@ -16,6 +17,11 @@ import {
 } from "@/hooks/localPreferences";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { translateError } from "@shared/i18n/error";
+import {
+  clearTurnstileToken,
+  isTurnstileEnabled,
+  setTurnstileToken,
+} from "@/api/turnstile";
 
 const LoginPage = () => {
   const router = useAppRouter();
@@ -27,18 +33,34 @@ const LoginPage = () => {
 
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
+  const turnstileRequired = isTurnstileEnabled();
+  const [turnstileToken, setTurnstileTokenValue] = useState<string | null>(
+    null
+  );
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const [isLoginPending, startLoginTransition] = useTransition();
 
   useRegisterLoadingDependencies(() => isLoginPending);
 
+  const resetTurnstile = useCallback(() => {
+    clearTurnstileToken();
+    setTurnstileTokenValue(null);
+    setTurnstileResetKey(value => value + 1);
+  }, []);
+
   const handleLoginOnSubmit = useCallback(
     async function (): Promise<void> {
+      if (turnstileRequired && !turnstileToken) {
+        toast.error(t("auth.turnstileRequired"));
+        return;
+      }
+
       startLoginTransition(async () => {
         try {
           const userAgent = navigator.userAgent;
           await loginMutator.mutateAsync({
-            header: getClientRequestHeaders(userAgent),
+            header: getClientRequestHeaders(userAgent, turnstileToken),
             body: {
               account: account,
               password: password,
@@ -52,12 +74,42 @@ const LoginPage = () => {
           router.push(getPreferredStartPath(preferences));
         } catch (error) {
           setPassword("");
+          resetTurnstile();
           toast.error(translateError(error, t));
         }
       });
     },
-    [account, password, t, preferences, userManager, loginMutator, router]
+    [
+      account,
+      password,
+      t,
+      preferences,
+      userManager,
+      loginMutator,
+      router,
+      resetTurnstile,
+      turnstileRequired,
+      turnstileToken,
+    ]
   );
+
+  const handleGoogleLogin = useCallback(() => {
+    if (turnstileRequired && !turnstileToken) {
+      toast.error(t("auth.turnstileRequired"));
+      return;
+    }
+    if (turnstileToken) setTurnstileToken(turnstileToken);
+
+    const state = createPendingOAuthState("login");
+    if (state === null) {
+      toast.error(t("error.encounterUnknownError"));
+      return;
+    }
+
+    router.forceNavigate(
+      WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
+    );
+  }, [router, t, turnstileRequired, turnstileToken]);
 
   return (
     <GridBackground>
@@ -88,6 +140,15 @@ const LoginPage = () => {
           ]}
           submitButtonText={t("auth.login")}
           onSubmit={handleLoginOnSubmit}
+          submitButtonDisabled={turnstileRequired && !turnstileToken}
+          verification={
+            turnstileRequired ? (
+              <CloudflareTurnstile
+                key={turnstileResetKey}
+                onTokenChange={setTurnstileTokenValue}
+              />
+            ) : null
+          }
           switchButtons={[
             {
               description: t("auth.haveNotRegisterAnAccount"),
@@ -108,16 +169,8 @@ const LoginPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleLogin"),
-              onClick: () =>
-                router.forceNavigate(
-                  WebURLPathDictionary.oauth.google(
-                    getOAuthGoogleSearchParamsString({
-                      csrfToken: CSRFTokenGenerator.generate(),
-                      action: "login",
-                      from: router.getCurrentPath(),
-                    })
-                  )
-                ),
+              onClick: handleGoogleLogin,
+              disabled: turnstileRequired && !turnstileToken,
             },
           ]}
           statusDetail={t("workspace.pages.systemReady")}

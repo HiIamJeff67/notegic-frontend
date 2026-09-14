@@ -14,7 +14,7 @@ It does not duplicate backend route definitions or server implementation.
 | `shared/api/graphql/` | GraphQL documents, generated types, conversions, and client-neutral operations |
 | `apps/web/src/api/graphql/` | Web Apollo client, React GraphQL hooks, and local adapters |
 | `shared/api/websocket/` | WebSocket frame/type definitions |
-| `apps/web/src/api/websocket-client.ts` | WebSocket connection lifecycle |
+| `apps/web/src/api/websocketClient.ts` | WebSocket connection lifecycle |
 | `shared/api/interfaces/` | Current frontend request and domain interfaces |
 
 Keep portable contracts, requests, queries, and domain logic under `shared/`

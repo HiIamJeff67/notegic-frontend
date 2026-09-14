@@ -101,3 +101,13 @@ test("mutation headers always include the CSRF field", () => {
     csrfToken: "current-token",
   });
 });
+
+test("includes the Turnstile token only when provided", () => {
+  expect(getClientRequestHeaders("explicit-agent")).toEqual({
+    userAgent: "explicit-agent",
+  });
+  expect(getClientRequestHeaders("explicit-agent", "turnstile-token")).toEqual({
+    userAgent: "explicit-agent",
+    turnstileToken: "turnstile-token",
+  });
+});

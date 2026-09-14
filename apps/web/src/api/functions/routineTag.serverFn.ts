@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateRoutineTagRequest,
@@ -26,6 +25,7 @@ import {
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 export const GetMyRoutineTagById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineTagByIdRequest) => data)

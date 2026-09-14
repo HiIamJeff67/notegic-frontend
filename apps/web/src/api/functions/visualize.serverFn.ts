@@ -1,8 +1,8 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 interface VisualizeServerRequest {
   header?: {

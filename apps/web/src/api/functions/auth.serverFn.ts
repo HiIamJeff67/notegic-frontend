@@ -1,4 +1,3 @@
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   DeleteMeRequest,
@@ -28,6 +27,7 @@ import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() => {
   const cookieHeader = getRequestHeader("cookie") ?? "";
@@ -58,6 +58,9 @@ export const Register = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -91,6 +94,9 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -122,6 +128,9 @@ export const Login = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -152,6 +161,9 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -219,6 +231,9 @@ export const SendAuthCode = createServerFn({ method: "POST" })
           "User-Agent": userAgent,
           ...(request.header?.csrfToken
             ? { "X-CSRF-Token": request.header.csrfToken }
+            : {}),
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
             : {}),
         },
         body: JSON.stringify(request.body),

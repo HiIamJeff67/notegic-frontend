@@ -13,12 +13,12 @@ import {
   UpdateMySettingResponse,
   UpdateMySettingResponseSchema,
 } from "@shared/api/interfaces/userSetting.interface";
+import { getRetryAt } from "@shared/api/retry";
 import { ZodError } from "zod";
 import {
   GetMySetting,
   UpdateMySetting,
 } from "@/api/functions/userSetting.serverFn";
-import { getRetryAt } from "@/api/retry";
 
 // Shared by settings reads and writes in this browser, never by SSR users.
 let rateLimitedUntil = 0;

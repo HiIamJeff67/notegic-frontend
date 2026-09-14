@@ -13,6 +13,15 @@ import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.sync
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
 
+export type SearchLocalAdapter = {
+  fieldName: string;
+  sync: (data?: any) => Promise<void>;
+  simulate: (input: any) => Promise<any>;
+  signature: (data?: any) => string;
+  syncErrorMessage: string;
+  simulateErrorMessage: string;
+};
+
 export const searchRoutinesLocalAdapter = {
   fieldName: "searchRoutines",
   syncErrorMessage: "failed to synchronize searched routines to local db",

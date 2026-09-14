@@ -72,6 +72,8 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
     pleaseInputValidAuthCode: "請輸入有效的驗證碼",
     pleaseMakeSurePasswordAndConfirmPasswordAreMatch:
       "請確保密碼跟確認密碼一致",
+    turnstileRequired: "請完成真人驗證",
+    turnstileUnavailable: "真人驗證暫時無法使用，請稍後再試",
   },
   themes: {
     theme: "主題",

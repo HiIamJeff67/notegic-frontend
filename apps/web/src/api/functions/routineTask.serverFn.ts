@@ -27,7 +27,7 @@ import {
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineTaskPurposeCount = createServerFn({

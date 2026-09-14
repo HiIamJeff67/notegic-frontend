@@ -5,12 +5,12 @@ import {
   UpdateMySettingRequest,
   UpdateMySettingResponse,
 } from "@shared/api/interfaces/userSetting.interface";
+import { getRetryAt } from "@shared/api/retry";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookies/bridge";
-import { getRetryAt } from "@/api/retry";
+import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
 
 const requestUpstream = async (
   request: GetMySettingRequest | UpdateMySettingRequest,
