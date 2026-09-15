@@ -46,6 +46,15 @@ const RegisterPage = () => {
     setTurnstileResetKey(value => value + 1);
   }, []);
 
+  const handleTurnstileTokenChange = useCallback((token: string | null) => {
+    setTurnstileTokenValue(token);
+    if (token === null) {
+      clearTurnstileToken();
+    } else {
+      setTurnstileToken(token);
+    }
+  }, []);
+
   const handleRegisterOnSubmit = useCallback(async (): Promise<void> => {
     if (turnstileRequired && !turnstileToken) {
       toast.error(t("auth.turnstileRequired"));
@@ -106,8 +115,6 @@ const RegisterPage = () => {
       toast.error(t("auth.turnstileRequired"));
       return;
     }
-    if (turnstileToken) setTurnstileToken(turnstileToken);
-
     const state = createPendingOAuthState("register");
     if (state === null) {
       toast.error(t("error.encounterUnknownError"));
@@ -169,7 +176,7 @@ const RegisterPage = () => {
             turnstileRequired ? (
               <CloudflareTurnstile
                 key={turnstileResetKey}
-                onTokenChange={setTurnstileTokenValue}
+                onTokenChange={handleTurnstileTokenChange}
               />
             ) : null
           }
