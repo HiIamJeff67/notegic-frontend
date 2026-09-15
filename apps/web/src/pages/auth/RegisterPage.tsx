@@ -2,6 +2,7 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useRegister } from "@/api/hooks/auth.hook";
 import {
   clearTurnstileToken,
+  debugTurnstile,
   isTurnstileEnabled,
   setTurnstileToken,
 } from "@/api/turnstile";
@@ -41,12 +42,18 @@ const RegisterPage = () => {
   useRegisterLoadingDependencies(() => isRegisterPending);
 
   const resetTurnstile = useCallback(() => {
+    debugTurnstile("register reset started");
     clearTurnstileToken();
     setTurnstileTokenValue(null);
     setTurnstileResetKey(value => value + 1);
+    debugTurnstile("register reset completed");
   }, []);
 
   const handleTurnstileTokenChange = useCallback((token: string | null) => {
+    debugTurnstile("register page received token change", {
+      tokenPresent: Boolean(token),
+      tokenLength: token?.length ?? 0,
+    });
     setTurnstileTokenValue(token);
     if (token === null) {
       clearTurnstileToken();
@@ -56,7 +63,12 @@ const RegisterPage = () => {
   }, []);
 
   const handleRegisterOnSubmit = useCallback(async (): Promise<void> => {
+    debugTurnstile("password registration submitted", {
+      turnstileRequired,
+      tokenPresent: Boolean(turnstileToken),
+    });
     if (turnstileRequired && !turnstileToken) {
+      debugTurnstile("password registration blocked by missing token");
       toast.error(t("auth.turnstileRequired"));
       return;
     }
@@ -111,7 +123,12 @@ const RegisterPage = () => {
   ]);
 
   const handleGoogleRegister = useCallback(() => {
+    debugTurnstile("Google registration clicked", {
+      turnstileRequired,
+      tokenPresent: Boolean(turnstileToken),
+    });
     if (turnstileRequired && !turnstileToken) {
+      debugTurnstile("Google registration blocked by missing token");
       toast.error(t("auth.turnstileRequired"));
       return;
     }
@@ -121,6 +138,7 @@ const RegisterPage = () => {
       return;
     }
 
+    debugTurnstile("Google registration OAuth navigation starting");
     router.forceNavigate(
       WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
     );
