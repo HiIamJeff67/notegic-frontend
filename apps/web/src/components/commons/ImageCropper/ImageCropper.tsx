@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 interface ImageCropperProps {
   imageURL: string;
   aspectRatio?: number;
+  borderRadius?: React.CSSProperties["borderRadius"];
   onComplete: (croppedBlob: Blob) => void;
   onCancel: () => void;
 }
@@ -13,6 +14,7 @@ interface ImageCropperProps {
 const ImageCropper: React.FC<ImageCropperProps> = ({
   imageURL,
   aspectRatio,
+  borderRadius,
   onComplete,
   onCancel,
 }) => {
@@ -56,27 +58,24 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
     });
   };
 
-  const handleOnCropComplete = (
-    _croppedArea: Area,
-    croppedAreaPixels: Area
-  ) => {
+  const handleOnCropComplete = (_croppedArea: Area, croppedAreaPixels: Area) =>
     setCroppedAreaPixels(croppedAreaPixels);
-  };
 
   return (
-    <div className="flex-col justify-center items-center bg-transparent rounded-lg p-4 shadow-lg relative w-[400px] h-[300px]">
-      <div className="relative w-full h-4/5">
+    <div className="flex w-full flex-col">
+      <div className="relative h-64 w-full overflow-hidden">
         <Cropper
           image={imageURL}
           crop={crop}
           zoom={zoom}
           aspect={aspectRatio ?? 16 / 9}
+          style={{ cropAreaStyle: { borderRadius } }}
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onCropComplete={handleOnCropComplete}
         />
       </div>
-      <div className="w-full flex justify-end gap-2 mt-4 h-1/5">
+      <div className="mt-4 flex w-full justify-end gap-2">
         <Button
           variant="destructive"
           className="px-4 py-2 z-100"

@@ -14,7 +14,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         avatar: "アバター",
         changeAvatarTitle: "アバターを変更",
         changeCoverTitle: "カバー画像を変更",
-        removeImage: "画像を削除",
+        removeImage: "削除",
         headline: "プロフィール見出し",
         introduction: "自己紹介",
         gender: "性別",

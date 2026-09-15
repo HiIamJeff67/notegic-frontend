@@ -40,11 +40,29 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isRemoving, setIsRemoving] = useState<boolean>(false);
 
-  const handleOnDrop = (files: File[]) => {
+  const uploadImages = async (files: File[]) => {
+    try {
+      setIsUploading(true);
+      await onUpload(files);
+      setSelectedFiles([]);
+      setError("");
+      onOpenChange(false);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleOnDrop = async (files: File[]) => {
     if (files.length > maxCount) {
       setError(t("workspace.dialogs.maxImages", { count: maxCount }));
       return;
     }
+
+    if (maxCount === 1) {
+      await uploadImages(files);
+      return;
+    }
+
     setSelectedFiles(prev => [...prev, ...files]);
     setError("");
   };
@@ -54,15 +72,7 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
       setError(t("workspace.dialogs.selectAtLeastOneImage"));
       return;
     }
-    try {
-      setIsUploading(true);
-      await onUpload(uploadedImages);
-      setSelectedFiles([]);
-      setError("");
-      onOpenChange(false);
-    } finally {
-      setIsUploading(false);
-    }
+    await uploadImages(uploadedImages);
   };
 
   const handleOnRemove = async () => {
@@ -95,7 +105,7 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
         <DropFileZone
           accept={{ "image/*": [".jpg", ".jpeg", ".png", ".gif", ".webp"] }}
           multiple={maxCount > 1}
-          disabled={false}
+          disabled={isBusy}
           width="100%"
           height="140px"
           className="mb-2 bg-muted/45 hover:bg-muted/60"
@@ -107,7 +117,7 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
             </p>
           </div>
         </DropFileZone>
-        {uploadedImages.length > 0 && (
+        {maxCount > 1 && uploadedImages.length > 0 && (
           <div className="w-full flex flex-wrap gap-2 mt-2">
             {uploadedImages.map((image, index) => (
               <div
@@ -149,14 +159,16 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
           <Button variant="destructive" disabled={isBusy} onClick={onCancel}>
             {t("workspace.widgets.cancel")}
           </Button>
-          <Button
-            variant="default"
-            onClick={handleOnUpload}
-            disabled={uploadedImages.length === 0 || isBusy}
-          >
-            {isBusy && <Spinner />}
-            {t("workspace.dialogs.upload")}
-          </Button>
+          {maxCount > 1 && (
+            <Button
+              variant="default"
+              onClick={handleOnUpload}
+              disabled={uploadedImages.length === 0 || isBusy}
+            >
+              {isUploading && <Spinner />}
+              {t("workspace.dialogs.upload")}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

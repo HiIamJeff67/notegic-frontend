@@ -124,6 +124,9 @@ for the version flag.
 Cloudflare Workers deployment is documented in
 [Cloudflare Workers deployment](cloudflare-workers-builds.md).
 
+Cloudflare maintenance mode is documented in
+[Cloudflare maintenance mode](cloudflare-maintenance-mode.md).
+
 ## Runbook expectations
 
 Each future runbook should state prerequisites, the command or procedure, the

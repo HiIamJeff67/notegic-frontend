@@ -67,8 +67,9 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
   }, [user, userForm]);
 
   const {
-    formState: { isDirty, isSubmitting },
+    formState: { dirtyFields, isSubmitting },
   } = userForm;
+  const isDirty = Boolean(dirtyFields.displayName || dirtyFields.status);
 
   const statusOptions = useMemo(
     () =>
@@ -303,7 +304,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
               className="max-w-2/5"
               disabled={!isDirty || isSubmitting}
             >
-              {t("settingsPage.account.fields.saveAccount")}
+              {t("common.save")}
             </Button>
             <Button
               variant="destructive"
@@ -312,7 +313,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
               disabled={!isDirty || isSubmitting}
               onClick={() => userForm.reset(user)}
             >
-              {t("settingsPage.account.fields.resetChanges")}
+              {t("workspace.fields.reset")}
             </Button>
           </div>
         </div>

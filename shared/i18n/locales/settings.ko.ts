@@ -14,7 +14,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         avatar: "아바타",
         changeAvatarTitle: "아바타 변경",
         changeCoverTitle: "커버 이미지 변경",
-        removeImage: "이미지 제거",
+        removeImage: "제거",
         headline: "프로필 제목",
         introduction: "자기소개",
         gender: "성별",

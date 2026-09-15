@@ -14,7 +14,7 @@ export const TraditionalChineseSettingsTranslation = {
         avatar: "大頭貼",
         changeAvatarTitle: "變更大頭貼",
         changeCoverTitle: "變更背景圖片",
-        removeImage: "移除圖片",
+        removeImage: "移除",
         headline: "個人標題",
         introduction: "自我介紹",
         gender: "性別",

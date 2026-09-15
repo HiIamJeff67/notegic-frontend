@@ -14,7 +14,7 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         avatar: "头像",
         changeAvatarTitle: "更改头像",
         changeCoverTitle: "更改背景图片",
-        removeImage: "移除图片",
+        removeImage: "移除",
         headline: "个人标题",
         introduction: "个人简介",
         gender: "性别",

@@ -12,7 +12,7 @@ export const EnglishSettingsTranslation = {
         avatar: "Avatar",
         changeAvatarTitle: "Change avatar",
         changeCoverTitle: "Change cover image",
-        removeImage: "Remove image",
+        removeImage: "Remove",
         headline: "Profile headline",
         introduction: "Introduction",
         gender: "Gender",

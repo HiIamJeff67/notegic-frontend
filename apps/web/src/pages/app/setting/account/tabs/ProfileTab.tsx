@@ -355,6 +355,9 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               }}
               imageURL={croppableImage.url}
               aspectRatio={croppableImage.field === "avatarURL" ? 1 : 3}
+              borderRadius={
+                croppableImage.field === "avatarURL" ? "50%" : undefined
+              }
               onComplete={handleProfileImageCropComplete}
               onCancel={() => {
                 clearCroppableImage();
