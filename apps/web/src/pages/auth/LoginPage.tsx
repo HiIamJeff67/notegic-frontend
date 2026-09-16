@@ -19,7 +19,6 @@ import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { translateError } from "@shared/i18n/error";
 import {
   clearTurnstileToken,
-  debugTurnstile,
   isTurnstileEnabled,
   setTurnstileToken,
 } from "@/api/turnstile";
@@ -45,18 +44,12 @@ const LoginPage = () => {
   useRegisterLoadingDependencies(() => isLoginPending);
 
   const resetTurnstile = useCallback(() => {
-    debugTurnstile("login reset started");
     clearTurnstileToken();
     setTurnstileTokenValue(null);
     setTurnstileResetKey(value => value + 1);
-    debugTurnstile("login reset completed");
   }, []);
 
   const handleTurnstileTokenChange = useCallback((token: string | null) => {
-    debugTurnstile("login page received token change", {
-      tokenPresent: Boolean(token),
-      tokenLength: token?.length ?? 0,
-    });
     setTurnstileTokenValue(token);
     if (token === null) {
       clearTurnstileToken();
@@ -67,12 +60,7 @@ const LoginPage = () => {
 
   const handleLoginOnSubmit = useCallback(
     async function (): Promise<void> {
-      debugTurnstile("password login submitted", {
-        turnstileRequired,
-        tokenPresent: Boolean(turnstileToken),
-      });
       if (turnstileRequired && !turnstileToken) {
-        debugTurnstile("password login blocked by missing token");
         toast.error(t("auth.turnstileRequired"));
         return;
       }
@@ -115,12 +103,7 @@ const LoginPage = () => {
   );
 
   const handleGoogleLogin = useCallback(() => {
-    debugTurnstile("Google login clicked", {
-      turnstileRequired,
-      tokenPresent: Boolean(turnstileToken),
-    });
     if (turnstileRequired && !turnstileToken) {
-      debugTurnstile("Google login blocked by missing token");
       toast.error(t("auth.turnstileRequired"));
       return;
     }
@@ -130,7 +113,6 @@ const LoginPage = () => {
       return;
     }
 
-    debugTurnstile("Google login OAuth navigation starting");
     router.forceNavigate(
       WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
     );
