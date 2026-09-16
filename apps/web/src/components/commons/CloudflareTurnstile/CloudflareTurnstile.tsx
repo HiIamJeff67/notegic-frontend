@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useTheme } from "@/hooks/useTheme";
 
 interface TurnstileRenderOptions {
   sitekey: string;
@@ -25,7 +24,6 @@ interface CloudflareTurnstileProps {
 }
 
 const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
-  const themeManager = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const onTokenChangeRef = useRef(onTokenChange);
 
@@ -99,9 +97,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
   return (
     <div
       ref={containerRef}
-      className={`flex w-full min-h-[65px] justify-center overflow-hidden rounded border ${
-        themeManager.currentTheme.isDark ? "border-gray-700" : "border-gray-300"
-      }`}
+      className="block min-h-[65px] w-full min-w-0"
       aria-label="Human verification"
     />
   );
