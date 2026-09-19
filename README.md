@@ -1,4 +1,4 @@
-<a><img src="apps/web/assets/logo/header-image.png" alt="Notegic" /></a>
+<a href="https://www.notegic.com"><img src="apps/web/assets/logo/header-image.png" alt="Notegic" /></a>
 
 # Notegic Frontend
 
@@ -53,9 +53,9 @@ This section is automatically maintained from the current change and recent loca
 
 ### Recent snapshots
 
+- [2026-09/2026-09-19](docs/devlogs/2026-09/2026-09-19.md)
 - [2026-09/2026-09-16](docs/devlogs/2026-09/2026-09-16.md)
 - [2026-09/2026-09-15](docs/devlogs/2026-09/2026-09-15.md)
 - [2026-09/2026-09-14](docs/devlogs/2026-09/2026-09-14.md)
 - [2026-09/2026-09-13](docs/devlogs/2026-09/2026-09-13.md)
-- [2026-09/2026-09-12](docs/devlogs/2026-09/2026-09-12.md)
 <!-- DEVLOG:END -->

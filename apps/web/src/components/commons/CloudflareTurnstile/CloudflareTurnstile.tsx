@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useScreen } from "@/hooks/useScreen";
 
 interface TurnstileRenderOptions {
   sitekey: string;
@@ -24,6 +25,8 @@ interface CloudflareTurnstileProps {
 }
 
 const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
+  const { breakpoint } = useScreen();
+  const isMobile = breakpoint === "base" || breakpoint === "sm";
   const containerRef = useRef<HTMLDivElement>(null);
   const onTokenChangeRef = useRef(onTokenChange);
 
@@ -48,7 +51,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
 
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,
-        size: "flexible",
+        size: isMobile ? "compact" : "flexible",
         callback: token => onTokenChangeRef.current(token),
         "expired-callback": () => onTokenChangeRef.current(null),
         "error-callback": () => onTokenChangeRef.current(null),
@@ -88,7 +91,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
       }
       onTokenChangeRef.current(null);
     };
-  }, []);
+  }, [isMobile]);
 
   if (!import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim()) {
     return null;
