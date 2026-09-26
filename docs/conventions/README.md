@@ -26,6 +26,7 @@ recurring patterns into explicit rules for new work.
 | [06-react-hooks.md](06-react-hooks.md) | Hook ownership, lifecycle boundaries, local logic, and hook-specific reuse |
 | [07-version-control.md](07-version-control.md) | Commit messages and generated development logs |
 | [08-testing.md](08-testing.md) | Unit and integration test ownership |
+| [09-widgets.md](09-widgets.md) | Dashboard widget structure and local persistence |
 
 ## Priority order
 

@@ -1,6 +1,6 @@
 # Frontend Architecture and Ownership
 
-This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration in NOT-90 is implemented; Desktop and Mobile remain planned boundaries without app implementations.
+This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented; Desktop and Mobile remain planned boundaries without app implementations.
 
 ## Current repository
 

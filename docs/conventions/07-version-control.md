@@ -3,6 +3,25 @@
 This document defines commit messages and generated development logs for this
 repository.
 
+## Branch names
+
+Use `<category>/<capability>` with a lowercase kebab-case capability that
+describes the work in repository terms. Use categories such as `feature`,
+`refactor`, `fix`, `docs`, `test`, `build`, `ci`, or `chore`.
+
+Branch names must not include contributor or agent names, tracker-specific
+issue identifiers, document codes, or opaque abbreviations. Keep the suffix
+understandable without looking up an external ticket; tracking relationships
+belong in the project tracker, not Git refs or repository artifacts.
+
+Examples:
+
+```text
+feature/offline-editor-drafts
+refactor/query-cache-boundary
+fix/session-cookie-expiration
+```
+
 ## Commit message format
 
 Commit headers use this form:

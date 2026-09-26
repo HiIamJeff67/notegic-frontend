@@ -5,6 +5,7 @@ import { PreviewWidget } from "@widgets/widget";
 import { getDefaultClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
 import GuideWidget from "../guide/GuideWidget";
 import VideoGuideWidget from "../guide/VideoGuideWidget";
+import { getDefaultGuideData } from "../guide/data/guideData";
 import { getDefaultScratchPadData } from "./ScratchPadWidget/data/scratchPadData";
 import ScratchPadWidget from "./ScratchPadWidget/ScratchPadWidget";
 import { getDefaultScratchPadSetting } from "./ScratchPadWidget/setting/scratchPadSetting";
@@ -117,7 +118,7 @@ export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
       { widthFrameCount: 3, heightFrameCount: 4 },
     ],
     defaultSetting: {},
-    defaultData: { completedSteps: {} },
+    defaultData: getDefaultGuideData(),
     isEditable: false,
   },
   scratchPad: {

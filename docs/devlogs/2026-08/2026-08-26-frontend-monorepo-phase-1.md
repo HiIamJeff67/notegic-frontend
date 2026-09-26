@@ -23,7 +23,7 @@ applications without assuming one specific Desktop or Mobile framework.
 
 ## Consequences
 
-NOT-90 has now created `apps/web` and made the Web/runtime boundary explicit:
+The workspace migration created `apps/web` and made the Web/runtime boundary explicit:
 Web API adapters, local persistence, React hooks, Apollo setup, WebSocket
 lifecycle, styles, and assets are app-owned; i18n resources/types, portable
 reducers, API contracts, GraphQL documents/generated artifacts, and other
@@ -31,9 +31,9 @@ runtime-neutral code remain shared. Cloudflare Workers builds use Nitro's
 `cloudflare_module` preset and the generated Wrangler config under
 `apps/web/.output/server/`. Desktop and Mobile remain planned boundaries only.
 
-## Related issues
+## Planning context
 
-- NOT-92 — Define frontend monorepo target architecture and ownership boundaries
-- NOT-91 — Define shared package and cross-platform runtime contracts
-- NOT-93 — Define API, query, storage, and platform boundaries
-- NOT-97 — Create Phase 1 architecture decision record and migration devlog
+- Define the frontend monorepo target architecture and ownership boundaries.
+- Define shared package and cross-platform runtime contracts.
+- Define API, query, storage, and platform boundaries.
+- Record the initial architecture decision and migration.

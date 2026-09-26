@@ -11,7 +11,7 @@ trap 'rm -rf "$temporary_dir"' EXIT INT TERM
 if ! git -C "$root" cat-file -e ":$relative_path" 2>/dev/null; then
   cat >&2 <<'EOF'
 Today's devlog is not staged.
-Run `npm run devlog`, then `git add .` before committing.
+Make sure to run `make devlog`, then `git add .` to add the generated devlogs before committing.
 EOF
   exit 1
 fi
@@ -28,7 +28,7 @@ git -C "$root" show ":$relative_path" > "$temporary_dir/staged.md"
 if ! cmp -s "$temporary_dir/devlogs/$month/$today.md" "$temporary_dir/staged.md"; then
   cat >&2 <<'EOF'
 Today's staged devlog is out of date.
-Run `npm run devlog`, then `git add .` before committing.
+Make sure to run `make devlog`, then `git add .` to add the generated devlogs before committing.
 EOF
   exit 1
 fi

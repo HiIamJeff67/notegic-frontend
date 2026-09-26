@@ -17,6 +17,12 @@ Use the repository documentation as the source of truth. Before editing, read on
 
 Inspect nearby components, tokens, helpers, hooks, and tests before creating anything new.
 
+Before creating or reshaping a component, inspect adjacent files in its parent
+directory for the closest responsibility and usage pattern. Treat those
+neighbors as repository conventions alongside these rules; reuse their naming,
+composition, prop/type shape, hook usage, and test structure unless the
+documented architecture requires a deliberate deviation.
+
 ## Rules
 
 - Reuse existing shadcn primitives, Tailwind v4 semantic tokens, canonical icons, and established components.

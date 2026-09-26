@@ -1,4 +1,5 @@
 import { WidgetProps } from "@widgets/widget";
+import { getDefaultGuideData, GuideData } from "@widgets/guide/data/guideData";
 import {
   BookOpen,
   CheckCircle2,
@@ -14,6 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useAnyTypeState } from "@/hooks/useAnyTypeState";
 
 type GuideStep = {
   id: string;
@@ -28,8 +30,18 @@ type GuidePage = {
   steps: GuideStep[];
 };
 
-const GuideWidget = ({ className, style, data, setData }: WidgetProps) => {
+const GuideWidget = ({
+  className,
+  style,
+  data: rawData,
+  setData: setRawData,
+  sync,
+}: WidgetProps) => {
   const { t } = useTranslation();
+  const [data, setData] = useAnyTypeState<GuideData>(
+    [rawData, setRawData],
+    getDefaultGuideData()
+  );
   const [pageIndex, setPageIndex] = useState(0);
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
 
@@ -119,6 +131,7 @@ const GuideWidget = ({ className, style, data, setData }: WidgetProps) => {
       ...data,
       completedSteps: { ...completedSteps, [stepId]: completed },
     });
+    sync();
   };
 
   return (
