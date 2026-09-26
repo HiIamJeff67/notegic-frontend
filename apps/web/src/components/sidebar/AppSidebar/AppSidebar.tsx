@@ -318,7 +318,9 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
         }
       >
         <SidebarGroupContent>
-          <SidebarMenu>
+          <SidebarMenu
+            className={isSidebarExpanded ? undefined : "items-center"}
+          >
             <SidebarMenuItem className="rounded-sm">
               <SidebarMenuButton
                 className={`w-full flex ${
