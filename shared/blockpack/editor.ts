@@ -10,6 +10,7 @@ import {
   CollaborationExtension,
   type CollaborationOptions,
 } from "@blocknote/core/yjs";
+import { blockPackShortcutExtensions } from "./extensions/shortcuts/shortcut";
 
 export const createNotegicBlockPackSchema = () =>
   BlockNoteSchema.create({
@@ -52,8 +53,13 @@ export class NotegicBlockPackEditor {
       schema: schema ?? createNotegicBlockPackSchema(),
       ...(collaboration ? {} : { initialContent }),
       ...(collaboration
-        ? { extensions: [CollaborationExtension(collaboration)] }
-        : {}),
+        ? {
+            extensions: [
+              ...blockPackShortcutExtensions,
+              CollaborationExtension(collaboration),
+            ],
+          }
+        : { extensions: [...blockPackShortcutExtensions] }),
       trailingBlock,
     }) as BlockNoteEditor<any, any, any>;
   }

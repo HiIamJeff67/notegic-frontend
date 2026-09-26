@@ -130,7 +130,14 @@ export const getNotegicSlashMenuItems =
   (editor: BlockNoteEditor<any, any, any>) => async (query: string) =>
     filterSuggestionItems(
       combineByGroup(
-        getDefaultReactSlashMenuItems(editor),
+        getDefaultReactSlashMenuItems(editor).map(item =>
+          item.title === editor.dictionary.slash_menu.code_block.title
+            ? {
+                ...item,
+                aliases: [...(item.aliases ?? []), "codeblock"],
+              }
+            : item
+        ),
         getMathSlashMenuItems(editor),
         getDiagramSlashMenuItems(editor),
         calendarSlashMenuItems(editor)

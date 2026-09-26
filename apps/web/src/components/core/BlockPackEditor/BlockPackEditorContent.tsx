@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useShelfItem } from "@/hooks";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
+import { useScreen } from "@/hooks/useScreen";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
@@ -65,6 +66,7 @@ const BlockPackEditorContent = ({
   const { i18n, t } = useTranslation();
   const sidebarManager = useSidebar();
   const shelfItemManager = useShelfItem();
+  const { width: screenWidth } = useScreen();
   const { preferences } = useLocalPreferences();
 
   const { editor, state, resync, maximumBlockCount, rejectQuotaExceededEdit } =
@@ -80,7 +82,8 @@ const BlockPackEditorContent = ({
     wide: "max-w-7xl",
   }[preferences.editorWidth];
   const shouldShowSideMenu =
-    preferences.quickInsert || preferences.blockDragHandle;
+    screenWidth >= 768 &&
+    (preferences.quickInsert || preferences.blockDragHandle);
 
   const countBlocks = (blocks: Array<{ children?: unknown }>): number =>
     blocks.reduce(
@@ -496,7 +499,7 @@ const BlockPackEditorContent = ({
               sideMenu={false}
               spellCheck={preferences.spellcheck}
               className={cn(
-                "notegic-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-block-content]:py-[3px]",
+                "notegic-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!pb-4 [&_.bn-editor]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-block-content]:py-[3px]",
                 !preferences.lineWrap &&
                   "[&_.bn-editor]:overflow-x-auto [&_.bn-inline-content]:whitespace-nowrap"
               )}
