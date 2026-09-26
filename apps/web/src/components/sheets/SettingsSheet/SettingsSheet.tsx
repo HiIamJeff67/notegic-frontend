@@ -12,7 +12,7 @@ import PreferencesPage from "@/pages/app/setting/preferences/PreferencesPage";
 
 const SettingsSheet = () => {
   const { t } = useTranslation();
-  const { sheetPage, closeSheet } = useSettingsDisplay();
+  const { sheetPage, sheetSection, closeSheet } = useSettingsDisplay();
 
   return (
     <Sheet
@@ -42,7 +42,10 @@ const SettingsSheet = () => {
             <AccountSettingsPage displayMode="sheet" />
           )}
           {sheetPage === "preferences" && (
-            <PreferencesPage displayMode="sheet" />
+            <PreferencesPage
+              displayMode="sheet"
+              initialSection={sheetSection ?? undefined}
+            />
           )}
         </div>
       </SheetContent>

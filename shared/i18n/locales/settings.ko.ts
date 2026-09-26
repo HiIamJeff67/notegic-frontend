@@ -438,6 +438,24 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         endTime: "종료 시간",
         to: "부터",
       },
+      feedback: {
+        title: "피드백 보내기",
+        description: "문제를 알려 주거나 개선 사항을 제안해 주세요.",
+        type: "피드백 유형",
+        titleLabel: "제목",
+        types: {
+          bug: "버그 신고",
+          featureRequest: "기능 제안",
+          other: "기타",
+        },
+        descriptionLabel: "설명",
+        privacyNote:
+          "비밀번호, 토큰, 비공개 메모 또는 기타 민감한 정보를 포함하지 마세요.",
+        submit: "피드백 보내기",
+        submitting: "전송 중…",
+        submitted: "피드백을 보냈습니다.",
+        replayed: "이 피드백은 이미 제출되었습니다.",
+      },
       about: {
         title: "정보",
         description:

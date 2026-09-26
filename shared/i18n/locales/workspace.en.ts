@@ -8,6 +8,7 @@ export const EnglishWorkspaceTranslation = {
     document: "Document",
     tutorial: "Tutorial",
     trash: "Trash",
+    report: "Report",
     account: "Account",
     preferences: "Preferences",
     settings: "Settings",

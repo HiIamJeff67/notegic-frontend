@@ -10,6 +10,7 @@ export const SimpleChineseWorkspaceTranslation = {
     document: "文档",
     tutorial: "教程",
     trash: "回收站",
+    report: "反馈",
     account: "账户",
     preferences: "偏好设置",
     settings: "设置",

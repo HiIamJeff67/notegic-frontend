@@ -173,6 +173,9 @@ export const APIURLPathDictionary = {
     read: "notifications/read",
     delete: "notifications/",
   },
+  feedback: {
+    submitReport: "feedback/reports",
+  },
   station: {
     visualizeMyTotalCount: "stations/visualizations/total-count",
     getMyStationById: (stationId: string) => `stations/${stationId}`,

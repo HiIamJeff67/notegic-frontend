@@ -447,6 +447,24 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         endTime: "終了時刻",
         to: "から",
       },
+      feedback: {
+        title: "フィードバックを送る",
+        description: "問題の報告や改善の提案を送信します。",
+        type: "フィードバックの種類",
+        titleLabel: "タイトル",
+        types: {
+          bug: "不具合の報告",
+          featureRequest: "機能の提案",
+          other: "その他",
+        },
+        descriptionLabel: "説明",
+        privacyNote:
+          "パスワード、トークン、非公開メモなどの機密情報を含めないでください。",
+        submit: "送信",
+        submitting: "送信中…",
+        submitted: "フィードバックを送信しました。",
+        replayed: "このフィードバックはすでに送信されています。",
+      },
       about: {
         title: "このアプリについて",
         description:

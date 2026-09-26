@@ -3,7 +3,7 @@ import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Article,
@@ -27,13 +27,16 @@ import {
 } from "./PreferencesPageContent";
 import AboutTab from "./tabs/AboutTab";
 import BrowserPermissionsTab from "./tabs/BrowserPermissionsTab";
+import FeedbackTab from "./tabs/FeedbackTab";
 import NotificationsTab from "./tabs/NotificationsTab";
 import PrivacyTab from "./tabs/PrivacyTab";
 
 const PreferencesPage = ({
   displayMode = "page",
+  initialSection,
 }: {
   displayMode?: "page" | "sheet";
+  initialSection?: string;
 }) => {
   const { isReady } = useLocalPreferences();
   const router = useAppRouterActions();
@@ -41,6 +44,25 @@ const PreferencesPage = ({
   const { openSheet, closeSheet } = useSettingsDisplay();
   const sidebarManager = useSidebar();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const section =
+      initialSection ??
+      (typeof window === "undefined"
+        ? ""
+        : decodeURIComponent(window.location.hash.slice(1)));
+    if (!section) return;
+
+    const animationFrame = requestAnimationFrame(() => {
+      document.getElementById(section)?.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [initialSection]);
+
   const navigationConfig = [
     ["appearance", "settingsPage.preferences.appearance", 5],
     ["dashboard", "settingsPage.preferences.dashboard", 3],
@@ -48,6 +70,7 @@ const PreferencesPage = ({
     ["offline", "settingsPage.preferences.offline", 3],
     ["privacy", "settingsPage.preferences.privacy", 2],
     ["browser-permissions", "settingsPage.preferences.browserPermissions", 3],
+    ["feedback", "settingsPage.preferences.feedback", 3],
     ["notifications", "settingsPage.preferences.notifications", 3],
     ["about", "settingsPage.preferences.about", 2],
   ] as const satisfies ReadonlyArray<
@@ -177,6 +200,16 @@ const PreferencesPage = ({
             )}
           >
             <BrowserPermissionsTab />
+          </PreferenceTab>
+
+          <ArticleParagraphSeparator />
+
+          <PreferenceTab
+            id="feedback"
+            title={t("settingsPage.preferences.feedback.title")}
+            description={t("settingsPage.preferences.feedback.description")}
+          >
+            <FeedbackTab />
           </PreferenceTab>
 
           <ArticleParagraphSeparator />

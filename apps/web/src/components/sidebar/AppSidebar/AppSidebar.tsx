@@ -1,4 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -9,6 +10,7 @@ import {
   FileTextIcon,
   LayoutDashboardIcon,
   LogOutIcon,
+  MessageSquareWarningIcon,
   PlusIcon,
   SettingsIcon,
   SlidersHorizontalIcon,
@@ -30,11 +32,21 @@ import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";
 import { NotificationPopover } from "@/components/popovers/NotificationPopover";
 import ResizableSidebar from "@/components/sidebar/ResizableSidebar/ResizableSidebar";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Menubar,
   MenubarContent,
@@ -45,16 +57,6 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import {
   SidebarContent,
   SidebarFooter,
@@ -81,7 +83,6 @@ import {
 } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
 import { useUser } from "@/hooks/useUser";
-import { translateError } from "@shared/i18n/error";
 import { type SettingsPage } from "@/providers/SettingsDisplayProvider";
 
 interface AppSidebarProps {
@@ -102,21 +103,33 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
   const shelfItemManager = useShelfItem();
   const settingsDisplay = useSettingsDisplay();
 
-  const openSettings = (page: SettingsPage) => {
+  const openSettings = (page: SettingsPage, section?: string) => {
     if (
       LocalStorageManipulator.getItemByKey(
         LocalStorageKey.settingsDisplayMode
       ) === "sheet"
     ) {
-      settingsDisplay.openSheet(page);
+      settingsDisplay.openSheet(page, section);
       return;
     }
 
-    router.push(
+    const path =
       page === "account"
         ? WebURLPathDictionary.app.setting.account
-        : WebURLPathDictionary.app.setting.preferences
-    );
+        : WebURLPathDictionary.app.setting.preferences;
+
+    if (section && router.isSamePath(router.getCurrentPath(), path)) {
+      window.location.hash = section;
+      requestAnimationFrame(() => {
+        document.getElementById(section)?.scrollIntoView({
+          behavior: "auto",
+          block: "start",
+        });
+      });
+      return;
+    }
+
+    router.push(section ? `${path}#${section}` : path);
   };
 
   useEffect(() => {
@@ -297,7 +310,13 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
           </Collapsible>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarGroup className="mx-2 mb-0 w-auto rounded-t-md border border-b-0 border-sidebar-border bg-sidebar-accent/20 px-1 py-1">
+      <SidebarGroup
+        className={
+          isSidebarExpanded
+            ? "mx-2 mb-0 w-auto rounded-t-md border border-b-0 border-sidebar-border bg-sidebar-accent/20 px-1 py-1"
+            : "m-0 mb-0 w-full rounded-none border-none bg-transparent p-0"
+        }
+      >
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem className="rounded-sm">
@@ -341,6 +360,21 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.trash")}
+                  </span>
+                )}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem className="rounded-sm">
+              <SidebarMenuButton
+                className={`w-full flex ${
+                  isSidebarExpanded ? "justify-start" : "justify-center"
+                } items-center select-none hover:bg-primary`}
+                onClick={() => openSettings("preferences", "feedback")}
+              >
+                <MessageSquareWarningIcon />
+                {isSidebarExpanded && (
+                  <span className="truncate">
+                    {t("workspace.navigation.report")}
                   </span>
                 )}
               </SidebarMenuButton>

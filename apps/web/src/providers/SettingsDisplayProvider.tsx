@@ -4,7 +4,8 @@ export type SettingsPage = "account" | "preferences";
 
 interface SettingsDisplayContextValue {
   sheetPage: SettingsPage | null;
-  openSheet: (page: SettingsPage) => void;
+  sheetSection: string | null;
+  openSheet: (page: SettingsPage, section?: string) => void;
   closeSheet: () => void;
 }
 
@@ -17,13 +18,23 @@ export const SettingsDisplayProvider = ({
   children: ReactNode;
 }) => {
   const [sheetPage, setSheetPage] = useState<SettingsPage | null>(null);
+  const [sheetSection, setSheetSection] = useState<string | null>(null);
+
+  const openSheet = (page: SettingsPage, section?: string) => {
+    setSheetPage(page);
+    setSheetSection(section ?? null);
+  };
 
   return (
     <SettingsDisplayContext.Provider
       value={{
         sheetPage,
-        openSheet: setSheetPage,
-        closeSheet: () => setSheetPage(null),
+        sheetSection,
+        openSheet,
+        closeSheet: () => {
+          setSheetPage(null);
+          setSheetSection(null);
+        },
       }}
     >
       {children}

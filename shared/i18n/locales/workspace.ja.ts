@@ -10,6 +10,7 @@ export const JapaneseWorkspaceTranslation = {
     document: "ドキュメント",
     tutorial: "チュートリアル",
     trash: "ゴミ箱",
+    report: "フィードバック",
     account: "アカウント",
     preferences: "環境設定",
     settings: "設定",

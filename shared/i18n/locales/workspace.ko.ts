@@ -10,6 +10,7 @@ export const KoreanWorkspaceTranslation = {
     document: "문서",
     tutorial: "튜토리얼",
     trash: "휴지통",
+    report: "피드백",
     account: "계정",
     preferences: "환경 설정",
     settings: "설정",

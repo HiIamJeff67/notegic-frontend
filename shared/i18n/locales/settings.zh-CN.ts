@@ -407,6 +407,23 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         endTime: "结束时间",
         to: "至",
       },
+      feedback: {
+        title: "提交反馈",
+        description: "告诉我们遇到的问题，或提出改进建议。",
+        type: "反馈类型",
+        titleLabel: "标题",
+        types: {
+          bug: "问题报告",
+          featureRequest: "功能建议",
+          other: "其他",
+        },
+        descriptionLabel: "说明",
+        privacyNote: "请不要包含密码、令牌、私人笔记或其他敏感信息。",
+        submit: "提交反馈",
+        submitting: "提交中…",
+        submitted: "反馈已提交。",
+        replayed: "这份反馈之前已经提交过。",
+      },
       about: {
         title: "关于",
         description: "查看版本信息、导出本地偏好或重置设置。",

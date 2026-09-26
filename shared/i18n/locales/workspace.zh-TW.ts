@@ -10,6 +10,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     document: "文件",
     tutorial: "教學",
     trash: "垃圾桶",
+    report: "回報",
     account: "帳戶",
     preferences: "偏好設定",
     settings: "設定",

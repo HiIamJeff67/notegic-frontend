@@ -411,6 +411,23 @@ export const TraditionalChineseSettingsTranslation = {
         endTime: "結束時間",
         to: "至",
       },
+      feedback: {
+        title: "回報問題",
+        description: "告訴我們遇到的問題，或提出改善建議。",
+        type: "回報類型",
+        titleLabel: "標題",
+        types: {
+          bug: "問題回報",
+          featureRequest: "功能建議",
+          other: "其他",
+        },
+        descriptionLabel: "說明",
+        privacyNote: "請不要包含密碼、token、私人筆記或其他敏感資訊。",
+        submit: "送出回報",
+        submitting: "送出中…",
+        submitted: "回報已送出。",
+        replayed: "這份回報先前已經送出。",
+      },
       about: {
         title: "關於",
         description: "查看版本資訊、匯出本機偏好或重設設定。",

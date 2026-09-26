@@ -450,6 +450,24 @@ export const EnglishSettingsTranslation = {
         endTime: "End time",
         to: "to",
       },
+      feedback: {
+        title: "Send feedback",
+        description: "Tell us about a problem or suggest an improvement.",
+        type: "Feedback type",
+        titleLabel: "Title",
+        types: {
+          bug: "Bug report",
+          featureRequest: "Feature request",
+          other: "Other",
+        },
+        descriptionLabel: "Description",
+        privacyNote:
+          "Do not include passwords, tokens, private notes, or other sensitive information.",
+        submit: "Send feedback",
+        submitting: "Sending…",
+        submitted: "Feedback sent.",
+        replayed: "This feedback was already submitted.",
+      },
       about: {
         title: "About",
         description:
