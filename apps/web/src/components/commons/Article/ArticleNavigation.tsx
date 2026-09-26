@@ -436,7 +436,7 @@ export const ArticleSidebar = ({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="mailto:your-email@example.com">
+                <a href="mailto:notegic@gmail.com">
                   <MailIcon className="size-4 shrink-0" />
                   <span>Contact us</span>
                 </a>

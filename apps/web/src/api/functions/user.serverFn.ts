@@ -4,6 +4,7 @@ import {
   GetMeResponse,
   GetUserDataRequest,
   GetUserDataResponse,
+  GetUserDataResponseSchema,
   UpdateMeRequest,
   UpdateMeResponse,
 } from "@shared/api/interfaces/user.interface";
@@ -47,6 +48,62 @@ export const GetUserData = createServerFn({ method: "GET" })
     }
 
     return formattedResponse;
+  });
+
+export const TryGetUserData = createServerFn({ method: "GET" })
+  .inputValidator((data: GetUserDataRequest) => data)
+  .handler(async ({ data: request }): Promise<boolean> => {
+    try {
+      const inboundCookie = getRequestHeader("cookie") ?? "";
+      const hasAuthCookie = inboundCookie.split(";").some(cookie => {
+        const separatorIndex = cookie.indexOf("=");
+        if (separatorIndex < 1) return false;
+
+        const name = cookie.slice(0, separatorIndex).trim();
+        const value = cookie.slice(separatorIndex + 1).trim();
+
+        return (
+          (name === "accessToken" || name === "refreshToken") &&
+          value.length > 0
+        );
+      });
+
+      if (!hasAuthCookie) return false;
+
+      const userAgent =
+        request.header?.userAgent ??
+        getRequestHeader("User-Agent") ??
+        "unknown";
+      const response = await fetch(
+        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.user.getUserData}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent": userAgent,
+            ...(request.header?.csrfToken
+              ? { "X-CSRF-Token": request.header.csrfToken }
+              : {}),
+            Cookie: inboundCookie,
+          },
+          credentials: "include",
+        }
+      );
+
+      forwardUpstreamSetCookies(response);
+      if (!response.ok || !isJsonResponse(response)) return false;
+
+      const parsedResponse = GetUserDataResponseSchema.safeParse(
+        await response.json()
+      );
+      return (
+        parsedResponse.success &&
+        parsedResponse.data.success &&
+        parsedResponse.data.exception === null
+      );
+    } catch {
+      return false;
+    }
   });
 
 export const GetMe = createServerFn({ method: "GET" })

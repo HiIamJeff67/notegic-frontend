@@ -76,6 +76,7 @@
   --density-menu-item-height: 2rem;
   --density-table-cell-padding: 1rem;
   --canvas: oklch(0.185 0 0);
+  --foreground: oklch(0.985 0 0);
   --inset: oklch(0.215 0 0);
   --overlay: oklch(0 0 0 / 50%);
   --decoration: var(--accent);

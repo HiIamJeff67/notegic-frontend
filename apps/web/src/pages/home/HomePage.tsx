@@ -1,7 +1,9 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { BookTextIcon } from "lucide-react";
+import { BookTextIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { TryGetUserData } from "@/api/functions/user.serverFn";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";
 import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
 import NoteIcon from "@/components/icons/NoteIcon";
@@ -21,7 +23,32 @@ export const HomePage = () => {
 
   const [displayTitle, setDisplayTitle] = useState<boolean>(true);
   const [currentText, setCurrentText] = useState("");
+  const [isStarting, setIsStarting] = useState(false);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
+
+  const handleGetStartedOnClick = async () => {
+    if (isStarting) return;
+
+    setIsStarting(true);
+    let destination = WebURLPathDictionary.auth.login;
+
+    try {
+      const hasValidSession = await TryGetUserData({
+        data: {
+          header: getClientRequestHeaders(navigator.userAgent),
+        },
+      });
+
+      if (hasValidSession) {
+        destination = WebURLPathDictionary.app.dashboard._;
+      }
+    } catch {
+      // A failed session check is an expected reason to continue to login.
+    }
+
+    router.push(destination);
+    setIsStarting(false);
+  };
 
   const clearAllTimers = useCallback(() => {
     timersRef.current.forEach(timer => clearTimeout(timer));
@@ -125,11 +152,15 @@ export const HomePage = () => {
               <Button
                 variant="default"
                 className="pointer-events-auto cursor-pointer font-bold hover:bg-primary/90 focus:bg-primary/90 active:bg-primary/90"
-                onClick={() => {
-                  router.push(WebURLPathDictionary.auth.login);
-                }}
+                onClick={() => void handleGetStartedOnClick()}
+                disabled={isStarting}
+                aria-busy={isStarting}
               >
-                <NoteIcon size={18} />
+                {isStarting ? (
+                  <LoaderCircleIcon className="size-[18px] animate-spin" />
+                ) : (
+                  <NoteIcon size={18} />
+                )}
                 {t("homePage.getStarted")}
               </Button>
               {/* <Button disabled variant="secondary" onClick={localDB.download}>

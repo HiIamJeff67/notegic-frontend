@@ -11,8 +11,20 @@ export function RootDocument() {
   }, []);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+              const theme = JSON.parse(localStorage.getItem("notegic_theme") ?? "null");
+              const isDark = typeof theme?.isDark === "boolean" ? theme.isDark : true;
+              document.documentElement.classList.toggle("dark", isDark);
+              document.documentElement.classList.toggle("light", !isDark);
+            } catch {
+              document.documentElement.classList.add("dark");
+            }`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

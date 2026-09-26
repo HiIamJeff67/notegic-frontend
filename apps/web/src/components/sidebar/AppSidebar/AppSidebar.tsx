@@ -466,9 +466,19 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
             <NotificationPopover mobile />
           </div>
         ) : (
-          <Menubar className="w-full h-full flex flex-row justify-start items-center rounded-none bg-transparent border-none">
+          <Menubar
+            className={`w-full h-full flex flex-row items-center rounded-none bg-transparent border-none ${
+              isSidebarExpanded ? "justify-start" : "justify-center"
+            }`}
+          >
             <MenubarMenu>
-              <MenubarTrigger className="h-full my-1 flex flex-1 flex-row min-w-0 gap-2 bg-transparent hover:bg-transparent">
+              <MenubarTrigger
+                className={`h-full my-1 flex min-w-0 flex-row bg-transparent hover:bg-transparent ${
+                  isSidebarExpanded
+                    ? "flex-1 justify-start gap-2"
+                    : "w-full justify-center px-0"
+                }`}
+              >
                 <AvatarIcon
                   avatarURL={userManager.userData?.avatarURL || null}
                   fallbackText={
@@ -478,22 +488,24 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   }
                   size={30}
                 />
-                <div className="flex min-w-0 flex-1 flex-col text-start">
-                  <TruncatedText
-                    className="text-xs font-semibold text-foreground transition-all"
-                    width={`${resizableSidebarManager.width - 120}px`}
-                  >
-                    {userManager.userData?.name ||
-                      t("workspace.navigation.userName")}
-                  </TruncatedText>
-                  <TruncatedText
-                    className="text-xs font-light text-foreground transition-all"
-                    width={`${resizableSidebarManager.width - 120}px`}
-                  >
-                    {userManager.userData?.status ||
-                      t("workspace.navigation.offline")}
-                  </TruncatedText>
-                </div>
+                {isSidebarExpanded && (
+                  <div className="flex min-w-0 flex-1 flex-col text-start">
+                    <TruncatedText
+                      className="text-xs font-semibold text-foreground transition-all"
+                      width={`${resizableSidebarManager.width - 120}px`}
+                    >
+                      {userManager.userData?.name ||
+                        t("workspace.navigation.userName")}
+                    </TruncatedText>
+                    <TruncatedText
+                      className="text-xs font-light text-foreground transition-all"
+                      width={`${resizableSidebarManager.width - 120}px`}
+                    >
+                      {userManager.userData?.status ||
+                        t("workspace.navigation.offline")}
+                    </TruncatedText>
+                  </div>
+                )}
               </MenubarTrigger>
             </MenubarMenu>
             {isSidebarExpanded && (
