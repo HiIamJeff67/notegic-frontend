@@ -1,4 +1,9 @@
+import { createContext } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
+
+export const SettingMenuLayoutContext = createContext<"panel" | "page">(
+  "panel"
+);
 
 interface SettingMenuProps {
   children: React.ReactNode;
@@ -23,17 +28,19 @@ const SettingMenu = ({
           : ""
       } w-full ${menuClassName}`}
     >
-      <div
-        className={`${
-          layout === "panel" ? "min-h-full bg-muted px-8 pt-12 pb-8" : ""
-        } flex flex-col gap-6 ${menuItemsClassName}`}
-      >
-        {children}
-      </div>
-      {dialogs &&
-        dialogs.map((dialog, index) => (
-          <WrapPlaceholder key={index}>{dialog}</WrapPlaceholder>
-        ))}
+      <SettingMenuLayoutContext.Provider value={layout}>
+        <div
+          className={`${
+            layout === "panel" ? "min-h-full bg-muted px-8 pt-12 pb-8" : ""
+          } flex flex-col ${layout === "panel" ? "gap-6" : "gap-0"} ${menuItemsClassName}`}
+        >
+          {children}
+        </div>
+        {dialogs &&
+          dialogs.map((dialog, index) => (
+            <WrapPlaceholder key={index}>{dialog}</WrapPlaceholder>
+          ))}
+      </SettingMenuLayoutContext.Provider>
     </div>
   );
 };

@@ -39,8 +39,10 @@ import UpgradeTab from "./tabs/UpgradeTab";
 
 const AccountSettingsPage = ({
   displayMode = "page",
+  previewMode = false,
 }: {
   displayMode?: "page" | "sheet";
+  previewMode?: boolean;
 }) => {
   const router = useAppRouter();
   const { t } = useTranslation();
@@ -222,7 +224,7 @@ const AccountSettingsPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:my-10">
+        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:!my-6">
           <ArticleParagraph id="personal">
             <ArticleParagraphHeader>
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
@@ -235,7 +237,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.personal.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? <ProfileTab layout="page" /> : <OfflineTab />}
             </ArticleParagraphContent>
           </ArticleParagraph>
@@ -251,7 +253,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.account.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? <AccountTab layout="page" /> : <OfflineTab />}
             </ArticleParagraphContent>
           </ArticleParagraph>
@@ -267,8 +269,12 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.apiKeys.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
-              {isOnline ? <ApiKeysTab layout="page" /> : <OfflineTab />}
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
+              {isOnline ? (
+                <ApiKeysTab layout="page" enabled={!previewMode} />
+              ) : (
+                <OfflineTab />
+              )}
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -283,7 +289,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.upgrade.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? <UpgradeTab layout="page" /> : <OfflineTab />}
             </ArticleParagraphContent>
           </ArticleParagraph>
@@ -299,7 +305,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.security.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? (
                 <SecurityTab {...authCodeProps} layout="page" />
               ) : (
@@ -319,7 +325,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.binding.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? (
                 <BindingTab
                   {...authCodeProps}
@@ -343,7 +349,7 @@ const AccountSettingsPage = ({
                 {t("settingsPage.account.modification.description")}
               </p>
             </ArticleParagraphHeader>
-            <ArticleParagraphContent className="max-w-none text-foreground">
+            <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
               {isOnline ? (
                 <AccountModificationTab
                   {...authCodeProps}

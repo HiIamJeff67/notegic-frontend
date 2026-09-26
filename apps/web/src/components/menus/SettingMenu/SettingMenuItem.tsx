@@ -1,4 +1,6 @@
-import { ReactNode } from "react";
+import { type ReactNode, useContext } from "react";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
+import { SettingMenuLayoutContext } from "./SettingMenu";
 
 interface SettingMenuItemProps {
   title: string;
@@ -6,6 +8,7 @@ interface SettingMenuItemProps {
   children: ReactNode;
   hideSeparator?: boolean;
   titleClassName?: string;
+  layout?: "panel" | "page";
 }
 
 const SettingMenuItem = ({
@@ -14,7 +17,24 @@ const SettingMenuItem = ({
   children,
   hideSeparator = false,
   titleClassName = "",
+  layout: itemLayout,
 }: SettingMenuItemProps) => {
+  const inheritedLayout = useContext(SettingMenuLayoutContext);
+  const layout = itemLayout ?? inheritedLayout;
+
+  if (layout === "page") {
+    return (
+      <ArticleSettingItem
+        title={title}
+        description={description}
+        hideSeparator={hideSeparator}
+        titleClassName={titleClassName}
+      >
+        {children}
+      </ArticleSettingItem>
+    );
+  }
+
   return (
     <div
       className={`flex flex-wrap items-center justify-between gap-4 py-3 ${

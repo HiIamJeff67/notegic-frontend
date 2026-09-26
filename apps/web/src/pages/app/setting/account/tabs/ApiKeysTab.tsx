@@ -36,6 +36,7 @@ import { translateError } from "@shared/i18n/error";
 
 interface ApiKeysTabProps {
   layout?: "panel" | "page";
+  enabled?: boolean;
 }
 
 type CreatedAPIKey = CreateMyAPIKeyResponse["data"];
@@ -141,9 +142,9 @@ const APIKeyRow = ({
   );
 };
 
-const ApiKeysTab = ({ layout = "panel" }: ApiKeysTabProps) => {
+const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
   const { t } = useTranslation();
-  const listQuery = useMyAPIKeys(true);
+  const listQuery = useMyAPIKeys(enabled);
   const createMutation = useCreateMyAPIKey();
   const revokeMutation = useRevokeMyAPIKey();
   const [createOpen, setCreateOpen] = useState(false);

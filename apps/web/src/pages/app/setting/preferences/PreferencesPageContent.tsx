@@ -6,9 +6,11 @@ import {
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
 import toast from "@shared/lib/toast";
+import { formatByteSize } from "@shared/util/formatByteSize";
 import { HardDriveIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,19 +29,19 @@ import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 import { useUser } from "@/hooks/useUser";
 import { Section, SettingRow, SwitchRow } from "./tabs/PreferenceRows";
 
-const formatStorageSize = (bytes = 0) => {
-  const mb = bytes / 1024 / 1024;
+type PreferenceSettingsLayout = "panel" | "article";
 
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
-};
-
-const AppearanceSettings = () => {
+const AppearanceSettings = ({
+  layout = "panel",
+}: {
+  layout?: PreferenceSettingsLayout;
+}) => {
   const { preferences, updatePreference } = useLocalPreferences();
   const { i18n, t } = useTranslation();
   const themeManager = useTheme();
 
   return (
-    <Section>
+    <Section article={layout === "article"}>
       <SettingRow
         title={t("settingsPage.preferences.appearance.theme")}
         description={t("settingsPage.preferences.appearance.themeDescription")}
@@ -144,12 +146,16 @@ const AppearanceSettings = () => {
   );
 };
 
-const EditorSettings = () => {
+const EditorSettings = ({
+  layout = "panel",
+}: {
+  layout?: PreferenceSettingsLayout;
+}) => {
   const { preferences, updatePreference } = useLocalPreferences();
   const { t } = useTranslation();
 
   return (
-    <Section>
+    <Section article={layout === "article"}>
       <SettingRow
         title={t("settingsPage.preferences.editor.pageWidth")}
         description={t("settingsPage.preferences.editor.pageWidthDescription")}
@@ -230,12 +236,16 @@ const EditorSettings = () => {
   );
 };
 
-const DashboardSettings = () => {
+const DashboardSettings = ({
+  layout = "panel",
+}: {
+  layout?: PreferenceSettingsLayout;
+}) => {
   const { preferences, updatePreference } = useLocalPreferences();
   const { t } = useTranslation();
 
   return (
-    <Section>
+    <Section article={layout === "article"}>
       <SwitchRow
         title={t("settingsPage.preferences.dashboard.manualWidth")}
         description={t(
@@ -248,7 +258,13 @@ const DashboardSettings = () => {
         hideSeparator={!preferences.manualDashboardWidth}
       />
       {preferences.manualDashboardWidth && (
-        <div className="border-b border-border/50 pb-[calc(var(--density-content-padding)*0.75)]">
+        <div
+          className={
+            layout === "panel"
+              ? "border-b border-border/50 pb-[calc(var(--density-content-padding)*0.75)]"
+              : "pb-[calc(var(--density-content-padding)*0.75)]"
+          }
+        >
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="flex items-center gap-3">
               <Slider
@@ -277,7 +293,11 @@ const DashboardSettings = () => {
   );
 };
 
-const OfflineSettings = () => {
+const OfflineSettings = ({
+  layout = "panel",
+}: {
+  layout?: PreferenceSettingsLayout;
+}) => {
   const {
     preferences,
     storageEstimate,
@@ -327,69 +347,89 @@ const OfflineSettings = () => {
     void refreshCacheUsage();
   }, [refreshCacheUsage]);
 
+  const storageUsageDetails = (
+    <>
+      <div className="min-w-0">
+        <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+          <div
+            className="h-full bg-primary"
+            style={{ width: `${storageUsagePercent}%` }}
+          />
+        </div>
+        <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+          <span>
+            {t("settingsPage.preferences.offline.used", {
+              size: formatByteSize(storageEstimate?.usage, 1),
+            })}
+          </span>
+          <span>
+            {t("settingsPage.preferences.offline.limit", {
+              size: formatByteSize(storageEstimate?.quota, 1),
+            })}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+        <div>
+          <div className="text-muted-foreground">
+            {t("settingsPage.preferences.offline.yjsDocuments")}
+          </div>
+          <div className="mt-1 font-medium">
+            {formatByteSize(yjsCache.totalSize, 1)}
+          </div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">
+            {t("settingsPage.preferences.offline.backgroundImages")}
+          </div>
+          <div className="mt-1 font-medium">
+            {formatByteSize(backgroundCache.totalBytes, 1)}
+          </div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">
+            {t("settingsPage.preferences.offline.attachmentCache")}
+          </div>
+          <div className="mt-1 font-medium">
+            {formatByteSize(attachmentCache.totalSize, 1)}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <section className="mb-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4 border-b border-border/50 pb-[var(--density-content-padding)]">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <HardDriveIcon className="size-4 text-primary" />
-            {t("settingsPage.preferences.offline.storage")}
-          </div>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {t("settingsPage.preferences.offline.storageDescription")}
-          </p>
-        </div>
-
-        <div className="min-w-0">
-          <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-            <div
-              className="h-full bg-primary"
-              style={{ width: `${storageUsagePercent}%` }}
-            />
-          </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>
-              {t("settingsPage.preferences.offline.used", {
-                size: formatStorageSize(storageEstimate?.usage),
-              })}
+      {layout === "article" ? (
+        <ArticleSettingItem
+          title={
+            <span className="flex items-center gap-2">
+              <HardDriveIcon className="size-4 text-primary" />
+              {t("settingsPage.preferences.offline.storage")}
             </span>
-            <span>
-              {t("settingsPage.preferences.offline.limit", {
-                size: formatStorageSize(storageEstimate?.quota),
-              })}
-            </span>
+          }
+          description={t("settingsPage.preferences.offline.storageDescription")}
+          layout="stacked"
+        >
+          {storageUsageDetails}
+        </ArticleSettingItem>
+      ) : (
+        <section className="mb-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4 border-b border-border/50 pb-[var(--density-content-padding)]">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <HardDriveIcon className="size-4 text-primary" />
+              {t("settingsPage.preferences.offline.storage")}
+            </div>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              {t("settingsPage.preferences.offline.storageDescription")}
+            </p>
           </div>
-        </div>
+          {storageUsageDetails}
+        </section>
+      )}
 
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
-          <div>
-            <div className="text-muted-foreground">
-              {t("settingsPage.preferences.offline.yjsDocuments")}
-            </div>
-            <div className="mt-1 font-medium">
-              {formatStorageSize(yjsCache.totalSize)}
-            </div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">
-              {t("settingsPage.preferences.offline.backgroundImages")}
-            </div>
-            <div className="mt-1 font-medium">
-              {formatStorageSize(backgroundCache.totalBytes)}
-            </div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">
-              {t("settingsPage.preferences.offline.attachmentCache")}
-            </div>
-            <div className="mt-1 font-medium">
-              {formatStorageSize(attachmentCache.totalSize)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <Section>
+      <Section article={layout === "article"}>
         <SwitchRow
           title={t("settingsPage.preferences.offline.localDatabase")}
           description={t(
@@ -453,7 +493,7 @@ const OfflineSettings = () => {
               {t("settingsPage.preferences.offline.documents", {
                 count: yjsCache.count,
               })}{" "}
-              · {formatStorageSize(yjsCache.totalSize)}
+              · {formatByteSize(yjsCache.totalSize, 1)}
             </span>
             <Button
               type="button"
@@ -540,7 +580,7 @@ const OfflineSettings = () => {
               {t("settingsPage.preferences.offline.images", {
                 count: backgroundCache.count,
               })}{" "}
-              · {formatStorageSize(backgroundCache.totalBytes)}
+              · {formatByteSize(backgroundCache.totalBytes, 1)}
             </span>
             <div className="flex gap-2">
               <Button

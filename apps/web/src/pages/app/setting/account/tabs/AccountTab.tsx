@@ -127,10 +127,10 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
         onSubmit={userForm.handleSubmit(handleSaveUserOnSubmit)}
       >
         <div
-          className={`flex flex-col gap-6 ${
+          className={`flex flex-col ${
             layout === "panel"
-              ? "min-h-full overflow-y-scroll bg-muted px-8 pt-12 pb-8 ![scrollbar-color:var(--muted-foreground)_var(--secondary)]"
-              : ""
+              ? "min-h-full gap-6 overflow-y-scroll bg-muted px-8 pt-12 pb-8 ![scrollbar-color:var(--muted-foreground)_var(--secondary)]"
+              : "gap-0"
           }`}
         >
           <FormField
@@ -139,6 +139,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.publicId")}
                   description={field.value}
                 >
@@ -154,6 +155,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.accountName")}
                   description={field.value}
                 >
@@ -169,6 +171,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.displayName")}
                   description={
                     field.value ||
@@ -197,6 +200,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.email")}
                   description={field.value}
                 >
@@ -212,6 +216,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.role")}
                   description={field.value}
                 >
@@ -227,6 +232,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.plan")}
                   description={field.value}
                 >
@@ -242,6 +248,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.status")}
                   description={t("settingsPage.account.fields.currentStatus", {
                     status: t(`settingsPage.account.statuses.${field.value}`),
@@ -279,6 +286,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
             render={({ field }) => (
               <FormItem>
                 <SettingMenuItem
+                  layout={layout}
                   title={t("settingsPage.account.fields.joinedAt")}
                   description={
                     field.value instanceof Date

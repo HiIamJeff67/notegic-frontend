@@ -173,31 +173,24 @@ const BrowserPermissionsTab = ({
   return (
     <div>
       <Section article={layout === "article"}>
-        <div className="border-b border-border/50 pb-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-sm font-medium">
-                {t("settingsPage.preferences.browserPermissions.status")}
-              </div>
-              <div className="mt-1 text-sm leading-5 text-muted-foreground">
-                {t(
-                  "settingsPage.preferences.browserPermissions.statusDescription"
-                )}
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => void refreshPermissions()}
-            >
-              <RefreshCwIcon className="size-4" />
-              {t("settingsPage.preferences.browserPermissions.refresh")}
-            </Button>
-          </div>
-        </div>
+        <SettingRow
+          title={t("settingsPage.preferences.browserPermissions.status")}
+          description={t(
+            "settingsPage.preferences.browserPermissions.statusDescription"
+          )}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => void refreshPermissions()}
+          >
+            <RefreshCwIcon className="size-4" />
+            {t("settingsPage.preferences.browserPermissions.refresh")}
+          </Button>
+        </SettingRow>
 
-        <div className={layout === "article" ? "space-y-8" : ""}>
+        <div>
           {permissionItems.map((item, index) => (
             <SettingRow
               key={item.name}

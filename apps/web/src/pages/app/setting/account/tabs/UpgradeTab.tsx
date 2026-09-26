@@ -1,5 +1,6 @@
 import { UserPlan } from "@shared/api/interfaces/enums";
 import { type PlanLimitation, PlanLimitations } from "@shared/constants";
+import { formatByteSize } from "@shared/util/formatByteSize";
 import {
   CheckIcon,
   DatabaseIcon,
@@ -167,19 +168,12 @@ const limitationDefinitions: LimitationDefinition[] = [
   },
 ];
 
-const formatBytes = (bytes: number) => {
-  if (bytes >= 1024 * 1024 * 1024) {
-    return `${Math.round(bytes / 1024 / 1024 / 1024)} GB`;
-  }
-  return `${Math.round(bytes / 1024 / 1024)} MB`;
-};
-
 const formatLimitation = (
   key: keyof PlanLimitation,
   value: number,
   locale: string
 ) => {
-  if (key === "maxMaterialSize") return formatBytes(value);
+  if (key === "maxMaterialSize") return formatByteSize(value);
 
   return value.toLocaleString(locale);
 };

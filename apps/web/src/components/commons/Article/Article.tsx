@@ -18,6 +18,7 @@ export {
   ArticleSubParagraphHeader,
   ArticleSubParagraphSeparator,
 } from "./ArticleSections";
+export { default as ArticleSettingItem } from "./ArticleSettingItem";
 export {
   ArticleNavigationBar,
   ArticleSidebar,

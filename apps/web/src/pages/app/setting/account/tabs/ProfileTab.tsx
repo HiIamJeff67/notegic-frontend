@@ -15,6 +15,7 @@ import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -367,8 +368,10 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
           )}
 
           <div
-            className={`flex flex-col gap-6 ${
-              layout === "panel" ? "h-full bg-muted px-8 pt-12 pb-8" : ""
+            className={`flex flex-col ${
+              layout === "panel"
+                ? "h-full gap-6 bg-muted px-8 pt-12 pb-8"
+                : "mt-6 gap-0"
             }`}
           >
             <FormField
@@ -376,13 +379,19 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               name="header"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("settingsPage.account.personal.headline")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value ?? ""} />
-                  </FormControl>
-                  <FormMessage />
+                  <ArticleSettingItem
+                    title={
+                      <FormLabel>
+                        {t("settingsPage.account.personal.headline")}
+                      </FormLabel>
+                    }
+                    layout="stacked"
+                  >
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </ArticleSettingItem>
                 </FormItem>
               )}
             />
@@ -392,17 +401,23 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               name="introduction"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("settingsPage.account.personal.introduction")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      className="text-base mb-6"
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <ArticleSettingItem
+                    title={
+                      <FormLabel>
+                        {t("settingsPage.account.personal.introduction")}
+                      </FormLabel>
+                    }
+                    layout="stacked"
+                  >
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ""}
+                        className="text-base"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </ArticleSettingItem>
                 </FormItem>
               )}
             />
@@ -413,6 +428,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               render={({ field }) => (
                 <FormItem>
                   <SettingMenuItem
+                    layout={layout}
                     title={t("settingsPage.account.personal.gender")}
                     description={
                       field.value ||
@@ -454,6 +470,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               render={({ field }) => (
                 <FormItem>
                   <SettingMenuItem
+                    layout={layout}
                     title={t("settingsPage.account.personal.country")}
                     description={
                       field.value ||
@@ -501,6 +518,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               render={({ field }) => (
                 <FormItem>
                   <SettingMenuItem
+                    layout={layout}
                     title={t("settingsPage.account.personal.birthDate")}
                     description={
                       field.value
@@ -560,6 +578,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               render={({ field }) => (
                 <FormItem>
                   <SettingMenuItem
+                    layout={layout}
                     title={t("settingsPage.account.personal.lastUpdated")}
                     description={
                       field.value instanceof Date
@@ -597,7 +616,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 {t("workspace.fields.reset")}
               </Button>
             </div>
-            <div className="w-full h-2 shrink-0" />
           </div>
         </div>
       </form>

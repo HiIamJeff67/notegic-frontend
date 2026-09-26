@@ -1,17 +1,8 @@
+import { dateToTimeString, timeStringToDate } from "@shared/util/timeString";
 import { useTranslation } from "react-i18next";
 import TimePicker from "@/components/commons/TimePicker/TimePicker";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
-
-const timeStringToDate = (time: string) => {
-  const [hours = "0", minutes = "0"] = time.split(":");
-  return new Date(2000, 0, 1, Number(hours), Number(minutes), 0, 0);
-};
-
-const dateToTimeString = (date: Date) =>
-  `${String(date.getHours()).padStart(2, "0")}:${String(
-    date.getMinutes()
-  ).padStart(2, "0")}`;
 
 interface NotificationsTabProps {
   layout?: "panel" | "article";

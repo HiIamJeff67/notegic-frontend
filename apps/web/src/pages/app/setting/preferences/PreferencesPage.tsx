@@ -3,7 +3,7 @@ import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Article,
@@ -139,7 +139,7 @@ const PreferencesPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:my-10">
+        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:!my-6">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}
@@ -147,7 +147,7 @@ const PreferencesPage = ({
             eyebrow={t("settingsPage.preferences.eyebrow")}
             primary
           >
-            {isReady && <AppearanceSettings />}
+            {isReady && <AppearanceSettings layout="article" />}
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -157,7 +157,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.dashboard.title")}
             description={t("settingsPage.preferences.dashboard.description")}
           >
-            {isReady && <DashboardSettings />}
+            {isReady && <DashboardSettings layout="article" />}
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -167,7 +167,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.editor.title")}
             description={t("settingsPage.preferences.editor.description")}
           >
-            {isReady && <EditorSettings />}
+            {isReady && <EditorSettings layout="article" />}
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -177,7 +177,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.offline.title")}
             description={t("settingsPage.preferences.offline.description")}
           >
-            {isReady && <OfflineSettings />}
+            {isReady && <OfflineSettings layout="article" />}
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -187,7 +187,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.privacy.title")}
             description={t("settingsPage.preferences.privacy.description")}
           >
-            <PrivacyTab />
+            <PrivacyTab layout="article" />
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -199,7 +199,7 @@ const PreferencesPage = ({
               "settingsPage.preferences.browserPermissions.description"
             )}
           >
-            <BrowserPermissionsTab />
+            <BrowserPermissionsTab layout="article" />
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -209,7 +209,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.feedback.title")}
             description={t("settingsPage.preferences.feedback.description")}
           >
-            <FeedbackTab />
+            <FeedbackTab layout="article" />
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -221,7 +221,7 @@ const PreferencesPage = ({
               "settingsPage.preferences.notifications.description"
             )}
           >
-            <NotificationsTab />
+            <NotificationsTab layout="article" />
           </PreferenceTab>
 
           <ArticleParagraphSeparator />
@@ -231,7 +231,7 @@ const PreferencesPage = ({
             title={t("settingsPage.preferences.about.title")}
             description={t("settingsPage.preferences.about.description")}
           >
-            <AboutTab />
+            <AboutTab layout="article" />
           </PreferenceTab>
         </ArticleContent>
       </Article>
@@ -270,7 +270,7 @@ const PreferenceTab = ({
         {description}
       </p>
     </ArticleParagraphHeader>
-    <ArticleParagraphContent className="max-w-none text-foreground">
+    <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
       {children}
     </ArticleParagraphContent>
   </ArticleParagraph>

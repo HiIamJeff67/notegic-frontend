@@ -1,9 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react";
-import {
-  ArticleSubParagraph,
-  ArticleSubParagraphContent,
-  ArticleSubParagraphHeader,
-} from "@/components/commons/Article/Article";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
@@ -33,9 +29,7 @@ const PreferenceArticleContext = createContext(false);
 
 export const Section = ({ children, article = false }: SectionProps) => (
   <PreferenceArticleContext.Provider value={article}>
-    <section className={article ? "min-w-0 space-y-8" : "min-w-0"}>
-      {children}
-    </section>
+    <section className="min-w-0">{children}</section>
   </PreferenceArticleContext.Provider>
 );
 
@@ -64,48 +58,32 @@ const SettingRowContent = ({
   unsupportedReason,
 }: SettingRowProps) => {
   const article = useContext(PreferenceArticleContext);
-  const controls = (
-    <div className="flex shrink-0 items-center justify-end gap-2">
-      {unsupportedReason ? (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          data-density-static
-          disabled
-          className="h-8 px-3 text-xs"
-        >
-          {unsupportedReason}
-        </Button>
-      ) : (
-        children
-      )}
-    </div>
+  const controlContent = unsupportedReason ? (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      data-density-static
+      disabled
+      className="h-8 px-3 text-xs"
+    >
+      {unsupportedReason}
+    </Button>
+  ) : (
+    children
   );
 
   if (article) {
     return (
-      <ArticleSubParagraph id={`preference-${title}`}>
-        <ArticleSubParagraphHeader className="text-base font-medium text-foreground/65">
-          {title}
-        </ArticleSubParagraphHeader>
-        <ArticleSubParagraphContent className="mt-2 space-y-0">
-          <div className="relative flex min-h-[calc(var(--density-control-height)+1.75rem)] items-center justify-between gap-[var(--density-content-gap)]">
-            {description && (
-              <p className="min-w-0 flex-1 text-sm leading-5 text-muted-foreground">
-                {description}
-              </p>
-            )}
-            {controls}
-            {unsupportedReason && (
-              <div
-                className="absolute inset-0 z-10 cursor-not-allowed bg-transparent"
-                aria-label={unsupportedReason}
-              />
-            )}
-          </div>
-        </ArticleSubParagraphContent>
-      </ArticleSubParagraph>
+      <ArticleSettingItem
+        id={`preference-${title}`}
+        title={title}
+        description={description}
+        hideSeparator={hideSeparator}
+        overlayLabel={unsupportedReason}
+      >
+        {controlContent}
+      </ArticleSettingItem>
     );
   }
 
@@ -123,7 +101,9 @@ const SettingRowContent = ({
           </div>
         )}
       </div>
-      {controls}
+      <div className="flex shrink-0 items-center justify-end gap-2">
+        {controlContent}
+      </div>
       {unsupportedReason && (
         <div
           className="absolute inset-0 z-10 cursor-not-allowed bg-transparent"

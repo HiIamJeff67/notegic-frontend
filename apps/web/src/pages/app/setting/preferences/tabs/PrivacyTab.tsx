@@ -219,6 +219,7 @@ const PrivacyTab = ({ layout = "panel" }: PrivacyTabProps) => {
             "settingsPage.preferences.privacy.clipboardGuardDescription"
           )}
           checked={preferences.clipboardGuard}
+          hideSeparator
           onCheckedChange={checked =>
             updatePreference("clipboardGuard", checked)
           }
