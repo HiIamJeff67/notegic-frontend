@@ -173,10 +173,6 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
                 <SettingMenuItem
                   layout={layout}
                   title={t("settingsPage.account.fields.displayName")}
-                  description={
-                    field.value ||
-                    t("settingsPage.account.fields.displayNameUnset")
-                  }
                 >
                   <FormControl>
                     <Input
@@ -250,9 +246,6 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
                 <SettingMenuItem
                   layout={layout}
                   title={t("settingsPage.account.fields.status")}
-                  description={t("settingsPage.account.fields.currentStatus", {
-                    status: t(`settingsPage.account.statuses.${field.value}`),
-                  })}
                 >
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>

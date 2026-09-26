@@ -430,10 +430,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   <SettingMenuItem
                     layout={layout}
                     title={t("settingsPage.account.personal.gender")}
-                    description={
-                      field.value ||
-                      t("settingsPage.account.personal.genderUnset")
-                    }
                   >
                     <FormControl>
                       <Select
@@ -472,10 +468,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   <SettingMenuItem
                     layout={layout}
                     title={t("settingsPage.account.personal.country")}
-                    description={
-                      field.value ||
-                      t("settingsPage.account.personal.countryUnset")
-                    }
                   >
                     <FormControl>
                       <Select
@@ -520,16 +512,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   <SettingMenuItem
                     layout={layout}
                     title={t("settingsPage.account.personal.birthDate")}
-                    description={
-                      field.value
-                        ? format(
-                            typeof field.value === "string"
-                              ? new Date(field.value)
-                              : field.value,
-                            "yyyy-MM-dd"
-                          )
-                        : t("settingsPage.account.personal.birthDateUnset")
-                    }
                   >
                     <Popover>
                       <PopoverTrigger asChild>

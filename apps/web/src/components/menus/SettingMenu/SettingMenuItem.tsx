@@ -4,7 +4,7 @@ import { SettingMenuLayoutContext } from "./SettingMenu";
 
 interface SettingMenuItemProps {
   title: string;
-  description: string;
+  description?: string;
   children: ReactNode;
   hideSeparator?: boolean;
   titleClassName?: string;
@@ -43,7 +43,11 @@ const SettingMenuItem = ({
     >
       <div className="min-w-0 flex-1">
         <div className={`text-sm font-medium ${titleClassName}`}>{title}</div>
-        <div className="text-sm text-muted-foreground mt-1">{description}</div>
+        {description && (
+          <div className="text-sm text-muted-foreground mt-1">
+            {description}
+          </div>
+        )}
       </div>
       <div className="shrink-0">{children}</div>
     </div>
