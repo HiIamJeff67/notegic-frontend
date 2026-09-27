@@ -1,26 +1,26 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useLoginViaGoogle, useRegisterViaGoogle } from "@/api/hooks/auth.hook";
-import { OAUTH_STATE_TTL_MS } from "@/api/oauthState";
-import {
-  clearTurnstileToken,
-  getTurnstileToken,
-  isTurnstileEnabled,
-} from "@/api/turnstile";
-import { useBindGoogleAccount } from "@/api/hooks/userAccount.hook";
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import { consumePendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import type { OAuthAction } from "@shared/types/redirectState.type";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useLoginViaGoogle, useRegisterViaGoogle } from "@/api/hooks/auth.hook";
+import { useBindGoogleAccount } from "@/api/hooks/userAccount.hook";
+import { OAUTH_STATE_TTL_MS } from "@/api/oauthState";
+import {
+  clearTurnstileToken,
+  getTurnstileToken,
+  isTurnstileEnabled,
+} from "@/api/turnstile";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useAppRouter, useUser } from "@/hooks";
 import {
   getPreferredStartPath,
   useLocalPreferences,
 } from "@/hooks/localPreferences";
-import { translateError } from "@shared/i18n/error";
 
 function GoogleRedirectPage() {
   const location = useLocation();
@@ -165,8 +165,8 @@ function GoogleRedirectPage() {
   }, [handleOAuthOnRedirect]);
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
-      <StrictLoadingCover
+    <Suspense fallback={<LoadingCover />}>
+      <LoadingCover
         label={t(
           loadingPhase === "validating"
             ? "workspace.pages.validatingGoogle"

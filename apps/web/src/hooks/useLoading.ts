@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { LoadingContext } from "@/providers/LoadingProvider";
 
 export const useLoading = () => {
@@ -9,13 +9,24 @@ export const useLoading = () => {
   return context;
 };
 
-export const useRegisterLoadingDependencies = (
-  ...getters: Array<() => boolean>
-) => {
-  const { registerLoadingDependencies } = useLoading();
+export const useRegisterLoadingDependencies = (...loadingStates: boolean[]) => {
+  const { registerLoadingDependency, unregisterLoadingDependency } =
+    useLoading();
+  const dependencyIdRef = useRef<symbol | null>(null);
+
+  if (dependencyIdRef.current === null) {
+    dependencyIdRef.current = Symbol("loading-dependency");
+  }
+
+  const dependencyId = dependencyIdRef.current;
+  const isLoading = loadingStates.some(Boolean);
 
   useEffect(() => {
-    const unregister = registerLoadingDependencies(...getters);
-    return unregister;
-  }, getters);
+    registerLoadingDependency(dependencyId, isLoading);
+  }, [dependencyId, isLoading, registerLoadingDependency]);
+
+  useEffect(
+    () => () => unregisterLoadingDependency(dependencyId),
+    [dependencyId, unregisterLoadingDependency]
+  );
 };

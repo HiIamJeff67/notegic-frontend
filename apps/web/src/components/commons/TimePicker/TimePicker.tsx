@@ -119,7 +119,7 @@ const TimePicker = ({
           align="start"
           sideOffset={4}
           className={cn(
-            "z-[160] w-72 rounded-sm border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+            "z-[160] w-72 overflow-hidden rounded-sm border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             contentClassName
           )}
         >
@@ -211,6 +211,7 @@ const TimePicker = ({
                         key={hour}
                         type="button"
                         variant="ghost"
+                        data-density-static
                         disabled={disabled}
                         onClick={event => {
                           const targetTime = value ?? new Date();
@@ -233,11 +234,11 @@ const TimePicker = ({
                           );
                         }}
                         className={cn(
-                          "flex h-8 w-full snap-center justify-center rounded-none font-mono text-sm font-normal",
+                          "mx-2 flex h-8 w-[calc(100%-1rem)] snap-center justify-center rounded-none border-y border-transparent font-mono text-sm font-normal hover:border-primary/50 hover:bg-accent",
                           (hourCycle === "12"
                             ? displayedTime.getHours() % 12
                             : displayedTime.getHours()) === hour
-                            ? "text-foreground"
+                            ? "border-primary/50 bg-primary/5 text-foreground"
                             : "text-muted-foreground"
                         )}
                       >
@@ -248,7 +249,6 @@ const TimePicker = ({
                     )
                   )}
                 </div>
-                <div className="pointer-events-none absolute inset-x-2 top-14 h-8 border-y border-primary/50 bg-primary/5" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-popover to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-linear-to-t from-popover to-transparent" />
               </div>
@@ -304,6 +304,7 @@ const TimePicker = ({
                       key={minute}
                       type="button"
                       variant="ghost"
+                      data-density-static
                       disabled={disabled}
                       onClick={event => {
                         const targetTime = value ?? new Date();
@@ -324,9 +325,9 @@ const TimePicker = ({
                         );
                       }}
                       className={cn(
-                        "flex h-8 w-full snap-center justify-center rounded-none font-mono text-sm font-normal",
+                        "mx-2 flex h-8 w-[calc(100%-1rem)] snap-center justify-center rounded-none border-y border-transparent font-mono text-sm font-normal hover:border-primary/50 hover:bg-accent",
                         displayedTime.getMinutes() === minute
-                          ? "text-foreground"
+                          ? "border-primary/50 bg-primary/5 text-foreground"
                           : "text-muted-foreground"
                       )}
                     >
@@ -334,7 +335,6 @@ const TimePicker = ({
                     </Button>
                   ))}
                 </div>
-                <div className="pointer-events-none absolute inset-x-2 top-14 h-8 border-y border-primary/50 bg-primary/5" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-popover to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-linear-to-t from-popover to-transparent" />
               </div>
@@ -347,6 +347,7 @@ const TimePicker = ({
                 <div className="flex flex-1 flex-col justify-center gap-1 p-2">
                   <Button
                     type="button"
+                    data-density-static
                     variant={
                       displayedTime.getHours() < 12 ? "secondary" : "ghost"
                     }
@@ -373,6 +374,7 @@ const TimePicker = ({
                   </Button>
                   <Button
                     type="button"
+                    data-density-static
                     variant={
                       displayedTime.getHours() >= 12 ? "secondary" : "ghost"
                     }

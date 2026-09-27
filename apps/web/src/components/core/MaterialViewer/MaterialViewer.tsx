@@ -4,7 +4,7 @@ import {
   materialMetaReducer,
 } from "@shared/reducers/materialMeta.reducer";
 import { Suspense, useEffect, useMemo, useReducer } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useShelfItem } from "@/hooks";
 import MaterialAudioViewerContent from "./MaterialAudioViewerContent";
 import MaterialImageViewerContent from "./MaterialImageViewerContent";
@@ -43,7 +43,7 @@ const MaterialViewer = ({ materialMeta }: MaterialViewerProps) => {
   }, [shelfItemManager.editItemName]);
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <div className="w-full h-dvh min-w-0 min-h-0 overflow-hidden">
         {(() => {
           switch (materialContentType) {

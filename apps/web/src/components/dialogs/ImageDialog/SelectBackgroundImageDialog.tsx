@@ -55,10 +55,7 @@ const SelectBackgroundImageDialog = ({
   const [isCropImageSelecting, startSelectingCropImageTransition] =
     useTransition();
 
-  useRegisterLoadingDependencies(
-    () => isCropImageCompleting,
-    () => isCropImageSelecting
-  );
+  useRegisterLoadingDependencies(isCropImageCompleting, isCropImageSelecting);
 
   useEffect(() => {
     const currentId =

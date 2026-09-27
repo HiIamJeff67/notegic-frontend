@@ -154,7 +154,7 @@ const DatePicker = ({
           align="start"
           sideOffset={4}
           className={cn(
-            "z-[160] w-auto rounded-sm border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+            "z-[160] w-auto overflow-hidden rounded-sm border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             contentClassName
           )}
         >
@@ -163,6 +163,12 @@ const DatePicker = ({
             selected={value}
             disabled={disabled}
             onSelect={date => {
+              if (hourScrollTimerRef.current) {
+                clearTimeout(hourScrollTimerRef.current);
+              }
+              if (minuteScrollTimerRef.current) {
+                clearTimeout(minuteScrollTimerRef.current);
+              }
               if (!date) {
                 onValueChange(undefined);
                 return;
@@ -219,13 +225,13 @@ const DatePicker = ({
                 <div
                   ref={hourWheelRef}
                   onScroll={event => {
-                    if (!value) return;
                     if (hourScrollTimerRef.current) {
                       clearTimeout(hourScrollTimerRef.current);
                     }
 
                     const scrollTop = event.currentTarget.scrollTop;
                     hourScrollTimerRef.current = setTimeout(() => {
+                      const selectedDate = value ?? new Date();
                       const hour = Math.min(
                         hourCycle === "12" ? 11 : 23,
                         Math.max(0, Math.round(scrollTop / 32))
@@ -235,8 +241,9 @@ const DatePicker = ({
                         behavior: "smooth",
                       });
                       if (
+                        value &&
                         (hourCycle === "12"
-                          ? hour + (value.getHours() >= 12 ? 12 : 0)
+                          ? hour + (selectedDate.getHours() >= 12 ? 12 : 0)
                           : hour) === value.getHours()
                       ) {
                         return;
@@ -244,13 +251,13 @@ const DatePicker = ({
 
                       onValueChange(
                         new Date(
-                          value.getFullYear(),
-                          value.getMonth(),
-                          value.getDate(),
+                          selectedDate.getFullYear(),
+                          selectedDate.getMonth(),
+                          selectedDate.getDate(),
                           hourCycle === "12"
-                            ? hour + (value.getHours() >= 12 ? 12 : 0)
+                            ? hour + (selectedDate.getHours() >= 12 ? 12 : 0)
                             : hour,
-                          value.getMinutes()
+                          selectedDate.getMinutes()
                         )
                       );
                     }, 100);
@@ -265,31 +272,31 @@ const DatePicker = ({
                         type="button"
                         variant="ghost"
                         data-density-static
-                        disabled={!value}
                         onClick={event => {
-                          if (!value) return;
+                          const selectedDate = value ?? new Date();
                           event.currentTarget.scrollIntoView({
                             block: "center",
                             behavior: "smooth",
                           });
                           onValueChange(
                             new Date(
-                              value.getFullYear(),
-                              value.getMonth(),
-                              value.getDate(),
+                              selectedDate.getFullYear(),
+                              selectedDate.getMonth(),
+                              selectedDate.getDate(),
                               hourCycle === "12"
-                                ? hour + (value.getHours() >= 12 ? 12 : 0)
+                                ? hour +
+                                    (selectedDate.getHours() >= 12 ? 12 : 0)
                                 : hour,
-                              value.getMinutes()
+                              selectedDate.getMinutes()
                             )
                           );
                         }}
                         className={cn(
-                          "flex h-8 w-full snap-center justify-center rounded-none font-mono text-sm font-normal",
+                          "mx-2 flex h-8 w-[calc(100%-1rem)] snap-center justify-center rounded-none border-y border-transparent font-mono text-sm font-normal hover:border-primary/50 hover:bg-accent",
                           (hourCycle === "12"
                             ? value && value.getHours() % 12
                             : value?.getHours()) === hour
-                            ? "text-foreground"
+                            ? "border-primary/50 bg-primary/5 text-foreground"
                             : "text-muted-foreground"
                         )}
                       >
@@ -300,7 +307,6 @@ const DatePicker = ({
                     )
                   )}
                 </div>
-                <div className="pointer-events-none absolute inset-x-2 top-12 h-8 border-y border-primary/50 bg-primary/5" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-linear-to-b from-popover to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-popover to-transparent" />
               </div>
@@ -319,13 +325,13 @@ const DatePicker = ({
                 <div
                   ref={minuteWheelRef}
                   onScroll={event => {
-                    if (!value) return;
                     if (minuteScrollTimerRef.current) {
                       clearTimeout(minuteScrollTimerRef.current);
                     }
 
                     const scrollTop = event.currentTarget.scrollTop;
                     minuteScrollTimerRef.current = setTimeout(() => {
+                      const selectedDate = value ?? new Date();
                       const minute = Math.min(
                         59,
                         Math.max(0, Math.round(scrollTop / 32))
@@ -334,14 +340,14 @@ const DatePicker = ({
                         top: minute * 32,
                         behavior: "smooth",
                       });
-                      if (minute === value.getMinutes()) return;
+                      if (value && minute === selectedDate.getMinutes()) return;
 
                       onValueChange(
                         new Date(
-                          value.getFullYear(),
-                          value.getMonth(),
-                          value.getDate(),
-                          value.getHours(),
+                          selectedDate.getFullYear(),
+                          selectedDate.getMonth(),
+                          selectedDate.getDate(),
+                          selectedDate.getHours(),
                           minute
                         )
                       );
@@ -355,27 +361,26 @@ const DatePicker = ({
                       type="button"
                       variant="ghost"
                       data-density-static
-                      disabled={!value}
                       onClick={event => {
-                        if (!value) return;
+                        const selectedDate = value ?? new Date();
                         event.currentTarget.scrollIntoView({
                           block: "center",
                           behavior: "smooth",
                         });
                         onValueChange(
                           new Date(
-                            value.getFullYear(),
-                            value.getMonth(),
-                            value.getDate(),
-                            value.getHours(),
+                            selectedDate.getFullYear(),
+                            selectedDate.getMonth(),
+                            selectedDate.getDate(),
+                            selectedDate.getHours(),
                             minute
                           )
                         );
                       }}
                       className={cn(
-                        "flex h-8 w-full snap-center justify-center rounded-none font-mono text-sm font-normal",
+                        "mx-2 flex h-8 w-[calc(100%-1rem)] snap-center justify-center rounded-none border-y border-transparent font-mono text-sm font-normal hover:border-primary/50 hover:bg-accent",
                         value?.getMinutes() === minute
-                          ? "text-foreground"
+                          ? "border-primary/50 bg-primary/5 text-foreground"
                           : "text-muted-foreground"
                       )}
                     >
@@ -383,7 +388,6 @@ const DatePicker = ({
                     </Button>
                   ))}
                 </div>
-                <div className="pointer-events-none absolute inset-x-2 top-12 h-8 border-y border-primary/50 bg-primary/5" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-linear-to-b from-popover to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-popover to-transparent" />
               </div>
@@ -400,17 +404,17 @@ const DatePicker = ({
                     variant={
                       value && value.getHours() < 12 ? "secondary" : "ghost"
                     }
-                    disabled={!value}
                     onClick={() => {
-                      if (!value || value.getHours() < 12) return;
+                      const selectedDate = value ?? new Date();
+                      if (value && selectedDate.getHours() < 12) return;
 
                       onValueChange(
                         new Date(
-                          value.getFullYear(),
-                          value.getMonth(),
-                          value.getDate(),
-                          value.getHours() - 12,
-                          value.getMinutes()
+                          selectedDate.getFullYear(),
+                          selectedDate.getMonth(),
+                          selectedDate.getDate(),
+                          selectedDate.getHours() - 12,
+                          selectedDate.getMinutes()
                         )
                       );
                     }}
@@ -424,17 +428,17 @@ const DatePicker = ({
                     variant={
                       value && value.getHours() >= 12 ? "secondary" : "ghost"
                     }
-                    disabled={!value}
                     onClick={() => {
-                      if (!value || value.getHours() >= 12) return;
+                      const selectedDate = value ?? new Date();
+                      if (value && selectedDate.getHours() >= 12) return;
 
                       onValueChange(
                         new Date(
-                          value.getFullYear(),
-                          value.getMonth(),
-                          value.getDate(),
-                          value.getHours() + 12,
-                          value.getMinutes()
+                          selectedDate.getFullYear(),
+                          selectedDate.getMonth(),
+                          selectedDate.getDate(),
+                          selectedDate.getHours() + 12,
+                          selectedDate.getMinutes()
                         )
                       );
                     }}

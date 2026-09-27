@@ -37,7 +37,7 @@ import {
   useUpdateRoutineTaskDependencyByRoutineId,
 } from "@/api/hooks/routineTaskDependency.hook";
 import type { RoutineTaskDependencyGraphDraftEdge } from "@/api/local/schemas";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import {
   useModal,
@@ -45,6 +45,7 @@ import {
   useStationRoutine,
   useTheme,
 } from "@/hooks";
+import { useLoading } from "@/hooks/useLoading";
 import RoutineTaskDependencyGraphCanvas from "./RoutineTaskDependencyGraphCanvas";
 import RoutineTaskDependencyGraphToolbar from "./RoutineTaskDependencyGraphToolbar";
 import RoutineTaskDependencyInspector from "./RoutineTaskDependencyInspector";
@@ -61,6 +62,7 @@ const RoutineTaskDependencyGraphEditor = ({
   const modalManager = useModal();
   const sidebarManager = useSidebar();
   const themeManager = useTheme();
+  const { startAsyncTransactionLoading } = useLoading();
   const stationRoutineManager = useStationRoutine();
   const {
     draft: localDraft,
@@ -158,11 +160,11 @@ const RoutineTaskDependencyGraphEditor = ({
       }
     };
 
-    void loadRoutineTasks();
+    void startAsyncTransactionLoading(loadRoutineTasks);
     return () => {
       cancelled = true;
     };
-  }, [loadDraft, reloadVersion, routineId]);
+  }, [loadDraft, reloadVersion, routineId, startAsyncTransactionLoading]);
 
   const graphNodes = useMemo<RoutineTaskGraphNodeType[]>(
     () =>
@@ -893,7 +895,7 @@ const RoutineTaskDependencyGraphEditor = ({
     deleteDependency.isPending ||
     updateDependency.isPending;
 
-  if (isLoading) return <StrictLoadingCover />;
+  if (isLoading) return <LoadingCover />;
 
   if (!routine) {
     return (

@@ -1,7 +1,7 @@
+import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { Suspense } from "react";
 import MaterialViewer from "@/components/core/MaterialViewer/MaterialViewer";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 
 interface MaterialViewerPageProps {
   materialMeta: MaterialMeta;
@@ -9,7 +9,7 @@ interface MaterialViewerPageProps {
 
 const MaterialViewerPage = ({ materialMeta }: MaterialViewerPageProps) => {
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <MaterialViewer
         key={`${materialMeta.id}:${materialMeta.parentId}:${materialMeta.rootId}`}
         materialMeta={materialMeta}

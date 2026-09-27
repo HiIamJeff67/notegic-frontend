@@ -4,18 +4,10 @@ import {
   useParams,
   useRouter,
 } from "@tanstack/react-router";
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef } from "react";
+import { useLoading } from "@/hooks/useLoading";
 
 export interface AppRouterStateContextType {
-  isNavigating: boolean;
   params: Record<string, string>;
 }
 
@@ -51,17 +43,12 @@ export const AppRouterProvider = ({
   children: React.ReactNode;
 }) => {
   const router = useRouter();
+  const { startAsyncTransactionLoading } = useLoading();
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams({ strict: false });
 
-  const [isOptimisticNavigating, setIsOptimisticNavigating] =
-    useState<boolean>(false);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [isRoutePending, _startRouteTransition] = useTransition();
   const prevPathsRef = useRef<string[]>([]);
-  const refreshIdRef = useRef<number>(0);
-  const isNavigating = isOptimisticNavigating || isRoutePending || isRefreshing;
 
   const isSamePath = useCallback((a: string, b: string): boolean => {
     if (a[0] === "/") {
@@ -87,17 +74,13 @@ export const AppRouterProvider = ({
 
     if (currentPath !== prevPath) {
       prevPathsRef.current.push(currentPath);
-      setIsOptimisticNavigating(false);
     }
   }, [getCurrentPath]);
 
   const push = useCallback(
     (path: string) => {
       if (!isSamePath(getCurrentPath(), path)) {
-        setIsOptimisticNavigating(true);
-        _startRouteTransition(() => {
-          navigate({ to: path.startsWith("/") ? path : `/${path}` });
-        });
+        void navigate({ to: path.startsWith("/") ? path : `/${path}` });
       }
     },
     [getCurrentPath, isSamePath, navigate]
@@ -106,10 +89,7 @@ export const AppRouterProvider = ({
   const forceNavigate = useCallback(
     (path: string) => {
       if (!isSamePath(getCurrentPath(), path)) {
-        setIsOptimisticNavigating(true);
-        _startRouteTransition(() => {
-          window.location.href = path;
-        });
+        window.location.href = path;
       }
     },
     [getCurrentPath, isSamePath]
@@ -118,12 +98,9 @@ export const AppRouterProvider = ({
   const replace = useCallback(
     (path: string) => {
       if (!isSamePath(getCurrentPath(), path)) {
-        setIsOptimisticNavigating(true);
-        _startRouteTransition(() => {
-          navigate({
-            to: path.startsWith("/") ? path : `/${path}`,
-            replace: true,
-          });
+        void navigate({
+          to: path.startsWith("/") ? path : `/${path}`,
+          replace: true,
         });
       }
     },
@@ -131,36 +108,22 @@ export const AppRouterProvider = ({
   );
 
   const back = useCallback((steps: number = 1): void => {
-    setIsOptimisticNavigating(true);
-    _startRouteTransition(() => {
-      while (steps-- > 0) window.history.back();
-    });
+    while (steps-- > 0) window.history.back();
   }, []);
 
   const forward = useCallback((steps: number = 1): void => {
-    setIsOptimisticNavigating(true);
-    _startRouteTransition(() => {
-      while (steps-- > 0) window.history.forward();
-    });
+    while (steps-- > 0) window.history.forward();
   }, []);
 
   const refresh = useCallback((): void => {
-    const refreshId = ++refreshIdRef.current;
-
-    setIsRefreshing(true);
-    void router.invalidate({ sync: true }).finally(() => {
-      if (refreshIdRef.current === refreshId) {
-        setIsRefreshing(false);
-      }
-    });
-  }, [router]);
+    void startAsyncTransactionLoading(() => router.invalidate({ sync: true }));
+  }, [router, startAsyncTransactionLoading]);
 
   const stateValue = useMemo<AppRouterStateContextType>(
     () => ({
-      isNavigating: isNavigating,
       params: params as Record<string, string>,
     }),
-    [isNavigating, params]
+    [params]
   );
 
   const actionsValue = useMemo<AppRouterActionsContextType>(

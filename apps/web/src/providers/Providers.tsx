@@ -17,8 +17,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <PerformanceProvider>
       <ScreenProvider>
         <QueryClientProvider client={queryClient}>
-          <AppRouterProvider>
-            <LoadingProvider>
+          <LoadingProvider>
+            <AppRouterProvider>
               <ThemeProvider>
                 <LocalPreferencesProvider>
                   <ClipboardGuardProvider>
@@ -27,8 +27,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                   </ClipboardGuardProvider>
                 </LocalPreferencesProvider>
               </ThemeProvider>
-            </LoadingProvider>
-          </AppRouterProvider>
+            </AppRouterProvider>
+          </LoadingProvider>
         </QueryClientProvider>
       </ScreenProvider>
     </PerformanceProvider>

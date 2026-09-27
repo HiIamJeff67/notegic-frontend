@@ -1,14 +1,20 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useLogin } from "@/api/hooks/auth.hook";
-import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useLogin } from "@/api/hooks/auth.hook";
+import {
+  clearTurnstileToken,
+  isTurnstileEnabled,
+  setTurnstileToken,
+} from "@/api/turnstile";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import {
@@ -16,12 +22,6 @@ import {
   useLocalPreferences,
 } from "@/hooks/localPreferences";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { translateError } from "@shared/i18n/error";
-import {
-  clearTurnstileToken,
-  isTurnstileEnabled,
-  setTurnstileToken,
-} from "@/api/turnstile";
 
 const LoginPage = () => {
   const router = useAppRouter();
@@ -41,7 +41,7 @@ const LoginPage = () => {
 
   const [isLoginPending, startLoginTransition] = useTransition();
 
-  useRegisterLoadingDependencies(() => isLoginPending);
+  useRegisterLoadingDependencies(isLoginPending);
 
   const resetTurnstile = useCallback(() => {
     clearTurnstileToken();
@@ -120,8 +120,8 @@ const LoginPage = () => {
 
   return (
     <GridBackground>
-      <Suspense fallback={<StrictLoadingCover />}>
-        <StrictLoadingCover condition={isLoginPending} />
+      <Suspense fallback={<LoadingCover />}>
+        <LoadingCover condition={isLoginPending} />
         <AuthPanel
           title={t("auth.login")}
           subtitle={`${t(

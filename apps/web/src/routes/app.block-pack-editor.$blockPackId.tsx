@@ -1,5 +1,4 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyBlockPackAndItsParentById } from "@/api/hooks/blockPack.hook";
+import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { isValidUUID } from "@shared/types/uuidv4.type";
 import {
   createFileRoute,
@@ -8,10 +7,12 @@ import {
 } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyBlockPackAndItsParentById } from "@/api/hooks/blockPack.hook";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import { useLoading } from "@/hooks/useLoading";
 import BlockPackEditorNotFoundPage from "@/pages/app/block-pack-editor/BlockPackEditorNotFoundPage";
 import BlockPackEditorPage from "@/pages/app/block-pack-editor/BlockPackEditorPage";
-import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 
 export const Route = createFileRoute("/app/block-pack-editor/$blockPackId")({
   ssr: false, // since the blocknote editor view is a client side component
@@ -54,6 +55,7 @@ function BlockPackEditorIndexRoute() {
   const loaderData = useLoaderData({
     from: "/app/block-pack-editor/$blockPackId",
   });
+  const { startAsyncTransactionLoading } = useLoading();
 
   const blockPackQuerier = useGetMyBlockPackAndItsParentById(undefined, {
     staleTime: 0,
@@ -116,7 +118,7 @@ function BlockPackEditorIndexRoute() {
       }
     };
 
-    void fetchBlockPackMeta();
+    void startAsyncTransactionLoading(fetchBlockPackMeta);
 
     return () => {
       isActive = false;
@@ -125,9 +127,10 @@ function BlockPackEditorIndexRoute() {
     loaderData.blockPackId,
     loaderData.parentSubShelfId,
     loaderData.rootShelfId,
+    startAsyncTransactionLoading,
   ]);
 
-  if (isLoading) return <StrictLoadingCover />;
+  if (isLoading) return <LoadingCover />;
   if (isNotFound || !blockPackMeta) return <BlockPackEditorNotFoundPage />;
 
   return <BlockPackEditorPage blockPackMeta={blockPackMeta} />;

@@ -1,4 +1,14 @@
-import React, { createContext, useRef, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import React, {
+  createContext,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import AppLoadingCover from "@/components/covers/LoadingCover/AppLoadingCover";
+
+type LoadingLevel = "strict" | "lax";
 
 interface LoadingContextType {
   isStrictLoading: boolean;
@@ -7,10 +17,12 @@ interface LoadingContextType {
   startSyncTransactionLoading: <T>(fn: () => T) => T;
   startAsyncTransactionLoading: <T>(
     fn: () => Promise<T>,
+    level?: LoadingLevel,
     loadingTimeout?: number,
     errorTimeout?: number
   ) => Promise<T>;
-  registerLoadingDependencies: (...getters: Array<() => boolean>) => () => void;
+  registerLoadingDependency: (id: symbol, isLoading: boolean) => void;
+  unregisterLoadingDependency: (id: symbol) => void;
 }
 
 export const LoadingContext = createContext<LoadingContextType | undefined>(
@@ -22,126 +34,172 @@ export const LoadingProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [_isLaxLoading, _setIsLaxLoading] = useState<boolean>(false);
+  const isRoutePending = useRouterState({
+    select: state => state.status === "pending",
+  });
+  const [isStrictTransactionLoading, setIsStrictTransactionLoading] =
+    useState(false);
+  const [isLaxTransactionLoading, setIsLaxTransactionLoading] = useState(false);
+  const [hasLoadingDependencies, setHasLoadingDependencies] = useState(false);
 
+  const strictLoadingCounterRef = useRef<number>(0);
   const laxLoadingCounterRef = useRef<number>(0);
-  const loadingDependenciesRef = useRef<Set<() => boolean>>(new Set());
+  const loadingDependenciesRef = useRef<Map<symbol, boolean>>(new Map());
 
-  const setIsLaxLoading = (state: boolean) => {
+  const isStrictLoading = isRoutePending || isStrictTransactionLoading;
+  const isLaxLoading =
+    isStrictLoading || isLaxTransactionLoading || hasLoadingDependencies;
+
+  const setIsLaxLoading = useCallback((state: boolean) => {
     if (state) {
-      _setIsLaxLoading(true);
       laxLoadingCounterRef.current++;
     } else {
-      laxLoadingCounterRef.current--;
-      if (laxLoadingCounterRef.current === 0) {
-        _setIsLaxLoading(false);
-      }
-    }
-  };
-
-  const startSyncTransactionLoading = <T,>(fn: () => T) => {
-    _setIsLaxLoading(true);
-    laxLoadingCounterRef.current++;
-    try {
-      return fn();
-    } finally {
       laxLoadingCounterRef.current = Math.max(
         0,
         laxLoadingCounterRef.current - 1
       );
-      if (laxLoadingCounterRef.current === 0) {
-        _setIsLaxLoading(false);
-      }
     }
-  };
 
-  const startAsyncTransactionLoading = async <T,>(
-    fn: () => Promise<T>,
-    loadingTimeout: number = Infinity,
-    errorTimeout: number = Infinity
-  ) => {
-    _setIsLaxLoading(true);
-    laxLoadingCounterRef.current++;
+    setIsLaxTransactionLoading(laxLoadingCounterRef.current > 0);
+  }, []);
 
-    let isLoadingActive: boolean = true;
-    let loadingTimer: NodeJS.Timeout | null = null;
-    let errorTimer: NodeJS.Timeout | null = null;
-
-    const stopLoading = () => {
-      if (isLoadingActive) {
-        isLoadingActive = false;
-        laxLoadingCounterRef.current = Math.max(
-          0,
-          laxLoadingCounterRef.current - 1
-        );
-        if (laxLoadingCounterRef.current === 0) {
-          _setIsLaxLoading(false);
-        }
-        if (loadingTimer) clearTimeout(loadingTimer);
-        if (errorTimer) clearTimeout(errorTimer);
-      }
-    };
-
-    if (loadingTimeout !== Infinity) {
-      loadingTimer = setTimeout(() => {
-        if (isLoadingActive) {
-          console.warn(
-            `[LoadingProvider] Loading UI timed out after ${loadingTimeout} ms`
-          );
-          stopLoading();
-        }
-      }, loadingTimeout);
-    }
+  const startSyncTransactionLoading = useCallback(<T,>(fn: () => T) => {
+    strictLoadingCounterRef.current++;
+    setIsStrictTransactionLoading(true);
 
     try {
-      let promise = fn();
+      return fn();
+    } finally {
+      strictLoadingCounterRef.current = Math.max(
+        0,
+        strictLoadingCounterRef.current - 1
+      );
+      setIsStrictTransactionLoading(strictLoadingCounterRef.current > 0);
+    }
+  }, []);
 
-      if (errorTimeout !== Infinity) {
-        promise = Promise.race([
-          promise,
-          new Promise<T>((_, reject) => {
-            errorTimer = setTimeout(() => {
-              reject(
-                new Error(`Transaction hard timed out after ${errorTimeout}ms`)
-              );
-            }, errorTimeout);
-          }),
-        ]);
+  const runAsyncTransactionLoading = useCallback(
+    async <T,>(
+      fn: () => Promise<T>,
+      loadingLevel: LoadingLevel,
+      loadingTimeout: number,
+      errorTimeout: number
+    ) => {
+      const loadingCounterRef =
+        loadingLevel === "strict"
+          ? strictLoadingCounterRef
+          : laxLoadingCounterRef;
+      const setIsTransactionLoading =
+        loadingLevel === "strict"
+          ? setIsStrictTransactionLoading
+          : setIsLaxTransactionLoading;
+
+      loadingCounterRef.current++;
+      setIsTransactionLoading(true);
+
+      let isLoadingActive = true;
+      let loadingTimer: NodeJS.Timeout | null = null;
+      let errorTimer: NodeJS.Timeout | null = null;
+
+      const stopLoading = () => {
+        if (!isLoadingActive) return;
+
+        isLoadingActive = false;
+        loadingCounterRef.current = Math.max(0, loadingCounterRef.current - 1);
+        setIsTransactionLoading(loadingCounterRef.current > 0);
+
+        if (loadingTimer) clearTimeout(loadingTimer);
+        if (errorTimer) clearTimeout(errorTimer);
+      };
+
+      if (loadingTimeout !== Infinity) {
+        loadingTimer = setTimeout(() => {
+          if (isLoadingActive) {
+            console.warn(
+              `[LoadingProvider] Loading UI timed out after ${loadingTimeout} ms`
+            );
+            stopLoading();
+          }
+        }, loadingTimeout);
       }
 
-      const result = await promise;
+      try {
+        let promise = fn();
 
-      // resolve the loading states first before heavy response or result
-      // from the async function being returned
-      stopLoading();
+        if (errorTimeout !== Infinity) {
+          promise = Promise.race([
+            promise,
+            new Promise<T>((_, reject) => {
+              errorTimer = setTimeout(() => {
+                reject(
+                  new Error(
+                    `Transaction hard timed out after ${errorTimeout}ms`
+                  )
+                );
+              }, errorTimeout);
+            }),
+          ]);
+        }
 
-      return result;
-    } catch (error) {
-      throw error;
-    } finally {
-      stopLoading();
-    }
-  };
+        return await promise;
+      } finally {
+        stopLoading();
+      }
+    },
+    []
+  );
 
-  const registerLoadingDependencies = (...getters: Array<() => boolean>) => {
-    getters.forEach(getter => loadingDependenciesRef.current.add(getter));
-    return () => {
-      // return a clean up function
-      getters.forEach(getter => loadingDependenciesRef.current.delete(getter));
-    };
-  };
+  const startAsyncTransactionLoading = useCallback(
+    <T,>(
+      fn: () => Promise<T>,
+      level: LoadingLevel = "strict",
+      loadingTimeout: number = Infinity,
+      errorTimeout: number = Infinity
+    ) => runAsyncTransactionLoading(fn, level, loadingTimeout, errorTimeout),
+    [runAsyncTransactionLoading]
+  );
 
-  const contextValue: LoadingContextType = {
-    isStrictLoading: _isLaxLoading,
-    isLaxLoading: _isLaxLoading,
-    setIsLaxLoading: setIsLaxLoading,
-    startSyncTransactionLoading: startSyncTransactionLoading,
-    startAsyncTransactionLoading: startAsyncTransactionLoading,
-    registerLoadingDependencies: registerLoadingDependencies,
-  };
+  const registerLoadingDependency = useCallback(
+    (id: symbol, isLoading: boolean) => {
+      loadingDependenciesRef.current.set(id, isLoading);
+      setHasLoadingDependencies(
+        Array.from(loadingDependenciesRef.current.values()).some(Boolean)
+      );
+    },
+    []
+  );
+
+  const unregisterLoadingDependency = useCallback((id: symbol) => {
+    loadingDependenciesRef.current.delete(id);
+    setHasLoadingDependencies(
+      Array.from(loadingDependenciesRef.current.values()).some(Boolean)
+    );
+  }, []);
+
+  const contextValue = useMemo<LoadingContextType>(
+    () => ({
+      isStrictLoading,
+      isLaxLoading,
+      setIsLaxLoading,
+      startSyncTransactionLoading,
+      startAsyncTransactionLoading,
+      registerLoadingDependency,
+      unregisterLoadingDependency,
+    }),
+    [
+      isStrictLoading,
+      isLaxLoading,
+      setIsLaxLoading,
+      startSyncTransactionLoading,
+      startAsyncTransactionLoading,
+      registerLoadingDependency,
+      unregisterLoadingDependency,
+    ]
+  );
 
   return (
     <LoadingContext.Provider value={contextValue}>
+      <AppLoadingCover isLoading={isStrictLoading} />
       {children}
     </LoadingContext.Provider>
   );

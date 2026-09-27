@@ -1,7 +1,5 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useForgetPassword, useSendAuthCode } from "@/api/hooks/auth.hook";
-import { clearTurnstileToken, isTurnstileEnabled } from "@/api/turnstile";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import {
   Suspense,
@@ -11,13 +9,15 @@ import {
   useTransition,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useForgetPassword, useSendAuthCode } from "@/api/hooks/auth.hook";
+import { clearTurnstileToken, isTurnstileEnabled } from "@/api/turnstile";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { translateError } from "@shared/i18n/error";
-import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 
 const ForgetPasswordPage = () => {
   const router = useAppRouter();
@@ -39,10 +39,7 @@ const ForgetPasswordPage = () => {
   const [isResetPasswordPending, startResetPasswordTransition] =
     useTransition();
 
-  useRegisterLoadingDependencies(
-    () => isSendAuthCodePending,
-    () => isResetPasswordPending
-  );
+  useRegisterLoadingDependencies(isSendAuthCodePending, isResetPasswordPending);
 
   const resetTurnstile = useCallback(() => {
     clearTurnstileToken();
@@ -150,12 +147,12 @@ const ForgetPasswordPage = () => {
 
   return (
     <GridBackground>
-      <Suspense fallback={<StrictLoadingCover />}>
-        <StrictLoadingCover
+      <Suspense fallback={<LoadingCover />}>
+        <LoadingCover
           condition={
             sendAuthCodeMutator.isPending ||
             forgetPasswordMutator.isPending ||
-            router.isNavigating
+            isResetPasswordPending
           }
         />
         <AuthPanel

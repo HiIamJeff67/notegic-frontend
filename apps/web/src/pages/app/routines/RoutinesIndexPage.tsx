@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import RoutineOverviewer from "@/components/core/RoutineOverviewer/RoutineOverviewer";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useStationRoutine, useUser } from "@/hooks";
 
 const RoutinesIndexPage = () => {
@@ -16,7 +16,7 @@ const RoutinesIndexPage = () => {
   }, [initializeStationRoutineData, userData?.publicId]);
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <RoutineOverviewer />
     </Suspense>
   );

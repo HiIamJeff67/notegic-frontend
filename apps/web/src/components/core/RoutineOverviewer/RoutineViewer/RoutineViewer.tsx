@@ -1,6 +1,6 @@
 import type { UUID } from "crypto";
 import { Suspense, useEffect } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useStationRoutine } from "@/hooks";
 import RoutineOverviewerContent from "../RoutineOverviewerContent";
 
@@ -22,7 +22,7 @@ const RoutineViewer = ({ stationId }: RoutineViewerProps) => {
   }, [stationId]);
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <RoutineOverviewerContent showStationScope={false} />
     </Suspense>
   );

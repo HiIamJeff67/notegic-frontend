@@ -1,3 +1,10 @@
+import { WebURLPathDictionary } from "@shared/constants";
+import { translateError } from "@shared/i18n/error";
+import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
+import { createPendingOAuthState } from "@shared/lib/oauthState";
+import toast from "@shared/lib/toast";
+import { Suspense, useCallback, useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useRegister } from "@/api/hooks/auth.hook";
 import {
@@ -5,19 +12,12 @@ import {
   isTurnstileEnabled,
   setTurnstileToken,
 } from "@/api/turnstile";
-import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
-import { WebURLPathDictionary } from "@shared/constants";
-import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
-import { createPendingOAuthState } from "@shared/lib/oauthState";
-import toast from "@shared/lib/toast";
-import { Suspense, useCallback, useState, useTransition } from "react";
-import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { translateError } from "@shared/i18n/error";
 
 const RegisterPage = () => {
   const router = useAppRouter();
@@ -38,7 +38,7 @@ const RegisterPage = () => {
 
   const [isRegisterPending, startRegisterTransition] = useTransition();
 
-  useRegisterLoadingDependencies(() => isRegisterPending);
+  useRegisterLoadingDependencies(isRegisterPending);
 
   const resetTurnstile = useCallback(() => {
     clearTurnstileToken();
@@ -128,8 +128,8 @@ const RegisterPage = () => {
 
   return (
     <GridBackground>
-      <Suspense fallback={<StrictLoadingCover />}>
-        <StrictLoadingCover condition={isRegisterPending} />
+      <Suspense fallback={<LoadingCover />}>
+        <LoadingCover condition={isRegisterPending} />
         <AuthPanel
           title={t("auth.register")}
           subtitle={`${t(

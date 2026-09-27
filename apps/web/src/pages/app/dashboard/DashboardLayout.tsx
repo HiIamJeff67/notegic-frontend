@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { WidgetProvider } from "@/providers/WidgetProvider";
 
@@ -8,7 +8,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="relative z-0 h-full">
-      <Suspense fallback={<StrictLoadingCover />}>
+      <Suspense fallback={<LoadingCover />}>
         {sidebarManager.isMobile && (
           <SidebarTrigger className="fixed top-2 left-2 z-[60] border-none bg-transparent" />
         )}

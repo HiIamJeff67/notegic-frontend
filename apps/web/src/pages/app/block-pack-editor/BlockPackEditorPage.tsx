@@ -1,7 +1,7 @@
+import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { Suspense } from "react";
 import BlockPackEditor from "@/components/core/BlockPackEditor/BlockPackEditor";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 
 interface BlockPackEditorPageProps {
   blockPackMeta: BlockPackMeta;
@@ -9,7 +9,7 @@ interface BlockPackEditorPageProps {
 
 const BlockPackEditorPage = ({ blockPackMeta }: BlockPackEditorPageProps) => {
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <BlockPackEditor
         key={`${blockPackMeta.id}:${blockPackMeta.parentId}:${blockPackMeta.rootId}`}
         blockPackMeta={blockPackMeta}

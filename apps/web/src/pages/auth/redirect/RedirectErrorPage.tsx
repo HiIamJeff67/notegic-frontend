@@ -2,7 +2,7 @@ import { WebURLPathDictionary } from "@shared/constants";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { Button } from "@/components/ui/button";
 import { useAppRouter } from "@/hooks";
 
@@ -19,7 +19,7 @@ function RedirectErrorPage() {
     searchParams.get("description") || t("workspace.pages.redirectUnknown");
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <div className="flex h-screen flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold text-red-500">{title}</h1>
         <p className="text-gray-600">{description}</p>

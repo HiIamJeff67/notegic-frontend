@@ -1,10 +1,10 @@
 import React, { Suspense } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import RoutineOverviewerContent from "./RoutineOverviewerContent";
 
 const RoutineOverviewer = () => {
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <RoutineOverviewerContent />
     </Suspense>
   );

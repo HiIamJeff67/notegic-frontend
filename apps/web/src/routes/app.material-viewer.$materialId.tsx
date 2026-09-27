@@ -1,9 +1,4 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import {
-  useCreateMaterialObjectTicket,
-  useGetMyMaterialAndItsParentById,
-  useResolveMaterialObjectTicket,
-} from "@/api/hooks/material.hook";
+import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { isValidUUID } from "@shared/types/uuidv4.type";
 import {
   createFileRoute,
@@ -12,10 +7,16 @@ import {
 } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import {
+  useCreateMaterialObjectTicket,
+  useGetMyMaterialAndItsParentById,
+  useResolveMaterialObjectTicket,
+} from "@/api/hooks/material.hook";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import { useLoading } from "@/hooks/useLoading";
 import MaterialViewerNotFoundPage from "@/pages/app/material-viewer/MaterialViewerNotFoundPage";
 import MaterialViewerPage from "@/pages/app/material-viewer/MaterialViewerPage";
-import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 
 export const Route = createFileRoute("/app/material-viewer/$materialId")({
   ssr: false,
@@ -62,6 +63,7 @@ function MaterialViewerRoute() {
   const loaderData = useLoaderData({
     from: "/app/material-viewer/$materialId",
   });
+  const { startAsyncTransactionLoading } = useLoading();
 
   const materialQuerier = useGetMyMaterialAndItsParentById();
   const createObjectTicketMutator = useCreateMaterialObjectTicket();
@@ -132,7 +134,7 @@ function MaterialViewerRoute() {
       }
     };
 
-    void fetchMaterialMeta();
+    void startAsyncTransactionLoading(fetchMaterialMeta);
 
     return () => {
       isActive = false;
@@ -142,6 +144,7 @@ function MaterialViewerRoute() {
     loaderData.materialId,
     loaderData.parentSubShelfId,
     loaderData.rootShelfId,
+    startAsyncTransactionLoading,
   ]);
 
   useEffect(() => {
@@ -152,7 +155,7 @@ function MaterialViewerRoute() {
     );
   }, [objectURLQuery.data?.data.objectURL]);
 
-  if (isLoading) return <StrictLoadingCover />;
+  if (isLoading) return <LoadingCover />;
   if (isNotFound || !materialMeta)
     return <MaterialViewerNotFoundPage id={loaderData.materialId} />;
 

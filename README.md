@@ -53,9 +53,9 @@ This section is automatically maintained from the current change and recent loca
 
 ### Recent snapshots
 
+- [2026-09/2026-09-27](docs/devlogs/2026-09/2026-09-27.md)
 - [2026-09/2026-09-26](docs/devlogs/2026-09/2026-09-26.md)
 - [2026-09/2026-09-19](docs/devlogs/2026-09/2026-09-19.md)
 - [2026-09/2026-09-16](docs/devlogs/2026-09/2026-09-16.md)
 - [2026-09/2026-09-15](docs/devlogs/2026-09/2026-09-15.md)
-- [2026-09/2026-09-14](docs/devlogs/2026-09/2026-09-14.md)
 <!-- DEVLOG:END -->

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { TryGetUserData } from "@/api/functions/user.serverFn";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import NoteIcon from "@/components/icons/NoteIcon";
 import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { Button } from "@/components/ui/button";
@@ -117,7 +117,7 @@ export const HomePage = () => {
 
   return (
     <TerrainBackground isDark={themeManager.currentTheme.isDark}>
-      <Suspense fallback={<StrictLoadingCover />}>
+      <Suspense fallback={<LoadingCover />}>
         <HomeMenu />
 
         <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4">

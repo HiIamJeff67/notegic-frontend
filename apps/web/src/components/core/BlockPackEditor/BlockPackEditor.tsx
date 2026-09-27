@@ -1,10 +1,10 @@
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
-import { useShelfItem } from "@/hooks/useShelfItem";
-import { BlockEditorProvider } from "@/providers/BlockEditorProvider";
 import {
   BlockPackMeta,
   blockPackMetaReducer,
 } from "@shared/reducers/blockPackMeta.reducer";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import { useShelfItem } from "@/hooks/useShelfItem";
+import { BlockEditorProvider } from "@/providers/BlockEditorProvider";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { Suspense, useEffect, useMemo, useReducer } from "react";
@@ -29,7 +29,7 @@ const BlockPackEditor = ({ blockPackMeta }: BlockPackEditorProps) => {
   }, [shelfItemManager.editItemName]);
 
   return (
-    <Suspense fallback={<StrictLoadingCover />}>
+    <Suspense fallback={<LoadingCover />}>
       <BlockEditorProvider blockPackMeta={meta}>
         <BlockPackEditorContent
           blockPackMeta={meta}

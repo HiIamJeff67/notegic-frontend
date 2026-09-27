@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
-import StrictLoadingCover from "@/components/covers/LoadingCover/StrictLoadingCover";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 
 const RoutinesLayout = ({ children }: { children: React.ReactNode }) => {
-  return <Suspense fallback={<StrictLoadingCover />}>{children}</Suspense>;
+  return <Suspense fallback={<LoadingCover />}>{children}</Suspense>;
 };
 
 export default RoutinesLayout;
