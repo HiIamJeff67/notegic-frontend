@@ -1,7 +1,7 @@
-import { translateError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast";
 import type { FeedbackReportType } from "@shared/api/interfaces/feedback.interface";
-import { useState, type FormEvent } from "react";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
+import { type FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
 import { Button } from "@/components/ui/button";
@@ -60,7 +60,7 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
           : t("settingsPage.preferences.feedback.submitted")
       );
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 

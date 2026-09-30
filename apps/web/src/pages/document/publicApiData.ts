@@ -230,22 +230,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -272,9 +256,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -543,22 +524,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -594,9 +559,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -726,22 +688,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -770,9 +716,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -902,22 +845,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -946,9 +873,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -1090,22 +1014,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -1121,9 +1029,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -1301,22 +1206,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -1332,9 +1221,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -1512,22 +1398,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -1542,9 +1412,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -1683,22 +1550,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -1713,9 +1564,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -1841,22 +1689,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -1871,9 +1703,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2006,22 +1835,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2036,9 +1849,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2169,22 +1979,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2199,9 +1993,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2419,22 +2210,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2461,9 +2236,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2588,22 +2360,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2632,9 +2388,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2751,22 +2504,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2781,9 +2518,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -2902,22 +2636,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -2932,9 +2650,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -3121,22 +2836,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -3160,9 +2859,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -3282,22 +2978,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -3323,9 +3003,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -3445,22 +3122,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -3486,9 +3147,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -3540,2421 +3198,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
         },
         tag: "blocks",
-      },
-    ],
-  },
-  {
-    id: "materials",
-    title: "Materials",
-    description: "Manage uploaded materials, content, parents, and recovery.",
-    endpoints: [
-      {
-        method: "GET",
-        path: "/materials/{material-id}",
-        operation: "getMyMaterialById",
-        summary: "Get My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "isDeleted",
-            location: "query",
-            required: false,
-            type: "boolean | null",
-            example: true,
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parseMediaType: "example",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "contentType",
-                type: '"none" | "application/json" | "application/pdf" | "text/plain" | "text/html" | "text/markdown" | "image/png" | "image/jpg" | "image/jpeg" | "image/gif" | "image/svg+xml" | "image/webp" | "video/mp4" | "video/webm" | "audio/mpeg"',
-                required: true,
-                enum: [
-                  "none",
-                  "application/json",
-                  "application/pdf",
-                  "text/plain",
-                  "text/html",
-                  "text/markdown",
-                  "image/png",
-                  "image/jpg",
-                  "image/jpeg",
-                  "image/gif",
-                  "image/svg+xml",
-                  "image/webp",
-                  "video/mp4",
-                  "video/webm",
-                  "audio/mpeg",
-                ],
-                example: "none",
-              },
-              {
-                name: "createdAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "deletedAt",
-                type: "string | null",
-                required: false,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "downloadURL",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "id",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "name",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "parentSubShelfId",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "parseMediaType",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "size",
-                type: "integer (int64)",
-                required: true,
-                example: 0,
-              },
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            contentType: "none",
-            createdAt: "2026-01-01T00:00:00Z",
-            deletedAt: "2026-01-01T00:00:00Z",
-            downloadURL: "example",
-            id: "00000000-0000-4000-8000-000000000001",
-            name: "example",
-            parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-            parseMediaType: "example",
-            size: 0,
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request GET 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "GET http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001?isDeleted=true\nUser-Agent: NotegicIntegration/1.0",
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "GET",
-        path: "/materials/{material-id}/parent",
-        operation: "getMyMaterialAndItsParentById",
-        summary: "Get My Material And Its Parent By Id",
-        parameters: [
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfCreatedAt: "2026-01-01T00:00:00Z",
-              parentSubShelfDeletedAt: "2026-01-01T00:00:00Z",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parentSubShelfName: "example",
-              parentSubShelfPath: ["00000000-0000-4000-8000-000000000001"],
-              parentSubShelfPrevSubShelfId:
-                "00000000-0000-4000-8000-000000000001",
-              parentSubShelfUpdatedAt: "2026-01-01T00:00:00Z",
-              parseMediaType: "example",
-              rootShelfId: "00000000-0000-4000-8000-000000000001",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "contentType",
-                type: '"none" | "application/json" | "application/pdf" | "text/plain" | "text/html" | "text/markdown" | "image/png" | "image/jpg" | "image/jpeg" | "image/gif" | "image/svg+xml" | "image/webp" | "video/mp4" | "video/webm" | "audio/mpeg"',
-                required: true,
-                enum: [
-                  "none",
-                  "application/json",
-                  "application/pdf",
-                  "text/plain",
-                  "text/html",
-                  "text/markdown",
-                  "image/png",
-                  "image/jpg",
-                  "image/jpeg",
-                  "image/gif",
-                  "image/svg+xml",
-                  "image/webp",
-                  "video/mp4",
-                  "video/webm",
-                  "audio/mpeg",
-                ],
-                example: "none",
-              },
-              {
-                name: "createdAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "deletedAt",
-                type: "string | null",
-                required: false,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "downloadURL",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "id",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "name",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "parentSubShelfCreatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "parentSubShelfDeletedAt",
-                type: "string | null",
-                required: false,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "parentSubShelfId",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "parentSubShelfName",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "parentSubShelfPath",
-                type: "string (uuid)[]",
-                required: true,
-                example: ["00000000-0000-4000-8000-000000000001"],
-              },
-              {
-                name: "parentSubShelfPrevSubShelfId",
-                type: "string | null",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "parentSubShelfUpdatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "parseMediaType",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "rootShelfId",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "size",
-                type: "integer (int64)",
-                required: true,
-                example: 0,
-              },
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            contentType: "none",
-            createdAt: "2026-01-01T00:00:00Z",
-            deletedAt: "2026-01-01T00:00:00Z",
-            downloadURL: "example",
-            id: "00000000-0000-4000-8000-000000000001",
-            name: "example",
-            parentSubShelfCreatedAt: "2026-01-01T00:00:00Z",
-            parentSubShelfDeletedAt: "2026-01-01T00:00:00Z",
-            parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-            parentSubShelfName: "example",
-            parentSubShelfPath: ["00000000-0000-4000-8000-000000000001"],
-            parentSubShelfPrevSubShelfId:
-              "00000000-0000-4000-8000-000000000001",
-            parentSubShelfUpdatedAt: "2026-01-01T00:00:00Z",
-            parseMediaType: "example",
-            rootShelfId: "00000000-0000-4000-8000-000000000001",
-            size: 0,
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request GET 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent'",
-          http: "GET http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent",
-          json: '{\n  "headers": {},\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "GET",
-        path: "/materials/root-shelf/{root-shelf-id}",
-        operation: "getMyMaterialsByRootShelfId",
-        summary: "Get My Materials By Root Shelf Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "areDeleted",
-            location: "query",
-            required: false,
-            type: "boolean | null",
-            example: true,
-          },
-          {
-            name: "root-shelf-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object[]",
-            required: true,
-            example: [
-              {
-                contentType: "none",
-                createdAt: "2026-01-01T00:00:00Z",
-                deletedAt: "2026-01-01T00:00:00Z",
-                downloadURL: "example",
-                id: "00000000-0000-4000-8000-000000000001",
-                name: "example",
-                parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-                parseMediaType: "example",
-                size: 0,
-                updatedAt: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: [
-            {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parseMediaType: "example",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-          ],
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request GET 'http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "GET http://localhost/api/development/v1/materials/root-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "GET",
-        path: "/materials/sub-shelf/{parent-sub-shelf-id}",
-        operation: "getMyMaterialsByParentSubShelfId",
-        summary: "Get My Materials By Parent Sub Shelf Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "areDeleted",
-            location: "query",
-            required: false,
-            type: "boolean | null",
-            example: true,
-          },
-          {
-            name: "parent-sub-shelf-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object[]",
-            required: true,
-            example: [
-              {
-                contentType: "none",
-                createdAt: "2026-01-01T00:00:00Z",
-                deletedAt: "2026-01-01T00:00:00Z",
-                downloadURL: "example",
-                id: "00000000-0000-4000-8000-000000000001",
-                name: "example",
-                parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-                parseMediaType: "example",
-                size: 0,
-                updatedAt: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: [
-            {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parseMediaType: "example",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-          ],
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request GET 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "GET http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001?areDeleted=true\nUser-Agent: NotegicIntegration/1.0",
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "POST",
-        path: "/materials/sub-shelf/{parent-sub-shelf-id}",
-        operation: "createMyMaterial",
-        summary: "Create My Material",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "parent-sub-shelf-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: {
-          name: "example",
-          parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-        },
-        requestFields: [
-          {
-            name: "name",
-            type: "string",
-            required: true,
-            example: "example",
-          },
-          {
-            name: "parentSubShelfId",
-            type: "string (uuid)",
-            required: true,
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        responseStatus: "201",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              createdAt: "2026-01-01T00:00:00Z",
-              id: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "createdAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "id",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            createdAt: "2026-01-01T00:00:00Z",
-            id: "00000000-0000-4000-8000-000000000001",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request POST 'http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"name\": \"example\",\n  \"parentSubShelfId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          http: 'POST http://localhost/api/development/v1/materials/sub-shelf/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "name": "example",\n  "parentSubShelfId": "00000000-0000-4000-8000-000000000001"\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "name": "example",\n    "parentSubShelfId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PUT",
-        path: "/materials/{material-id}",
-        operation: "updateMyMaterialById",
-        summary: "Update My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: {
-          setNull: {},
-          values: {
-            name: "example",
-          },
-        },
-        requestFields: [
-          {
-            name: "setNull",
-            type: "object | null",
-            required: false,
-            example: null,
-          },
-          {
-            name: "values",
-            type: "object",
-            required: false,
-            example: {
-              name: null,
-            },
-            children: [
-              {
-                name: "name",
-                type: "string | null",
-                required: false,
-                example: null,
-              },
-            ],
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"setNull\": {},\n  \"values\": {\n    \"name\": \"example\"\n  }\n}'",
-          http: 'PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "setNull": {},\n  "values": {\n    "name": "example"\n  }\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "setNull": {},\n    "values": {\n      "name": "example"\n    }\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PUT",
-        path: "/materials/{material-id}/content",
-        operation: "saveMyMaterialById",
-        summary: "Save My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: {
-          contentFile: [1],
-        },
-        requestFields: [
-          {
-            name: "contentFile",
-            type: "integer (int32)[]",
-            required: true,
-            example: [0],
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"contentFile\": [\n    1\n  ]\n}'",
-          http: 'PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/content\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "contentFile": [\n    1\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "contentFile": [\n      1\n    ]\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PUT",
-        path: "/materials/{material-id}/parent",
-        operation: "moveMyMaterialById",
-        summary: "Move My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: {
-          destinationParentSubShelfId: "00000000-0000-4000-8000-000000000001",
-          materialId: "00000000-0000-4000-8000-000000000001",
-        },
-        requestFields: [
-          {
-            name: "destinationParentSubShelfId",
-            type: "string (uuid)",
-            required: true,
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-          {
-            name: "materialId",
-            type: "string (uuid)",
-            required: true,
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PUT 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          http: 'PUT http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/parent\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "destinationParentSubShelfId": "00000000-0000-4000-8000-000000000001",\n  "materialId": "00000000-0000-4000-8000-000000000001"\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "destinationParentSubShelfId": "00000000-0000-4000-8000-000000000001",\n    "materialId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PUT",
-        path: "/materials/batch/parent",
-        operation: "moveMyMaterialsByIds",
-        summary: "Move My Materials By Ids",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-        ],
-        requestExample: {
-          destinationParentSubShelfId: "00000000-0000-4000-8000-000000000001",
-          materialIds: ["00000000-0000-4000-8000-000000000001"],
-        },
-        requestFields: [
-          {
-            name: "destinationParentSubShelfId",
-            type: "string (uuid)",
-            required: true,
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-          {
-            name: "materialIds",
-            type: "string (uuid)[]",
-            required: true,
-            example: ["00000000-0000-4000-8000-000000000001"],
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PUT 'http://localhost/api/development/v1/materials/batch/parent' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"destinationParentSubShelfId\": \"00000000-0000-4000-8000-000000000001\",\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          http: 'PUT http://localhost/api/development/v1/materials/batch/parent\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "destinationParentSubShelfId": "00000000-0000-4000-8000-000000000001",\n  "materialIds": [\n    "00000000-0000-4000-8000-000000000001"\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "destinationParentSubShelfId": "00000000-0000-4000-8000-000000000001",\n    "materialIds": [\n      "00000000-0000-4000-8000-000000000001"\n    ]\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PATCH",
-        path: "/materials/{material-id}/restore",
-        operation: "restoreMyMaterialById",
-        summary: "Restore My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parseMediaType: "example",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "contentType",
-                type: '"none" | "application/json" | "application/pdf" | "text/plain" | "text/html" | "text/markdown" | "image/png" | "image/jpg" | "image/jpeg" | "image/gif" | "image/svg+xml" | "image/webp" | "video/mp4" | "video/webm" | "audio/mpeg"',
-                required: true,
-                enum: [
-                  "none",
-                  "application/json",
-                  "application/pdf",
-                  "text/plain",
-                  "text/html",
-                  "text/markdown",
-                  "image/png",
-                  "image/jpg",
-                  "image/jpeg",
-                  "image/gif",
-                  "image/svg+xml",
-                  "image/webp",
-                  "video/mp4",
-                  "video/webm",
-                  "audio/mpeg",
-                ],
-                example: "none",
-              },
-              {
-                name: "createdAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "deletedAt",
-                type: "string | null",
-                required: false,
-                example: "2026-01-01T00:00:00Z",
-              },
-              {
-                name: "downloadURL",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "id",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "name",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "parentSubShelfId",
-                type: "string (uuid)",
-                required: true,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-              {
-                name: "parseMediaType",
-                type: "string",
-                required: true,
-                example: "example",
-              },
-              {
-                name: "size",
-                type: "integer (int64)",
-                required: true,
-                example: 0,
-              },
-              {
-                name: "updatedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            contentType: "none",
-            createdAt: "2026-01-01T00:00:00Z",
-            deletedAt: "2026-01-01T00:00:00Z",
-            downloadURL: "example",
-            id: "00000000-0000-4000-8000-000000000001",
-            name: "example",
-            parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-            parseMediaType: "example",
-            size: 0,
-            updatedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PATCH 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "PATCH http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001/restore\nUser-Agent: NotegicIntegration/1.0",
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "PATCH",
-        path: "/materials/batch/restore",
-        operation: "restoreMyMaterialsByIds",
-        summary: "Restore My Materials By Ids",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-        ],
-        requestExample: {
-          materialIds: ["00000000-0000-4000-8000-000000000001"],
-        },
-        requestFields: [
-          {
-            name: "materialIds",
-            type: "string (uuid)[]",
-            required: true,
-            example: ["00000000-0000-4000-8000-000000000001"],
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object[]",
-            required: true,
-            example: [
-              {
-                contentType: "none",
-                createdAt: "2026-01-01T00:00:00Z",
-                deletedAt: "2026-01-01T00:00:00Z",
-                downloadURL: "example",
-                id: "00000000-0000-4000-8000-000000000001",
-                name: "example",
-                parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-                parseMediaType: "example",
-                size: 0,
-                updatedAt: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: [
-            {
-              contentType: "none",
-              createdAt: "2026-01-01T00:00:00Z",
-              deletedAt: "2026-01-01T00:00:00Z",
-              downloadURL: "example",
-              id: "00000000-0000-4000-8000-000000000001",
-              name: "example",
-              parentSubShelfId: "00000000-0000-4000-8000-000000000001",
-              parseMediaType: "example",
-              size: 0,
-              updatedAt: "2026-01-01T00:00:00Z",
-            },
-          ],
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request PATCH 'http://localhost/api/development/v1/materials/batch/restore' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          http: 'PATCH http://localhost/api/development/v1/materials/batch/restore\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "materialIds": [\n    "00000000-0000-4000-8000-000000000001"\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "materialIds": [\n      "00000000-0000-4000-8000-000000000001"\n    ]\n  }\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "DELETE",
-        path: "/materials/{material-id}",
-        operation: "deleteMyMaterialById",
-        summary: "Delete My Material By Id",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-          {
-            name: "material-id",
-            location: "path",
-            required: true,
-            type: "string (uuid)",
-            example: "00000000-0000-4000-8000-000000000001",
-          },
-        ],
-        requestExample: null,
-        requestFields: [],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              deletedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "deletedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            deletedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request DELETE 'http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001' \\\n  -H 'User-Agent: NotegicIntegration/1.0'",
-          http: "DELETE http://localhost/api/development/v1/materials/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0",
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0"\n  },\n  "body": null\n}',
-        },
-        tag: "materials",
-      },
-      {
-        method: "DELETE",
-        path: "/materials/batch",
-        operation: "deleteMyMaterialsByIds",
-        summary: "Delete My Materials By Ids",
-        parameters: [
-          {
-            name: "User-Agent",
-            location: "header",
-            required: true,
-            type: "string",
-            example: "NotegicIntegration/1.0",
-          },
-        ],
-        requestExample: {
-          materialIds: ["00000000-0000-4000-8000-000000000001"],
-        },
-        requestFields: [
-          {
-            name: "materialIds",
-            type: "string (uuid)[]",
-            required: true,
-            example: ["00000000-0000-4000-8000-000000000001"],
-          },
-        ],
-        responseStatus: "200",
-        responseFields: [
-          {
-            name: "data",
-            type: "object",
-            required: true,
-            example: {
-              deletedAt: "2026-01-01T00:00:00Z",
-            },
-            children: [
-              {
-                name: "deletedAt",
-                type: "string (date-time)",
-                required: true,
-                example: "2026-01-01T00:00:00Z",
-              },
-            ],
-          },
-          {
-            name: "embedded",
-            type: "object",
-            required: false,
-            example: {
-              publicId: "00000000-0000-4000-8000-000000000001",
-            },
-            children: [
-              {
-                name: "publicId",
-                type: "string (uuid)",
-                required: false,
-                example: "00000000-0000-4000-8000-000000000001",
-              },
-            ],
-          },
-          {
-            name: "exception",
-            type: "null",
-            required: true,
-            example: null,
-          },
-          {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
-            name: "success",
-            type: "true",
-            required: true,
-            example: true,
-          },
-        ],
-        responseExample: {
-          data: {
-            deletedAt: "2026-01-01T00:00:00Z",
-          },
-          embedded: {
-            publicId: "00000000-0000-4000-8000-000000000001",
-          },
-          exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
-          success: true,
-        },
-        errors: [
-          {
-            status: "400",
-            description: "Invalid request",
-            message: "The server returned HTTP 400. Invalid request",
-          },
-          {
-            status: "401",
-            description: "Authentication or CSRF failed",
-            message:
-              "The server returned HTTP 401. Authentication or CSRF failed",
-          },
-          {
-            status: "403",
-            description: "Permission denied",
-            message: "The server returned HTTP 403. Permission denied",
-          },
-          {
-            status: "404",
-            description: "Resource not found",
-            message: "The server returned HTTP 404. Resource not found",
-          },
-          {
-            status: "409",
-            description: "State conflict",
-            message: "The server returned HTTP 409. State conflict",
-          },
-          {
-            status: "429",
-            description: "Rate limit exceeded",
-            message: "The server returned HTTP 429. Rate limit exceeded",
-          },
-          {
-            status: "500",
-            description: "Unexpected server error",
-            message: "The server returned HTTP 500. Unexpected server error",
-          },
-          {
-            status: "503",
-            description: "Service unavailable",
-            message: "The server returned HTTP 503. Service unavailable",
-          },
-        ],
-        examples: {
-          curl: "curl --request DELETE 'http://localhost/api/development/v1/materials/batch' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"materialIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          http: 'DELETE http://localhost/api/development/v1/materials/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "materialIds": [\n    "00000000-0000-4000-8000-000000000001"\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "materialIds": [\n      "00000000-0000-4000-8000-000000000001"\n    ]\n  }\n}',
-        },
-        tag: "materials",
       },
     ],
   },
@@ -6090,22 +3333,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -6128,9 +3355,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -6275,22 +3499,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -6308,9 +3516,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -6450,22 +3655,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -6482,9 +3671,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -6627,22 +3813,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -6659,9 +3829,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -6808,22 +3975,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -6841,9 +3992,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -6998,22 +4146,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7031,9 +4163,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -7178,22 +4307,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7208,9 +4321,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -7345,22 +4455,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7375,9 +4469,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -7527,22 +4618,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7564,9 +4639,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -7704,22 +4776,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7737,9 +4793,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -7914,22 +4967,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -7951,9 +4988,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8073,22 +5107,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8112,9 +5130,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8252,22 +5267,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8285,9 +5284,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8413,22 +5409,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8443,9 +5423,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8564,22 +5541,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8594,9 +5555,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8713,22 +5671,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8741,9 +5683,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8861,22 +5800,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -8889,9 +5812,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -8999,22 +5919,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9027,9 +5931,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -9137,22 +6038,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9165,9 +6050,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -9290,22 +6172,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9327,9 +6193,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -9488,22 +6351,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9523,9 +6370,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -9672,22 +6516,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9703,9 +6531,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -9845,22 +6670,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -9876,9 +6685,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10039,22 +6845,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10069,9 +6859,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10210,22 +6997,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10240,9 +7011,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10359,22 +7127,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10389,9 +7141,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10510,22 +7259,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10540,9 +7273,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10633,12 +7363,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             required: true,
             example: [
               {
-                costUnit: 0,
                 createdAt: "2026-01-01T00:00:00Z",
                 id: "00000000-0000-4000-8000-000000000001",
                 maxAttempts: 0,
                 payload: {},
-                phase: "Claimed",
                 previousRoutineTaskIds: [
                   "00000000-0000-4000-8000-000000000001",
                 ],
@@ -10673,22 +7401,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10698,12 +7410,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         responseExample: {
           data: [
             {
-              costUnit: 0,
               createdAt: "2026-01-01T00:00:00Z",
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
-              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -10716,9 +7426,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -10808,12 +7515,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             type: "object",
             required: true,
             example: {
-              costUnit: 0,
               createdAt: "2026-01-01T00:00:00Z",
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
-              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -10822,12 +7527,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               updatedAt: "2026-01-01T00:00:00Z",
             },
             children: [
-              {
-                name: "costUnit",
-                type: "integer (int64)",
-                required: true,
-                example: 0,
-              },
               {
                 name: "createdAt",
                 type: "string (date-time)",
@@ -10852,13 +7551,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 required: true,
                 example: {},
                 children: [],
-              },
-              {
-                name: "phase",
-                type: '"Claimed" | "Plan" | "Execution" | "Recovery" | "Analysis"',
-                required: false,
-                enum: ["Claimed", "Plan", "Execution", "Recovery", "Analysis"],
-                example: "Claimed",
               },
               {
                 name: "previousRoutineTaskIds",
@@ -10939,22 +7631,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -10963,12 +7639,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         ],
         responseExample: {
           data: {
-            costUnit: 0,
             createdAt: "2026-01-01T00:00:00Z",
             id: "00000000-0000-4000-8000-000000000001",
             maxAttempts: 0,
             payload: {},
-            phase: "Claimed",
             previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
             priority: 0,
             purpose: "GetSubShelf",
@@ -10980,9 +7654,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -11073,12 +7744,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             required: true,
             example: [
               {
-                costUnit: 0,
                 createdAt: "2026-01-01T00:00:00Z",
                 id: "00000000-0000-4000-8000-000000000001",
                 maxAttempts: 0,
                 payload: {},
-                phase: "Claimed",
                 previousRoutineTaskIds: [
                   "00000000-0000-4000-8000-000000000001",
                 ],
@@ -11113,22 +7782,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -11138,12 +7791,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         responseExample: {
           data: [
             {
-              costUnit: 0,
               createdAt: "2026-01-01T00:00:00Z",
               id: "00000000-0000-4000-8000-000000000001",
               maxAttempts: 0,
               payload: {},
-              phase: "Claimed",
               previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
               priority: 0,
               purpose: "GetSubShelf",
@@ -11156,9 +7807,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -11289,22 +7937,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -11326,9 +7958,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -11515,22 +8144,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -11546,9 +8159,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -11758,22 +8368,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -11788,9 +8382,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -11916,22 +8507,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -11946,9 +8521,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -12067,22 +8639,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -12097,9 +8653,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -12218,13 +8771,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 isPinned: false,
                 itemIds: ["00000000-0000-4000-8000-000000000001"],
                 period: "Daily",
-                phase: "Claimed",
+                phase: "Plan",
                 scheduledEndAt: "2026-01-01T00:00:00Z",
                 scheduledStartAt: "2026-01-01T00:00:00Z",
                 stationId: "00000000-0000-4000-8000-000000000001",
-                status: "Scheduled",
                 tagIds: ["00000000-0000-4000-8000-000000000001"],
                 taskIds: ["00000000-0000-4000-8000-000000000001"],
+                timeoutSeconds: 0,
                 timezone: "example",
                 title: "example",
                 updatedAt: "2026-01-01T00:00:00Z",
@@ -12254,22 +8807,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -12286,13 +8823,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               isPinned: false,
               itemIds: ["00000000-0000-4000-8000-000000000001"],
               period: "Daily",
-              phase: "Claimed",
+              phase: "Plan",
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
-              status: "Scheduled",
               tagIds: ["00000000-0000-4000-8000-000000000001"],
               taskIds: ["00000000-0000-4000-8000-000000000001"],
+              timeoutSeconds: 0,
               timezone: "example",
               title: "example",
               updatedAt: "2026-01-01T00:00:00Z",
@@ -12302,9 +8839,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -12401,13 +8935,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               isPinned: false,
               itemIds: ["00000000-0000-4000-8000-000000000001"],
               period: "Daily",
-              phase: "Claimed",
+              phase: "Plan",
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
-              status: "Scheduled",
               tagIds: ["00000000-0000-4000-8000-000000000001"],
               taskIds: ["00000000-0000-4000-8000-000000000001"],
+              timeoutSeconds: 0,
               timezone: "example",
               title: "example",
               updatedAt: "2026-01-01T00:00:00Z",
@@ -12458,10 +8992,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
               {
                 name: "phase",
-                type: '"Claimed" | "Plan" | "Execution" | "Recovery" | "Analysis"',
+                type: '"Plan" | "Execution" | "Recovery" | "Analysis"',
                 required: false,
-                enum: ["Claimed", "Plan", "Execution", "Recovery", "Analysis"],
-                example: "Claimed",
+                enum: ["Plan", "Execution", "Recovery", "Analysis"],
+                example: "Plan",
               },
               {
                 name: "scheduledEndAt",
@@ -12482,13 +9016,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 example: "00000000-0000-4000-8000-000000000001",
               },
               {
-                name: "status",
-                type: '"Scheduled" | "InProgress" | "Completed" | "OverDue"',
-                required: true,
-                enum: ["Scheduled", "InProgress", "Completed", "OverDue"],
-                example: "Scheduled",
-              },
-              {
                 name: "tagIds",
                 type: "string (uuid)[]",
                 required: true,
@@ -12499,6 +9026,12 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 type: "string (uuid)[]",
                 required: true,
                 example: ["00000000-0000-4000-8000-000000000001"],
+              },
+              {
+                name: "timeoutSeconds",
+                type: "integer (int32)",
+                required: true,
+                example: 0,
               },
               {
                 name: "timezone",
@@ -12543,22 +9076,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -12574,13 +9091,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             isPinned: false,
             itemIds: ["00000000-0000-4000-8000-000000000001"],
             period: "Daily",
-            phase: "Claimed",
+            phase: "Plan",
             scheduledEndAt: "2026-01-01T00:00:00Z",
             scheduledStartAt: "2026-01-01T00:00:00Z",
             stationId: "00000000-0000-4000-8000-000000000001",
-            status: "Scheduled",
             tagIds: ["00000000-0000-4000-8000-000000000001"],
             taskIds: ["00000000-0000-4000-8000-000000000001"],
+            timeoutSeconds: 0,
             timezone: "example",
             title: "example",
             updatedAt: "2026-01-01T00:00:00Z",
@@ -12589,9 +9106,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -12689,13 +9203,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 isPinned: false,
                 itemIds: ["00000000-0000-4000-8000-000000000001"],
                 period: "Daily",
-                phase: "Claimed",
+                phase: "Plan",
                 scheduledEndAt: "2026-01-01T00:00:00Z",
                 scheduledStartAt: "2026-01-01T00:00:00Z",
                 stationId: "00000000-0000-4000-8000-000000000001",
-                status: "Scheduled",
                 tagIds: ["00000000-0000-4000-8000-000000000001"],
                 taskIds: ["00000000-0000-4000-8000-000000000001"],
+                timeoutSeconds: 0,
                 timezone: "example",
                 title: "example",
                 updatedAt: "2026-01-01T00:00:00Z",
@@ -12725,22 +9239,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -12757,13 +9255,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               isPinned: false,
               itemIds: ["00000000-0000-4000-8000-000000000001"],
               period: "Daily",
-              phase: "Claimed",
+              phase: "Plan",
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
-              status: "Scheduled",
               tagIds: ["00000000-0000-4000-8000-000000000001"],
               taskIds: ["00000000-0000-4000-8000-000000000001"],
+              timeoutSeconds: 0,
               timezone: "example",
               title: "example",
               updatedAt: "2026-01-01T00:00:00Z",
@@ -12773,9 +9271,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -12891,22 +9386,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -12928,9 +9407,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13046,22 +9522,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13083,9 +9543,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13237,22 +9694,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13274,9 +9715,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13407,22 +9845,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13444,9 +9866,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13523,6 +9942,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
+              timeoutSeconds: 60,
               timezone: "example",
               title: "example",
             },
@@ -13542,6 +9962,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 scheduledEndAt: "2026-01-01T00:00:00Z",
                 scheduledStartAt: "2026-01-01T00:00:00Z",
                 stationId: "00000000-0000-4000-8000-000000000001",
+                timeoutSeconds: null,
                 timezone: null,
                 title: "example",
               },
@@ -13596,22 +10017,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13627,9 +10032,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13676,9 +10078,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'http://localhost/api/development/v1/routines/batch\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timezone": "example",\n      "title": "example"\n    }\n  ]\n}\'',
-          http: 'POST http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timezone": "example",\n      "title": "example"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timezone": "example",\n        "title": "example"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request POST \'http://localhost/api/development/v1/routines/batch\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "example",\n      "title": "example"\n    }\n  ]\n}\'',
+          http: 'POST http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "example",\n      "title": "example"\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "example",\n        "title": "example"\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
       },
@@ -13767,22 +10169,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13797,9 +10183,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -13935,22 +10318,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -13965,9 +10332,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -14049,6 +10413,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           scheduledEndAt: "2026-01-01T00:00:00Z",
           scheduledStartAt: "2026-01-01T00:00:00Z",
           stationId: "00000000-0000-4000-8000-000000000001",
+          timeoutSeconds: 60,
           timezone: "example",
           title: "example",
         },
@@ -14095,6 +10460,12 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             type: "string (uuid)",
             required: true,
             example: "00000000-0000-4000-8000-000000000001",
+          },
+          {
+            name: "timeoutSeconds",
+            type: "integer | null",
+            required: false,
+            example: null,
           },
           {
             name: "timezone",
@@ -14157,22 +10528,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -14188,9 +10543,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -14237,9 +10589,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-01T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timezone": "example",\n  "title": "example"\n}\'',
-          http: 'POST http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-01T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timezone": "example",\n  "title": "example"\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timezone": "example",\n    "title": "example"\n  }\n}',
+          curl: 'curl --request POST \'http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-01T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "example",\n  "title": "example"\n}\'',
+          http: 'POST http://localhost/api/development/v1/routines/station/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-01T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "example",\n  "title": "example"\n}',
+          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "example",\n    "title": "example"\n  }\n}',
         },
         tag: "routines",
       },
@@ -14345,22 +10697,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -14375,9 +10711,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -14524,22 +10857,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -14554,9 +10871,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -14640,6 +10954,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             scheduledEndAt: "2026-01-01T00:00:00Z",
             scheduledStartAt: "2026-01-01T00:00:00Z",
             stationId: "00000000-0000-4000-8000-000000000001",
+            timeoutSeconds: 60,
             timezone: "example",
             title: "example",
           },
@@ -14668,6 +10983,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
+              timeoutSeconds: null,
               timezone: null,
               title: null,
             },
@@ -14708,6 +11024,12 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 type: "string | null",
                 required: false,
                 example: "00000000-0000-4000-8000-000000000001",
+              },
+              {
+                name: "timeoutSeconds",
+                type: "integer | null",
+                required: false,
+                example: null,
               },
               {
                 name: "timezone",
@@ -14765,22 +11087,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -14795,9 +11101,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -14844,9 +11147,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timezone": "example",\n    "title": "example"\n  }\n}\'',
-          http: 'PUT http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timezone": "example",\n    "title": "example"\n  }\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timezone": "example",\n      "title": "example"\n    }\n  }\n}',
+          curl: 'curl --request PUT \'http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "example",\n    "title": "example"\n  }\n}\'',
+          http: 'PUT http://localhost/api/development/v1/routines/00000000-0000-4000-8000-000000000001\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-01T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "example",\n    "title": "example"\n  }\n}',
+          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-01T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "example",\n      "title": "example"\n    }\n  }\n}',
         },
         tag: "routines",
       },
@@ -14876,6 +11179,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 scheduledEndAt: "2026-01-01T00:00:00Z",
                 scheduledStartAt: "2026-01-01T00:00:00Z",
                 stationId: "00000000-0000-4000-8000-000000000001",
+                timeoutSeconds: 60,
                 timezone: "example",
                 title: "example",
               },
@@ -14898,6 +11202,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   scheduledEndAt: "2026-01-01T00:00:00Z",
                   scheduledStartAt: "2026-01-01T00:00:00Z",
                   stationId: "00000000-0000-4000-8000-000000000001",
+                  timeoutSeconds: null,
                   timezone: null,
                   title: null,
                 },
@@ -14946,22 +11251,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -14976,9 +11265,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15025,9 +11311,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'http://localhost/api/development/v1/routines/batch\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timezone": "example",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
-          http: 'PUT http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timezone": "example",\n        "title": "example"\n      }\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-01T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timezone": "example",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
+          curl: 'curl --request PUT \'http://localhost/api/development/v1/routines/batch\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "example",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
+          http: 'PUT http://localhost/api/development/v1/routines/batch\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-01T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "example",\n        "title": "example"\n      }\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-01T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timeoutSeconds": 60,\n          "timezone": "example",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
       },
@@ -15077,13 +11363,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               isPinned: false,
               itemIds: ["00000000-0000-4000-8000-000000000001"],
               period: "Daily",
-              phase: "Claimed",
+              phase: "Plan",
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
-              status: "Scheduled",
               tagIds: ["00000000-0000-4000-8000-000000000001"],
               taskIds: ["00000000-0000-4000-8000-000000000001"],
+              timeoutSeconds: 0,
               timezone: "example",
               title: "example",
               updatedAt: "2026-01-01T00:00:00Z",
@@ -15134,10 +11420,10 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
               {
                 name: "phase",
-                type: '"Claimed" | "Plan" | "Execution" | "Recovery" | "Analysis"',
+                type: '"Plan" | "Execution" | "Recovery" | "Analysis"',
                 required: false,
-                enum: ["Claimed", "Plan", "Execution", "Recovery", "Analysis"],
-                example: "Claimed",
+                enum: ["Plan", "Execution", "Recovery", "Analysis"],
+                example: "Plan",
               },
               {
                 name: "scheduledEndAt",
@@ -15158,13 +11444,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 example: "00000000-0000-4000-8000-000000000001",
               },
               {
-                name: "status",
-                type: '"Scheduled" | "InProgress" | "Completed" | "OverDue"',
-                required: true,
-                enum: ["Scheduled", "InProgress", "Completed", "OverDue"],
-                example: "Scheduled",
-              },
-              {
                 name: "tagIds",
                 type: "string (uuid)[]",
                 required: true,
@@ -15175,6 +11454,12 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 type: "string (uuid)[]",
                 required: true,
                 example: ["00000000-0000-4000-8000-000000000001"],
+              },
+              {
+                name: "timeoutSeconds",
+                type: "integer (int32)",
+                required: true,
+                example: 0,
               },
               {
                 name: "timezone",
@@ -15219,22 +11504,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -15250,13 +11519,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             isPinned: false,
             itemIds: ["00000000-0000-4000-8000-000000000001"],
             period: "Daily",
-            phase: "Claimed",
+            phase: "Plan",
             scheduledEndAt: "2026-01-01T00:00:00Z",
             scheduledStartAt: "2026-01-01T00:00:00Z",
             stationId: "00000000-0000-4000-8000-000000000001",
-            status: "Scheduled",
             tagIds: ["00000000-0000-4000-8000-000000000001"],
             taskIds: ["00000000-0000-4000-8000-000000000001"],
+            timeoutSeconds: 0,
             timezone: "example",
             title: "example",
             updatedAt: "2026-01-01T00:00:00Z",
@@ -15265,9 +11534,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15360,13 +11626,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 isPinned: false,
                 itemIds: ["00000000-0000-4000-8000-000000000001"],
                 period: "Daily",
-                phase: "Claimed",
+                phase: "Plan",
                 scheduledEndAt: "2026-01-01T00:00:00Z",
                 scheduledStartAt: "2026-01-01T00:00:00Z",
                 stationId: "00000000-0000-4000-8000-000000000001",
-                status: "Scheduled",
                 tagIds: ["00000000-0000-4000-8000-000000000001"],
                 taskIds: ["00000000-0000-4000-8000-000000000001"],
+                timeoutSeconds: 0,
                 timezone: "example",
                 title: "example",
                 updatedAt: "2026-01-01T00:00:00Z",
@@ -15396,22 +11662,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -15428,13 +11678,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               isPinned: false,
               itemIds: ["00000000-0000-4000-8000-000000000001"],
               period: "Daily",
-              phase: "Claimed",
+              phase: "Plan",
               scheduledEndAt: "2026-01-01T00:00:00Z",
               scheduledStartAt: "2026-01-01T00:00:00Z",
               stationId: "00000000-0000-4000-8000-000000000001",
-              status: "Scheduled",
               tagIds: ["00000000-0000-4000-8000-000000000001"],
               taskIds: ["00000000-0000-4000-8000-000000000001"],
+              timeoutSeconds: 0,
               timezone: "example",
               title: "example",
               updatedAt: "2026-01-01T00:00:00Z",
@@ -15444,9 +11694,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15572,22 +11819,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -15602,9 +11833,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15723,22 +11951,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -15753,9 +11965,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15865,22 +12074,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -15895,9 +12088,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -15999,22 +12189,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16029,9 +12203,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -16158,22 +12329,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16198,9 +12353,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -16387,22 +12539,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16426,9 +12562,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -16557,22 +12690,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16593,9 +12710,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -16740,22 +12854,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16773,9 +12871,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -16929,22 +13024,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -16960,9 +13039,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -17104,22 +13180,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -17135,9 +13195,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -17284,22 +13341,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -17317,9 +13358,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -17474,22 +13512,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -17507,9 +13529,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -17678,22 +13697,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -17708,9 +13711,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -17851,22 +13851,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -17881,9 +13865,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18033,22 +14014,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18070,9 +14035,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18210,22 +14172,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18243,9 +14189,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18427,22 +14370,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18465,9 +14392,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18588,22 +14512,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18628,9 +14536,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18768,22 +14673,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18801,9 +14690,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -18929,22 +14815,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -18959,9 +14829,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19080,22 +14947,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19110,9 +14961,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19238,22 +15086,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19268,9 +15100,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19387,22 +15216,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19415,9 +15228,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19536,22 +15346,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19566,9 +15360,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19686,22 +15477,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19714,9 +15489,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19824,22 +15596,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19852,9 +15608,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -19969,22 +15722,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -19997,9 +15734,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -20179,22 +15913,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -20216,9 +15934,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -20343,22 +16058,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -20382,9 +16081,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -20509,22 +16205,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -20548,9 +16228,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -20662,9 +16339,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   contentType: "example",
                   createdAt: "2026-01-01T00:00:00Z",
                   deletedAt: "2026-01-01T00:00:00Z",
-                  downloadURL: "example",
                   id: "00000000-0000-4000-8000-000000000001",
                   name: "example",
+                  objectKey: "example",
                   parentSubShelfId: "00000000-0000-4000-8000-000000000001",
                   parseMediaType: "example",
                   size: 0,
@@ -20716,9 +16393,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                     contentType: "example",
                     createdAt: "2026-01-01T00:00:00Z",
                     deletedAt: "2026-01-01T00:00:00Z",
-                    downloadURL: "example",
                     id: "00000000-0000-4000-8000-000000000001",
                     name: "example",
+                    objectKey: "example",
                     parentSubShelfId: "00000000-0000-4000-8000-000000000001",
                     parseMediaType: "example",
                     size: 0,
@@ -20768,22 +16445,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -20814,9 +16475,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 contentType: "example",
                 createdAt: "2026-01-01T00:00:00Z",
                 deletedAt: "2026-01-01T00:00:00Z",
-                downloadURL: "example",
                 id: "00000000-0000-4000-8000-000000000001",
                 name: "example",
+                objectKey: "example",
                 parentSubShelfId: "00000000-0000-4000-8000-000000000001",
                 parseMediaType: "example",
                 size: 0,
@@ -20840,9 +16501,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -20982,22 +16640,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21013,9 +16655,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -21169,22 +16808,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21200,9 +16823,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -21347,22 +16967,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21377,9 +16981,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -21514,22 +17115,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21544,9 +17129,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -21686,22 +17268,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21716,9 +17282,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -21865,22 +17428,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -21895,9 +17442,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22030,22 +17574,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -22060,9 +17588,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22228,22 +17753,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -22265,9 +17774,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22387,22 +17893,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -22426,9 +17916,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22545,22 +18032,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -22575,9 +18046,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22696,22 +18164,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: null,
           },
           {
-            name: "refreshableTokens",
-            type: "object",
-            required: false,
-            example: {
-              newCSRFToken: "example",
-            },
-            children: [
-              {
-                name: "newCSRFToken",
-                type: "string",
-                required: false,
-                example: "example",
-              },
-            ],
-          },
-          {
             name: "success",
             type: "true",
             required: true,
@@ -22726,9 +18178,6 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             publicId: "00000000-0000-4000-8000-000000000001",
           },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken: "example",
-          },
           success: true,
         },
         errors: [
@@ -22814,7 +18263,6 @@ export const gatewayRules = [
       'Public failure envelope: `{ "success": false, "data": null, "exception": ... }`.',
       "`exception.retryable` is the server's explicit retry signal. A client must not infer retryability only from the message.",
       "Optional `embedded.publicId` identifies the authenticated actor.",
-      "Optional `refreshableTokens.newCSRFToken` replaces the previously stored CSRF value.",
       "Unknown request fields should not be used for forward compatibility. Only documented properties form the contract.",
       "Batch requests are not atomic unless the operation description or future version explicitly promises atomicity.",
       "DELETE may be soft delete or permanent delete; permanent endpoints include `permanently` in their path.",

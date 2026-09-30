@@ -1,4 +1,4 @@
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { GraduationCapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -25,7 +25,7 @@ const BlockPackEditorIndexPage = () => {
 
         await shelfItemManager.createRootShelf(newShelfName);
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       } finally {
         setNewShelfName("");
       }

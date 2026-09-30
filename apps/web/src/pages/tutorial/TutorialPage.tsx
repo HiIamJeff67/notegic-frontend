@@ -17,6 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 
 const domainTutorials = [
@@ -157,212 +158,226 @@ const TutorialPage = () => {
         initialPageId="tutorial"
         headerLinks={headerLinks}
       >
-        <div className="flex h-full min-h-0">
-          <ArticleSidebar
-            items={navigationItems}
-            scrollContainerRef={articleRef}
-          />
-          <Article
-            scrollRef={articleRef}
-            mode="pagination"
-            initialPageId="tutorial"
-            headerLinks={headerLinks}
-            className="min-w-0 flex-1 pt-10 lg:pt-0"
-          >
-            <ArticleContent>
-              <ArticleParagraph id="tutorial">
-                <ArticleParagraphHeader>
-                  <h1 className="text-3xl font-semibold tracking-tight">
-                    {title}
-                  </h1>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("overview.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <p>{translateTutorial("overview.intro")}</p>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
+        <SidebarProvider className="h-full min-h-0">
+          <div className="flex h-full min-h-0">
+            <ArticleSidebar
+              items={navigationItems}
+              scrollContainerRef={articleRef}
+            />
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <div className="flex h-10 shrink-0 items-center px-3">
+                <SidebarTrigger className="border-none bg-transparent shadow-none hover:bg-transparent" />
+              </div>
+              <Article
+                scrollRef={articleRef}
+                mode="pagination"
+                initialPageId="tutorial"
+                headerLinks={headerLinks}
+                className="h-0 min-w-0 flex-1"
+              >
+                <ArticleContent>
+                  <ArticleParagraph id="tutorial">
+                    <ArticleParagraphHeader>
+                      <h1 className="text-3xl font-semibold tracking-tight">
+                        {title}
+                      </h1>
+                      <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("overview.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <p>{translateTutorial("overview.intro")}</p>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
 
-              <ArticleParagraphSeparator />
+                  <ArticleParagraphSeparator />
 
-              <ArticleParagraph id="api-keys">
-                <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {translateTutorial("apiKeys.title")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("apiKeys.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <p>{translateTutorial("apiKeys.intro")}</p>
-                  <ol className="list-decimal space-y-2 pl-5">
-                    {[1, 2, 3, 4].map(step => (
-                      <li key={step}>
-                        {translateTutorial(`apiKeys.step${step}`)}
-                        {step === 4 && (
-                          <>
-                            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                              X-API-Key
-                            </code>
-                            {translateTutorial("apiKeys.step4Suffix")}
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                  <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
-                    <code>
-                      {
-                        "curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.com/v1/root-shelves"
-                      }
-                    </code>
-                  </pre>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
+                  <ArticleParagraph id="api-keys">
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {translateTutorial("apiKeys.title")}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("apiKeys.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <p>{translateTutorial("apiKeys.intro")}</p>
+                      <ol className="list-decimal space-y-2 pl-5">
+                        {[1, 2, 3, 4].map(step => (
+                          <li key={step}>
+                            {translateTutorial(`apiKeys.step${step}`)}
+                            {step === 4 && (
+                              <>
+                                <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                                  X-API-Key
+                                </code>
+                                {translateTutorial("apiKeys.step4Suffix")}
+                              </>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                      <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
+                        <code>
+                          {
+                            "curl --request GET \\\n  --header 'X-API-Key: nzy_<secret>' \\\n  https://api.notegic.com/v1/root-shelves"
+                          }
+                        </code>
+                      </pre>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
 
-              <ArticleParagraphSeparator />
+                  <ArticleParagraphSeparator />
 
-              <ArticleParagraph id="api-key-management">
-                <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {translateTutorial("keyManagement.title")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("keyManagement.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <ul className="list-disc space-y-2 pl-5">
-                    {[1, 2, 3, 4].map(item => (
-                      <li key={item}>
-                        {translateTutorial(`keyManagement.item${item}`)}
-                      </li>
-                    ))}
-                  </ul>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
+                  <ArticleParagraph id="api-key-management">
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {translateTutorial("keyManagement.title")}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("keyManagement.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <ul className="list-disc space-y-2 pl-5">
+                        {[1, 2, 3, 4].map(item => (
+                          <li key={item}>
+                            {translateTutorial(`keyManagement.item${item}`)}
+                          </li>
+                        ))}
+                      </ul>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
 
-              <ArticleParagraphSeparator />
+                  <ArticleParagraphSeparator />
 
-              <ArticleParagraph id="notegic-model">
-                <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {translateTutorial("model.title")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("model.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
-                    <code>{translateTutorial("model.diagram")}</code>
-                  </pre>
-                  <p>
-                    {translateTutorial("model.intro")}{" "}
-                    <a
-                      className="underline"
-                      href="/document#gateway"
-                      onClick={event => {
-                        event.preventDefault();
-                        router.push("/document#gateway");
-                      }}
-                    >
-                      {translateTutorial("model.documentLink")}
-                    </a>
-                    .
-                  </p>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
-
-              {domainTutorials.map(domain => {
-                const domainPath = `domains.${domain.key}`;
-                const domainTitle = translateTutorial(`${domainPath}.title`);
-                return (
-                  <Fragment key={domain.id}>
-                    <ArticleParagraphSeparator />
-                    <ArticleParagraph id={domain.id}>
-                      <ArticleParagraphHeader>
-                        <h2 className="text-2xl font-semibold tracking-tight">
-                          {domainTitle}
-                        </h2>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          {translateTutorial(`${domainPath}.summary`)}
-                        </p>
-                      </ArticleParagraphHeader>
-                      <ArticleParagraphContent>
-                        <p>{translateTutorial(`${domainPath}.details`)}</p>
-                        <p className="font-mono text-xs leading-6 text-muted-foreground">
-                          {translateTutorial("domains.structure")}:{" "}
-                          {translateTutorial(`${domainPath}.structure`)}
-                        </p>
+                  <ArticleParagraph id="notegic-model">
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {translateTutorial("model.title")}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("model.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6">
+                        <code>{translateTutorial("model.diagram")}</code>
+                      </pre>
+                      <p>
+                        {translateTutorial("model.intro")}{" "}
                         <a
                           className="underline"
-                          href={`/document#gateway-${domain.id}`}
+                          href="/document#gateway"
                           onClick={event => {
                             event.preventDefault();
-                            router.push(`/document#gateway-${domain.id}`);
+                            router.push("/document#gateway");
                           }}
                         >
-                          {translateTutorial("domains.viewApiOperations", {
-                            title: domainTitle,
-                          })}
+                          {translateTutorial("model.documentLink")}
                         </a>
-                      </ArticleParagraphContent>
-                    </ArticleParagraph>
-                  </Fragment>
-                );
-              })}
+                        .
+                      </p>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
 
-              <ArticleParagraphSeparator />
+                  {domainTutorials.map(domain => {
+                    const domainPath = `domains.${domain.key}`;
+                    const domainTitle = translateTutorial(
+                      `${domainPath}.title`
+                    );
+                    return (
+                      <Fragment key={domain.id}>
+                        <ArticleParagraphSeparator />
+                        <ArticleParagraph id={domain.id}>
+                          <ArticleParagraphHeader>
+                            <h2 className="text-2xl font-semibold tracking-tight">
+                              {domainTitle}
+                            </h2>
+                            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                              {translateTutorial(`${domainPath}.summary`)}
+                            </p>
+                          </ArticleParagraphHeader>
+                          <ArticleParagraphContent>
+                            <p>{translateTutorial(`${domainPath}.details`)}</p>
+                            <p className="font-mono text-xs leading-6 text-muted-foreground">
+                              {translateTutorial("domains.structure")}:{" "}
+                              {translateTutorial(`${domainPath}.structure`)}
+                            </p>
+                            <a
+                              className="underline"
+                              href={`/document#gateway-${domain.id}`}
+                              onClick={event => {
+                                event.preventDefault();
+                                router.push(`/document#gateway-${domain.id}`);
+                              }}
+                            >
+                              {translateTutorial("domains.viewApiOperations", {
+                                title: domainTitle,
+                              })}
+                            </a>
+                          </ArticleParagraphContent>
+                        </ArticleParagraph>
+                      </Fragment>
+                    );
+                  })}
 
-              <ArticleParagraph id="integration-patterns">
-                <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {translateTutorial("integration.title")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("integration.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <p>{translateTutorial("integration.paragraph1")}</p>
-                  <p>{translateTutorial("integration.paragraph2")}</p>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
+                  <ArticleParagraphSeparator />
 
-              <ArticleParagraphSeparator />
+                  <ArticleParagraph id="integration-patterns">
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {translateTutorial("integration.title")}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("integration.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <p>{translateTutorial("integration.paragraph1")}</p>
+                      <p>{translateTutorial("integration.paragraph2")}</p>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
 
-              <ArticleParagraph id="q-and-a">
-                <ArticleParagraphHeader>
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {translateTutorial("qa.title")}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {translateTutorial("qa.subtitle")}
-                  </p>
-                </ArticleParagraphHeader>
-                <ArticleParagraphContent>
-                  <Accordion type="single" collapsible className="w-full">
-                    {tutorialQuestionKeys.map((item, index) => (
-                      <AccordionItem key={item.key} value={`question-${index}`}>
-                        <AccordionTrigger>
-                          {translateTutorial(
-                            `qa.questions.${item.key}.question`
-                          )}
-                        </AccordionTrigger>
-                        <AccordionContent className="leading-6 text-muted-foreground">
-                          {translateTutorial(`qa.questions.${item.key}.answer`)}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </ArticleParagraphContent>
-              </ArticleParagraph>
-            </ArticleContent>
-          </Article>
-        </div>
+                  <ArticleParagraphSeparator />
+
+                  <ArticleParagraph id="q-and-a">
+                    <ArticleParagraphHeader>
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        {translateTutorial("qa.title")}
+                      </h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {translateTutorial("qa.subtitle")}
+                      </p>
+                    </ArticleParagraphHeader>
+                    <ArticleParagraphContent>
+                      <Accordion type="single" collapsible className="w-full">
+                        {tutorialQuestionKeys.map((item, index) => (
+                          <AccordionItem
+                            key={item.key}
+                            value={`question-${index}`}
+                          >
+                            <AccordionTrigger>
+                              {translateTutorial(
+                                `qa.questions.${item.key}.question`
+                              )}
+                            </AccordionTrigger>
+                            <AccordionContent className="leading-6 text-muted-foreground">
+                              {translateTutorial(
+                                `qa.questions.${item.key}.answer`
+                              )}
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </ArticleParagraphContent>
+                  </ArticleParagraph>
+                </ArticleContent>
+              </Article>
+            </div>
+          </div>
+        </SidebarProvider>
       </ArticleDisplayProvider>
     </div>
   );

@@ -1,12 +1,13 @@
-import { getClientMutationHeaders } from "@/api/clientHeaders";
-import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
+import { tError } from "@shared/i18n/error";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientMutationHeaders } from "@/api/clientHeaders";
+import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -31,7 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface BindTabProps {
   layout?: "panel" | "page";
@@ -102,7 +102,7 @@ const BindingTab = ({
           setBindBackupEmailDialogOpen(false);
           toast.success(t("settingsPage.account.messages.backupEmailSet"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [
@@ -134,7 +134,7 @@ const BindingTab = ({
           setBindPhoneNumberDialogOpen(false);
           toast.success(t("settingsPage.account.messages.phoneNumberSet"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [

@@ -1,3 +1,4 @@
+import { formatTimezone } from "@shared/i18n/timezone";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import {
   ClockSetting,
@@ -7,7 +8,6 @@ import { WidgetProps } from "@widgets/widget";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAnyTypeState } from "@/hooks/useAnyTypeState";
-import { formatTimezoneDisplayName } from "@shared/i18n/workspace";
 import EditClockWidgetDialog from "./EditClockWidgetDialog";
 
 const ClockWidget = ({
@@ -130,7 +130,7 @@ const ClockWidget = ({
                 className="text-foreground font-bold whitespace-nowrap"
                 style={{ fontSize: setting.localeFontSize }}
               >
-                {formatTimezoneDisplayName(
+                {formatTimezone(
                   setting.selectedTimeZone.locale,
                   i18n.resolvedLanguage
                 )}

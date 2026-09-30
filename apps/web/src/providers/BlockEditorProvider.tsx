@@ -8,6 +8,7 @@ import {
   NotegicBlockPackEditor,
 } from "@shared/blockpack";
 import { WebURLPathDictionary } from "@shared/constants";
+import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { randomColor } from "@shared/util/random";
 import { createContext, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,6 @@ import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockP
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useBlockPackRealtimeChannel, useRealtime } from "@/hooks/useRealtime";
 import { useUser } from "@/hooks/useUser";
-import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 
 interface BlockEditorContextType {
   editor: BlockNoteEditor<any, any, any>;
@@ -86,7 +86,7 @@ export const BlockEditorProvider = ({
           } as { name: string; color: string },
           showCursorLabels: "activity",
         },
-        trailingBlock: false,
+        trailingBlock: true,
       }),
     [blockPackMeta.id, channel.doc, channel.provider, t, userData]
   );

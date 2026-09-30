@@ -52,7 +52,6 @@ type LimitationLabelKey =
   | "settingsPage.account.upgrade.stations"
   | "settingsPage.account.upgrade.routineTags"
   | "settingsPage.account.upgrade.routinesPerStation"
-  | "settingsPage.account.upgrade.taskCostUnits"
   | "settingsPage.account.upgrade.taskAttempts"
   | "settingsPage.account.upgrade.realtimeRoomSubscribers";
 
@@ -155,10 +154,6 @@ const limitationDefinitions: LimitationDefinition[] = [
     labelKey: "settingsPage.account.upgrade.routinesPerStation",
   },
   {
-    key: "maxRoutineTaskCostUnitCount",
-    labelKey: "settingsPage.account.upgrade.taskCostUnits",
-  },
-  {
     key: "maxRoutineTaskAttempts",
     labelKey: "settingsPage.account.upgrade.taskAttempts",
   },
@@ -230,11 +225,6 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
                   icon: GaugeIcon,
                   label: t("settingsPage.account.upgrade.workflows"),
                   value: currentOption.limitations.maxWorkflowCount,
-                },
-                {
-                  icon: ShieldCheckIcon,
-                  label: t("settingsPage.account.upgrade.taskCostUnits"),
-                  value: currentOption.limitations.maxRoutineTaskCostUnitCount,
                 },
               ].map(item => {
                 const Icon = item.icon;

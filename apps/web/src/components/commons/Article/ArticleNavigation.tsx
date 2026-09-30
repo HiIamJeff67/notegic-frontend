@@ -26,9 +26,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarProvider,
   SidebarSeparator,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
@@ -357,108 +355,102 @@ export const ArticleSidebar = ({
   };
 
   return (
-    <SidebarProvider open onOpenChange={() => undefined} className="contents">
-      <SidebarTrigger
-        className="fixed top-2 left-2 z-40 border-none bg-transparent shadow-none hover:bg-transparent lg:hidden"
-        aria-label={t("workspace.accessibility.articleNavigation")}
-      />
-      <Sidebar
-        aria-label={t("workspace.accessibility.articleNavigation")}
-        className={cn(
-          "article-sidebar h-full min-h-0 shrink-0 border-sidebar-border bg-sidebar text-sidebar-foreground",
-          className
-        )}
-      >
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
+    <Sidebar
+      aria-label={t("workspace.accessibility.articleNavigation")}
+      className={cn(
+        "article-sidebar h-full min-h-0 shrink-0 border-sidebar-border bg-sidebar text-sidebar-foreground",
+        className
+      )}
+    >
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <a
+              href="/"
+              aria-label="Home"
+              className="flex h-8 w-full cursor-pointer items-center gap-2 px-2 focus:outline-none"
+              onClick={event => {
+                event.preventDefault();
+                router.push("/");
+              }}
+            >
+              <img
+                src={notegicLogo}
+                alt=""
+                draggable={false}
+                className="size-4 shrink-0 object-contain"
+              />
+              <span className="text-sm font-semibold tracking-[0.08em] text-white">
+                Notegic
+              </span>
+            </a>
+          </SidebarMenuItem>
+          {(
+            display?.headerLinks ?? [
+              { label: "Home", href: "/" },
+              { label: "Tutorial", href: "/tutorial" },
+            ]
+          )
+            .slice(1)
+            .map(link => {
+              const LinkIcon =
+                link.label === "Document" ? FileTextIcon : BookOpenIcon;
+              return (
+                <SidebarMenuItem key={link.href}>
+                  <SidebarMenuButton asChild>
+                    <a
+                      href={link.href}
+                      onClick={event => {
+                        event.preventDefault();
+                        router.push(link.href);
+                      }}
+                    >
+                      <LinkIcon className="size-4 shrink-0" />
+                      <span>{link.label}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
+          <ArticleCommand
+            articleRef={articleRef ?? { current: null }}
+            onSelect={handleCommandSelect}
+          />
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarSeparator className="mx-0 w-full" />
+      <SidebarContent className="min-h-0 flex-1">
+        <SidebarGroup>
+          <SidebarMenu>{items.map(item => renderItem(item, 0))}</SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarSeparator className="mx-0 w-full" />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <a href="mailto:notegic@gmail.com">
+                <MailIcon className="size-4 shrink-0" />
+                <span>Contact us</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
               <a
-                href="/"
-                aria-label="Home"
-                className="flex h-8 w-full cursor-pointer items-center gap-2 px-2 focus:outline-none"
+                href="/tutorial"
                 onClick={event => {
                   event.preventDefault();
-                  router.push("/");
+                  router.push("/tutorial");
                 }}
               >
-                <img
-                  src={notegicLogo}
-                  alt=""
-                  draggable={false}
-                  className="size-4 shrink-0 object-contain"
-                />
-                <span className="text-sm font-semibold tracking-[0.08em] text-white">
-                  Notegic
-                </span>
+                <CircleHelpIcon className="size-4 shrink-0" />
+                <span>Help</span>
               </a>
-            </SidebarMenuItem>
-            {(
-              display?.headerLinks ?? [
-                { label: "Home", href: "/" },
-                { label: "Tutorial", href: "/tutorial" },
-              ]
-            )
-              .slice(1)
-              .map(link => {
-                const LinkIcon =
-                  link.label === "Document" ? FileTextIcon : BookOpenIcon;
-                return (
-                  <SidebarMenuItem key={link.href}>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={link.href}
-                        onClick={event => {
-                          event.preventDefault();
-                          router.push(link.href);
-                        }}
-                      >
-                        <LinkIcon className="size-4 shrink-0" />
-                        <span>{link.label}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            <ArticleCommand
-              articleRef={articleRef ?? { current: null }}
-              onSelect={handleCommandSelect}
-            />
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarSeparator className="mx-0 w-full" />
-        <SidebarContent className="min-h-0 flex-1">
-          <SidebarGroup>
-            <SidebarMenu>{items.map(item => renderItem(item, 0))}</SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarSeparator className="mx-0 w-full" />
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="mailto:notegic@gmail.com">
-                  <MailIcon className="size-4 shrink-0" />
-                  <span>Contact us</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a
-                  href="/tutorial"
-                  onClick={event => {
-                    event.preventDefault();
-                    router.push("/tutorial");
-                  }}
-                >
-                  <CircleHelpIcon className="size-4 shrink-0" />
-                  <span>Help</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   );
 };

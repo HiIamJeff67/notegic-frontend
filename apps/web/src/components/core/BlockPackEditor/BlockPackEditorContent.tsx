@@ -1,6 +1,6 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import {
   convertBlocksToDOCX,
   convertBlocksToHTML,
@@ -123,7 +123,7 @@ const BlockPackEditorContent = ({
       await navigator.clipboard.writeText(text);
       toast.success(t("workspace.notifications.copied"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -161,7 +161,7 @@ const BlockPackEditorContent = ({
           t("workspace.notifications.fileImported", { name: file.name })
         );
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     });
   };
@@ -211,7 +211,7 @@ const BlockPackEditorContent = ({
 
         toast.success(t("workspace.notifications.exported"));
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     });
   };
@@ -224,7 +224,7 @@ const BlockPackEditorContent = ({
       await resync();
       toast.success(t("workspace.notifications.reconnecting"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     } finally {
       setIsResyncing(false);
     }
@@ -239,7 +239,7 @@ const BlockPackEditorContent = ({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-9 max-w-full gap-2 border-none px-2 text-2xl font-semibold select-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-9 max-w-full gap-2 border-none px-2 text-xl font-semibold select-none focus-visible:ring-0 focus-visible:ring-offset-0"
               >
                 <TruncatedText width="240px">
                   {blockPackMeta.name}

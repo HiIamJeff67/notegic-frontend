@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -100,6 +100,8 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
   const isSidebarExpanded = sidebarManager.open || sidebarManager.isMobile;
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
+  const avatarURL =
+    userManager.userInfo?.avatarURL || userManager.userData?.avatarURL || null;
   const shelfItemManager = useShelfItem();
   const settingsDisplay = useSettingsDisplay();
 
@@ -138,7 +140,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
     const initiallySearchRootShelves = async () =>
       await shelfItemManager
         .searchRootShelves()
-        .catch(error => toast.error(translateError(error, t)));
+        .catch(error => toast.error(tError(error, t)));
     initiallySearchRootShelves();
   }, [userManager.userData?.publicId]);
 
@@ -223,7 +225,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   onCreate: async (newRootShelfName: string) => {
                     await shelfItemManager
                       .createRootShelf(newRootShelfName)
-                      .catch(error => toast.error(translateError(error, t)));
+                      .catch(error => toast.error(tError(error, t)));
                   },
                   onCancel: modalManager.close,
                 })
@@ -390,7 +392,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
           <div className="flex w-full items-center gap-1 px-1 py-1">
             <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1">
               <AvatarIcon
-                avatarURL={userManager.userData?.avatarURL || null}
+                avatarURL={avatarURL}
                 fallbackText={
                   userManager.userData?.displayName ||
                   userManager.userData?.name ||
@@ -480,7 +482,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 }`}
               >
                 <AvatarIcon
-                  avatarURL={userManager.userData?.avatarURL || null}
+                  avatarURL={avatarURL}
                   fallbackText={
                     userManager.userData?.displayName ||
                     userManager.userData?.name ||

@@ -48,6 +48,7 @@ import {
   StationIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { PrivacyPolicySections } from "@/pages/privacy-policy/PrivacyPolicyPage";
 import {
@@ -619,346 +620,355 @@ const DocumentPage = () => {
 
   return (
     <div className="h-svh min-h-0 overflow-hidden bg-canvas">
-      <div className="flex h-full min-h-0">
-        <ArticleSidebar
-          items={navigationItems}
-          scrollContainerRef={articleRef}
-        />
-        <Article
-          scrollRef={articleRef}
-          className="min-w-0 flex-1 pt-10 lg:pt-0"
-        >
-          <ArticleContent>
-            <ArticleParagraph id="overview">
-              <ArticleParagraphHeader>
-                <h1 className="text-3xl font-semibold tracking-tight">
-                  {title}
-                </h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Contract-first documentation for the public API. This page
-                  presents the published public contract.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    [String(gatewayOperationCount), "API operations"],
-                    ["OpenAPI 3.1", "Public HTTP contract"],
-                    ["9", "API-key resource domains"],
-                  ].map(([value, label]) => (
-                    <div
-                      className="rounded-sm border border-border/70 bg-background p-4"
-                      key={label}
-                    >
-                      <p className="font-mono text-lg font-semibold text-foreground">
-                        {value}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <p>
-                  The public API is the REST surface for server-to-server
-                  integrations authenticated with X-API-Key. The browser app
-                  continues to use its secure session flow; API keys must never
-                  be placed in browser storage, URLs, or frontend environment
-                  variables.
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="quick-start">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  API key quick start
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Use an API key only from a trusted server or CLI integration.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <p className="mb-4">
-                  Find the API key area at{" "}
-                  <NavigationPath
-                    href={accountApiKeysPath}
-                    onNavigate={() => router.push(accountApiKeysPath)}
-                  >
-                    Dashboard Page <span aria-hidden="true">›</span> Setting
-                    button (bottom-left) <span aria-hidden="true">›</span>{" "}
-                    Account Settings <span aria-hidden="true">›</span> API key
-                    area
-                  </NavigationPath>
-                  .
-                </p>
-                <ol className="list-decimal space-y-3 pl-5">
-                  <li>
-                    Create a named key for one integration or environment.
-                  </li>
-                  <li>
-                    Copy the secret immediately and store it in your server's
-                    secret manager. The complete secret is shown only once;
-                    never commit it or place it in browser storage.
-                  </li>
-                  <li>
-                    Send it to the public API as
-                    <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                      X-API-Key: nzy_...
-                    </code>
-                    for each integration request.
-                  </li>
-                  <li>
-                    Return to the API key area to review metadata, rotate a
-                    compromised key, or revoke a key that is no longer used.
-                  </li>
-                </ol>
-                <p>
-                  The browser application itself continues to use its secure
-                  session. Read the full workflow in the{" "}
-                  <a
-                    className="underline"
-                    href="/tutorial#api-keys"
-                    onClick={event => {
-                      event.preventDefault();
-                      router.push("/tutorial#api-keys");
-                    }}
-                  >
-                    API key tutorial
-                  </a>
-                  .
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="gateway">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  {publicApiLabel}
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The public API contract is generated from its route allowlist
-                  and schemas.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <ArticleSubParagraph id="gateway-contract">
-                  <ArticleSubParagraphHeader>
-                    Contract
-                  </ArticleSubParagraphHeader>
-                  <ArticleSubParagraphContent>
-                    <p>
-                      OpenAPI 3.1 describes the HTTP routes at the local
-                      development base path
-                      <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                        /api/development/v1
-                      </code>
-                      . Production uses `https://api.notegic.com/v1`. The same
-                      directory bundles operation examples, curl scripts, and
-                      Postman imports. Requests use an X-API-Key header for
-                      server-to-server authentication.
+      <SidebarProvider className="h-full min-h-0">
+        <div className="flex h-full min-h-0">
+          <ArticleSidebar
+            items={navigationItems}
+            scrollContainerRef={articleRef}
+          />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="flex h-10 shrink-0 items-center px-3">
+              <SidebarTrigger className="border-none bg-transparent shadow-none hover:bg-transparent" />
+            </div>
+            <Article scrollRef={articleRef} className="h-0 min-w-0 flex-1">
+              <ArticleContent>
+                <ArticleParagraph id="overview">
+                  <ArticleParagraphHeader>
+                    <h1 className="text-3xl font-semibold tracking-tight">
+                      {title}
+                    </h1>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                      Contract-first documentation for the public API. This page
+                      presents the published public contract.
                     </p>
-                    <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
-                      <code>{`GET  http://localhost/api/development/v1
-GET  https://api.notegic.com/v1
-Content-Type: application/json`}</code>
-                    </pre>
-                  </ArticleSubParagraphContent>
-                </ArticleSubParagraph>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      {[
+                        [String(gatewayOperationCount), "API operations"],
+                        ["OpenAPI 3.1", "Public HTTP contract"],
+                        ["9", "API-key resource domains"],
+                      ].map(([value, label]) => (
+                        <div
+                          className="rounded-sm border border-border/70 bg-background p-4"
+                          key={label}
+                        >
+                          <p className="font-mono text-lg font-semibold text-foreground">
+                            {value}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {label}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <p>
+                      The public API is the REST surface for server-to-server
+                      integrations authenticated with X-API-Key. The browser app
+                      continues to use its secure session flow; API keys must
+                      never be placed in browser storage, URLs, or frontend
+                      environment variables.
+                    </p>
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
 
-                {apiGatewayEndpointGroups.map(group => {
-                  const guide = domainGuides[group.id];
-                  return (
-                    <ArticleSubParagraph
-                      id={`gateway-${group.id}`}
-                      key={group.id}
-                    >
+                <ArticleParagraphSeparator />
+
+                <ArticleParagraph id="quick-start">
+                  <ArticleParagraphHeader>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      API key quick start
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      Use an API key only from a trusted server or CLI
+                      integration.
+                    </p>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <p className="mb-4">
+                      Find the API key area at{" "}
+                      <NavigationPath
+                        href={accountApiKeysPath}
+                        onNavigate={() => router.push(accountApiKeysPath)}
+                      >
+                        Dashboard Page <span aria-hidden="true">›</span> Setting
+                        button (bottom-left) <span aria-hidden="true">›</span>{" "}
+                        Account Settings <span aria-hidden="true">›</span> API
+                        key area
+                      </NavigationPath>
+                      .
+                    </p>
+                    <ol className="list-decimal space-y-3 pl-5">
+                      <li>
+                        Create a named key for one integration or environment.
+                      </li>
+                      <li>
+                        Copy the secret immediately and store it in your
+                        server's secret manager. The complete secret is shown
+                        only once; never commit it or place it in browser
+                        storage.
+                      </li>
+                      <li>
+                        Send it to the public API as
+                        <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                          X-API-Key: nzy_...
+                        </code>
+                        for each integration request.
+                      </li>
+                      <li>
+                        Return to the API key area to review metadata, rotate a
+                        compromised key, or revoke a key that is no longer used.
+                      </li>
+                    </ol>
+                    <p>
+                      The browser application itself continues to use its secure
+                      session. Read the full workflow in the{" "}
+                      <a
+                        className="underline"
+                        href="/tutorial#api-keys"
+                        onClick={event => {
+                          event.preventDefault();
+                          router.push("/tutorial#api-keys");
+                        }}
+                      >
+                        API key tutorial
+                      </a>
+                      .
+                    </p>
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
+
+                <ArticleParagraphSeparator />
+
+                <ArticleParagraph id="gateway">
+                  <ArticleParagraphHeader>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      {publicApiLabel}
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      The public API contract is generated from its route
+                      allowlist and schemas.
+                    </p>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <ArticleSubParagraph id="gateway-contract">
                       <ArticleSubParagraphHeader>
-                        {group.title}
+                        Contract
                       </ArticleSubParagraphHeader>
                       <ArticleSubParagraphContent>
-                        <p>{guide?.summary ?? group.description}</p>
-                        {guide && (
-                          <p className="text-sm leading-6 text-muted-foreground">
-                            {guide.structure} Read the{" "}
-                            <a
-                              className="underline"
-                              href={`/tutorial#${group.id}`}
-                              onClick={event => {
-                                event.preventDefault();
-                                router.push(`/tutorial#${group.id}`);
-                              }}
-                            >
-                              {group.title.toLowerCase()} tutorial
-                            </a>
-                            .
-                          </p>
-                        )}
-                        <EndpointTable endpoints={group.endpoints} />
+                        <p>
+                          OpenAPI 3.1 describes the HTTP routes at the local
+                          development base path
+                          <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                            /api/development/v1
+                          </code>
+                          . Production uses `https://api.notegic.com/v1`. The
+                          same directory bundles operation examples, curl
+                          scripts, and Postman imports. Requests use an
+                          X-API-Key header for server-to-server authentication.
+                        </p>
+                        <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
+                          <code>{`GET  http://localhost/api/development/v1
+GET  https://api.notegic.com/v1
+Content-Type: application/json`}</code>
+                        </pre>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                  );
-                })}
 
-                <ArticleSubParagraph id="gateway-rules">
-                  <ArticleSubParagraphHeader>Rules</ArticleSubParagraphHeader>
-                  <ArticleSubParagraphContent>
-                    <p>
-                      These rules are operational constraints, not product
-                      tutorials. They apply to every endpoint in the public
-                      public API contract.
-                    </p>
-                    {gatewayRules.map(rule => (
-                      <ArticleSubParagraph
-                        id={`gateway-rule-${rule.id}`}
-                        key={rule.id}
-                      >
-                        <ArticleSubParagraphHeader>
-                          {rule.title}
-                        </ArticleSubParagraphHeader>
-                        <ArticleSubParagraphContent>
-                          <RuleBlock rule={rule} />
-                        </ArticleSubParagraphContent>
-                      </ArticleSubParagraph>
-                    ))}
-                  </ArticleSubParagraphContent>
-                </ArticleSubParagraph>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
+                    {apiGatewayEndpointGroups.map(group => {
+                      const guide = domainGuides[group.id];
+                      return (
+                        <ArticleSubParagraph
+                          id={`gateway-${group.id}`}
+                          key={group.id}
+                        >
+                          <ArticleSubParagraphHeader>
+                            {group.title}
+                          </ArticleSubParagraphHeader>
+                          <ArticleSubParagraphContent>
+                            <p>{guide?.summary ?? group.description}</p>
+                            {guide && (
+                              <p className="text-sm leading-6 text-muted-foreground">
+                                {guide.structure} Read the{" "}
+                                <a
+                                  className="underline"
+                                  href={`/tutorial#${group.id}`}
+                                  onClick={event => {
+                                    event.preventDefault();
+                                    router.push(`/tutorial#${group.id}`);
+                                  }}
+                                >
+                                  {group.title.toLowerCase()} tutorial
+                                </a>
+                                .
+                              </p>
+                            )}
+                            <EndpointTable endpoints={group.endpoints} />
+                          </ArticleSubParagraphContent>
+                        </ArticleSubParagraph>
+                      );
+                    })}
 
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="versions">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Versions
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  A compact view of what Notegic has shipped, what is available
-                  now, and the direction of the next release.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <div className="rounded-xl border border-primary/25 bg-primary/5 p-5">
-                  <div className="space-y-5">
-                    <div className="max-w-2xl">
-                      <p className="font-mono text-[11px] tracking-[0.16em] text-primary">
-                        Product Roadmap
-                      </p>
-                      <h3 className="mt-2 text-lg font-semibold text-foreground">
-                        Making knowledge work more intelligent and
-                        conversational
-                      </h3>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        Our current focus is AI integration: building a more
-                        advanced and human-centered conversational interface
-                        that connects with existing notes and turns dialogue
-                        into more structured, reusable knowledge.
-                      </p>
-                    </div>
-                    <VersionCardProgress
-                      {...getVersionProgress(versionRoadmap)}
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-5">
-                  {versionRoadmap.map(version => (
-                    <VersionCard key={version.version} version={version} />
-                  ))}
-                </div>
-                <div className="rounded-sm border border-border/70 bg-background p-4">
-                  <p className="font-medium text-foreground">
-                    Public API baseline
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {publicApiVersion} Beta · OpenAPI 3.1 · X-API-Key ·{" "}
-                    {gatewayOperationCount} operations
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    Future API comparisons will cover base paths,
-                    authentication, renamed or removed operations, schema
-                    changes, errors, limits, migration deadlines, binary frames,
-                    ticket claims, and reconnect semantics.
-                  </p>
-                </div>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="privacy-policy">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Privacy and policy
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The same privacy terms apply when an integration accesses
-                  resources through an API key.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <PrivacyPolicySections />
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-
-            <ArticleParagraphSeparator />
-
-            <ArticleParagraph id="implementation">
-              <ArticleParagraphHeader>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Implementation
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  The page is a readable index of the published contracts; it
-                  does not replace the generated artifacts.
-                </p>
-              </ArticleParagraphHeader>
-              <ArticleParagraphContent>
-                <div className="space-y-3">
-                  {documentSources.map(source => (
-                    <div
-                      className="rounded-sm border border-border/70 bg-background p-4"
-                      key={source.title}
-                    >
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p className="font-medium text-foreground">
-                          {source.title}
+                    <ArticleSubParagraph id="gateway-rules">
+                      <ArticleSubParagraphHeader>
+                        Rules
+                      </ArticleSubParagraphHeader>
+                      <ArticleSubParagraphContent>
+                        <p>
+                          These rules are operational constraints, not product
+                          tutorials. They apply to every endpoint in the public
+                          public API contract.
                         </p>
-                        <span className="font-mono text-[10px] text-muted-foreground">
-                          {source.format}
-                        </span>
+                        {gatewayRules.map(rule => (
+                          <ArticleSubParagraph
+                            id={`gateway-rule-${rule.id}`}
+                            key={rule.id}
+                          >
+                            <ArticleSubParagraphHeader>
+                              {rule.title}
+                            </ArticleSubParagraphHeader>
+                            <ArticleSubParagraphContent>
+                              <RuleBlock rule={rule} />
+                            </ArticleSubParagraphContent>
+                          </ArticleSubParagraph>
+                        ))}
+                      </ArticleSubParagraphContent>
+                    </ArticleSubParagraph>
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
+
+                <ArticleParagraphSeparator />
+
+                <ArticleParagraph id="versions">
+                  <ArticleParagraphHeader>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      Versions
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      A compact view of what Notegic has shipped, what is
+                      available now, and the direction of the next release.
+                    </p>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <div className="rounded-xl border border-primary/25 bg-primary/5 p-5">
+                      <div className="space-y-5">
+                        <div className="max-w-2xl">
+                          <p className="font-mono text-[11px] tracking-[0.16em] text-primary">
+                            Product Roadmap
+                          </p>
+                          <h3 className="mt-2 text-lg font-semibold text-foreground">
+                            Making knowledge work more intelligent and
+                            conversational
+                          </h3>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                            Our current focus is AI integration: building a more
+                            advanced and human-centered conversational interface
+                            that connects with existing notes and turns dialogue
+                            into more structured, reusable knowledge.
+                          </p>
+                        </div>
+                        <VersionCardProgress
+                          {...getVersionProgress(versionRoadmap)}
+                        />
                       </div>
-                      <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-                        {source.path}
+                    </div>
+                    <div className="grid gap-5">
+                      {versionRoadmap.map(version => (
+                        <VersionCard key={version.version} version={version} />
+                      ))}
+                    </div>
+                    <div className="rounded-sm border border-border/70 bg-background p-4">
+                      <p className="font-medium text-foreground">
+                        Public API baseline
                       </p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {source.detail}
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {publicApiVersion} Beta · OpenAPI 3.1 · X-API-Key ·{" "}
+                        {gatewayOperationCount} operations
+                      </p>
+                      <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                        Future API comparisons will cover base paths,
+                        authentication, renamed or removed operations, schema
+                        changes, errors, limits, migration deadlines, binary
+                        frames, ticket claims, and reconnect semantics.
                       </p>
                     </div>
-                  ))}
-                </div>
-                <p>
-                  Routes and server schemas remain authoritative. Refresh the
-                  public artifacts from the public API generator before
-                  reviewing API changes:
-                </p>
-                <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
-                  <code>make -C contracts public-api-gen</code>
-                </pre>
-                <p>
-                  The frontend groups public API operations by generated OpenAPI
-                  tags. Product usage teaching belongs in Tutorial, while this
-                  page describes contract behavior and operational constraints.
-                </p>
-              </ArticleParagraphContent>
-            </ArticleParagraph>
-          </ArticleContent>
-        </Article>
-      </div>
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
+
+                <ArticleParagraphSeparator />
+
+                <ArticleParagraph id="privacy-policy">
+                  <ArticleParagraphHeader>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      Privacy and policy
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      The same privacy terms apply when an integration accesses
+                      resources through an API key.
+                    </p>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <PrivacyPolicySections />
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
+
+                <ArticleParagraphSeparator />
+
+                <ArticleParagraph id="implementation">
+                  <ArticleParagraphHeader>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      Implementation
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      The page is a readable index of the published contracts;
+                      it does not replace the generated artifacts.
+                    </p>
+                  </ArticleParagraphHeader>
+                  <ArticleParagraphContent>
+                    <div className="space-y-3">
+                      {documentSources.map(source => (
+                        <div
+                          className="rounded-sm border border-border/70 bg-background p-4"
+                          key={source.title}
+                        >
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <p className="font-medium text-foreground">
+                              {source.title}
+                            </p>
+                            <span className="font-mono text-[10px] text-muted-foreground">
+                              {source.format}
+                            </span>
+                          </div>
+                          <p className="mt-2 font-mono text-[11px] text-muted-foreground">
+                            {source.path}
+                          </p>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            {source.detail}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <p>
+                      Routes and server schemas remain authoritative. Refresh
+                      the public artifacts from the public API generator before
+                      reviewing API changes:
+                    </p>
+                    <pre className="overflow-x-auto rounded-sm border border-border/70 bg-background p-4 font-mono text-xs leading-6 text-foreground/85">
+                      <code>make -C contracts public-api-gen</code>
+                    </pre>
+                    <p>
+                      The frontend groups public API operations by generated
+                      OpenAPI tags. Product usage teaching belongs in Tutorial,
+                      while this page describes contract behavior and
+                      operational constraints.
+                    </p>
+                  </ArticleParagraphContent>
+                </ArticleParagraph>
+              </ArticleContent>
+            </Article>
+          </div>
+        </div>
+      </SidebarProvider>
     </div>
   );
 };

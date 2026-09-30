@@ -1,4 +1,5 @@
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
+import { tError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -19,7 +20,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 import Closeable from "../Closeable/Closeable";
 import ColorPicker from "../ColorPicker/ColorPicker";
 
@@ -89,7 +89,7 @@ const ColorSelector = ({
           );
           forceUpdate();
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }
     };

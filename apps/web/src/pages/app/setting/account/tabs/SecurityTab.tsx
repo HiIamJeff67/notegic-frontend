@@ -1,10 +1,11 @@
-import { getClientMutationHeaders } from "@/api/clientHeaders";
 import { Dialog } from "@radix-ui/react-dialog";
-import { useValidateEmail } from "@/api/hooks/auth.hook";
 import { UserRole } from "@shared/api/interfaces/enums";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientMutationHeaders } from "@/api/clientHeaders";
+import { useValidateEmail } from "@/api/hooks/auth.hook";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface SecurityTabProps {
   layout?: "panel" | "page";
@@ -66,7 +66,7 @@ const SecurityTab = ({
           setValidateEmailDialogOpen(false);
           userManager.updateUserData({ role: UserRole.Normal });
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [

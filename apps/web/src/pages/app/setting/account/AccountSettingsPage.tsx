@@ -1,5 +1,5 @@
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -155,7 +155,7 @@ const AccountSettingsPage = ({
         } catch (error) {
           fallback?.();
           setSendAuthCodeTimeCounter(0);
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [t, router, sendAuthCodeMutator, sendAuthCodeTimeCounter, userManager]

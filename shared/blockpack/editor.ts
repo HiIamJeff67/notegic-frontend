@@ -12,13 +12,6 @@ import {
 } from "@blocknote/core/yjs";
 import { blockPackShortcutExtensions } from "./extensions/shortcuts/shortcut";
 
-export const createNotegicBlockPackSchema = () =>
-  BlockNoteSchema.create({
-    blockSpecs: NotegicBlockPackEditor.notegicBlockNoteBlockSpecs,
-    inlineContentSpecs: defaultInlineContentSpecs,
-    styleSpecs: defaultStyleSpecs,
-  });
-
 type NotegicBlockPackEditorOptions = {
   initialContent?: PartialBlock<any, any, any>[];
   trailingBlock?: boolean;
@@ -45,12 +38,18 @@ export class NotegicBlockPackEditor {
 
   static create({
     initialContent,
-    trailingBlock = false,
+    trailingBlock = true,
     schema,
     collaboration,
   }: NotegicBlockPackEditorOptions) {
     return BlockNoteEditor.create({
-      schema: schema ?? createNotegicBlockPackSchema(),
+      schema:
+        schema ??
+        BlockNoteSchema.create({
+          blockSpecs: this.notegicBlockNoteBlockSpecs,
+          inlineContentSpecs: defaultInlineContentSpecs,
+          styleSpecs: defaultStyleSpecs,
+        }),
       ...(collaboration ? {} : { initialContent }),
       ...(collaboration
         ? {

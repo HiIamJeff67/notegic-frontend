@@ -1,16 +1,17 @@
+import type {
+  APIKeySummary,
+  CreateMyAPIKeyResponse,
+} from "@shared/api/interfaces/apiKey.interface";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
+import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useCreateMyAPIKey,
   useMyAPIKeys,
   useRevokeMyAPIKey,
 } from "@/api/hooks/apiKey.hook";
-import type {
-  APIKeySummary,
-  CreateMyAPIKeyResponse,
-} from "@shared/api/interfaces/apiKey.interface";
-import toast from "@shared/lib/toast";
-import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -32,7 +33,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { translateError } from "@shared/i18n/error";
 
 interface ApiKeysTabProps {
   layout?: "panel" | "page";
@@ -177,7 +177,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
       resetCreateForm();
       toast.success(t("settingsPage.account.apiKeys.createdToast"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -188,7 +188,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
       setCopied(true);
       toast.success(t("settingsPage.account.apiKeys.copiedToast"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -202,7 +202,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
       });
       toast.success(t("settingsPage.account.apiKeys.revokedToast"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -244,7 +244,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
           </div>
         ) : listQuery.isError ? (
           <div className="rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
-            {translateError(listQuery.error, t)}
+            {tError(listQuery.error, t)}
           </div>
         ) : apiKeys.length === 0 ? (
           <div className="flex min-h-40 flex-col items-center justify-center rounded-md border border-dashed border-border bg-background/35 p-8 text-center">

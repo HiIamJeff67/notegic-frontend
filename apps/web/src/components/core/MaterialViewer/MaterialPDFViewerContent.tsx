@@ -1,7 +1,7 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { MaterialContentType } from "@shared/api/interfaces/enums";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
+import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import {
   DownloadIcon,
   EraserIcon,
@@ -24,6 +24,8 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
@@ -42,8 +44,6 @@ import {
 } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useAppRouter } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import MaterialViewerFrame from "./MaterialViewerFrame";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -481,7 +481,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
       setAnnotations([]);
       await loadPdf(nextPdfBytes);
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     } finally {
       setIsApplyingAnnotations(false);
     }
@@ -504,7 +504,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
       downloadPdfBytes(nextPdfBytes, meta.name);
       toast.success(t("workspace.notifications.annotatedPdfDownloaded"));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     } finally {
       setIsApplyingAnnotations(false);
     }

@@ -1,7 +1,7 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { MaterialContentType } from "@shared/api/interfaces/enums";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
+import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { cn } from "@shared/util/utils";
 import {
   ChevronDownIcon,
@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
@@ -36,8 +38,6 @@ import {
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { useAppRouter, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 
 interface MaterialViewerFrameProps {
   meta: MaterialMeta;
@@ -90,7 +90,7 @@ const MaterialViewerFrame = ({
         await navigator.clipboard.writeText(text);
         toast.success(t("workspace.notifications.copied"));
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [t]
@@ -126,7 +126,7 @@ const MaterialViewerFrame = ({
         try {
           await importFile(contentFile);
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       });
     },

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
 import { format } from "date-fns";
@@ -11,11 +11,11 @@ import { UseFormReturn, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
-import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -129,7 +129,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
         clearCroppableImage();
         setEditingImageField(null);
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [clearCroppableImage, croppableImage, t, uploadProfileImage]
@@ -259,7 +259,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
           await userManager.fetchUserInfo();
           toast.success(t("settingsPage.account.messages.profileUpdated"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [loadingManager, userManager, t, updateUserInfoMutator]

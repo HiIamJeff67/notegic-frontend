@@ -8,7 +8,7 @@ import {
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { MaxSearchLimit } from "@shared/constants";
 import { AnalysisStatus } from "@shared/enums";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/LRUCache";
 import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
 import toast from "@shared/lib/toast";
@@ -285,7 +285,7 @@ export const useRootShelfLogic = ({
     if (shelfTreeSummary === undefined) {
       cancelRenamingRootShelfNode();
       toast.error(
-        translateError(
+        tError(
           new Error(
             `parentShelfNode not found in one of the children of editingRootShelfNode`
           ),
@@ -319,7 +319,7 @@ export const useRootShelfLogic = ({
       shelfTreeSummary.root.name = previousName;
       editingNode.name = previousName;
       forceUpdate();
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     } finally {
       cancelRenamingRootShelfNode();
     }

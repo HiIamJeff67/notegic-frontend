@@ -2,7 +2,7 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
@@ -107,7 +107,7 @@ const SelectBackgroundImageDialog = ({
           setCroppedBackgroundImagePack(null);
           setCropImageDialogOpen(false);
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [croppedBackgroundImagePack, backgroundImagesManager, t]
@@ -125,7 +125,7 @@ const SelectBackgroundImageDialog = ({
           setCroppedBackgroundImagePack(imagePack);
           setCropImageDialogOpen(true);
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [selectedBackgroundImageId, backgroundImagesManager, t]
@@ -147,7 +147,7 @@ const SelectBackgroundImageDialog = ({
           );
         }
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [backgroundImagesManager, t]
@@ -178,7 +178,7 @@ const SelectBackgroundImageDialog = ({
           );
         }
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [backgroundImagesManager, t, thumbnails]

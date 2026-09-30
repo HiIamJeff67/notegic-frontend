@@ -1,4 +1,5 @@
 import { MaxTriggerValue } from "@shared/constants";
+import { tError } from "@shared/i18n/error";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -7,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
 import { toWidget, Widget } from "@/components/widgets/widget";
 import { useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface WidgetContextType {
   hasChanged: boolean;
@@ -67,7 +67,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
           ).filter(widget => widget.component !== undefined) as Widget[];
           forceUpdate();
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
         return;
       }

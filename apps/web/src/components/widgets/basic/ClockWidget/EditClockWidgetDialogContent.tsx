@@ -1,3 +1,4 @@
+import { formatTimezone } from "@shared/i18n/timezone";
 import { ClockStyles } from "@widgets/basic/ClockWidget/data/clockStyles";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import { Dispatch, SetStateAction } from "react";
@@ -17,7 +18,6 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { ClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
-import { formatTimezoneDisplayName } from "@shared/i18n/workspace";
 
 interface EditClockWidgetDialogContentProps {
   setting: ClockSetting;
@@ -58,8 +58,7 @@ const EditClockWidgetDialogContent = ({
           <SelectContent>
             {TimeZones.map(tz => (
               <SelectItem key={tz.index} value={tz.locale}>
-                {formatTimezoneDisplayName(tz.locale, i18n.resolvedLanguage)}{" "}
-                (UTC
+                {formatTimezone(tz.locale, i18n.resolvedLanguage)} (UTC
                 {tz.offset >= 0 ? "+" : ""}
                 {tz.offset})
               </SelectItem>

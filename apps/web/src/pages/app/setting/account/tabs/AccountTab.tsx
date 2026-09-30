@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
 import { FakeUser } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { User, UserSchema } from "@shared/types/user.type";
 import { memo, useCallback, useEffect, useMemo } from "react";
@@ -111,7 +111,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
 
           toast.success(t("settingsPage.account.messages.accountUpdated"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [loadingManager, userManager, t, updateMeMutator]

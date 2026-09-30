@@ -4,21 +4,22 @@ import type {
   FragmentedBasicPublicUserFragment,
   FragmentedBasicPublicUserInfoFragment,
 } from "@shared/api/graphql/generated/graphql";
-import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
-import {
-  useDeleteRootShelfPermissions,
-  useUpsertRootShelfPermission,
-} from "@/api/hooks/rootShelf.hook";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
 } from "@shared/api/websocket";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { cn } from "@shared/util/utils";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
+import {
+  useDeleteRootShelfPermissions,
+  useUpsertRootShelfPermission,
+} from "@/api/hooks/rootShelf.hook";
 import AddShelfCollaboratorDialog, {
   type ShelfCollaboratorPermission,
 } from "@/components/dialogs/ShelfSharingDialog/AddShelfCollaboratorDialog";
@@ -42,7 +43,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useUser } from "@/hooks/useUser";
-import { translateError } from "@shared/i18n/error";
 
 interface BlockPackParticipantsDropdownProps {
   blockPackId: UUID;
@@ -447,7 +447,7 @@ const BlockPackParticipantsDropdown = ({
         variables: { input: { query: "", first: 64 } },
       });
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -484,7 +484,7 @@ const BlockPackParticipantsDropdown = ({
         variables: { input: { query: "", first: 64 } },
       });
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 

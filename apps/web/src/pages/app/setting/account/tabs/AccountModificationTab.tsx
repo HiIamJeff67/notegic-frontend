@@ -1,3 +1,9 @@
+import { UserRole } from "@shared/api/interfaces/enums";
+import { WebURLPathDictionary } from "@shared/constants";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import {
   useDeleteMe,
@@ -5,11 +11,6 @@ import {
   useResetEmail,
   useResetMe,
 } from "@/api/hooks/auth.hook";
-import { UserRole } from "@shared/api/interfaces/enums";
-import { WebURLPathDictionary } from "@shared/constants";
-import toast from "@shared/lib/toast";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface AccountModificationTabProps {
   layout?: "panel" | "page";
@@ -82,7 +82,7 @@ const AccountModificationTab = ({
           toast.success(t("settingsPage.account.messages.accountReset"));
           router.push(WebURLPathDictionary.app.dashboard._);
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [
@@ -113,7 +113,7 @@ const AccountModificationTab = ({
           userManager.updateUserData({ email: newEmail });
           toast.success(t("settingsPage.account.messages.emailReset"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [
@@ -154,7 +154,7 @@ const AccountModificationTab = ({
           setChangePasswordDialogOpen(false);
           toast.success(t("settingsPage.account.messages.passwordChanged"));
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [
@@ -191,7 +191,7 @@ const AccountModificationTab = ({
           toast.success(t("settingsPage.account.messages.accountDeleted"));
           router.push(WebURLPathDictionary.home);
         } catch (error) {
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       }),
     [
