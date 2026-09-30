@@ -2,7 +2,7 @@ import {
   AllRoutinePeriods,
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
-import { translateRoutinePeriod } from "@shared/i18n/workspace";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
@@ -177,7 +177,7 @@ const CreateRoutinePayloadEditor = ({
               <SelectItem value="None">{t("workspace.period.none")}</SelectItem>
               {AllRoutinePeriods.map(routinePeriod => (
                 <SelectItem key={routinePeriod} value={routinePeriod}>
-                  {translateRoutinePeriod(routinePeriod, t)}
+                  {t(routinePeriodTKeys[routinePeriod])}
                 </SelectItem>
               ))}
             </SelectContent>

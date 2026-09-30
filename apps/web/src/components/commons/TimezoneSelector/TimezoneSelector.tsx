@@ -1,11 +1,11 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { formatTimezone } from "@shared/i18n/timezone";
 import { cn } from "@shared/util/utils";
 import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatTimezoneDisplayName } from "@shared/i18n/workspace";
 
 export const SupportedTimezones = Array.from(
   new Set(["UTC", ...Intl.supportedValuesOf("timeZone")])
@@ -48,7 +48,7 @@ const TimezoneSelector = ({
     const query = searchQuery.trim().toLowerCase();
     return (
       timezone.toLowerCase().includes(query) ||
-      formatTimezoneDisplayName(timezone, i18n.resolvedLanguage)
+      formatTimezone(timezone, i18n.resolvedLanguage)
         .toLowerCase()
         .includes(query)
     );
@@ -84,7 +84,7 @@ const TimezoneSelector = ({
         >
           <span className="truncate">
             {value
-              ? formatTimezoneDisplayName(value, i18n.resolvedLanguage)
+              ? formatTimezone(value, i18n.resolvedLanguage)
               : t("workspace.accessibility.selectTimezone")}
           </span>
           <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
@@ -139,7 +139,7 @@ const TimezoneSelector = ({
                   </span>
                   <span className="truncate">
                     {getTimezoneOffset(timezone)}{" "}
-                    {formatTimezoneDisplayName(timezone, i18n.resolvedLanguage)}{" "}
+                    {formatTimezone(timezone, i18n.resolvedLanguage)}{" "}
                     {`(${timezone})`}
                   </span>
                 </Button>

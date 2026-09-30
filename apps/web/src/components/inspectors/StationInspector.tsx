@@ -1,14 +1,15 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyStationById } from "@/api/hooks/station.hook";
 import type {
   AccessControlPermission,
   SupportedIcon,
 } from "@shared/api/interfaces/enums";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyStationById } from "@/api/hooks/station.hook";
 import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,6 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
 interface StationInspectorProps {
@@ -100,7 +100,7 @@ const StationInspector = ({
         });
       })
       .catch(error => {
-        if (!cancelled) toast.error(translateError(error, t));
+        if (!cancelled) toast.error(tError(error, t));
       })
       .finally(() => {
         if (!cancelled) setIsLoadingStationDetail(false);
@@ -134,7 +134,7 @@ const StationInspector = ({
       toast.success(t("workspace.station.updated"));
       onClose();
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 

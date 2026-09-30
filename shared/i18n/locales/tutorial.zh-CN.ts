@@ -160,9 +160,9 @@ export const SimpleChineseTutorialTranslation = {
           "流程是可重复的自动化定义和计划；流程任务则是由该定义创建、并由调度器领取的可执行步骤。",
       },
       routineQuota: {
-        question: "流程配额什么时候会消耗？",
+        question: "流程任务的执行配额如何计算？",
         answer:
-          "配额会在后端领取流程任务执行时消耗。client 不应只根据本地 payload 成本估算拒绝任务。",
+          "后端领取任务时先预留配额，完成后按实际执行时间计费。并行任务的时间分别累加；两个任务各运行 2 分钟，会使用 4 分钟。每期额度为 Free 100、Pro 300、Premium 500、Ultimate 1,000、Enterprise 2,000 分钟。流程超时可设为 1–60 分钟，默认 5 分钟。",
       },
       leakedApiKey: {
         question: "如果 API 密钥可能泄漏，我该怎么办？",

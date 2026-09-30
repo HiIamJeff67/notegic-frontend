@@ -1,8 +1,6 @@
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutineTaskPurpose,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
@@ -40,7 +38,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   const stationRoutineManager = useStationRoutine();
   const executionStatus = routineTask.executionStatus;
   const displayedStatus = executionStatus
-    ? translateRoutineTaskRecordStatus(executionStatus, t)
+    ? t(routineTaskRecordStatusTKeys[executionStatus])
     : "—";
 
   return (
@@ -86,7 +84,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
                 },
                 {
                   field: t("workspace.table.purpose"),
-                  value: translateRoutineTaskPurpose(routineTask.purpose, t),
+                  value: `${t(routineTaskPurposeTKeys[routineTask.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.purpose].target)}`,
                 },
                 {
                   field: t("workspace.fields.priority"),
@@ -134,7 +132,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
               onClick={() => {
                 void stationRoutineManager
                   .duplicateRoutineTask(routineTask.id)
-                  .catch(error => toast.error(translateError(error, t)));
+                  .catch(error => toast.error(tError(error, t)));
               }}
             >
               <Copy className="mr-2 size-4" />

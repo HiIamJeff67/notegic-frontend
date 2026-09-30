@@ -30,16 +30,6 @@ export const GetMyAccountResponseSchema = NotegicResponseSchema.extend({
       .string()
       .nullish()
       .transform(value => value ?? null),
-    rootShelfCount: z.int32().min(0),
-    blockPackCount: z.int32().min(0),
-    blockCount: z.int32().min(0),
-    materialCount: z.int32().min(0),
-    workflowCount: z.int32().min(0),
-    additionalItemCount: z.int32().min(0),
-    stationCount: z.number().int().min(0),
-    routineCount: z.number().int().min(0),
-    routineTaskCostUnitCount: z.number().int().min(0),
-    routineTagCount: z.number().int().min(0),
     updatedAt: z.coerce.date(),
   }),
   embedded: z.object({

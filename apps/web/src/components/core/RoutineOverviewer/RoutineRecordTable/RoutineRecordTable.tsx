@@ -6,7 +6,7 @@ import {
   AllRoutineRecordStatuses,
   RoutineRecordStatus,
 } from "@shared/api/interfaces/enums";
-import { translateRoutineRecordStatus } from "@shared/i18n/workspace";
+import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
 import type { UUID } from "crypto";
 import { Activity, Eye } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -205,14 +205,14 @@ const RoutineRecordTable = () => {
             </SelectItem>
             {AllRoutineRecordStatuses.map(recordStatus => (
               <SelectItem key={recordStatus} value={recordStatus}>
-                {translateRoutineRecordStatus(recordStatus, t)}
+                {t(routineRecordStatusTKeys[recordStatus])}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearching || !hasMore) return;
           const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
@@ -254,7 +254,7 @@ const RoutineRecordTable = () => {
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
-                    {translateRoutineRecordStatus(record.status, t)}
+                    {t(routineRecordStatusTKeys[record.status])}
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
                     {record.scheduledAt.toLocaleString(i18n.resolvedLanguage)}

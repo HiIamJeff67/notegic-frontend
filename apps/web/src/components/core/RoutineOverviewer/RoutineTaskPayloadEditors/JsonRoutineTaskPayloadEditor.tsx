@@ -1,5 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,7 @@ const JsonRoutineTaskPayloadEditor = ({
           <DialogTitle>{t("workspace.payloadEditor.title")}</DialogTitle>
           <DialogDescription>
             {t("workspace.payloadEditor.generatedJson", {
-              purpose: translateRoutineTaskPurpose(purpose, t),
+              purpose: `${t(routineTaskPurposeTKeys[purpose].action)} · ${t(routineTaskPurposeTKeys[purpose].target)}`,
             })}
           </DialogDescription>
         </DialogHeader>

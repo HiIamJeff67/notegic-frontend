@@ -3,7 +3,6 @@
 enum SearchRoutineSortBy {
   RELEVANCE
   TITLE
-  STATUS
   SCHEDULED_START_AT
   SCHEDULED_END_AT
   PERIOD

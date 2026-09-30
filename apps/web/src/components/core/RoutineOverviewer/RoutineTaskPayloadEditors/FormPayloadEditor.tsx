@@ -1,5 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { cn } from "@shared/util/utils";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -72,7 +72,7 @@ const FormPayloadEditor = ({
               <Label>{t("workspace.payloadEditor.payloadPreview")}</Label>
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("workspace.payloadEditor.generatedJson", {
-                  purpose: translateRoutineTaskPurpose(purpose, t),
+                  purpose: `${t(routineTaskPurposeTKeys[purpose].action)} · ${t(routineTaskPurposeTKeys[purpose].target)}`,
                 })}
               </p>
             </div>
@@ -87,11 +87,6 @@ const FormPayloadEditor = ({
         </div>
 
         <DialogFooter className="border-t bg-secondary px-6 py-4">
-          <span className="mr-auto self-center text-xs text-muted-foreground">
-            {t("workspace.payloadEditor.estimatedCost", {
-              count: Math.ceil(new Blob([payloadPreview]).size / 1024),
-            })}
-          </span>
           {error && <span className="text-destructive text-xs">{error}</span>}
           <Button type="button" variant="destructive" onClick={onClose}>
             {t("common.cancel")}

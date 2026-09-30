@@ -1,3 +1,4 @@
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
@@ -14,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 import type { ModalProps } from "@/providers/ModalProvider";
 
 interface DeleteStationDialogProps extends ModalProps {
@@ -47,7 +47,7 @@ const DeleteStationDialog = ({
       toast.success(t("workspace.station.deleted"));
       onClose();
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 

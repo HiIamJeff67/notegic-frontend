@@ -1,14 +1,7 @@
-import {
-  RoutinePeriod,
-  RoutinePhase,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutinePhase,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
+import { RoutinePeriod, RoutinePhase } from "@shared/api/interfaces/enums";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
@@ -61,7 +54,7 @@ const RoutineInspector = ({
   const [values, setValues] = useState<{
     title: string;
     description: string;
-    status: RoutineStatus;
+    timeoutMinutes: number;
     phase: RoutinePhase | null;
     isPinned: boolean;
     scheduledStartAt: Date;
@@ -71,7 +64,7 @@ const RoutineInspector = ({
   }>({
     title: "",
     description: "",
-    status: RoutineStatus.Scheduled,
+    timeoutMinutes: 5,
     phase: null,
     isPinned: false,
     scheduledStartAt: new Date(),
@@ -107,7 +100,7 @@ const RoutineInspector = ({
     setValues({
       title: "",
       description: "",
-      status: RoutineStatus.Scheduled,
+      timeoutMinutes: 5,
       phase: null,
       isPinned: false,
       scheduledStartAt,
@@ -141,7 +134,6 @@ const RoutineInspector = ({
           stationId: response.data.stationId as UUID,
           title: response.data.title,
           description: response.data.description,
-          status: response.data.status,
           phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
@@ -184,7 +176,7 @@ const RoutineInspector = ({
         setValues({
           title: response.data.title,
           description: response.data.description,
-          status: response.data.status,
+          timeoutMinutes: (response.data.timeoutSeconds ?? 300) / 60,
           phase: response.data.phase,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
@@ -194,7 +186,7 @@ const RoutineInspector = ({
         });
       })
       .catch(error => {
-        if (!cancelled) toast.error(translateError(error, t));
+        if (!cancelled) toast.error(tError(error, t));
       })
       .finally(() => {
         if (!cancelled) setIsLoadingRoutineDetail(false);
@@ -256,6 +248,12 @@ const RoutineInspector = ({
       toast.error(t("workspace.validation.invalidSchedule"));
       return;
     }
+    if (
+      !Number.isInteger(values.timeoutMinutes) ||
+      values.timeoutMinutes < 1 ||
+      values.timeoutMinutes > 60
+    )
+      return;
     if (!SupportedTimezones.includes(values.timezone)) {
       toast.error(t("workspace.validation.unsupportedTimezone"));
       return;
@@ -267,6 +265,7 @@ const RoutineInspector = ({
         {
           title,
           description: values.description.trim(),
+          timeoutSeconds: values.timeoutMinutes * 60,
           isPinned: values.isPinned,
           scheduledStartAt,
           scheduledEndAt,
@@ -280,7 +279,7 @@ const RoutineInspector = ({
       toast.success(t("workspace.routine.updated"));
       onClose();
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -358,17 +357,30 @@ const RoutineInspector = ({
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label>{t("workspace.table.status")}</Label>
-                <div className="rounded-sm border border-border bg-muted px-3 py-2 text-sm">
-                  {translateRoutineStatus(values.status, t)}
-                </div>
+                <Label htmlFor="routine-inspector-timeout-minutes">
+                  {t("workspace.fields.executionTimeoutMinutes")}
+                </Label>
+                <Input
+                  id="routine-inspector-timeout-minutes"
+                  type="number"
+                  min={1}
+                  max={60}
+                  step={1}
+                  value={values.timeoutMinutes}
+                  onChange={event =>
+                    setValues(current => ({
+                      ...current,
+                      timeoutMinutes: Number(event.currentTarget.value),
+                    }))
+                  }
+                />
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label>{t("workspace.table.phase")}</Label>
                 <div className="rounded-sm border border-border bg-muted px-3 py-2 text-sm">
                   {values.phase
-                    ? translateRoutinePhase(values.phase, t)
+                    ? t(routinePhaseTKeys[values.phase])
                     : t("workspace.period.none")}
                 </div>
               </div>
@@ -487,19 +499,19 @@ const RoutineInspector = ({
                   options={[
                     {
                       value: "None",
-                      label: translateRoutinePeriod(null, t),
+                      label: t(routinePeriodTKeys.none),
                     },
                     {
                       value: RoutinePeriod.Daily,
-                      label: translateRoutinePeriod(RoutinePeriod.Daily, t),
+                      label: t(routinePeriodTKeys[RoutinePeriod.Daily]),
                     },
                     {
                       value: RoutinePeriod.Weekly,
-                      label: translateRoutinePeriod(RoutinePeriod.Weekly, t),
+                      label: t(routinePeriodTKeys[RoutinePeriod.Weekly]),
                     },
                     {
                       value: RoutinePeriod.Monthly,
-                      label: translateRoutinePeriod(RoutinePeriod.Monthly, t),
+                      label: t(routinePeriodTKeys[RoutinePeriod.Monthly]),
                     },
                   ]}
                 />

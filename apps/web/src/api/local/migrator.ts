@@ -4,6 +4,7 @@ export type MigrationEntry = {
   versionNumber: number;
   sqlContent: string;
   statements: string[];
+  downStatements?: string[];
 };
 
 export type MigrationResult = {
@@ -94,9 +95,26 @@ export class LocalDBMigrator {
 
   private runStatementsWithVersion = async (
     statements: string[],
-    targetVersion: number
+    targetVersion: number,
+    expectedVersion?: number
   ): Promise<void> => {
     await this.localDB.transaction(async transaction => {
+      if (expectedVersion !== undefined) {
+        const result = await transaction.run("PRAGMA user_version");
+        const row = Array.isArray(result) ? result[0] : undefined;
+        const persistedVersion = normalizeVersionNumber(
+          Number(
+            row !== null && typeof row === "object"
+              ? (row as { user_version?: unknown }).user_version
+              : undefined
+          )
+        );
+        if (persistedVersion !== expectedVersion) {
+          throw new Error(
+            `local database version ${persistedVersion} does not match expected version ${expectedVersion}`
+          );
+        }
+      }
       for (const statement of statements) {
         await transaction.run(normalizeStatement(statement));
       }
@@ -194,5 +212,20 @@ export class LocalDBMigrator {
     });
 
     return this.runningMigrationPromise;
+  };
+
+  public down = async (currentVersion: number): Promise<MigrationResult> => {
+    const orderedMigrations = this.migrations ?? [];
+    const migration = orderedMigrations[currentVersion - 1];
+    if (!migration || !migration.downStatements) {
+      throw new Error(`no local down migration for version ${currentVersion}`);
+    }
+
+    await this.runStatementsWithVersion(
+      migration.downStatements,
+      currentVersion - 1,
+      currentVersion
+    );
+    return { appliedTags: [migration.tag], finalVersion: currentVersion - 1 };
   };
 }

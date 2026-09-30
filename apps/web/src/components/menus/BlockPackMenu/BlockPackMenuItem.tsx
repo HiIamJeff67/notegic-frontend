@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { BlockPackNode } from "@shared/types/itemNodes.type";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -46,7 +46,7 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
       );
       shelfItemManager.toggleBlockPack(current);
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   }, [parent, current, router, shelfItemManager]);
 

@@ -1,0 +1,45 @@
+export interface ServerTranslation {
+  error: {
+    InternalServerError: string;
+    InvalidDto: string;
+    InvalidInput: string;
+    InvalidRequest: string;
+    InvalidAuthenticationCode: string;
+    TokenExchangeFailed: string;
+    OAuthProviderUnavailable: string;
+    ResponseReadFailed: string;
+    InvalidResponse: string;
+    WrongPassword: string;
+    WrongAuthCode: string;
+    LoginBlockedDueToTryingTooManyTimes: string;
+    AuthCodeBlockedDueToTryingTooManyTimes: string;
+    PermissionDeniedDueToUserRole: string;
+    PermissionDeniedDueToUserPlan: string;
+    PermissionDeniedDueToInvalidRequestOriginDomain: string;
+    PermissionDeniedDueToTooManyRequests: string;
+    TurnstileVerificationFailed: string;
+    TurnstileProviderUnavailable: string;
+    InvalidCSRFToken: string;
+    RefreshFailed: string;
+    SessionUnavailable: string;
+    InvalidSession: string;
+    Unauthorized: string;
+    PermissionDenied: string;
+    NotFound: string;
+    DuplicateName: string;
+    DuplicateEmail: string;
+    NoChanges: string;
+    FailedToGet: string;
+    FailedToCreate: string;
+    FailedToUpdate: string;
+    FailedToDelete: string;
+    QueryFailed: string;
+    GenerationFailed: string;
+    FileTooLarge: string;
+    InvalidType: string;
+    StorageUnavailable: string;
+    EmailServiceUnavailable: string;
+    InvalidChannelPermission: string;
+    RoomAdmissionUnavailable: string;
+  };
+}

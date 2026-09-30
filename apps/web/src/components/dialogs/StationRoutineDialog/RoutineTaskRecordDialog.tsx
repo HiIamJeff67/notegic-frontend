@@ -9,10 +9,8 @@ import {
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
 import type { ExecutionResult } from "@shared/api/interfaces/routineTaskRecord.interface";
-import {
-  translateRoutineTaskPurpose,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -92,7 +90,6 @@ const RoutineTaskRecordDialog = ({
               errorCode:
                 node.errorCode?.replace("RoutineTaskRecordErrorCode_", "") ??
                 null,
-              costUnit: node.costUnit as number,
               routineRecordId: node.routineRecordId as UUID,
               attempts: node.attempts as number,
               payloadSnapshot: node.payloadSnapshot,
@@ -227,9 +224,7 @@ const RoutineTaskRecordDialog = ({
       record.status === RoutineTaskRecordStatus.Cancel
   );
   const deterministicHasRunningTask = deterministicRecords.some(
-    record =>
-      record.status === RoutineTaskRecordStatus.Running ||
-      record.status === RoutineTaskRecordStatus.Ready
+    record => record.status === RoutineTaskRecordStatus.Running
   );
   const deterministicBarrierStatus = deterministicHasFailure
     ? RoutineTaskRecordStatus.Blocked
@@ -278,7 +273,7 @@ const RoutineTaskRecordDialog = ({
               </SelectItem>
               {AllRoutineTaskRecordStatuses.map(recordStatus => (
                 <SelectItem key={recordStatus} value={recordStatus}>
-                  {translateRoutineTaskRecordStatus(recordStatus, t)}
+                  {t(routineTaskRecordStatusTKeys[recordStatus])}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -298,7 +293,7 @@ const RoutineTaskRecordDialog = ({
               </SelectItem>
               {AllRoutineTaskPurposes.map(taskPurpose => (
                 <SelectItem key={taskPurpose} value={taskPurpose}>
-                  {translateRoutineTaskPurpose(taskPurpose, t)}
+                  {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -327,10 +322,7 @@ const RoutineTaskRecordDialog = ({
                 {t("workspace.records.creationBarrier")}
               </p>
               <p className="text-muted-foreground text-xs">
-                {translateRoutineTaskRecordStatus(
-                  deterministicBarrierStatus,
-                  t
-                )}
+                {t(routineTaskRecordStatusTKeys[deterministicBarrierStatus])}
               </p>
             </div>
             <p className="mt-1 text-muted-foreground text-xs">
@@ -346,7 +338,7 @@ const RoutineTaskRecordDialog = ({
           </div>
         )}
         <div
-          className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
           onScroll={event => {
             if (isSearching || !hasMore) return;
             const { clientHeight, scrollHeight, scrollTop } =
@@ -372,9 +364,6 @@ const RoutineTaskRecordDialog = ({
                 </TableHead>
                 <TableHead className="h-9 w-[18%] px-2">
                   {t("workspace.table.ended")}
-                </TableHead>
-                <TableHead className="h-9 w-[7%] px-2">
-                  {t("workspace.table.cost")}
                 </TableHead>
                 <TableHead className="h-9 w-[7%] px-2">
                   {t("workspace.table.attempts")}
@@ -403,13 +392,13 @@ const RoutineTaskRecordDialog = ({
                       <span className="inline-flex min-w-0 items-center gap-1.5">
                         <RoutineTaskStatusDot status={record.status} />
                         <span className="truncate">
-                          {translateRoutineTaskRecordStatus(record.status, t)}
+                          {t(routineTaskRecordStatusTKeys[record.status])}
                         </span>
                       </span>
                     </TableCell>
                     <TableCell className="px-2 py-2.5">
                       <span className="line-clamp-2">
-                        {translateRoutineTaskPurpose(record.purpose, t)}
+                        {`${t(routineTaskPurposeTKeys[record.purpose].action)} · ${t(routineTaskPurposeTKeys[record.purpose].target)}`}
                       </span>
                     </TableCell>
                     <TableCell className="px-2 py-2.5">
@@ -421,9 +410,6 @@ const RoutineTaskRecordDialog = ({
                       {record.actualEndedAt?.toLocaleString(
                         i18n.resolvedLanguage
                       ) ?? t("workspace.period.none")}
-                    </TableCell>
-                    <TableCell className="px-2 py-2.5 tabular-nums">
-                      {record.costUnit}
                     </TableCell>
                     <TableCell className="px-2 py-2.5 tabular-nums">
                       {record.attempts}
@@ -454,7 +440,7 @@ const RoutineTaskRecordDialog = ({
               {filteredRecords.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={9}
+                    colSpan={8}
                     className="h-28 text-center text-sm text-muted-foreground"
                   >
                     {routineTaskIds.length === 0

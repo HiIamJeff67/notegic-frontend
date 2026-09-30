@@ -2,8 +2,8 @@ import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { RoutinePhase, RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { SquarePen } from "lucide-react";
@@ -81,8 +81,6 @@ const RoutineTaskTable = () => {
             routineId: UUID;
             title: string;
             purpose: string;
-            phase: RoutinePhase | null;
-            costUnit: number;
             priority: number;
             maxAttempts: number;
             previousRoutineTaskIds: UUID[];
@@ -112,11 +110,7 @@ const RoutineTaskTable = () => {
               "RoutineTaskPurpose_",
               ""
             ) as RoutineTaskPurpose,
-            phase: node.phase
-              ? (node.phase.replace("RoutinePhase_", "") as RoutinePhase)
-              : null,
             payload: {},
-            costUnit: node.costUnit,
             priority: node.priority,
             maxAttempts: node.maxAttempts,
             previousRoutineTaskIds: node.previousRoutineTaskIds,
@@ -341,7 +335,7 @@ const RoutineTaskTable = () => {
               </SelectItem>
               {Object.values(RoutineTaskPurpose).map(routineTaskPurpose => (
                 <SelectItem key={routineTaskPurpose} value={routineTaskPurpose}>
-                  {translateRoutineTaskPurpose(routineTaskPurpose, t)}
+                  {`${t(routineTaskPurposeTKeys[routineTaskPurpose].action)} · ${t(routineTaskPurposeTKeys[routineTaskPurpose].target)}`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -376,7 +370,7 @@ const RoutineTaskTable = () => {
       </div>
 
       <div
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearchingRoutineTasks || !hasMoreRoutineTasks) return;
 
@@ -432,7 +426,7 @@ const RoutineTaskTable = () => {
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
                     <span className="break-words">
-                      {translateRoutineTaskPurpose(routineTask.purpose, t)}
+                      {`${t(routineTaskPurposeTKeys[routineTask.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.purpose].target)}`}
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">

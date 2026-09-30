@@ -1,3 +1,4 @@
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { CheckIcon } from "lucide-react";
@@ -7,7 +8,6 @@ import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuIte
 import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPackMenuItemSkeleton";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface BlockPackMenuProps {
   parent: SubShelfNode;
@@ -23,7 +23,7 @@ const BlockPackMenu = ({ parent }: BlockPackMenuProps) => {
       async () =>
         await shelfItemManager
           .renameEditingBlockPack()
-          .catch(error => toast.error(translateError(error, t)))
+          .catch(error => toast.error(tError(error, t)))
     );
   }, [loadingManager, t, shelfItemManager]);
 

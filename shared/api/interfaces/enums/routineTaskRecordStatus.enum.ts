@@ -1,6 +1,5 @@
 export enum RoutineTaskRecordStatus {
   Waiting = "Waiting",
-  Ready = "Ready",
   Running = "Running",
   Success = "Success",
   Failed = "Failed",

@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { consumePendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import type { OAuthAction } from "@shared/types/redirectState.type";
@@ -118,7 +118,7 @@ function GoogleRedirectPage() {
         router.push(
           WebURLPathDictionary.auth.redirect.error(
             t("workspace.pages.googleAuthFailed"),
-            translateError(error, t)
+            tError(error, t)
           )
         );
         return;
@@ -140,11 +140,11 @@ function GoogleRedirectPage() {
       setLoadingPhase("redirecting");
       router.push(getPreferredStartPath(preferences));
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
       router.push(
         WebURLPathDictionary.auth.redirect.error(
           t("workspace.pages.googleRedirectFailed"),
-          translateError(error, t)
+          tError(error, t)
         )
       );
     }

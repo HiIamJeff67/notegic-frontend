@@ -79,7 +79,6 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         status: "状態",
         blocks: "ブロック",
         workflows: "ワークフロー",
-        taskCostUnits: "ルーティンタスク月間実行 CostUnits",
         billingCycle: "請求周期",
         annualPricing: "年額プランには年間価格が適用されます。",
         monthly: "月払い",

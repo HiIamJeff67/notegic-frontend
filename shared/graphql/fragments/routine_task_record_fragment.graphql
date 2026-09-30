@@ -6,7 +6,6 @@ fragment FragmentedPrivateRoutineTaskRecord on PrivateRoutineTaskRecord {
   status
   errorCode
   errorReason
-  costUnit
   attempts
   payloadSnapshot
   resultSnapshot

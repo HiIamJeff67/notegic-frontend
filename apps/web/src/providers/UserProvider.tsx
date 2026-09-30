@@ -3,6 +3,7 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { WebURLPathDictionary } from "@shared/constants";
 import toast from "@shared/lib/toast";
 import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
+import type { UserQuota } from "@shared/types/userQuota.type";
 import React, {
   createContext,
   useCallback,
@@ -14,6 +15,7 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogout } from "@/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
 import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
+import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
 import i18n from "@/i18n";
@@ -40,6 +42,9 @@ interface UserContextType {
   updateUserAccount: (fields: Partial<UserAccount>) => boolean;
   fetchUserAccount: () => Promise<void>;
 
+  userQuota: UserQuota | null;
+  fetchUserQuota: () => Promise<void>;
+
   logout: () => void;
 }
 
@@ -62,15 +67,18 @@ export const UserProvider = ({
   const getMeQuerier = useGetMe();
   const getMyInfoQuerier = useGetMyInfo();
   const getMyAccountQuerier = useGetMyAccount();
+  const getMyQuotaQuerier = useGetMyQuota();
   const logoutMutator = useLogout();
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
+  const [userQuota, setUserQuota] = useState<UserQuota | null>(null);
 
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
   const hasAttemptedInitialUserDataFetchRef = useRef(false);
+  const initialQuotaFetchUserPublicIdRef = useRef<string | null>(null);
 
   const logout = useCallback(async () => {
     if (logoutInFlightRef.current) {
@@ -83,6 +91,8 @@ export const UserProvider = ({
       setUser(null);
       setUserInfo(null);
       setUserAccount(null);
+      setUserQuota(null);
+      initialQuotaFetchUserPublicIdRef.current = null;
 
       const userAgent = navigator.userAgent;
       try {
@@ -273,6 +283,47 @@ export const UserProvider = ({
     return userAccount !== null;
   };
 
+  const fetchUserQuota = useCallback(
+    async () =>
+      await loadingManager.startAsyncTransactionLoading(async () => {
+        try {
+          if (!isOnline)
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+
+          const userAgent = navigator.userAgent;
+          const response = await getMyQuotaQuerier.fetch({
+            header: getClientRequestHeaders(userAgent),
+          });
+          setUserQuota(response.data);
+        } catch (error) {
+          console.error(error);
+          if (
+            !(error instanceof NotegicAPIError) ||
+            error.unWrap.reason !==
+              FetchClientExceptions.NetworkRequired().reason
+          ) {
+            await expireSession();
+          }
+        }
+      }),
+    [expireSession, getMyQuotaQuerier, isOnline, loadingManager]
+  );
+
+  useEffect(() => {
+    if (userData === null) {
+      initialQuotaFetchUserPublicIdRef.current = null;
+      return;
+    }
+
+    if (initialQuotaFetchUserPublicIdRef.current === userData.publicId) {
+      return;
+    }
+
+    initialQuotaFetchUserPublicIdRef.current = userData.publicId;
+    setUserQuota(null);
+    void fetchUserQuota();
+  }, [fetchUserQuota, userData]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -310,6 +361,9 @@ export const UserProvider = ({
     setUserAccount: setUserAccount,
     fetchUserAccount: fetchUserAccount,
     updateUserAccount: updateUserAccount,
+
+    userQuota: userQuota,
+    fetchUserQuota: fetchUserQuota,
 
     logout: logout,
   };

@@ -3,8 +3,8 @@ type PrivateRoutine {
   stationId: UUID!
   title: String!
   description: String!
-  status: RoutineStatus!
   phase: RoutinePhase
+  timeoutSeconds: Int32!
   isPinned: Boolean!
   scheduledStartAt: Time!
   scheduledEndAt: Time!
@@ -24,8 +24,8 @@ type PrivateSearchableRoutine {
   id: UUID!
   stationId: UUID!
   title: String!
-  status: RoutineStatus!
   phase: RoutinePhase
+  timeoutSeconds: Int32!
   isPinned: Boolean!
   scheduledStartAt: Time!
   scheduledEndAt: Time!

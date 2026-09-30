@@ -77,7 +77,6 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         status: "状态",
         blocks: "区块",
         workflows: "工作流",
-        taskCostUnits: "流程任务每月执行 CostUnits",
         billingCycle: "付费周期",
         annualPricing: "年付方案使用年度价格。",
         monthly: "月付",

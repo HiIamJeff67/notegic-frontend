@@ -85,7 +85,6 @@ export const JapaneseWorkspaceTranslation = {
     end: "終了",
     timezone: "タイムゾーン",
     currentStatus: "現在の状態",
-    costUnit: "コスト単位",
     nextExpectedRun:
       "次回実行予定：{{date}}。バックエンドのシステムスケジュールが後の場合、更新しても即時再実行はされません。",
     systemClaimableTime: "システム取得可能時刻：{{date}}。",
@@ -284,7 +283,6 @@ export const JapaneseWorkspaceTranslation = {
     children: "子項目",
     generatedJson:
       "{{purpose}} 用に生成された JSON です。最終的な判定はバックエンドが行います。",
-    estimatedCost: "実行ごとの推定コスト：{{count}} CostUnits",
     updatedBlocksHint:
       "各項目には blockId と arborizedEditableBlock が必要です。単一ブロックには専用エディターを使用してください。",
     valuesAvailableAsTokens: "値は「{{token}}」として利用できます。",
@@ -460,6 +458,9 @@ export const JapaneseWorkspaceTranslation = {
     progress: "進捗",
     routineTask: "ルーティンタスク",
     dependency: "依存関係",
+    nodeCount: "ノード数",
+    edgeCount: "エッジ数",
+    storage: "保存状態",
     name: "名前",
     icon: "アイコン",
     color: "色",
@@ -471,6 +472,7 @@ export const JapaneseWorkspaceTranslation = {
     noRepeat: "繰り返さない",
     customSchedule: "カスタムスケジュール",
     customScheduleDescription: "開始時刻と終了時刻を明示的に設定します。",
+    executionTimeoutMinutes: "実行タイムアウト（分）",
     weekdays: "曜日",
     monthDays: "毎月の日付",
     monthDaysDescription: "すべての月で有効になるよう 1～28 日に制限されます。",
@@ -575,12 +577,7 @@ export const JapaneseWorkspaceTranslation = {
       "クリックしてクリップボードから JSON をインポートするか、JSON を貼り付けるか、JSON ファイルをここにドロップします。",
     collapse: "ペイロードを折りたたむ",
     expand: "ペイロードを展開",
-    usage:
-      "ルーティンタスクの今月の実行使用量: {{used}} / {{limit}} CostUnits。",
     notLoaded: "未読み込み",
-    estimateInvalid: "CostUnits を見積もるには有効な JSON が必要です。",
-    estimatedUsage:
-      "このルーティンタスクは実行ごとに約 {{count}} CostUnits を使用します。",
     hardLimit: "ペイロード上限: 16 MiB。",
     edit: "ペイロードを編集",
   },

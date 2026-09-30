@@ -76,7 +76,6 @@ const backendRoutineExecutionFixture = {
 describe("Routine execution backend contract integration", () => {
   test("maps the backend phase lifecycle without exposing preparation", () => {
     const backendPhases = [
-      GraphQLRoutinePhase.RoutinePhaseClaimed,
       GraphQLRoutinePhase.RoutinePhasePlan,
       GraphQLRoutinePhase.RoutinePhaseExecution,
       GraphQLRoutinePhase.RoutinePhaseRecovery,
@@ -84,7 +83,6 @@ describe("Routine execution backend contract integration", () => {
     ];
 
     expect(backendPhases.map(fromGraphQLRoutinePhase)).toEqual([
-      RoutinePhase.Claimed,
       RoutinePhase.Plan,
       RoutinePhase.Execution,
       RoutinePhase.Recovery,

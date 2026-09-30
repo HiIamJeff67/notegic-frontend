@@ -16,6 +16,10 @@ export const queryKeys = {
     all: () => ["userAccount"] as const,
     my: () => ["userAccount", "my"] as const,
   },
+  userQuota: {
+    all: () => ["userQuota"] as const,
+    my: () => ["userQuota", "my"] as const,
+  },
   userSetting: {
     all: () => ["userSetting"] as const,
     my: () => ["userSetting", "my"] as const,

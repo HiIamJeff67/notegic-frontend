@@ -6,7 +6,6 @@ type PrivateRoutineTaskRecord {
   status: RoutineTaskRecordStatus!
   errorCode: RoutineTaskRecordErrorCode
   errorReason: String
-  costUnit: Int64!
   attempts: Int32!
   payloadSnapshot: RawJSON!
   resultSnapshot: RawJSON!

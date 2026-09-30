@@ -1,11 +1,12 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
 import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
 interface RoutineTagInspectorProps {
@@ -90,7 +90,7 @@ const RoutineTagInspector = ({
         });
       })
       .catch(error => {
-        if (!cancelled) toast.error(translateError(error, t));
+        if (!cancelled) toast.error(tError(error, t));
       })
       .finally(() => {
         if (!cancelled) setIsLoadingRoutineTagDetail(false);
@@ -120,7 +120,7 @@ const RoutineTagInspector = ({
       toast.success(t("workspace.routineTag.updated"));
       onClose();
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 

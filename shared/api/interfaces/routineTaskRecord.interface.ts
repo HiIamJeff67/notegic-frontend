@@ -51,7 +51,6 @@ const RoutineTaskRecordSchema = z.object({
   status: z.enum(AllRoutineTaskRecordStatuses),
   errorCode: z.enum(AllRoutineTaskRecordErrorCodes).nullable(),
   errorReason: z.string().nullable(),
-  costUnit: z.number().int().min(0),
   attempts: z.number().int().min(0),
   payloadSnapshot: z.any(),
   resultSnapshot: ExecutionResultSchema,

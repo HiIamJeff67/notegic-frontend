@@ -138,7 +138,10 @@ export const createApolloClient = () => {
             },
           },
           searchRoutineTasks: {
-            keyArgs: ["input", ["query", "sortBy", "sortOrder", "stationId"]],
+            keyArgs: [
+              "input",
+              ["query", "sortBy", "sortOrder", "stationId", "routineIds"],
+            ],
             merge(existing, incoming, { args }) {
               if (!existing) return incoming;
               if (args?.input?.after) {

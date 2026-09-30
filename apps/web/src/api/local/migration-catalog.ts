@@ -9,11 +9,16 @@ const migrationSqlModules = import.meta.glob("./migrations/*.sql", {
 
 export const getOrderedMigrations = (): MigrationEntry[] => {
   const sqlByTag = new Map<string, string>();
+  const downSqlByTag = new Map<string, string>();
   for (const [path, sqlContent] of Object.entries(migrationSqlModules)) {
     const fileName = path.split("/").pop();
     if (!fileName || !fileName.endsWith(".sql")) continue;
     const tag = fileName.replace(".sql", "");
     if (!tag) continue;
+    if (tag.endsWith(".down")) {
+      downSqlByTag.set(tag.slice(0, -5), sqlContent);
+      continue;
+    }
     sqlByTag.set(tag, sqlContent);
   }
 
@@ -44,6 +49,9 @@ export const getOrderedMigrations = (): MigrationEntry[] => {
         versionNumber,
         sqlContent,
         statements: splitSqlStatements(sqlContent),
+        downStatements: downSqlByTag.has(entry.tag)
+          ? splitSqlStatements(downSqlByTag.get(entry.tag)!)
+          : undefined,
       };
     })
     .map((migration, index) => {

@@ -14,7 +14,7 @@ export type PlanLimitation = {
   maxStationCount: number;
   maxRoutineTagCount: number;
   maxRoutineCountPerStation: number;
-  maxRoutineTaskCostUnitCount: number;
+  maxRoutineTaskExecutionMinutes: number;
   maxRoutineTaskAttempts: number;
   maxRealtimeRoomSubscriberCount: number;
 };
@@ -34,7 +34,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 10,
     maxRoutineTagCount: 5,
     maxRoutineCountPerStation: 20,
-    maxRoutineTaskCostUnitCount: 100,
+    maxRoutineTaskExecutionMinutes: 100,
     maxRoutineTaskAttempts: 3,
     maxRealtimeRoomSubscriberCount: 5,
   },
@@ -52,7 +52,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 20,
     maxRoutineTagCount: 25,
     maxRoutineCountPerStation: 50,
-    maxRoutineTaskCostUnitCount: 300,
+    maxRoutineTaskExecutionMinutes: 300,
     maxRoutineTaskAttempts: 10,
     maxRealtimeRoomSubscriberCount: 15,
   },
@@ -70,7 +70,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 50,
     maxRoutineTagCount: 50,
     maxRoutineCountPerStation: 100,
-    maxRoutineTaskCostUnitCount: 600,
+    maxRoutineTaskExecutionMinutes: 500,
     maxRoutineTaskAttempts: 10,
     maxRealtimeRoomSubscriberCount: 30,
   },
@@ -88,7 +88,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 100,
     maxRoutineTagCount: 100,
     maxRoutineCountPerStation: 300,
-    maxRoutineTaskCostUnitCount: 1200,
+    maxRoutineTaskExecutionMinutes: 1000,
     maxRoutineTaskAttempts: 20,
     maxRealtimeRoomSubscriberCount: 60,
   },
@@ -106,7 +106,7 @@ export const PlanLimitations: Record<UserPlan, PlanLimitation> = {
     maxStationCount: 200,
     maxRoutineTagCount: 200,
     maxRoutineCountPerStation: 500,
-    maxRoutineTaskCostUnitCount: 6000,
+    maxRoutineTaskExecutionMinutes: 2000,
     maxRoutineTaskAttempts: 20,
     maxRealtimeRoomSubscriberCount: 250,
   },

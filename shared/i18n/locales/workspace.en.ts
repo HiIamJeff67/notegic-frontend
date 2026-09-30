@@ -84,7 +84,6 @@ export const EnglishWorkspaceTranslation = {
     end: "End",
     timezone: "Timezone",
     currentStatus: "Current status",
-    costUnit: "Cost unit",
     nextExpectedRun:
       "Next expected run time: {{date}}. Updating it will not force an immediate rerun if the backend system schedule is later.",
     systemClaimableTime: "System claimable time: {{date}}.",
@@ -283,7 +282,6 @@ export const EnglishWorkspaceTranslation = {
     children: "Children",
     generatedJson:
       "Generated JSON for {{purpose}}. The backend remains authoritative.",
-    estimatedCost: "Estimated cost per execution: {{count}} CostUnits",
     updatedBlocksHint:
       "Each entry needs a blockId and an arborizedEditableBlock. Use the block-specific editor for one block.",
     valuesAvailableAsTokens: 'Values are available as "{{token}}".',
@@ -458,6 +456,9 @@ export const EnglishWorkspaceTranslation = {
     progress: "Progress",
     routineTask: "Routine task",
     dependency: "Dependency",
+    nodeCount: "Node count",
+    edgeCount: "Edge count",
+    storage: "Storage",
     name: "Name",
     icon: "Icon",
     color: "Color",
@@ -469,6 +470,7 @@ export const EnglishWorkspaceTranslation = {
     noRepeat: "Does not repeat",
     customSchedule: "Custom schedule",
     customScheduleDescription: "Set an explicit start and end time.",
+    executionTimeoutMinutes: "Execution timeout (minutes)",
     weekdays: "Weekdays",
     monthDays: "Month days",
     monthDaysDescription: "Limited to days 1–28 so every month remains valid.",
@@ -571,12 +573,7 @@ export const EnglishWorkspaceTranslation = {
       "Click to import JSON from the clipboard, paste JSON, or drag a JSON file here.",
     collapse: "Collapse payload",
     expand: "Expand payload",
-    usage:
-      "Routine task monthly execution usage: {{used}} / {{limit}} CostUnits.",
     notLoaded: "Not loaded",
-    estimateInvalid: "Payload must be valid JSON to estimate CostUnits.",
-    estimatedUsage:
-      "This routine task is estimated to use {{count}} CostUnits per execution.",
     hardLimit: "Payload hard limit: 16 MiB.",
     edit: "Edit payload",
   },

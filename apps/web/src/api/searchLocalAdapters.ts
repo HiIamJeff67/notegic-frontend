@@ -1,6 +1,6 @@
 import {
   fromGraphQLRoutinePeriod,
-  fromGraphQLRoutineStatus,
+  fromGraphQLRoutinePhase,
   fromGraphQLSupportedIcon,
 } from "@shared/api/graphql/conversions";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
@@ -48,7 +48,8 @@ export const searchRoutinesLocalAdapter = {
         id: edge.node.id,
         stationId: edge.node.stationId,
         title: edge.node.title,
-        status: fromGraphQLRoutineStatus(edge.node.status),
+        phase: fromGraphQLRoutinePhase(edge.node.phase),
+        timeoutSeconds: edge.node.timeoutSeconds,
         isPinned: edge.node.isPinned,
         scheduledStartAt: new Date(edge.node.scheduledStartAt ?? 0),
         scheduledEndAt: new Date(edge.node.scheduledEndAt ?? 0),

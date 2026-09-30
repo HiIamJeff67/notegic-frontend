@@ -1,6 +1,6 @@
 import { MaxShelfDepth } from "@shared/constants";
 import { DNDType } from "@shared/enums";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
 import toast from "@shared/lib/toast";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -149,7 +149,7 @@ const SubShelfMenuItem = ({
         await shelfItemManager.expandSubShelf(root, current);
       }
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   }, [root, current, t, shelfItemManager]);
 
@@ -164,7 +164,7 @@ const SubShelfMenuItem = ({
         await shelfItemManager.expandSubShelf(root, current);
       }
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   }, [root, current, t, shelfItemManager]);
 
@@ -179,7 +179,7 @@ const SubShelfMenuItem = ({
         await shelfItemManager.expandSubShelf(root, current);
       }
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   }, [root, current, t, shelfItemManager]);
 
@@ -334,9 +334,7 @@ const SubShelfMenuItem = ({
                         async () => {
                           await shelfItemManager
                             .deleteSubShelf(prev, current)
-                            .catch(error =>
-                              toast.error(translateError(error, t))
-                            );
+                            .catch(error => toast.error(tError(error, t)));
                         }
                       ),
                     onCancel: modalManager.close,

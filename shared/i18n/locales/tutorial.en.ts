@@ -249,9 +249,9 @@ export const EnglishTutorialTranslation = {
           "A Routine is the repeatable automation definition and schedule. A Routine Task is an executable step created from that definition and claimed by the scheduler.",
       },
       routineQuota: {
-        question: "When is routine quota consumed?",
+        question: "How is Routine Task execution quota calculated?",
         answer:
-          "Quota is consumed when the backend claims a Routine Task for execution. A client should not reject a task based only on a local estimate of its payload cost.",
+          "The backend reserves quota when it claims a task, then charges its actual execution time. Parallel tasks count separately; two tasks running for two minutes each use four task-minutes. Per-cycle limits are Free 100, Pro 300, Premium 500, Ultimate 1,000, and Enterprise 2,000 minutes. A Routine can time out after 1–60 minutes (default 5).",
       },
       leakedApiKey: {
         question: "What should I do if an API key may have leaked?",

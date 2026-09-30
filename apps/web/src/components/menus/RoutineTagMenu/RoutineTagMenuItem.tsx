@@ -1,4 +1,4 @@
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import {
@@ -66,7 +66,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         await stationRoutineManager
           .renameEditingRoutineTag()
-          .catch(error => toast.error(translateError(error, t)));
+          .catch(error => toast.error(tError(error, t)));
       }),
     [t, loadingManager, stationRoutineManager]
   );
@@ -133,9 +133,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
                         stationRoutineManager.selectRoutineTag(routineTag.id);
                         void stationRoutineManager
                           .toggleRoutineTag(routineTag.id)
-                          .catch(error =>
-                            toast.error(translateError(error, t))
-                          );
+                          .catch(error => toast.error(tError(error, t)));
                       }}
                     >
                       {routineTag.isOpen ? <ChevronDown /> : <ChevronRight />}
@@ -219,7 +217,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
                 onClick={() => {
                   void stationRoutineManager
                     .duplicateRoutineTag(routineTag.id)
-                    .catch(error => toast.error(translateError(error, t)));
+                    .catch(error => toast.error(tError(error, t)));
                 }}
               >
                 <Copy className="mr-2 size-4" />
@@ -234,7 +232,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
                   if (!open) return;
                   void stationRoutineManager
                     .searchRoutines()
-                    .catch(error => toast.error(translateError(error, t)));
+                    .catch(error => toast.error(tError(error, t)));
                 }}
               >
                 <ContextMenuSubTrigger>
@@ -258,9 +256,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
                           onClick={() => {
                             void stationRoutineManager
                               .linkRoutineTag(routine.id, routineTag.id)
-                              .catch(error =>
-                                toast.error(translateError(error, t))
-                              );
+                              .catch(error => toast.error(tError(error, t)));
                           }}
                         >
                           <RoutineIcon className="mr-2 size-4" />

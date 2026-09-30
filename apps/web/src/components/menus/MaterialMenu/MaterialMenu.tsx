@@ -1,3 +1,4 @@
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { CheckIcon } from "lucide-react";
@@ -7,7 +8,6 @@ import MaterialMenuItem from "@/components/menus/MaterialMenu/MaterialMenuItem";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
 
 interface MaterialMenuProps {
   parent: SubShelfNode;
@@ -24,7 +24,7 @@ const MaterialMenu = ({ parent }: MaterialMenuProps) => {
         async () =>
           await shelfItemManager
             .renameEditingMaterial()
-            .catch(error => toast.error(translateError(error, t)))
+            .catch(error => toast.error(tError(error, t)))
       ),
     [loadingManager, t, shelfItemManager]
   );

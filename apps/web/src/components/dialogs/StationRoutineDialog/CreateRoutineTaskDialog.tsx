@@ -1,12 +1,10 @@
 import {
   RoutineTaskPurpose,
   RoutineTaskPurposeByAction,
-  UserPlan,
 } from "@shared/api/interfaces/enums";
 import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
-import { PlanLimitations } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -121,25 +119,6 @@ const CreateRoutineTaskDialog = ({
     );
   }, [isOpen, isPayloadExpanded, payload]);
 
-  const estimatedPayloadCostUnit = useMemo(() => {
-    try {
-      const parsedPayload =
-        payload.trim().length === 0 ? {} : JSON.parse(payload);
-      return Math.ceil(
-        new Blob([JSON.stringify(parsedPayload ?? {})]).size / 1024
-      );
-    } catch {
-      return null;
-    }
-  }, [payload]);
-
-  const routineTaskMonthlyCostUnitUsed = Number(
-    userManager.userAccount?.routineTaskCostUnitCount ?? 0
-  );
-  const maxRoutineTaskCostUnitCount =
-    PlanLimitations[userManager.userData?.plan ?? UserPlan.Free]
-      .maxRoutineTaskCostUnitCount;
-
   const validation = useMemo(() => {
     try {
       return CreateRoutineTaskByRoutineIdRequestSchema.safeParse({
@@ -171,6 +150,7 @@ const CreateRoutineTaskDialog = ({
     }
     setPayloadError("");
 
+    let routineTaskId: UUID;
     try {
       const routineTaskNode = await stationRoutineManager.createRoutineTask(
         validation.data.body.routineId as UUID,
@@ -180,11 +160,26 @@ const CreateRoutineTaskDialog = ({
         validation.data.body.priority ?? 0,
         validation.data.body.maxAttempts ?? 1
       );
-      await onCreated?.(routineTaskNode.id);
-      toast.success(t("workspace.routineTask.created"));
-      onClose();
+      routineTaskId = routineTaskNode.id;
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
+      return;
+    }
+
+    toast.success(t("workspace.routineTask.created"));
+    onClose();
+    try {
+      await onCreated?.(routineTaskId);
+    } catch (error) {
+      console.error("Failed to refresh after creating routine task", error);
+    }
+    try {
+      await userManager.fetchUserQuota();
+    } catch (error) {
+      console.error(
+        "Failed to refresh user quota after creating routine task",
+        error
+      );
     }
   };
 
@@ -245,7 +240,7 @@ const CreateRoutineTaskDialog = ({
                   >
                     <SelectTrigger className="w-full rounded-sm">
                       <SelectValue>
-                        {translateRoutineTaskPurpose(purpose, t)}
+                        {`${t(routineTaskPurposeTKeys[purpose].action)} · ${t(routineTaskPurposeTKeys[purpose].target)}`}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="z-[160]">
@@ -264,7 +259,7 @@ const CreateRoutineTaskDialog = ({
                             </SelectLabel>
                             {purposes.map(taskPurpose => (
                               <SelectItem key={taskPurpose} value={taskPurpose}>
-                                {translateRoutineTaskPurpose(taskPurpose, t)}
+                                {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -418,24 +413,6 @@ const CreateRoutineTaskDialog = ({
                 </div>
                 <div className="flex items-start justify-between gap-3 rounded-sm border bg-card/45 px-3 py-2">
                   <div className="flex min-w-0 flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">
-                      {t("workspace.payload.usage", {
-                        used: userManager.userAccount
-                          ? routineTaskMonthlyCostUnitUsed
-                          : t("workspace.payload.notLoaded"),
-                        limit: maxRoutineTaskCostUnitCount,
-                      })}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {estimatedPayloadCostUnit === null
-                        ? t("workspace.payload.estimateInvalid")
-                        : t("workspace.payload.estimatedUsage", {
-                            count: estimatedPayloadCostUnit,
-                          })}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {t("workspace.payload.hardLimit")}
-                    </span>
                     {payloadError.length > 0 && (
                       <span className="text-destructive text-xs">
                         {payloadError}

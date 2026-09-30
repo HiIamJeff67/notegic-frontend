@@ -225,7 +225,7 @@ export const mutationFnLogout = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
@@ -261,7 +261,7 @@ export const mutationFnSendAuthCode = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
@@ -291,7 +291,7 @@ export const mutationFnValidateEmail = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
@@ -321,7 +321,7 @@ export const mutationFnResetEmail = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
@@ -351,7 +351,7 @@ export const mutationFnForgetPassword = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
@@ -376,7 +376,7 @@ export const mutationFnResetMe = async (
         ValidationClientException.ZodParsingFailed(error)
       );
     } else if (error instanceof NotegicAPIError) {
-      throw new Error(error.unWrap.message);
+      throw error;
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
     }
@@ -405,7 +405,7 @@ export const mutationFnDeleteMe = async (
           throw error.setPresentation("error.apiError.getUser.failedToGetUser");
 
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());

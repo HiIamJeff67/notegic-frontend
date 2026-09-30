@@ -1,15 +1,13 @@
 import {
   RoutineTaskPurpose,
   RoutineTaskPurposeByAction,
-  UserPlan,
 } from "@shared/api/interfaces/enums";
-import { PlanLimitations } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
@@ -66,14 +64,12 @@ const RoutineTaskInspector = ({
     payload: string;
     priority: number;
     maxAttempts: number;
-    costUnit: number;
   }>({
     title: "",
     purpose: RoutineTaskPurpose.CreateBlockPack,
     payload: "{}",
     priority: 0,
     maxAttempts: 1,
-    costUnit: 0,
   });
   const [isPayloadEditorOpen, setIsPayloadEditorOpen] =
     useState<boolean>(false);
@@ -87,7 +83,6 @@ const RoutineTaskInspector = ({
       payload: "{}",
       priority: 0,
       maxAttempts: 1,
-      costUnit: 0,
     });
     setIsPayloadEditorOpen(false);
 
@@ -110,8 +105,6 @@ const RoutineTaskInspector = ({
           stationId: parentRoutine?.stationId ?? ("" as UUID),
           title: response.data.title,
           purpose: response.data.purpose,
-          phase: response.data.phase,
-          costUnit: response.data.costUnit,
           payload: response.data.payload,
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
@@ -127,11 +120,10 @@ const RoutineTaskInspector = ({
           payload: JSON.stringify(response.data.payload ?? {}, null, 2),
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
-          costUnit: response.data.costUnit,
         });
       })
       .catch(error => {
-        if (!cancelled) toast.error(translateError(error, t));
+        if (!cancelled) toast.error(tError(error, t));
       })
       .finally(() => {
         if (!cancelled) setIsLoadingRoutineTaskDetail(false);
@@ -141,25 +133,6 @@ const RoutineTaskInspector = ({
       cancelled = true;
     };
   }, [isOpen, routineTaskId]);
-
-  const estimatedPayloadCostUnit = useMemo(() => {
-    try {
-      const parsedPayload =
-        values.payload.trim().length === 0 ? {} : JSON.parse(values.payload);
-      return Math.ceil(
-        new Blob([JSON.stringify(parsedPayload ?? {})]).size / 1024
-      );
-    } catch {
-      return null;
-    }
-  }, [values.payload]);
-
-  const routineTaskMonthlyCostUnitUsed = Number(
-    userManager.userAccount?.routineTaskCostUnitCount ?? 0
-  );
-  const maxRoutineTaskCostUnitCount =
-    PlanLimitations[userManager.userData?.plan ?? UserPlan.Free]
-      .maxRoutineTaskCostUnitCount;
 
   const saveRoutineTask = async () => {
     const title = values.title.trim();
@@ -187,11 +160,11 @@ const RoutineTaskInspector = ({
         priority: values.priority,
         maxAttempts: values.maxAttempts,
       });
-      void userManager.fetchUserAccount();
+      void userManager.fetchUserQuota();
       toast.success(t("workspace.routineTask.updated"));
       onClose();
     } catch (error) {
-      toast.error(translateError(error, t));
+      toast.error(tError(error, t));
     }
   };
 
@@ -259,7 +232,7 @@ const RoutineTaskInspector = ({
                       purpose: purpose as RoutineTaskPurpose,
                     }))
                   }
-                  valueLabel={translateRoutineTaskPurpose(values.purpose, t)}
+                  valueLabel={`${t(routineTaskPurposeTKeys[values.purpose].action)} · ${t(routineTaskPurposeTKeys[values.purpose].target)}`}
                 >
                   {Object.entries(RoutineTaskPurposeByAction).map(
                     ([action, purposes], index) => (
@@ -276,7 +249,7 @@ const RoutineTaskInspector = ({
                         </SelectLabel>
                         {purposes.map(taskPurpose => (
                           <SelectItem key={taskPurpose} value={taskPurpose}>
-                            {translateRoutineTaskPurpose(taskPurpose, t)}
+                            {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -346,30 +319,6 @@ const RoutineTaskInspector = ({
                 >
                   {t("workspace.payload.edit")}
                 </Button>
-                <span className="text-xs text-muted-foreground">
-                  {t("workspace.payload.usage", {
-                    used: userManager.userAccount
-                      ? routineTaskMonthlyCostUnitUsed
-                      : t("workspace.payload.notLoaded"),
-                    limit: maxRoutineTaskCostUnitCount,
-                  })}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {estimatedPayloadCostUnit === null
-                    ? t("workspace.payload.estimateInvalid")
-                    : t("workspace.payload.estimatedUsage", {
-                        count: estimatedPayloadCostUnit,
-                      })}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3 text-sm">
-                <span className="text-muted-foreground">
-                  {t("workspace.inspector.costUnit")}
-                </span>
-                <span className="font-medium tabular-nums">
-                  {values.costUnit}
-                </span>
               </div>
             </div>
 
@@ -380,8 +329,7 @@ const RoutineTaskInspector = ({
                 disabled={
                   stationRoutineManager.isUpdatingRoutineTask ||
                   isLoadingRoutineTaskDetail ||
-                  values.title.trim().length === 0 ||
-                  estimatedPayloadCostUnit === null
+                  values.title.trim().length === 0
                 }
               >
                 {stationRoutineManager.isUpdatingRoutineTask && <Spinner />}

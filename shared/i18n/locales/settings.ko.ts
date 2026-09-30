@@ -78,7 +78,6 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         status: "상태",
         blocks: "블록",
         workflows: "워크플로",
-        taskCostUnits: "루틴 작업 월간 실행 CostUnits",
         billingCycle: "결제 주기",
         annualPricing: "연간 결제는 연간 가격이 적용됩니다.",
         monthly: "월간",

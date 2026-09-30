@@ -1,5 +1,5 @@
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import {
   Suspense,
@@ -91,7 +91,7 @@ const ForgetPasswordPage = () => {
       } catch (error) {
         setSendAuthCodeTimeCounter(0);
         resetTurnstile();
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     });
   }, [
@@ -130,7 +130,7 @@ const ForgetPasswordPage = () => {
         } catch (error) {
           setNewPassword("");
           setConfirmNewPassword("");
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       });
     },

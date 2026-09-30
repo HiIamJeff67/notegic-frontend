@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
@@ -75,7 +75,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         await stationRoutineManager
           .renameEditingStation()
-          .catch(error => toast.error(translateError(error, t)));
+          .catch(error => toast.error(tError(error, t)));
       }),
     [t, loadingManager, stationRoutineManager]
   );
@@ -141,9 +141,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                       onClick={() => {
                         void stationRoutineManager
                           .toggleStation(station.id)
-                          .catch(error =>
-                            toast.error(translateError(error, t))
-                          );
+                          .catch(error => toast.error(tError(error, t)));
                       }}
                     >
                       {station.isOpen ? (
@@ -276,7 +274,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                     void loadingManager.startAsyncTransactionLoading(async () =>
                       stationRoutineManager
                         .leaveStation(station.id)
-                        .catch(error => toast.error(translateError(error, t)))
+                        .catch(error => toast.error(tError(error, t)))
                     );
                     return;
                   }

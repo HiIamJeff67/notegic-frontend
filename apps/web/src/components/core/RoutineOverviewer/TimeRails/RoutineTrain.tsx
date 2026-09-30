@@ -1,4 +1,5 @@
-import { RoutineStatus } from "@shared/api/interfaces/enums";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import { cn } from "@shared/util/utils";
 import { Bookmark } from "lucide-react";
@@ -10,11 +11,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  translateRoutinePeriod,
-  translateRoutinePhase,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
 
 const RoutineTrain = ({
   routine,
@@ -52,9 +48,6 @@ const RoutineTrain = ({
           className={cn(
             "group absolute flex h-7 min-w-0 items-center gap-1.5 overflow-hidden",
             "rounded-sm border border-input bg-muted px-2 text-left text-xs shadow-sm hover:bg-input/50",
-            routine.status === RoutineStatus.Completed &&
-              "text-[var(--decoration)]",
-            routine.status === RoutineStatus.OverDue && "text-destructive",
             "select-none",
             isResizing && "ring-1 ring-primary/50"
           )}
@@ -110,18 +103,16 @@ const RoutineTrain = ({
           id={routine.id}
           rows={[
             {
-              field: t("workspace.table.status"),
-              value: translateRoutineStatus(routine.status, t),
-            },
-            {
               field: t("workspace.table.phase"),
               value: routine.phase
-                ? translateRoutinePhase(routine.phase, t)
+                ? t(routinePhaseTKeys[routine.phase])
                 : t("workspace.period.none"),
             },
             {
               field: t("workspace.payloadEditor.period"),
-              value: translateRoutinePeriod(routine.period, t),
+              value: routine.period
+                ? t(routinePeriodTKeys[routine.period])
+                : t(routinePeriodTKeys.none),
             },
             {
               field: t("workspace.inspector.start"),

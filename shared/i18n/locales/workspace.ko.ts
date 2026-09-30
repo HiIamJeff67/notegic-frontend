@@ -85,7 +85,6 @@ export const KoreanWorkspaceTranslation = {
     end: "종료",
     timezone: "표준 시간대",
     currentStatus: "현재 상태",
-    costUnit: "비용 단위",
     nextExpectedRun:
       "다음 예상 실행 시간: {{date}}. 백엔드 시스템 일정이 더 늦다면 이 시간을 업데이트해도 즉시 다시 실행되지 않습니다.",
     systemClaimableTime: "시스템 처리 가능 시간: {{date}}.",
@@ -283,7 +282,6 @@ export const KoreanWorkspaceTranslation = {
     children: "하위 항목",
     generatedJson:
       "{{purpose}}용으로 생성된 JSON입니다. 최종 기준은 백엔드입니다.",
-    estimatedCost: "실행당 예상 비용: {{count}} CostUnits",
     updatedBlocksHint:
       "각 항목에는 blockId와 arborizedEditableBlock이 필요합니다. 단일 블록에는 전용 편집기를 사용하세요.",
     valuesAvailableAsTokens: '값은 "{{token}}" 형식으로 사용할 수 있습니다.',
@@ -457,6 +455,9 @@ export const KoreanWorkspaceTranslation = {
     progress: "진행률",
     routineTask: "루틴 작업",
     dependency: "의존성",
+    nodeCount: "노드 수",
+    edgeCount: "엣지 수",
+    storage: "저장 상태",
     name: "이름",
     icon: "아이콘",
     color: "색상",
@@ -468,6 +469,7 @@ export const KoreanWorkspaceTranslation = {
     noRepeat: "반복 안 함",
     customSchedule: "사용자 지정 일정",
     customScheduleDescription: "명확한 시작 및 종료 시간을 설정합니다.",
+    executionTimeoutMinutes: "실행 시간 초과(분)",
     weekdays: "요일",
     monthDays: "매월 날짜",
     monthDaysDescription: "모든 달에 유효하도록 1~28일로 제한됩니다.",
@@ -568,11 +570,7 @@ export const KoreanWorkspaceTranslation = {
       "클릭하여 클립보드에서 JSON을 가져오거나, JSON을 붙여넣거나, JSON 파일을 여기에 드롭하세요.",
     collapse: "페이로드 접기",
     expand: "페이로드 펼치기",
-    usage: "루틴 작업 월간 실행 사용량: {{used}} / {{limit}} CostUnits.",
     notLoaded: "불러오지 않음",
-    estimateInvalid: "CostUnits를 추정하려면 유효한 JSON이어야 합니다.",
-    estimatedUsage:
-      "이 루틴 작업은 실행당 약 {{count}} CostUnits를 사용합니다.",
     hardLimit: "페이로드 최대 한도: 16 MiB.",
     edit: "페이로드 편집",
   },

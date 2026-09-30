@@ -1,11 +1,8 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { ItemType } from "@shared/api/interfaces/enums";
-import { translateError } from "@shared/i18n/error";
-import {
-  translateRoutinePeriod,
-  translateRoutinePhase,
-  translateRoutineStatus,
-} from "@shared/i18n/workspace";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
@@ -110,7 +107,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
       await loadingManager.startAsyncTransactionLoading(async () => {
         await stationRoutineManager
           .renameEditingRoutine()
-          .catch(error => toast.error(translateError(error, t)));
+          .catch(error => toast.error(tError(error, t)));
       }),
     [t, loadingManager, stationRoutineManager]
   );
@@ -181,9 +178,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                         stationRoutineManager.selectRoutine(routine.id);
                         void stationRoutineManager
                           .toggleRoutine(station.id, routine.id)
-                          .catch(error =>
-                            toast.error(translateError(error, t))
-                          );
+                          .catch(error => toast.error(tError(error, t)));
                       }}
                     >
                       {routine.isPinned && (
@@ -214,18 +209,16 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                       value: routine.description || t("workspace.period.none"),
                     },
                     {
-                      field: t("workspace.table.status"),
-                      value: translateRoutineStatus(routine.status, t),
-                    },
-                    {
                       field: t("workspace.table.phase"),
                       value: routine.phase
-                        ? translateRoutinePhase(routine.phase, t)
+                        ? t(routinePhaseTKeys[routine.phase])
                         : t("workspace.period.none"),
                     },
                     {
                       field: t("workspace.payloadEditor.period"),
-                      value: translateRoutinePeriod(routine.period, t),
+                      value: routine.period
+                        ? t(routinePeriodTKeys[routine.period])
+                        : t(routinePeriodTKeys.none),
                     },
                     {
                       field: t("workspace.table.tags"),
@@ -299,7 +292,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                 onClick={() => {
                   void stationRoutineManager
                     .duplicateRoutine(routine.id)
-                    .catch(error => toast.error(translateError(error, t)));
+                    .catch(error => toast.error(tError(error, t)));
                 }}
               >
                 <Copy className="mr-2 size-4" />
@@ -312,7 +305,12 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                     stationName: station.name,
                     routineTitle: routine.title,
                     onCreated: async () => {
-                      routine.isOpen = true;
+                      if (!routine.isOpen) {
+                        await stationRoutineManager.toggleRoutine(
+                          station.id,
+                          routine.id
+                        );
+                      }
                     },
                   })
                 }
@@ -330,7 +328,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                   window.setTimeout(() => {
                     void stationRoutineManager
                       .searchRoutineTags()
-                      .catch(error => toast.error(translateError(error, t)));
+                      .catch(error => toast.error(tError(error, t)));
                   }, 0);
                 }}
               >
@@ -355,7 +353,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                     }
                     void stationRoutineManager
                       .loadMoreRoutineTags()
-                      .catch(error => toast.error(translateError(error, t)));
+                      .catch(error => toast.error(tError(error, t)));
                   }}
                 >
                   {stationRoutineManager.routineTags.length === 0 ? (
@@ -380,9 +378,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                                 routineTag.id,
                                 isLinked
                               )
-                              .catch(error =>
-                                toast.error(translateError(error, t))
-                              );
+                              .catch(error => toast.error(tError(error, t)));
                           }}
                         >
                           <RoutineTagIcon className="mr-2 size-4" />
@@ -403,7 +399,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                         rootShelfId: null,
                         parentSubShelfId: null,
                       })
-                      .catch(error => toast.error(translateError(error, t)));
+                      .catch(error => toast.error(tError(error, t)));
                   }, 0);
                 }}
               >
@@ -428,7 +424,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                     }
                     void shelfItemManager
                       .loadMoreItems()
-                      .catch(error => toast.error(translateError(error, t)));
+                      .catch(error => toast.error(tError(error, t)));
                   }}
                 >
                   {shelfItemManager.itemSearch.loading &&
@@ -466,9 +462,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                                       : t("workspace.menu.itemConnected")
                                   )
                                 )
-                                .catch(error =>
-                                  toast.error(translateError(error, t))
-                                );
+                                .catch(error => toast.error(tError(error, t)));
                             }}
                           >
                             {item.type === ItemType.BlockPack ? (
@@ -498,7 +492,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                 onClick={() => {
                   void stationRoutineManager
                     .updateRoutine(routine.id, { isPinned: !routine.isPinned })
-                    .catch(error => toast.error(translateError(error, t)));
+                    .catch(error => toast.error(tError(error, t)));
                 }}
               >
                 <Bookmark className="mr-2 size-4" />

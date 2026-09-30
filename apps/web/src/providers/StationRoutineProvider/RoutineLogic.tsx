@@ -2,15 +2,10 @@ import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
   RoutinePhase as GraphQLRoutinePhase,
-  RoutineStatus as GraphQLRoutineStatus,
   SearchRoutineSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import {
-  ItemType,
-  RoutinePeriod,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
+import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
@@ -107,7 +102,6 @@ export const useRoutineLogic = ({
           id: UUID;
           stationId: UUID;
           title: string;
-          status: GraphQLRoutineStatus;
           phase?: GraphQLRoutinePhase | null;
           isPinned: boolean;
           scheduledStartAt: Date | string | number;
@@ -147,14 +141,6 @@ export const useRoutineLogic = ({
           stationId: node.stationId,
           title: node.title,
           description: existingRoutine?.description ?? "",
-          status:
-            node.status === GraphQLRoutineStatus.RoutineStatusCompleted
-              ? RoutineStatus.Completed
-              : node.status === GraphQLRoutineStatus.RoutineStatusInProgress
-                ? RoutineStatus.InProgress
-                : node.status === GraphQLRoutineStatus.RoutineStatusOverDue
-                  ? RoutineStatus.OverDue
-                  : RoutineStatus.Scheduled,
           phase: fromGraphQLRoutinePhase(node.phase),
           isPinned: node.isPinned,
           scheduledStartAt: new Date(node.scheduledStartAt),
@@ -172,9 +158,7 @@ export const useRoutineLogic = ({
           updatedAt: new Date(node.updatedAt),
           createdAt: new Date(node.createdAt),
           isOpen: existingRoutine?.isOpen ?? false,
-          isExpanded:
-            existingRoutine?.isExpanded ??
-            routineTasks.length >= routineTaskIds.length,
+          isExpanded: routineTasks.length >= routineTaskIds.length,
           routineTagIds,
           routineTaskIds,
           itemIds: routineItemIds,
@@ -342,7 +326,15 @@ export const useRoutineLogic = ({
         return;
       }
 
-      if (!routineNode.isExpanded) {
+      if (
+        !routineNode.isExpanded ||
+        routineNode.routineTaskIds.some(
+          routineTaskId =>
+            !stationNode.routineTasks.some(
+              routineTask => routineTask.id === routineTaskId
+            )
+        )
+      ) {
         routineNode.isOpen = true;
         forceUpdate();
         if (routineNode.routineTaskIds.length > 0) {
@@ -376,6 +368,7 @@ export const useRoutineLogic = ({
       values: {
         title: string;
         description: string;
+        timeoutSeconds?: number;
         isPinned?: boolean;
         scheduledStartAt?: Date;
         scheduledEndAt?: Date;
@@ -391,6 +384,7 @@ export const useRoutineLogic = ({
           stationId,
           title: values.title,
           description: values.description,
+          timeoutSeconds: values.timeoutSeconds,
           isPinned: values.isPinned,
           scheduledStartAt: values.scheduledStartAt,
           scheduledEndAt: values.scheduledEndAt,
@@ -407,7 +401,6 @@ export const useRoutineLogic = ({
         stationId,
         title: values.title,
         description: values.description,
-        status: RoutineStatus.Scheduled,
         phase: null,
         isPinned: values.isPinned ?? false,
         scheduledStartAt,

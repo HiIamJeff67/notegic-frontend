@@ -3,11 +3,9 @@ import {
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
-import {
-  translateRoutinePhase,
-  translateRoutineTaskPurpose,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { Trash2 } from "lucide-react";
@@ -68,17 +66,17 @@ const RoutineTaskGraphNode = ({
         </Button>
       </div>
       <div className="mt-1 truncate text-xs text-muted-foreground">
-        {translateRoutineTaskPurpose(data.purpose, t)}
+        {`${t(routineTaskPurposeTKeys[data.purpose].action)} · ${t(routineTaskPurposeTKeys[data.purpose].target)}`}
       </div>
       <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
         <RoutineTaskStatusDot status={data.executionStatus} />
         <span className="truncate">
           {data.executionStatus
-            ? translateRoutineTaskRecordStatus(data.executionStatus, t)
+            ? t(routineTaskRecordStatusTKeys[data.executionStatus])
             : t("workspace.status.waiting")}
         </span>
         {data.routinePhase
-          ? ` · ${translateRoutinePhase(data.routinePhase, t)}`
+          ? ` · ${t(routinePhaseTKeys[data.routinePhase])}`
           : ""}
       </div>
       <Handle type="source" position={Position.Right} />

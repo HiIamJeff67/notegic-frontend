@@ -10,7 +10,6 @@ export * from "./realtimePermission.enum";
 export * from "./routinePeriod.enum";
 export * from "./routinePhase.enum";
 export * from "./routineRecordStatus.enum";
-export * from "./routineStatus.enum";
 export * from "./routineTaskPurpose.enum";
 export * from "./routineTaskRecordErrorCode.enum";
 export * from "./routineTaskRecordStatus.enum";

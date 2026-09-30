@@ -1,10 +1,8 @@
 export enum RoutineRecordStatus {
-  Pending = "Pending",
   Running = "Running",
   Success = "Success",
   Failed = "Failed",
-  Blocked = "Blocked",
-  Canceled = "Canceled",
+  Cancel = "Cancel",
 }
 
 export const AllRoutineRecordStatuses: RoutineRecordStatus[] =

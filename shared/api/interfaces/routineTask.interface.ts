@@ -2,10 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
-import {
-  AllRoutinePhases,
-  AllRoutineTaskPurposes,
-} from "@shared/api/interfaces/enums";
+import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
 import { z } from "zod";
 import {
   RoutineTaskPayloadSchema,
@@ -50,9 +47,7 @@ const RoutineTaskDefinitionSchema = z.object({
   routineId: z.uuidv4(),
   title: z.string(),
   purpose: z.enum(AllRoutineTaskPurposes),
-  phase: z.enum(AllRoutinePhases).nullable(),
   payload: z.any(),
-  costUnit: z.number(),
   priority: z.int32(),
   maxAttempts: z.int32(),
   previousRoutineTaskIds: z.array(z.uuidv4()),

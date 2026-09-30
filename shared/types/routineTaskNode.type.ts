@@ -1,5 +1,4 @@
 import {
-  RoutinePhase,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
@@ -13,8 +12,6 @@ export interface RoutineTaskNode {
   stationId: UUID;
   title: string;
   purpose: RoutineTaskPurpose;
-  phase: RoutinePhase | null;
-  costUnit: number;
   payload: any;
   priority: number;
   previousRoutineTaskIds: UUID[];
@@ -34,8 +31,6 @@ export const getDefaultRoutineTaskNode = (
   stationId,
   title: "Untitled",
   purpose: RoutineTaskPurpose.GetBlockPack,
-  phase: null,
-  costUnit: 0,
   payload: {},
   priority: 0,
   previousRoutineTaskIds: [],

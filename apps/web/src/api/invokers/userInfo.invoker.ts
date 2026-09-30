@@ -33,7 +33,7 @@ export const queryFnGetMyInfo = async (
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());

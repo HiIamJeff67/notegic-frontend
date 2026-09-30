@@ -1,5 +1,4 @@
 export enum RoutinePhase {
-  Claimed = "Claimed",
   Plan = "Plan",
   Execution = "Execution",
   Recovery = "Recovery",

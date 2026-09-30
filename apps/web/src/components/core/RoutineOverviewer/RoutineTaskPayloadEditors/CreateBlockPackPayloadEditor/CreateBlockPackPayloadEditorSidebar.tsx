@@ -1,6 +1,6 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import toast from "@shared/lib/toast";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
@@ -535,10 +535,7 @@ const CreateBlockPackPayloadEditorSidebar = ({
             <Label>{t("workspace.payloadEditor.payloadPreview")}</Label>
             <p className="mt-1 text-xs text-muted-foreground">
               {t("workspace.payloadEditor.generatedJson", {
-                purpose: translateRoutineTaskPurpose(
-                  purpose as RoutineTaskPurpose,
-                  t
-                ),
+                purpose: `${t(routineTaskPurposeTKeys[purpose as RoutineTaskPurpose].action)} · ${t(routineTaskPurposeTKeys[purpose as RoutineTaskPurpose].target)}`,
               })}
             </p>
           </div>

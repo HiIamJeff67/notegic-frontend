@@ -1,4 +1,6 @@
 import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
@@ -30,8 +32,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine } from "@/hooks";
-import { translateError } from "@shared/i18n/error";
-import { translateRoutinePeriod } from "@shared/i18n/workspace";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineDialogSkeleton from "./CreateRoutineDialogSkeleton";
 
@@ -53,6 +53,7 @@ const CreateRoutineDialog = ({
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [timeoutMinutes, setTimeoutMinutes] = useState<number>(5);
   const [hasCustomSchedule, setHasCustomSchedule] = useState<boolean>(false);
   const [scheduledStartAt, setScheduledStartAt] = useState<Date | undefined>(
     undefined
@@ -76,6 +77,7 @@ const CreateRoutineDialog = ({
     if (isOpen) return;
     setTitle("");
     setDescription("");
+    setTimeoutMinutes(5);
     setHasCustomSchedule(false);
     setScheduledStartAt(undefined);
     setScheduledEndAt(undefined);
@@ -128,7 +130,14 @@ const CreateRoutineDialog = ({
           onSubmit={async event => {
             event.preventDefault();
             const trimmedTitle = title.trim();
-            if (trimmedTitle.length === 0 || hasInvalidSchedule) return;
+            if (
+              trimmedTitle.length === 0 ||
+              hasInvalidSchedule ||
+              !Number.isInteger(timeoutMinutes) ||
+              timeoutMinutes < 1 ||
+              timeoutMinutes > 60
+            )
+              return;
 
             try {
               let nextScheduledStartAt = scheduledStartAt;
@@ -183,6 +192,7 @@ const CreateRoutineDialog = ({
                 {
                   title: trimmedTitle,
                   description: description.trim(),
+                  timeoutSeconds: timeoutMinutes * 60,
                   isPinned,
                   ...((hasCustomSchedule ||
                     period === RoutinePeriod.Weekly ||
@@ -203,7 +213,7 @@ const CreateRoutineDialog = ({
               toast.success(t("workspace.routine.created"));
               onClose();
             } catch (error) {
-              toast.error(translateError(error, t));
+              toast.error(tError(error, t));
             }
           }}
         >
@@ -237,6 +247,23 @@ const CreateRoutineDialog = ({
                   onChange={event => setDescription(event.currentTarget.value)}
                   className="min-h-24 resize-none"
                   placeholder={t("workspace.routine.descriptionPlaceholder")}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="routine-timeout-minutes">
+                  {t("workspace.fields.executionTimeoutMinutes")}
+                </Label>
+                <Input
+                  id="routine-timeout-minutes"
+                  type="number"
+                  min={1}
+                  max={60}
+                  step={1}
+                  value={timeoutMinutes}
+                  onChange={event =>
+                    setTimeoutMinutes(Number(event.currentTarget.value))
+                  }
                 />
               </div>
 
@@ -372,7 +399,7 @@ const CreateRoutineDialog = ({
                       </SelectItem>
                       {AllRoutinePeriods.map(routinePeriod => (
                         <SelectItem key={routinePeriod} value={routinePeriod}>
-                          {translateRoutinePeriod(routinePeriod, t)}
+                          {t(routinePeriodTKeys[routinePeriod])}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -409,7 +436,10 @@ const CreateRoutineDialog = ({
               disabled={
                 stationRoutineManager.isCreatingRoutine ||
                 title.trim().length === 0 ||
-                hasInvalidSchedule
+                hasInvalidSchedule ||
+                !Number.isInteger(timeoutMinutes) ||
+                timeoutMinutes < 1 ||
+                timeoutMinutes > 60
               }
             >
               {stationRoutineManager.isCreatingRoutine && <Spinner />}

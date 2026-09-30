@@ -1,5 +1,4 @@
 enum RoutinePhase {
-  RoutinePhase_Claimed
   RoutinePhase_Plan
   RoutinePhase_Execution
   RoutinePhase_Recovery

@@ -1,7 +1,6 @@
 import {
   toGraphQLRoutinePhase,
   toGraphQLRoutinePeriod,
-  toGraphQLRoutineStatus,
 } from "@shared/api/graphql/conversions";
 import {
   type SearchRoutineInput,
@@ -12,7 +11,6 @@ import {
 import {
   AccessControlPermission,
   AllAccessControlPermissions,
-  RoutineStatus,
 } from "@shared/api/interfaces/enums";
 import type {
   CreateRoutineByStationIdRequest,
@@ -111,7 +109,7 @@ export class RoutineLocalSimulator {
         id: Routine.id,
         stationId: Routine.stationId,
         title: Routine.title,
-        status: Routine.status,
+        timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -165,9 +163,7 @@ export class RoutineLocalSimulator {
       const sortOrder = input.sortOrder ?? SearchSortOrder.Asc;
       let comparison = 0;
 
-      if (sortBy === SearchRoutineSortBy.Status) {
-        comparison = left.status.localeCompare(right.status);
-      } else if (sortBy === SearchRoutineSortBy.ScheduledStartAt) {
+      if (sortBy === SearchRoutineSortBy.ScheduledStartAt) {
         comparison =
           left.scheduledStartAt.getTime() - right.scheduledStartAt.getTime();
       } else if (sortBy === SearchRoutineSortBy.ScheduledEndAt) {
@@ -243,7 +239,6 @@ export class RoutineLocalSimulator {
     return {
       __typename: "SearchRoutineConnection",
       searchEdges: pagedRoutines.map(routine => {
-        const status = toGraphQLRoutineStatus(routine.status);
         const period = toGraphQLRoutinePeriod(routine.period);
         return {
           __typename: "SearchRoutineEdge",
@@ -253,8 +248,8 @@ export class RoutineLocalSimulator {
             id: routine.id,
             stationId: routine.stationId,
             title: routine.title,
-            status,
             phase: toGraphQLRoutinePhase(routine.phase),
+            timeoutSeconds: routine.timeoutSeconds,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -312,7 +307,7 @@ export class RoutineLocalSimulator {
         stationId: Routine.stationId,
         title: Routine.title,
         description: Routine.description,
-        status: Routine.status,
+        timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -375,7 +370,7 @@ export class RoutineLocalSimulator {
         id: Routine.id,
         stationId: Routine.stationId,
         title: Routine.title,
-        status: Routine.status,
+        timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -478,7 +473,7 @@ export class RoutineLocalSimulator {
         id: Routine.id,
         stationId: Routine.stationId,
         title: Routine.title,
-        status: Routine.status,
+        timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -609,7 +604,6 @@ export class RoutineLocalSimulator {
         stationId: request.body.stationId,
         title: request.body.title,
         description: request.body.description,
-        status: RoutineStatus.Scheduled,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt: request.body.scheduledStartAt ?? createdAt,
         scheduledEndAt: request.body.scheduledEndAt ?? createdAt,
@@ -690,7 +684,6 @@ export class RoutineLocalSimulator {
           stationId: routine.stationId,
           title: routine.title,
           description: routine.description,
-          status: RoutineStatus.Scheduled,
           phase: null,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? createdAt,

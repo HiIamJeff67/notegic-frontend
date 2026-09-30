@@ -15,6 +15,13 @@
       "when": 1789108085253,
       "tag": "0001_solid_the_spike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790564128517,
+      "tag": "0002_first_tyrannus",
+      "breakpoints": true
     }
   ]
 }

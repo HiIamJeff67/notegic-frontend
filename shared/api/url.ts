@@ -56,6 +56,9 @@ export const APIURLPathDictionary = {
     bindGoogleAccount: "me/account/google",
     unbindGoogleAccount: "me/account/google",
   },
+  userQuota: {
+    getMyQuota: "me/quota/",
+  },
   apiKey: {
     create: "me/api-keys/create",
     list: "me/api-keys/",

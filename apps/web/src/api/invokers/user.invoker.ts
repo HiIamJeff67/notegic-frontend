@@ -41,7 +41,7 @@ export const queryFnGetUserData = async (
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -69,7 +69,7 @@ export const queryFnGetMe = async (
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -97,7 +97,7 @@ export const mutationFnUpdateMe = async (
         case ExceptionReasonDictionary.user.notFound:
           throw new Error("error.apiError.getUser.failedToGetUser");
         default:
-          throw new Error(error.unWrap.message);
+          throw error;
       }
     } else if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());

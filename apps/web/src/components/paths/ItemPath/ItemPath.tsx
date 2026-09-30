@@ -69,7 +69,7 @@ const ItemPath = ({
               {summary.root.name}
             </DropdownMenuTrigger>
             {Object.entries(summary.root.children).length !== 0 && (
-              <DropdownMenuContent>
+              <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
                 {Object.entries(summary.root.children).map(([id, child]) => {
                   return (
                     <DropdownMenuItem key={id}>

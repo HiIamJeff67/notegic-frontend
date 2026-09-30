@@ -3,7 +3,6 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import {
-  RoutinePhase,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
@@ -116,8 +115,6 @@ export const useRoutineTaskLogic = ({
           stationId: routineNode.stationId,
           title: routineTask.title,
           purpose: routineTask.purpose,
-          phase: routineTask.phase,
-          costUnit: routineTask.costUnit,
           payload: routineTask.payload,
           priority: routineTask.priority,
           maxAttempts: routineTask.maxAttempts,
@@ -275,8 +272,6 @@ export const useRoutineTaskLogic = ({
             routineId: UUID;
             title: string;
             purpose: string;
-            phase: RoutinePhase | null;
-            costUnit: number;
             priority: number;
             maxAttempts: number;
             previousRoutineTaskIds: UUID[];
@@ -305,11 +300,7 @@ export const useRoutineTaskLogic = ({
               "RoutineTaskPurpose_",
               ""
             ) as RoutineTaskPurpose,
-            phase: node.phase
-              ? (node.phase.replace("RoutinePhase_", "") as RoutinePhase)
-              : null,
             payload: existingRoutineTask?.payload ?? {},
-            costUnit: node.costUnit,
             priority: node.priority,
             maxAttempts: node.maxAttempts,
             previousRoutineTaskIds: node.previousRoutineTaskIds,
@@ -466,10 +457,6 @@ export const useRoutineTaskLogic = ({
         stationId: routineNode.stationId,
         title,
         purpose,
-        phase: null,
-        costUnit: Math.ceil(
-          new Blob([JSON.stringify(payload ?? {})]).size / 1024
-        ),
         payload,
         priority,
         maxAttempts,
@@ -608,11 +595,6 @@ export const useRoutineTaskLogic = ({
 
       for (const routineTaskNode of routineTaskNodes) {
         Object.assign(routineTaskNode, values);
-        if (values.payload !== undefined) {
-          routineTaskNode.costUnit = Math.ceil(
-            new Blob([JSON.stringify(values.payload ?? {})]).size / 1024
-          );
-        }
         routineTaskNode.updatedAt = response.data.updatedAt;
       }
       if (values.routineId !== undefined) {

@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -47,7 +47,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
           )
         );
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [router, shelfItemManager]
@@ -65,7 +65,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
         router.push(nextPath);
         shelfItemManager.toggleMaterial(current);
       } catch (error) {
-        toast.error(translateError(error, t));
+        toast.error(tError(error, t));
       }
     },
     [router, shelfItemManager]
@@ -82,7 +82,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
           {(Object.entries(subShelfNode.children).length !== 0 ||
             Object.entries(subShelfNode.blockPackNodes).length !== 0 ||
             Object.entries(subShelfNode.materialNodes).length !== 0) && (
-            <DropdownMenuContent>
+            <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
               {Object.entries(subShelfNode.children).map(([id, child]) => {
                 return (
                   <DropdownMenuItem

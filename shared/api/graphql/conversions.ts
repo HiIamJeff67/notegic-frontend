@@ -1,7 +1,6 @@
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
   RoutinePhase as GraphQLRoutinePhase,
-  RoutineStatus as GraphQLRoutineStatus,
   RoutineTaskPurpose as GraphQLRoutineTaskPurpose,
   SupportedIcon as GraphQLSupportedIcon,
   UserStatus as GraphQLUserStatus,
@@ -9,7 +8,6 @@ import {
 import {
   RoutinePeriod,
   RoutinePhase,
-  RoutineStatus,
   RoutineTaskPurpose,
   SupportedIcon,
   UserStatus,
@@ -21,15 +19,7 @@ const routinePeriodToGraphQL: Record<RoutinePeriod, GraphQLRoutinePeriod> = {
   [RoutinePeriod.Monthly]: GraphQLRoutinePeriod.RoutinePeriodMonthly,
 };
 
-const routineStatusToGraphQL: Record<RoutineStatus, GraphQLRoutineStatus> = {
-  [RoutineStatus.Scheduled]: GraphQLRoutineStatus.RoutineStatusScheduled,
-  [RoutineStatus.InProgress]: GraphQLRoutineStatus.RoutineStatusInProgress,
-  [RoutineStatus.Completed]: GraphQLRoutineStatus.RoutineStatusCompleted,
-  [RoutineStatus.OverDue]: GraphQLRoutineStatus.RoutineStatusOverDue,
-};
-
 const routinePhaseToGraphQL: Record<RoutinePhase, GraphQLRoutinePhase> = {
-  [RoutinePhase.Claimed]: GraphQLRoutinePhase.RoutinePhaseClaimed,
   [RoutinePhase.Plan]: GraphQLRoutinePhase.RoutinePhasePlan,
   [RoutinePhase.Execution]: GraphQLRoutinePhase.RoutinePhaseExecution,
   [RoutinePhase.Recovery]: GraphQLRoutinePhase.RoutinePhaseRecovery,
@@ -89,14 +79,6 @@ const graphQLRoutinePeriodToLocal: Record<GraphQLRoutinePeriod, RoutinePeriod> =
     ])
   ) as Record<GraphQLRoutinePeriod, RoutinePeriod>;
 
-const graphQLRoutineStatusToLocal: Record<GraphQLRoutineStatus, RoutineStatus> =
-  Object.fromEntries(
-    Object.entries(routineStatusToGraphQL).map(([status, graphqlStatus]) => [
-      graphqlStatus,
-      status,
-    ])
-  ) as Record<GraphQLRoutineStatus, RoutineStatus>;
-
 const graphQLRoutinePhaseToLocal: Record<GraphQLRoutinePhase, RoutinePhase> =
   Object.fromEntries(
     Object.entries(routinePhaseToGraphQL).map(([phase, graphqlPhase]) => [
@@ -129,16 +111,6 @@ export const toGraphQLRoutinePeriod = (
 export const fromGraphQLRoutinePeriod = (
   period?: GraphQLRoutinePeriod | null
 ) => (period ? graphQLRoutinePeriodToLocal[period] : null);
-
-export const toGraphQLRoutineStatus = (
-  status?: RoutineStatus | string | null
-) =>
-  status
-    ? routineStatusToGraphQL[status as RoutineStatus]
-    : GraphQLRoutineStatus.RoutineStatusScheduled;
-
-export const fromGraphQLRoutineStatus = (status: GraphQLRoutineStatus) =>
-  graphQLRoutineStatusToLocal[status];
 
 export const toGraphQLRoutinePhase = (phase?: RoutinePhase | null) =>
   phase ? routinePhaseToGraphQL[phase] : null;

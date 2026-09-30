@@ -79,7 +79,6 @@ export const EnglishSettingsTranslation = {
         status: "Status",
         blocks: "Blocks",
         workflows: "Workflows",
-        taskCostUnits: "Monthly routine-task execution CostUnits",
         billingCycle: "Billing cycle",
         annualPricing: "Yearly billing uses annual prices.",
         monthly: "Monthly",

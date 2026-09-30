@@ -1,7 +1,4 @@
-import {
-  RoutineStatus,
-  RoutineTaskRecordStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { LRUCache } from "@shared/lib/LRUCache";
@@ -493,7 +490,7 @@ export const StationRoutineProvider = ({
     scheduledRoutines: visibleRoutines.length - unscheduledRoutines.length,
     unscheduledRoutines: unscheduledRoutines.length,
     overdueRoutines: visibleRoutines.filter(
-      routine => routine.status === RoutineStatus.OverDue
+      routine => routine.period === null && routine.scheduledEndAt < new Date()
     ).length,
     activeTasks: routineTasks.filter(
       routineTask =>

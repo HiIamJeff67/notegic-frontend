@@ -9,10 +9,7 @@ import { ValidationClientException } from "@shared/api/exceptions/client/validat
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { toGraphQLRoutinePeriod } from "@shared/api/graphql/conversions";
-import {
-  FragmentedBasicPrivateSearchableRoutineFragmentDoc,
-  RoutineStatus as GraphQLRoutineStatus,
-} from "@shared/api/graphql/generated/graphql";
+import { FragmentedBasicPrivateSearchableRoutineFragmentDoc } from "@shared/api/graphql/generated/graphql";
 import type {
   CreateRoutineByStationIdRequest,
   CreateRoutinesByStationIdsRequest,
@@ -85,6 +82,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
+
+const getRoutineSearchInput = (storeFieldName: string) =>
+  JSON.parse(storeFieldName.slice(storeFieldName.indexOf(":") + 1)).input;
 
 export const useVisualizeMyRoutineStatusCount = (
   request?: VisualizeMyRoutineStatusCountRequest,
@@ -472,7 +472,8 @@ export const useCreateRoutineByStationId = () => {
         id: response.data.id,
         stationId: request.body.stationId,
         title: request.body.title,
-        status: GraphQLRoutineStatus.RoutineStatusScheduled,
+        phase: null,
+        timeoutSeconds: request.body.timeoutSeconds ?? 300,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt: request.body.scheduledEndAt ?? scheduledStartAt,
@@ -491,9 +492,7 @@ export const useCreateRoutineByStationId = () => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName }) {
             if (!existing?.searchEdges) return existing;
-            const input = JSON.parse(
-              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-            ).input;
+            const input = getRoutineSearchInput(storeFieldName);
             if (input.after) return existing;
             const query = input.query.trim().toLowerCase();
             if (
@@ -600,7 +599,8 @@ export const useCreateRoutinesByStationIds = () => {
           id: response.data.ids[index],
           stationId: routine.stationId,
           title: routine.title,
-          status: GraphQLRoutineStatus.RoutineStatusScheduled,
+          phase: null,
+          timeoutSeconds: routine.timeoutSeconds ?? 300,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt,
           scheduledEndAt: routine.scheduledEndAt ?? scheduledStartAt,
@@ -619,9 +619,7 @@ export const useCreateRoutinesByStationIds = () => {
           fields: {
             searchRoutines(existing, { readField, storeFieldName }) {
               if (!existing?.searchEdges) return existing;
-              const input = JSON.parse(
-                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-              ).input;
+              const input = getRoutineSearchInput(storeFieldName);
               if (input.after) return existing;
               const query = input.query.trim().toLowerCase();
               if (
@@ -690,7 +688,7 @@ export const useUpdateMyRoutineById = () => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
-    return await mutationFnUpdateMyRoutineById(request);
+    return mutationFnUpdateMyRoutineById(request);
   };
 
   const mutation = useMutation({
@@ -737,9 +735,7 @@ export const useUpdateMyRoutineById = () => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName }) {
             if (!existing?.searchEdges) return existing;
-            const input = JSON.parse(
-              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-            ).input;
+            const input = getRoutineSearchInput(storeFieldName);
             const query = input.query.trim().toLowerCase();
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
               if (readField("id", edge.node) !== request.body.routineId) {
@@ -852,9 +848,7 @@ export const useUpdateMyRoutinesByIds = () => {
           fields: {
             searchRoutines(existing, { readField, storeFieldName }) {
               if (!existing?.searchEdges) return existing;
-              const input = JSON.parse(
-                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-              ).input;
+              const input = getRoutineSearchInput(storeFieldName);
               const query = input.query.trim().toLowerCase();
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
                 if (readField("id", edge.node) !== routine.routineId) {
@@ -980,9 +974,7 @@ export const useLinkRoutineTagById = () => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName, toReference }) {
             if (!existing?.searchEdges) return existing;
-            const input = JSON.parse(
-              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-            ).input;
+            const input = getRoutineSearchInput(storeFieldName);
             const query = input.query.trim().toLowerCase();
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -1137,9 +1129,7 @@ export const useLinkRoutineTagsByIds = () => {
               { readField, storeFieldName, toReference }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = JSON.parse(
-                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-              ).input;
+              const input = getRoutineSearchInput(storeFieldName);
               const query = input.query.trim().toLowerCase();
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -1283,9 +1273,7 @@ export const useLinkRoutineTaskById = () => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName, toReference }) {
             if (!existing?.searchEdges) return existing;
-            const input = JSON.parse(
-              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-            ).input;
+            const input = getRoutineSearchInput(storeFieldName);
             const query = input.query.trim().toLowerCase();
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -1443,9 +1431,7 @@ export const useLinkRoutineTasksByIds = () => {
               { readField, storeFieldName, toReference }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = JSON.parse(
-                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-              ).input;
+              const input = getRoutineSearchInput(storeFieldName);
               const query = input.query.trim().toLowerCase();
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -1605,9 +1591,7 @@ export const useLinkRoutineItemById = () => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName, toReference }) {
             if (!existing?.searchEdges) return existing;
-            const input = JSON.parse(
-              storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-            ).input;
+            const input = getRoutineSearchInput(storeFieldName);
             const query = input.query.trim().toLowerCase();
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -1759,9 +1743,7 @@ export const useLinkRoutineItemsByIds = () => {
               { readField, storeFieldName, toReference }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = JSON.parse(
-                storeFieldName.slice(storeFieldName.indexOf("(") + 1, -1)
-              ).input;
+              const input = getRoutineSearchInput(storeFieldName);
               const query = input.query.trim().toLowerCase();
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {

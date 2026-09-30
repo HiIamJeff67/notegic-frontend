@@ -20,7 +20,6 @@ import type { PatternBlock } from "./CreateBlockPackPayloadEditor";
 
 interface CreateBlockPackPayloadTemplateEditorProps {
   editor: BlockNoteEditor<any, any, any>;
-  originalBlockEditor: BlockNoteEditor<any, any, any>;
   purpose: RoutineTaskPurpose;
   payloadPreview: string;
   patternBlockIds: Set<string>;
@@ -95,7 +94,6 @@ const PatternToggleButton = ({
 
 const CreateBlockPackPayloadTemplateEditor = ({
   editor,
-  originalBlockEditor,
   purpose,
   payloadPreview,
   patternBlockIds,
@@ -134,11 +132,6 @@ const CreateBlockPackPayloadTemplateEditor = ({
         </section>
       </div>
       <DialogFooter className="min-h-10 border-t bg-secondary px-4 py-2">
-        <span className="mr-auto self-center text-xs text-muted-foreground">
-          {t("workspace.payloadEditor.estimatedCost", {
-            count: Math.ceil(new Blob([payloadPreview]).size / 1024),
-          })}
-        </span>
         <Button
           type="button"
           variant="outline"

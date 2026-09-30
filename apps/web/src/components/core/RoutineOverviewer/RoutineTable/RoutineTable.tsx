@@ -2,20 +2,12 @@ import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
   RoutinePhase as GraphQLRoutinePhase,
-  RoutineStatus as GraphQLRoutineStatus,
   SearchRoutineSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import {
-  AllRoutineStatuses,
-  RoutinePeriod,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
-import {
-  translateRoutinePhase,
-  translateRoutineStatus,
-  translateRoutineTaskRecordStatus,
-} from "@shared/i18n/workspace";
+import { RoutinePeriod } from "@shared/api/interfaces/enums";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { UUID } from "crypto";
 import { Bookmark, SquarePen } from "lucide-react";
@@ -32,13 +24,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -68,7 +53,6 @@ const RoutineTable = () => {
     useState<boolean>(false);
   const isSearchingRoutinesRef = useRef<boolean>(false);
   const hasExecutedInitialSearchRef = useRef<boolean>(false);
-  const [status, setStatus] = useState<RoutineStatus | "All">("All");
   const [startsAfter, setStartsAfter] = useState<Date | undefined>();
   const [endsBefore, setEndsBefore] = useState<Date | undefined>();
   const [showUnscheduled, setShowUnscheduled] = useState<boolean>(true);
@@ -101,7 +85,6 @@ const RoutineTable = () => {
             id: UUID;
             stationId: UUID;
             title: string;
-            status: GraphQLRoutineStatus;
             phase?: GraphQLRoutinePhase | null;
             isPinned: boolean;
             scheduledStartAt: Date | string | number;
@@ -137,14 +120,6 @@ const RoutineTable = () => {
             stationId: node.stationId,
             title: node.title,
             description: "",
-            status:
-              node.status === GraphQLRoutineStatus.RoutineStatusCompleted
-                ? RoutineStatus.Completed
-                : node.status === GraphQLRoutineStatus.RoutineStatusInProgress
-                  ? RoutineStatus.InProgress
-                  : node.status === GraphQLRoutineStatus.RoutineStatusOverDue
-                    ? RoutineStatus.OverDue
-                    : RoutineStatus.Scheduled,
             phase: fromGraphQLRoutinePhase(node.phase),
             isPinned: node.isPinned,
             scheduledStartAt: new Date(node.scheduledStartAt),
@@ -337,8 +312,6 @@ const RoutineTable = () => {
 
   const filteredRoutines = useMemo(() => {
     return routines.filter(routine => {
-      if (status !== "All" && routine.status !== status) return false;
-
       const isScheduled =
         routine.scheduledStartAt instanceof Date &&
         routine.scheduledEndAt instanceof Date &&
@@ -354,7 +327,7 @@ const RoutineTable = () => {
       }
       return true;
     });
-  }, [endsBefore, routines, showUnscheduled, startsAfter, status]);
+  }, [endsBefore, routines, showUnscheduled, startsAfter]);
 
   return (
     <section className="@container flex max-h-[640px] w-full min-w-0 shrink-0 flex-col overflow-hidden rounded-md border border-border/60 bg-card">
@@ -371,27 +344,6 @@ const RoutineTable = () => {
           </span>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 @max-[760px]:w-full @max-[760px]:justify-start">
-          <Select
-            value={status}
-            onValueChange={value => setStatus(value as RoutineStatus | "All")}
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-32 rounded-sm text-xs @max-[520px]:w-24"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">
-                {t("workspace.table.allStatus")}
-              </SelectItem>
-              {AllRoutineStatuses.map(routineStatus => (
-                <SelectItem key={routineStatus} value={routineStatus}>
-                  {translateRoutineStatus(routineStatus, t)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <DatePicker
             value={startsAfter}
             onValueChange={setStartsAfter}
@@ -417,7 +369,7 @@ const RoutineTable = () => {
       </div>
 
       <div
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearchingRoutines || !hasMoreRoutines) return;
 
@@ -436,7 +388,7 @@ const RoutineTable = () => {
                 {t("workspace.table.station")}
               </TableHead>
               <TableHead className="w-[12%] px-3">
-                {t("workspace.table.status")}
+                {t("workspace.table.phase")}
               </TableHead>
               <TableHead className="w-[22%] px-3">
                 {t("workspace.table.schedule")}
@@ -503,10 +455,9 @@ const RoutineTable = () => {
                   </TableCell>
                   <TableCell className="px-3 py-3">
                     <div className="flex flex-col gap-0.5">
-                      <span>{translateRoutineStatus(routine.status, t)}</span>
                       {routine.phase && (
                         <span className="text-xs text-muted-foreground">
-                          {translateRoutinePhase(routine.phase, t)}
+                          {t(routinePhaseTKeys[routine.phase])}
                         </span>
                       )}
                     </div>
@@ -646,9 +597,10 @@ const RoutineTable = () => {
                                     </span>
                                     <span className="shrink-0 text-xs text-muted-foreground">
                                       {routineTask.executionStatus
-                                        ? translateRoutineTaskRecordStatus(
-                                            routineTask.executionStatus,
-                                            t
+                                        ? t(
+                                            routineTaskRecordStatusTKeys[
+                                              routineTask.executionStatus
+                                            ]
                                           )
                                         : "—"}
                                     </span>

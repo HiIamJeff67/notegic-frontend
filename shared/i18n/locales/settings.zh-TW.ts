@@ -74,7 +74,6 @@ export const TraditionalChineseSettingsTranslation = {
         status: "狀態",
         blocks: "區塊",
         workflows: "工作流程",
-        taskCostUnits: "流程任務每月執行 CostUnits",
         billingCycle: "付款週期",
         annualPricing: "年付方案已套用年度價格。",
         monthly: "月付",

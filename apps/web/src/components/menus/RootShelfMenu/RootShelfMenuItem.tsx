@@ -1,6 +1,6 @@
 import { SearchRootShelfEdge } from "@shared/api/graphql/generated/graphql";
 import { DNDType } from "@shared/enums";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
@@ -259,9 +259,7 @@ const RootShelfMenuItem = ({
                         async () => {
                           await shelfItemManager
                             .deleteRootShelf(summary.root)
-                            .catch(error =>
-                              toast.error(translateError(error, t))
-                            );
+                            .catch(error => toast.error(tError(error, t)));
                         }
                       ),
                     onCancel: modalManager.close,
@@ -281,7 +279,7 @@ const RootShelfMenuItem = ({
                     void loadingManager.startAsyncTransactionLoading(async () =>
                       shelfItemManager
                         .leaveRootShelf(summary.root.id)
-                        .catch(error => toast.error(translateError(error, t)))
+                        .catch(error => toast.error(tError(error, t)))
                     );
                     return;
                   }

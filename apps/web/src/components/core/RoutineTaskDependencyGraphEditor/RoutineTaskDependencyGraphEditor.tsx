@@ -12,6 +12,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { NotegicAPIError } from "@shared/api/exceptions";
+import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
 import {
   getRoutineTaskDependencyEdgeId,
@@ -21,10 +22,12 @@ import {
   isRoutineTaskDependencyInRoutine,
   mergePendingRoutineTaskDependencyEdges,
 } from "@shared/graph";
-import { translateError } from "@shared/i18n/error";
-import { translateRoutinePhase } from "@shared/i18n/workspace";
+import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
+import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -37,7 +40,17 @@ import {
   useUpdateRoutineTaskDependencyByRoutineId,
 } from "@/api/hooks/routineTaskDependency.hook";
 import type { RoutineTaskDependencyGraphDraftEdge } from "@/api/local/schemas";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
+import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import {
   useModal,
@@ -93,6 +106,7 @@ const RoutineTaskDependencyGraphEditor = ({
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [dependencyDescription, setDependencyDescription] = useState("");
   const [dependencyProgress, setDependencyProgress] = useState(0);
+  const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState(true);
   const [isCreatingDependency, setIsCreatingDependency] = useState(false);
@@ -144,7 +158,7 @@ const RoutineTaskDependencyGraphEditor = ({
         }
       } catch (error) {
         if (!cancelled) {
-          const translatedMessage = translateError(error, t);
+          const translatedMessage = tError(error, t);
           const unknownErrorMessage = t("error.encounterUnknownError");
           const errorDetails =
             error instanceof Error ? error.message : String(error);
@@ -357,7 +371,7 @@ const RoutineTaskDependencyGraphEditor = ({
       });
     } catch (error) {
       const message =
-        translateError(error, t) ||
+        tError(error, t) ||
         t("workspace.notifications.routineDependencyGraphSaveFailed");
       const syncStatus =
         error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
@@ -462,7 +476,7 @@ const RoutineTaskDependencyGraphEditor = ({
         });
       } catch (error) {
         const message =
-          translateError(error, t) ||
+          tError(error, t) ||
           t("workspace.notifications.routineDependencyGraphSaveFailed");
         const syncStatus =
           error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
@@ -628,7 +642,7 @@ const RoutineTaskDependencyGraphEditor = ({
         failedCount += 1;
         if (error instanceof NotegicAPIError) {
           terminalErrorMessage =
-            translateError(error, t) ||
+            tError(error, t) ||
             t("workspace.notifications.routineDependencyGraphSaveFailed");
           nextDraftEdges = nextDraftEdges.map(edge =>
             edge.id === pendingEdge.id
@@ -800,7 +814,7 @@ const RoutineTaskDependencyGraphEditor = ({
       });
     } catch (error) {
       const message =
-        translateError(error, t) ||
+        tError(error, t) ||
         t("workspace.notifications.routineDependencyGraphSaveFailed");
       const syncStatus =
         error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
@@ -875,16 +889,11 @@ const RoutineTaskDependencyGraphEditor = ({
       routineTitle: routine.title,
       stationName: station.name,
       onCreated: async () => {
-        await stationRoutineManager.refresh();
         setReloadVersion(version => version + 1);
       },
     });
   };
 
-  const graphSummary = useMemo(
-    () => `${nodes.length} nodes · ${edges.length} edges`,
-    [edges.length, nodes.length]
-  );
   const pendingSyncCount =
     localDraft?.edges.filter(edge => edge.syncStatus === "pending").length ?? 0;
   const invalidMutationCount =
@@ -894,6 +903,36 @@ const RoutineTaskDependencyGraphEditor = ({
     createDependency.isPending ||
     deleteDependency.isPending ||
     updateDependency.isPending;
+  const station = routine
+    ? stationRoutineManager.getStationById(routine.stationId)
+    : undefined;
+  const storageStatus = isSaving
+    ? t("workspace.fields.saving")
+    : isDirty
+      ? t("workspace.fields.localDraft")
+      : invalidMutationCount > 0
+        ? `${t("workspace.fields.validationError")} (${invalidMutationCount})`
+        : pendingSyncCount > 0
+          ? `${t("workspace.fields.pendingSync")} (${pendingSyncCount})`
+          : t("workspace.fields.saved");
+  const routineTaskStatusCounts = Object.values(RoutineTaskRecordStatus)
+    .map(status => ({
+      status,
+      count:
+        routine?.routineTasks.filter(
+          routineTask => routineTask.executionStatus === status
+        ).length ?? 0,
+    }))
+    .filter(
+      statusCount =>
+        statusCount.count > 0 &&
+        statusCount.status !== RoutineTaskRecordStatus.Running
+    );
+  const activeRoutineTaskCount =
+    routine?.routineTasks.filter(
+      routineTask =>
+        routineTask.executionStatus === RoutineTaskRecordStatus.Running
+    ).length ?? 0;
 
   if (isLoading) return <LoadingCover />;
 
@@ -909,29 +948,40 @@ const RoutineTaskDependencyGraphEditor = ({
 
   return (
     <main className="flex h-full min-h-0 flex-1 flex-col bg-background">
-      <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
-        <div className="flex min-w-0 items-center gap-2">
+      <header className="flex h-12 w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
-          <div className="min-w-0">
-            <h1 className="truncate text-sm font-semibold">{routine.title}</h1>
-            <p className="truncate text-xs text-muted-foreground">
-              {t("workspace.table.routineTasks")} · {graphSummary}
-              {routine.phase
-                ? ` · ${translateRoutinePhase(routine.phase, t)}`
-                : ""}
-              {isSaving
-                ? ` · ${t("workspace.fields.saving")}`
-                : isDirty
-                  ? ` · ${t("workspace.fields.localDraft")}`
-                  : invalidMutationCount > 0
-                    ? ` · ${t("workspace.fields.validationError")} (${invalidMutationCount})`
-                    : pendingSyncCount > 0
-                      ? ` · ${t("workspace.fields.pendingSync")} (${pendingSyncCount})`
-                      : localDraft
-                        ? ` · ${t("workspace.fields.saved")}`
-                        : ""}
-            </p>
-          </div>
+          <DropdownMenu
+            open={isRoutineMenuOpen}
+            onOpenChange={setIsRoutineMenuOpen}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-9 max-w-full gap-2 border-none px-2 text-xl font-semibold select-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              >
+                <TruncatedText width="240px">{routine.title}</TruncatedText>
+                <ChevronDownIcon
+                  className={`transition ${isRoutineMenuOpen ? "-rotate-180" : ""}`}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="bottom">
+              <DropdownMenuLabel className="flex items-center justify-between gap-6 font-normal text-muted-foreground">
+                <span>{t("workspace.fields.nodeCount")}</span>
+                <span className="text-foreground">{nodes.length}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuLabel className="flex items-center justify-between gap-6 font-normal text-muted-foreground">
+                <span>{t("workspace.fields.edgeCount")}</span>
+                <span className="text-foreground">{edges.length}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="flex items-center justify-between gap-6 font-normal text-muted-foreground">
+                <span>{t("workspace.fields.storage")}</span>
+                <span className="text-foreground">{storageStatus}</span>
+              </DropdownMenuLabel>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <RoutineTaskDependencyGraphToolbar
@@ -954,6 +1004,36 @@ const RoutineTaskDependencyGraphEditor = ({
           onRefresh={() => setReloadVersion(version => version + 1)}
         />
       </header>
+      {station && (
+        <div className="flex min-h-8 w-full flex-wrap items-center gap-x-3 gap-y-1 border-y px-4 py-1 text-sm">
+          <span className="inline-flex min-w-0 items-center gap-1.5 font-semibold text-secondary-foreground/80">
+            <span className="max-w-48 truncate">{station.name}</span>
+          </span>
+          <span aria-hidden="true" className="h-4 w-px shrink-0 bg-border" />
+          <span className="text-muted-foreground">
+            {routine.phase ? t(routinePhaseTKeys[routine.phase]) : "—"}
+          </span>
+          <span aria-hidden="true" className="h-4 w-px shrink-0 bg-border" />
+          <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+            <RoutineTaskStatusDot status={RoutineTaskRecordStatus.Running} />
+            <span>
+              {t(routineTaskRecordStatusTKeys[RoutineTaskRecordStatus.Running])}
+              : {activeRoutineTaskCount}
+            </span>
+          </span>
+          {routineTaskStatusCounts.map(({ status, count }) => (
+            <span
+              key={status}
+              className="inline-flex items-center gap-1.5 text-muted-foreground"
+            >
+              <RoutineTaskStatusDot status={status} />
+              <span>
+                {t(routineTaskRecordStatusTKeys[status])}: {count}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
 
       <section
         className={`routine-task-dependency-graph relative min-h-0 flex-1 ${isCreatingDependency ? "cursor-crosshair" : ""}`}

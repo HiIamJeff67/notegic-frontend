@@ -1,6 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { NotegicBlockPackEditor } from "@shared/blockpack";
-import { translateRoutineTaskPurpose } from "@shared/i18n/workspace";
+import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
@@ -96,26 +96,10 @@ const CreateBlockPackPayloadEditor = ({
             content: [],
           },
         ],
-        trailingBlock: false,
+        trailingBlock: true,
       }),
     []
   );
-  const originalBlockEditor = useMemo(
-    () =>
-      NotegicBlockPackEditor.create({
-        schema: notegicBlockPackSchema,
-        initialContent: [
-          {
-            id: crypto.randomUUID(),
-            type: "paragraph",
-            content: [],
-          },
-        ],
-        trailingBlock: false,
-      }),
-    []
-  );
-
   const usesBlockLiteEditor = purpose === RoutineTaskPurpose.CreateBlockPack;
   const usesPayloadSidebar = usesBlockLiteEditor;
   const availablePatternBlocks = useMemo(() => {
@@ -274,12 +258,8 @@ const CreateBlockPackPayloadEditor = ({
       editor.document.map(block => block.id),
       blocks
     );
-    originalBlockEditor.replaceBlocks(
-      originalBlockEditor.document.map(block => block.id),
-      blocks.length > 0 ? [blocks[0]] : blocks
-    );
     setEditorVersion(version => version + 1);
-  }, [editor, originalBlockEditor, isOpen, parsedInitialPayload, purpose]);
+  }, [editor, isOpen, parsedInitialPayload, purpose]);
 
   useEffect(() => {
     if (!isOpen || !usesBlockLiteEditor) return;
@@ -398,7 +378,7 @@ const CreateBlockPackPayloadEditor = ({
           <DialogTitle>{t("workspace.payloadEditor.title")}</DialogTitle>
           <DialogDescription>
             {t("workspace.payloadEditor.generatedJson", {
-              purpose: translateRoutineTaskPurpose(purpose, t),
+              purpose: `${t(routineTaskPurposeTKeys[purpose].action)} · ${t(routineTaskPurposeTKeys[purpose].target)}`,
             })}
           </DialogDescription>
         </DialogHeader>
@@ -424,7 +404,6 @@ const CreateBlockPackPayloadEditor = ({
             {usesBlockLiteEditor ? (
               <CreateBlockPackPayloadTemplateEditor
                 editor={editor}
-                originalBlockEditor={originalBlockEditor}
                 purpose={purpose}
                 payloadPreview={payloadPreview}
                 patternBlockIds={
@@ -448,11 +427,6 @@ const CreateBlockPackPayloadEditor = ({
                   </pre>
                 </div>
                 <DialogFooter className="min-h-10 border-t bg-secondary px-4 py-2">
-                  <span className="mr-auto self-center text-xs text-muted-foreground">
-                    {t("workspace.payloadEditor.estimatedCost", {
-                      count: Math.ceil(new Blob([payloadPreview]).size / 1024),
-                    })}
-                  </span>
                   <Button
                     type="button"
                     variant="outline"
@@ -479,11 +453,6 @@ const CreateBlockPackPayloadEditor = ({
               />
             </div>
             <DialogFooter>
-              <span className="mr-auto self-center text-xs text-muted-foreground">
-                {t("workspace.payloadEditor.estimatedCost", {
-                  count: Math.ceil(new Blob([payloadPreview]).size / 1024),
-                })}
-              </span>
               <Button type="button" variant="destructive" onClick={onClose}>
                 {t("common.cancel")}
               </Button>

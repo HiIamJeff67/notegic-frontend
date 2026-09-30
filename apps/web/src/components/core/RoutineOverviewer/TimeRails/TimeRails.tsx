@@ -147,7 +147,7 @@ const TimeRails = () => {
   const timeRangeFetchWindowSignature = `${timeRangeFetchWindow.from.getTime()}-${timeRangeFetchWindow.to.getTime()}`;
 
   useEffect(() => {
-    if (visibleStationIds.length === 0) {
+    if (visibleStationIdsSignature.length === 0) {
       setTimeRangeRoutines([]);
       return;
     }
@@ -160,7 +160,7 @@ const TimeRails = () => {
         param: {
           from: timeRangeFetchWindow.from,
           to: timeRangeFetchWindow.to,
-          stationIds: visibleStationIds,
+          stationIds: visibleStationIdsSignature.split("|") as UUID[],
           areDeleted: false,
         },
       })
@@ -170,12 +170,11 @@ const TimeRails = () => {
           const existingRoutine = stationRoutineManager.getRoutineById(
             routine.id as UUID
           );
-          return {
+          return stationRoutineManager.upsertRoutineNode({
             id: routine.id as UUID,
             stationId: routine.stationId as UUID,
             title: routine.title,
             description: existingRoutine?.description ?? "",
-            status: routine.status,
             phase: existingRoutine?.phase ?? null,
             isPinned: routine.isPinned,
             scheduledStartAt: new Date(routine.scheduledStartAt),
@@ -192,7 +191,7 @@ const TimeRails = () => {
             routineTaskIds: routine.taskIds as UUID[],
             itemIds: routine.itemIds as UUID[],
             routineTasks: existingRoutine?.routineTasks ?? [],
-          } satisfies RoutineNode;
+          } satisfies RoutineNode);
         });
         setTimeRangeRoutines(routineNodes);
       })
@@ -203,10 +202,10 @@ const TimeRails = () => {
       });
   }, [
     stationRoutineManager.getRoutineById,
+    stationRoutineManager.upsertRoutineNode,
     timeRangeFetchWindow.from,
     timeRangeFetchWindow.to,
     timeRangeFetchWindowSignature,
-    visibleStationIds,
     visibleStationIdsSignature,
   ]);
 

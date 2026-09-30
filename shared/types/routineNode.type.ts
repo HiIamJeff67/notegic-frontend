@@ -1,8 +1,4 @@
-import {
-  RoutinePeriod,
-  RoutinePhase,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutinePeriod, RoutinePhase } from "@shared/api/interfaces/enums";
 import type { UUID } from "crypto";
 import type { RoutineTaskNode } from "./routineTaskNode.type";
 
@@ -11,7 +7,6 @@ export interface RoutineNode {
   stationId: UUID;
   title: string;
   description: string;
-  status: RoutineStatus;
   phase: RoutinePhase | null;
   isPinned: boolean;
   scheduledStartAt: Date;
@@ -39,7 +34,6 @@ export const getDefaultRoutineNode = (
   stationId,
   title: "Untitled",
   description: "",
-  status: RoutineStatus.Scheduled,
   phase: null,
   isPinned: false,
   scheduledStartAt: new Date(),

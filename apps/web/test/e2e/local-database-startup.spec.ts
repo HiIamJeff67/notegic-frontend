@@ -235,3 +235,68 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
     hasPendingYjs: true,
   });
 });
+
+test("upgrades a freshly created database after a local down migration", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+
+  await page.evaluate(async () => {
+    const importModule = (path: string) => import(/* @vite-ignore */ path);
+    const { localDB } = await importModule("/src/api/local/db.ts");
+    const { getOrderedMigrations } = await importModule(
+      "/src/api/local/migration-catalog.ts"
+    );
+    const { sql } = await importModule(
+      "/test/e2e/local-database-test-support.ts"
+    );
+    const { Routine, Station } = await importModule(
+      "/src/api/local/schemas/index.ts"
+    );
+
+    await localDB.insert(Station).values({
+      id: "e2e-updown-station",
+      name: "E2E Updown Station",
+    });
+    await localDB.insert(Routine).values({
+      id: "e2e-updown-routine",
+      stationId: "e2e-updown-station",
+      title: "E2E Updown Routine",
+      timeoutSeconds: 600,
+    });
+
+    const latest = getOrderedMigrations().at(-1);
+    if (latest?.tag !== "0002_first_tyrannus" || !latest.downStatements) {
+      throw new Error("Routine local down migration is unavailable");
+    }
+    await localDB.transaction(
+      async (transaction: { run: (query: unknown) => Promise<unknown> }) => {
+        for (const statement of latest.downStatements) {
+          await transaction.run(sql.raw(statement));
+        }
+        await transaction.run(sql.raw("PRAGMA user_version = 2"));
+      }
+    );
+  });
+
+  await page.reload();
+  await page.waitForLoadState("networkidle");
+  const result = await page.evaluate(async () => {
+    const importModule = (path: string) => import(/* @vite-ignore */ path);
+    const { localDB } = await importModule("/src/api/local/db.ts");
+    const { eq } = await importModule(
+      "/test/e2e/local-database-test-support.ts"
+    );
+    const { Routine } = await importModule("/src/api/local/schemas/index.ts");
+    await localDB.ensureReady();
+    const routine = await localDB.query.Routine.findFirst({
+      where: eq(Routine.id, "e2e-updown-routine"),
+    });
+    return {
+      version: await localDB.getVersion(),
+      timeoutSeconds: routine?.timeoutSeconds,
+    };
+  });
+  expect(result).toEqual({ version: 3, timeoutSeconds: 600 });
+});

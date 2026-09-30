@@ -46,9 +46,9 @@ jest.mock("@/hooks", () => ({
     upsertRoutineTaskNode: jest.fn(),
   }),
   useUser: () => ({
-    userAccount: { routineTaskCostUnitCount: 0 },
+    userQuota: { routineTaskCostUnitCount: 0 },
     userData: { plan: "Free" },
-    fetchUserAccount: jest.fn(),
+    fetchUserQuota: jest.fn(),
   }),
 }));
 

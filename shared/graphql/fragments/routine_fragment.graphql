@@ -3,8 +3,8 @@ fragment FragmentedBasicPrivateRoutine on PrivateRoutine {
   stationId
   title
   description
-  status
   phase
+  timeoutSeconds
   isPinned
   scheduledStartAt
   scheduledEndAt
@@ -26,8 +26,8 @@ fragment FragmentedBasicPrivateSearchableRoutine on PrivateSearchableRoutine {
   id
   stationId
   title
-  status
   phase
+  timeoutSeconds
   isPinned
   scheduledStartAt
   scheduledEndAt

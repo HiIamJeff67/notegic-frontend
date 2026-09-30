@@ -3,6 +3,11 @@ import { JapaneseCommonTranslation } from "./locales/common.ja";
 import { KoreanCommonTranslation } from "./locales/common.ko";
 import { SimpleChineseCommonTranslation } from "./locales/common.zh-CN";
 import { TraditionalChineseCommonTranslation } from "./locales/common.zh-TW";
+import { EnglishServerTranslation } from "./locales/server.en";
+import { JapaneseServerTranslation } from "./locales/server.ja";
+import { KoreanServerTranslation } from "./locales/server.ko";
+import { SimpleChineseServerTranslation } from "./locales/server.zh-CN";
+import { TraditionalChineseServerTranslation } from "./locales/server.zh-TW";
 import { EnglishSettingsTranslation } from "./locales/settings.en";
 import { JapaneseSettingsTranslation } from "./locales/settings.ja";
 import { KoreanSettingsTranslation } from "./locales/settings.ko";
@@ -27,6 +32,7 @@ export const resources = {
     translation: {
       ...EnglishCommonTranslation,
       ...EnglishSettingsTranslation,
+      server: EnglishServerTranslation,
       tutorial: EnglishTutorialTranslation,
       workspace: EnglishWorkspaceTranslation,
     },
@@ -35,6 +41,7 @@ export const resources = {
     translation: {
       ...TraditionalChineseCommonTranslation,
       ...TraditionalChineseSettingsTranslation,
+      server: TraditionalChineseServerTranslation,
       tutorial: TraditionalChineseTutorialTranslation,
       workspace: TraditionalChineseWorkspaceTranslation,
     },
@@ -43,6 +50,7 @@ export const resources = {
     translation: {
       ...SimpleChineseCommonTranslation,
       ...SimpleChineseSettingsTranslation,
+      server: SimpleChineseServerTranslation,
       tutorial: SimpleChineseTutorialTranslation,
       workspace: SimpleChineseWorkspaceTranslation,
     },
@@ -51,6 +59,7 @@ export const resources = {
     translation: {
       ...JapaneseCommonTranslation,
       ...JapaneseSettingsTranslation,
+      server: JapaneseServerTranslation,
       tutorial: JapaneseTutorialTranslation,
       workspace: JapaneseWorkspaceTranslation,
     },
@@ -59,6 +68,7 @@ export const resources = {
     translation: {
       ...KoreanCommonTranslation,
       ...KoreanSettingsTranslation,
+      server: KoreanServerTranslation,
       tutorial: KoreanTutorialTranslation,
       workspace: KoreanWorkspaceTranslation,
     },

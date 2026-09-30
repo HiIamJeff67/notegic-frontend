@@ -1,5 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
-import { translateError } from "@shared/i18n/error";
+import { tError } from "@shared/i18n/error";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
@@ -84,7 +84,7 @@ const LoginPage = () => {
         } catch (error) {
           setPassword("");
           resetTurnstile();
-          toast.error(translateError(error, t));
+          toast.error(tError(error, t));
         }
       });
     },

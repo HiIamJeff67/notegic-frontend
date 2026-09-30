@@ -160,9 +160,9 @@ export const TraditionalChineseTutorialTranslation = {
           "流程是可重複的自動化定義與排程；流程任務則是由該定義建立、並由排程器領取的可執行步驟。",
       },
       routineQuota: {
-        question: "流程配額什麼時候會消耗？",
+        question: "流程任務的執行配額如何計算？",
         answer:
-          "配額會在後端領取流程任務執行時消耗。client 不應只根據本地 payload 成本估算拒絕任務。",
+          "後端領取任務時先預留配額，完成後按實際執行時間計費。平行任務的時間會分別累加；兩個任務各執行 2 分鐘，便使用 4 分鐘。每期額度為 Free 100、Pro 300、Premium 500、Ultimate 1,000、Enterprise 2,000 分鐘。流程逾時可設 1–60 分鐘，預設 5 分鐘。",
       },
       leakedApiKey: {
         question: "如果 API 金鑰可能洩漏，我該怎麼做？",

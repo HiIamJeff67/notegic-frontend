@@ -1,8 +1,4 @@
-import {
-  RoutinePeriod,
-  RoutinePhase,
-  RoutineStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutinePeriod, RoutinePhase } from "@shared/api/interfaces/enums";
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { RoutinesToItems } from "./routinesToItems.schema";
@@ -19,10 +15,6 @@ export const Routine = sqliteTable(
       .references(() => Station.id),
     title: text("title").notNull().default("undefined"),
     description: text("description").notNull().default(""),
-    status: text("status")
-      .$type<RoutineStatus>()
-      .notNull()
-      .default(RoutineStatus.Scheduled),
     phase: text("phase").$type<RoutinePhase>(),
     isPinned: integer("is_pinned", { mode: "boolean" })
       .notNull()
@@ -35,6 +27,7 @@ export const Routine = sqliteTable(
       .default(new Date()),
     period: text("period").$type<RoutinePeriod>(),
     timezone: text("timezone").notNull().default("UTC"),
+    timeoutSeconds: integer("timeout_seconds").notNull().default(300),
     deletedAt: integer("deleted_at", { mode: "timestamp" }),
     updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
