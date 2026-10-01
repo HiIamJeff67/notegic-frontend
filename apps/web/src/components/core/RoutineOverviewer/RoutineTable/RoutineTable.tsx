@@ -379,7 +379,7 @@ const RoutineTable = () => {
         }}
       >
         <Table className="table-fixed">
-          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary">
+          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
             <TableRow>
               <TableHead className="w-[18%] px-3">
                 {t("workspace.table.routine")}

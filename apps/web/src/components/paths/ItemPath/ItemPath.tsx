@@ -3,7 +3,8 @@ import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
 import type { UUID } from "crypto";
 import { ChevronRightIcon } from "lucide-react";
-import { useCallback } from "react";
+import { type WheelEvent, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import ItemPathItem from "@/components/paths/ItemPath/ItemPathItem";
 import {
@@ -24,6 +25,8 @@ interface ItemPathProps {
   itemId: UUID;
   itemType: ItemType;
   path: UUID[];
+  pathItems?: { id: UUID; name: string }[];
+  itemName?: string;
   summary?: ShelfTreeSummary;
 }
 
@@ -32,11 +35,13 @@ const ItemPath = ({
   itemId,
   itemType,
   path,
+  pathItems,
+  itemName,
   summary,
 }: ItemPathProps) => {
-  if (!summary) return <></>;
-
+  const { t } = useTranslation();
   const tracePathInSummary = useCallback((): SubShelfNode[] => {
+    if (!summary) return [];
     if (path.length === 0) {
       const parentSubShelfNode = summary.root.children[parentSubShelfId];
       return parentSubShelfNode ? [parentSubShelfNode] : [];
@@ -59,69 +64,217 @@ const ItemPath = ({
   }, [path, parentSubShelfId, summary]);
 
   const subShelfNodes = tracePathInSummary();
+  const hasSummaryPath = !!summary && subShelfNodes.length === path.length + 1;
+  const [isPathExpanded, setIsPathExpanded] = useState(false);
+  const canExpandPath = hasSummaryPath
+    ? subShelfNodes.length > 1
+    : (pathItems?.length ?? 0) > 2;
+  const isScrollable = canExpandPath && isPathExpanded;
+
+  const handlePathWheel = (event: WheelEvent<HTMLElement>) => {
+    const pathElement = event.currentTarget;
+    const maxScrollLeft = pathElement.scrollWidth - pathElement.clientWidth;
+    if (
+      !isScrollable ||
+      maxScrollLeft <= 0 ||
+      Math.abs(event.deltaY) <= Math.abs(event.deltaX)
+    ) {
+      return;
+    }
+
+    const canScrollInDirection =
+      event.deltaY > 0
+        ? pathElement.scrollLeft < maxScrollLeft
+        : pathElement.scrollLeft > 0;
+    if (!canScrollInDirection) return;
+
+    event.preventDefault();
+    pathElement.scrollLeft += event.deltaY;
+  };
+
+  if (hasSummaryPath) {
+    return (
+      <Breadcrumb
+        className={`h-9 min-w-0 w-full shrink-0 border-y bg-transparent overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
+        onWheel={handlePathWheel}
+      >
+        <BreadcrumbList
+          className={`h-full flex-nowrap items-center whitespace-nowrap px-4 py-0 ${isScrollable ? "w-max min-w-full" : "w-full min-w-0"}`}
+        >
+          <BreadcrumbItem className={isScrollable ? "shrink-0" : "min-w-0"}>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="min-w-0 max-w-full select-none font-semibold text-secondary-foreground/80 hover:underline">
+                <span
+                  className={
+                    isScrollable
+                      ? "whitespace-nowrap"
+                      : "block max-w-[min(20vw,10rem)] truncate"
+                  }
+                >
+                  {summary.root.name}
+                </span>
+              </DropdownMenuTrigger>
+              {Object.entries(summary.root.children).length !== 0 && (
+                <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
+                  {Object.entries(summary.root.children).map(([id, child]) => {
+                    return (
+                      <DropdownMenuItem key={id}>
+                        <ChevronRightIcon />
+                        <span>{child.name}</span>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              )}
+            </DropdownMenu>
+          </BreadcrumbItem>
+          {canExpandPath && !isScrollable && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem className="shrink-0">
+                <button
+                  type="button"
+                  aria-label={t("common.more")}
+                  aria-expanded={isPathExpanded}
+                  className="cursor-pointer select-none font-semibold text-secondary-foreground/80 hover:underline"
+                  onClick={() => setIsPathExpanded(true)}
+                >
+                  …
+                </button>
+              </BreadcrumbItem>
+            </>
+          )}
+          {(isScrollable || !canExpandPath
+            ? subShelfNodes
+            : subShelfNodes.slice(-1)
+          ).map((subShelfNode, index, visibleNodes) => {
+            if (index === visibleNodes.length - 1) {
+              let itemName: string | undefined = undefined;
+
+              switch (itemType) {
+                case "BlockPack":
+                  if (subShelfNode.blockPackNodes[itemId])
+                    itemName = subShelfNode.blockPackNodes[itemId].name;
+                  break;
+                case "Material":
+                  if (subShelfNode.materialNodes[itemId])
+                    itemName = subShelfNode.materialNodes[itemId].name;
+                  break;
+              }
+
+              if (itemName) {
+                return (
+                  <WrapPlaceholder key={subShelfNode.id}>
+                    <ItemPathItem
+                      rootShelfNode={summary.root}
+                      subShelfNode={subShelfNode}
+                      isScrollable={isScrollable}
+                    />
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem
+                      className={`cursor-pointer font-semibold text-secondary-foreground/80 hover:underline ${isScrollable ? "shrink-0" : "min-w-0"}`}
+                    >
+                      <span
+                        className={
+                          isScrollable
+                            ? "whitespace-nowrap"
+                            : "max-w-[min(20vw,10rem)] truncate"
+                        }
+                      >
+                        {itemName}
+                      </span>
+                    </BreadcrumbItem>
+                  </WrapPlaceholder>
+                );
+              }
+            }
+
+            return (
+              <ItemPathItem
+                key={subShelfNode.id}
+                rootShelfNode={summary.root}
+                subShelfNode={subShelfNode}
+                isScrollable={isScrollable}
+              />
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+  }
+
+  if (!pathItems || pathItems.length === 0) return <></>;
 
   return (
-    <Breadcrumb className="bg-transparent border-y w-full">
-      <BreadcrumbList className="px-4 py-1 w-full">
-        <BreadcrumbItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="select-none hover:underline text-secondary-foreground/80 font-semibold">
-              {summary.root.name}
-            </DropdownMenuTrigger>
-            {Object.entries(summary.root.children).length !== 0 && (
-              <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
-                {Object.entries(summary.root.children).map(([id, child]) => {
-                  return (
-                    <DropdownMenuItem key={id}>
-                      <ChevronRightIcon />
-                      <span>{child.name}</span>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            )}
-          </DropdownMenu>
+    <Breadcrumb
+      className={`h-9 min-w-0 w-full shrink-0 border-y bg-transparent overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
+      onWheel={handlePathWheel}
+    >
+      <BreadcrumbList
+        className={`h-full flex-nowrap items-center whitespace-nowrap px-4 py-0 ${isScrollable ? "w-max min-w-full" : "w-full min-w-0"}`}
+      >
+        <BreadcrumbItem className={isScrollable ? "shrink-0" : "min-w-0"}>
+          <span
+            className={
+              isScrollable
+                ? "whitespace-nowrap"
+                : "block max-w-[min(20vw,10rem)] truncate font-semibold text-secondary-foreground/80"
+            }
+          >
+            {pathItems[0].name}
+          </span>
         </BreadcrumbItem>
-        {subShelfNodes.map((subShelfNode, index) => {
-          if (index === subShelfNodes.length - 1) {
-            let itemName: string | undefined = undefined;
-
-            switch (itemType) {
-              case "BlockPack":
-                if (subShelfNode.blockPackNodes[itemId])
-                  itemName = subShelfNode.blockPackNodes[itemId].name;
-                break;
-              case "Material":
-                if (subShelfNode.materialNodes[itemId])
-                  itemName = subShelfNode.materialNodes[itemId].name;
-                break;
-            }
-
-            if (itemName) {
-              return (
-                <WrapPlaceholder key={index}>
-                  <ItemPathItem
-                    key={subShelfNode.id}
-                    rootShelfNode={summary.root}
-                    subShelfNode={subShelfNode}
-                  />
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem className="select-none cursor-pointer hover:underline text-secondary-foreground/80 font-semibold">
-                    {itemName}
-                  </BreadcrumbItem>
-                </WrapPlaceholder>
-              );
-            }
-          }
-
-          return (
-            <ItemPathItem
-              key={subShelfNode.id}
-              rootShelfNode={summary.root}
-              subShelfNode={subShelfNode}
-            />
-          );
-        })}
+        {canExpandPath && !isScrollable && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem className="shrink-0">
+              <button
+                type="button"
+                aria-label={t("common.more")}
+                aria-expanded={isPathExpanded}
+                className="cursor-pointer select-none font-semibold text-secondary-foreground/80 hover:underline"
+                onClick={() => setIsPathExpanded(true)}
+              >
+                …
+              </button>
+            </BreadcrumbItem>
+          </>
+        )}
+        {(isScrollable || !canExpandPath
+          ? pathItems.slice(1)
+          : pathItems.slice(-1)
+        ).map(pathItem => (
+          <WrapPlaceholder key={pathItem.id}>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem className={isScrollable ? "shrink-0" : "min-w-0"}>
+              <span
+                className={
+                  isScrollable
+                    ? "whitespace-nowrap font-semibold text-secondary-foreground/80"
+                    : "block max-w-[min(20vw,10rem)] truncate font-semibold text-secondary-foreground/80"
+                }
+              >
+                {pathItem.name}
+              </span>
+            </BreadcrumbItem>
+          </WrapPlaceholder>
+        ))}
+        {itemName && (
+          <WrapPlaceholder>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem className={isScrollable ? "shrink-0" : "min-w-0"}>
+              <span
+                className={
+                  isScrollable
+                    ? "whitespace-nowrap font-semibold text-secondary-foreground/80"
+                    : "block max-w-[min(20vw,10rem)] truncate font-semibold text-secondary-foreground/80"
+                }
+              >
+                {itemName}
+              </span>
+            </BreadcrumbItem>
+          </WrapPlaceholder>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );

@@ -221,7 +221,7 @@ const RoutineRecordTable = () => {
         }}
       >
         <Table className="table-fixed text-xs">
-          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary">
+          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
             <TableRow>
               <TableHead className="h-9 w-[20%] px-2">
                 {t("workspace.table.routine")}

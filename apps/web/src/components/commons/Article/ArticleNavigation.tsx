@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
+import "@/global/styles/article.css";
 import ArticleCommand from "./ArticleCommand";
 import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";
 

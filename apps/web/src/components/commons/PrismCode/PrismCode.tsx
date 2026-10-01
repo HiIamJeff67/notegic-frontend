@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import "@/global/styles/prism-code.css";
 
 type PrismLanguage = "curl" | "go" | "http" | "json" | "python" | "typescript";
 

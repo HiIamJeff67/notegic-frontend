@@ -216,14 +216,6 @@ const EditorSettings = ({
         onCheckedChange={checked => updatePreference("spellcheck", checked)}
       />
       <SwitchRow
-        title={t("settingsPage.preferences.editor.quickInsert")}
-        description={t(
-          "settingsPage.preferences.editor.quickInsertDescription"
-        )}
-        checked={preferences.quickInsert}
-        onCheckedChange={checked => updatePreference("quickInsert", checked)}
-      />
-      <SwitchRow
         title={t("settingsPage.preferences.editor.dragHandle")}
         description={t("settingsPage.preferences.editor.dragHandleDescription")}
         checked={preferences.blockDragHandle}

@@ -45,36 +45,39 @@ const RoutineTaskRecordDialogSkeleton = ({
           <Skeleton className="h-8 w-40 rounded-sm" />
         </div>
         <div className="min-h-0 flex-1 overflow-hidden">
-          <Table className="table-fixed text-xs">
-            <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary">
+          <Table className="min-w-[64rem] table-fixed text-xs">
+            <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
               <TableRow>
-                <TableHead className="h-9 w-[20%] px-2">
+                <TableHead className="h-9 w-[16%] px-2">
                   <Skeleton className="h-3 w-16 rounded-sm" />
                 </TableHead>
                 <TableHead className="h-9 w-[12%] px-2">
                   <Skeleton className="h-3 w-14 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[16%] px-2">
                   <Skeleton className="h-3 w-16 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[14%] px-2">
                   <Skeleton className="h-3 w-20 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[14%] px-2">
                   <Skeleton className="h-3 w-14 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[7%] px-2">
-                  <Skeleton className="mx-auto h-3 w-8 rounded-sm" />
+                <TableHead className="h-9 w-[8%] px-2">
+                  <Skeleton className="h-3 w-8 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[7%] px-2">
-                  <Skeleton className="mx-auto h-3 w-10 rounded-sm" />
+                <TableHead className="h-9 w-[10%] px-2">
+                  <Skeleton className="h-3 w-10 rounded-sm" />
+                </TableHead>
+                <TableHead className="h-9 w-[10%] px-2">
+                  <Skeleton className="h-3 w-10 rounded-sm" />
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Array.from({ length: 8 }).map((_, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  {Array.from({ length: 7 }).map((__, cellIndex) => (
+                  {Array.from({ length: 8 }).map((__, cellIndex) => (
                     <TableCell className="px-2 py-2.5" key={cellIndex}>
                       <Skeleton className="h-4 w-full rounded-sm" />
                     </TableCell>

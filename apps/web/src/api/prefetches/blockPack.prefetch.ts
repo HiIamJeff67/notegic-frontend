@@ -1,12 +1,10 @@
 import {
   GetMyBlockPacksByRootShelfIdRequest,
-  GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackByIdRequest,
   GetMyBlockPacksByParentSubShelfIdRequest,
 } from "@shared/api/interfaces/blockPack.interface";
 import {
   queryFnGetMyBlockPacksByRootShelfId,
-  queryFnGetMyBlockPackAndItsParentById,
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
 } from "@/api/invokers/blockPack.invoker";
@@ -27,7 +25,6 @@ export const prefetchGetMyBlockPackById = (
     await queryClient.prefetchQuery({
       queryKey: queryKeys.blockPack.oneById(
         prefetchRequest.param.blockPackId as UUID,
-        false,
         prefetchRequest.param.isDeleted ?? false
       ),
       queryFn: async () => await queryFnGetMyBlockPackById(prefetchRequest),
@@ -39,33 +36,6 @@ export const prefetchGetMyBlockPackById = (
     prefetchQuery: prefetchQuery,
     nextQueryClient: queryClient,
     name: "GET_MY_BLOCK_PACK_BY_ID_PREFETCH" as const,
-  };
-};
-
-export const prefetchGetMyBlockPackAndItsParentById = (
-  initialQueryClient?: QueryClient
-) => {
-  const queryClient = initialQueryClient ?? getQueryClient();
-
-  const prefetchQuery = async (
-    prefetchRequest: GetMyBlockPackAndItsParentByIdRequest
-  ): Promise<void> => {
-    await queryClient.prefetchQuery({
-      queryKey: queryKeys.blockPack.oneById(
-        prefetchRequest.param.blockPackId as UUID,
-        true,
-        prefetchRequest.param.isDeleted ?? false
-      ),
-      queryFn: async () =>
-        await queryFnGetMyBlockPackAndItsParentById(prefetchRequest),
-      staleTime: PrefetchQueryDefaultOptions.staleTime as number,
-    });
-  };
-
-  return {
-    prefetchQuery: prefetchQuery,
-    nextQueryClient: queryClient,
-    name: "GET_MY_BLOCK_PACK_AND_ITS_PARENT_BY_ID_PREFETCH" as const,
   };
 };
 

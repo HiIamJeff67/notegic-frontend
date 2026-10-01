@@ -1,14 +1,9 @@
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
-import { isValidUUID } from "@shared/types/uuidv4.type";
-import {
-  createFileRoute,
-  notFound,
-  useLoaderData,
-} from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyBlockPackAndItsParentById } from "@/api/hooks/blockPack.hook";
+import { useGetMyBlockPackById } from "@/api/hooks/blockPack.hook";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useLoading } from "@/hooks/useLoading";
 import BlockPackEditorNotFoundPage from "@/pages/app/block-pack-editor/BlockPackEditorNotFoundPage";
@@ -16,35 +11,9 @@ import BlockPackEditorPage from "@/pages/app/block-pack-editor/BlockPackEditorPa
 
 export const Route = createFileRoute("/app/block-pack-editor/$blockPackId")({
   ssr: false, // since the blocknote editor view is a client side component
-  validateSearch: search => ({
-    parentSubShelfId:
-      typeof search.parentSubShelfId === "string"
-        ? search.parentSubShelfId
-        : undefined,
-    rootShelfId:
-      typeof search.rootShelfId === "string" ? search.rootShelfId : undefined,
-  }),
-  loaderDeps: ({ search }) => {
-    const { parentSubShelfId, rootShelfId } = search;
-
-    if (
-      !parentSubShelfId ||
-      !rootShelfId ||
-      !isValidUUID(parentSubShelfId) ||
-      !isValidUUID(rootShelfId)
-    ) {
-      throw notFound();
-    }
-
-    return {
-      parentSubShelfId: parentSubShelfId as UUID,
-      rootShelfId: rootShelfId as UUID,
-    };
-  },
-  loader: ({ params, deps }) => {
+  loader: ({ params }) => {
     return {
       blockPackId: params.blockPackId as UUID,
-      ...deps,
     };
   },
   component: BlockPackEditorIndexRoute,
@@ -57,7 +26,7 @@ function BlockPackEditorIndexRoute() {
   });
   const { startAsyncTransactionLoading } = useLoading();
 
-  const blockPackQuerier = useGetMyBlockPackAndItsParentById(undefined, {
+  const blockPackQuerier = useGetMyBlockPackById(undefined, {
     staleTime: 0,
   });
   const [blockPackMeta, setBlockPackMeta] = useState<BlockPackMeta | null>(
@@ -93,14 +62,20 @@ function BlockPackEditorIndexRoute() {
 
         setBlockPackMeta({
           id: blockPackResponse.data.id as UUID,
-          parentId: loaderData.parentSubShelfId,
-          rootId: loaderData.rootShelfId,
+          parentId: blockPackResponse.data.parentSubShelfId as UUID,
+          rootId: blockPackResponse.data.rootShelfId as UUID,
           permission: blockPackResponse.data.permission,
           name: blockPackResponse.data.name,
           icon: blockPackResponse.data.icon,
           headerBackgroundURL: blockPackResponse.data.headerBackgroundURL,
           blockCount: blockPackResponse.data.blockCount,
-          path: (blockPackResponse.data.parentSubShelfPath || []) as UUID[],
+          path: blockPackResponse.data.path
+            .slice(1, -1)
+            .map(pathItem => pathItem.id as UUID),
+          pathItems: blockPackResponse.data.path.map(pathItem => ({
+            id: pathItem.id as UUID,
+            name: pathItem.name,
+          })),
           deletedAt: blockPackResponse.data.deletedAt
             ? new Date(blockPackResponse.data.deletedAt)
             : null,
@@ -123,12 +98,7 @@ function BlockPackEditorIndexRoute() {
     return () => {
       isActive = false;
     };
-  }, [
-    loaderData.blockPackId,
-    loaderData.parentSubShelfId,
-    loaderData.rootShelfId,
-    startAsyncTransactionLoading,
-  ]);
+  }, [loaderData.blockPackId, startAsyncTransactionLoading]);
 
   if (isLoading) return <LoadingCover />;
   if (isNotFound || !blockPackMeta) return <BlockPackEditorNotFoundPage />;

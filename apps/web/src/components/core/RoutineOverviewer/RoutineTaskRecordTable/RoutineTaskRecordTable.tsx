@@ -285,7 +285,7 @@ const RoutineTaskRecordTable = ({
         }}
       >
         <Table className="table-fixed text-xs">
-          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight">
+          <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight [&_th]:text-left">
             <TableRow>
               <TableHead className="h-9 w-[18%] px-2">
                 {t("workspace.table.task")}

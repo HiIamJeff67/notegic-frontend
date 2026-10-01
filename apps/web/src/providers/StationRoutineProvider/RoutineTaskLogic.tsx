@@ -12,6 +12,9 @@ import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
+import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
@@ -438,16 +441,26 @@ export const useRoutineTaskLogic = ({
       }
       if (!stationNode || !routineNode)
         throw new Error("routine does not exist");
-      const response = await createRoutineTaskMutator.mutateAsync({
-        header: getClientRequestHeaders(navigator.userAgent),
+      const validation = CreateRoutineTaskByRoutineIdRequestSchema.safeParse({
         body: {
           routineId,
-          title,
+          title: title.trim(),
           purpose,
           payload,
           priority,
           maxAttempts,
         },
+      });
+      if (!validation.success) {
+        throw new NotegicValidationError(
+          ValidationClientException.ZodParsingFailed(validation.error)
+        );
+      }
+
+      const body = validation.data.body;
+      const response = await createRoutineTaskMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body,
       });
       if (response.success === false) throw response.exception;
 
@@ -455,11 +468,11 @@ export const useRoutineTaskLogic = ({
         id: response.data.id as UUID,
         routineId,
         stationId: routineNode.stationId,
-        title,
-        purpose,
-        payload,
-        priority,
-        maxAttempts,
+        title: body.title,
+        purpose: body.purpose,
+        payload: body.payload,
+        priority: body.priority ?? 0,
+        maxAttempts: body.maxAttempts ?? 1,
         previousRoutineTaskIds: [],
         updatedAt: response.data.createdAt,
         createdAt: response.data.createdAt,

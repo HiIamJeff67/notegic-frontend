@@ -8,7 +8,6 @@ import {
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
   GetMyBlockPacksByRootShelfIdResponse,
-  GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdResponse,
   MoveMyBlockPackByIdRequest,
@@ -66,39 +65,49 @@ export class BlockPackLocalSynchronizer {
     response: GetMyBlockPackByIdResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
-    await localDB
-      .insert(BlockPack)
-      .values({
-        id: response.data.id,
-        parentSubShelfId: response.data.parentSubShelfId,
-        name: response.data.name,
-        icon: response.data.icon,
-        headerBackgroundURL: response.data.headerBackgroundURL,
-        blockCount: response.data.blockCount,
-        deletedAt: response.data.deletedAt,
-        updatedAt: response.data.updatedAt,
-        createdAt: response.data.createdAt,
-      })
-      .onConflictDoUpdate({
-        target: BlockPack.id,
-        set: {
-          parentSubShelfId: response.data.parentSubShelfId,
-          name: response.data.name,
-          icon: response.data.icon,
-          headerBackgroundURL: response.data.headerBackgroundURL,
-          blockCount: response.data.blockCount,
-          deletedAt: response.data.deletedAt,
-          updatedAt: response.data.updatedAt,
-          createdAt: response.data.createdAt,
-        },
-      });
-  };
-
-  static syncGetMyBlockPackAndItsParentById = async (
-    response: GetMyBlockPackAndItsParentByIdResponse
-  ): Promise<void> => {
-    if (!localDB.isReady) await localDB.ensureReady();
     await localDB.transaction(async tx => {
+      const subShelfPathItems = response.data.path.slice(1);
+      const parentSubShelfPath = subShelfPathItems
+        .slice(0, -1)
+        .map(pathItem => pathItem.id);
+
+      await tx
+        .insert(RootShelf)
+        .values({
+          id: response.data.rootShelfId,
+          name: response.data.rootShelfName,
+        })
+        .onConflictDoUpdate({
+          target: RootShelf.id,
+          set: { name: response.data.rootShelfName },
+        });
+
+      const ancestorSubShelves = subShelfPathItems
+        .slice(0, -1)
+        .map((pathItem, index) => ({
+          id: pathItem.id,
+          name: pathItem.name,
+          rootShelfId: response.data.rootShelfId,
+          prevSubShelfId: index === 0 ? null : subShelfPathItems[index - 1].id,
+          path: subShelfPathItems
+            .slice(0, index)
+            .map(ancestor => ancestor.id) as any,
+        }));
+      if (ancestorSubShelves.length > 0) {
+        await tx
+          .insert(SubShelf)
+          .values(ancestorSubShelves)
+          .onConflictDoUpdate({
+            target: SubShelf.id,
+            set: {
+              name: sql`excluded.name`,
+              rootShelfId: sql`excluded.root_shelf_id`,
+              prevSubShelfId: sql`excluded.prev_sub_shelf_id`,
+              path: sql`excluded.path`,
+            },
+          });
+      }
+
       await tx
         .insert(SubShelf)
         .values({
@@ -106,7 +115,7 @@ export class BlockPackLocalSynchronizer {
           name: response.data.parentSubShelfName,
           rootShelfId: response.data.rootShelfId,
           prevSubShelfId: response.data.parentSubShelfPrevSubShelfId,
-          path: response.data.parentSubShelfPath as any,
+          path: parentSubShelfPath as any,
           deletedAt: response.data.parentSubShelfDeletedAt,
           updatedAt: response.data.parentSubShelfUpdatedAt,
           createdAt: response.data.parentSubShelfCreatedAt,
@@ -117,7 +126,7 @@ export class BlockPackLocalSynchronizer {
             name: response.data.parentSubShelfName,
             rootShelfId: response.data.rootShelfId,
             prevSubShelfId: response.data.parentSubShelfPrevSubShelfId,
-            path: response.data.parentSubShelfPath as any,
+            path: parentSubShelfPath as any,
             deletedAt: response.data.parentSubShelfDeletedAt,
             updatedAt: response.data.parentSubShelfUpdatedAt,
             createdAt: response.data.parentSubShelfCreatedAt,

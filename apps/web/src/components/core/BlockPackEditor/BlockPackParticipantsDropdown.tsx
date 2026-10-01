@@ -5,6 +5,9 @@ import type {
   FragmentedBasicPublicUserInfoFragment,
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import { UpsertRootShelfPermissionRequestSchema } from "@shared/api/interfaces/rootShelf.interface";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
@@ -420,13 +423,26 @@ const BlockPackParticipantsDropdown = ({
       return;
     }
 
+    const validation = UpsertRootShelfPermissionRequestSchema.safeParse({
+      param: { rootShelfId, userPublicId: userPublicId.trim() },
+      body: { permission },
+    });
+    if (!validation.success) {
+      toast.error(
+        tError(
+          new NotegicValidationError(
+            ValidationClientException.ZodParsingFailed(validation.error)
+          ),
+          t
+        )
+      );
+      return;
+    }
+
     try {
       const response = await upsertPermissionMutator.mutateAsync({
-        param: {
-          rootShelfId,
-          userPublicId: userPublicId.trim() as UUID,
-        },
-        body: { permission },
+        param: validation.data.param,
+        body: validation.data.body,
       });
       setPermissionByPublicId(prev => {
         const next = new Map(prev);

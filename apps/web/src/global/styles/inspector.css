@@ -1,0 +1,9 @@
+/* Keep inspector controls on the standard background surface. */
+.inspector-surface [data-slot="input"],
+.inspector-surface [data-slot="textarea"],
+.inspector-surface [role="combobox"],
+.inspector-surface [data-slot="button"][data-empty],
+.inspector-surface .bg-background,
+.inspector-surface .bg-muted {
+  background-color: var(--background);
+}

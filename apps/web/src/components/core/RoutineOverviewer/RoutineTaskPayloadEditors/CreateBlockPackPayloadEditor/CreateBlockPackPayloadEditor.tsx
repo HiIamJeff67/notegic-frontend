@@ -84,6 +84,9 @@ const CreateBlockPackPayloadEditor = ({
     JSON.stringify(parsedInitialPayload, null, 2)
   );
   const [editorVersion, setEditorVersion] = useState(0);
+  const [dialogElement, setDialogElement] = useState<HTMLDivElement | null>(
+    null
+  );
 
   const editor = useMemo(
     () =>
@@ -364,15 +367,17 @@ const CreateBlockPackPayloadEditor = ({
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
       <DialogContent
+        id="block-pack-payload-editor-dialog"
+        ref={setDialogElement}
         className={
           usesPayloadSidebar
-            ? "z-[180] max-h-[92vh] !w-[min(1600px,97vw)] !max-w-none gap-0 overflow-hidden rounded-sm bg-card p-0"
+            ? "notegic-block-editor z-[180] h-[92dvh] max-h-[92dvh] !w-[min(1600px,97vw)] !max-w-none flex flex-col gap-0 overflow-hidden rounded-sm bg-card p-0 md:h-auto"
             : "max-h-[90vh] overflow-visible rounded-sm bg-card sm:max-w-xl"
         }
       >
         <DialogHeader
           className={
-            usesPayloadSidebar ? "border-b bg-secondary px-5 py-4" : ""
+            usesPayloadSidebar ? "shrink-0 border-b bg-secondary px-5 py-4" : ""
           }
         >
           <DialogTitle>{t("workspace.payloadEditor.title")}</DialogTitle>
@@ -384,7 +389,7 @@ const CreateBlockPackPayloadEditor = ({
         </DialogHeader>
 
         {usesPayloadSidebar ? (
-          <div className="grid min-h-0 flex-1 grid-cols-[500px_minmax(0,1fr)] overflow-hidden">
+          <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] grid-cols-1 overflow-hidden md:grid-rows-1 md:grid-cols-[minmax(0,500px)_minmax(0,1fr)]">
             <CreateBlockPackPayloadEditorSidebar
               purpose={purpose}
               targetSubShelfId={targetSubShelfId}
@@ -402,22 +407,25 @@ const CreateBlockPackPayloadEditor = ({
               payloadPreview={payloadPreview}
             />
             {usesBlockLiteEditor ? (
-              <CreateBlockPackPayloadTemplateEditor
-                editor={editor}
-                purpose={purpose}
-                payloadPreview={payloadPreview}
-                patternBlockIds={
-                  new Set(patternBlocks.map(patternBlock => patternBlock.id))
-                }
-                onAddPatternBlock={addPatternBlock}
-                onRemovePatternBlock={removePatternBlock}
-                onClose={onClose}
-                onConfirm={onConfirm}
-                isSaveDisabled={
-                  purpose === RoutineTaskPurpose.CreateBlockPack &&
-                  targetSubShelfId.trim().length === 0
-                }
-              />
+              dialogElement && (
+                <CreateBlockPackPayloadTemplateEditor
+                  editor={editor}
+                  portalElement={dialogElement}
+                  purpose={purpose}
+                  payloadPreview={payloadPreview}
+                  patternBlockIds={
+                    new Set(patternBlocks.map(patternBlock => patternBlock.id))
+                  }
+                  onAddPatternBlock={addPatternBlock}
+                  onRemovePatternBlock={removePatternBlock}
+                  onClose={onClose}
+                  onConfirm={onConfirm}
+                  isSaveDisabled={
+                    purpose === RoutineTaskPurpose.CreateBlockPack &&
+                    targetSubShelfId.trim().length === 0
+                  }
+                />
+              )
             ) : (
               <main className="flex max-h-[72vh] min-h-0 flex-col overflow-hidden bg-card">
                 <div className="min-h-0 flex-1 overflow-y-auto p-5">

@@ -16,8 +16,6 @@ import type {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetMyBlockPackAndItsParentByIdRequest,
-  GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdRequest,
@@ -39,7 +37,6 @@ import type {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
-import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -63,7 +60,6 @@ import {
   mutationFnRestoreMyBlockPacksByIds,
   mutationFnUpdateMyBlockPackById,
   mutationFnUpdateMyBlockPacksByIds,
-  queryFnGetMyBlockPackAndItsParentById,
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
   queryFnGetMyBlockPacksByRootShelfId,
@@ -107,7 +103,15 @@ export const useGetMyBlockPackById = (
           await BlockPackLocalSimulator.simulateGetMyBlockPackById(request);
         return {
           success: false,
-          data: existingBlockPack,
+          data: existingBlockPack
+            ? {
+                ...existingBlockPack,
+                lastUpdateSequence: 0,
+                compactedUntilSequence: 0,
+                projectedUntilSequence: -1,
+                isProjectionCurrent: false,
+              }
+            : null,
           exception: error.unWrap,
           embedded: { publicId: "" },
         } as GetMyBlockPackByIdResponse;
@@ -120,7 +124,6 @@ export const useGetMyBlockPackById = (
   const query = useQuery<GetMyBlockPackByIdResponse, Error>({
     queryKey: queryKeys.blockPack.oneById(
       hookRequest?.param.blockPackId as UUID | undefined,
-      false,
       hookRequest?.param.isDeleted ?? false
     ),
     queryFn: async () => perform(hookRequest),
@@ -137,99 +140,6 @@ export const useGetMyBlockPackById = (
     return queryClient.fetchQuery({
       queryKey: queryKeys.blockPack.oneById(
         callbackRequest.param.blockPackId as UUID | undefined,
-        false,
-        callbackRequest.param.isDeleted ?? false
-      ),
-      queryFn: async () => perform(callbackRequest),
-      staleTime: UseQueryDefaultOptions.staleTime,
-      ...options,
-    });
-  };
-
-  return { ...query, fetch };
-};
-
-export const useGetMyBlockPackAndItsParentById = (
-  hookRequest?: GetMyBlockPackAndItsParentByIdRequest,
-  options?: Partial<
-    UseQueryOptions<GetMyBlockPackAndItsParentByIdResponse, Error>
-  >
-) => {
-  const queryClient = getQueryClient();
-
-  const perform = async (
-    request?: GetMyBlockPackAndItsParentByIdRequest
-  ): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
-    if (!request) {
-      throw new NotegicValidationError(
-        ValidationClientException.ReceivedUndefinedRequest()
-      );
-    }
-
-    try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-      }
-
-      const response = await queryFnGetMyBlockPackAndItsParentById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
-      await BlockPackLocalSynchronizer.syncGetMyBlockPackAndItsParentById(
-        response
-      );
-      return response;
-    } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const existingBlockPackData =
-          await BlockPackLocalSimulator.simulateGetMyBlockPackAndItsParentById(
-            request
-          );
-        return {
-          success: false,
-          data: existingBlockPackData
-            ? {
-                ...existingBlockPackData,
-                permission:
-                  "permission" in existingBlockPackData
-                    ? existingBlockPackData.permission
-                    : AccessControlPermission.Read,
-              }
-            : existingBlockPackData,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as unknown as GetMyBlockPackAndItsParentByIdResponse;
-      }
-
-      throw error;
-    }
-  };
-
-  const query = useQuery<GetMyBlockPackAndItsParentByIdResponse, Error>({
-    queryKey: queryKeys.blockPack.oneById(
-      hookRequest?.param.blockPackId as UUID | undefined,
-      true,
-      hookRequest?.param.isDeleted ?? false
-    ),
-    queryFn: async () => perform(hookRequest),
-    staleTime: UseQueryDefaultOptions.staleTime,
-    refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
-    refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
-    ...options,
-    enabled: hookRequest ? (options?.enabled ?? true) : false,
-  });
-
-  const fetch = async (
-    callbackRequest: GetMyBlockPackAndItsParentByIdRequest
-  ): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
-    return queryClient.fetchQuery({
-      queryKey: queryKeys.blockPack.oneById(
-        callbackRequest.param.blockPackId as UUID | undefined,
-        true,
         callbackRequest.param.isDeleted ?? false
       ),
       queryFn: async () => perform(callbackRequest),

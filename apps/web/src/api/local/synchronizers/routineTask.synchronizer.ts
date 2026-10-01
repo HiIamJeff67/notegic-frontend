@@ -1,14 +1,66 @@
 import type {
+  CreateRoutineTaskByRoutineIdRequest,
+  CreateRoutineTaskByRoutineIdResponse,
   GetAllMyRoutineTasksResponse,
   GetMyRoutineTaskByIdResponse,
   GetMyRoutineTasksByRoutineIdResponse,
   GetMyRoutineTasksByRoutineIdsResponse,
 } from "@shared/api/interfaces/routineTask.interface";
-import { sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { RoutineTask } from "@/api/local/schemas";
+import { RoutinesToTasks, RoutineTask } from "@/api/local/schemas";
 
 export class RoutineTaskLocalSynchronizer {
+  static syncCreateRoutineTaskByRoutineId = async (
+    request: CreateRoutineTaskByRoutineIdRequest,
+    response: CreateRoutineTaskByRoutineIdResponse
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+
+    await localDB.transaction(async tx => {
+      await tx
+        .insert(RoutineTask)
+        .values({
+          id: response.data.id,
+          routineId: request.body.routineId,
+          title: request.body.title,
+          purpose: request.body.purpose,
+          payload: request.body.payload,
+          priority: request.body.priority ?? 0,
+          maxAttempts: request.body.maxAttempts ?? 1,
+          previousRoutineTaskIds: [],
+          updatedAt: response.data.createdAt,
+          createdAt: response.data.createdAt,
+        })
+        .onConflictDoUpdate({
+          target: RoutineTask.id,
+          set: {
+            routineId: request.body.routineId,
+            title: request.body.title,
+            purpose: request.body.purpose,
+            payload: request.body.payload,
+            priority: request.body.priority ?? 0,
+            maxAttempts: request.body.maxAttempts ?? 1,
+            previousRoutineTaskIds: [],
+            updatedAt: response.data.createdAt,
+          },
+        });
+      await tx
+        .delete(RoutinesToTasks)
+        .where(
+          and(
+            eq(RoutinesToTasks.routineId, request.body.routineId),
+            eq(RoutinesToTasks.taskId, response.data.id)
+          )
+        );
+      await tx.insert(RoutinesToTasks).values({
+        routineId: request.body.routineId,
+        taskId: response.data.id,
+        createdAt: response.data.createdAt,
+      });
+    });
+  };
+
   static syncGetMyRoutineTaskById = async (
     response: GetMyRoutineTaskByIdResponse
   ): Promise<void> => {

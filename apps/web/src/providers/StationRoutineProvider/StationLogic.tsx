@@ -8,6 +8,9 @@ import {
   SupportedIcon,
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.interface";
+import { CreateStationRequestSchema } from "@shared/api/interfaces/station.interface";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
@@ -110,23 +113,33 @@ export const useStationLogic = ({
       icon: SupportedIcon | null = null,
       headerBackgroundURL: string | null = null
     ): Promise<StationNode> => {
+      const validation = CreateStationRequestSchema.safeParse({
+        body: {
+          name: name.trim(),
+          description: description.trim(),
+          icon,
+          headerBackgroundURL: headerBackgroundURL?.trim() || null,
+        },
+      });
+      if (!validation.success) {
+        throw new NotegicValidationError(
+          ValidationClientException.ZodParsingFailed(validation.error)
+        );
+      }
+
+      const body = validation.data.body;
       const response = await createStationMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
-        body: {
-          name,
-          description,
-          icon,
-          headerBackgroundURL,
-        },
+        body,
       });
       if (response.success === false) throw response.exception;
 
       const stationNode: StationNode = {
         id: response.data.id as UUID,
-        name,
-        description,
-        icon,
-        headerBackgroundURL,
+        name: body.name,
+        description: body.description,
+        icon: body.icon,
+        headerBackgroundURL: body.headerBackgroundURL,
         permission: AccessControlPermission.Owner,
         routineCount: 0,
         deletedAt: null,

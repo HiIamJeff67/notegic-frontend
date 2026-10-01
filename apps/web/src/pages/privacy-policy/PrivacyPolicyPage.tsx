@@ -8,8 +8,6 @@ import {
 } from "@/components/commons/Article/Article";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 
-const CONTACT_EMAIL = "your-email@example.com";
-
 const PrivacySection = ({
   id,
   title,
@@ -29,7 +27,10 @@ export const PrivacyPolicySections = () => {
   const { t } = useTranslation();
   const router = useAppRouterActions();
   const emailLink = (
-    <a href={`mailto:${CONTACT_EMAIL}`} className="underline" />
+    <a
+      href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL}`}
+      className="underline"
+    />
   );
 
   return (
@@ -94,7 +95,7 @@ export const PrivacyPolicySections = () => {
         <p>
           <Trans
             i18nKey="workspace.pages.privacy.rightsText"
-            values={{ email: CONTACT_EMAIL }}
+            values={{ email: import.meta.env.VITE_CONTACT_EMAIL }}
             components={{ email: emailLink }}
           />
         </p>
@@ -130,7 +131,7 @@ export const PrivacyPolicySections = () => {
         <p>
           <Trans
             i18nKey="workspace.pages.privacy.contactText"
-            values={{ email: CONTACT_EMAIL }}
+            values={{ email: import.meta.env.VITE_CONTACT_EMAIL }}
             components={{ email: emailLink }}
           />
         </p>

@@ -74,14 +74,8 @@ export const queryKeys = {
   },
   blockPack: {
     all: () => ["blockPack"] as const,
-    oneById: (
-      id?: UUID,
-      withParent: boolean = false,
-      isDeleted: boolean = false
-    ) =>
-      withParent
-        ? (["blockPack", "oneById", id, "withParent", isDeleted] as const)
-        : (["blockPack", "oneById", id, isDeleted] as const),
+    oneById: (id?: UUID, isDeleted: boolean = false) =>
+      ["blockPack", "oneById", id, isDeleted] as const,
     manyByParentSubShelfId: (
       parentSubShelfId?: UUID,
       areDeleted: boolean = false

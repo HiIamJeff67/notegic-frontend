@@ -1,7 +1,6 @@
 import type { BlockNoteEditor } from "@blocknote/core";
 import { SideMenuExtension } from "@blocknote/core/extensions";
 import {
-  AddBlockButton,
   DragHandleButton,
   SideMenu,
   SideMenuController,
@@ -17,9 +16,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import type { PatternBlock } from "./CreateBlockPackPayloadEditor";
+import "@/global/styles/block-editor.css";
 
 interface CreateBlockPackPayloadTemplateEditorProps {
   editor: BlockNoteEditor<any, any, any>;
+  portalElement: HTMLElement;
   purpose: RoutineTaskPurpose;
   payloadPreview: string;
   patternBlockIds: Set<string>;
@@ -46,47 +47,50 @@ const PatternToggleButton = ({
   if (!block) return null;
 
   const isSelected = patternBlockIds.has(block.id);
+  const label = isSelected
+    ? t("workspace.payloadEditor.removeFromPatternTable")
+    : t("workspace.payloadEditor.addToPatternTable");
+  const icon = isSelected ? (
+    <XIcon className="size-3.5" />
+  ) : (
+    <Form className="size-3.5" />
+  );
+  const handleToggle = () => {
+    if (isSelected) {
+      onRemovePatternBlock(block.id);
+      return;
+    }
+
+    onAddPatternBlock({
+      id: block.id,
+      type: block.type,
+      props: block.props ?? {},
+      label: Array.isArray(block.content)
+        ? block.content
+            .map((content: any) => {
+              if (content.type === "text") return content.text;
+              if (content.type === "link" && Array.isArray(content.content)) {
+                return content.content
+                  .map((linkContent: any) => linkContent.text ?? "")
+                  .join("");
+              }
+              return "";
+            })
+            .join("")
+            .trim()
+        : "",
+    });
+  };
+
   return (
     <blockNoteShadcnComponents.SideMenu.Button
-      className="bn-button size-7 min-w-0 p-1.5 text-muted-foreground"
-      label={
-        isSelected
-          ? t("workspace.payloadEditor.removeFromPatternTable")
-          : t("workspace.payloadEditor.addToPatternTable")
-      }
-      icon={
-        isSelected ? <XIcon className="size-4" /> : <Form className="size-4" />
-      }
+      className="bn-button"
+      label={label}
+      icon={icon}
       onClick={event => {
         event.preventDefault();
         event.stopPropagation();
-        if (isSelected) {
-          onRemovePatternBlock(block.id);
-          return;
-        }
-
-        onAddPatternBlock({
-          id: block.id,
-          type: block.type,
-          props: block.props ?? {},
-          label: Array.isArray(block.content)
-            ? block.content
-                .map((content: any) => {
-                  if (content.type === "text") return content.text;
-                  if (
-                    content.type === "link" &&
-                    Array.isArray(content.content)
-                  ) {
-                    return content.content
-                      .map((linkContent: any) => linkContent.text ?? "")
-                      .join("");
-                  }
-                  return "";
-                })
-                .join("")
-                .trim()
-            : "",
-        });
+        handleToggle();
       }}
     />
   );
@@ -94,6 +98,7 @@ const PatternToggleButton = ({
 
 const CreateBlockPackPayloadTemplateEditor = ({
   editor,
+  portalElement,
   purpose,
   payloadPreview,
   patternBlockIds,
@@ -104,20 +109,19 @@ const CreateBlockPackPayloadTemplateEditor = ({
   isSaveDisabled = false,
 }: CreateBlockPackPayloadTemplateEditorProps) => {
   const { t } = useTranslation();
-
   return (
-    <main className="flex max-h-[72vh] min-h-0 flex-col overflow-hidden bg-card">
-      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-visible py-6 pr-6 pl-16">
-        <section>
+    <main className="flex h-full min-h-0 flex-col overflow-hidden bg-card md:max-h-[72vh]">
+      <div className="min-h-0 flex-1 overflow-y-auto py-6 pr-4 pl-7">
+        <section className="min-w-0">
           <BlockNoteView
             editor={editor}
             sideMenu={false}
-            className="caret-muted-foreground [&_.bn-editor]:px-8 [&_.bn-side-menu_.bn-button]:size-7 [&_.bn-side-menu_.bn-button]:min-w-0 [&_.bn-side-menu_.bn-button]:p-1.5 [&_.bn-side-menu_.bn-button_svg]:size-4"
+            portalElements={{ default: portalElement }}
+            className="notegic-block-editor caret-muted-foreground [&_.bn-editor]:px-4"
           >
             <SideMenuController
               sideMenu={sideMenuProps => (
                 <SideMenu {...sideMenuProps}>
-                  <AddBlockButton />
                   <PatternToggleButton
                     patternBlockIds={patternBlockIds}
                     onAddPatternBlock={onAddPatternBlock}

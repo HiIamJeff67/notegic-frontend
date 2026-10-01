@@ -77,7 +77,7 @@ const CreateBlockPackPayloadEditorSidebar = ({
   );
 
   return (
-    <aside className="flex max-h-[72vh] min-h-0 flex-col gap-4 overflow-y-auto border-r bg-sidebar p-4">
+    <aside className="min-h-0 flex flex-col gap-4 overflow-y-auto border-b bg-sidebar p-4 md:max-h-[72vh] md:border-r md:border-b-0">
       {purpose === "CreateBlockPack" && (
         <>
           <ShelfLocationPicker

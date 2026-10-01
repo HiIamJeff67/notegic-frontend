@@ -135,8 +135,6 @@ export const APIURLPathDictionary = {
   },
   blockPack: {
     getMyBlockPackById: (blockPackId: string) => `block-packs/${blockPackId}`,
-    getMyBlockPackAndItsParentById: (blockPackId: string) =>
-      `block-packs/${blockPackId}/parent`,
     getMyBlockPacksByParentSubShelfId: (parentSubShelfId: string) =>
       `block-packs/sub-shelf/${parentSubShelfId}`,
     getMyBlockPacksByRootShelfId: (rootShelfId: string) =>

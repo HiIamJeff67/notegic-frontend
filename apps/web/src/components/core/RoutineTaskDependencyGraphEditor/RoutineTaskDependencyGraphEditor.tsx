@@ -11,6 +11,7 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import "./graph.css";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
@@ -1007,7 +1008,7 @@ const RoutineTaskDependencyGraphEditor = ({
       {station && (
         <div className="flex min-h-8 w-full flex-wrap items-center gap-x-3 gap-y-1 border-y px-4 py-1 text-sm">
           <span className="inline-flex min-w-0 items-center gap-1.5 font-semibold text-secondary-foreground/80">
-            <span className="max-w-48 truncate">{station.name}</span>
+            <span className="max-w-64 truncate">{station.name}</span>
           </span>
           <span aria-hidden="true" className="h-4 w-px shrink-0 bg-border" />
           <span className="text-muted-foreground">

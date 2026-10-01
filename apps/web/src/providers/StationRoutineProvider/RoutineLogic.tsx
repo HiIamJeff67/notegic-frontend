@@ -7,6 +7,9 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
+import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/routine.interface";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
 import type { RoutineNode } from "@shared/types/routineNode.type";
@@ -158,7 +161,9 @@ export const useRoutineLogic = ({
           updatedAt: new Date(node.updatedAt),
           createdAt: new Date(node.createdAt),
           isOpen: existingRoutine?.isOpen ?? false,
-          isExpanded: routineTasks.length >= routineTaskIds.length,
+          isExpanded:
+            routineTaskIds.length > 0 &&
+            routineTasks.length >= routineTaskIds.length,
           routineTagIds,
           routineTaskIds,
           itemIds: routineItemIds,
@@ -337,9 +342,7 @@ export const useRoutineLogic = ({
       ) {
         routineNode.isOpen = true;
         forceUpdate();
-        if (routineNode.routineTaskIds.length > 0) {
-          await getMyRoutineTasksByRoutineIds([routineId]);
-        }
+        await getMyRoutineTasksByRoutineIds([routineId]);
       }
 
       routineNode.routineTasks = routineNode.routineTaskIds
@@ -368,6 +371,7 @@ export const useRoutineLogic = ({
       values: {
         title: string;
         description: string;
+        hasCustomSchedule?: boolean;
         timeoutSeconds?: number;
         isPinned?: boolean;
         scheduledStartAt?: Date;
@@ -378,12 +382,37 @@ export const useRoutineLogic = ({
     ): Promise<RoutineNode> => {
       const stationNode = stationsRef.current.get(stationId);
       if (!stationNode) throw new Error("station does not exist");
-      const response = await createRoutineMutator.mutateAsync({
-        header: getClientRequestHeaders(navigator.userAgent),
+      if (
+        values.hasCustomSchedule &&
+        (!values.scheduledStartAt || !values.scheduledEndAt)
+      ) {
+        throw new Error("workspace.validation.invalidSchedule");
+      }
+
+      if (values.scheduledStartAt && values.scheduledEndAt) {
+        switch (values.period) {
+          case RoutinePeriod.Daily:
+            if (
+              values.scheduledEndAt.getHours() * 60 +
+                values.scheduledEndAt.getMinutes() <=
+              values.scheduledStartAt.getHours() * 60 +
+                values.scheduledStartAt.getMinutes()
+            ) {
+              throw new Error("workspace.validation.invalidSchedule");
+            }
+            break;
+          default:
+            if (values.scheduledEndAt <= values.scheduledStartAt) {
+              throw new Error("workspace.validation.invalidSchedule");
+            }
+        }
+      }
+
+      const validation = CreateRoutineByStationIdRequestSchema.safeParse({
         body: {
           stationId,
-          title: values.title,
-          description: values.description,
+          title: values.title.trim(),
+          description: values.description.trim(),
           timeoutSeconds: values.timeoutSeconds,
           isPinned: values.isPinned,
           scheduledStartAt: values.scheduledStartAt,
@@ -392,6 +421,17 @@ export const useRoutineLogic = ({
           timezone: values.timezone,
         },
       });
+      if (!validation.success) {
+        throw new NotegicValidationError(
+          ValidationClientException.ZodParsingFailed(validation.error)
+        );
+      }
+
+      const body = validation.data.body;
+      const response = await createRoutineMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body,
+      });
       if (response.success === false) throw response.exception;
 
       const scheduledStartAt =
@@ -399,17 +439,17 @@ export const useRoutineLogic = ({
       const routineNode: RoutineNode = {
         id: response.data.id as UUID,
         stationId,
-        title: values.title,
-        description: values.description,
+        title: body.title,
+        description: body.description,
         phase: null,
-        isPinned: values.isPinned ?? false,
+        isPinned: body.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt:
           values.scheduledEndAt ??
           new Date(scheduledStartAt.getTime() + 60 * 60 * 1000),
-        period: values.period ?? null,
+        period: body.period ?? null,
         timezone:
-          values.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+          body.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
         deletedAt: null,
         updatedAt: response.data.createdAt,
         createdAt: response.data.createdAt,

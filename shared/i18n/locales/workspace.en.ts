@@ -281,7 +281,7 @@ export const EnglishWorkspaceTranslation = {
     pathDepth: "Path depth",
     children: "Children",
     generatedJson:
-      "Generated JSON for {{purpose}}. The backend remains authoritative.",
+      "Generated JSON to {{purpose}}. The backend remains authoritative.",
     updatedBlocksHint:
       "Each entry needs a blockId and an arborizedEditableBlock. Use the block-specific editor for one block.",
     valuesAvailableAsTokens: 'Values are available as "{{token}}".',

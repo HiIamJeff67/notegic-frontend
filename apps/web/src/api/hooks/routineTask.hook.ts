@@ -311,6 +311,10 @@ export const useCreateRoutineTaskByRoutineId = () => {
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
+      await RoutineTaskLocalSynchronizer.syncCreateRoutineTaskByRoutineId(
+        request,
+        response
+      );
       const targetKeys = [
         queryKeys.routineTask.all(),
         queryKeys.routineTask.myAll(),

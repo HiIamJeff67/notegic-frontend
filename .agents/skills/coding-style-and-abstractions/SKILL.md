@@ -26,6 +26,7 @@ documented architecture requires a deliberate deviation.
 ## Rules
 
 - Reuse existing shadcn primitives, Tailwind v4 semantic tokens, canonical icons, and established components.
+- Trace existing entry points before changing an interaction. The same action must share one owning UI component; pass entry-specific context or completion callbacks instead of copying its markup or state flow.
 - Prefer concise names in pure algorithm/data-structure and runtime-neutral library code when package context is clear; use complete, non-sentence-like domain names for business workflows and primary components. Treat `...For...` and `...And...` as warning signs: avoid `For` except for established external/protocol vocabulary, and split independent responsibilities instead of naming them with `And`. Use `...With...` only for established options/configuration or similar APIs, and keep it restrained.
 - Keep feature logic close to its route/component. Extract only for real reuse, a meaningful concept, a stable boundary, or a test seam.
 - Do not add one-use style helpers, generic hooks, pass-through wrappers, speculative abstraction layers, or a dependency for a small local need.

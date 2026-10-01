@@ -1,0 +1,25 @@
+/* Article sidebars must grow with wrapped navigation labels. */
+.article-sidebar [data-sidebar="menu-button"],
+.article-sidebar [data-sidebar="menu-sub-button"] {
+  height: auto !important;
+  min-height: var(--density-menu-item-height) !important;
+  padding-block: 0.375rem;
+  overflow: visible !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  line-height: 1.25rem;
+  align-items: center;
+}
+
+html[data-density] .article-sidebar [data-sidebar="menu-button"],
+html[data-density] .article-sidebar [data-sidebar="menu-sub-button"] {
+  height: auto !important;
+}
+
+.article-sidebar [data-sidebar="menu-button"] > span:last-child,
+.article-sidebar [data-sidebar="menu-sub-button"] > span:last-child {
+  min-width: 0;
+  overflow: visible !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}

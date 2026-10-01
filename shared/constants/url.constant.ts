@@ -47,8 +47,7 @@ export const WebURLPathDictionary = {
     },
     blockPackEditor: {
       index: "app/block-pack-editor",
-      _: (blockPackId: UUID, parentSubShelfId: UUID, rootShelfId: UUID) =>
-        `app/block-pack-editor/${blockPackId}?parentSubShelfId=${parentSubShelfId}&rootShelfId=${rootShelfId}`,
+      _: (blockPackId: UUID) => `app/block-pack-editor/${blockPackId}`,
     },
     dashboard: {
       _: "app/dashboard",

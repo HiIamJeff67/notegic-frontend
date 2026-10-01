@@ -16,6 +16,7 @@ export interface BlockPackMeta {
   headerBackgroundURL: string | null;
   blockCount: number;
   path: UUID[];
+  pathItems: { id: UUID; name: string }[];
   deletedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
@@ -36,6 +37,7 @@ export const getDefaultBlockPackMeta = (
   headerBackgroundURL: null,
   blockCount: 0,
   path: [],
+  pathItems: [],
   deletedAt: null,
   updatedAt: new Date(),
   createdAt: new Date(),

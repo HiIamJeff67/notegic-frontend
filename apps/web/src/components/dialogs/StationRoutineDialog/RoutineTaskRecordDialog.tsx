@@ -347,31 +347,31 @@ const RoutineTaskRecordDialog = ({
             void searchRecords(false);
           }}
         >
-          <Table className="table-fixed text-xs">
-            <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight">
+          <Table className="min-w-[64rem] table-fixed text-xs">
+            <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight [&_th]:text-left">
               <TableRow>
-                <TableHead className="h-9 w-[20%] px-2">
+                <TableHead className="h-9 w-[16%] px-2">
                   {t("workspace.table.task")}
                 </TableHead>
                 <TableHead className="h-9 w-[12%] px-2">
                   {t("workspace.table.status")}
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[16%] px-2">
                   {t("workspace.table.purpose")}
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[14%] px-2">
                   {t("workspace.table.started")}
                 </TableHead>
-                <TableHead className="h-9 w-[18%] px-2">
+                <TableHead className="h-9 w-[14%] px-2">
                   {t("workspace.table.ended")}
                 </TableHead>
-                <TableHead className="h-9 w-[7%] px-2">
+                <TableHead className="h-9 w-[8%] px-2">
                   {t("workspace.table.attempts")}
                 </TableHead>
-                <TableHead className="h-9 w-[8%] px-2">
+                <TableHead className="h-9 w-[10%] px-2">
                   {t("workspace.table.payload")}
                 </TableHead>
-                <TableHead className="h-9 w-[8%] px-2">
+                <TableHead className="h-9 w-[10%] px-2">
                   {t("workspace.table.result")}
                 </TableHead>
               </TableRow>

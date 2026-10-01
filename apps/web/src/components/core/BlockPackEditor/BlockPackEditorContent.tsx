@@ -39,7 +39,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useShelfItem } from "@/hooks";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
-import { useScreen } from "@/hooks/useScreen";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
@@ -54,6 +53,7 @@ import { ChevronDownIcon, Download, Import } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/localPreferences";
+import "@/global/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {
   blockPackMeta: BlockPackMeta;
@@ -66,7 +66,6 @@ const BlockPackEditorContent = ({
   const { i18n, t } = useTranslation();
   const sidebarManager = useSidebar();
   const shelfItemManager = useShelfItem();
-  const { width: screenWidth } = useScreen();
   const { preferences } = useLocalPreferences();
 
   const { editor, state, resync, maximumBlockCount, rejectQuotaExceededEdit } =
@@ -81,9 +80,7 @@ const BlockPackEditorContent = ({
     standard: "max-w-4xl",
     wide: "max-w-7xl",
   }[preferences.editorWidth];
-  const shouldShowSideMenu =
-    screenWidth >= 768 &&
-    (preferences.quickInsert || preferences.blockDragHandle);
+  const shouldShowSideMenu = preferences.blockDragHandle;
 
   const countBlocks = (blocks: Array<{ children?: unknown }>): number =>
     blocks.reduce(
@@ -463,6 +460,8 @@ const BlockPackEditorContent = ({
         itemId={blockPackMeta.id}
         itemType="BlockPack"
         path={blockPackMeta.path}
+        pathItems={blockPackMeta.pathItems}
+        itemName={blockPackMeta.name}
         summary={shelfItemManager.expandedShelves.get(
           blockPackMeta.rootId.toString()
         )}
@@ -500,6 +499,7 @@ const BlockPackEditorContent = ({
               spellCheck={preferences.spellcheck}
               className={cn(
                 "notegic-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!pb-4 [&_.bn-editor]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-block-content]:py-[3px]",
+                shouldShowSideMenu && "[&_.bn-editor]:!pl-10",
                 !preferences.lineWrap &&
                   "[&_.bn-editor]:overflow-x-auto [&_.bn-inline-content]:whitespace-nowrap"
               )}
@@ -510,13 +510,7 @@ const BlockPackEditorContent = ({
                   floatingUIOptions={{
                     useFloatingOptions: { placement: "left-start" },
                   }}
-                  sideMenu={sideMenuProps => (
-                    <BlockSideMenu
-                      {...sideMenuProps}
-                      showDragHandle={preferences.blockDragHandle}
-                      showQuickInsert={preferences.quickInsert}
-                    />
-                  )}
+                  sideMenu={() => <BlockSideMenu />}
                 />
               )}
             </BlockNoteView>

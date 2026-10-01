@@ -1,0 +1,49 @@
+/* Prism tokens use the active theme rather than a fixed editor palette. */
+.prism-code {
+  color: var(--foreground);
+}
+
+.prism-code .token.comment,
+.prism-code .token.prolog,
+.prism-code .token.doctype,
+.prism-code .token.cdata {
+  color: var(--muted-foreground);
+}
+
+.prism-code .token.punctuation,
+.prism-code .token.operator {
+  color: color-mix(in oklab, var(--foreground) 82%, var(--muted-foreground));
+}
+
+.prism-code .token.property,
+.prism-code .token.tag,
+.prism-code .token.constant,
+.prism-code .token.symbol,
+.prism-code .token.deleted,
+.prism-code .token.boolean,
+.prism-code .token.number {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--primary));
+}
+
+.prism-code .token.selector,
+.prism-code .token.attr-name,
+.prism-code .token.string,
+.prism-code .token.char,
+.prism-code .token.builtin,
+.prism-code .token.inserted {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--decoration));
+}
+
+.prism-code .token.atrule,
+.prism-code .token.attr-value,
+.prism-code .token.keyword,
+.prism-code .token.function,
+.prism-code .token.class-name {
+  color: color-mix(in oklab, var(--foreground) 68%, var(--accent-foreground));
+}
+
+.prism-code .token.regex,
+.prism-code .token.important,
+.prism-code .token.variable {
+  color: color-mix(in oklab, var(--foreground) 72%, var(--primary));
+}

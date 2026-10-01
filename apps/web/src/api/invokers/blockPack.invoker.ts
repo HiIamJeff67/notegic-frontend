@@ -10,7 +10,6 @@ import {
   DeleteMyBlockPackById,
   DeleteMyBlockPacksByIds,
   GetMyBlockPacksByRootShelfId,
-  GetMyBlockPackAndItsParentById,
   GetMyBlockPackById,
   GetMyBlockPacksByParentSubShelfId,
   MoveMyBlockPackById,
@@ -45,10 +44,6 @@ import {
   GetMyBlockPacksByRootShelfIdRequestSchema,
   GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPacksByRootShelfIdResponseSchema,
-  type GetMyBlockPackAndItsParentByIdRequest,
-  GetMyBlockPackAndItsParentByIdRequestSchema,
-  GetMyBlockPackAndItsParentByIdResponse,
-  GetMyBlockPackAndItsParentByIdResponseSchema,
   type GetMyBlockPackByIdRequest,
   GetMyBlockPackByIdRequestSchema,
   GetMyBlockPackByIdResponse,
@@ -95,38 +90,6 @@ export const queryFnGetMyBlockPackById = async (
     return GetMyBlockPackByIdResponseSchema.parse(response);
   } catch (error) {
     console.error("error happening in queryFnGetMyBlockPackById", error);
-    if (error instanceof ZodError) {
-      throw new NotegicValidationError(
-        ValidationClientException.ZodParsingFailed(error)
-      );
-    } else if (error instanceof NotegicAPIError) {
-      switch (error.unWrap.reason) {
-        default:
-          throw error;
-      }
-    } else if (error instanceof TypeError) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-    }
-
-    throw error;
-  }
-};
-
-export const queryFnGetMyBlockPackAndItsParentById = async (
-  request: GetMyBlockPackAndItsParentByIdRequest
-): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
-  try {
-    const validatedRequest =
-      GetMyBlockPackAndItsParentByIdRequestSchema.parse(request);
-    const response = await GetMyBlockPackAndItsParentById({
-      data: validatedRequest,
-    });
-    return GetMyBlockPackAndItsParentByIdResponseSchema.parse(response);
-  } catch (error) {
-    console.error(
-      "error happening in queryFnGetMyBlockPackAndItsParentById",
-      error
-    );
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)

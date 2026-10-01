@@ -40,3 +40,10 @@
     animation-duration: 0ms !important;
   }
 }
+
+/* Keep this after Tailwind/base output so fixed sidebar h-* utilities do not win. */
+html[data-density] [data-sidebar="menu-button"],
+html[data-density] [data-sidebar="menu-sub-button"] {
+  height: var(--density-menu-item-height) !important;
+  min-height: var(--density-menu-item-height) !important;
+}

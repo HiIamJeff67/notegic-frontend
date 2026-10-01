@@ -197,15 +197,15 @@ const SelectBackgroundImageDialog = ({
           max-w-md 
           md:max-w-2xl 
           lg:max-w-3xl 
-          bg-card shadow-xl rounded-xl p-6 flex flex-col items-center gap-4
+          max-h-[90dvh] overflow-hidden bg-card shadow-xl rounded-xl p-6 flex flex-col items-center gap-4
         "
       >
-        <DialogHeader>
+        <DialogHeader className="shrink-0">
           <DialogTitle>
             {t("workspace.dialogs.selectBackgroundImages")}
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="px-4">
+        <DialogDescription className="shrink-0 px-4">
           {t("workspace.dialogs.selectBackgroundDescription")}
         </DialogDescription>
         <UploadImageDialog
@@ -239,7 +239,7 @@ const SelectBackgroundImageDialog = ({
           />
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto max-h-[60vh] w-full mt-4 p-2">
+        <div className="min-h-0 w-full flex-1 grid auto-rows-max grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto p-2">
           {[
             {
               id: dashboardHeaderBackgroundImageNoneId,
@@ -264,10 +264,10 @@ const SelectBackgroundImageDialog = ({
               key={image.id}
               onClick={() => void handleBackgroundOnSelect(image.id)}
               className={`
-                    cursor-pointer relative aspect-video rounded-lg overflow-hidden border-2 transition-all
+                    relative aspect-video min-w-0 cursor-pointer overflow-hidden rounded-lg border-2 transition-all
                     ${
                       selectedBackgroundImageId === image.id
-                        ? "border-primary shadow-lg scale-105"
+                        ? "border-primary shadow-lg"
                         : "border-transparent hover:border-foreground/50"
                     }
                     `}
@@ -299,7 +299,7 @@ const SelectBackgroundImageDialog = ({
             </div>
           ))}
         </div>
-        <div className="w-full flex justify-end gap-2 mt-4">
+        <div className="w-full shrink-0 flex justify-end gap-2">
           <Button
             variant="secondary"
             className="w-20"

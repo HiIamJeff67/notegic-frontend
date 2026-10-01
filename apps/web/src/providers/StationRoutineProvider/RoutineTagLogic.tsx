@@ -15,6 +15,9 @@ import type { UpdateMyRoutineTagByIdRequest } from "@shared/api/interfaces/routi
 import { MaxSearchLimit } from "@shared/constants";
 import { LRUCache } from "@shared/lib/LRUCache";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
+import { CreateRoutineTagRequestSchema } from "@shared/api/interfaces/routineTag.interface";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
@@ -89,21 +92,27 @@ export const useRoutineTagLogic = ({
       color: string,
       icon: SupportedIcon | null
     ): Promise<RoutineTagNode> => {
+      const validation = CreateRoutineTagRequestSchema.safeParse({
+        body: { name: name.trim(), color, icon },
+      });
+      if (!validation.success) {
+        throw new NotegicValidationError(
+          ValidationClientException.ZodParsingFailed(validation.error)
+        );
+      }
+
+      const body = validation.data.body;
       const response = await createRoutineTagMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
-        body: {
-          name,
-          color,
-          icon,
-        },
+        body,
       });
       if (response.success === false) throw response.exception;
 
       const routineTagNode: RoutineTagNode = {
         id: response.data.id as UUID,
-        name,
-        color,
-        icon,
+        name: body.name,
+        color: body.color,
+        icon: body.icon,
         updatedAt: response.data.createdAt,
         createdAt: response.data.createdAt,
         routines: [],

@@ -37,18 +37,12 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
 
   const handleBlockPackOnClick = useCallback(() => {
     try {
-      router.push(
-        WebURLPathDictionary.app.blockPackEditor._(
-          current.id,
-          parent.id,
-          parent.rootShelfId
-        )
-      );
+      router.push(WebURLPathDictionary.app.blockPackEditor._(current.id));
       shelfItemManager.toggleBlockPack(current);
     } catch (error) {
       toast.error(tError(error, t));
     }
-  }, [parent, current, router, shelfItemManager]);
+  }, [current, router, shelfItemManager]);
 
   return (
     <ContextMenu>

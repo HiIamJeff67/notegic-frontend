@@ -28,24 +28,23 @@ interface ItemPathItemProps {
   key?: any;
   rootShelfNode: RootShelfNode;
   subShelfNode: SubShelfNode;
+  isScrollable?: boolean;
 }
 
-const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
+const ItemPathItem = ({
+  rootShelfNode,
+  subShelfNode,
+  isScrollable = false,
+}: ItemPathItemProps) => {
   const router = useAppRouter();
   const { t } = useTranslation();
   const shelfItemManager = useShelfItem();
 
   const handleBlockPackOnClick = useCallback(
-    (current: BlockPackNode, parent: SubShelfNode) => {
+    (current: BlockPackNode) => {
       try {
         shelfItemManager.toggleBlockPack(current);
-        router.push(
-          WebURLPathDictionary.app.blockPackEditor._(
-            current.id,
-            parent.id,
-            parent.rootShelfId
-          )
-        );
+        router.push(WebURLPathDictionary.app.blockPackEditor._(current.id));
       } catch (error) {
         toast.error(tError(error, t));
       }
@@ -74,10 +73,18 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
   return (
     <WrapPlaceholder>
       <BreadcrumbSeparator />
-      <BreadcrumbItem>
+      <BreadcrumbItem className={isScrollable ? "shrink-0" : "min-w-0"}>
         <DropdownMenu>
-          <DropdownMenuTrigger className="select-none hover:underline text-secondary-foreground/80 font-semibold">
-            {subShelfNode.name}
+          <DropdownMenuTrigger className="max-w-full select-none font-semibold text-secondary-foreground/80 hover:underline">
+            <span
+              className={
+                isScrollable
+                  ? "whitespace-nowrap"
+                  : "block max-w-[min(20vw,10rem)] truncate"
+              }
+            >
+              {subShelfNode.name}
+            </span>
           </DropdownMenuTrigger>
           {(Object.entries(subShelfNode.children).length !== 0 ||
             Object.entries(subShelfNode.blockPackNodes).length !== 0 ||
@@ -108,9 +115,7 @@ const ItemPathItem = ({ rootShelfNode, subShelfNode }: ItemPathItemProps) => {
                   return (
                     <DropdownMenuItem
                       key={id}
-                      onClick={() =>
-                        handleBlockPackOnClick(blockPackNode, subShelfNode)
-                      }
+                      onClick={() => handleBlockPackOnClick(blockPackNode)}
                     >
                       <BlockPackIcon />
                       {blockPackNode.name}

@@ -2,13 +2,12 @@ import {
   RoutineTaskPurpose,
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
-import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -119,33 +118,12 @@ const CreateRoutineTaskDialog = ({
     );
   }, [isOpen, isPayloadExpanded, payload]);
 
-  const validation = useMemo(() => {
-    try {
-      return CreateRoutineTaskByRoutineIdRequestSchema.safeParse({
-        body: {
-          routineId,
-          title: title.trim(),
-          purpose,
-          payload: JSON.parse(payload),
-          priority: Number(priority),
-          maxAttempts: Number(maxAttempts),
-        },
-      });
-    } catch {
-      return null;
-    }
-  }, [maxAttempts, payload, priority, purpose, routineId, title]);
-
   const createRoutineTask = async () => {
-    if (validation === null) {
+    let parsedPayload: unknown;
+    try {
+      parsedPayload = JSON.parse(payload);
+    } catch {
       setPayloadError(t("workspace.validation.invalidJson"));
-      return;
-    }
-    if (!validation.success) {
-      setPayloadError(
-        validation.error.issues[0]?.message ??
-          t("workspace.validation.invalidPayload")
-      );
       return;
     }
     setPayloadError("");
@@ -153,12 +131,12 @@ const CreateRoutineTaskDialog = ({
     let routineTaskId: UUID;
     try {
       const routineTaskNode = await stationRoutineManager.createRoutineTask(
-        validation.data.body.routineId as UUID,
-        validation.data.body.title,
-        validation.data.body.purpose,
-        validation.data.body.payload,
-        validation.data.body.priority ?? 0,
-        validation.data.body.maxAttempts ?? 1
+        routineId,
+        title,
+        purpose,
+        parsedPayload,
+        Number(priority),
+        Number(maxAttempts)
       );
       routineTaskId = routineTaskNode.id;
     } catch (error) {
@@ -480,10 +458,7 @@ const CreateRoutineTaskDialog = ({
             <Button
               type="submit"
               variant="default"
-              disabled={
-                stationRoutineManager.isCreatingRoutineTask ||
-                validation?.success !== true
-              }
+              disabled={stationRoutineManager.isCreatingRoutineTask}
             >
               {stationRoutineManager.isCreatingRoutineTask && <Spinner />}
               {t("common.create")}

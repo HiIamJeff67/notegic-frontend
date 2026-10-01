@@ -5,7 +5,6 @@ import {
   DeleteMyBlockPackByIdRequest,
   DeleteMyBlockPacksByIdsRequest,
   GetMyBlockPacksByRootShelfIdRequest,
-  GetMyBlockPackAndItsParentByIdRequest,
   GetMyBlockPackByIdRequest,
   GetMyBlockPacksByParentSubShelfIdRequest,
   MoveMyBlockPackByIdRequest,
@@ -28,6 +27,7 @@ import {
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
 import { generateUUID } from "@shared/types/uuidv4.type";
+import type { UUID } from "crypto";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class BlockPackLocalSimulator {
@@ -73,55 +73,9 @@ export class BlockPackLocalSimulator {
         deletedAt: BlockPack.deletedAt,
         updatedAt: BlockPack.updatedAt,
         createdAt: BlockPack.createdAt,
-      })
-      .from(BlockPack)
-      .innerJoin(SubShelf, eq(SubShelf.id, BlockPack.parentSubShelfId))
-      .where(
-        and(
-          eq(BlockPack.id, request.param.blockPackId),
-          BlockPackLocalSimulator.getPassPermissionCheckSQL(
-            localDB,
-            loggedInUser.publicId,
-            [
-              AccessControlPermission.Read,
-              AccessControlPermission.Write,
-              AccessControlPermission.Admin,
-              AccessControlPermission.Owner,
-            ]
-          )
-        )
-      )
-      .limit(1);
-
-    const blockPack = rows[0];
-    if (!blockPack) return null;
-
-    const isDeleted = request.param.isDeleted ?? false;
-    return (blockPack.deletedAt !== null) === isDeleted ? blockPack : null;
-  };
-
-  static simulateGetMyBlockPackAndItsParentById = async (
-    request: GetMyBlockPackAndItsParentByIdRequest
-  ) => {
-    if (!localDB.isReady) await localDB.ensureReady();
-
-    const loggedInUser = await localDB.query.User.findFirst({
-      where: eq(User.isLoggedIn, true),
-    });
-    if (!loggedInUser) return null;
-
-    const rows = await localDB
-      .select({
-        id: BlockPack.id,
-        name: BlockPack.name,
-        icon: BlockPack.icon,
-        headerBackgroundURL: BlockPack.headerBackgroundURL,
-        blockCount: BlockPack.blockCount,
-        deletedAt: BlockPack.deletedAt,
-        updatedAt: BlockPack.updatedAt,
-        createdAt: BlockPack.createdAt,
-        rootShelfId: SubShelf.rootShelfId,
-        parentSubShelfId: SubShelf.id,
+        rootShelfId: RootShelf.id,
+        rootShelfName: RootShelf.name,
+        permission: UsersToShelves.permission,
         parentSubShelfPrevSubShelfId: SubShelf.prevSubShelfId,
         parentSubShelfName: SubShelf.name,
         parentSubShelfPath: SubShelf.path,
@@ -131,6 +85,14 @@ export class BlockPackLocalSimulator {
       })
       .from(BlockPack)
       .innerJoin(SubShelf, eq(SubShelf.id, BlockPack.parentSubShelfId))
+      .innerJoin(RootShelf, eq(RootShelf.id, SubShelf.rootShelfId))
+      .innerJoin(
+        UsersToShelves,
+        and(
+          eq(UsersToShelves.rootShelfId, SubShelf.rootShelfId),
+          eq(UsersToShelves.userPublicId, loggedInUser.publicId)
+        )
+      )
       .where(
         and(
           eq(BlockPack.id, request.param.blockPackId),
@@ -152,7 +114,38 @@ export class BlockPackLocalSimulator {
     if (!blockPack) return null;
 
     const isDeleted = request.param.isDeleted ?? false;
-    return (blockPack.deletedAt !== null) === isDeleted ? blockPack : null;
+    if ((blockPack.deletedAt !== null) !== isDeleted) return null;
+
+    const subShelves = await localDB
+      .select({ id: SubShelf.id, name: SubShelf.name })
+      .from(SubShelf)
+      .where(eq(SubShelf.rootShelfId, blockPack.rootShelfId));
+    const subShelfNames = new Map(
+      subShelves.map(subShelf => [subShelf.id, subShelf.name])
+    );
+    const subShelfPath = blockPack.parentSubShelfPath.flatMap(id => {
+      const name = subShelfNames.get(id);
+      return name !== undefined ? [{ id, name }] : [];
+    });
+    if (subShelfPath.at(-1)?.id !== blockPack.parentSubShelfId) {
+      subShelfPath.push({
+        id: blockPack.parentSubShelfId as UUID,
+        name: blockPack.parentSubShelfName,
+      });
+    }
+    const path = [
+      { id: blockPack.rootShelfId, name: blockPack.rootShelfName },
+      ...subShelfPath,
+    ];
+
+    return {
+      ...blockPack,
+      lastUpdateSequence: 0,
+      compactedUntilSequence: 0,
+      projectedUntilSequence: -1,
+      isProjectionCurrent: false,
+      path,
+    };
   };
 
   static simulateGetMyBlockPacksByParentSubShelfId = async (

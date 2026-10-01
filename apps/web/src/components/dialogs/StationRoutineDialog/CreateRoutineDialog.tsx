@@ -94,17 +94,6 @@ const CreateRoutineDialog = ({
     return () => window.cancelAnimationFrame(frame);
   }, [isOpen]);
 
-  const hasInvalidSchedule =
-    hasCustomSchedule &&
-    period !== RoutinePeriod.Weekly &&
-    period !== RoutinePeriod.Monthly &&
-    (!scheduledStartAt ||
-      !scheduledEndAt ||
-      (period === RoutinePeriod.Daily
-        ? scheduledEndAt.getHours() * 60 + scheduledEndAt.getMinutes() <=
-          scheduledStartAt.getHours() * 60 + scheduledStartAt.getMinutes()
-        : scheduledEndAt <= scheduledStartAt));
-
   return (
     <Dialog
       open={isOpen}
@@ -129,28 +118,32 @@ const CreateRoutineDialog = ({
           className="flex flex-col gap-4"
           onSubmit={async event => {
             event.preventDefault();
-            const trimmedTitle = title.trim();
-            if (
-              trimmedTitle.length === 0 ||
-              hasInvalidSchedule ||
-              !Number.isInteger(timeoutMinutes) ||
-              timeoutMinutes < 1 ||
-              timeoutMinutes > 60
-            )
-              return;
-
             try {
               let nextScheduledStartAt = scheduledStartAt;
               let nextScheduledEndAt = scheduledEndAt;
 
               if (period === RoutinePeriod.Weekly) {
+                const now = new Date();
+                const currentWeekday = now.getDay() || 7;
+                const daysUntilStart =
+                  (weekdayRange.start - currentWeekday + 7) % 7;
                 nextScheduledStartAt = new Date(
-                  2026,
-                  0,
-                  4 + weekdayRange.start
+                  now.getFullYear(),
+                  now.getMonth(),
+                  now.getDate() + daysUntilStart
                 );
                 nextScheduledStartAt.setHours(0, 0, 0, 0);
-                nextScheduledEndAt = new Date(2026, 0, 4 + weekdayRange.end);
+                if (nextScheduledStartAt <= now) {
+                  nextScheduledStartAt.setDate(
+                    nextScheduledStartAt.getDate() + 7
+                  );
+                }
+                nextScheduledEndAt = new Date(nextScheduledStartAt);
+                nextScheduledEndAt.setDate(
+                  nextScheduledEndAt.getDate() +
+                    weekdayRange.end -
+                    weekdayRange.start
+                );
                 nextScheduledEndAt.setHours(23, 59, 0, 0);
               }
 
@@ -190,8 +183,9 @@ const CreateRoutineDialog = ({
               const routineNode = await stationRoutineManager.createRoutine(
                 stationId,
                 {
-                  title: trimmedTitle,
-                  description: description.trim(),
+                  title,
+                  description,
+                  hasCustomSchedule,
                   timeoutSeconds: timeoutMinutes * 60,
                   isPinned,
                   ...((hasCustomSchedule ||
@@ -345,7 +339,6 @@ const CreateRoutineDialog = ({
                           <TimePicker
                             value={scheduledEndAt}
                             onValueChange={setScheduledEndAt}
-                            isInvalid={hasInvalidSchedule}
                             placeholder={t("workspace.fields.selectEndTime")}
                             className="bg-card/45 hover:bg-card/60"
                             contentClassName="bg-card"
@@ -359,7 +352,6 @@ const CreateRoutineDialog = ({
                                 ? { before: scheduledStartAt }
                                 : undefined
                             }
-                            isInvalid={hasInvalidSchedule}
                             placeholder={t(
                               "workspace.fields.selectEndDateTime"
                             )}
@@ -433,14 +425,7 @@ const CreateRoutineDialog = ({
             <Button
               type="submit"
               variant="default"
-              disabled={
-                stationRoutineManager.isCreatingRoutine ||
-                title.trim().length === 0 ||
-                hasInvalidSchedule ||
-                !Number.isInteger(timeoutMinutes) ||
-                timeoutMinutes < 1 ||
-                timeoutMinutes > 60
-              }
+              disabled={stationRoutineManager.isCreatingRoutine}
             >
               {stationRoutineManager.isCreatingRoutine && <Spinner />}
               {t("common.create")}

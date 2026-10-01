@@ -8,8 +8,6 @@ import {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetMyBlockPackAndItsParentByIdRequest,
-  GetMyBlockPackAndItsParentByIdResponse,
   GetMyBlockPackByIdRequest,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdRequest,
@@ -77,51 +75,6 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
 
     return formattedResponse;
   });
-
-export const GetMyBlockPackAndItsParentById = createServerFn({
-  method: "GET",
-})
-  .inputValidator((data: GetMyBlockPackAndItsParentByIdRequest) => data)
-  .handler(
-    async ({
-      data: request,
-    }): Promise<GetMyBlockPackAndItsParentByIdResponse> => {
-      const { blockPackId, isDeleted = false } = request.param;
-      const params = new URLSearchParams({ isDeleted: String(isDeleted) });
-      let url = `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.blockPack.getMyBlockPackAndItsParentById(blockPackId)}?${params}`;
-      const inboundCookie = getRequestHeader("cookie");
-      const userAgent =
-        request.header?.userAgent ??
-        getRequestHeader("User-Agent") ??
-        "unknown";
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
-          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-        },
-        credentials: "include",
-      });
-
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
-      forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyBlockPackAndItsParentByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
-
-      return formattedResponse;
-    }
-  );
 
 export const GetMyBlockPacksByParentSubShelfId = createServerFn({
   method: "GET",

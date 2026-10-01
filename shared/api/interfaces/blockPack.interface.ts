@@ -35,9 +35,29 @@ export const GetMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
     icon: z.enum(AllSupportedIcons).nullable(),
     headerBackgroundURL: z.url().nullable(),
     blockCount: z.int32(),
+    lastUpdateSequence: z.number().int(),
+    compactedUntilSequence: z.number().int(),
+    projectedUntilSequence: z.number().int(),
+    isProjectionCurrent: z.boolean(),
     deletedAt: z.coerce.date().nullable(),
     updatedAt: z.coerce.date(),
     createdAt: z.coerce.date(),
+    rootShelfId: z.uuidv4(),
+    rootShelfName: z.string(),
+    permission: z.enum(AllAccessControlPermissions),
+    parentSubShelfPrevSubShelfId: z.uuidv4().nullable(),
+    parentSubShelfName: z.string(),
+    parentSubShelfDeletedAt: z.coerce.date().nullable(),
+    parentSubShelfUpdatedAt: z.coerce.date(),
+    parentSubShelfCreatedAt: z.coerce.date(),
+    path: z
+      .array(
+        z.object({
+          id: z.uuidv4(),
+          name: z.string(),
+        })
+      )
+      .min(2),
   }),
   embedded: z.object({
     publicId: z.string(),
@@ -46,56 +66,6 @@ export const GetMyBlockPackByIdResponseSchema = NotegicResponseSchema.extend({
 
 export type GetMyBlockPackByIdResponse = z.infer<
   typeof GetMyBlockPackByIdResponseSchema
->;
-
-/* ============================== GetMyBlockPackAndItsParentById ============================== */
-
-export const GetMyBlockPackAndItsParentByIdRequestSchema =
-  NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
-    param: z.object({
-      blockPackId: z.uuidv4(),
-      isDeleted: z.boolean().optional().default(false),
-    }),
-  });
-
-export type GetMyBlockPackAndItsParentByIdRequest = z.input<
-  typeof GetMyBlockPackAndItsParentByIdRequestSchema
->;
-
-export const GetMyBlockPackAndItsParentByIdResponseSchema =
-  NotegicResponseSchema.extend({
-    data: z.object({
-      id: z.uuidv4(),
-      name: z.string(),
-      icon: z.enum(AllSupportedIcons).nullable(),
-      headerBackgroundURL: z.url().nullable(),
-      blockCount: z.int32(),
-      deletedAt: z.coerce.date().nullable(),
-      updatedAt: z.coerce.date(),
-      createdAt: z.coerce.date(),
-      rootShelfId: z.uuidv4(),
-      permission: z.enum(AllAccessControlPermissions),
-      parentSubShelfId: z.uuidv4(),
-      parentSubShelfPrevSubShelfId: z.uuidv4().nullable(),
-      parentSubShelfName: z.string(),
-      parentSubShelfPath: z.array(z.uuidv4()),
-      parentSubShelfDeletedAt: z.coerce.date().nullable(),
-      parentSubShelfUpdatedAt: z.coerce.date(),
-      parentSubShelfCreatedAt: z.coerce.date(),
-    }),
-    embedded: z.object({
-      publicId: z.string(),
-    }),
-  });
-
-export type GetMyBlockPackAndItsParentByIdResponse = z.infer<
-  typeof GetMyBlockPackAndItsParentByIdResponseSchema
 >;
 
 /* ============================== GetMyBlockPacksByParentSubShelfId ============================== */
