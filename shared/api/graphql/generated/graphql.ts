@@ -499,7 +499,10 @@ export enum RoutineTaskPurpose {
 export enum RoutineTaskRecordErrorCode {
   RoutineTaskRecordErrorCodeCanceled = 'RoutineTaskRecordErrorCode_Canceled',
   RoutineTaskRecordErrorCodeDatabaseError = 'RoutineTaskRecordErrorCode_DatabaseError',
+  RoutineTaskRecordErrorCodeDependencyUnavailable = 'RoutineTaskRecordErrorCode_DependencyUnavailable',
   RoutineTaskRecordErrorCodeHandlerFailed = 'RoutineTaskRecordErrorCode_HandlerFailed',
+  RoutineTaskRecordErrorCodeNoQuota = 'RoutineTaskRecordErrorCode_NoQuota',
+  RoutineTaskRecordErrorCodeOutOfUsage = 'RoutineTaskRecordErrorCode_OutOfUsage',
   RoutineTaskRecordErrorCodePayloadInvalid = 'RoutineTaskRecordErrorCode_PayloadInvalid',
   RoutineTaskRecordErrorCodePermissionDenied = 'RoutineTaskRecordErrorCode_PermissionDenied',
   RoutineTaskRecordErrorCodePlanLimitExceeded = 'RoutineTaskRecordErrorCode_PlanLimitExceeded',

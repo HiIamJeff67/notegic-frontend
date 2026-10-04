@@ -1,4 +1,7 @@
-import type { FeedbackReportType } from "@shared/api/interfaces/feedback.interface";
+import type {
+  FeedbackReportType,
+  SubmitFeedbackReportRequest,
+} from "@shared/api/interfaces/feedback.interface";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast";
 import { type FormEvent, useState } from "react";
@@ -27,33 +30,35 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
   const [type, setType] = useState<FeedbackReportType>("bug");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const [pendingRequest, setPendingRequest] =
+    useState<SubmitFeedbackReportRequest | null>(null);
 
   const submitReport = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextIdempotencyKey = idempotencyKey ?? globalThis.crypto.randomUUID();
-    setIdempotencyKey(nextIdempotencyKey);
+    if (submitMutation.isPending) return;
+    const request = pendingRequest ?? {
+      header: { idempotencyKey: globalThis.crypto.randomUUID() },
+      body: {
+        type,
+        title: title.trim(),
+        description: description.trim(),
+        route: typeof window === "undefined" ? "/" : window.location.pathname,
+        browserContext: {
+          locale: navigator.language,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          platform: navigator.platform,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+        },
+      },
+    };
+    setPendingRequest(request);
 
     try {
-      const response = await submitMutation.mutateAsync({
-        header: { idempotencyKey: nextIdempotencyKey },
-        body: {
-          type,
-          title: title.trim(),
-          description: description.trim(),
-          route: typeof window === "undefined" ? "/" : window.location.pathname,
-          browserContext: {
-            locale: navigator.language,
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            platform: navigator.platform,
-            viewportWidth: window.innerWidth,
-            viewportHeight: window.innerHeight,
-          },
-        },
-      });
+      const response = await submitMutation.mutateAsync(request);
       setTitle("");
       setDescription("");
-      setIdempotencyKey(null);
+      setPendingRequest(null);
       toast.success(
         response.data.replay
           ? t("settingsPage.preferences.feedback.replayed")
@@ -72,10 +77,11 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
             {t("settingsPage.preferences.feedback.type")}
           </Label>
           <Select
+            disabled={submitMutation.isPending}
             value={type}
             onValueChange={value => {
               setType(value as FeedbackReportType);
-              setIdempotencyKey(null);
+              setPendingRequest(null);
             }}
           >
             <SelectTrigger id="feedback-type">
@@ -100,12 +106,13 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
           </Label>
           <Input
             id="feedback-title"
+            disabled={submitMutation.isPending}
             maxLength={200}
             required
             value={title}
             onChange={event => {
               setTitle(event.target.value);
-              setIdempotencyKey(null);
+              setPendingRequest(null);
             }}
           />
         </div>
@@ -115,12 +122,13 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
           </Label>
           <Textarea
             id="feedback-description"
+            disabled={submitMutation.isPending}
             maxLength={10000}
             required
             value={description}
             onChange={event => {
               setDescription(event.target.value);
-              setIdempotencyKey(null);
+              setPendingRequest(null);
             }}
             rows={7}
           />

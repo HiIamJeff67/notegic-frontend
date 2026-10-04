@@ -2,6 +2,9 @@ enum RoutineTaskRecordErrorCode {
   RoutineTaskRecordErrorCode_PermissionDenied
   RoutineTaskRecordErrorCode_PayloadInvalid
   RoutineTaskRecordErrorCode_TargetNotFound
+  RoutineTaskRecordErrorCode_NoQuota
+  RoutineTaskRecordErrorCode_OutOfUsage
+  RoutineTaskRecordErrorCode_DependencyUnavailable
   RoutineTaskRecordErrorCode_PlanLimitExceeded
   RoutineTaskRecordErrorCode_HandlerFailed
   RoutineTaskRecordErrorCode_DatabaseError

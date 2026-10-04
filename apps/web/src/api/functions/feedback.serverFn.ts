@@ -1,7 +1,8 @@
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
-import type {
-  SubmitFeedbackReportRequest,
-  SubmitFeedbackReportResponse,
+import {
+  SubmitFeedbackReportRequestSchema,
+  SubmitFeedbackReportResponseSchema,
+  type SubmitFeedbackReportResponse,
 } from "@shared/api/interfaces/feedback.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/util/isJsonContext";
@@ -40,7 +41,9 @@ const toFeedbackException = (exception: unknown): NotegicException => {
 };
 
 export const SubmitFeedbackReport = createServerFn({ method: "POST" })
-  .inputValidator((data: SubmitFeedbackReportRequest) => data)
+  .inputValidator((data: unknown) =>
+    SubmitFeedbackReportRequestSchema.parse(data)
+  )
   .handler(async ({ data: request }): Promise<SubmitFeedbackReportResponse> => {
     const response = await fetch(
       `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.feedback.submitReport}`,
@@ -77,6 +80,9 @@ export const SubmitFeedbackReport = createServerFn({ method: "POST" })
         toFeedbackException(formattedResponse.exception)
       );
     }
+    if (!response.ok || formattedResponse.success !== true) {
+      throw new Error("error.encounterUnknownError");
+    }
 
-    return formattedResponse;
+    return SubmitFeedbackReportResponseSchema.parse(formattedResponse);
   });

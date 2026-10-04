@@ -13,6 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   TableBody,
   TableCell,
   TableHead,
@@ -55,12 +62,53 @@ const TemplatePatternEditor = ({
     originalToken: string;
     token: string;
     binding: RoutineTaskTemplatePattern[string];
+    bindings: Partial<
+      Record<
+        RoutineTaskTemplatePattern[string]["source"],
+        RoutineTaskTemplatePattern[string]
+      >
+    >;
   } | null>(null);
 
   const updateEditingBinding = (
     binding: RoutineTaskTemplatePattern[string]
   ) => {
-    setEditingPattern(current => (current ? { ...current, binding } : current));
+    setEditingPattern(current =>
+      current
+        ? {
+            ...current,
+            binding,
+            bindings: { ...current.bindings, [binding.source]: binding },
+          }
+        : current
+    );
+  };
+
+  const changeEditingSource = (
+    source: RoutineTaskTemplatePattern[string]["source"]
+  ) => {
+    setEditingPattern(current => {
+      if (!current) return current;
+      const bindings = {
+        ...current.bindings,
+        [current.binding.source]: current.binding,
+      };
+      const binding = bindings[source] ?? {
+        source,
+        ...(source === "scheduledAt"
+          ? {
+              format: "2006-01-02",
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }
+          : {}),
+      };
+
+      return {
+        ...current,
+        binding,
+        bindings: { ...bindings, [source]: binding },
+      };
+    });
   };
 
   return (
@@ -196,6 +244,7 @@ const TemplatePatternEditor = ({
                                 originalToken: token,
                                 token,
                                 binding: { ...binding },
+                                bindings: { [binding.source]: { ...binding } },
                               })
                             }
                           >
@@ -276,45 +325,31 @@ const TemplatePatternEditor = ({
                 <Label htmlFor="pattern-source">
                   {t("workspace.payloadEditor.source")}
                 </Label>
-                <select
-                  id="pattern-source"
+                <Select
                   value={editingPattern.binding.source}
-                  onChange={event => {
-                    const source = event.currentTarget.value as
-                      | "scheduledAt"
-                      | "recordId"
-                      | "shortRecordId"
-                      | "routineTaskId"
-                      | "blockText"
-                      | "blockCheckboxCount";
-                    const binding = editingPattern.binding;
-                    updateEditingBinding(
-                      source === "scheduledAt"
-                        ? {
-                            source,
-                            format: binding.format,
-                            timezone: binding.timezone,
-                          }
-                        : source === "blockText"
-                          ? { source, blockId: binding.blockId }
-                          : source === "blockCheckboxCount"
-                            ? {
-                                source,
-                                blockPackId: binding.blockPackId,
-                                checked: binding.checked,
-                              }
-                            : { source }
-                    );
-                  }}
-                  className="h-9 w-full rounded-sm border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                  onValueChange={value =>
+                    changeEditingSource(
+                      value as RoutineTaskTemplatePattern[string]["source"]
+                    )
+                  }
                 >
-                  <option value="scheduledAt">scheduledAt</option>
-                  <option value="recordId">recordId</option>
-                  <option value="shortRecordId">shortRecordId</option>
-                  <option value="routineTaskId">routineTaskId</option>
-                  <option value="blockText">blockText</option>
-                  <option value="blockCheckboxCount">blockCheckboxCount</option>
-                </select>
+                  <SelectTrigger
+                    id="pattern-source"
+                    className="w-full rounded-sm"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="z-[240]">
+                    <SelectItem value="scheduledAt">scheduledAt</SelectItem>
+                    <SelectItem value="recordId">recordId</SelectItem>
+                    <SelectItem value="shortRecordId">shortRecordId</SelectItem>
+                    <SelectItem value="routineTaskId">routineTaskId</SelectItem>
+                    <SelectItem value="blockText">blockText</SelectItem>
+                    <SelectItem value="blockCheckboxCount">
+                      blockCheckboxCount
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="pattern-target">
@@ -359,34 +394,39 @@ const TemplatePatternEditor = ({
                   {t("workspace.payloadEditor.option")}
                 </Label>
                 {editingPattern.binding.source === "blockCheckboxCount" ? (
-                  <select
-                    id="pattern-option"
+                  <Select
                     value={
                       editingPattern.binding.checked === undefined
-                        ? ""
+                        ? "any"
                         : editingPattern.binding.checked
                           ? "true"
                           : "false"
                     }
-                    onChange={event =>
+                    onValueChange={value =>
                       updateEditingBinding({
                         ...editingPattern.binding,
-                        checked:
-                          event.currentTarget.value === ""
-                            ? undefined
-                            : event.currentTarget.value === "true",
+                        checked: value === "any" ? undefined : value === "true",
                       })
                     }
-                    className="h-9 w-full rounded-sm border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                   >
-                    <option value="">{t("workspace.payloadEditor.any")}</option>
-                    <option value="true">
-                      {t("workspace.payloadEditor.checked")}
-                    </option>
-                    <option value="false">
-                      {t("workspace.payloadEditor.unchecked")}
-                    </option>
-                  </select>
+                    <SelectTrigger
+                      id="pattern-option"
+                      className="w-full rounded-sm"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[240]">
+                      <SelectItem value="any">
+                        {t("workspace.payloadEditor.any")}
+                      </SelectItem>
+                      <SelectItem value="true">
+                        {t("workspace.payloadEditor.checked")}
+                      </SelectItem>
+                      <SelectItem value="false">
+                        {t("workspace.payloadEditor.unchecked")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <Input
                     id="pattern-option"

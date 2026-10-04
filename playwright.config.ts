@@ -21,6 +21,9 @@ export default defineConfig({
       VITE_APP_BASE_PATH: "/",
       PORT: String(port),
       HOST: "127.0.0.1",
+      ...(process.env.E2E_FEEDBACK_API_URL
+        ? { VITE_API_DOMAIN_URL: process.env.E2E_FEEDBACK_API_URL }
+        : {}),
     },
     url: `${baseURL}/`,
     reuseExistingServer: false,

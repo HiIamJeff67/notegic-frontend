@@ -1123,7 +1123,7 @@ export const ShelfLocationPicker = ({
             className="z-[220] w-[620px] origin-[--radix-popover-content-transform-origin] overflow-hidden rounded-sm border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
           >
             <div className="grid h-96 grid-cols-[240px_minmax(0,1fr)]">
-              <div className="flex min-w-0 flex-col border-r">
+              <div className="flex min-h-0 min-w-0 flex-col border-r">
                 <div className="shrink-0 border-b p-2">
                   <Input
                     value={rootQuery}
@@ -1133,7 +1133,7 @@ export const ShelfLocationPicker = ({
                   />
                 </div>
                 <div
-                  className="min-h-0 flex-1 overflow-y-auto p-2"
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2"
                   onScroll={event => {
                     const element = event.currentTarget;
                     if (
@@ -1175,7 +1175,7 @@ export const ShelfLocationPicker = ({
                   )}
                 </div>
               </div>
-              <div className="flex min-w-0 flex-col">
+              <div className="flex min-h-0 min-w-0 flex-col">
                 <div className="shrink-0 border-b p-2">
                   <Input
                     value={subShelfQuery}
@@ -1188,7 +1188,7 @@ export const ShelfLocationPicker = ({
                   />
                 </div>
                 <div
-                  className="min-h-0 flex-1 overflow-y-auto p-2"
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2"
                   onScroll={event => {
                     const element = event.currentTarget;
                     if (
