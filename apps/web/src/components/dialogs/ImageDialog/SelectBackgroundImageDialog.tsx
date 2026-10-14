@@ -3,10 +3,10 @@ import {
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import { Button } from "@/components/ui/button";
@@ -110,7 +110,7 @@ const SelectBackgroundImageDialog = ({
           toast.error(tError(error, t));
         }
       }),
-    [croppedBackgroundImagePack, backgroundImagesManager, t]
+    [croppedBackgroundImagePack, backgroundImagesManager]
   );
 
   const handleCropImageOnSelect = useCallback(
@@ -128,7 +128,7 @@ const SelectBackgroundImageDialog = ({
           toast.error(tError(error, t));
         }
       }),
-    [selectedBackgroundImageId, backgroundImagesManager, t]
+    [selectedBackgroundImageId, backgroundImagesManager]
   );
 
   const handleBackgroundOnSelect = useCallback(
@@ -150,7 +150,7 @@ const SelectBackgroundImageDialog = ({
         toast.error(tError(error, t));
       }
     },
-    [backgroundImagesManager, t]
+    [backgroundImagesManager]
   );
 
   const handleThumbnailOnRemove = useCallback(
@@ -181,7 +181,7 @@ const SelectBackgroundImageDialog = ({
         toast.error(tError(error, t));
       }
     },
-    [backgroundImagesManager, t, thumbnails]
+    [backgroundImagesManager, thumbnails]
   );
 
   return (

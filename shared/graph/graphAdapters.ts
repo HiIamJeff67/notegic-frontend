@@ -10,6 +10,8 @@ export interface RoutineTaskDependencyGraphDraftEdge {
   progress?: number;
   syncStatus?: "synced" | "pending" | "invalid";
   operation?: "create" | "update" | "delete";
+  errorKey?: string;
+  // Legacy localized text; new drafts persist errorKey instead.
   errorMessage?: string;
 }
 

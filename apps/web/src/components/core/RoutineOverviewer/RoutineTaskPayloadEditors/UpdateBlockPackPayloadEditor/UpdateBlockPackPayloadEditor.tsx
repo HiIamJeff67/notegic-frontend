@@ -1,6 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

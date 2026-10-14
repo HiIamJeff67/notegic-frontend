@@ -1,11 +1,11 @@
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -108,7 +108,6 @@ const BindingTab = ({
     [
       router,
       userManager,
-      t,
       updateUserAccountMutator,
       setSendAuthCodeTimeCounter,
       setBindBackupEmailDialogOpen,
@@ -140,7 +139,6 @@ const BindingTab = ({
     [
       router,
       userManager,
-      t,
       updateUserAccountMutator,
       setSendAuthCodeTimeCounter,
       setBindPhoneNumberDialogOpen,

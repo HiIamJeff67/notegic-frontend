@@ -1,9 +1,9 @@
 import { generateDynamicDNDType } from "@shared/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

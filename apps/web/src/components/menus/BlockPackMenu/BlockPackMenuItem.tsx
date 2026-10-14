@@ -1,11 +1,11 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { BlockPackNode } from "@shared/types/itemNodes.type";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   ContextMenu,

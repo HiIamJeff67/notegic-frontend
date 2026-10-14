@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { UUID } from "crypto";
-import { useTranslation } from "react-i18next";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 const MaterialViewerNotFoundPage = ({ id }: { id?: UUID }) => {

@@ -1,14 +1,13 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
+import { GuideData, getDefaultGuideData } from "@widgets/guide/data/guideData";
 import { WidgetProps } from "@widgets/widget";
-import { getDefaultGuideData, GuideData } from "@widgets/guide/data/guideData";
 import {
-  BookOpen,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
@@ -140,13 +139,10 @@ const GuideWidget = ({
       style={style}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <BookOpen className="size-4 shrink-0 text-primary" />
-            <h2 className="font-semibold text-foreground">
-              {t("workspace.widgets.guideTitle")}
-            </h2>
-          </div>
+        <div className="min-w-0 flex items-center gap-2">
+          <h2 className="font-semibold text-foreground">
+            {t("workspace.widgets.guideTitle")}
+          </h2>
         </div>
         <span className="shrink-0 rounded-full border border-border px-2 py-1 font-mono text-[11px] text-muted-foreground">
           {pageIndex + 1} / {pages.length}

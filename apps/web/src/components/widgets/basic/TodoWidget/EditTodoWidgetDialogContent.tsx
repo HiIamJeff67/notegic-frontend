@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { TodoSetting } from "@widgets/basic/TodoWidget/setting/todoSetting";
 import { Dispatch, SetStateAction } from "react";
-import { useTranslation } from "react-i18next";
 import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,

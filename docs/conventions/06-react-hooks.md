@@ -42,6 +42,11 @@ behavior it owns.
 
 ## Shared hook rule
 
+React translations must use `useTranslation` from
+`@shared/i18n/useTranslation`, not the vendor hook directly. See
+[Translation entry points](10-translations.md) for current-language async
+translation, memo dependencies, and non-React boundaries.
+
 Before adding a hook under a shared or common location, verify that it has a
 real cross-feature consumer. A shared hook must have a clear responsibility and
 stable dependencies; it must not become a dumping ground for component logic.

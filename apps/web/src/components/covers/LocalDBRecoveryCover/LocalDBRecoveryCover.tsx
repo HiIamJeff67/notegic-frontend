@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { TFunction } from "i18next";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { localDB } from "@/api/local/db";
 import type {
   LocalDBDiagnostics,

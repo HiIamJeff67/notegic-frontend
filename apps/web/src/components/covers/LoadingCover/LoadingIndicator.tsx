@@ -63,4 +63,4 @@ const LoadingIndicator = ({ label }: LoadingIndicatorProps) => {
 
 export default LoadingIndicator;
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";

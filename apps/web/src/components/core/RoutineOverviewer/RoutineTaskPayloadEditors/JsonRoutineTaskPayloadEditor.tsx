@@ -1,7 +1,7 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

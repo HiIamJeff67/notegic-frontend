@@ -1,12 +1,12 @@
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSendAuthCode } from "@/api/hooks/auth.hook";
 import {
@@ -130,7 +130,7 @@ const AccountSettingsPage = ({
           if (userManager.userData?.email === undefined) {
             router.push(WebURLPathDictionary.home);
             userManager.logout();
-            throw new Error(t("settingsPage.account.sessionExpired"));
+            throw new Error("settingsPage.account.sessionExpired");
           }
 
           const response = await sendAuthCodeMutator.mutateAsync({
@@ -158,7 +158,7 @@ const AccountSettingsPage = ({
           toast.error(tError(error, t));
         }
       }),
-    [t, router, sendAuthCodeMutator, sendAuthCodeTimeCounter, userManager]
+    [router, sendAuthCodeMutator, sendAuthCodeTimeCounter, userManager]
   );
 
   const authCodeProps = {

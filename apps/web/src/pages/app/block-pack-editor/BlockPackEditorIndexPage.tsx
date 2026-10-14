@@ -1,8 +1,8 @@
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { GraduationCapIcon } from "lucide-react";
 import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -20,7 +20,7 @@ const BlockPackEditorIndexPage = () => {
     await loadingManager.startAsyncTransactionLoading(async () => {
       try {
         if (newShelfName.replaceAll(" ", "") === "") {
-          throw new Error(t("workspace.pages.newShelfNameEmpty"));
+          throw new Error("workspace.pages.newShelfNameEmpty");
         }
 
         await shelfItemManager.createRootShelf(newShelfName);

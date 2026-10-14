@@ -1,6 +1,7 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   convertBlocksToDOCX,
   convertBlocksToHTML,
@@ -9,7 +10,6 @@ import {
   convertBlocksToPDF,
   convertBlocksToPlainText,
 } from "@shared/util/convertBlocksToFiles";
-import { useTranslation } from "react-i18next";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import { NotegicSlashMenuController } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";

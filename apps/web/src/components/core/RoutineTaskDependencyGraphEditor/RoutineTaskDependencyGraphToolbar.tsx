@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { Download, GitBranch, Plus, RefreshCw, RotateCcw } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {

@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { RefreshCwIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Section, SettingRow } from "./PreferenceRows";
 

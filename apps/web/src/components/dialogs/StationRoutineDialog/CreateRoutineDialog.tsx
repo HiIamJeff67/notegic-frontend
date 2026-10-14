@@ -1,10 +1,10 @@
 import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
 import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import MonthlyDayPicker from "@/components/commons/MonthlyDayPicker/MonthlyDayPicker";
 import TimePicker from "@/components/commons/TimePicker/TimePicker";

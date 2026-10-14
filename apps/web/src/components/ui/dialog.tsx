@@ -1,8 +1,8 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import { XIcon } from "lucide-react";
 import * as React from "react";
-import { useTranslation } from "react-i18next";
 
 function Dialog({
   ...props

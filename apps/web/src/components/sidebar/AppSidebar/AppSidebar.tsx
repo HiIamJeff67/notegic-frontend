@@ -1,5 +1,6 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -19,7 +20,6 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import AvatarIcon from "@/components/icons/AvatarIcon";
 import ShelfCaseIcon from "@/components/icons/ShelfCaseIcon";

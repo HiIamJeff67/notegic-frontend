@@ -1,10 +1,10 @@
 import { MaxTriggerValue } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
 import { toWidget, Widget } from "@/components/widgets/widget";
 import { useUser } from "@/hooks";
@@ -50,6 +50,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
     setUpdateTrigger(prev => (prev + 1) % MaxTriggerValue);
   }, []);
 
+  // Retained t stays current; a language change must not reload unsaved widgets.
   useEffect(() => {
     const initializeWidgets = async () => {
       if (userManager.userData === null) return;
@@ -91,7 +92,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
     };
 
     initializeWidgets();
-  }, [userManager.userData, t, forceUpdate]);
+  }, [userManager.userData, forceUpdate]);
 
   const getWidgets = useCallback(() => widgetsRef.current, []);
 

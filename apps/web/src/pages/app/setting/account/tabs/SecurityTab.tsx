@@ -1,9 +1,9 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import { UserRole } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import { useValidateEmail } from "@/api/hooks/auth.hook";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
@@ -71,7 +71,6 @@ const SecurityTab = ({
       }),
     [
       userManager,
-      t,
       validateEmailMutator,
       setSendAuthCodeTimeCounter,
       setValidateEmailDialogOpen,

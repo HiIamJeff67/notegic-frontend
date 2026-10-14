@@ -1,4 +1,6 @@
 import type { UUID } from "node:crypto";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   FragmentedBasicPrivateRootShelfFragment,
   FragmentedBasicPublicUserFragment,
@@ -6,18 +8,16 @@ import type {
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { UpsertRootShelfPermissionRequestSchema } from "@shared/api/interfaces/rootShelf.interface";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
 } from "@shared/api/websocket";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { cn } from "@shared/util/utils";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
 import {
   useDeleteRootShelfPermissions,

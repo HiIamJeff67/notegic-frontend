@@ -1,4 +1,5 @@
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import {
@@ -11,7 +12,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
@@ -68,7 +68,7 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
           .renameEditingRoutineTag()
           .catch(error => toast.error(tError(error, t)));
       }),
-    [t, loadingManager, stationRoutineManager]
+    [loadingManager, stationRoutineManager]
   );
 
   return (

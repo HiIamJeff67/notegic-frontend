@@ -1,5 +1,6 @@
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import {
   Suspense,
@@ -8,7 +9,6 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useForgetPassword, useSendAuthCode } from "@/api/hooks/auth.hook";
 import { clearTurnstileToken, isTurnstileEnabled } from "@/api/turnstile";
@@ -98,7 +98,6 @@ const ForgetPasswordPage = () => {
     email,
     resetTurnstile,
     sendAuthCodeMutator,
-    t,
     turnstileRequired,
     turnstileToken,
   ]);

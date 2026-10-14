@@ -3,9 +3,9 @@ import type {
   SubmitFeedbackReportRequest,
 } from "@shared/api/interfaces/feedback.interface";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { type FormEvent, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

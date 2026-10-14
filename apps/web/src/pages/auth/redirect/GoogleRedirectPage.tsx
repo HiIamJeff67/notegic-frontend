@@ -1,11 +1,11 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { consumePendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import type { OAuthAction } from "@shared/types/redirectState.type";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLoginViaGoogle, useRegisterViaGoogle } from "@/api/hooks/auth.hook";
 import { useBindGoogleAccount } from "@/api/hooks/userAccount.hook";
@@ -125,13 +125,13 @@ function GoogleRedirectPage() {
       }
 
       if (code === null) {
-        throw new Error(t("error.encounterUnknownError"));
+        throw new Error("error.encounterUnknownError");
       }
 
       const turnstileEnabled = isTurnstileEnabled();
       const turnstileToken = getTurnstileToken();
       if (action !== "binding" && turnstileEnabled && !turnstileToken) {
-        throw new Error(t("auth.turnstileRequired"));
+        throw new Error("auth.turnstileRequired");
       }
 
       await performGoogleOAuthAction(action, code);

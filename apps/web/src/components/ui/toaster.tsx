@@ -1,3 +1,4 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { CircleCheck, Info, OctagonX, TriangleAlert } from "lucide-react";
 import {
   Toast,
@@ -18,6 +19,7 @@ const iconByVariant = {
 } as const;
 
 const Toaster = () => {
+  const { t } = useTranslation();
   const { toasts, dismiss } = useToast();
 
   return (
@@ -47,7 +49,7 @@ const Toaster = () => {
                   <ToastDescription>{description}</ToastDescription>
                 )}
               </div>
-              <ToastClose aria-label="Close" />
+              <ToastClose aria-label={t("common.close")} />
             </Toast>
           );
         }

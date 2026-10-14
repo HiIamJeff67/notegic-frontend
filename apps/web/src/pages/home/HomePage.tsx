@@ -1,7 +1,7 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { BookTextIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { TryGetUserData } from "@/api/functions/user.serverFn";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";

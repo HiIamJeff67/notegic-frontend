@@ -1,4 +1,5 @@
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import type { RoutineNode } from "@shared/types/routineNode.type";
@@ -7,7 +8,6 @@ import { cn } from "@shared/util/utils";
 import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { Button } from "@/components/ui/button";

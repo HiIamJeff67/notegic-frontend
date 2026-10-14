@@ -1,4 +1,5 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import {
   BlocksIcon,
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Fragment, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,
@@ -188,15 +188,15 @@ const privacyPolicyNavigation = [
   weight: 3 as const,
 }));
 
-const inlineCodeClassName =
-  "rounded-sm bg-muted px-1 py-0.5 font-mono text-[0.9em] text-foreground";
-
 const InlineText = ({ children }: { children: ReactNode }) => {
   if (typeof children !== "string") return <>{children}</>;
 
   return children.split(/(`[^`]+`)/g).map((part, index) =>
     part.startsWith("`") && part.endsWith("`") ? (
-      <code className={inlineCodeClassName} key={`${part}-${index}`}>
+      <code
+        className="rounded-sm bg-muted px-1 py-0.5 font-mono text-[0.9em] text-foreground"
+        key={`${part}-${index}`}
+      >
         {part.slice(1, -1)}
       </code>
     ) : (
@@ -204,8 +204,6 @@ const InlineText = ({ children }: { children: ReactNode }) => {
     )
   );
 };
-
-const stripInlineCode = (value: string) => value.replace(/`([^`]+)`/g, "$1");
 
 const NavigationPath = ({
   href,
@@ -549,7 +547,7 @@ const DocumentPage = () => {
   const gatewayRuleNavigation = gatewayRules.map(rule => ({
     id: `gateway-rule-${rule.id}`,
     title: rule.title,
-    description: stripInlineCode(rule.summary),
+    description: rule.summary.replace(/`([^`]+)`/g, "$1"),
     weight: 3 as const,
   }));
 

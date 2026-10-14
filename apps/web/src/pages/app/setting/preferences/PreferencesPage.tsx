@@ -1,10 +1,10 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { cn } from "@shared/util/utils";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,

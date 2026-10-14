@@ -1,7 +1,7 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 
 const builtInSensitivePatterns = [
@@ -72,7 +72,7 @@ export const ClipboardGuardProvider = ({
 
     document.addEventListener("copy", handleCopy);
     return () => document.removeEventListener("copy", handleCopy);
-  }, [preferences.clipboardGuard, preferences.clipboardGuardPatterns, t]);
+  }, [preferences.clipboardGuard, preferences.clipboardGuardPatterns]);
 
   return children;
 };

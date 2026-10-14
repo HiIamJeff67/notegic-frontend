@@ -1,11 +1,11 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ChevronRightIcon } from "lucide-react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import {
   BlockPackIcon,
@@ -36,8 +36,8 @@ const ItemPathItem = ({
   subShelfNode,
   isScrollable = false,
 }: ItemPathItemProps) => {
-  const router = useAppRouter();
   const { t } = useTranslation();
+  const router = useAppRouter();
   const shelfItemManager = useShelfItem();
 
   const handleBlockPackOnClick = useCallback(

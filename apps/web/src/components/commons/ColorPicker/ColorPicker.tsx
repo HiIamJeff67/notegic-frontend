@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 interface ColorPickerProps {
   value: string;

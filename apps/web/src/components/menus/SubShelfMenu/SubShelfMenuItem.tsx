@@ -1,6 +1,7 @@
 import { MaxShelfDepth } from "@shared/constants";
 import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
 import toast from "@shared/lib/toast";
 import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -16,7 +17,6 @@ import {
 } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   BlockPackIcon,

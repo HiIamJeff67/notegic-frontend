@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { ClipboardIcon, RotateCcwIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { Section, SettingRow } from "./PreferenceRows";

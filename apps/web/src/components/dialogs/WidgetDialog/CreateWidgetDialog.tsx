@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,

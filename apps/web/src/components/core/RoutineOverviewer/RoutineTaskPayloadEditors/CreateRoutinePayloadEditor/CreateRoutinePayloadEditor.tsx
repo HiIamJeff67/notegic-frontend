@@ -3,8 +3,8 @@ import {
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
 import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";
 import { Checkbox } from "@/components/ui/checkbox";

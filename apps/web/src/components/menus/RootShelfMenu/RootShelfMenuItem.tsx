@@ -1,6 +1,7 @@
 import { SearchRootShelfEdge } from "@shared/api/graphql/generated/graphql";
 import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
@@ -16,7 +17,6 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { useDrop } from "react-dnd";
-import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import EmptyShelfIcon from "@/components/icons/EmptyShelfIcon";
 import { RootShelfIcon } from "@/components/icons/WorkspaceEntityIcons";

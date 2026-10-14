@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { ChartNoAxesCombined } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import OverallChartWidget from "./OverallChartWidget";
 import RoutineChartWidget from "./RoutineChartWidget";
 import RoutineTaskChartWidget from "./RoutineTaskChartWidget";

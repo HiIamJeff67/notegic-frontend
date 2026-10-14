@@ -1,3 +1,5 @@
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
@@ -7,18 +9,16 @@ import {
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
+import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxSearchLimit } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/LRUCache";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import type { StationNode } from "@shared/types/stationNode.type";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import {
@@ -367,7 +367,7 @@ export const useRoutineTaskLogic = ({
             .endEncodedSearchCursor ?? null,
       };
     },
-    [executeSearch, forceUpdate, stationsRef, t]
+    [executeSearch, forceUpdate, stationsRef]
   );
 
   const loadMoreRoutineTaskCandidates = useCallback(async (): Promise<void> => {

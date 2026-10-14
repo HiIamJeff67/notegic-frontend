@@ -1,4 +1,5 @@
 import { formatTimezone } from "@shared/i18n/timezone";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import {
   ClockSetting,
@@ -6,7 +7,6 @@ import {
 } from "@widgets/basic/ClockWidget/setting/clockSetting";
 import { WidgetProps } from "@widgets/widget";
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useAnyTypeState } from "@/hooks/useAnyTypeState";
 import EditClockWidgetDialog from "./EditClockWidgetDialog";
 

@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { Fragment, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Article,
   ArticleContent,

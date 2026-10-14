@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 interface WeekdayPickerProps {

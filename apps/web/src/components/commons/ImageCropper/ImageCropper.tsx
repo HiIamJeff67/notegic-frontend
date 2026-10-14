@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import React, { useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 interface ImageCropperProps {

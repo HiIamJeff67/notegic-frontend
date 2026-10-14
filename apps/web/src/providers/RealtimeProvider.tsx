@@ -20,6 +20,7 @@ import {
 } from "@shared/api/websocket";
 import { BlockPackYjsCoordinator } from "@shared/blockpack";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import {
@@ -42,7 +43,6 @@ import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
-import i18n from "@/i18n";
 import {
   canSendDesktopNotification,
   isQuietHours,
@@ -103,6 +103,7 @@ export const RealtimeProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { t } = useTranslation();
   const { userData } = useUser();
   const { isOnline } = useNetwork();
   const { preferences, notificationPermission } = useLocalPreferences();
@@ -197,7 +198,7 @@ export const RealtimeProvider = ({
     ) {
       return;
     }
-    toast.success(i18n.t("workspace.notifications.syncConnected"));
+    toast.success(t("workspace.notifications.syncConnected"));
   }, []);
 
   const showDesktopNotification = useCallback(
@@ -325,6 +326,7 @@ export const RealtimeProvider = ({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Retained t stays current without reconnecting when the language changes.
     if (!userData || !isOnline) {
       clientRef.current?.stop();
       clientRef.current = null;
@@ -410,7 +412,7 @@ export const RealtimeProvider = ({
           preferencesRef.current.routineNudges
         ) {
           showDesktopNotification(
-            i18n.t("workspace.notifications.routineReminder"),
+            t("workspace.notifications.routineReminder"),
             frame.purpose,
             "normal"
           );
@@ -473,9 +475,7 @@ export const RealtimeProvider = ({
           channel.status = "error";
           channel.provider.setReadOnly(true);
           channel.provider.disconnect();
-          showSyncError(
-            i18n.t("workspace.notifications.realtimeResyncRequired")
-          );
+          showSyncError(t("workspace.notifications.realtimeResyncRequired"));
           rerender();
         }
       },
@@ -497,7 +497,7 @@ export const RealtimeProvider = ({
           channel.status = "error";
           channel.provider.setReadOnly(true);
           channel.provider.disconnect();
-          showSyncError(i18n.t("workspace.notifications.realtimeError"));
+          showSyncError(t("workspace.notifications.realtimeError"));
           rerender();
 
           void (async () => {
@@ -527,7 +527,7 @@ export const RealtimeProvider = ({
               channel.error = frame.message;
               channel.status = "error";
               rerender();
-              showSyncError(i18n.t("workspace.notifications.realtimeError"));
+              showSyncError(t("workspace.notifications.realtimeError"));
             }
           })();
           return;
@@ -549,14 +549,12 @@ export const RealtimeProvider = ({
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
           void disposeBlockPackChannel(channel);
-          showSyncError(
-            i18n.t("workspace.notifications.blockPackRoomUnavailable")
-          );
+          showSyncError(t("workspace.notifications.blockPackRoomUnavailable"));
         } else if (frame.code === "resource_unavailable") {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";
           void disposeBlockPackChannel(channel);
-          showSyncError(i18n.t("workspace.notifications.blockPackUnavailable"));
+          showSyncError(t("workspace.notifications.blockPackUnavailable"));
         } else if (
           frame.code === "resync_required" ||
           frame.code === "channel_backpressure" ||
@@ -566,18 +564,16 @@ export const RealtimeProvider = ({
           channel.status = "error";
           channel.provider.setReadOnly(true);
           channel.provider.disconnect();
-          showSyncError(
-            i18n.t("workspace.notifications.realtimeResyncRequired")
-          );
+          showSyncError(t("workspace.notifications.realtimeResyncRequired"));
         } else {
           channel.provider.disconnect();
-          showSyncError(i18n.t("workspace.notifications.realtimeError"));
+          showSyncError(t("workspace.notifications.realtimeError"));
         }
         rerender();
       },
       onError: error => {
         console.error("[Realtime]", error);
-        showSyncError(i18n.t("workspace.notifications.realtimeError"));
+        showSyncError(t("workspace.notifications.realtimeError"));
       },
     });
 

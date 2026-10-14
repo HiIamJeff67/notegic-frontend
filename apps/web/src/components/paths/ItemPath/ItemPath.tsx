@@ -1,10 +1,10 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { ItemType } from "@shared/types/itemNodes.type";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
 import type { UUID } from "crypto";
 import { ChevronRightIcon } from "lucide-react";
-import { type WheelEvent, useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useState, type WheelEvent } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import ItemPathItem from "@/components/paths/ItemPath/ItemPathItem";
 import {

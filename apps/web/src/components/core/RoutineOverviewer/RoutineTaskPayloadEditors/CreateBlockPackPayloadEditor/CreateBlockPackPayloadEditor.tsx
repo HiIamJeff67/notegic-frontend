@@ -1,8 +1,8 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { NotegicBlockPackEditor } from "@shared/blockpack";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import { Button } from "@/components/ui/button";
 import {

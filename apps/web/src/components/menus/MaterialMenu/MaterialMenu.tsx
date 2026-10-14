@@ -1,9 +1,9 @@
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import MaterialMenuItem from "@/components/menus/MaterialMenu/MaterialMenuItem";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
@@ -26,7 +26,7 @@ const MaterialMenu = ({ parent }: MaterialMenuProps) => {
             .renameEditingMaterial()
             .catch(error => toast.error(tError(error, t)))
       ),
-    [loadingManager, t, shelfItemManager]
+    [loadingManager, shelfItemManager]
   );
 
   return (

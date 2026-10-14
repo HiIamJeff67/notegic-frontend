@@ -8,11 +8,11 @@ import {
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { UUID } from "crypto";
 import { Bookmark, SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";

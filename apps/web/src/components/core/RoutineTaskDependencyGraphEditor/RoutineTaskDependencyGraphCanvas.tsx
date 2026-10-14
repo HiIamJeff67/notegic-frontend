@@ -1,3 +1,4 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   Background,
   Controls,
@@ -13,7 +14,6 @@ import {
   useStore,
 } from "@xyflow/react";
 import { Map as MapIcon, X } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useScreen } from "@/hooks";
 import RoutineTaskGraphNode, {

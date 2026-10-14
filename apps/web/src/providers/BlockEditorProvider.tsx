@@ -8,10 +8,10 @@ import {
   NotegicBlockPackEditor,
 } from "@shared/blockpack";
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { randomColor } from "@shared/util/random";
 import { createContext, useCallback, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import type * as Y from "yjs";
 import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import { useAppRouterActions } from "@/hooks/useAppRouter";

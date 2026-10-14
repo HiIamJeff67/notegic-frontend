@@ -3,6 +3,7 @@ import { ItemType } from "@shared/api/interfaces/enums";
 import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
@@ -22,7 +23,6 @@ import {
   Workflow,
 } from "lucide-react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   BlockPackIcon,
@@ -109,7 +109,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
           .renameEditingRoutine()
           .catch(error => toast.error(tError(error, t)));
       }),
-    [t, loadingManager, stationRoutineManager]
+    [loadingManager, stationRoutineManager]
   );
 
   return (

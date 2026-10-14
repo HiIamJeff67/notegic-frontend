@@ -1,4 +1,5 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import {
   BookOpenIcon,
@@ -8,7 +9,6 @@ import {
 } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   HoverCard,
   HoverCardContent,

@@ -2,11 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
 import { FakeUser } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { User, UserSchema } from "@shared/types/user.type";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useUpdateMe } from "@/api/hooks/user.hook";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -114,7 +114,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
           toast.error(tError(error, t));
         }
       }),
-    [loadingManager, userManager, t, updateMeMutator]
+    [loadingManager, userManager, updateMeMutator]
   );
 
   return (

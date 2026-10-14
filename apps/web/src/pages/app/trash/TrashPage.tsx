@@ -6,9 +6,9 @@ import {
   type SearchStationsQuery,
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { SearchIcon, Trash2Icon } from "lucide-react";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   BlockPackIcon,
   MaterialIcon,

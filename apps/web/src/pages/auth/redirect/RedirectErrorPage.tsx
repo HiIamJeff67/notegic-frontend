@@ -1,7 +1,7 @@
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { Button } from "@/components/ui/button";
 import { useAppRouter } from "@/hooks";

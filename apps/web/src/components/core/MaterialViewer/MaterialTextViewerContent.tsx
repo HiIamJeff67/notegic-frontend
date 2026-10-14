@@ -1,7 +1,7 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
+import { useEffect, useState } from "react";
 import MaterialViewerFrame from "./MaterialViewerFrame";
 
 interface MaterialTextViewerContentProps {

@@ -1,8 +1,8 @@
 import { formatTimezone } from "@shared/i18n/timezone";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { ClockStyles } from "@widgets/basic/ClockWidget/data/clockStyles";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import { Dispatch, SetStateAction } from "react";
-import { useTranslation } from "react-i18next";
 import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,

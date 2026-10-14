@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
 
 interface DropFileZoneProps {
   accept?: Record<string, string[]>;

@@ -4,11 +4,11 @@ import {
 } from "@shared/api/interfaces/enums";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";

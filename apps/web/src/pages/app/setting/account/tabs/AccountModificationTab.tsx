@@ -1,9 +1,9 @@
 import { UserRole } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import {
   useDeleteMe,
@@ -88,7 +88,6 @@ const AccountModificationTab = ({
     [
       router,
       userManager,
-      t,
       resetMeMutator,
       setSendAuthCodeTimeCounter,
       setResetMeDialogOpen,
@@ -118,7 +117,6 @@ const AccountModificationTab = ({
       }),
     [
       userManager,
-      t,
       resetEmailMutator,
       setSendAuthCodeTimeCounter,
       setResetEmailDialogOpen,
@@ -138,7 +136,7 @@ const AccountModificationTab = ({
           if (userManager.userData?.email === undefined) {
             router.push(WebURLPathDictionary.home);
             userManager.logout();
-            throw new Error(t("settingsPage.account.sessionExpired"));
+            throw new Error("settingsPage.account.sessionExpired");
           }
 
           const userAgent = navigator.userAgent;

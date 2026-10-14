@@ -1,9 +1,9 @@
 import { DNDType } from "@shared/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { StationNode } from "@shared/types/stationNode.type";
 import { cn } from "@shared/util/utils";
 import type { UUID } from "crypto";
 import { useDrag, useDrop } from "react-dnd";
-import { useTranslation } from "react-i18next";
 import { StationIcon } from "@/components/icons/WorkspaceEntityIcons";
 
 interface TimeRailsStationBarItemProps {

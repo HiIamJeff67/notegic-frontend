@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { TimerSetting } from "@widgets/basic/TimerWidget/setting/timerSetting";
 import { Dispatch, SetStateAction } from "react";
-import { useTranslation } from "react-i18next";
 import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,

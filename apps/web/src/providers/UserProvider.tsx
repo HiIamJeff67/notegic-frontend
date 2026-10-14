@@ -1,6 +1,7 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { WebURLPathDictionary } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
 import type { UserQuota } from "@shared/types/userQuota.type";
@@ -15,10 +16,9 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogout } from "@/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
 import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
-import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
+import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
-import i18n from "@/i18n";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 interface UserContextType {
@@ -59,6 +59,7 @@ export const UserProvider = ({
   children: React.ReactNode;
   autoFetchUserData?: boolean;
 }) => {
+  const { t } = useTranslation();
   const router = useAppRouterActions();
   const loadingManager = useLoading();
   const { isOnline } = useNetwork();
@@ -123,7 +124,7 @@ export const UserProvider = ({
       if (
         !router.isSamePath(router.getCurrentPath(), WebURLPathDictionary.home)
       ) {
-        toast.error(i18n.t("workspace.notifications.sessionExpired"));
+        toast.error(t("workspace.notifications.sessionExpired"));
         router.push(WebURLPathDictionary.auth.login);
       }
     }

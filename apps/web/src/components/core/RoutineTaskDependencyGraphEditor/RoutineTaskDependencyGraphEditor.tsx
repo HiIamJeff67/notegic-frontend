@@ -26,11 +26,11 @@ import {
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
 import { useGetMyRoutineTasksByRoutineId } from "@/api/hooks/routineTask.hook";
@@ -60,6 +60,7 @@ import {
   useTheme,
 } from "@/hooks";
 import { useLoading } from "@/hooks/useLoading";
+import { getDependencyDraftErrorKey } from "./dependency-draft-error";
 import RoutineTaskDependencyGraphCanvas from "./RoutineTaskDependencyGraphCanvas";
 import RoutineTaskDependencyGraphToolbar from "./RoutineTaskDependencyGraphToolbar";
 import RoutineTaskDependencyInspector from "./RoutineTaskDependencyInspector";
@@ -153,8 +154,15 @@ const RoutineTaskDependencyGraphEditor = ({
           const invalidDraftEdge = draft?.edges.find(
             edge => edge.syncStatus === "invalid"
           );
-          if (invalidDraftEdge?.errorMessage) {
-            toast.error(invalidDraftEdge.errorMessage);
+          if (invalidDraftEdge?.errorKey || invalidDraftEdge?.errorMessage) {
+            // Legacy drafts contain translated text; use a localized fallback.
+            toast.error(
+              t(
+                (invalidDraftEdge.errorKey ??
+                  "error.encounterUnknownError") as never,
+                { defaultValue: t("error.encounterUnknownError") }
+              )
+            );
           }
         }
       } catch (error) {
@@ -371,9 +379,7 @@ const RoutineTaskDependencyGraphEditor = ({
         edges: syncedEdges,
       });
     } catch (error) {
-      const message =
-        tError(error, t) ||
-        t("workspace.notifications.routineDependencyGraphSaveFailed");
+      const errorKey = getDependencyDraftErrorKey(error);
       const syncStatus =
         error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
       const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] =
@@ -395,7 +401,7 @@ const RoutineTaskDependencyGraphEditor = ({
                 ? syncStatus
                 : (existingDraftEdge?.syncStatus ?? "synced"),
             ...(edge.id === nextEdge.id
-              ? { operation: "create" as const, errorMessage: message }
+              ? { operation: "create" as const, errorKey }
               : existingDraftEdge?.operation
                 ? { operation: existingDraftEdge.operation }
                 : {}),
@@ -414,7 +420,7 @@ const RoutineTaskDependencyGraphEditor = ({
       } catch {
         // Keep the attempted edge visible so the user can correct it in place.
       }
-      toast.error(message);
+      toast.error(tError(error, t));
     }
   };
 
@@ -476,9 +482,7 @@ const RoutineTaskDependencyGraphEditor = ({
           edges: syncedEdges,
         });
       } catch (error) {
-        const message =
-          tError(error, t) ||
-          t("workspace.notifications.routineDependencyGraphSaveFailed");
+        const errorKey = getDependencyDraftErrorKey(error);
         const syncStatus =
           error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
         const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] =
@@ -501,7 +505,7 @@ const RoutineTaskDependencyGraphEditor = ({
           target: edge.target,
           syncStatus,
           operation: "delete",
-          errorMessage: message,
+          errorKey,
         });
         const nextDraft = {
           nodes: nodes.map(node => ({
@@ -516,7 +520,7 @@ const RoutineTaskDependencyGraphEditor = ({
         } catch {
           // Keep the edge removed so the user can continue correcting the graph.
         }
-        toast.error(message);
+        toast.error(tError(error, t));
       }
     }
   };
@@ -533,7 +537,6 @@ const RoutineTaskDependencyGraphEditor = ({
 
     setIsRetryingSync(true);
     let failedCount = 0;
-    let terminalErrorMessage: string | null = null;
     let nextDraftEdges = [...localDraft.edges];
 
     for (const pendingEdge of localDraft.edges.filter(
@@ -642,15 +645,13 @@ const RoutineTaskDependencyGraphEditor = ({
       } catch (error) {
         failedCount += 1;
         if (error instanceof NotegicAPIError) {
-          terminalErrorMessage =
-            tError(error, t) ||
-            t("workspace.notifications.routineDependencyGraphSaveFailed");
+          const errorKey = getDependencyDraftErrorKey(error);
           nextDraftEdges = nextDraftEdges.map(edge =>
             edge.id === pendingEdge.id
               ? {
                   ...edge,
                   syncStatus: "invalid" as const,
-                  errorMessage: terminalErrorMessage ?? undefined,
+                  errorKey,
                 }
               : edge
           );
@@ -814,9 +815,7 @@ const RoutineTaskDependencyGraphEditor = ({
         edges: draftEdges,
       });
     } catch (error) {
-      const message =
-        tError(error, t) ||
-        t("workspace.notifications.routineDependencyGraphSaveFailed");
+      const errorKey = getDependencyDraftErrorKey(error);
       const syncStatus =
         error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
       const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] = edges.map(
@@ -844,7 +843,7 @@ const RoutineTaskDependencyGraphEditor = ({
                 ? syncStatus
                 : (existingDraftEdge?.syncStatus ?? "synced"),
             ...(edge.id === selectedEdgeId
-              ? { operation: "update" as const, errorMessage: message }
+              ? { operation: "update" as const, errorKey }
               : existingDraftEdge?.operation
                 ? { operation: existingDraftEdge.operation }
                 : {}),
@@ -876,7 +875,7 @@ const RoutineTaskDependencyGraphEditor = ({
       } catch {
         // Keep the edited values visible so the user can correct them in place.
       }
-      toast.error(message);
+      toast.error(tError(error, t));
     }
   };
 

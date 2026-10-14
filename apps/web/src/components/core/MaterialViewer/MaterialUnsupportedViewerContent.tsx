@@ -1,5 +1,5 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import MaterialViewerFrame from "./MaterialViewerFrame";
 

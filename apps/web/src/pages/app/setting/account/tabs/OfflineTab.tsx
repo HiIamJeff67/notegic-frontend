@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { WifiOffIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 const OfflineTab = () => {
   const { t } = useTranslation();

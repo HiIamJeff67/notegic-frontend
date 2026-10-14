@@ -1,11 +1,7 @@
-import {
-  useMarkNotificationsRead,
-  useNotifications,
-  useUnreadNotificationCount,
-} from "@/api/hooks/notification.hook";
 import type { Notification } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import {
   AlertCircleIcon,
@@ -17,7 +13,11 @@ import {
   NewspaperIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import {
+  useMarkNotificationsRead,
+  useNotifications,
+  useUnreadNotificationCount,
+} from "@/api/hooks/notification.hook";
 import { NotificationDialog } from "@/components/dialogs/NotificationDialog";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
 import { Button } from "@/components/ui/button";

@@ -1,17 +1,17 @@
-import {
-  useDeleteNotifications,
-  useNotifications,
-} from "@/api/hooks/notification.hook";
 import type {
   ListNotificationsResponse,
   Notification,
 } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CircleAlertIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import {
+  useDeleteNotifications,
+  useNotifications,
+} from "@/api/hooks/notification.hook";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";

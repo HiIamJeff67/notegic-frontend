@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { CSSProperties, ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 import { Spinner } from "@/components/ui/spinner";
 import {
   DEFAULT_VIEWBOX_HEIGHT,

@@ -7,10 +7,10 @@ import {
   RoutineRecordStatus,
 } from "@shared/api/interfaces/enums";
 import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type { UUID } from "crypto";
 import { Activity, Eye } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSearchRoutineRecordsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineRecords";
 import { Button } from "@/components/ui/button";
 import {

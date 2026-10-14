@@ -11,8 +11,8 @@ import {
   components as blockNoteShadcnComponents,
 } from "@blocknote/shadcn";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { Form, XIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import type { PatternBlock } from "./CreateBlockPackPayloadEditor";

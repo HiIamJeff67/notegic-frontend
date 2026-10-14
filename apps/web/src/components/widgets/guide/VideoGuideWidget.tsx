@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { WidgetProps } from "@widgets/widget";
 import { Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 const VideoGuideWidget = ({ className, style, data }: WidgetProps) => {
   const { t } = useTranslation();

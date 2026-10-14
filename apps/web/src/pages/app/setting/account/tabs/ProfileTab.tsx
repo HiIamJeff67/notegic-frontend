@@ -2,13 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import { FakeUserInfo } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
@@ -100,7 +100,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
       await userManager.fetchUserInfo();
       toast.success(t("settingsPage.account.messages.profileUpdated"));
     },
-    [t, updateUserInfoMutator, userManager]
+    [updateUserInfoMutator, userManager]
   );
 
   const handleProfileImageUpload = useCallback(
@@ -132,7 +132,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
         toast.error(tError(error, t));
       }
     },
-    [clearCroppableImage, croppableImage, t, uploadProfileImage]
+    [clearCroppableImage, croppableImage, uploadProfileImage]
   );
 
   useEffect(() => {
@@ -262,7 +262,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
           toast.error(tError(error, t));
         }
       }),
-    [loadingManager, userManager, t, updateUserInfoMutator]
+    [loadingManager, userManager, updateUserInfoMutator]
   );
 
   return (

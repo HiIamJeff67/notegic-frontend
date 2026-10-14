@@ -1,5 +1,6 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import {
@@ -23,7 +24,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { Button } from "@/components/ui/button";

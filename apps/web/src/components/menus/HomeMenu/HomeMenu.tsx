@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import LanguageIcon from "@/components/icons/LanguageIcon";
 import { ThemeIcon } from "@/components/icons/ThemeIcon";
 import { HomeMenuFrame } from "./HomeMenuSection";

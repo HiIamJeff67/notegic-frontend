@@ -1,3 +1,4 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { clamp } from "@shared/util/math";
 import {
   getDefaultTimerData,
@@ -10,7 +11,6 @@ import {
 } from "@widgets/basic/TimerWidget/setting/timerSetting";
 import { WidgetProps } from "@widgets/widget";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { useAnyTypeState } from "@/hooks/useAnyTypeState";
 import EditTimerWidgetDialog from "./EditTimerWidgetDialog";

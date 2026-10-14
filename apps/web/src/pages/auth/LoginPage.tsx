@@ -1,10 +1,10 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
 import { createPendingOAuthState } from "@shared/lib/oauthState";
 import toast from "@shared/lib/toast";
 import { Suspense, useCallback, useState, useTransition } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogin } from "@/api/hooks/auth.hook";
 import {
@@ -91,7 +91,6 @@ const LoginPage = () => {
     [
       account,
       password,
-      t,
       preferences,
       userManager,
       loginMutator,
@@ -116,7 +115,7 @@ const LoginPage = () => {
     router.forceNavigate(
       WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
     );
-  }, [router, t, turnstileRequired, turnstileToken]);
+  }, [router, turnstileRequired, turnstileToken]);
 
   return (
     <GridBackground>

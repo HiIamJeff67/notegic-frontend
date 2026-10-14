@@ -1,5 +1,5 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { dateToTimeString, timeStringToDate } from "@shared/util/timeString";
-import { useTranslation } from "react-i18next";
 import TimePicker from "@/components/commons/TimePicker/TimePicker";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";

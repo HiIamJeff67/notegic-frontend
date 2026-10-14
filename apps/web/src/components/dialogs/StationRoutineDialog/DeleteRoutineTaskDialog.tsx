@@ -1,7 +1,7 @@
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import { Button } from "@/components/ui/button";

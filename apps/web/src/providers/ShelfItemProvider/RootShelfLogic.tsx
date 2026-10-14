@@ -9,6 +9,7 @@ import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { MaxSearchLimit } from "@shared/constants";
 import { AnalysisStatus } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/LRUCache";
 import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
 import toast from "@shared/lib/toast";
@@ -24,7 +25,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
 import {
@@ -331,7 +331,6 @@ export const useRootShelfLogic = ({
     forceUpdate,
     originalRootShelfName,
     setEditingRootShelfNode,
-    t,
     updateRootShelfMutator,
   ]);
 

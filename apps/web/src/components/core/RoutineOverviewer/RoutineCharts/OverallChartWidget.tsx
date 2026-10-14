@@ -1,8 +1,8 @@
-import { useVisualizeMyTotalCount } from "@/api/hooks/station.hook";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { IntChart } from "@shared/charts/components";
 import { hasPositiveChartValue } from "@shared/charts/util";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";
+import { useVisualizeMyTotalCount } from "@/api/hooks/station.hook";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { OverallChartType } from "./RoutineCharts";
 

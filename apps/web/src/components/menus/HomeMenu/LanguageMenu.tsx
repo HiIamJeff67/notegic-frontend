@@ -1,5 +1,5 @@
 import { AllLanguageData } from "@shared/constants";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { HomeMenuSection } from "./HomeMenuSection";
 import { SelectionDot } from "./SelectionDot";
 

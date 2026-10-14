@@ -1,5 +1,6 @@
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
@@ -12,7 +13,6 @@ import {
   XIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -95,7 +95,7 @@ const ColorSelector = ({
     };
 
     initializeColors();
-  }, [userManager.userData, t, forceUpdate]);
+  }, [userManager.userData, forceUpdate]);
 
   const syncColors = useCallback(
     (syncColors?: string[]) => {

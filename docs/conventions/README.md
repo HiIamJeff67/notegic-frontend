@@ -27,6 +27,7 @@ recurring patterns into explicit rules for new work.
 | [07-version-control.md](07-version-control.md) | Commit messages and generated development logs |
 | [08-testing.md](08-testing.md) | Unit and integration test ownership |
 | [09-widgets.md](09-widgets.md) | Dashboard widget structure and local persistence |
+| [10-translations.md](10-translations.md) | Project translation hook, async notifications, errors, enum mappings, and language ownership |
 
 ## Priority order
 

@@ -1,8 +1,8 @@
 import { SupportedIcon } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import { CheckIcon, SearchIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

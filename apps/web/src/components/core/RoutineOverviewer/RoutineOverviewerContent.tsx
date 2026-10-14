@@ -2,6 +2,7 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import { CheckIcon, SquarePen } from "lucide-react";
@@ -12,7 +13,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";

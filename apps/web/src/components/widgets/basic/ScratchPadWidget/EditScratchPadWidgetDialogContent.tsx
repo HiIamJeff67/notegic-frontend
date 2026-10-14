@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { ScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import { Dispatch, SetStateAction } from "react";
-import { useTranslation } from "react-i18next";
 import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,

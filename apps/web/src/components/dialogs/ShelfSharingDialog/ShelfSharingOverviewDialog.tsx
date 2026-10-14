@@ -1,7 +1,7 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
+import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

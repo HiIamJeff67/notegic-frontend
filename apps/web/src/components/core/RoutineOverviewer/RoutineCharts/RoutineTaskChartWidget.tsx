@@ -1,8 +1,8 @@
-import { useVisualizeMyRoutineTaskPurposeCount } from "@/api/hooks/routineTask.hook";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { IntChart } from "@shared/charts/components";
 import { hasPositiveChartValue } from "@shared/charts/util";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@shared/i18n/useTranslation";
+import { useVisualizeMyRoutineTaskPurposeCount } from "@/api/hooks/routineTask.hook";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { RoutineTaskChartType } from "./RoutineCharts";
 

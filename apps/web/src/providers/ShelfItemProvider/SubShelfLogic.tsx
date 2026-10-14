@@ -2,6 +2,7 @@ import { GetMyBlockPacksByParentSubShelfIdResponse } from "@shared/api/interface
 import { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
 import { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/LRUCache";
 import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
 import toast from "@shared/lib/toast";
@@ -10,7 +11,6 @@ import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   useCreateSubShelfByRootShelfId,
@@ -281,7 +281,6 @@ export const useSubShelfLogic = ({
     forceUpdate,
     originalSubShelfName,
     setEditingSubShelfNode,
-    t,
     updateSubShelfMutator,
   ]);
 

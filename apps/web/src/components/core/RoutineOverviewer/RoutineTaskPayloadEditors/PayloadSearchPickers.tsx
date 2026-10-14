@@ -5,10 +5,10 @@ import {
   SearchStationSortBy,
   SearchSubShelfSortBy,
 } from "@shared/api/graphql/generated/graphql";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
 import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStations";
 import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";

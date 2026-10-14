@@ -16,7 +16,7 @@ apps/web/
 shared/
   api/              portable API/query contracts and generated client artifacts
   graphql/          GraphQL schemas, documents, and codegen inputs
-  i18n/             translation resources, language types, and pure helpers
+  i18n/             resources, pure helpers, and an explicit React adapter
   reducers/         portable metadata reducers
   blockpack/        reusable block-pack logic
   charts/           reusable chart logic
@@ -46,7 +46,7 @@ shared/
   api/              portable request, query, GraphQL, realtime, and domain boundaries
   contracts/        public/generated API contract types
   graphql/          GraphQL documents and codegen inputs
-  i18n/             translation resources, language types, and pure helpers
+  i18n/             resources, pure helpers, and an explicit React adapter
   reducers/         portable state reducers and actions
   packages/         reusable TypeScript packages with real multi-app consumers
   types/            shared types
@@ -71,7 +71,7 @@ app.
 | `shared/api` | Request semantics, endpoint payloads, query configuration, cache policy, GraphQL, realtime contracts, and portable domain logic | Required browser APIs, DOM, Web CSS, or a mandatory TanStack Start runtime |
 | `shared/contracts` | Public API types and generated contract artifacts | Backend implementation or database access |
 | `shared/graphql` | GraphQL schema/document inputs and frontend codegen configuration | Server resolvers and hand-edited generated output |
-| `shared/i18n` | Translation resources, language types, and pure translation helpers | `localStorage`, `window`, `document`, or app lifecycle side effects |
+| `shared/i18n` | Translation resources, language types, pure helpers, and the explicit React translation adapter | `localStorage`, `window`, `document`, or app initialization/persistence side effects |
 | `shared/reducers` | Portable state transitions, actions, and reducer tests | Browser/native lifecycle and platform persistence |
 | `shared/design-tokens` | Platform-neutral values such as color, spacing, and typography tokens | CSS files or native component styling setup |
 | App asset directories | Asset imports and packaging for the owning application | A shared asset import contract in the initial migration |
@@ -80,6 +80,12 @@ app.
 ## Internationalization and state
 
 `shared/i18n/language.ts` owns `supportedLanguages`, `SupportedLanguage`, and `isSupportedLanguage`. `shared/i18n/index.ts` owns shared translation resources and pure i18n setup that does not require a platform global. Each app owns its `syncStoredLanguage` flow and supplies its own persistence/lifecycle integration. The shared i18n core must not read or write browser or native storage.
+
+React consumers use `shared/i18n/useTranslation.ts`, an explicit adapter around
+the vendor hook with current-language translators for retained async callbacks.
+It does not initialize an instance or import Web code, and is not re-exported
+from the resource index. See [Translation entry points](../../conventions/10-translations.md)
+for imports, presentation examples, dependencies, and verification.
 
 Reducers may move to `shared/reducers/` when their state and actions are platform-neutral. Reducers that depend on editor-specific types remain behind an explicit editor boundary until those types are intentionally made shared.
 

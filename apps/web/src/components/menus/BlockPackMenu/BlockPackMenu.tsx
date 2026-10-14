@@ -1,9 +1,9 @@
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuItem";
 import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPackMenuItemSkeleton";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
@@ -25,7 +25,7 @@ const BlockPackMenu = ({ parent }: BlockPackMenuProps) => {
           .renameEditingBlockPack()
           .catch(error => toast.error(tError(error, t)))
     );
-  }, [loadingManager, t, shelfItemManager]);
+  }, [loadingManager, shelfItemManager]);
 
   return (
     <Suspense fallback={<BlockPackMenuItemSkeleton />}>

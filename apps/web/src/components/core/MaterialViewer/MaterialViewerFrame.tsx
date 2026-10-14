@@ -1,5 +1,6 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { cn } from "@shared/util/utils";
@@ -11,7 +12,6 @@ import {
   RotateCw,
 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
@@ -84,25 +84,17 @@ const MaterialViewerFrame = ({
     setIsFileLoading(false);
   }, [materialContentType, meta.downloadURL]);
 
-  const copyToClipboard = useCallback(
-    async (text: string) => {
-      try {
-        await navigator.clipboard.writeText(text);
-        toast.success(t("workspace.notifications.copied"));
-      } catch (error) {
-        toast.error(tError(error, t));
-      }
-    },
-    [t]
-  );
+  const copyToClipboard = useCallback(async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(t("workspace.notifications.copied"));
+    } catch (error) {
+      toast.error(tError(error, t));
+    }
+  }, []);
 
   const importFile = useCallback(
-    async (
-      contentFile: File,
-      successMessage = t("workspace.notifications.fileImported", {
-        name: contentFile.name,
-      })
-    ) => {
+    async (contentFile: File) => {
       await saveMaterialMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body: {
@@ -115,9 +107,13 @@ const MaterialViewerFrame = ({
       });
       router.refresh();
       await loadFile();
-      toast.success(successMessage);
+      toast.success(
+        t("workspace.notifications.fileImported", {
+          name: contentFile.name,
+        })
+      );
     },
-    [loadFile, meta.id, meta.parentId, router, saveMaterialMutator, t]
+    [loadFile, meta.id, meta.parentId, router, saveMaterialMutator]
   );
 
   const handleImportFileOnClick = useCallback(
@@ -130,7 +126,7 @@ const MaterialViewerFrame = ({
         }
       });
     },
-    [t, importFile]
+    [importFile]
   );
 
   useEffect(() => {

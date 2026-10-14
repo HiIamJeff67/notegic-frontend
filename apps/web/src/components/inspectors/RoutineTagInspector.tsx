@@ -1,10 +1,10 @@
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";

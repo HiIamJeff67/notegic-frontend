@@ -1,6 +1,6 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { Image } from "@unpic/react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import { Button } from "@/components/ui/button";

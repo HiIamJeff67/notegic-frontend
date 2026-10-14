@@ -6,10 +6,10 @@ import {
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { Trash2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks";

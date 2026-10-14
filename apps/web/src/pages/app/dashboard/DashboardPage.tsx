@@ -8,6 +8,7 @@ import {
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
 import { DNDType } from "@shared/enums";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
 import {
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { DropTargetMonitor } from "react-dnd";
-import { useTranslation } from "react-i18next";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import PlaceableBackground from "@/components/backgrounds/PlaceableBackground/PlaceableBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";

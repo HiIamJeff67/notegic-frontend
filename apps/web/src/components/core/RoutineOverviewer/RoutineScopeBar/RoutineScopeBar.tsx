@@ -1,3 +1,4 @@
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import { ChartNoAxesCombined, Tags } from "lucide-react";
 import {
@@ -7,7 +8,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import {
   RoutineIcon,
   RoutineTaskIcon,
