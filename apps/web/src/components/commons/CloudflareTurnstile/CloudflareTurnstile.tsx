@@ -1,5 +1,4 @@
-import { useEffect, useRef } from "react";
-import { useScreen } from "@/hooks/useScreen";
+import { useEffect, useRef, useState } from "react";
 
 interface TurnstileRenderOptions {
   sitekey: string;
@@ -25,8 +24,7 @@ interface CloudflareTurnstileProps {
 }
 
 const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
-  const { breakpoint } = useScreen();
-  const isMobile = breakpoint === "base" || breakpoint === "sm";
+  const [size, setSize] = useState<"flexible" | "compact" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const onTokenChangeRef = useRef(onTokenChange);
 
@@ -35,30 +33,52 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
   }, [onTokenChange]);
 
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateSize = (width: number) => {
+      if (width <= 0) return;
+      // Cloudflare's flexible widget requires at least 300 CSS pixels.
+      setSize(width >= 300 ? "flexible" : "compact");
+    };
+    updateSize(container.getBoundingClientRect().width);
+    const observer = new ResizeObserver(([entry]) => {
+      updateSize(entry.contentRect.width);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
     if (!siteKey) {
       onTokenChangeRef.current(null);
       return;
     }
+    if (!size) return;
 
     let widgetId: string | undefined;
     let cancelled = false;
     const container = containerRef.current;
     let script: HTMLScriptElement | undefined;
 
+    const updateToken = (token: string | null) => {
+      if (!cancelled) onTokenChangeRef.current(token);
+    };
+
     const renderWidget = () => {
       if (cancelled || !container || !window.turnstile) return;
 
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,
-        size: isMobile ? "compact" : "flexible",
-        callback: token => onTokenChangeRef.current(token),
-        "expired-callback": () => onTokenChangeRef.current(null),
-        "error-callback": () => onTokenChangeRef.current(null),
+        size,
+        callback: updateToken,
+        "expired-callback": () => updateToken(null),
+        "error-callback": () => updateToken(null),
       });
     };
 
-    const handleScriptError = () => onTokenChangeRef.current(null);
+    const handleScriptError = () => updateToken(null);
 
     const existingScript = document.getElementById(
       "cloudflare-turnstile-script"
@@ -91,7 +111,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
       }
       onTokenChangeRef.current(null);
     };
-  }, [isMobile]);
+  }, [size]);
 
   if (!import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim()) {
     return null;
@@ -100,7 +120,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
   return (
     <div
       ref={containerRef}
-      className="block min-h-[65px] w-full min-w-0"
+      className="block min-h-[65px] w-full min-w-0 text-center"
       aria-label="Human verification"
     />
   );

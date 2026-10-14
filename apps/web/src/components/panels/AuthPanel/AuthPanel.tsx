@@ -5,9 +5,9 @@ import {
   OAuthMetaIcon,
 } from "@/components/icons/OAuthIcon";
 import "@/global/styles/panel.css";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { toCamelCase } from "@shared/util/stringCaseConversions";
 import { type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 import { useTheme } from "@/hooks/useTheme";
 
 const OAuthIcons = {
@@ -75,10 +75,10 @@ const AuthPanel = ({
   const themeManager = useTheme();
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-8">
+    <div className="flex justify-center items-center min-h-screen px-4 py-8 sm:px-8">
       <div
         className={`
-          relative w-[450px] px-10 py-12 rounded-lg overflow-hidden
+          relative w-full max-w-[450px] min-w-0 px-4 py-12 sm:px-10 rounded-lg overflow-hidden
           ${
             themeManager.currentTheme.isDark
               ? "panel-gradient panel-texture panel-shine shadow-[0_25px_50px_rgba(0,0,0,0.8),0_10px_25px_rgba(0,0,0,0.6),inset_0_1px_2px_rgba(255,255,255,0.1),inset_0_-1px_2px_rgba(0,0,0,0.5)]"
