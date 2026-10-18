@@ -102,6 +102,7 @@ export type ModalPropsMap = {
   };
   CreateRoutineTaskDialog: {
     routineId: UUID;
+    expectedDefinitionVersion?: number;
     stationName?: string;
     routineTitle?: string;
     onCreated?: (routineTaskId: UUID) => void | Promise<void>;
@@ -109,6 +110,7 @@ export type ModalPropsMap = {
   DeleteRoutineTaskDialog: {
     routineTaskId: UUID;
     routineTaskTitle: string;
+    expectedDefinitionVersion?: number;
     onDeleted?: () => void | Promise<void>;
   };
   RoutineTaskRecordDialog: {

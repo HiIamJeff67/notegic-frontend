@@ -1,15 +1,15 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
-import { RootShelf } from "@/api/local/schemas/rootShelf.schema";
-import { User } from "@/api/local/schemas/user.schema";
-import { eq, relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
-  integer,
   index,
+  integer,
   primaryKey,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import { RootShelf } from "@/api/local/schemas/rootShelf.schema";
+import { User } from "@/api/local/schemas/user.schema";
 
 export const UsersToShelves = sqliteTable(
   "UsersToShelvesTable",
@@ -33,7 +33,7 @@ export const UsersToShelves = sqliteTable(
     primaryKey({ columns: [table.userPublicId, table.rootShelfId] }),
     uniqueIndex("users_to_shelves_unique_idx_root_shelf_owner")
       .on(table.rootShelfId)
-      .where(eq(table.permission, AccessControlPermission.Owner)),
+      .where(sql`${table.permission} = 'Owner'`),
   ]
 );
 

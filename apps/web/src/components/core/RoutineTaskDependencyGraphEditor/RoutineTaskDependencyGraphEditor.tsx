@@ -10,6 +10,11 @@ import {
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
+import { eq } from "drizzle-orm";
+import { localDB } from "@/api/local/db";
+import { Routine } from "@/api/local/schemas";
+import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
+import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 import "@xyflow/react/dist/style.css";
 import "./graph.css";
 import { NotegicAPIError } from "@shared/api/exceptions";
@@ -29,11 +34,15 @@ import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
-import { ChevronDownIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ChevronDownIcon, Pencil, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
-import { useGetMyRoutineTasksByRoutineId } from "@/api/hooks/routineTask.hook";
+import {
+  useCreateRoutineTaskByRoutineId,
+  useGetMyRoutineTasksByRoutineId,
+  useUpdateMyRoutineTaskById,
+} from "@/api/hooks/routineTask.hook";
 import {
   useCreateRoutineTaskDependencyByRoutineId,
   useDeleteRoutineTaskDependencyByRoutineId,
@@ -48,6 +57,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -79,12 +89,17 @@ const RoutineTaskDependencyGraphEditor = ({
   const themeManager = useTheme();
   const { startAsyncTransactionLoading } = useLoading();
   const stationRoutineManager = useStationRoutine();
+  const transactionSynchronizer = useTransactionSynchronizer();
   const {
     draft: localDraft,
     loadDraft,
     saveDraft,
   } = useRoutineTaskDependencyGraphDraft();
   const routineQuery = useGetMyRoutineById();
+  const createNode = useCreateRoutineTaskByRoutineId();
+  const updateNode = useUpdateMyRoutineTaskById();
+  const [pendingNodeCount, setPendingNodeCount] = useState(0);
+  const [definitionVersion, setDefinitionVersion] = useState(1);
   const routineTasksQuery = useGetMyRoutineTasksByRoutineId();
   const routineTaskDependenciesQuery =
     useGetRoutineTaskDependenciesByRoutineId();
@@ -111,18 +126,80 @@ const RoutineTaskDependencyGraphEditor = ({
   const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState(true);
-  const [isCreatingDependency, setIsCreatingDependency] = useState(false);
-  const [dependencySourceNodeId, setDependencySourceNodeId] = useState<
-    string | null
-  >(null);
+  const [edgeMenu, setEdgeMenu] = useState<{
+    id: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const hasLoaded = useRef(false);
+  const pendingPositions = useRef(
+    new Map<
+      string,
+      {
+        x: number;
+        y: number;
+        expectedDefinitionVersion: number;
+      }
+    >()
+  );
+  const positionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
+  const savingPositions = useRef(false);
+  const [isSavingPositions, setIsSavingPositions] = useState(false);
+
+  const saveNodePositions = useCallback(async () => {
+    if (savingPositions.current || pendingPositions.current.size === 0) return;
+    savingPositions.current = true;
+    setIsSavingPositions(true);
+    try {
+      while (pendingPositions.current.size > 0) {
+        const [id, position] = pendingPositions.current.entries().next().value!;
+        const response = await updateNode.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            routineTaskId: id as UUID,
+            values: { x: position.x, y: position.y },
+            expectedDefinitionVersion: position.expectedDefinitionVersion,
+          },
+        });
+        setRoutineTasks(current =>
+          current.map(task =>
+            task.id === id ? { ...task, x: position.x, y: position.y } : task
+          )
+        );
+        if (pendingPositions.current.get(id) === position)
+          pendingPositions.current.delete(id);
+        if (!response.success) {
+          setPendingNodeCount(count => count + 1);
+          toast.info(t("workspace.fields.pendingSync"));
+        }
+      }
+      setIsDirty(false);
+    } catch (error) {
+      toast.error(tError(error, t));
+    } finally {
+      savingPositions.current = false;
+      setIsSavingPositions(false);
+    }
+  }, [updateNode.mutateAsync, t]);
+
+  useEffect(
+    () => () => {
+      clearTimeout(positionTimer.current);
+      void saveNodePositions();
+    },
+    [saveNodePositions]
+  );
+  useEffect(() => {
+    setReloadVersion(version => version + 1);
+  }, [transactionSynchronizer.synchronizationRevision]);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadRoutineTasks = async () => {
-      setIsLoading(true);
-      setRoutineTasks([]);
-      setSelectedEdgeId(null);
+      if (!hasLoaded.current) setIsLoading(true);
       try {
         await stationRoutineManager.initializeStationRoutineData();
         const routineResponse = await routineQuery.fetch({
@@ -148,9 +225,20 @@ const RoutineTaskDependencyGraphEditor = ({
         });
         const fetchedDependencies: RoutineTaskDependency[] = response.data;
         const draft = await loadDraft();
+        const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+        const pendingCount = pending.filter(transaction => {
+          const body = transaction.body as { routineId?: string };
+          const affected = transaction.affected as {
+            routineId?: string;
+          } | null;
+          return (body.routineId ?? affected?.routineId) === routineId;
+        }).length;
         if (!cancelled) {
+          setPendingNodeCount(pendingCount);
           setRoutineTasks(routineTasksResponse.data);
+          setDefinitionVersion(routineResponse.data.definitionVersion);
           setRoutineTaskDependencies(fetchedDependencies);
+          hasLoaded.current = true;
           const invalidDraftEdge = draft?.edges.find(
             edge => edge.syncStatus === "invalid"
           );
@@ -183,7 +271,8 @@ const RoutineTaskDependencyGraphEditor = ({
       }
     };
 
-    void startAsyncTransactionLoading(loadRoutineTasks);
+    if (hasLoaded.current) void loadRoutineTasks();
+    else void startAsyncTransactionLoading(loadRoutineTasks);
     return () => {
       cancelled = true;
     };
@@ -195,12 +284,44 @@ const RoutineTaskDependencyGraphEditor = ({
         id: task.id,
         type: "routineTask" as const,
         position: {
-          x: (index % 3) * 320,
-          y: Math.floor(index / 3) * 180,
+          x: task.x ?? (index % 3) * 320,
+          y: task.y ?? Math.floor(index / 3) * 180,
         },
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
         data: {
+          kind: task.kind,
+          payload: task.payload ?? {},
+          expectedDefinitionVersion: definitionVersion,
+          onEdit: () =>
+            stationRoutineManager.openInspector({
+              type: "routineTask",
+              id: task.id as UUID,
+              onUpdated: () => setReloadVersion(version => version + 1),
+            }),
+          onUpdated: async values => {
+            try {
+              const response = await updateNode.mutateAsync({
+                header: getClientRequestHeaders(navigator.userAgent),
+                body: {
+                  routineTaskId: task.id,
+                  values,
+                  expectedDefinitionVersion: definitionVersion,
+                },
+              });
+              if (!response.success) {
+                setPendingNodeCount(count => count + 1);
+                toast.info(t("workspace.fields.pendingSync"));
+              }
+              setRoutineTasks(current =>
+                current.map(node =>
+                  node.id === task.id ? { ...node, ...values } : node
+                )
+              );
+            } catch (error) {
+              toast.error(tError(error, t));
+            }
+          },
           title: task.title,
           purpose: task.purpose,
           executionStatus: routine?.routineTasks.find(
@@ -213,7 +334,14 @@ const RoutineTaskDependencyGraphEditor = ({
           },
         },
       })) ?? [],
-    [routine?.phase, routineTasks, stationRoutineManager.refresh]
+    [
+      definitionVersion,
+      routine?.phase,
+      routineTasks,
+      stationRoutineManager.refresh,
+      updateNode.mutateAsync,
+      t,
+    ]
   );
   const graphEdges = useMemo(
     () =>
@@ -247,9 +375,6 @@ const RoutineTaskDependencyGraphEditor = ({
     if (!routine || localDraft === undefined) return;
 
     const routineTaskIds = new Set<string>(routineTasks.map(task => task.id));
-    const draftNodePositions = new Map(
-      localDraft?.nodes.map(node => [node.id, node.position])
-    );
     const draftEdges = localDraft
       ? localDraft.edges
           .filter(
@@ -265,16 +390,23 @@ const RoutineTaskDependencyGraphEditor = ({
           }))
       : [];
 
-    setNodes(
-      graphNodes.map(node => ({
-        ...node,
-        position: draftNodePositions.get(node.id) ?? node.position,
-      }))
+    setNodes(current =>
+      graphNodes.map(node => {
+        const existing = current.find(value => value.id === node.id);
+        const pending = pendingPositions.current.get(node.id);
+        return {
+          ...existing,
+          ...node,
+          ...(existing?.dragging || pending
+            ? { position: existing?.position ?? pending! }
+            : {}),
+        };
+      })
     );
     setEdges(
       routineTaskDependencies !== undefined ? graphEdgesWithPending : draftEdges
     );
-    setIsDirty(false);
+    if (pendingPositions.current.size === 0) setIsDirty(false);
   }, [
     graphEdges,
     graphEdgesWithPending,
@@ -291,6 +423,12 @@ const RoutineTaskDependencyGraphEditor = ({
     if (connection.source === connection.target) {
       const message = t("workspace.validation.dependencyCycle");
       toast.error(message);
+      return;
+    }
+    if (
+      nodes.find(node => node.id === connection.target)?.data.kind === "Start"
+    ) {
+      toast.error(t("workspace.validation.startingNodeIncoming"));
       return;
     }
     const routineTaskIds = new Set(nodes.map(node => node.id));
@@ -329,17 +467,17 @@ const RoutineTaskDependencyGraphEditor = ({
     };
     const nextEdges = addEdge(nextEdge, edges);
     setEdges(nextEdges);
-    setIsCreatingDependency(false);
-    setDependencySourceNodeId(null);
 
     try {
       const response = await createDependency.mutateAsync({
         param: { routineId },
         body: {
+          expectedDefinitionVersion: definitionVersion,
           routineTaskId: connection.target as UUID,
           previousRoutineTaskId: connection.source as UUID,
         },
       });
+      if (response.success) setDefinitionVersion(version => version + 1);
       setRoutineTaskDependencies(currentDependencies => {
         if (currentDependencies === undefined) return undefined;
         return [
@@ -366,7 +504,11 @@ const RoutineTaskDependencyGraphEditor = ({
             description: edgeData?.description ?? "",
             progress: edgeData?.progress ?? 0,
             ...(edge.id === nextEdge.id && !response.success
-              ? { syncStatus: "pending" as const, operation: "create" as const }
+              ? {
+                  syncStatus: "pending" as const,
+                  operation: "create" as const,
+                  expectedDefinitionVersion: definitionVersion,
+                }
               : { syncStatus: "synced" as const }),
           };
         }
@@ -433,15 +575,20 @@ const RoutineTaskDependencyGraphEditor = ({
     onEdgesChange(changes);
     if (removedEdges.length === 0) return;
 
+    let nextDefinitionVersion = definitionVersion;
     for (const edge of removedEdges) {
       try {
         const response = await deleteDependency.mutateAsync({
           param: { routineId },
           body: {
+            expectedDefinitionVersion: nextDefinitionVersion,
             routineTaskId: edge.target as UUID,
             previousRoutineTaskId: edge.source as UUID,
           },
         });
+        if (response.success) {
+          setDefinitionVersion(++nextDefinitionVersion);
+        }
         setRoutineTaskDependencies(currentDependencies =>
           currentDependencies?.filter(
             dependency =>
@@ -471,6 +618,7 @@ const RoutineTaskDependencyGraphEditor = ({
             source: edge.source,
             target: edge.target,
             syncStatus: "pending",
+            expectedDefinitionVersion: definitionVersion,
             operation: "delete",
           });
         }
@@ -525,34 +673,121 @@ const RoutineTaskDependencyGraphEditor = ({
     }
   };
 
-  const handleNodesChange = (
+  const handleNodesChange = async (
     changes: NodeChange<RoutineTaskGraphNodeType>[]
   ) => {
     onNodesChange(changes);
-    if (changes.some(change => change.type !== "select")) setIsDirty(true);
+    if (
+      changes.some(
+        change => change.type === "position" && change.dragging === true
+      )
+    )
+      setIsDirty(true);
+    const stopped = changes.filter(
+      change => change.type === "position" && change.dragging === false
+    );
+    if (stopped.length > 0) {
+      const positions = new Map(nodes.map(node => [node.id, node.position]));
+      for (const change of stopped) {
+        if (change.type !== "position" || !change.position) continue;
+        positions.set(change.id, change.position);
+        pendingPositions.current.set(change.id, {
+          ...change.position,
+          expectedDefinitionVersion: definitionVersion,
+        });
+      }
+      setIsDirty(true);
+      clearTimeout(positionTimer.current);
+      positionTimer.current = setTimeout(() => void saveNodePositions(), 750);
+      try {
+        await saveDraft({
+          nodes: [...positions].map(([id, position]) => ({ id, position })),
+          edges: localDraft?.edges ?? [],
+        });
+      } catch (error) {
+        toast.error(tError(error, t));
+      }
+    }
   };
 
   const handleRetryPendingSync = async () => {
-    if (!routine || !localDraft || isRetryingSync) return;
+    if (!routine || isRetryingSync) return;
 
     setIsRetryingSync(true);
     let failedCount = 0;
-    let nextDraftEdges = [...localDraft.edges];
+    let nextDraftEdges = [...(localDraft?.edges ?? [])];
+    let nextDefinitionVersion = definitionVersion;
+    try {
+      await saveNodePositions();
+      await RoutineTaskLocalSimulator.resetPendingRetries(routineId);
+      await transactionSynchronizer.synchronizeTransactions();
+      const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+      const remaining = pending.filter(transaction => {
+        const body = transaction.body as { routineId?: string };
+        const affected = transaction.affected as { routineId?: string } | null;
+        return (body.routineId ?? affected?.routineId) === routineId;
+      }).length;
+      setPendingNodeCount(remaining);
+      if (remaining > 0) {
+        toast.info(t("workspace.fields.pendingSync"));
+        setIsRetryingSync(false);
+        return;
+      }
+      // Only locally acknowledged writes may advance the draft conflict boundary.
+      const acknowledgedDraft = await loadDraft();
+      nextDraftEdges = [...(acknowledgedDraft?.edges ?? [])];
+      const [cached] = await localDB
+        .select()
+        .from(Routine)
+        .where(eq(Routine.id, routineId));
+      nextDefinitionVersion = cached?.definitionVersion ?? definitionVersion;
+      setDefinitionVersion(nextDefinitionVersion);
+    } catch (error) {
+      toast.error(tError(error, t));
+      setIsRetryingSync(false);
+      return;
+    }
 
-    for (const pendingEdge of localDraft.edges.filter(
+    for (const pendingEdge of [...nextDraftEdges].filter(
       edge => edge.syncStatus === "pending"
     )) {
       try {
+        if (pendingEdge.expectedDefinitionVersion === undefined) {
+          nextDraftEdges = nextDraftEdges.map(edge =>
+            edge.id === pendingEdge.id
+              ? {
+                  ...edge,
+                  syncStatus: "invalid",
+                  errorKey: "server.error.DefinitionConflict",
+                }
+              : edge
+          );
+          failedCount++;
+          continue;
+        }
+        nextDefinitionVersion =
+          nextDraftEdges.find(edge => edge.id === pendingEdge.id)
+            ?.expectedDefinitionVersion ??
+          pendingEdge.expectedDefinitionVersion;
         if (pendingEdge.operation === "update") {
           const response = await updateDependency.mutateAsync({
             param: { routineId },
             body: {
+              expectedDefinitionVersion: nextDefinitionVersion,
               routineTaskId: pendingEdge.target as UUID,
               previousRoutineTaskId: pendingEdge.source as UUID,
               description: pendingEdge.description ?? "",
               progress: pendingEdge.progress ?? 0,
             },
           });
+          if (response.success) {
+            setDefinitionVersion(++nextDefinitionVersion);
+            nextDraftEdges = nextDraftEdges.map(edge =>
+              edge.expectedDefinitionVersion === nextDefinitionVersion - 1
+                ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
+                : edge
+            );
+          }
           if (!response.success) {
             failedCount += 1;
             continue;
@@ -584,10 +819,19 @@ const RoutineTaskDependencyGraphEditor = ({
           const response = await deleteDependency.mutateAsync({
             param: { routineId },
             body: {
+              expectedDefinitionVersion: nextDefinitionVersion,
               routineTaskId: pendingEdge.target as UUID,
               previousRoutineTaskId: pendingEdge.source as UUID,
             },
           });
+          if (response.success) {
+            setDefinitionVersion(++nextDefinitionVersion);
+            nextDraftEdges = nextDraftEdges.map(edge =>
+              edge.expectedDefinitionVersion === nextDefinitionVersion - 1
+                ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
+                : edge
+            );
+          }
           if (!response.success) {
             failedCount += 1;
             continue;
@@ -610,10 +854,19 @@ const RoutineTaskDependencyGraphEditor = ({
         const response = await createDependency.mutateAsync({
           param: { routineId },
           body: {
+            expectedDefinitionVersion: nextDefinitionVersion,
             routineTaskId: pendingEdge.target as UUID,
             previousRoutineTaskId: pendingEdge.source as UUID,
           },
         });
+        if (response.success) {
+          setDefinitionVersion(++nextDefinitionVersion);
+          nextDraftEdges = nextDraftEdges.map(edge =>
+            edge.expectedDefinitionVersion === nextDefinitionVersion - 1
+              ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
+              : edge
+          );
+        }
         if (!response.success) {
           failedCount += 1;
           continue;
@@ -667,13 +920,12 @@ const RoutineTaskDependencyGraphEditor = ({
         })),
         edges: nextDraftEdges,
       });
-      toast[failedCount === 0 ? "success" : "error"](
-        t(
-          failedCount === 0
-            ? "workspace.notifications.routineDependencyGraphSaved"
-            : "workspace.notifications.routineDependencyGraphSaveFailed"
-        )
-      );
+      setReloadVersion(version => version + 1);
+      if (failedCount === 0) toast.success(t("workspace.fields.saved"));
+      else
+        toast.error(
+          t("workspace.notifications.routineDependencyGraphSaveFailed")
+        );
     } catch {
       toast.error(
         t("workspace.notifications.routineDependencyGraphSaveFailed")
@@ -685,6 +937,8 @@ const RoutineTaskDependencyGraphEditor = ({
 
   const handleReset = () => {
     if (!routine) return;
+    clearTimeout(positionTimer.current);
+    pendingPositions.current.clear();
     setNodes(graphNodes);
     setEdges(graphEdges);
     setIsDirty(false);
@@ -704,6 +958,8 @@ const RoutineTaskDependencyGraphEditor = ({
         position: node.position,
         data: {
           title: node.data.title,
+          kind: node.data.kind,
+          payload: node.data.payload,
           purpose: node.data.purpose,
         },
       })),
@@ -744,6 +1000,7 @@ const RoutineTaskDependencyGraphEditor = ({
       const response = await updateDependency.mutateAsync({
         param: { routineId },
         body: {
+          expectedDefinitionVersion: definitionVersion,
           routineTaskId: selectedDependency.routineTaskId as UUID,
           previousRoutineTaskId:
             selectedDependency.previousRoutineTaskId as UUID,
@@ -751,6 +1008,7 @@ const RoutineTaskDependencyGraphEditor = ({
           progress: dependencyProgress,
         },
       });
+      if (response.success) setDefinitionVersion(version => version + 1);
       setRoutineTaskDependencies(currentDependencies =>
         currentDependencies?.map(dependency =>
           dependency.routineTaskId === selectedDependency.routineTaskId &&
@@ -886,6 +1144,7 @@ const RoutineTaskDependencyGraphEditor = ({
 
     modalManager.open("CreateRoutineTaskDialog", {
       routineId: routine.id,
+      expectedDefinitionVersion: definitionVersion,
       routineTitle: routine.title,
       stationName: station.name,
       onCreated: async () => {
@@ -895,10 +1154,13 @@ const RoutineTaskDependencyGraphEditor = ({
   };
 
   const pendingSyncCount =
-    localDraft?.edges.filter(edge => edge.syncStatus === "pending").length ?? 0;
+    pendingNodeCount +
+    (localDraft?.edges.filter(edge => edge.syncStatus === "pending").length ??
+      0);
   const invalidMutationCount =
     localDraft?.edges.filter(edge => edge.syncStatus === "invalid").length ?? 0;
   const isSaving =
+    isSavingPositions ||
     isRetryingSync ||
     createDependency.isPending ||
     deleteDependency.isPending ||
@@ -993,14 +1255,40 @@ const RoutineTaskDependencyGraphEditor = ({
           pendingSyncCount={pendingSyncCount}
           onAddMenuOpenChange={setIsAddMenuOpen}
           onOpenCreateRoutineTaskDialog={openCreateRoutineTaskDialog}
+          canAddStartingNode={
+            routineTasks.filter(task => task.kind === "Start").length < 16 &&
+            !createNode.isPending
+          }
+          onAddStartingNode={() => {
+            void (async () => {
+              try {
+                const response = await createNode.mutateAsync({
+                  header: getClientRequestHeaders(navigator.userAgent),
+                  body: {
+                    routineId,
+                    kind: "Start",
+                    title: t("workspace.fields.startingNode"),
+                    payload: {
+                      schemaVersion: 1,
+                      isActive: true,
+                      description: "",
+                    },
+                    x: 0,
+                    y: 0,
+                    expectedDefinitionVersion: definitionVersion,
+                  },
+                });
+                if (!response.success)
+                  toast.info(t("workspace.fields.pendingSync"));
+                setReloadVersion(version => version + 1);
+              } catch (error) {
+                toast.error(tError(error, t));
+              }
+            })();
+          }}
           onReset={handleReset}
           onRetryPendingSync={() => void handleRetryPendingSync()}
           onExport={handleExport}
-          onStartCreatingDependency={() => {
-            setIsCreatingDependency(true);
-            setDependencySourceNodeId(null);
-            toast.info(t("workspace.notifications.dependencyCreationHint"));
-          }}
           onRefresh={() => setReloadVersion(version => version + 1)}
         />
       </header>
@@ -1035,9 +1323,7 @@ const RoutineTaskDependencyGraphEditor = ({
         </div>
       )}
 
-      <section
-        className={`routine-task-dependency-graph relative min-h-0 flex-1 ${isCreatingDependency ? "cursor-crosshair" : ""}`}
-      >
+      <section className="routine-task-dependency-graph relative min-h-0 flex-1">
         {selectedDependency && (
           <RoutineTaskDependencyInspector
             dependency={selectedDependency}
@@ -1055,37 +1341,65 @@ const RoutineTaskDependencyGraphEditor = ({
           isMiniMapVisible={isMiniMapVisible}
           nodes={nodes}
           onConnect={handleConnect}
-          onEdgeClick={(_, edge) => setSelectedEdgeId(edge.id)}
-          onEdgesChange={handleEdgesChange}
-          onMiniMapVisibilityChange={setIsMiniMapVisible}
-          onNodeClick={(_, node) => {
-            if (isCreatingDependency) {
-              if (!dependencySourceNodeId) {
-                setDependencySourceNodeId(node.id);
-                return;
-              }
-
-              void handleConnect({
-                source: dependencySourceNodeId,
-                target: node.id,
-                sourceHandle: null,
-                targetHandle: null,
-              });
-              return;
-            }
-
-            stationRoutineManager.openInspector({
-              type: "routineTask",
-              id: node.id as UUID,
+          onEdgeClick={(event, edge) => {
+            const bounds = event.currentTarget
+              .closest("section")
+              ?.getBoundingClientRect();
+            if (!bounds) return;
+            setEdgeMenu({
+              id: edge.id,
+              x: event.clientX - bounds.left,
+              y: event.clientY - bounds.top,
             });
           }}
+          onEdgesChange={handleEdgesChange}
+          onMiniMapVisibilityChange={setIsMiniMapVisible}
           onNodesChange={handleNodesChange}
           onPaneClick={() => {
             setSelectedEdgeId(null);
-            setIsCreatingDependency(false);
-            setDependencySourceNodeId(null);
+            setEdgeMenu(null);
           }}
         />
+        <DropdownMenu
+          open={edgeMenu !== null}
+          onOpenChange={open => {
+            if (!open) setEdgeMenu(null);
+          }}
+        >
+          {/* SVG edge clicks are anchored outside the zoomed viewport. */}
+          <DropdownMenuTrigger
+            aria-hidden
+            tabIndex={-1}
+            className="pointer-events-none absolute size-px opacity-0"
+            style={{ left: edgeMenu?.x ?? 0, top: edgeMenu?.y ?? 0 }}
+          />
+          <DropdownMenuContent
+            align="start"
+            onClick={event => event.stopPropagation()}
+            onCloseAutoFocus={event => event.preventDefault()}
+          >
+            <DropdownMenuItem
+              onSelect={() => {
+                if (edgeMenu) setSelectedEdgeId(edgeMenu.id);
+              }}
+            >
+              <Pencil />
+              {t("common.edit")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={() => {
+                if (!edgeMenu) return;
+                if (selectedEdgeId === edgeMenu.id) setSelectedEdgeId(null);
+                void handleEdgesChange([{ type: "remove", id: edgeMenu.id }]);
+              }}
+            >
+              <Trash2 />
+              {t("common.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </section>
     </main>
   );

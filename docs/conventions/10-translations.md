@@ -41,6 +41,14 @@ instance; do not create another instance inside a component. The adapter uses
 the vendor hook's context/instance selection, so an explicit `I18nextProvider`
 also works without importing the Web runtime.
 
+## Feature-local status labels
+
+Keep short feature-local status branches inline with direct literal
+`t("...")` calls at the render site. Do not introduce a translation-key helper
+function, a key-building wrapper or a one-use lookup map just to hide these
+branches. Existing shared enum mappings remain owned by their established
+modules; do not add another mapping layer for one component.
+
 ## Current-language semantics
 
 The vendor hook supplies subscriptions, readiness, and render updates. The

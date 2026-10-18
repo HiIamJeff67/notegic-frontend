@@ -71,3 +71,30 @@ describe("tError", () => {
     ).toBe(i18n.t("auth.turnstileRequired"));
   });
 });
+
+test.each([
+  "en",
+  "zh-TW",
+  "zh-CN",
+  "ja",
+  "ko",
+])("localizes Routine conflicts and rescheduling in %s", async language => {
+  const i18n = createInstance();
+  await i18n.init({ resources, lng: language, fallbackLng: false });
+  for (const reason of ["DefinitionConflict", "RescheduleRequired"]) {
+    const error = new NotegicAPIError(
+      new NotegicException({
+        reason,
+        domain: "Routine",
+        operation: "UpdateDefinition",
+        message: "Do not expose this fallback",
+        retryable: false,
+      })
+    );
+    expect(tError(error, i18n.t)).not.toBe(
+      i18n.t("error.encounterUnknownError")
+    );
+    expect(tError(error, i18n.t)).not.toContain("server.error.");
+    expect(tError(error, i18n.t)).not.toContain("fallback");
+  }
+});

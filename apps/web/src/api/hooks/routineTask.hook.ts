@@ -7,6 +7,7 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   CreateRoutineTaskByRoutineIdRequest,
+  CreateRoutineTaskByRoutineIdResponse,
   GetAllMyRoutineTasksRequest,
   GetAllMyRoutineTasksResponse,
   GetMyRoutineTaskByIdRequest,
@@ -14,8 +15,10 @@ import type {
   GetMyRoutineTasksByRoutineIdRequest,
   GetMyRoutineTasksByRoutineIdResponse,
   HardDeleteMyRoutineTaskByIdRequest,
+  HardDeleteMyRoutineTaskByIdResponse,
   HardDeleteMyRoutineTasksByIdsRequest,
   UpdateMyRoutineTaskByIdRequest,
+  UpdateMyRoutineTaskByIdResponse,
   VisualizeMyRoutineTaskPurposeCountRequest,
   VisualizeMyRoutineTaskPurposeCountResponse,
 } from "@shared/api/interfaces/routineTask.interface";
@@ -24,6 +27,7 @@ import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import { generateUUID } from "@shared/types/uuidv4.type";
 import {
   type UseQueryOptions,
   useMutation,
@@ -167,6 +171,26 @@ export const useGetMyRoutineTasksByRoutineId = (
         await RoutineTaskLocalSynchronizer.syncGetMyRoutineTasksByRoutineId(
           response
         );
+        const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+        const pendingIds = new Set(
+          pending.map(transaction => {
+            const body = transaction.body as {
+              id?: string;
+              routineTaskId?: string;
+            };
+            return body.id ?? body.routineTaskId;
+          })
+        );
+        if (pendingIds.size > 0) {
+          const local =
+            await RoutineTaskLocalSimulator.simulateGetMyRoutineTasksByRoutineId(
+              request
+            );
+          response.data = [
+            ...response.data.filter(task => !pendingIds.has(task.id)),
+            ...local.filter(task => pendingIds.has(task.id)),
+          ];
+        }
         return response;
       } catch (error) {
         if (
@@ -297,12 +321,31 @@ export const useGetAllMyRoutineTasks = (
   return { ...query, fetch };
 };
 
-export const useCreateRoutineTaskByRoutineId = () => {
+export const useCreateRoutineTaskByRoutineId = (allowOffline = true) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnCreateRoutineTaskByRoutineId,
+    mutationFn: async (
+      request: CreateRoutineTaskByRoutineIdRequest
+    ): Promise<CreateRoutineTaskByRoutineIdResponse> => {
+      request.body.id ??= generateUUID();
+      try {
+        return await mutationFnCreateRoutineTaskByRoutineId(request);
+      } catch (error) {
+        if (!allowOffline || !(error instanceof NotegicFetchError)) throw error;
+        const data =
+          await RoutineTaskLocalSimulator.simulateCreateRoutineTaskByRoutineId(
+            request
+          );
+        return {
+          success: false,
+          data,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     onSuccess: async (
       response,
       request: CreateRoutineTaskByRoutineIdRequest
@@ -311,11 +354,13 @@ export const useCreateRoutineTaskByRoutineId = () => {
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
-      await RoutineTaskLocalSynchronizer.syncCreateRoutineTaskByRoutineId(
-        request,
-        response
-      );
+      if (response.success)
+        await RoutineTaskLocalSynchronizer.syncCreateRoutineTaskByRoutineId(
+          request,
+          response
+        );
       const targetKeys = [
+        queryKeys.routine.all(),
         queryKeys.routineTask.all(),
         queryKeys.routineTask.myAll(),
         queryKeys.routineTask.oneById(response.data.id as UUID),
@@ -334,18 +379,42 @@ export const useCreateRoutineTaskByRoutineId = () => {
   return mutation;
 };
 
-export const useUpdateMyRoutineTaskById = () => {
+export const useUpdateMyRoutineTaskById = (allowOffline = true) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnUpdateMyRoutineTaskById,
+    mutationFn: async (
+      request: UpdateMyRoutineTaskByIdRequest
+    ): Promise<UpdateMyRoutineTaskByIdResponse> => {
+      try {
+        return await mutationFnUpdateMyRoutineTaskById(request);
+      } catch (error) {
+        if (!allowOffline || !(error instanceof NotegicFetchError)) throw error;
+        const data =
+          await RoutineTaskLocalSimulator.simulateUpdateMyRoutineTaskById(
+            request
+          );
+        return {
+          success: false,
+          data,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     onSuccess: async (response, request: UpdateMyRoutineTaskByIdRequest) => {
+      if (response.success)
+        await RoutineTaskLocalSynchronizer.syncUpdateMyRoutineTaskById(
+          request,
+          response
+        );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
+        queryKeys.routine.all(),
         queryKeys.routineTask.all(),
         queryKeys.routineTask.myAll(),
         queryKeys.routineTask.oneById(request.body.routineTaskId as UUID),
@@ -365,21 +434,44 @@ export const useUpdateMyRoutineTaskById = () => {
   return mutation;
 };
 
-export const useHardDeleteMyRoutineTaskById = () => {
+export const useHardDeleteMyRoutineTaskById = (allowOffline = true) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnHardDeleteMyRoutineTaskById,
+    mutationFn: async (
+      request: HardDeleteMyRoutineTaskByIdRequest
+    ): Promise<HardDeleteMyRoutineTaskByIdResponse> => {
+      try {
+        return await mutationFnHardDeleteMyRoutineTaskById(request);
+      } catch (error) {
+        if (!allowOffline || !(error instanceof NotegicFetchError)) throw error;
+        const data =
+          await RoutineTaskLocalSimulator.simulateHardDeleteMyRoutineTaskById(
+            request
+          );
+        return {
+          success: false,
+          data,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     onSuccess: async (
       response,
       request: HardDeleteMyRoutineTaskByIdRequest
     ) => {
+      if (response.success)
+        await RoutineTaskLocalSynchronizer.syncHardDeleteMyRoutineTaskById(
+          request
+        );
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
+        queryKeys.routine.all(),
         queryKeys.routineTask.all(),
         queryKeys.routineTask.myAll(),
         queryKeys.routineTask.oneById(request.body.routineTaskId as UUID),
@@ -430,6 +522,7 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
         response.refreshableTokens?.newCSRFToken
       );
       const targetKeys = [
+        queryKeys.routine.all(),
         queryKeys.routineTask.all(),
         queryKeys.routineTask.myAll(),
         ...request.body.routineTaskIds.map(routineTaskId =>

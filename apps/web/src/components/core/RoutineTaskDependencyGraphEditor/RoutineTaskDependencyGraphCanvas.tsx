@@ -5,7 +5,6 @@ import {
   type Edge,
   type EdgeMouseHandler,
   MiniMap,
-  type NodeMouseHandler,
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
@@ -29,7 +28,6 @@ interface RoutineTaskDependencyGraphCanvasProps {
   onEdgeClick: EdgeMouseHandler;
   onEdgesChange: OnEdgesChange<Edge>;
   onMiniMapVisibilityChange: (visible: boolean) => void;
-  onNodeClick: NodeMouseHandler<RoutineTaskGraphNodeType>;
   onNodesChange: OnNodesChange<RoutineTaskGraphNodeType>;
   onPaneClick: () => void;
 }
@@ -100,7 +98,6 @@ const RoutineTaskDependencyGraphCanvas = ({
   onEdgeClick,
   onEdgesChange,
   onMiniMapVisibilityChange,
-  onNodeClick,
   onNodesChange,
   onPaneClick,
 }: RoutineTaskDependencyGraphCanvasProps) => {
@@ -121,7 +118,6 @@ const RoutineTaskDependencyGraphCanvas = ({
       onConnect={onConnect}
       onEdgeClick={onEdgeClick}
       onPaneClick={onPaneClick}
-      onNodeClick={onNodeClick}
       fitView
       colorMode={colorMode}
       proOptions={{ hideAttribution: true }}

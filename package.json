@@ -26,7 +26,7 @@
     "test:environment": "playwright test --grep @environment",
     "test:security": "npm audit --omit=dev --audit-level=high",
     "generate-local-bootstrap": "npx drizzle-kit export --config apps/web/src/api/local/drizzle.config.ts > apps/web/src/api/local/bootstrap.sql",
-    "generate-local-migrations": "npx drizzle-kit generate --config apps/web/src/api/local/drizzle.config.ts && npm run generate-local-bootstrap && biome format apps/web/src/api/local/migrations --write",
+    "generate-local-migrations": "npx drizzle-kit generate --config apps/web/src/api/local/drizzle.config.ts && npm run generate-local-bootstrap",
     "clear-local-migrations": "rm -rf apps/web/src/api/local/migrations/**",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch",

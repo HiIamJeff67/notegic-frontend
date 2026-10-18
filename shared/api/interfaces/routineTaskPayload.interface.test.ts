@@ -1,5 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { RoutineTaskPayloadSchema } from "@shared/api/interfaces/routineTaskPayload.interface";
+import { normalizeRoutineTaskDefinition } from "./routineTask.interface";
 
 const block = {
   id: "73b3a848-bca0-44e4-8fb4-cf6cc6ca6aee",
@@ -173,5 +174,88 @@ describe("RoutineTaskPayloadSchema", () => {
         payload: { blockPackId: block.id },
       }).success
     ).toBe(false);
+  });
+});
+
+describe("canonical Action payload metadata", () => {
+  const payload = {
+    schemaVersion: 1,
+    purpose: RoutineTaskPurpose.GetRoutine,
+    routineId: "09311e30-6adc-4979-84e1-2912dd200fa4",
+  };
+
+  test("accepts aligned metadata and rejects conflicting purpose or version", () => {
+    expect(
+      RoutineTaskPayloadSchema.safeParse({
+        purpose: RoutineTaskPurpose.GetRoutine,
+        payload,
+      }).success
+    ).toBe(true);
+    expect(
+      RoutineTaskPayloadSchema.safeParse({
+        purpose: RoutineTaskPurpose.DeleteRoutine,
+        payload,
+      }).success
+    ).toBe(false);
+    expect(
+      RoutineTaskPayloadSchema.safeParse({
+        purpose: RoutineTaskPurpose.GetRoutine,
+        payload: { ...payload, schemaVersion: 2 },
+      }).success
+    ).toBe(false);
+  });
+});
+
+describe("canonical local node projection", () => {
+  const input = {
+    id: "22345678-1234-4234-8234-123456789abc",
+    routineId: "12345678-1234-4234-8234-123456789abc",
+    title: "Read routine",
+    payload: {
+      schemaVersion: 1,
+      purpose: RoutineTaskPurpose.GetRoutine,
+      routineId: "12345678-1234-4234-8234-123456789abc",
+    },
+  };
+  it("derives the compatibility projection from canonical payload-only input", () => {
+    const normalized = normalizeRoutineTaskDefinition(input);
+    expect(normalized.purpose).toBe(RoutineTaskPurpose.GetRoutine);
+    expect(normalized.payload.purpose).toBe(normalized.purpose);
+  });
+  it("normalizes legacy input without losing operation fields", () => {
+    const normalized = normalizeRoutineTaskDefinition({
+      ...input,
+      purpose: RoutineTaskPurpose.GetRoutine,
+      payload: { routineId: input.routineId },
+    });
+    expect(normalized.payload).toEqual(input.payload);
+  });
+  it("keeps Start purpose empty and rejects conflicting or unsupported metadata", () => {
+    expect(
+      normalizeRoutineTaskDefinition({
+        ...input,
+        kind: "Start",
+        payload: { isActive: false },
+      }).purpose
+    ).toBe("");
+    expect(() =>
+      normalizeRoutineTaskDefinition({
+        ...input,
+        purpose: RoutineTaskPurpose.DeleteRoutine,
+      })
+    ).toThrow();
+    expect(() =>
+      normalizeRoutineTaskDefinition({
+        ...input,
+        payload: { ...input.payload, schemaVersion: 2 },
+      })
+    ).toThrow();
+    expect(() =>
+      normalizeRoutineTaskDefinition({
+        ...input,
+        kind: "Start",
+        payload: input.payload,
+      })
+    ).toThrow();
   });
 });

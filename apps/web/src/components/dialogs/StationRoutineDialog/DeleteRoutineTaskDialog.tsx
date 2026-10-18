@@ -18,6 +18,7 @@ import type { ModalProps } from "@/providers/ModalProvider";
 
 interface DeleteRoutineTaskDialogProps extends ModalProps {
   routineTaskId: UUID;
+  expectedDefinitionVersion?: number;
   routineTaskTitle: string;
   onDeleted?: () => void | Promise<void>;
 }
@@ -27,6 +28,7 @@ const DeleteRoutineTaskDialog = ({
   onClose,
   routineTaskId,
   routineTaskTitle,
+  expectedDefinitionVersion,
   onDeleted,
 }: DeleteRoutineTaskDialogProps) => {
   const { t } = useTranslation();
@@ -38,10 +40,13 @@ const DeleteRoutineTaskDialog = ({
         header: getClientRequestHeaders(navigator.userAgent),
         body: {
           routineTaskId,
+          expectedDefinitionVersion,
         },
       });
       if (response.success === false) {
         toast.error(tError(response.exception, t));
+        await onDeleted?.();
+        onClose();
         return;
       }
 

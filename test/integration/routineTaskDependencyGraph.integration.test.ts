@@ -1,4 +1,4 @@
-const mockFindFirst = jest.fn();
+const mockLoadRows = jest.fn();
 const mockInsert = jest.fn();
 const mockValues = jest.fn();
 const mockOnConflictDoUpdate = jest.fn();
@@ -7,11 +7,9 @@ jest.mock("@/api/local/db", () => ({
   localDB: {
     isEnabled: true,
     isReady: true,
-    query: {
-      RoutineTaskDependencyGraphDraft: {
-        findFirst: mockFindFirst,
-      },
-    },
+    select: () => ({
+      from: () => ({ where: () => ({ limit: mockLoadRows }) }),
+    }),
     insert: mockInsert,
   },
 }));
@@ -46,8 +44,16 @@ const getDraftContext = (routineId: string) => {
 };
 
 describe("RoutineTask dependency graph local draft boundary", () => {
+  test("returns no draft when the select has no rows", async () => {
+    mockLoadRows.mockResolvedValue([]);
+    const draftContext = getDraftContext(
+      "11111111-1111-4111-8111-111111111111"
+    );
+    await expect(draftContext.loadDraft()).resolves.toBeNull();
+  });
+
   beforeEach(() => {
-    mockFindFirst.mockReset();
+    mockLoadRows.mockReset();
     mockInsert.mockReset();
     mockValues.mockReset();
     mockOnConflictDoUpdate.mockReset();
@@ -115,28 +121,32 @@ describe("RoutineTask dependency graph local draft boundary", () => {
       })
     );
 
-    mockFindFirst.mockResolvedValue({
-      ...savedDraft,
-      nodes: JSON.stringify(savedDraft.nodes),
-      edges: JSON.stringify(savedDraft.edges),
-    });
+    mockLoadRows.mockResolvedValue([
+      {
+        ...savedDraft,
+        nodes: JSON.stringify(savedDraft.nodes),
+        edges: JSON.stringify(savedDraft.edges),
+      },
+    ]);
     await expect(draftContext.loadDraft()).resolves.toEqual({
       nodes: draft.nodes,
       edges: draft.edges,
       updatedAt: savedDraft.updatedAt,
     });
-    expect(mockFindFirst).toHaveBeenCalledTimes(1);
+    expect(mockLoadRows).toHaveBeenCalledTimes(1);
   });
 
   test("ignores an invalid graph draft instead of throwing during local mapping", async () => {
     const draftContext = getDraftContext(
       "11111111-1111-4111-8111-111111111111"
     );
-    mockFindFirst.mockResolvedValue({
-      nodes: "not-json",
-      edges: JSON.stringify([]),
-      updatedAt: new Date("2026-09-03T00:00:00.000Z"),
-    });
+    mockLoadRows.mockResolvedValue([
+      {
+        nodes: "not-json",
+        edges: JSON.stringify([]),
+        updatedAt: new Date("2026-09-03T00:00:00.000Z"),
+      },
+    ]);
 
     await expect(draftContext.loadDraft()).resolves.toBeNull();
   });

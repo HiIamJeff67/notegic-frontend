@@ -2,6 +2,10 @@ import type { ServerTranslation } from "./server.type";
 
 export const JapaneseServerTranslation = {
   error: {
+    DefinitionConflict:
+      "このルーティンは変更されました。更新してから編集を適用してください。",
+    RescheduleRequired:
+      "このルーティンを有効にする前に、未来の実行時刻を設定してください。",
     InternalServerError:
       "サーバーで問題が発生しました。しばらくしてからもう一度お試しください。",
     InvalidDto: "送信した情報の一部が正しくありません。",

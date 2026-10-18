@@ -1,6 +1,9 @@
 fragment FragmentedBasicPrivateRoutineTask on PrivateRoutineTask {
   id
   routineId
+  kind
+  x
+  y
   title
   purpose
   priority

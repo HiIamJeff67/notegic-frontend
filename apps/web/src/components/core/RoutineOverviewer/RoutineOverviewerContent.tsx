@@ -210,7 +210,7 @@ const RoutineOverviewerContent = ({
         "
         style={{
           left: headerLeft,
-          transition: "left 0.2s",
+          transition: sidebarManager.isMobile ? undefined : "left 0.2s",
         }}
       >
         <RoutineScopeBar

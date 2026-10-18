@@ -15,12 +15,12 @@ import type {
   CreateRoutinesByStationIdsRequest,
   DeleteMyRoutineByIdRequest,
   DeleteMyRoutinesByIdsRequest,
-  GetMyRoutinesByTimeRangeRequest,
-  GetMyRoutinesByTimeRangeResponse,
   GetMyRoutineByIdRequest,
   GetMyRoutineByIdResponse,
   GetMyRoutinesByStationIdRequest,
   GetMyRoutinesByStationIdResponse,
+  GetMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeResponse,
   HardDeleteMyRoutineByIdRequest,
   HardDeleteMyRoutinesByIdsRequest,
   LinkRoutineItemByIdRequest,
@@ -32,6 +32,7 @@ import type {
   RestoreMyRoutineByIdRequest,
   RestoreMyRoutinesByIdsRequest,
   UpdateMyRoutineByIdRequest,
+  UpdateMyRoutineByIdResponse,
   UpdateMyRoutinesByIdsRequest,
   VisualizeMyRoutinePeriodCountRequest,
   VisualizeMyRoutinePeriodCountResponse,
@@ -42,6 +43,16 @@ import type {
   VisualizeMyRoutineStatusCountRequest,
   VisualizeMyRoutineStatusCountResponse,
 } from "@shared/api/interfaces/routine.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
+import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -59,9 +70,9 @@ import {
   mutationFnRestoreMyRoutinesByIds,
   mutationFnUpdateMyRoutineById,
   mutationFnUpdateMyRoutinesByIds,
-  queryFnGetMyRoutinesByTimeRange,
   queryFnGetMyRoutineById,
   queryFnGetMyRoutinesByStationId,
+  queryFnGetMyRoutinesByTimeRange,
   queryFnVisualizeMyRoutinePeriodCount,
   queryFnVisualizeMyRoutineScheduledEndAtCount,
   queryFnVisualizeMyRoutineScheduledStartAtCount,
@@ -69,18 +80,6 @@ import {
 } from "@/api/invokers/routine.invoker";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
 
 const getRoutineSearchInput = (storeFieldName: string) =>
@@ -680,15 +679,27 @@ export const useCreateRoutinesByStationIds = () => {
   return mutation;
 };
 
-export const useUpdateMyRoutineById = () => {
+export const useUpdateMyRoutineById = (allowOffline = true) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
-  const perform = async (request: UpdateMyRoutineByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+  const perform = async (
+    request: UpdateMyRoutineByIdRequest
+  ): Promise<UpdateMyRoutineByIdResponse> => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.onLine === false)
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      return await mutationFnUpdateMyRoutineById(request);
+    } catch (error) {
+      if (!allowOffline || !(error instanceof NotegicFetchError)) throw error;
+      await RoutineLocalSimulator.simulateUpdateMyRoutineById(request);
+      return {
+        success: false,
+        data: { updatedAt: new Date() },
+        exception: error.unWrap,
+        embedded: { publicId: "" },
+      };
     }
-    return mutationFnUpdateMyRoutineById(request);
   };
 
   const mutation = useMutation({
@@ -714,6 +725,9 @@ export const useUpdateMyRoutineById = () => {
         }),
         ...(request.body.values.title !== undefined && {
           title: request.body.values.title,
+        }),
+        ...(request.body.values.isActive !== undefined && {
+          isActive: request.body.values.isActive,
         }),
         ...(request.body.values.isPinned !== undefined && {
           isPinned: request.body.values.isPinned,
@@ -776,15 +790,6 @@ export const useUpdateMyRoutineById = () => {
       apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
       apolloClient.cache.gc();
       await RoutineLocalSynchronizer.syncUpdateMyRoutineById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateUpdateMyRoutineById(request);
-      }
     },
   });
 

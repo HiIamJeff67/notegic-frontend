@@ -6,14 +6,23 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
+import type { RoutineAdmissionState } from "@shared/api/interfaces/routine.interface";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { UUID } from "crypto";
+import { and, eq } from "drizzle-orm";
 import { Bookmark, SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
+import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";
+import { localDB } from "@/api/local/db";
+import { Transaction, User } from "@/api/local/schemas";
+import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
@@ -24,6 +33,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -33,14 +43,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
+import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 
 const RoutineTable = () => {
   const { i18n, t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
+  const updateRoutine = useUpdateMyRoutineById();
+  const { synchronizationRevision } = useTransactionSynchronizer();
   const [executeSearchRoutines, routineSearch] = useSearchRoutinesLazyQuery({
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+  const [pendingActive, setPendingActive] = useState<Record<string, boolean>>(
+    {}
+  );
   const [routines, setRoutines] = useState<
     Array<RoutineNode & { routineTaskIds: UUID[] }>
   >([]);
@@ -86,6 +102,9 @@ const RoutineTable = () => {
             stationId: UUID;
             title: string;
             phase?: GraphQLRoutinePhase | null;
+            admissionState: RoutineAdmissionState;
+            isActive: boolean;
+            definitionVersion: number;
             isPinned: boolean;
             scheduledStartAt: Date | string | number;
             scheduledEndAt: Date | string | number;
@@ -121,6 +140,9 @@ const RoutineTable = () => {
             title: node.title,
             description: "",
             phase: fromGraphQLRoutinePhase(node.phase),
+            isActive: node.isActive,
+            admissionState: node.admissionState,
+            definitionVersion: node.definitionVersion,
             isPinned: node.isPinned,
             scheduledStartAt: new Date(node.scheduledStartAt),
             scheduledEndAt: new Date(node.scheduledEndAt),
@@ -294,6 +316,48 @@ const RoutineTable = () => {
   );
 
   useEffect(() => {
+    let cancelled = false;
+    const reconcilePending = async () => {
+      if (!localDB.isEnabled) return;
+      if (!localDB.isReady) await localDB.ensureReady();
+      const [user] = await localDB
+        .select()
+        .from(User)
+        .where(eq(User.isLoggedIn, true))
+        .limit(1);
+      if (!user) return;
+      const pending = await localDB
+        .select()
+        .from(Transaction)
+        .where(
+          and(
+            eq(Transaction.ownerPublicId, user.publicId),
+            eq(Transaction.entityType, TransactionEntityType.Routine)
+          )
+        );
+      const activeById: Record<string, boolean> = {};
+      for (const transaction of pending) {
+        const body = transaction.body as {
+          routineId?: string;
+          values?: { isActive?: boolean };
+        };
+        if (body.routineId && body.values?.isActive !== undefined)
+          activeById[body.routineId] = body.values.isActive;
+      }
+      if (!cancelled) {
+        setPendingActive(activeById);
+        if (synchronizationRevision > 0) await searchRoutines(true);
+      }
+    };
+    void reconcilePending().catch(error =>
+      console.error("Failed to reconcile pending routine activation", error)
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [synchronizationRevision, searchRoutines]);
+
+  useEffect(() => {
     if (!routineSearch.data) return;
     applySearchRoutinesData(routineSearch.data);
   }, [applySearchRoutinesData, routineSearch.data]);
@@ -331,7 +395,7 @@ const RoutineTable = () => {
 
   return (
     <section className="@container flex max-h-[640px] w-full min-w-0 shrink-0 flex-col overflow-hidden rounded-md border border-border/60 bg-card">
-      <div className="flex min-h-11 select-none items-center justify-between gap-3 border-b border-border/80 bg-secondary px-3 py-2 @max-[760px]:items-start @max-[760px]:flex-col">
+      <div className="flex min-h-11 shrink-0 select-none items-center justify-between gap-3 border-b border-border/80 bg-secondary px-3 py-2 @max-[760px]:items-start @max-[760px]:flex-col">
         <div className="flex min-w-0 items-center gap-2">
           <RoutineIcon className="size-4 text-muted-foreground" />
           <span className="text-sm font-medium @max-[520px]:sr-only">
@@ -381,7 +445,7 @@ const RoutineTable = () => {
         <Table className="table-fixed">
           <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
             <TableRow>
-              <TableHead className="w-[18%] px-3">
+              <TableHead className="w-[16%] px-3">
                 {t("workspace.table.routine")}
               </TableHead>
               <TableHead className="w-[14%] px-3">
@@ -390,7 +454,7 @@ const RoutineTable = () => {
               <TableHead className="w-[12%] px-3">
                 {t("workspace.table.phase")}
               </TableHead>
-              <TableHead className="w-[22%] px-3">
+              <TableHead className="w-[18.5%] px-3">
                 {t("workspace.table.schedule")}
               </TableHead>
               <TableHead className="w-[22%] px-3">
@@ -398,6 +462,9 @@ const RoutineTable = () => {
               </TableHead>
               <TableHead className="w-[7%] px-3">
                 {t("workspace.table.tasks")}
+              </TableHead>
+              <TableHead className="w-[7%] px-2">
+                {t("workspace.fields.active")}
               </TableHead>
               <TableHead className="w-[5%] px-2" />
             </TableRow>
@@ -430,6 +497,34 @@ const RoutineTable = () => {
                 routine.scheduledEndAt instanceof Date &&
                 !Number.isNaN(routine.scheduledStartAt.getTime()) &&
                 !Number.isNaN(routine.scheduledEndAt.getTime());
+
+              let admissionLabel: string;
+              switch (
+                routine.isActive === false ? "Paused" : routine.admissionState
+              ) {
+                case "Paused":
+                  admissionLabel = t("workspace.routineAdmission.paused");
+                  break;
+                case "NoEntry":
+                  admissionLabel = t("workspace.routineAdmission.noEntry");
+                  break;
+                case "QuotaBlocked":
+                  admissionLabel = t("workspace.routineAdmission.quotaBlocked");
+                  break;
+                case "DependencyBlocked":
+                  admissionLabel = t(
+                    "workspace.routineAdmission.dependencyBlocked"
+                  );
+                  break;
+                case "Eligible":
+                  admissionLabel = t("workspace.routineAdmission.eligible");
+                  break;
+                case "Unavailable":
+                  admissionLabel = t("workspace.routineAdmission.unavailable");
+                  break;
+                default:
+                  admissionLabel = t("workspace.routineAdmission.unknown");
+              }
 
               return (
                 <TableRow key={routine.id}>
@@ -614,6 +709,56 @@ const RoutineTable = () => {
                     )}
                   </TableCell>
                   <TableCell className="px-2 py-3">
+                    <Switch
+                      aria-label={`${routine.title}: ${t("workspace.fields.active")}`}
+                      checked={
+                        pendingActive[routine.id] ?? routine.isActive ?? true
+                      }
+                      disabled={updateRoutine.isPending}
+                      onCheckedChange={isActive => {
+                        setPendingActive(current => ({
+                          ...current,
+                          [routine.id]: isActive,
+                        }));
+                        void (async () => {
+                          try {
+                            const response = await updateRoutine.mutateAsync({
+                              header: getClientRequestHeaders(
+                                navigator.userAgent
+                              ),
+                              body: {
+                                routineId: routine.id,
+                                values: { isActive },
+                              },
+                            });
+                            if (!response.success) {
+                              toast.info(t("workspace.fields.pendingSync"));
+                              return;
+                            }
+                            await routineSearch.refetch();
+                            setPendingActive(current => {
+                              const next = { ...current };
+                              delete next[routine.id];
+                              return next;
+                            });
+                          } catch (error) {
+                            setPendingActive(current => {
+                              const next = { ...current };
+                              delete next[routine.id];
+                              return next;
+                            });
+                            toast.error(tError(error, t));
+                          }
+                        })();
+                      }}
+                    />
+                    <span className="mt-1 block text-[10px] leading-tight text-muted-foreground">
+                      {pendingActive[routine.id] !== undefined
+                        ? t("workspace.fields.pendingSync")
+                        : admissionLabel}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-2 py-3">
                     <Button
                       type="button"
                       variant="ghost"
@@ -635,7 +780,7 @@ const RoutineTable = () => {
             {filteredRoutines.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="h-28 text-center text-sm text-muted-foreground"
                 >
                   {isSearchingRoutines

@@ -2,6 +2,8 @@ import type { ServerTranslation } from "./server.type";
 
 export const TraditionalChineseServerTranslation = {
   error: {
+    DefinitionConflict: "流程已被變更，請重新整理後再套用編輯。",
+    RescheduleRequired: "請先設定未來的排程時間，再啟用此流程。",
     InternalServerError: "伺服器發生問題，請稍後再試。",
     InvalidDto: "提交的資料有部分格式不正確。",
     InvalidInput: "輸入的資料格式不正確。",

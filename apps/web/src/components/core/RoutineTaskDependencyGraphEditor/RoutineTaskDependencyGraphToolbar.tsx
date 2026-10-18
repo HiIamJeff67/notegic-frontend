@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Download, GitBranch, Plus, RefreshCw, RotateCcw } from "lucide-react";
+import { Download, Plus, RefreshCw, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -23,10 +23,11 @@ interface RoutineTaskDependencyGraphToolbarProps {
   pendingSyncCount: number;
   onAddMenuOpenChange: (open: boolean) => void;
   onOpenCreateRoutineTaskDialog: () => void;
+  onAddStartingNode: () => void;
+  canAddStartingNode: boolean;
   onReset: () => void;
   onRetryPendingSync: () => void;
   onExport: () => void;
-  onStartCreatingDependency: () => void;
   onRefresh: () => void;
 }
 
@@ -39,10 +40,11 @@ const RoutineTaskDependencyGraphToolbar = ({
   pendingSyncCount,
   onAddMenuOpenChange,
   onOpenCreateRoutineTaskDialog,
+  onAddStartingNode,
+  canAddStartingNode,
   onReset,
   onRetryPendingSync,
   onExport,
-  onStartCreatingDependency,
   onRefresh,
 }: RoutineTaskDependencyGraphToolbarProps) => {
   const { t } = useTranslation();
@@ -88,13 +90,16 @@ const RoutineTaskDependencyGraphToolbar = ({
           </TooltipContent>
         </Tooltip>
         <DropdownMenuContent align="end" side="bottom">
+          <DropdownMenuItem
+            disabled={!canAddStartingNode}
+            onSelect={onAddStartingNode}
+          >
+            <Plus />
+            {t("workspace.fields.startingNode")}
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={onOpenCreateRoutineTaskDialog}>
             <Plus />
             {t("workspace.fields.routineTask")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onStartCreatingDependency}>
-            <GitBranch />
-            {t("workspace.fields.dependency")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -80,6 +80,37 @@ suite bundles the real React providers with mocked network/storage boundaries
 and runs in headless Chromium, including StrictMode. Install its browser once
 with `npx playwright install chromium --only-shell`; no live account is used.
 
+## Routine graph editing
+
+Graph dragging updates the canvas immediately and coalesces repeated positions
+per node behind a 750 ms debounce. The editor serializes the existing node
+update requests, keeps newer positions while an older request is in flight,
+and flushes remaining writes when the editor unmounts. Background refreshes
+must not clear nodes, remount React Flow, or reset its viewport. Local graph
+drafts are retained; network-failed writes use the existing durable queue and
+show pending synchronization rather than a successful remote save. A draft
+indicator before acknowledgement is not a server persistence guarantee.
+
+Nodes share one context-menu and Inspector entry point, without visible
+ellipsis buttons. Left-clicking only selects a node; right-clicking or the
+context-menu keyboard shortcut opens its menu. Dragging and connection
+handles must not open it. Only the menu's Edit action opens the Inspector.
+Start uses a circular shape with its title outside,
+green/gray activation styling, and an Active menu checkbox.
+Its Inspector edits title and description, not Action-only execution fields.
+Actions keep their title, operation summary and execution status.
+
+Dependencies are created only by dragging connection handles; the add menu
+contains nodes, not a separate dependency action. Left-clicking an edge opens
+Edit/Delete options. Edit opens the existing dependency Inspector; Delete
+uses the same version-checked mutation and offline draft path as keyboard
+edge deletion, without deleting either endpoint.
+
+Execution-progress edge/card coloring is deferred. It must follow captured
+execution identities and status events, not infer execution from current live
+graph edits or manually entered dependency progress. This UI pass adds no
+schema, SQLite migration or general-purpose node upsert endpoint.
+
 ## Future application responsibilities
 
 Each app owns its framework/runtime integration, request and authentication

@@ -1,6 +1,12 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { relations } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  real,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 import { Routine } from "./routine.schema";
 import { RoutinesToTasks } from "./routinesToTasks.schema";
 
@@ -11,8 +17,14 @@ export const RoutineTask = sqliteTable(
     routineId: text("routine_id")
       .notNull()
       .references(() => Routine.id),
+    kind: text("kind").$type<"Start" | "Action">().notNull().default("Action"),
+    x: real("x").notNull().default(0),
+    y: real("y").notNull().default(0),
     title: text("title").notNull().default("undefined"),
-    purpose: text("purpose").$type<RoutineTaskPurpose>().notNull(),
+    purpose: text("purpose")
+      .$type<RoutineTaskPurpose | "">()
+      .notNull()
+      .default(""),
     payload: text("payload", { mode: "json" }).$type<unknown>().notNull(),
     priority: integer("priority").notNull().default(0),
     maxAttempts: integer("max_attempts").notNull().default(1),

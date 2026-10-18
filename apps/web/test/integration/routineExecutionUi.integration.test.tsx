@@ -17,6 +17,14 @@ jest.mock("@/api/graphql/hooks/useSearchRoutineRecords", () => ({
 
 jest.mock("@/api/hooks/routineTask.hook", () => ({
   useGetMyRoutineTaskById: () => ({ fetch: jest.fn() }),
+  useUpdateMyRoutineTaskById: () => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
+  }),
+}));
+
+jest.mock("@/api/hooks/routine.hook", () => ({
+  useGetMyRoutineById: () => ({ fetch: jest.fn() }),
 }));
 
 jest.mock("@/hooks", () => ({

@@ -18,8 +18,8 @@ const ResizableSidebarInset = ({
     <SidebarInset
       className={className}
       style={{
-        transition: "padding-left 0.2s",
-        ...(sidebarManager.open && insetStyle),
+        transition: sidebarManager.isMobile ? undefined : "padding-left 0.2s",
+        ...(sidebarManager.open && !sidebarManager.isMobile && insetStyle),
       }}
     >
       {children}

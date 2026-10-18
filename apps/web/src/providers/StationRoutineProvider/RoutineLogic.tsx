@@ -1,3 +1,5 @@
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
@@ -8,10 +10,10 @@ import {
 import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/routine.interface";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { MaxSearchLimit } from "@shared/constants";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/LRUCache";
+import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
@@ -43,6 +45,7 @@ export const useRoutineLogic = ({
   forceUpdate,
   getMyRoutineTasksByRoutineIds,
 }: UseRoutineLogicProps) => {
+  const { t } = useTranslation();
   const createRoutineMutator = useCreateRoutineByStationId();
   const deleteRoutineMutator = useDeleteMyRoutineById();
   const updateRoutineMutator = useUpdateMyRoutineById();
@@ -106,6 +109,8 @@ export const useRoutineLogic = ({
           stationId: UUID;
           title: string;
           phase?: GraphQLRoutinePhase | null;
+          isActive: boolean;
+          definitionVersion: number;
           isPinned: boolean;
           scheduledStartAt: Date | string | number;
           scheduledEndAt: Date | string | number;
@@ -145,6 +150,8 @@ export const useRoutineLogic = ({
           title: node.title,
           description: existingRoutine?.description ?? "",
           phase: fromGraphQLRoutinePhase(node.phase),
+          isActive: node.isActive,
+          definitionVersion: node.definitionVersion,
           isPinned: node.isPinned,
           scheduledStartAt: new Date(node.scheduledStartAt),
           scheduledEndAt: new Date(node.scheduledEndAt),
@@ -442,6 +449,8 @@ export const useRoutineLogic = ({
         title: body.title,
         description: body.description,
         phase: null,
+        isActive: body.isActive ?? false,
+        definitionVersion: 1,
         isPinned: body.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt:
@@ -609,7 +618,8 @@ export const useRoutineLogic = ({
             setNull,
           },
         });
-        if (response.success === false) throw response.exception;
+        if (response.success === false)
+          toast.info(t("workspace.fields.pendingSync"));
 
         for (const routineNode of routineNodes) {
           routineNode.updatedAt = response.data.updatedAt;
@@ -624,7 +634,7 @@ export const useRoutineLogic = ({
         throw error;
       }
     },
-    [forceUpdate, routineTagsRef, stationsRef, updateRoutineMutator]
+    [forceUpdate, routineTagsRef, stationsRef, updateRoutineMutator, t]
   );
 
   const isRoutineEditing = useCallback(

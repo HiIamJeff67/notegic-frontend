@@ -39,6 +39,11 @@ import {
   useUpdateMyRoutineTagsByIds,
 } from "@/api/hooks/routineTag.hook";
 import {
+  useCreateRoutineTaskByRoutineId,
+  useHardDeleteMyRoutineTaskById,
+  useUpdateMyRoutineTaskById,
+} from "@/api/hooks/routineTask.hook";
+import {
   useCreateStation,
   useCreateStations,
   useDeleteMyStationById,
@@ -61,6 +66,7 @@ import { localDB } from "@/api/local/db";
 import { Transaction, User } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { RoutineTaskLocalSynchronizer } from "@/api/local/synchronizers/routineTask.synchronizer";
 import { useNetwork } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import {
@@ -79,6 +85,7 @@ import {
   mergeRoutineTagTransactions,
   prepareRoutineTagSyncJobs,
 } from "./RoutineTagSyncLogic";
+import { prepareRoutineTaskSyncJobs } from "./RoutineTaskSyncLogic";
 import {
   mergeRootShelfTransactions,
   prepareRootShelfSyncJobs,
@@ -108,6 +115,7 @@ export type PreparedSyncJobsResult = {
   syncJobs: SyncJob[];
   noopSequences: Set<number>;
   parseFailedSequences: Set<number>;
+  deferredSequences?: Set<number>;
 };
 
 export type MergedTransaction = InferSelectModel<typeof Transaction> & {
@@ -368,6 +376,7 @@ interface TransactionSynchronizerContextType {
   clearTerminalTransactions: () => Promise<void>;
   synchronizeTransactions: () => Promise<void>;
   synchronizationProgress: number;
+  synchronizationRevision: number;
 }
 
 export const TransactionSynchronizerContext = createContext<
@@ -410,9 +419,12 @@ export const TransactionSynchronizerProvider = ({
   const hardDeleteStationMutator = useHardDeleteMyStationById();
   const hardDeleteStationsMutator = useHardDeleteMyStationsByIds();
 
+  const createRoutineTaskMutator = useCreateRoutineTaskByRoutineId(false);
+  const updateRoutineTaskMutator = useUpdateMyRoutineTaskById(false);
+  const hardDeleteRoutineTaskMutator = useHardDeleteMyRoutineTaskById(false);
   const createRoutineMutator = useCreateRoutineByStationId();
   const createRoutinesMutator = useCreateRoutinesByStationIds();
-  const updateRoutineMutator = useUpdateMyRoutineById();
+  const updateRoutineMutator = useUpdateMyRoutineById(false);
   const updateRoutinesMutator = useUpdateMyRoutinesByIds();
   const restoreRoutineMutator = useRestoreMyRoutineById();
   const restoreRoutinesMutator = useRestoreMyRoutinesByIds();
@@ -444,6 +456,8 @@ export const TransactionSynchronizerProvider = ({
   const restoreBlockPacksMutator = useRestoreMyBlockPacksByIds();
   const deleteBlockPacksMutator = useDeleteMyBlockPacksByIds();
 
+  const [synchronizationRevision, setSynchronizationRevision] = useState(0);
+  const activeSynchronizationRef = useRef<Promise<void> | null>(null);
   const [synchronizationProgress, setSynchronizationProgress] =
     useState<number>(0);
   const hasBootstrappedRef = useRef<boolean>(false);
@@ -560,22 +574,6 @@ export const TransactionSynchronizerProvider = ({
       mergedResult: PreparedSyncJobsResult,
       onJobFinished: () => void
     ) => {
-      if (mergedResult.syncJobs.length === 0) {
-        const discardedSequences = Array.from(
-          new Set([
-            ...mergedResult.noopSequences,
-            ...mergedResult.parseFailedSequences,
-          ])
-        );
-        if (discardedSequences.length > 0) {
-          if (!localDB.isReady) await localDB.ensureReady();
-          await localDB
-            .delete(Transaction)
-            .where(inArray(Transaction.sequence, discardedSequences));
-        }
-        return;
-      }
-
       const settledSyncJobs = await Promise.allSettled(
         mergedResult.syncJobs.map(job => job.run())
       );
@@ -602,7 +600,11 @@ export const TransactionSynchronizerProvider = ({
           )
         ) {
           mergeSet(succeededSequences, sequences);
-        } else {
+        } else if (
+          ![...sequences].some(sequence =>
+            mergedResult.deferredSequences?.has(sequence)
+          )
+        ) {
           mergeSet(failedSequences, sequences);
         }
         onJobFinished();
@@ -636,7 +638,7 @@ export const TransactionSynchronizerProvider = ({
     []
   );
 
-  const synchronizeTransactions = useCallback(async () => {
+  const performSynchronization = useCallback(async () => {
     if (
       !areLocalPreferencesReady ||
       !localVault ||
@@ -688,6 +690,7 @@ export const TransactionSynchronizerProvider = ({
     const blockTransactions: InferSelectModel<typeof Transaction>[] = [];
     const stationTransactions: InferSelectModel<typeof Transaction>[] = [];
     const routineTransactions: InferSelectModel<typeof Transaction>[] = [];
+    const routineTaskTransactions: InferSelectModel<typeof Transaction>[] = [];
     const routineTagTransactions: InferSelectModel<typeof Transaction>[] = [];
     const routineRelationTransactions: InferSelectModel<typeof Transaction>[] =
       [];
@@ -710,6 +713,9 @@ export const TransactionSynchronizerProvider = ({
           break;
         case TransactionEntityType.Routine:
           routineTransactions.push(transaction);
+          break;
+        case TransactionEntityType.RoutineTask:
+          routineTaskTransactions.push(transaction);
           break;
         case TransactionEntityType.RoutineTag:
           routineTagTransactions.push(transaction);
@@ -915,6 +921,33 @@ export const TransactionSynchronizerProvider = ({
           })
         ),
       },
+      {
+        transactions: routineTaskTransactions,
+        mergedResult: prepareRoutineTaskSyncJobs({
+          transactions: routineTaskTransactions,
+          header,
+          acknowledge: async (acknowledged, routineId, expected, confirmed) => {
+            const advanced =
+              await RoutineTaskLocalSynchronizer.acknowledgeMutation(
+                acknowledged,
+                routineId,
+                expected,
+                confirmed
+              );
+            for (const successor of advanced) {
+              const prepared = routineTaskTransactions.find(
+                entry => entry.sequence === successor.sequence
+              );
+              if (prepared) prepared.body = successor.body;
+            }
+          },
+          mutators: {
+            createRoutineTaskMutator,
+            updateRoutineTaskMutator,
+            hardDeleteRoutineTaskMutator,
+          },
+        }),
+      },
     ];
 
     const totalJobs = allPreparedResults.reduce(
@@ -966,6 +999,9 @@ export const TransactionSynchronizerProvider = ({
     deleteStationsMutator,
     hardDeleteStationMutator,
     hardDeleteStationsMutator,
+    createRoutineTaskMutator,
+    updateRoutineTaskMutator,
+    hardDeleteRoutineTaskMutator,
     createRoutineMutator,
     createRoutinesMutator,
     updateRoutineMutator,
@@ -988,6 +1024,22 @@ export const TransactionSynchronizerProvider = ({
     hardDeleteRoutineTagsMutator,
     syncPreparedSyncJobs,
   ]);
+
+  const performSynchronizationRef = useRef(performSynchronization);
+  useEffect(() => {
+    performSynchronizationRef.current = performSynchronization;
+  }, [performSynchronization]);
+
+  const synchronizeTransactions = useCallback(() => {
+    if (activeSynchronizationRef.current)
+      return activeSynchronizationRef.current;
+    const synchronization = performSynchronizationRef.current().finally(() => {
+      activeSynchronizationRef.current = null;
+      setSynchronizationRevision(revision => revision + 1);
+    });
+    activeSynchronizationRef.current = synchronization;
+    return synchronization;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1132,6 +1184,7 @@ export const TransactionSynchronizerProvider = ({
       value={{
         status: status,
         synchronizationProgress: synchronizationProgress,
+        synchronizationRevision,
         getTransactionCount: getTransactionCount,
         getTerminalTransactionCount: getTerminalTransactionCount,
         clearTerminalTransactions: clearTerminalTransactions,

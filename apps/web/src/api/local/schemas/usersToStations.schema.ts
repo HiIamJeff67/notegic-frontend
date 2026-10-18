@@ -1,8 +1,8 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { eq, relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
-  integer,
   index,
+  integer,
   primaryKey,
   sqliteTable,
   text,
@@ -33,7 +33,7 @@ export const UsersToStations = sqliteTable(
     primaryKey({ columns: [table.userPublicId, table.stationId] }),
     uniqueIndex("users_to_stations_unique_idx_station_owner")
       .on(table.stationId)
-      .where(eq(table.permission, AccessControlPermission.Owner)),
+      .where(sql`${table.permission} = 'Owner'`),
   ]
 );
 

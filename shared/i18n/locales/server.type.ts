@@ -3,6 +3,8 @@ export interface ServerTranslation {
     InternalServerError: string;
     InvalidDto: string;
     InvalidInput: string;
+    DefinitionConflict: string;
+    RescheduleRequired: string;
     InvalidRequest: string;
     InvalidAuthenticationCode: string;
     TokenExchangeFailed: string;

@@ -30,7 +30,8 @@ documented architecture requires a deliberate deviation.
 - Prefer concise names in pure algorithm/data-structure and runtime-neutral library code when package context is clear; use complete, non-sentence-like domain names for business workflows and primary components. Treat `...For...` and `...And...` as warning signs: avoid `For` except for established external/protocol vocabulary, and split independent responsibilities instead of naming them with `And`. Use `...With...` only for established options/configuration or similar APIs, and keep it restrained.
 - Keep feature logic close to its route/component. Extract only for real reuse, a meaningful concept, a stable boundary, or a test seam.
 - Do not add one-use style helpers, generic hooks, pass-through wrappers, speculative abstraction layers, or a dependency for a small local need.
-- Follow PascalCase component files, documented kebab-case generic files, role suffixes, route boundaries, and local type/constant placement.
+- Follow PascalCase component files, documented kebab-case generic files, role suffixes, route boundaries, and local type/constant placement. Keep imports before declarations; keep identity and ownership fields first, lifecycle fields near the end of persisted data, and computed/UI-only fields in their own trailing group. Do not reorder applied migration SQL or generated metadata for declaration style.
+- Follow [Feature-local status labels](../../../docs/conventions/10-translations.md#feature-local-status-labels): inline direct literal translation calls for short local branches; do not add translation-key helper functions, key-building wrappers or one-use lookup maps.
 - Keep responsive layouts safe with `min-w-0`; preserve accessibility, keyboard behavior, focus states, and reduced-motion expectations.
 - Prefer CSS and existing platform/library primitives before custom JavaScript behavior.
 

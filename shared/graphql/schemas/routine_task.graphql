@@ -1,8 +1,11 @@
 type PrivateRoutineTask {
   id: UUID!
   routineId: UUID!
+  kind: String!
+  x: Float!
+  y: Float!
   title: String!
-  purpose: RoutineTaskPurpose!
+  purpose: RoutineTaskPurpose
   payload: RawJSON!
   priority: Int32!
   maxAttempts: Int32!

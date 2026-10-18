@@ -2,6 +2,9 @@ import type { ServerTranslation } from "./server.type";
 
 export const KoreanServerTranslation = {
   error: {
+    DefinitionConflict:
+      "루틴이 변경되었습니다. 새로고침한 후 편집 내용을 적용하세요.",
+    RescheduleRequired: "루틴을 활성화하기 전에 향후 실행 시간을 설정하세요.",
     InternalServerError:
       "서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     InvalidDto: "제출한 정보 중 일부 형식이 올바르지 않습니다.",

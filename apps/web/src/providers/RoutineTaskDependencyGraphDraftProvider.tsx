@@ -56,10 +56,11 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
     }
     if (!localDB.isReady) await localDB.ensureReady();
 
-    const storedDraft =
-      await localDB.query.RoutineTaskDependencyGraphDraft.findFirst({
-        where: eq(RoutineTaskDependencyGraphDraft.routineId, routineId),
-      });
+    const [storedDraft] = await localDB
+      .select()
+      .from(RoutineTaskDependencyGraphDraft)
+      .where(eq(RoutineTaskDependencyGraphDraft.routineId, routineId))
+      .limit(1);
     if (!storedDraft) {
       setDraft(null);
       return null;

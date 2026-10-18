@@ -10,7 +10,11 @@ import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
+import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
+import {
+  useGetMyRoutineTaskById,
+  useUpdateMyRoutineTaskById,
+} from "@/api/hooks/routineTask.hook";
 import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +34,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine, useUser } from "@/hooks";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
@@ -44,17 +49,30 @@ interface RoutineTaskInspectorProps {
   routineTaskId: UUID;
   isOpen: boolean;
   onClose: () => void;
+  onUpdated?: () => void;
 }
 
 const RoutineTaskInspector = ({
   routineTaskId,
   isOpen,
   onClose,
+  onUpdated,
 }: RoutineTaskInspectorProps) => {
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const getRoutineTaskQuerier = useGetMyRoutineTaskById();
+  const getRoutineQuerier = useGetMyRoutineById();
+  const updateNode = useUpdateMyRoutineTaskById();
+  const [startingPayload, setStartingPayload] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+  const [definitionVersion, setDefinitionVersion] = useState<
+    number | undefined
+  >();
+  const isSaving =
+    updateNode.isPending || stationRoutineManager.isUpdatingRoutineTask;
 
   const [isLoadingRoutineTaskDetail, setIsLoadingRoutineTaskDetail] =
     useState(false);
@@ -85,6 +103,8 @@ const RoutineTaskInspector = ({
       maxAttempts: 1,
     });
     setIsPayloadEditorOpen(false);
+    setStartingPayload(null);
+    setDefinitionVersion(undefined);
 
     setIsLoadingRoutineTaskDetail(true);
     getRoutineTaskQuerier
@@ -94,8 +114,19 @@ const RoutineTaskInspector = ({
           routineTaskId,
         },
       })
-      .then(response => {
+      .then(async response => {
         if (cancelled || !response.data) return;
+        if (response.data.kind === "Start") {
+          const parent = await getRoutineQuerier.fetch({
+            param: { routineId: response.data.routineId as UUID },
+          });
+          if (cancelled) return;
+          setStartingPayload(response.data.payload ?? {});
+          setDefinitionVersion(parent.data.definitionVersion);
+          setValues(current => ({ ...current, title: response.data.title }));
+          return;
+        }
+        if (response.data.purpose === "") return;
         const parentRoutine = stationRoutineManager.getRoutineById(
           response.data.routineId as UUID
         );
@@ -137,6 +168,25 @@ const RoutineTaskInspector = ({
   const saveRoutineTask = async () => {
     const title = values.title.trim();
     if (title.length === 0) return;
+    if (startingPayload) {
+      try {
+        const response = await updateNode.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            routineTaskId,
+            values: { title, payload: startingPayload },
+            expectedDefinitionVersion: definitionVersion,
+          },
+        });
+        if (response.success) toast.success(t("workspace.routineTask.updated"));
+        else toast.info(t("workspace.fields.pendingSync"));
+        onUpdated?.();
+        onClose();
+      } catch (error) {
+        toast.error(tError(error, t));
+      }
+      return;
+    }
     let payload: unknown;
     try {
       payload =
@@ -162,6 +212,7 @@ const RoutineTaskInspector = ({
       });
       void userManager.fetchUserQuota();
       toast.success(t("workspace.routineTask.updated"));
+      onUpdated?.();
       onClose();
     } catch (error) {
       toast.error(tError(error, t));
@@ -172,7 +223,7 @@ const RoutineTaskInspector = ({
     <Sheet
       open={isOpen}
       onOpenChange={open => {
-        if (!open && !stationRoutineManager.isUpdatingRoutineTask) onClose();
+        if (!open && !isSaving) onClose();
       }}
     >
       <SheetContent
@@ -222,104 +273,126 @@ const RoutineTaskInspector = ({
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <Label>{t("workspace.fields.purpose")}</Label>
-                <ContainableSelect
-                  value={values.purpose}
-                  onValueChange={purpose =>
-                    setValues(current => ({
-                      ...current,
-                      purpose: purpose as RoutineTaskPurpose,
-                    }))
-                  }
-                  valueLabel={`${t(routineTaskPurposeTKeys[values.purpose].action)} · ${t(routineTaskPurposeTKeys[values.purpose].target)}`}
-                >
-                  {Object.entries(RoutineTaskPurposeByAction).map(
-                    ([action, purposes], index) => (
-                      <SelectGroup key={action}>
-                        {index > 0 && <SelectSeparator />}
-                        <SelectLabel>
-                          {action === "Get"
-                            ? t("workspace.fields.get")
-                            : action === "Create"
-                              ? t("workspace.fields.create")
-                              : action === "Update"
-                                ? t("workspace.fields.update")
-                                : t("workspace.fields.delete")}
-                        </SelectLabel>
-                        {purposes.map(taskPurpose => (
-                          <SelectItem key={taskPurpose} value={taskPurpose}>
-                            {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    )
-                  )}
-                </ContainableSelect>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <Label htmlFor="routine-task-inspector-priority">
-                    {t("workspace.fields.priority")}
+              {startingPayload ? (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="routine-task-inspector-description">
+                    {t("workspace.fields.description")}
                   </Label>
-                  <Input
-                    id="routine-task-inspector-priority"
-                    type="number"
-                    min={0}
-                    value={values.priority}
+                  <Textarea
+                    id="routine-task-inspector-description"
+                    maxLength={1024}
+                    value={String(startingPayload.description ?? "")}
                     onChange={event => {
-                      const priority = event.currentTarget.valueAsNumber;
-                      setValues(current => ({
+                      const description = event.currentTarget.value;
+                      setStartingPayload(current => ({
                         ...current,
-                        priority: Math.max(0, priority),
+                        description,
                       }));
                     }}
                   />
                 </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <Label>{t("workspace.fields.purpose")}</Label>
+                    <ContainableSelect
+                      value={values.purpose}
+                      onValueChange={purpose =>
+                        setValues(current => ({
+                          ...current,
+                          purpose: purpose as RoutineTaskPurpose,
+                        }))
+                      }
+                      valueLabel={`${t(routineTaskPurposeTKeys[values.purpose].action)} · ${t(routineTaskPurposeTKeys[values.purpose].target)}`}
+                    >
+                      {Object.entries(RoutineTaskPurposeByAction).map(
+                        ([action, purposes], index) => (
+                          <SelectGroup key={action}>
+                            {index > 0 && <SelectSeparator />}
+                            <SelectLabel>
+                              {action === "Get"
+                                ? t("workspace.fields.get")
+                                : action === "Create"
+                                  ? t("workspace.fields.create")
+                                  : action === "Update"
+                                    ? t("workspace.fields.update")
+                                    : t("workspace.fields.delete")}
+                            </SelectLabel>
+                            {purposes.map(taskPurpose => (
+                              <SelectItem key={taskPurpose} value={taskPurpose}>
+                                {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )
+                      )}
+                    </ContainableSelect>
+                  </div>
 
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <Label htmlFor="routine-task-inspector-attempts">
-                    {t("workspace.fields.maxAttempts")}
-                  </Label>
-                  <Input
-                    id="routine-task-inspector-attempts"
-                    type="number"
-                    min={1}
-                    max={20}
-                    value={values.maxAttempts}
-                    onChange={event => {
-                      const maxAttempts = event.currentTarget.valueAsNumber;
-                      setValues(current => ({
-                        ...current,
-                        maxAttempts: Math.min(20, Math.max(1, maxAttempts)),
-                      }));
-                    }}
-                  />
-                </div>
-              </div>
+                  <div className="flex gap-4">
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <Label htmlFor="routine-task-inspector-priority">
+                        {t("workspace.fields.priority")}
+                      </Label>
+                      <Input
+                        id="routine-task-inspector-priority"
+                        type="number"
+                        min={0}
+                        value={values.priority}
+                        onChange={event => {
+                          const priority = event.currentTarget.valueAsNumber;
+                          setValues(current => ({
+                            ...current,
+                            priority: Math.max(0, priority),
+                          }));
+                        }}
+                      />
+                    </div>
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="routine-task-inspector-payload">
-                  {t("workspace.fields.payload")}
-                </Label>
-                <div
-                  id="routine-task-inspector-payload"
-                  className="max-h-64 overflow-y-auto rounded-sm border bg-background p-3"
-                >
-                  <pre className="whitespace-pre-wrap break-words font-mono text-xs text-muted-foreground">
-                    {values.payload}
-                  </pre>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-fit"
-                  onClick={() => setIsPayloadEditorOpen(true)}
-                >
-                  {t("workspace.payload.edit")}
-                </Button>
-              </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <Label htmlFor="routine-task-inspector-attempts">
+                        {t("workspace.fields.maxAttempts")}
+                      </Label>
+                      <Input
+                        id="routine-task-inspector-attempts"
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={values.maxAttempts}
+                        onChange={event => {
+                          const maxAttempts = event.currentTarget.valueAsNumber;
+                          setValues(current => ({
+                            ...current,
+                            maxAttempts: Math.min(20, Math.max(1, maxAttempts)),
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="routine-task-inspector-payload">
+                      {t("workspace.fields.payload")}
+                    </Label>
+                    <div
+                      id="routine-task-inspector-payload"
+                      className="max-h-64 overflow-y-auto rounded-sm border bg-background p-3"
+                    >
+                      <pre className="whitespace-pre-wrap break-words font-mono text-xs text-muted-foreground">
+                        {values.payload}
+                      </pre>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-fit"
+                      onClick={() => setIsPayloadEditorOpen(true)}
+                    >
+                      {t("workspace.payload.edit")}
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
 
             <SheetFooter className="shrink-0 flex-col gap-2 border-t border-border px-6 py-5 sm:flex-col sm:space-x-0">
@@ -327,19 +400,19 @@ const RoutineTaskInspector = ({
                 type="submit"
                 className="w-full"
                 disabled={
-                  stationRoutineManager.isUpdatingRoutineTask ||
+                  isSaving ||
                   isLoadingRoutineTaskDetail ||
                   values.title.trim().length === 0
                 }
               >
-                {stationRoutineManager.isUpdatingRoutineTask && <Spinner />}
+                {isSaving && <Spinner />}
                 {t("common.save")}
               </Button>
               <Button
                 type="button"
                 variant="destructive"
                 className="w-full"
-                disabled={stationRoutineManager.isUpdatingRoutineTask}
+                disabled={isSaving}
                 onClick={onClose}
               >
                 {t("common.cancel")}

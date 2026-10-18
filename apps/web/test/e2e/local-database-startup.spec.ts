@@ -267,7 +267,10 @@ test("upgrades a freshly created database after a local down migration", async (
     });
 
     const latest = getOrderedMigrations().at(-1);
-    if (latest?.tag !== "0002_first_tyrannus" || !latest.downStatements) {
+    if (
+      latest?.tag !== "0003_hesitant_forgotten_one" ||
+      !latest.downStatements
+    ) {
       throw new Error("Routine local down migration is unavailable");
     }
     await localDB.transaction(
@@ -275,7 +278,7 @@ test("upgrades a freshly created database after a local down migration", async (
         for (const statement of latest.downStatements) {
           await transaction.run(sql.raw(statement));
         }
-        await transaction.run(sql.raw("PRAGMA user_version = 2"));
+        await transaction.run(sql.raw("PRAGMA user_version = 3"));
       }
     );
   });
@@ -298,5 +301,5 @@ test("upgrades a freshly created database after a local down migration", async (
       timeoutSeconds: routine?.timeoutSeconds,
     };
   });
-  expect(result).toEqual({ version: 3, timeoutSeconds: 600 });
+  expect(result).toEqual({ version: 4, timeoutSeconds: 600 });
 });

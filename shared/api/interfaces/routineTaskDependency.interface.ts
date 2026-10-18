@@ -5,6 +5,7 @@ import {
 import { z } from "zod";
 
 const RoutineTaskDependencyIdentitySchema = z.object({
+  expectedDefinitionVersion: z.number().int().positive().optional(),
   routineTaskId: z.uuidv4(),
   previousRoutineTaskId: z.uuidv4(),
 });

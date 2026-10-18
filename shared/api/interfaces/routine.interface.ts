@@ -4,8 +4,8 @@ import {
 } from "@shared/api/interfaces/context.interface";
 import {
   AllItemTypes,
-  AllRoutinePhases,
   AllRoutinePeriods,
+  AllRoutinePhases,
 } from "@shared/api/interfaces/enums";
 import { z } from "zod";
 import {
@@ -13,6 +13,18 @@ import {
   VisualizeResponseSchema,
   VisualizeTimeBucketRequestSchema,
 } from "./visualize.interface";
+
+export const RoutineAdmissionStates = [
+  "Unknown",
+  "Paused",
+  "NoEntry",
+  "QuotaBlocked",
+  "DependencyBlocked",
+  "Eligible",
+  "Unavailable",
+] as const;
+
+export type RoutineAdmissionState = (typeof RoutineAdmissionStates)[number];
 
 /* ============================== Visualize Routine Charts ============================== */
 
@@ -87,6 +99,8 @@ export const GetMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     description: z.string(),
     timeoutSeconds: z.number().int().min(60).max(3600),
     phase: z.enum(AllRoutinePhases).nullable(),
+    isActive: z.boolean().default(true),
+    definitionVersion: z.number().int().positive().default(1),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
     scheduledEndAt: z.coerce.date(),
@@ -98,6 +112,8 @@ export const GetMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     tagIds: z.array(z.uuidv4()),
     taskIds: z.array(z.uuidv4()),
     itemIds: z.array(z.uuidv4()),
+
+    admissionState: z.enum(RoutineAdmissionStates).catch("Unknown"),
   }),
   embedded: z.object({
     publicId: z.string(),
@@ -137,6 +153,8 @@ export const GetMyRoutinesByStationIdResponseSchema =
         title: z.string(),
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
+        isActive: z.boolean().default(true),
+        definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -148,6 +166,8 @@ export const GetMyRoutinesByStationIdResponseSchema =
         tagIds: z.array(z.uuidv4()),
         taskIds: z.array(z.uuidv4()),
         itemIds: z.array(z.uuidv4()),
+
+        admissionState: z.enum(RoutineAdmissionStates).catch("Unknown"),
       })
     ),
     embedded: z.object({
@@ -190,6 +210,8 @@ export const GetMyRoutinesByTimeRangeResponseSchema =
         title: z.string(),
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
+        isActive: z.boolean().default(true),
+        definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -201,6 +223,8 @@ export const GetMyRoutinesByTimeRangeResponseSchema =
         tagIds: z.array(z.uuidv4()),
         taskIds: z.array(z.uuidv4()),
         itemIds: z.array(z.uuidv4()),
+
+        admissionState: z.enum(RoutineAdmissionStates).catch("Unknown"),
       })
     ),
     embedded: z.object({
@@ -229,6 +253,7 @@ export const CreateRoutineByStationIdRequestSchema =
         title: z.string().min(1).max(128),
         description: z.string().max(1024),
         timeoutSeconds: z.number().int().min(60).max(3600).optional(),
+        isActive: z.boolean().optional(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -282,6 +307,7 @@ export const CreateRoutinesByStationIdsRequestSchema =
             title: z.string().min(1).max(128),
             description: z.string().max(1024),
             timeoutSeconds: z.number().int().min(60).max(3600).optional(),
+            isActive: z.boolean().optional(),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -335,6 +361,7 @@ export const UpdateMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
         title: z.string().min(1).max(128),
         description: z.string().max(1024),
         timeoutSeconds: z.number().int().min(60).max(3600),
+        isActive: z.boolean().optional(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -381,6 +408,7 @@ export const UpdateMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
             stationId: z.uuidv4(),
             title: z.string().min(1).max(128),
             description: z.string().max(1024),
+            isActive: z.boolean().optional(),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -650,6 +678,8 @@ export const RestoreMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     description: z.string(),
     timeoutSeconds: z.number().int().min(60).max(3600),
     phase: z.enum(AllRoutinePhases).nullable(),
+    isActive: z.boolean().default(true),
+    definitionVersion: z.number().int().positive().default(1),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
     scheduledEndAt: z.coerce.date(),
@@ -658,6 +688,8 @@ export const RestoreMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     deletedAt: z.coerce.date().nullable(),
     updatedAt: z.coerce.date(),
     createdAt: z.coerce.date(),
+
+    admissionState: z.enum(RoutineAdmissionStates).catch("Unknown"),
   }),
   embedded: z.object({
     publicId: z.string(),
@@ -696,6 +728,8 @@ export const RestoreMyRoutinesByIdsResponseSchema =
         description: z.string(),
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
+        isActive: z.boolean().default(true),
+        definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -704,6 +738,8 @@ export const RestoreMyRoutinesByIdsResponseSchema =
         deletedAt: z.coerce.date().nullable(),
         updatedAt: z.coerce.date(),
         createdAt: z.coerce.date(),
+
+        admissionState: z.enum(RoutineAdmissionStates).catch("Unknown"),
       })
     ),
     embedded: z.object({

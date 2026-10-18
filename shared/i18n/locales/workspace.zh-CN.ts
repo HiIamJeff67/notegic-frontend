@@ -1,6 +1,15 @@
 import type { WorkspaceTranslation } from "./workspace.type";
 
 export const SimpleChineseWorkspaceTranslation = {
+  routineAdmission: {
+    unknown: "尚未检查",
+    paused: "已暂停",
+    noEntry: "没有有效起点",
+    quotaBlocked: "等待可用额度",
+    dependencyBlocked: "依赖未满足",
+    eligible: "可调度",
+    unavailable: "暂时不可用",
+  },
   navigation: {
     dashboard: "仪表板",
     routines: "流程",
@@ -151,7 +160,7 @@ export const SimpleChineseWorkspaceTranslation = {
   },
   records: {
     title: "流程任务记录",
-    routineTitle: "流程执行记录",
+    routineTitle: "流程记录表格",
     noLinkedTasks: "这个流程没有关联的流程任务。",
     loading: "正在加载流程任务记录……",
     noMatches: "没有流程任务记录符合当前筛选条件。",
@@ -428,6 +437,8 @@ export const SimpleChineseWorkspaceTranslation = {
     routineTaskRecordTable: "流程任务记录表格",
   },
   fields: {
+    startingNode: "起点",
+    active: "启用",
     get: "获取",
     create: "创建",
     append: "追加",
@@ -535,6 +546,7 @@ export const SimpleChineseWorkspaceTranslation = {
     titlePlaceholder: "例如：创建每日笔记",
   },
   validation: {
+    startingNodeIncoming: "起点不能接受连入的连线。",
     invalidSchedule: "结束时间必须晚于开始时间。",
     unsupportedTimezone: "请选择受支持的时区。",
     invalidJson: "Payload 必须是有效的 JSON。",

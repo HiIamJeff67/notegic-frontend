@@ -56,6 +56,7 @@ const RoutineInspector = ({
     description: string;
     timeoutMinutes: number;
     phase: RoutinePhase | null;
+    isActive: boolean;
     isPinned: boolean;
     scheduledStartAt: Date;
     scheduledEndAt: Date;
@@ -66,6 +67,7 @@ const RoutineInspector = ({
     description: "",
     timeoutMinutes: 5,
     phase: null,
+    isActive: false,
     isPinned: false,
     scheduledStartAt: new Date(),
     scheduledEndAt: new Date(),
@@ -102,6 +104,7 @@ const RoutineInspector = ({
       description: "",
       timeoutMinutes: 5,
       phase: null,
+      isActive: false,
       isPinned: false,
       scheduledStartAt,
       scheduledEndAt,
@@ -135,6 +138,7 @@ const RoutineInspector = ({
           title: response.data.title,
           description: response.data.description,
           phase: response.data.phase,
+          isActive: response.data.isActive,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -178,6 +182,7 @@ const RoutineInspector = ({
           description: response.data.description,
           timeoutMinutes: (response.data.timeoutSeconds ?? 300) / 60,
           phase: response.data.phase,
+          isActive: response.data.isActive,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -266,6 +271,7 @@ const RoutineInspector = ({
           title,
           description: values.description.trim(),
           timeoutSeconds: values.timeoutMinutes * 60,
+          isActive: values.isActive,
           isPinned: values.isPinned,
           scheduledStartAt,
           scheduledEndAt,
@@ -383,6 +389,19 @@ const RoutineInspector = ({
                     ? t(routinePhaseTKeys[values.phase])
                     : t("workspace.period.none")}
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3">
+                <Label htmlFor="routine-inspector-active">
+                  {t("workspace.fields.active")}
+                </Label>
+                <Switch
+                  id="routine-inspector-active"
+                  checked={values.isActive}
+                  onCheckedChange={isActive =>
+                    setValues(current => ({ ...current, isActive }))
+                  }
+                />
               </div>
 
               <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3">

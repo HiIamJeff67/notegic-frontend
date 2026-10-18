@@ -44,6 +44,7 @@ const RoutineTaskPayloadEditor = lazy(
 
 interface CreateRoutineTaskDialogProps extends ModalProps {
   routineId: UUID;
+  expectedDefinitionVersion?: number;
   stationName?: string;
   routineTitle?: string;
   onCreated?: (routineTaskId: UUID) => void | Promise<void>;
@@ -53,6 +54,7 @@ const CreateRoutineTaskDialog = ({
   isOpen,
   onClose,
   routineId,
+  expectedDefinitionVersion,
   stationName,
   routineTitle,
   onCreated,
@@ -136,7 +138,8 @@ const CreateRoutineTaskDialog = ({
         purpose,
         parsedPayload,
         Number(priority),
-        Number(maxAttempts)
+        Number(maxAttempts),
+        expectedDefinitionVersion
       );
       routineTaskId = routineTaskNode.id;
     } catch (error) {

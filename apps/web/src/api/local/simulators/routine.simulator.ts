@@ -1,6 +1,6 @@
 import {
-  toGraphQLRoutinePhase,
   toGraphQLRoutinePeriod,
+  toGraphQLRoutinePhase,
 } from "@shared/api/graphql/conversions";
 import {
   type SearchRoutineInput,
@@ -17,9 +17,9 @@ import type {
   CreateRoutinesByStationIdsRequest,
   DeleteMyRoutineByIdRequest,
   DeleteMyRoutinesByIdsRequest,
-  GetMyRoutinesByTimeRangeRequest,
   GetMyRoutineByIdRequest,
   GetMyRoutinesByStationIdRequest,
+  GetMyRoutinesByTimeRangeRequest,
   HardDeleteMyRoutineByIdRequest,
   HardDeleteMyRoutinesByIdsRequest,
   LinkRoutineItemByIdRequest,
@@ -31,6 +31,18 @@ import type {
   UpdateMyRoutineByIdRequest,
   UpdateMyRoutinesByIdsRequest,
 } from "@shared/api/interfaces/routine.interface";
+import { generateUUID } from "@shared/types/uuidv4.type";
+import {
+  and,
+  asc,
+  eq,
+  exists,
+  gt,
+  inArray,
+  isNull,
+  lt,
+  sql,
+} from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Item,
@@ -47,18 +59,6 @@ import {
 } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { generateUUID } from "@shared/types/uuidv4.type";
-import {
-  and,
-  asc,
-  eq,
-  exists,
-  gt,
-  inArray,
-  isNull,
-  lt,
-  sql,
-} from "drizzle-orm";
 
 export class RoutineLocalSimulator {
   private static getPassPermissionCheckSQL = (
@@ -111,6 +111,8 @@ export class RoutineLocalSimulator {
         title: Routine.title,
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
+        isActive: Routine.isActive,
+        definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -250,6 +252,9 @@ export class RoutineLocalSimulator {
             title: routine.title,
             phase: toGraphQLRoutinePhase(routine.phase),
             timeoutSeconds: routine.timeoutSeconds,
+            isActive: routine.isActive,
+            admissionState: routine.isActive ? "Unknown" : "Paused",
+            definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -309,6 +314,8 @@ export class RoutineLocalSimulator {
         description: Routine.description,
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
+        isActive: Routine.isActive,
+        definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -350,6 +357,9 @@ export class RoutineLocalSimulator {
       .where(eq(RoutinesToItems.routineId, routine.id));
     return {
       ...routine,
+      admissionState: routine.isActive
+        ? ("Unknown" as const)
+        : ("Paused" as const),
       tagIds: relations.map(relation => relation.tagId),
       taskIds: taskRelations.map(relation => relation.taskId),
       itemIds: itemRelations.map(relation => relation.itemId),
@@ -372,6 +382,8 @@ export class RoutineLocalSimulator {
         title: Routine.title,
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
+        isActive: Routine.isActive,
+        definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -445,6 +457,9 @@ export class RoutineLocalSimulator {
       );
     return routines.map(routine => ({
       ...routine,
+      admissionState: routine.isActive
+        ? ("Unknown" as const)
+        : ("Paused" as const),
       tagIds: relations
         .filter(relation => relation.routineId === routine.id)
         .map(relation => relation.tagId),
@@ -475,6 +490,8 @@ export class RoutineLocalSimulator {
         title: Routine.title,
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
+        isActive: Routine.isActive,
+        definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
         scheduledEndAt: Routine.scheduledEndAt,
@@ -550,6 +567,9 @@ export class RoutineLocalSimulator {
       );
     return routines.map(routine => ({
       ...routine,
+      admissionState: routine.isActive
+        ? ("Unknown" as const)
+        : ("Paused" as const),
       tagIds: relations
         .filter(relation => relation.routineId === routine.id)
         .map(relation => relation.tagId),
@@ -604,6 +624,7 @@ export class RoutineLocalSimulator {
         stationId: request.body.stationId,
         title: request.body.title,
         description: request.body.description,
+        isActive: request.body.isActive ?? false,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt: request.body.scheduledStartAt ?? createdAt,
         scheduledEndAt: request.body.scheduledEndAt ?? createdAt,
@@ -685,6 +706,7 @@ export class RoutineLocalSimulator {
           title: routine.title,
           description: routine.description,
           phase: null,
+          isActive: routine.isActive ?? false,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? createdAt,
@@ -732,23 +754,29 @@ export class RoutineLocalSimulator {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (loggedInUser === undefined) return;
+      if (loggedInUser === undefined)
+        throw new Error("A signed-in user is required");
 
-      const existingRoutine = await tx.query.Routine.findFirst({
-        where: and(
-          eq(Routine.id, request.body.routineId),
-          RoutineLocalSimulator.getPassPermissionCheckSQL(
-            tx,
-            loggedInUser.publicId,
-            [
-              AccessControlPermission.Owner,
-              AccessControlPermission.Admin,
-              AccessControlPermission.Write,
-            ]
+      const [existingRoutine] = await tx
+        .select()
+        .from(Routine)
+        .where(
+          and(
+            eq(Routine.id, request.body.routineId),
+            RoutineLocalSimulator.getPassPermissionCheckSQL(
+              tx,
+              loggedInUser.publicId,
+              [
+                AccessControlPermission.Owner,
+                AccessControlPermission.Admin,
+                AccessControlPermission.Write,
+              ]
+            )
           )
-        ),
-      });
-      if (existingRoutine === undefined) return;
+        )
+        .limit(1);
+      if (existingRoutine === undefined)
+        throw new Error("Routine write permission is required");
 
       if (
         request.body.values.stationId !== undefined &&
@@ -770,7 +798,8 @@ export class RoutineLocalSimulator {
             )
           )
           .where(eq(Station.id, request.body.values.stationId));
-        if (targetStation.length === 0) return;
+        if (targetStation.length === 0)
+          throw new Error("Station write permission is required");
       }
 
       const updatedAt = new Date();
@@ -785,6 +814,9 @@ export class RoutineLocalSimulator {
           }),
           ...(request.body.values.description !== undefined && {
             description: request.body.values.description,
+          }),
+          ...(request.body.values.isActive !== undefined && {
+            isActive: request.body.values.isActive,
           }),
           ...(request.body.values.isPinned !== undefined && {
             isPinned: request.body.values.isPinned,
@@ -899,6 +931,9 @@ export class RoutineLocalSimulator {
             }),
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
+            }),
+            ...(routine.values.isActive !== undefined && {
+              isActive: routine.values.isActive,
             }),
             ...(routine.values.isPinned !== undefined && {
               isPinned: routine.values.isPinned,

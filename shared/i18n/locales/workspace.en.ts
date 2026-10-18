@@ -1,4 +1,13 @@
 export const EnglishWorkspaceTranslation = {
+  routineAdmission: {
+    unknown: "Not checked",
+    paused: "Paused",
+    noEntry: "No active entry",
+    quotaBlocked: "Waiting for quota",
+    dependencyBlocked: "Dependencies blocked",
+    eligible: "Ready",
+    unavailable: "Unavailable",
+  },
   navigation: {
     dashboard: "Dashboard",
     routines: "Routines",
@@ -152,7 +161,7 @@ export const EnglishWorkspaceTranslation = {
   },
   records: {
     title: "Routine task records",
-    routineTitle: "Routine execution records",
+    routineTitle: "Routine record table",
     noLinkedTasks: "This routine has no linked routine tasks.",
     loading: "Loading routine task records...",
     noMatches: "No routine task records match the current filters.",
@@ -438,6 +447,8 @@ export const EnglishWorkspaceTranslation = {
     routineTaskRecordTable: "Routine task record table",
   },
   fields: {
+    startingNode: "Starting node",
+    active: "Active",
     get: "Get",
     create: "Create",
     append: "Append",
@@ -552,6 +563,7 @@ export const EnglishWorkspaceTranslation = {
     titlePlaceholder: "e.g. Create the daily note",
   },
   validation: {
+    startingNodeIncoming: "Starting nodes cannot have incoming connections.",
     invalidSchedule: "End time must be later than start time.",
     unsupportedTimezone: "Select a supported timezone.",
     invalidJson: "Payload must be valid JSON.",

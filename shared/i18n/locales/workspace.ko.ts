@@ -1,6 +1,15 @@
 import type { WorkspaceTranslation } from "./workspace.type";
 
 export const KoreanWorkspaceTranslation = {
+  routineAdmission: {
+    unknown: "확인 전",
+    paused: "일시 중지됨",
+    noEntry: "활성 시작점 없음",
+    quotaBlocked: "할당량 대기 중",
+    dependencyBlocked: "종속 조건 미충족",
+    eligible: "실행 가능",
+    unavailable: "사용 불가",
+  },
   navigation: {
     dashboard: "대시보드",
     routines: "루틴",
@@ -153,7 +162,7 @@ export const KoreanWorkspaceTranslation = {
   },
   records: {
     title: "루틴 작업 기록",
-    routineTitle: "루틴 실행 기록",
+    routineTitle: "루틴 기록 표",
     noLinkedTasks: "이 루틴에 연결된 루틴 작업이 없습니다.",
     loading: "루틴 작업 기록을 불러오는 중…",
     noMatches: "현재 필터와 일치하는 루틴 작업 기록이 없습니다.",
@@ -437,6 +446,8 @@ export const KoreanWorkspaceTranslation = {
     routineTaskRecordTable: "루틴 작업 기록 표",
   },
   fields: {
+    startingNode: "시작 노드",
+    active: "활성",
     get: "가져오기",
     create: "만들기",
     append: "추가",
@@ -548,6 +559,7 @@ export const KoreanWorkspaceTranslation = {
     titlePlaceholder: "예: 매일 메모 만들기",
   },
   validation: {
+    startingNodeIncoming: "시작 노드로 연결할 수 없습니다.",
     invalidSchedule: "종료 시간은 시작 시간보다 늦어야 합니다.",
     unsupportedTimezone: "지원되는 표준 시간대를 선택하세요.",
     invalidJson: "페이로드는 유효한 JSON이어야 합니다.",

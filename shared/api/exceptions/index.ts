@@ -177,6 +177,8 @@ export const isAuthenticationFailureReason = (reason: string): boolean =>
 
 export const DatabaseExceptionReasons = {
   notFound: "NotFound",
+  definitionConflict: "DefinitionConflict",
+  rescheduleRequired: "RescheduleRequired",
   failedToCreate: "FailedToCreate",
   failedToUpdate: "FailedToUpdate",
   failedToDelete: "FailedToDelete",

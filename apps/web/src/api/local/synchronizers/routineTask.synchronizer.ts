@@ -5,17 +5,174 @@ import type {
   GetMyRoutineTaskByIdResponse,
   GetMyRoutineTasksByRoutineIdResponse,
   GetMyRoutineTasksByRoutineIdsResponse,
+  HardDeleteMyRoutineTaskByIdRequest,
+  UpdateMyRoutineTaskByIdRequest,
+  UpdateMyRoutineTaskByIdResponse,
 } from "@shared/api/interfaces/routineTask.interface";
-import { and, eq, sql } from "drizzle-orm";
+import { normalizeRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
+import { and, eq, gte, type InferSelectModel, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { RoutinesToTasks, RoutineTask } from "@/api/local/schemas";
+import {
+  Routine,
+  RoutinesToTasks,
+  RoutineTask,
+  RoutineTaskDependency,
+  RoutineTaskDependencyGraphDraft,
+  Transaction,
+} from "@/api/local/schemas";
+import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
 
 export class RoutineTaskLocalSynchronizer {
+  static acknowledgeMutation = async (
+    acknowledged: InferSelectModel<typeof Transaction>,
+    routineId: string,
+    expected: number,
+    confirmed: number
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    return localDB.transaction(async tx => {
+      const pending = await tx
+        .select()
+        .from(Transaction)
+        .where(
+          and(
+            eq(Transaction.ownerPublicId, acknowledged.ownerPublicId),
+            eq(Transaction.entityType, TransactionEntityType.RoutineTask),
+            gte(Transaction.sequence, acknowledged.sequence)
+          )
+        );
+      const advanced: Array<{ sequence: number; body: unknown }> = [];
+      for (const successor of pending) {
+        if (successor.sequence === acknowledged.sequence) continue;
+        const body = successor.body as {
+          routineId?: string;
+          expectedDefinitionVersion?: number;
+        };
+        const affected = successor.affected as { routineId?: string } | null;
+        if (
+          (body.routineId ?? affected?.routineId) !== routineId ||
+          body.expectedDefinitionVersion !== expected
+        )
+          continue;
+        const nextBody = { ...body, expectedDefinitionVersion: confirmed };
+        advanced.push({ sequence: successor.sequence, body: nextBody });
+        await tx
+          .update(Transaction)
+          .set({ body: nextBody })
+          .where(eq(Transaction.sequence, successor.sequence));
+      }
+      const [draft] = await tx
+        .select()
+        .from(RoutineTaskDependencyGraphDraft)
+        .where(eq(RoutineTaskDependencyGraphDraft.routineId, routineId));
+      if (draft) {
+        const edges = JSON.parse(draft.edges) as Array<{
+          expectedDefinitionVersion?: number;
+          syncStatus?: string;
+        }>;
+        for (const edge of edges) {
+          if (
+            edge.syncStatus === "pending" &&
+            edge.expectedDefinitionVersion === expected
+          )
+            edge.expectedDefinitionVersion = confirmed;
+        }
+        await tx
+          .update(RoutineTaskDependencyGraphDraft)
+          .set({ edges: JSON.stringify(edges) })
+          .where(eq(RoutineTaskDependencyGraphDraft.routineId, routineId));
+      }
+      await tx
+        .update(Routine)
+        .set({ definitionVersion: confirmed })
+        .where(
+          and(
+            eq(Routine.id, routineId),
+            eq(Routine.definitionVersion, expected)
+          )
+        );
+      await tx
+        .delete(Transaction)
+        .where(eq(Transaction.sequence, acknowledged.sequence));
+      return advanced;
+    });
+  };
+
+  static syncUpdateMyRoutineTaskById = async (
+    request: UpdateMyRoutineTaskByIdRequest,
+    response: UpdateMyRoutineTaskByIdResponse
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+    if (
+      pending.some(
+        transaction =>
+          (transaction.body as { routineTaskId?: string }).routineTaskId ===
+          request.body.routineTaskId
+      )
+    )
+      return;
+    const [existing] = await localDB
+      .select()
+      .from(RoutineTask)
+      .where(eq(RoutineTask.id, request.body.routineTaskId));
+    if (!existing) return;
+    const normalized = normalizeRoutineTaskDefinition({
+      ...existing,
+      ...request.body.values,
+      purpose:
+        existing.kind === "Start"
+          ? request.body.values.purpose
+          : (request.body.values.purpose ??
+            request.body.values.payload?.purpose ??
+            existing.purpose),
+    });
+    await localDB
+      .update(RoutineTask)
+      .set({
+        ...request.body.values,
+        payload: normalized.payload,
+        purpose: normalized.purpose,
+        updatedAt: response.data.updatedAt,
+      })
+      .where(eq(RoutineTask.id, request.body.routineTaskId));
+  };
+
+  static syncHardDeleteMyRoutineTaskById = async (
+    request: HardDeleteMyRoutineTaskByIdRequest
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const id = request.body.routineTaskId;
+      await tx
+        .delete(RoutineTaskDependency)
+        .where(
+          sql`${RoutineTaskDependency.routineTaskId} = ${id} OR ${RoutineTaskDependency.previousRoutineTaskId} = ${id}`
+        );
+      await tx.delete(RoutinesToTasks).where(eq(RoutinesToTasks.taskId, id));
+      await tx.delete(RoutineTask).where(eq(RoutineTask.id, id));
+    });
+  };
+
   static syncCreateRoutineTaskByRoutineId = async (
     request: CreateRoutineTaskByRoutineIdRequest,
     response: CreateRoutineTaskByRoutineIdResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
+
+    const normalized = normalizeRoutineTaskDefinition(request.body);
+    const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+    if (
+      pending.some(transaction => {
+        const body = transaction.body as {
+          id?: string;
+          routineTaskId?: string;
+        };
+        return (body.id ?? body.routineTaskId) === response.data.id;
+      })
+    )
+      return;
 
     await localDB.transaction(async tx => {
       await tx
@@ -23,9 +180,12 @@ export class RoutineTaskLocalSynchronizer {
         .values({
           id: response.data.id,
           routineId: request.body.routineId,
+          kind: request.body.kind ?? "Action",
+          x: request.body.x ?? 0,
+          y: request.body.y ?? 0,
           title: request.body.title,
-          purpose: request.body.purpose,
-          payload: request.body.payload,
+          purpose: normalized.purpose,
+          payload: normalized.payload,
           priority: request.body.priority ?? 0,
           maxAttempts: request.body.maxAttempts ?? 1,
           previousRoutineTaskIds: [],
@@ -36,9 +196,12 @@ export class RoutineTaskLocalSynchronizer {
           target: RoutineTask.id,
           set: {
             routineId: request.body.routineId,
+            kind: request.body.kind ?? "Action",
+            x: request.body.x ?? 0,
+            y: request.body.y ?? 0,
             title: request.body.title,
-            purpose: request.body.purpose,
-            payload: request.body.payload,
+            purpose: normalized.purpose,
+            payload: normalized.payload,
             priority: request.body.priority ?? 0,
             maxAttempts: request.body.maxAttempts ?? 1,
             previousRoutineTaskIds: [],
@@ -53,6 +216,7 @@ export class RoutineTaskLocalSynchronizer {
             eq(RoutinesToTasks.taskId, response.data.id)
           )
         );
+      if (request.body.kind === "Start") return;
       await tx.insert(RoutinesToTasks).values({
         routineId: request.body.routineId,
         taskId: response.data.id,
@@ -66,6 +230,17 @@ export class RoutineTaskLocalSynchronizer {
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
 
+    const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+    if (
+      pending.some(transaction => {
+        const body = transaction.body as {
+          id?: string;
+          routineTaskId?: string;
+        };
+        return (body.id ?? body.routineTaskId) === response.data.id;
+      })
+    )
+      return;
     await localDB
       .insert(RoutineTask)
       .values(response.data)
@@ -73,6 +248,9 @@ export class RoutineTaskLocalSynchronizer {
         target: RoutineTask.id,
         set: {
           routineId: response.data.routineId,
+          kind: response.data.kind,
+          x: response.data.x,
+          y: response.data.y,
           title: response.data.title,
           purpose: response.data.purpose,
           payload: response.data.payload,
@@ -90,13 +268,27 @@ export class RoutineTaskLocalSynchronizer {
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
     if (response.data.length === 0) return;
-
+    const pending = await RoutineTaskLocalSimulator.getPendingMutations();
+    const pendingIds = new Set(
+      pending.map(transaction => {
+        const body = transaction.body as {
+          id?: string;
+          routineTaskId?: string;
+        };
+        return body.id ?? body.routineTaskId;
+      })
+    );
+    const incoming = response.data.filter(task => !pendingIds.has(task.id));
+    if (incoming.length === 0) return;
     await localDB
       .insert(RoutineTask)
       .values(
-        response.data.map(routineTask => ({
+        incoming.map(routineTask => ({
           id: routineTask.id,
           routineId: routineTask.routineId,
+          kind: routineTask.kind,
+          x: routineTask.x,
+          y: routineTask.y,
           title: routineTask.title,
           purpose: routineTask.purpose,
           payload: routineTask.payload,
@@ -111,6 +303,9 @@ export class RoutineTaskLocalSynchronizer {
         target: RoutineTask.id,
         set: {
           routineId: sql`excluded.routine_id`,
+          kind: sql`excluded.kind`,
+          x: sql`excluded.x`,
+          y: sql`excluded.y`,
           title: sql`excluded.title`,
           purpose: sql`excluded.purpose`,
           payload: sql`excluded.payload`,
@@ -134,25 +329,8 @@ export class RoutineTaskLocalSynchronizer {
   static syncGetAllMyRoutineTasks = async (
     response: GetAllMyRoutineTasksResponse
   ): Promise<void> => {
-    if (!localDB.isReady) await localDB.ensureReady();
-    if (response.data.length === 0) return;
-
-    await localDB
-      .insert(RoutineTask)
-      .values(response.data)
-      .onConflictDoUpdate({
-        target: RoutineTask.id,
-        set: {
-          routineId: sql`excluded.routine_id`,
-          title: sql`excluded.title`,
-          purpose: sql`excluded.purpose`,
-          payload: sql`excluded.payload`,
-          priority: sql`excluded.priority`,
-          maxAttempts: sql`excluded.max_attempts`,
-          previousRoutineTaskIds: sql`excluded.previous_routine_task_ids`,
-          updatedAt: sql`excluded.updated_at`,
-          createdAt: sql`excluded.created_at`,
-        },
-      });
+    await RoutineTaskLocalSynchronizer.syncGetMyRoutineTasksByRoutineIds(
+      response
+    );
   };
 }

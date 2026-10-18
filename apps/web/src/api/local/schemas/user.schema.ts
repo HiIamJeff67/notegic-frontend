@@ -1,11 +1,11 @@
-import { RootShelf, Transaction, UsersToShelves } from "@/api/local/schemas";
-import { eq, relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   integer,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import { RootShelf, Transaction, UsersToShelves } from "@/api/local/schemas";
 import { UsersToStations } from "./usersToStations.schema";
 
 // the same schemas as the user in api interface and shard type
@@ -30,7 +30,7 @@ export const User = sqliteTable(
   table => [
     uniqueIndex("user_unique_idx_is_logged_in")
       .on(table.isLoggedIn)
-      .where(eq(table.isLoggedIn, true)),
+      .where(sql`${table.isLoggedIn} = 1`),
   ]
 );
 

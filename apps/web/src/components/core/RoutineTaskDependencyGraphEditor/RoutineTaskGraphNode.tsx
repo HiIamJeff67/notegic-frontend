@@ -9,16 +9,31 @@ import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskReco
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { useModal } from "@/hooks";
 
 export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
   title: string;
-  purpose: RoutineTaskPurpose;
+  kind: "Start" | "Action";
+  purpose: RoutineTaskPurpose | "";
+  payload: Record<string, unknown>;
+  expectedDefinitionVersion?: number;
+  onUpdated?: (values: {
+    title?: string;
+    payload?: Record<string, unknown>;
+  }) => Promise<void>;
   executionStatus?: RoutineTaskRecordStatus | null;
   routinePhase?: RoutinePhase | null;
+  onEdit?: () => void;
   onDeleted?: () => void | Promise<void>;
 }
 
@@ -34,53 +49,103 @@ const RoutineTaskGraphNode = ({
 }: NodeProps<RoutineTaskGraphNode>) => {
   const { t } = useTranslation();
   const modalManager = useModal();
+  const isStart = data.kind === "Start";
+  const isActive = data.payload.isActive !== false;
 
   return (
-    <div
-      className={`min-w-56 max-w-64 rounded-md border bg-card px-3 py-2 shadow-sm ${
-        selected ? "border-primary ring-2 ring-primary/30" : "border-border"
-      }`}
-    >
-      <Handle type="target" position={Position.Left} />
-      <div className="flex min-w-0 items-start gap-2">
-        <div className="min-w-0 flex-1 truncate text-sm font-medium">
-          {data.title}
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div
+          role="group"
+          tabIndex={0}
+          aria-label={data.title}
+          aria-haspopup="menu"
+          onContextMenu={event => {
+            if ((event.target as Element).closest(".react-flow__handle"))
+              event.preventDefault();
+          }}
+          data-node-kind={data.kind}
+          data-active={isStart ? isActive : undefined}
+          className={`relative border shadow-sm ${
+            isStart
+              ? `flex size-20 items-center justify-center rounded-full ${isActive ? "border-emerald-500 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300" : "border-border bg-muted text-muted-foreground"}`
+              : "min-w-56 max-w-64 rounded-md bg-card px-3 py-2"
+          } ${selected ? "ring-2 ring-primary/30" : ""}`}
+        >
+          {!isStart && <Handle type="target" position={Position.Left} />}
+          <div
+            className={
+              isStart
+                ? "absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 truncate text-center text-sm font-medium"
+                : "min-w-0 truncate text-sm font-medium"
+            }
+            title={data.title}
+          >
+            {data.title}
+          </div>
+          {!isStart && (
+            <>
+              <div className="mt-1 truncate text-xs text-muted-foreground">
+                {data.purpose
+                  ? `${t(routineTaskPurposeTKeys[data.purpose].action)} · ${t(routineTaskPurposeTKeys[data.purpose].target)}`
+                  : ""}
+              </div>
+              <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                <RoutineTaskStatusDot status={data.executionStatus} />
+                <span className="truncate">
+                  {data.executionStatus
+                    ? t(routineTaskRecordStatusTKeys[data.executionStatus])
+                    : t("workspace.status.waiting")}
+                </span>
+                {data.routinePhase
+                  ? ` · ${t(routinePhaseTKeys[data.routinePhase])}`
+                  : ""}
+              </div>
+            </>
+          )}
+          <Handle type="source" position={Position.Right} />
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="nodrag nopan -mr-1 -mt-1 shrink-0 text-muted-foreground hover:text-destructive"
-          aria-label={t("common.delete")}
-          title={t("common.delete")}
-          onClick={event => {
-            event.stopPropagation();
+      </ContextMenuTrigger>
+      <ContextMenuContent
+        className="nodrag nopan"
+        onClick={event => event.stopPropagation()}
+        onKeyDown={event => event.stopPropagation()}
+        onContextMenu={event => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <ContextMenuItem onSelect={() => data.onEdit?.()}>
+          <Pencil className="mr-2 size-4" />
+          {t("common.edit")}
+        </ContextMenuItem>
+        {isStart && (
+          <ContextMenuCheckboxItem
+            checked={isActive}
+            onCheckedChange={isActive =>
+              void data.onUpdated?.({ payload: { ...data.payload, isActive } })
+            }
+          >
+            {t("workspace.fields.active")}
+          </ContextMenuCheckboxItem>
+        )}
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          className="text-destructive focus:text-destructive"
+          onSelect={() =>
             modalManager.open("DeleteRoutineTaskDialog", {
               routineTaskId: id as UUID,
               routineTaskTitle: data.title,
               onDeleted: data.onDeleted,
-            });
-          }}
+              expectedDefinitionVersion: data.expectedDefinitionVersion,
+            })
+          }
         >
-          <Trash2 />
-        </Button>
-      </div>
-      <div className="mt-1 truncate text-xs text-muted-foreground">
-        {`${t(routineTaskPurposeTKeys[data.purpose].action)} · ${t(routineTaskPurposeTKeys[data.purpose].target)}`}
-      </div>
-      <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-        <RoutineTaskStatusDot status={data.executionStatus} />
-        <span className="truncate">
-          {data.executionStatus
-            ? t(routineTaskRecordStatusTKeys[data.executionStatus])
-            : t("workspace.status.waiting")}
-        </span>
-        {data.routinePhase
-          ? ` · ${t(routinePhaseTKeys[data.routinePhase])}`
-          : ""}
-      </div>
-      <Handle type="source" position={Position.Right} />
-    </div>
+          <Trash2 className="mr-2 size-4" />
+          {t("common.delete")}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 

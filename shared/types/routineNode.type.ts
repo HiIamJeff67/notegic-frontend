@@ -1,4 +1,5 @@
 import { RoutinePeriod, RoutinePhase } from "@shared/api/interfaces/enums";
+import type { RoutineAdmissionState } from "@shared/api/interfaces/routine.interface";
 import type { UUID } from "crypto";
 import type { RoutineTaskNode } from "./routineTaskNode.type";
 
@@ -8,6 +9,8 @@ export interface RoutineNode {
   title: string;
   description: string;
   phase: RoutinePhase | null;
+  isActive?: boolean;
+  definitionVersion?: number;
   isPinned: boolean;
   scheduledStartAt: Date;
   scheduledEndAt: Date;
@@ -24,6 +27,8 @@ export interface RoutineNode {
   routineTaskIds: UUID[];
   itemIds: UUID[];
   routineTasks: RoutineTaskNode[];
+
+  admissionState?: RoutineAdmissionState;
 }
 
 export const getDefaultRoutineNode = (
@@ -35,6 +40,8 @@ export const getDefaultRoutineNode = (
   title: "Untitled",
   description: "",
   phase: null,
+  isActive: false,
+  definitionVersion: 1,
   isPinned: false,
   scheduledStartAt: new Date(),
   scheduledEndAt: new Date(),

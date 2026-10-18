@@ -34,6 +34,24 @@ export const RoutineTaskPayloadSchema = z
     const addPayloadIssue = (path: (string | number)[], message: string) =>
       ctx.addIssue({ code: "custom", path: ["payload", ...path], message });
 
+    if (
+      rawPayload === null ||
+      typeof rawPayload !== "object" ||
+      Array.isArray(rawPayload)
+    ) {
+      addPayloadIssue([], "Payload must be an object.");
+      return;
+    }
+    if (payload.schemaVersion !== undefined && payload.schemaVersion !== 1) {
+      addPayloadIssue(["schemaVersion"], "Unsupported payload version.");
+    }
+    if (payload.purpose !== undefined && payload.purpose !== purpose) {
+      addPayloadIssue(
+        ["purpose"],
+        "Payload purpose conflicts with the compatibility field."
+      );
+    }
+
     if (payload.pattern !== undefined) {
       if (typeof payload.pattern !== "object" || payload.pattern === null) {
         addPayloadIssue(["pattern"], "Pattern must be an object.");

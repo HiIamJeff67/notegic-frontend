@@ -101,6 +101,8 @@ export const useRoutineTaskLogic = ({
         routines.map(routine => [routine.id, routine])
       );
       const routineTaskNodes = routineTasks.flatMap(routineTask => {
+        if (routineTask.kind === "Start" || routineTask.purpose === "")
+          return [];
         const routineNode = routineById.get(routineTask.routineId as UUID);
         if (!routineNode) return [];
         const stationNode = stationsRef.current.get(routineNode.stationId);
@@ -274,13 +276,15 @@ export const useRoutineTaskLogic = ({
             id: UUID;
             routineId: UUID;
             title: string;
-            purpose: string;
+            kind?: string;
+            purpose: string | null;
             priority: number;
             maxAttempts: number;
             previousRoutineTaskIds: UUID[];
             updatedAt: Date | string | number;
             createdAt: Date | string | number;
           };
+          if (node.kind === "Start" || !node.purpose) return null;
           const routineNode = routines.find(
             routine => routine.id === node.routineId
           );
@@ -424,7 +428,8 @@ export const useRoutineTaskLogic = ({
       purpose: RoutineTaskPurpose,
       payload: unknown = {},
       priority: number = 0,
-      maxAttempts: number = 1
+      maxAttempts: number = 1,
+      expectedDefinitionVersion?: number
     ): Promise<RoutineTaskNode> => {
       let stationNode: StationNode | undefined;
       let routineNode = undefined as
@@ -444,6 +449,8 @@ export const useRoutineTaskLogic = ({
       const validation = CreateRoutineTaskByRoutineIdRequestSchema.safeParse({
         body: {
           routineId,
+          expectedDefinitionVersion:
+            expectedDefinitionVersion ?? routineNode.definitionVersion,
           title: title.trim(),
           purpose,
           payload,
@@ -462,14 +469,17 @@ export const useRoutineTaskLogic = ({
         header: getClientRequestHeaders(navigator.userAgent),
         body,
       });
-      if (response.success === false) throw response.exception;
+      if (response.success)
+        routineNode.definitionVersion =
+          (routineNode.definitionVersion ?? 1) + 1;
+      else toast.info(t("workspace.fields.pendingSync"));
 
       const routineTaskNode: RoutineTaskNode = {
         id: response.data.id as UUID,
         routineId,
         stationId: routineNode.stationId,
         title: body.title,
-        purpose: body.purpose,
+        purpose: body.purpose ?? purpose,
         payload: body.payload,
         priority: body.priority ?? 0,
         maxAttempts: body.maxAttempts ?? 1,
@@ -496,7 +506,7 @@ export const useRoutineTaskLogic = ({
       forceUpdate();
       return routineTaskNode;
     },
-    [createRoutineTaskMutator, forceUpdate, stationsRef]
+    [createRoutineTaskMutator, forceUpdate, stationsRef, t]
   );
 
   const duplicateRoutineTask = useCallback(

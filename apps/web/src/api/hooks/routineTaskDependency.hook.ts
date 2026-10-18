@@ -148,6 +148,9 @@ export const useCreateRoutineTaskDependencyByRoutineId = () => {
         response
       );
       await queryClient.invalidateQueries({
+        queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
+      });
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.routineTaskDependency.byRoutineId(
           request.param.routineId as UUID
         ),
@@ -198,6 +201,9 @@ export const useUpdateRoutineTaskDependencyByRoutineId = () => {
         response
       );
       await queryClient.invalidateQueries({
+        queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
+      });
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.routineTaskDependency.byRoutineId(
           request.param.routineId as UUID
         ),
@@ -245,6 +251,9 @@ export const useDeleteRoutineTaskDependencyByRoutineId = () => {
         request,
         response
       );
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
+      });
       await queryClient.invalidateQueries({
         queryKey: queryKeys.routineTaskDependency.byRoutineId(
           request.param.routineId as UUID

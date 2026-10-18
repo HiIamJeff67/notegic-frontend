@@ -2,6 +2,10 @@ import type { ServerTranslation } from "./server.type";
 
 export const EnglishServerTranslation = {
   error: {
+    DefinitionConflict:
+      "This routine changed. Refresh before applying your edit.",
+    RescheduleRequired:
+      "Choose a future schedule before activating this routine.",
     InternalServerError: "Something went wrong on our side. Please try again.",
     InvalidDto: "Some submitted information is invalid.",
     InvalidInput: "The submitted input is invalid.",

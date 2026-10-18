@@ -1,6 +1,15 @@
 import type { WorkspaceTranslation } from "./workspace.type";
 
 export const JapaneseWorkspaceTranslation = {
+  routineAdmission: {
+    unknown: "未確認",
+    paused: "一時停止中",
+    noEntry: "有効な開始点なし",
+    quotaBlocked: "利用枠を待機中",
+    dependencyBlocked: "依存関係が未達成",
+    eligible: "実行準備完了",
+    unavailable: "利用不可",
+  },
   navigation: {
     dashboard: "ダッシュボード",
     routines: "ルーティン",
@@ -153,7 +162,7 @@ export const JapaneseWorkspaceTranslation = {
   },
   records: {
     title: "ルーティンタスク記録",
-    routineTitle: "ルーティン実行記録",
+    routineTitle: "ルーチン記録表",
     noLinkedTasks: "このルーティンに連携されたルーティンタスクはありません。",
     loading: "ルーティンタスク記録を読み込み中…",
     noMatches: "現在のフィルターに一致するルーティンタスク記録はありません。",
@@ -440,6 +449,8 @@ export const JapaneseWorkspaceTranslation = {
     routineTaskRecordTable: "ルーチンタスク記録表",
   },
   fields: {
+    startingNode: "開始ノード",
+    active: "有効",
     get: "取得",
     create: "作成",
     append: "追加",
@@ -553,6 +564,7 @@ export const JapaneseWorkspaceTranslation = {
     titlePlaceholder: "例: 毎日のメモを作成",
   },
   validation: {
+    startingNodeIncoming: "開始ノードへの接続はできません。",
     invalidSchedule: "終了時刻は開始時刻より後にしてください。",
     unsupportedTimezone: "サポートされているタイムゾーンを選択してください。",
     invalidJson: "ペイロードは有効な JSON である必要があります。",

@@ -13,11 +13,19 @@ import {
   VisualizeResponseSchema,
 } from "./visualize.interface";
 
-const CreateRoutineTaskBodySchema = z
+export const RoutineTaskKinds = ["Start", "Action"] as const;
+export type RoutineTaskKind = (typeof RoutineTaskKinds)[number];
+
+export const CreateRoutineTaskBodySchema = z
   .object({
+    id: z.uuidv4().optional(),
     routineId: z.uuidv4(),
+    kind: z.enum(RoutineTaskKinds).optional().default("Action"),
+    x: z.number().finite().min(-1000000).max(1000000).optional().default(0),
+    y: z.number().finite().min(-1000000).max(1000000).optional().default(0),
+    expectedDefinitionVersion: z.number().int().positive().optional(),
     title: z.string().min(1).max(128),
-    purpose: z.enum(AllRoutineTaskPurposes),
+    purpose: z.enum(AllRoutineTaskPurposes).optional(),
     payload: RoutineTaskPayloadSizeSchema,
     priority: z.int32().min(0).max(100),
     maxAttempts: z.int32().min(1).max(20),
@@ -27,8 +35,26 @@ const CreateRoutineTaskBodySchema = z
     maxAttempts: true,
   })
   .superRefine((body, ctx) => {
+    if (body.kind === "Start") {
+      const result = z
+        .object({
+          schemaVersion: z.literal(1).optional(),
+          description: z.string().max(1024).optional(),
+          isActive: z.boolean().optional(),
+        })
+        .strict()
+        .safeParse(body.payload);
+      if (!result.success || body.purpose !== undefined)
+        ctx.addIssue({
+          code: "custom",
+          message: "Invalid starting node payload",
+          path: ["payload"],
+        });
+      return;
+    }
     const result = RoutineTaskPayloadSchema.safeParse({
-      purpose: body.purpose,
+      purpose:
+        body.purpose ?? (body.payload as Record<string, unknown>)?.purpose,
       payload: body.payload,
     });
     if (!result.success) {
@@ -42,11 +68,31 @@ const CreateRoutineTaskBodySchema = z
     }
   });
 
+export const normalizeRoutineTaskDefinition = (
+  input: z.input<typeof CreateRoutineTaskBodySchema>
+) => {
+  const body = CreateRoutineTaskBodySchema.parse(input);
+  const purpose =
+    body.kind === "Start" ? "" : (body.purpose ?? body.payload.purpose);
+  const payload =
+    body.kind === "Start"
+      ? {
+          ...body.payload,
+          schemaVersion: 1,
+          isActive: body.payload.isActive ?? true,
+        }
+      : { ...body.payload, schemaVersion: 1, purpose };
+  return { ...body, purpose, payload };
+};
+
 const RoutineTaskDefinitionSchema = z.object({
   id: z.uuidv4(),
   routineId: z.uuidv4(),
+  kind: z.enum(RoutineTaskKinds).default("Action"),
+  x: z.number().finite().default(0),
+  y: z.number().finite().default(0),
   title: z.string(),
-  purpose: z.enum(AllRoutineTaskPurposes),
+  purpose: z.enum(AllRoutineTaskPurposes).or(z.literal("")),
   payload: z.any(),
   priority: z.int32(),
   maxAttempts: z.int32(),
@@ -207,7 +253,7 @@ export const CreateRoutineTaskByRoutineIdRequestSchema =
     body: CreateRoutineTaskBodySchema,
   });
 
-export type CreateRoutineTaskByRoutineIdRequest = z.infer<
+export type CreateRoutineTaskByRoutineIdRequest = z.input<
   typeof CreateRoutineTaskByRoutineIdRequestSchema
 >;
 
@@ -215,6 +261,7 @@ export const CreateRoutineTaskByRoutineIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.object({
       id: z.uuidv4(),
+      definitionVersion: z.number().int().positive().optional(),
       createdAt: z.coerce.date(),
     }),
     embedded: z.object({
@@ -238,8 +285,11 @@ export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend(
       .optional(),
     body: z.object({
       routineTaskId: z.uuidv4(),
+      expectedDefinitionVersion: z.number().int().positive().optional(),
       values: z
         .object({
+          x: z.number().finite().min(-1000000).max(1000000),
+          y: z.number().finite().min(-1000000).max(1000000),
           routineId: z.uuidv4(),
           title: z.string().min(1).max(128),
           purpose: z.enum(AllRoutineTaskPurposes),
@@ -270,6 +320,7 @@ export const UpdateMyRoutineTaskByIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.object({
       updatedAt: z.coerce.date(),
+      definitionVersion: z.number().int().positive().optional(),
     }),
     embedded: z.object({
       publicId: z.string(),
@@ -292,6 +343,7 @@ export const HardDeleteMyRoutineTaskByIdRequestSchema =
       .optional(),
     body: z.object({
       routineTaskId: z.uuidv4(),
+      expectedDefinitionVersion: z.number().int().positive().optional(),
     }),
   });
 
@@ -303,6 +355,7 @@ export const HardDeleteMyRoutineTaskByIdResponseSchema =
   NotegicResponseSchema.extend({
     data: z.object({
       deletedAt: z.coerce.date(),
+      definitionVersion: z.number().int().positive().optional(),
     }),
     embedded: z.object({
       publicId: z.string(),

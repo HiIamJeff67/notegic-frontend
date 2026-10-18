@@ -45,6 +45,7 @@ const StationRoutineInspectorHost = () => {
     <RoutineTaskInspector
       routineTaskId={inspectorTarget.id}
       isOpen
+      onUpdated={inspectorTarget.onUpdated}
       onClose={stationRoutineManager.closeInspector}
     />
   );

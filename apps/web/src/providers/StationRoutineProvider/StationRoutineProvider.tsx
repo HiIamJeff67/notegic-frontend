@@ -25,7 +25,7 @@ export type StationRoutineInspectorTarget =
   | { type: "station"; id: UUID }
   | { type: "routine"; id: UUID }
   | { type: "routineTag"; id: UUID }
-  | { type: "routineTask"; id: UUID };
+  | { type: "routineTask"; id: UUID; onUpdated?: () => void };
 
 interface StationRoutineBaseContext {
   inputRef: RefObject<HTMLInputElement | null>;

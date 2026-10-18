@@ -12,9 +12,9 @@ import type {
   DeleteMyRoutineByIdResponse,
   DeleteMyRoutinesByIdsRequest,
   DeleteMyRoutinesByIdsResponse,
-  GetMyRoutinesByTimeRangeResponse,
   GetMyRoutineByIdResponse,
   GetMyRoutinesByStationIdResponse,
+  GetMyRoutinesByTimeRangeResponse,
   HardDeleteMyRoutineByIdRequest,
   HardDeleteMyRoutineByIdResponse,
   HardDeleteMyRoutinesByIdsRequest,
@@ -85,6 +85,8 @@ export class RoutineLocalSynchronizer {
           description: response.data.description,
           phase: response.data.phase,
           timeoutSeconds: response.data.timeoutSeconds,
+          isActive: response.data.isActive,
+          definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -102,6 +104,8 @@ export class RoutineLocalSynchronizer {
             description: response.data.description,
             phase: response.data.phase,
             timeoutSeconds: response.data.timeoutSeconds,
+            isActive: response.data.isActive,
+            definitionVersion: response.data.definitionVersion,
             isPinned: response.data.isPinned,
             scheduledStartAt: response.data.scheduledStartAt,
             scheduledEndAt: response.data.scheduledEndAt,
@@ -191,6 +195,8 @@ export class RoutineLocalSynchronizer {
             title: routine.title,
             phase: routine.phase,
             timeoutSeconds: routine.timeoutSeconds,
+            isActive: routine.isActive,
+            definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -208,6 +214,8 @@ export class RoutineLocalSynchronizer {
             title: sql`excluded.title`,
             phase: sql`excluded.phase`,
             timeoutSeconds: sql`excluded.timeout_seconds`,
+            isActive: sql`excluded.is_active`,
+            definitionVersion: sql`excluded.definition_version`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
             scheduledEndAt: sql`excluded.scheduled_end_at`,
@@ -318,6 +326,8 @@ export class RoutineLocalSynchronizer {
       title: string;
       phase: RoutinePhase | null;
       timeoutSeconds: number;
+      isActive: boolean;
+      definitionVersion: number;
       isPinned: boolean;
       scheduledStartAt: Date;
       scheduledEndAt: Date;
@@ -349,6 +359,8 @@ export class RoutineLocalSynchronizer {
             title: routine.title,
             phase: routine.phase,
             timeoutSeconds: routine.timeoutSeconds,
+            isActive: routine.isActive,
+            definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
             scheduledEndAt: routine.scheduledEndAt,
@@ -366,6 +378,8 @@ export class RoutineLocalSynchronizer {
             title: sql`excluded.title`,
             phase: sql`excluded.phase`,
             timeoutSeconds: sql`excluded.timeout_seconds`,
+            isActive: sql`excluded.is_active`,
+            definitionVersion: sql`excluded.definition_version`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
             scheduledEndAt: sql`excluded.scheduled_end_at`,
@@ -478,6 +492,7 @@ export class RoutineLocalSynchronizer {
         title: request.body.title,
         description: request.body.description,
         timeoutSeconds: request.body.timeoutSeconds ?? 300,
+        isActive: request.body.isActive ?? false,
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt:
           request.body.scheduledStartAt ?? response.data.createdAt,
@@ -512,6 +527,7 @@ export class RoutineLocalSynchronizer {
           title: routine.title,
           description: routine.description,
           timeoutSeconds: routine.timeoutSeconds ?? 300,
+          isActive: routine.isActive ?? false,
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? response.data.createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? response.data.createdAt,
@@ -567,7 +583,11 @@ export class RoutineLocalSynchronizer {
           ...(request.body.values.timeoutSeconds !== undefined && {
             timeoutSeconds: request.body.values.timeoutSeconds,
           }),
+          ...(request.body.values.isActive !== undefined && {
+            isActive: request.body.values.isActive,
+          }),
           ...(request.body.values.isPinned !== undefined && {
+            isActive: request.body.values.isActive,
             isPinned: request.body.values.isPinned,
           }),
           ...(request.body.values.scheduledStartAt !== undefined && {
@@ -647,7 +667,11 @@ export class RoutineLocalSynchronizer {
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
             }),
+            ...(routine.values.isActive !== undefined && {
+              isActive: routine.values.isActive,
+            }),
             ...(routine.values.isPinned !== undefined && {
+              isActive: routine.values.isActive,
               isPinned: routine.values.isPinned,
             }),
             ...(routine.values.scheduledStartAt !== undefined && {
@@ -825,6 +849,8 @@ export class RoutineLocalSynchronizer {
           description: response.data.description,
           phase: response.data.phase,
           timeoutSeconds: response.data.timeoutSeconds,
+          isActive: response.data.isActive,
+          definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -855,6 +881,8 @@ export class RoutineLocalSynchronizer {
           description: sql`excluded.description`,
           phase: sql`excluded.phase`,
           timeoutSeconds: sql`excluded.timeout_seconds`,
+          isActive: sql`excluded.is_active`,
+          definitionVersion: sql`excluded.definition_version`,
           isPinned: sql`excluded.is_pinned`,
           scheduledStartAt: sql`excluded.scheduled_start_at`,
           scheduledEndAt: sql`excluded.scheduled_end_at`,

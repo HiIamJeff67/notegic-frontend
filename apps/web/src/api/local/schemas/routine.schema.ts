@@ -16,6 +16,10 @@ export const Routine = sqliteTable(
     title: text("title").notNull().default("undefined"),
     description: text("description").notNull().default(""),
     phase: text("phase").$type<RoutinePhase>(),
+    definitionVersion: integer("definition_version").notNull().default(1),
+    isActive: integer("is_active", { mode: "boolean" })
+      .notNull()
+      .default(false),
     isPinned: integer("is_pinned", { mode: "boolean" })
       .notNull()
       .default(false),
