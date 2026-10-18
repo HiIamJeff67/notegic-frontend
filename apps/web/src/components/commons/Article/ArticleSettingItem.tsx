@@ -66,7 +66,7 @@ const ArticleSettingItem = ({
         />
       )}
     </div>
-    {!hideSeparator && <ArticleSubParagraphSeparator className="my-4 w-full" />}
+    {!hideSeparator && <ArticleSubParagraphSeparator />}
   </div>
 );
 

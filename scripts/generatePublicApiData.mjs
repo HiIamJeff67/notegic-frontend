@@ -3,84 +3,72 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { marked } from "marked";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
-const backendRoot = path.resolve(projectRoot, "../notegic-backend");
-const defaults = {
-  gateway: path.join(
-    backendRoot,
-    "contracts/gateway/api-gateway/v1/public/openapi/openapi.json"
-  ),
-  gatewayRules: path.join(
-    backendRoot,
-    "contracts/gateway/api-gateway/v1/public/rules"
-  ),
-  output: path.join(
-    projectRoot,
-    "apps/web/src/pages/document/publicApiData.ts"
-  ),
-};
+const referenceRoot = path.join(
+  projectRoot,
+  "apps/web/src/pages/document/api-reference"
+);
+const contractRoot = path.join(referenceRoot, "contracts");
+const output = path.join(referenceRoot, "generated/publicAPIData.ts");
+const ruleFiles = [
+  "authentication.md",
+  "http-contract.md",
+  "origins-and-security.md",
+  "rate-limits-and-retries.md",
+  "versioning.md",
+];
 
-const args = {};
-for (let index = 0; index < process.argv.length - 2; index += 1) {
-  const argument = process.argv[index + 2];
-  if (!argument.startsWith("--")) continue;
-  const [key, inlineValue] = argument.slice(2).split("=", 2);
-  const nextValue = process.argv[index + 3];
-  const value =
-    inlineValue ??
-    (nextValue && !nextValue.startsWith("--") ? nextValue : true);
-  args[key] = value;
-  if (inlineValue === undefined && value !== true) index += 1;
-}
+if (process.argv.length === 3 && process.argv[2] === "--help") {
+  console.log(`Usage: npm run generate:public-api
 
-if (args.help === true) {
-  console.log(`Usage: npm run generate:public-api -- [options]
+Manually copy the backend's published contract into:
+  apps/web/src/pages/document/api-reference/contracts/
 
-Paths may be absolute or relative to the frontend project root.
+Required files:
+  openapi.json (OpenAPI 3.1 JSON)
+${ruleFiles.map(file => `  rules/${file}`).join("\n")}
 
-Options:
-  --gateway <path>        API Gateway public OpenAPI JSON
-  --gatewayRules <path>   API Gateway public rules directory
-  --output <path>         Generated TypeScript output
+All six files must exist before generation. Missing inputs leave the existing output unchanged.
+Output: apps/web/src/pages/document/api-reference/generated/publicAPIData.ts
 `);
   process.exit(0);
 }
 
-const input = key => {
-  const value = args[key] ?? defaults[key];
-  if (value === true) throw new Error(`Missing value for --${key}`);
-  return path.isAbsolute(value) ? value : path.resolve(projectRoot, value);
-};
-const readJson = file => JSON.parse(fs.readFileSync(file, "utf8"));
-const readText = file => fs.readFileSync(file, "utf8");
-const refName = ref => ref?.split("/").pop();
-const sanitizeDocumentation = value => {
-  if (typeof value === "string") {
-    return value
-      .replace(/`?x-go-[\w-]*dto`?/gi, "schema metadata")
-      .replace(/\bGo DTOs?\b/gi, "server schemas")
-      .replace(/\bDTOs?\b/gi, "schemas")
-      .replace(/\bAPI Gateway\b/gi, "public API")
-      .replace(/\bClientGateway\b/g, "web app")
-      .replace(/\bRealtimeGateway\b/g, "realtime service")
-      .replace(/\bGateway\b/gi, "API");
-  }
-  if (Array.isArray(value)) return value.map(sanitizeDocumentation);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, entry]) => [
-        key,
-        sanitizeDocumentation(entry),
-      ])
-    );
-  }
-  return value;
-};
+if (process.argv.length > 2) {
+  console.error(
+    "Unsupported arguments. Run npm run generate:public-api:help for usage."
+  );
+  process.exit(1);
+}
 
+const requiredFiles = [
+  "openapi.json",
+  ...ruleFiles.map(file => `rules/${file}`),
+];
+const missingFiles = requiredFiles.filter(file => {
+  const filePath = path.join(contractRoot, file);
+  try {
+    fs.accessSync(filePath, fs.constants.R_OK);
+    return !fs.statSync(filePath).isFile();
+  } catch {
+    return true;
+  }
+});
+
+if (missingFiles.length > 0) {
+  console.error(`Cannot generate public API documentation. Missing or unreadable required files:
+${missingFiles.map(file => `  - ${path.relative(projectRoot, path.join(contractRoot, file))}`).join("\n")}
+Copy all six published contract files into ${path.relative(projectRoot, contractRoot)} and run the command again.
+The existing generated output has not been changed.`);
+  process.exit(1);
+}
+
+const refName = ref => ref?.split("/").pop();
 const resolveSchema = (schema, document, seen = new Set()) => {
   if (!schema) return {};
   if (schema.$ref) {
@@ -116,34 +104,41 @@ const schemaType = (schema, document) => {
   if (resolved.const !== undefined) return JSON.stringify(resolved.const);
   if (resolved.enum)
     return resolved.enum.map(value => JSON.stringify(value)).join(" | ");
-  if (Array.isArray(resolved.type)) return resolved.type.join(" | ");
-  if (resolved.type === "array") {
-    return `${schemaType(resolved.items || {}, document)}[]`;
+  const types = [resolved.type].flat();
+  if (types.includes("array")) {
+    return `${schemaType(resolved.items || {}, document)}[]${types.includes("null") ? " | null" : ""}`;
   }
+  if (Array.isArray(resolved.type)) return resolved.type.join(" | ");
   if (resolved.format)
     return `${resolved.type || "value"} (${resolved.format})`;
   return resolved.type || (resolved.properties ? "object" : "value");
 };
 
-const exampleForSchema = (schema, document, seen = new Set()) => {
+const schemaExample = (schema, document, seen = new Set()) => {
+  if (schema?.$ref && seen.has(schema.$ref)) return null;
   const resolved = schema?.$ref
     ? resolveSchema(schema, document, seen)
     : schema || {};
+  const nextSeen = schema?.$ref ? new Set([...seen, schema.$ref]) : seen;
   if (resolved.example !== undefined) return resolved.example;
   if (resolved.const !== undefined) return resolved.const;
   if (resolved.enum?.length) return resolved.enum[0];
   if (resolved.oneOf?.length)
-    return exampleForSchema(resolved.oneOf[0], document, seen);
+    return schemaExample(resolved.oneOf[0], document, nextSeen);
   if (resolved.anyOf?.length)
-    return exampleForSchema(resolved.anyOf[0], document, seen);
-  if (resolved.type === "array")
-    return [exampleForSchema(resolved.items, document, seen)];
-  if (resolved.type === "object" || resolved.properties || resolved.$ref) {
+    return schemaExample(resolved.anyOf[0], document, nextSeen);
+  if ([resolved.type].flat().includes("array"))
+    return [schemaExample(resolved.items, document, nextSeen)];
+  if (
+    [resolved.type].flat().includes("object") ||
+    resolved.properties ||
+    resolved.allOf
+  ) {
     const properties = combinedProperties(schema, document, seen);
     return Object.fromEntries(
       Object.entries(properties).map(([name, property]) => [
         name,
-        exampleForSchema(property, document, seen),
+        schemaExample(property, document, nextSeen),
       ])
     );
   }
@@ -155,8 +150,27 @@ const exampleForSchema = (schema, document, seen = new Set()) => {
   return null;
 };
 
-const fieldsForSchema = (schema, document, seen = new Set()) => {
+const schemaConstraints = schema =>
+  [
+    "default",
+    "minimum",
+    "maximum",
+    "exclusiveMinimum",
+    "exclusiveMaximum",
+    "minLength",
+    "maxLength",
+    "pattern",
+    "minItems",
+    "maxItems",
+    "uniqueItems",
+  ]
+    .filter(key => schema[key] !== undefined)
+    .map(key => `${key}: ${JSON.stringify(schema[key])}`);
+
+const schemaFields = (schema, document, seen = new Set()) => {
+  if (schema?.$ref && seen.has(schema.$ref)) return [];
   const resolved = resolveSchema(schema, document, seen);
+  const nextSeen = schema?.$ref ? new Set([...seen, schema.$ref]) : seen;
   const properties = combinedProperties(schema, document, seen);
   const required = new Set(resolved.required || []);
   return Object.entries(properties).map(([name, property]) => {
@@ -167,18 +181,20 @@ const fieldsForSchema = (schema, document, seen = new Set()) => {
       required: required.has(name),
       description: propertySchema.description,
       enum: propertySchema.enum,
-      example: exampleForSchema(property, document, seen),
-      children:
-        propertySchema.type === "object" ||
-        propertySchema.properties ||
-        propertySchema.$ref
-          ? fieldsForSchema(property, document, seen)
-          : undefined,
+      example: schemaExample(property, document, seen),
+      constraints: schemaConstraints(propertySchema),
+      children: schemaFields(
+        [propertySchema.type].flat().includes("array")
+          ? propertySchema.items
+          : property,
+        document,
+        nextSeen
+      ),
     };
   });
 };
 
-const contentSchema = (content, document) =>
+const contentSchema = content =>
   content?.["application/json"]?.schema ||
   content?.["application/octet-stream"]?.schema ||
   null;
@@ -188,31 +204,9 @@ const operationExample = (operation, document) => {
   return (
     media?.example ??
     (media?.examples ? Object.values(media.examples)[0]?.value : undefined) ??
-    exampleForSchema(media?.schema, document)
+    schemaExample(media?.schema, document)
   );
 };
-
-const responseDetails = (operation, document) => {
-  const status = Object.keys(operation.responses || {}).find(code =>
-    /^2/.test(code)
-  );
-  const response = status ? operation.responses[status] : undefined;
-  const schema = contentSchema(response?.content, document);
-  return {
-    status: status || null,
-    fields: fieldsForSchema(schema, document),
-    example: exampleForSchema(schema, document),
-  };
-};
-
-const errorDetails = operation =>
-  Object.entries(operation.responses || {})
-    .filter(([status]) => !/^2/.test(status))
-    .map(([status, response]) => ({
-      status,
-      description: response.description || "Request failed",
-      message: `The server returned HTTP ${status}. ${response.description || "Request failed"}`,
-    }));
 
 const parameterDetails = (operation, pathItem, document) =>
   [...(pathItem.parameters || []), ...(operation.parameters || [])].map(
@@ -221,9 +215,9 @@ const parameterDetails = (operation, pathItem, document) =>
       location: parameter.in,
       required: Boolean(parameter.required),
       type: schemaType(parameter.schema, document),
-      example:
-        parameter.example ?? exampleForSchema(parameter.schema, document),
+      example: parameter.example ?? schemaExample(parameter.schema, document),
       description: parameter.description,
+      constraints: schemaConstraints(resolveSchema(parameter.schema, document)),
     })
   );
 
@@ -234,10 +228,8 @@ const endpointExamples = (
   method,
   parameters,
   requestExample,
-  document
+  server
 ) => {
-  const server =
-    document.servers?.[0]?.url || "http://localhost/api/development/v1";
   const pathParameters = new Map(
     parameters
       .filter(parameter => parameter.location === "path")
@@ -247,7 +239,7 @@ const endpointExamples = (
     encodeURIComponent(String(pathParameters.get(name) ?? `{${name}}`))
   );
   const query = parameters
-    .filter(parameter => parameter.location === "query")
+    .filter(parameter => parameter.location === "query" && parameter.required)
     .map(
       parameter =>
         `${encodeURIComponent(parameter.name)}=${encodeURIComponent(String(parameter.example))}`
@@ -289,7 +281,10 @@ const endpointExamples = (
   const json = JSON.stringify(
     {
       headers: Object.fromEntries(
-        httpHeaders.map(line => line.split(/:\s*/, 2))
+        httpHeaders.map(line => {
+          const separator = line.indexOf(":");
+          return [line.slice(0, separator), line.slice(separator + 1).trim()];
+        })
       ),
       body: requestExample ?? null,
     },
@@ -300,61 +295,28 @@ const endpointExamples = (
 };
 
 const tagInfo = {
-  auth: [
-    "Authentication",
-    "Register and login establish the Beta cookie session.",
-  ],
   "block-packs": [
     "Block Packs",
     "Create, read, move, restore, and update Block Pack resources.",
   ],
   blocks: ["Blocks", "Read blocks directly or by their containing Block Pack."],
-  graphql: [
-    "GraphQL",
-    "GraphQL-over-HTTP endpoint and bundled schema examples.",
-  ],
-  materials: [
-    "Materials",
-    "Manage uploaded materials, content, parents, and recovery.",
-  ],
-  "user-account": [
-    "User account",
-    "Account identity and linked Google account operations.",
-  ],
-  "user-info": [
-    "User info",
-    "Public profile and personal information operations.",
-  ],
-  "user-settings": [
-    "User settings",
-    "Read and update persisted user settings.",
-  ],
-  notifications: [
-    "Notifications",
-    "Search, count, read, and delete notifications.",
-  ],
-  realtime: [
-    "Realtime tickets",
-    "Gateway-issued connection and channel tickets.",
-  ],
   "root-shelves": [
     "Root Shelves",
     "CRUD, memberships, ownership, permissions, and recovery.",
   ],
   "routine-tags": ["Routine Tags", "Routine tag CRUD and permanent deletion."],
-  "routine-task-records": [
-    "Routine task records",
-    "History queries and visualizations.",
+  "routine-task-dependencies": [
+    "Routine Task Dependencies",
+    "Read and manage the execution dependencies between routine tasks.",
   ],
   "routine-tasks": [
     "Routine Tasks",
-    "Task queries, lifecycle actions, and visualizations.",
+    "Read and manage the steps that make up a routine.",
   ],
   routines: [
     "Routines",
     "Routine CRUD, linking, scheduling, and visualizations.",
   ],
-  static: ["Static assets", "Public global assets such as avatars."],
   stations: [
     "Stations",
     "CRUD, memberships, permissions, ownership, and visualizations.",
@@ -363,12 +325,6 @@ const tagInfo = {
     "Sub Shelves",
     "CRUD, ordering, item traversal, and recovery.",
   ],
-  users: ["Users", "Authenticated user data and self profile endpoints."],
-};
-
-const tagForPath = pathValue => {
-  const tag = pathValue.split("/")[1];
-  return tag === "me" ? "user-account" : tagInfo[tag] ? tag : "users";
 };
 
 const methodOrder = { GET: 0, POST: 1, PUT: 2, PATCH: 3, DELETE: 4 };
@@ -383,43 +339,99 @@ const endpointSort = (left, right) => {
   return (
     leftPath.split("/").length - rightPath.split("/").length ||
     leftPath.localeCompare(rightPath) ||
-    left.operation.localeCompare(right.operation)
+    left.operationId.localeCompare(right.operationId)
   );
 };
 
-const endpointGroups = document => {
+const endpointGroups = (document, server) => {
   const groups = new Map();
   for (const [route, pathItem] of Object.entries(document.paths || {})) {
     for (const [method, operation] of Object.entries(pathItem)) {
-      if (method.startsWith("x") || method === "parameters") continue;
-      const tag = operation.tags?.[0] || tagForPath(route);
-      const schema = contentSchema(operation.requestBody?.content, document);
-      const response = responseDetails(operation, document);
+      if (!Object.hasOwn(methodOrder, method.toUpperCase())) continue;
+      const name =
+        typeof operation.summary === "string" ? operation.summary.trim() : "";
+      const description =
+        typeof operation.description === "string"
+          ? operation.description.trim()
+          : "";
+      if (
+        typeof operation.operationId !== "string" ||
+        !operation.operationId.trim() ||
+        !/^[A-Z][A-Za-z0-9]*$/.test(name) ||
+        !description
+      ) {
+        throw new Error(
+          `Cannot publish ${method.toUpperCase()} ${route}: a stable operationId, a BigCamelCase summary name, and a non-empty description are required. The existing generated output has not been changed.`
+        );
+      }
+      const tag = operation.tags?.[0] || route.split("/")[1];
+      const schema = contentSchema(operation.requestBody?.content);
+      const responses = Object.entries(operation.responses || {})
+        .filter(([status]) => !status.startsWith("x-"))
+        .map(([status, response]) => {
+          const schema = contentSchema(response.content);
+          const media = response.content?.["application/json"];
+          return {
+            status,
+            description:
+              response.description === "Authentication or CSRF failed"
+                ? "API key authentication failed"
+                : response.description || "Response",
+            hasBody: Object.keys(response.content || {}).length > 0,
+            fields: schemaFields(schema, document),
+            example:
+              media?.example ??
+              Object.values(media?.examples || {})[0]?.value ??
+              schemaExample(schema, document),
+          };
+        });
       const parameters = parameterDetails(operation, pathItem, document);
+      const security = operation.security ?? document.security ?? [];
+      const schemes = Object.keys(security[0] ?? {});
+      const scheme = document.components?.securitySchemes?.[schemes[0]];
+      if (
+        security.length !== 1 ||
+        schemes.length !== 1 ||
+        scheme?.type !== "apiKey" ||
+        scheme.in !== "header" ||
+        !scheme.name
+      ) {
+        throw new Error(
+          `Cannot publish ${method.toUpperCase()} ${route}: an API-key header security requirement is required.`
+        );
+      }
+      if (
+        !parameters.some(
+          parameter =>
+            parameter.location === "header" &&
+            parameter.name.toLowerCase() === scheme.name.toLowerCase()
+        )
+      ) {
+        parameters.unshift({
+          name: scheme.name,
+          location: "header",
+          required: true,
+          type: "string",
+          example: "<YOUR_API_KEY>",
+        });
+      }
       const requestExample = operationExample(operation, document);
-      const summary =
-        tag === "graphql"
-          ? `GraphQL ${method.toUpperCase()}`
-          : operation.summary || operation.operationId;
       const endpoint = {
         method: method.toUpperCase(),
         path: route,
-        operation: operation.operationId,
-        summary,
-        description: operation.description,
+        operation: name,
+        operationId: operation.operationId,
+        description,
         parameters,
         requestExample,
-        requestFields: fieldsForSchema(schema, document),
-        responseStatus: response.status,
-        responseFields: response.fields,
-        responseExample: response.example,
-        errors: errorDetails(operation),
+        requestFields: schemaFields(schema, document),
+        responses,
         examples: endpointExamples(
           route,
           method.toUpperCase(),
           parameters,
           requestExample,
-          document
+          server
         ),
         tag,
       };
@@ -435,94 +447,133 @@ const endpointGroups = document => {
   }));
 };
 
-const humanizeDocumentation = value =>
-  typeof value === "string"
-    ? value
-        .replaceAll("APIGateway", "API Gateway")
-        .replaceAll("BlockPacks", "Block Packs")
-        .replaceAll("BlockPack", "Block Pack")
-    : value;
+// shortcut: exclude known contributor notes until the backend publishes reviewed public-only rules; this is not a secret scanner.
+const publicRuleText = text => {
+  text = text
+    .replace(
+      "Keys can be expired or revoked; revoked keys fail immediately even if a cache entry exists.",
+      "Keys can expire or be revoked. Revoke keys that are no longer needed."
+    )
+    .replace(
+      "HTTPS is mandatory outside local development.",
+      "Use HTTPS for all public API requests."
+    )
+    .replace(
+      "Do not log request bodies containing credentials, `X-API-Key`, Cookie, Set-Cookie, or CSRF values.",
+      "Do not log credentials or the `X-API-Key` header."
+    )
+    .replace(
+      "Cross-origin browser access works only for origins configured in the APIGateway allowlist.",
+      "Keep API-key integrations on a trusted server or CLI; do not expose the key in browser code."
+    )
+    .replace(
+      "Never commit Postman environments after adding credentials.",
+      "Never commit files containing credentials."
+    );
+  if (
+    /Local base path:|server persists|cache entry|Unauthorized rate limits|x-go-|CLI and server clients should omit|outside local development|Treat all IDs and permissions|Public documentation does not itself|development namespace|changes must ship together|Compare generated OpenAPI/.test(
+      text
+    )
+  )
+    return "";
+  return text
+    .replace(/ An authenticated-user limiter exists internally[^.]*\./g, "")
+    .replace(" with a 100 requests/second token bucket and burst 10", "")
+    .replaceAll("IP/fingerprint", "IP address")
+    .replaceAll("APIGateway", "Public API")
+    .replaceAll(
+      "authenticated ClientGateway flow",
+      "API key area in Account settings"
+    )
+    .replaceAll("Repository release tags", "Product releases");
+};
 
 const markdownRules = directory =>
-  fs
-    .readdirSync(directory)
-    .filter(file => file.endsWith(".md"))
-    .sort()
-    .map(file => {
-      const lines = readText(path.join(directory, file)).split(/\r?\n/);
-      const title = lines.find(line => line.startsWith("# "))?.slice(2) || file;
-      const bullets = lines
-        .filter(line => line.startsWith("- "))
-        .map(line =>
-          line
-            .slice(2)
-            .trim()
-            .replace(/Go DTOs?/g, "server schemas")
-        );
-      const summary = lines
-        .slice(1)
-        .find(
-          line => line.trim() && !line.startsWith("- ") && !line.startsWith("|")
-        )
-        ?.trim();
-      return {
-        id: file.replace(/\.md$/, ""),
-        title: humanizeDocumentation(title),
-        summary: humanizeDocumentation(summary),
-        bullets: bullets.map(humanizeDocumentation),
-      };
+  ruleFiles.map(file => {
+    const tokens = marked.lexer(
+      fs.readFileSync(path.join(directory, file), "utf8")
+    );
+    const title =
+      tokens.find(token => token.type === "heading" && token.depth === 1)
+        ?.text || file;
+    const blocks = tokens.flatMap(token => {
+      if (
+        token.type === "space" ||
+        (token.type === "heading" && token.depth === 1)
+      )
+        return [];
+      if (token.type === "list") {
+        const items = token.items
+          .map(item => publicRuleText(item.text))
+          .filter(Boolean);
+        return items.length
+          ? [{ type: "list", items, ordered: token.ordered }]
+          : [];
+      }
+      const text = publicRuleText(token.text ?? token.raw);
+      return text
+        ? [{ type: token.type === "code" ? "code" : "paragraph", text }]
+        : [];
     });
+    return {
+      id: file.replace(/\.md$/, ""),
+      title,
+      summary: blocks.find(block => block.type === "paragraph")?.text || title,
+      blocks,
+    };
+  });
 
-const gateway = readJson(input("gateway"));
-const apiGatewayDomainIds = new Set([
-  "root-shelves",
-  "sub-shelves",
-  "materials",
-  "block-packs",
-  "blocks",
-  "stations",
-  "routines",
-  "routine-tasks",
-  "routine-tags",
-]);
-const gatewayEndpointData = sanitizeDocumentation(
-  endpointGroups(gateway).filter(group => apiGatewayDomainIds.has(group.id))
+const gateway = JSON.parse(
+  fs.readFileSync(path.join(contractRoot, "openapi.json"), "utf8")
 );
-const gatewayRuleData = sanitizeDocumentation(
-  markdownRules(input("gatewayRules"))
+const productionServer = gateway.servers?.find(
+  server =>
+    server.description?.toLowerCase() === "production" &&
+    server.url.startsWith("https://")
 );
+if (!productionServer)
+  throw new Error(
+    "The public contract must declare an HTTPS Production server. The existing output has not been changed."
+  );
+const publicApiBaseURL = productionServer.url.replace(/\/$/, "");
+const gatewayEndpointData = endpointGroups(gateway, publicApiBaseURL);
+const gatewayRuleData = markdownRules(path.join(contractRoot, "rules"));
+const responseSpecifications = [];
+const responseIndexes = new Map();
+const groupSources = gatewayEndpointData.map(({ endpoints, ...group }) => {
+  const endpointSources = endpoints.map(({ responses, ...endpoint }) => {
+    const references = responses.map(response => {
+      const serialized = JSON.stringify(response);
+      let index = responseIndexes.get(serialized);
+      if (index === undefined) {
+        index = responseSpecifications.length;
+        responseIndexes.set(serialized, index);
+        responseSpecifications.push(response);
+      }
+      return `responseSpecifications[${index}]`;
+    });
+    return `${JSON.stringify(endpoint, null, 2).slice(0, -2)},\n"responses": [${references.join(", ")}]\n}`;
+  });
+  return `${JSON.stringify(group, null, 2).slice(0, -2)},\n"endpoints": [${endpointSources.join(",\n")}]\n}`;
+});
 const result = `// Generated by scripts/generatePublicApiData.mjs. Do not edit by hand.\n\n${[
-  "export type DocumentField = { name: string; type: string; required: boolean; description?: string; enum?: readonly unknown[]; example?: unknown; children?: DocumentField[] };",
-  `export type DocumentParameter = { name: string; location: string; required: boolean; type: string; example?: unknown; description?: string };`,
+  "export type DocumentField = { name: string; type: string; required: boolean; description?: string; enum?: readonly unknown[]; example?: unknown; constraints?: readonly string[]; children?: DocumentField[] };",
+  `export type DocumentParameter = { name: string; location: string; required: boolean; type: string; example?: unknown; description?: string; constraints?: readonly string[] };`,
+  'export type DocumentRuleBlock = { type: "paragraph" | "code"; text: string } | { type: "list"; items: readonly string[]; ordered: boolean };',
+  "export type DocumentRule = { id: string; title: string; summary: string; blocks: readonly DocumentRuleBlock[] };",
   "export type DocumentExamples = { curl: string; http: string; json: string };",
-  "export type DocumentError = { status: string; description: string; message: string };",
-  `export type DocumentEndpoint = { method: string; path: string; operation: string; summary: string; description?: string; parameters: DocumentParameter[]; requestExample: unknown; requestFields: DocumentField[]; responseStatus: string | null; responseFields: DocumentField[]; responseExample: unknown; errors: DocumentError[]; examples: DocumentExamples; tag: string };`,
+  "export type DocumentResponse = { status: string; description: string; hasBody: boolean; fields: DocumentField[]; example: unknown };",
+  `export type DocumentEndpoint = { method: string; path: string; operation: string; operationId: string; description: string; parameters: DocumentParameter[]; requestExample: unknown; requestFields: DocumentField[]; responses: DocumentResponse[]; examples: DocumentExamples; tag: string };`,
   `export type DocumentEndpointGroup = { id: string; title: string; description: string; endpoints: DocumentEndpoint[] };`,
-  `export const gatewayEndpointGroups: DocumentEndpointGroup[] = ${JSON.stringify(gatewayEndpointData, null, 2)};`,
-  `export const gatewayRules = ${JSON.stringify(gatewayRuleData, null, 2)} as const;`,
-  `export const documentSources = ${JSON.stringify(
-    [
-      {
-        title: `API ${gateway.info.version}`,
-        format: "OpenAPI 3.1",
-        path: "Public API reference",
-        detail:
-          "The canonical public API contract for external integrations and API-key authentication.",
-      },
-      {
-        title: "Rules and examples",
-        format: "Markdown + JSON + HTTP",
-        path: "*/rules/ and */examples/",
-        detail: "Operational constraints and sanitized request examples.",
-      },
-    ],
-    null,
-    2
-  )} as const;`,
+  `const responseSpecifications: DocumentResponse[] = ${JSON.stringify(responseSpecifications, null, 2)};`,
+  `export const gatewayEndpointGroups: DocumentEndpointGroup[] = [${groupSources.join(",\n")}];`,
+  `export const gatewayRules: DocumentRule[] = ${JSON.stringify(gatewayRuleData, null, 2)};`,
+  `export const contractVersion = ${JSON.stringify(gateway.info.version)} as const;`,
+  `export const publicApiBaseURL = ${JSON.stringify(publicApiBaseURL)} as const;`,
 ].join("\n\n")}\n`;
 
-fs.mkdirSync(path.dirname(input("output")), { recursive: true });
-fs.writeFileSync(input("output"), result);
+fs.mkdirSync(path.dirname(output), { recursive: true });
+fs.writeFileSync(output, result);
 console.log(
-  `Generated ${input("output")} from the public API contract with ${Object.values(gateway.paths || {}).reduce((count, item) => count + Object.keys(item).filter(key => !key.startsWith("x") && key !== "parameters").length, 0)} operations.`
+  `Generated ${output} from the local public API contract with ${gatewayEndpointData.reduce((count, group) => count + group.endpoints.length, 0)} operations.`
 );

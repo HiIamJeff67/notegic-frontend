@@ -1,3 +1,4 @@
+import { useLocation } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -39,9 +40,10 @@ export const ArticleDisplayProvider = ({
   pageIdFromHash,
   headerLinks = [
     { label: "Home", href: "/" },
-    { label: "Tutorial", href: "/tutorial" },
+    { label: "Website", href: "/document#website" },
   ],
 }: ArticleDisplayProviderProps) => {
+  const locationHash = useLocation({ select: location => location.hash });
   const [pageId, setPageId] = useState<string | null>(initialPageId ?? null);
   const [activeItemId, setActiveItemId] = useState<string | null>(
     initialPageId ?? null
@@ -55,12 +57,18 @@ export const ArticleDisplayProvider = ({
   }, [initialPageId]);
 
   useEffect(() => {
-    if (mode !== "pagination" || typeof window === "undefined") return;
-    const hash = decodeURIComponent(window.location.hash.slice(1));
-    if (!hash) return;
-    setPageId(pageIdFromHash?.(hash) ?? hash);
-    setActiveItemId(hash);
-  }, [mode, pageIdFromHash]);
+    if (mode !== "pagination") return;
+    let hash = locationHash;
+    try {
+      hash = decodeURIComponent(hash);
+    } catch {
+      hash = "";
+    }
+    const nextId = hash || initialPageId;
+    if (!nextId) return;
+    setPageId(pageIdFromHash?.(nextId) ?? nextId);
+    setActiveItemId(nextId);
+  }, [initialPageId, locationHash, mode, pageIdFromHash]);
 
   return (
     <ArticleDisplayContext.Provider

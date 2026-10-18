@@ -16,8 +16,8 @@ html[data-density] .article-sidebar [data-sidebar="menu-sub-button"] {
   height: auto !important;
 }
 
-.article-sidebar [data-sidebar="menu-button"] > span:last-child,
-.article-sidebar [data-sidebar="menu-sub-button"] > span:last-child {
+.article-sidebar [data-sidebar="menu-button"] > [data-article-title],
+.article-sidebar [data-sidebar="menu-sub-button"] > [data-article-title] {
   min-width: 0;
   overflow: visible !important;
   white-space: normal !important;

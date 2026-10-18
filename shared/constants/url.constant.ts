@@ -16,7 +16,6 @@ export const CurrentWebBaseURL = WebDevelopmentBaseURL;
 export const WebURLPathDictionary = {
   home: "",
   document: "document",
-  tutorial: "tutorial",
   privacyPolicy: "privacy-policy",
   auth: {
     register: "register",

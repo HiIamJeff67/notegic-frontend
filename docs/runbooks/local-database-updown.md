@@ -155,11 +155,15 @@ the Cloudflare production build. No frontend deployment or daily-profile
 reset is implied. The backend checkpoint records the original DB cutover,
 restored-copy rehearsal and isolated production-image owner-init tests.
 
-This handoff is for product review, not release approval. Both worktrees remain
-uncommitted. The candidate-commit compatibility gate must run after authorized
-delivery preparation; published-image provenance and staging/production smoke
-and rollback checks remain separate release steps. Do not replace those gates
-with UI sign-off or claim that a local build deployed the application.
+This handoff is for product review, not release approval. Subsequent delivery
+authorization permits backend commits and push, frontend local commits only,
+and no tags. The backend formal candidate-commit compatibility gate passed on
+`23841dae`; rerun it on final delivery HEAD. Published-image provenance and
+staging/production smoke and rollback checks remain separate release steps.
+Do not replace those gates with UI sign-off or claim that a local build
+deployed the application. Delivery Playwright preflight passed 66 tests with
+seven credential/infrastructure-gated skips; earlier authenticated backend
+evidence remains separate from that browser run.
 
 ## Authenticated Routine runtime verification
 

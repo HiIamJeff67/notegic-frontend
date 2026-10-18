@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -33,6 +34,7 @@ import { useAppRouterActions } from "@/hooks/useAppRouter";
 import "@/global/styles/article.css";
 import ArticleCommand from "./ArticleCommand";
 import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";
+import { ArticleInlineText } from "./ArticleInlineText";
 
 export type ArticleNavigationItem = {
   id: string;
@@ -41,6 +43,11 @@ export type ArticleNavigationItem = {
   weight?: 1 | 2 | 3 | 4 | 5;
   icon?: ComponentType<{ className?: string; size?: number }>;
   children?: ArticleNavigationItem[];
+  badge?: ReactNode;
+  command?: {
+    layout?: "group" | "flat";
+    separator?: boolean;
+  };
 };
 
 type ArticleNavigationProps = {
@@ -198,10 +205,12 @@ export const ArticleNavigationBar = ({
       >
         <HoverCard openDelay={150} closeDelay={100}>
           <HoverCardTrigger asChild>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               className={cn(
-                "group/article-node flex w-full items-center justify-center outline-none",
+                "group/article-node flex w-full items-center justify-center rounded-none p-0 outline-none hover:bg-transparent",
                 isRoot ? "h-2" : "h-1.5"
               )}
               aria-current={isActive ? "location" : undefined}
@@ -219,12 +228,15 @@ export const ArticleNavigationBar = ({
                       : "bg-foreground/15 group-hover/article-node:bg-foreground/70 group-focus-visible/article-node:bg-foreground/70"
                 )}
               />
-            </button>
+            </Button>
           </HoverCardTrigger>
           <HoverCardContent side="right" align="center" className="w-60">
-            <p className="font-medium">{item.title}</p>
+            <p className="flex flex-wrap items-center gap-2 font-medium">
+              <span>{item.title}</span>
+              {item.badge}
+            </p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {item.description}
+              <ArticleInlineText>{item.description}</ArticleInlineText>
             </p>
           </HoverCardContent>
         </HoverCard>
@@ -294,12 +306,15 @@ export const ArticleSidebar = ({
       return (
         <SidebarMenuItem key={item.id}>
           <SidebarMenuButton
-            className="h-auto min-h-8 items-center overflow-visible whitespace-normal break-words py-1.5 leading-5 [&>span:last-child]:whitespace-normal [&>span:last-child]:break-words [&>span:last-child]:overflow-visible [&>span:last-child]:text-clip"
+            className="h-auto min-h-8 items-center overflow-visible whitespace-normal break-words py-1.5 leading-5"
             isActive={isActive}
             onClick={() => navigate(item, pageId)}
           >
             {item.icon && <item.icon className="size-3.5 shrink-0" size={14} />}
-            <span>{item.title}</span>
+            <span data-article-title className="min-w-0">
+              {item.title}
+            </span>
+            {item.badge}
           </SidebarMenuButton>
           {hasChildren && (
             <SidebarMenuSub>
@@ -317,11 +332,14 @@ export const ArticleSidebar = ({
         <SidebarMenuSubButton
           href={`#${item.id}`}
           isActive={isActive}
-          className="h-auto min-h-7 items-center overflow-visible whitespace-normal break-words py-1 leading-5 [&>span:last-child]:whitespace-normal [&>span:last-child]:break-words [&>span:last-child]:overflow-visible [&>span:last-child]:text-clip"
+          className="h-auto min-h-7 items-center overflow-visible whitespace-normal break-words py-1 leading-5"
           onClick={handleClick}
         >
           {item.icon && <item.icon className="size-3.5 shrink-0" size={14} />}
-          <span>{item.title}</span>
+          <span data-article-title className="min-w-0">
+            {item.title}
+          </span>
+          {item.badge}
         </SidebarMenuSubButton>
         {hasChildren && (
           <SidebarMenuSub>
@@ -381,7 +399,7 @@ export const ArticleSidebar = ({
                 draggable={false}
                 className="size-4 shrink-0 object-contain"
               />
-              <span className="text-sm font-semibold tracking-[0.08em] text-white">
+              <span className="text-sm font-semibold tracking-[0.08em] text-sidebar-foreground">
                 Notegic
               </span>
             </a>
@@ -389,7 +407,7 @@ export const ArticleSidebar = ({
           {(
             display?.headerLinks ?? [
               { label: "Home", href: "/" },
-              { label: "Tutorial", href: "/tutorial" },
+              { label: "Website", href: "/document#website" },
             ]
           )
             .slice(1)
@@ -414,6 +432,7 @@ export const ArticleSidebar = ({
               );
             })}
           <ArticleCommand
+            items={items}
             articleRef={articleRef ?? { current: null }}
             onSelect={handleCommandSelect}
           />
@@ -439,10 +458,10 @@ export const ArticleSidebar = ({
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a
-                href="/tutorial"
+                href="/document#q-and-a"
                 onClick={event => {
                   event.preventDefault();
-                  router.push("/tutorial");
+                  router.push("/document#q-and-a");
                 }}
               >
                 <CircleHelpIcon className="size-4 shrink-0" />

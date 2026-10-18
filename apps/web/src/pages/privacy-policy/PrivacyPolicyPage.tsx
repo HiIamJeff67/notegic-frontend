@@ -13,18 +13,24 @@ const PrivacySection = ({
   id,
   title,
   children,
+  separatorFullWidth,
 }: {
   id: string;
   title: string;
   children: ReactNode;
+  separatorFullWidth?: boolean;
 }) => (
-  <ArticleSubParagraph id={id}>
+  <ArticleSubParagraph id={id} separatorFullWidth={separatorFullWidth}>
     <ArticleSubParagraphHeader>{title}</ArticleSubParagraphHeader>
     <ArticleSubParagraphContent>{children}</ArticleSubParagraphContent>
   </ArticleSubParagraph>
 );
 
-export const PrivacyPolicySections = () => {
+export const PrivacyPolicySections = ({
+  separatorFullWidth = false,
+}: {
+  separatorFullWidth?: boolean;
+}) => {
   const { t } = useTranslation();
   const router = useAppRouterActions();
   const emailLink = (
@@ -41,6 +47,7 @@ export const PrivacyPolicySections = () => {
       </p>
       <PrivacySection
         id="privacy-collection"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.collectTitle")}
       >
         <p>{t("workspace.pages.privacy.collectIntro")}</p>
@@ -57,6 +64,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-use"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.useTitle")}
       >
         <ul className="list-disc ml-6 mt-2 space-y-1">
@@ -71,6 +79,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-sharing"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.sharingTitle")}
       >
         <p>{t("workspace.pages.privacy.sharingText")}</p>
@@ -81,6 +90,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-retention"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.retentionTitle")}
       >
         <p>{t("workspace.pages.privacy.retentionText")}</p>
@@ -91,6 +101,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-rights"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.rightsTitle")}
       >
         <p>
@@ -107,6 +118,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-cookies"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.cookiesTitle")}
       >
         <p>{t("workspace.pages.privacy.cookiesText")}</p>
@@ -117,6 +129,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-changes"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.changesTitle")}
       >
         <p>{t("workspace.pages.privacy.changesText")}</p>
@@ -127,6 +140,7 @@ export const PrivacyPolicySections = () => {
 
       <PrivacySection
         id="privacy-contact"
+        separatorFullWidth={separatorFullWidth}
         title={t("workspace.pages.privacy.contactTitle")}
       >
         <p>

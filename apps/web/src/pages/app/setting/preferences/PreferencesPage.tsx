@@ -139,7 +139,7 @@ const PreferencesPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:!my-6">
+        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)]">
           <PreferenceTab
             id="appearance"
             title={t("settingsPage.preferences.appearance.title")}

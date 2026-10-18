@@ -5,7 +5,6 @@ import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import {
-  BookOpenIcon,
   ChevronDown,
   ChevronRight,
   FileTextIcon,
@@ -334,21 +333,6 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.document")}
-                  </span>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem className="rounded-sm">
-              <SidebarMenuButton
-                className={`w-full flex ${
-                  isSidebarExpanded ? "justify-start" : "justify-center"
-                } items-center select-none hover:bg-primary`}
-                onClick={() => router.push(WebURLPathDictionary.tutorial)}
-              >
-                <BookOpenIcon />
-                {isSidebarExpanded && (
-                  <span className="truncate">
-                    {t("workspace.navigation.tutorial")}
                   </span>
                 )}
               </SidebarMenuButton>

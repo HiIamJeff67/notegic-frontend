@@ -26,6 +26,7 @@ describe backend implementation as if it belongs to this repository.
 
 | Area | Scope |
 | --- | --- |
+| [documentations](documentations/) | Product documentation drafts and screenshots for editorial review; not automatically published |
 | [designs](designs/README.md) | Current route, codebase, and system design decisions |
 | [conventions](conventions/) | Naming, UI, styling, icons, generated code, and implementation conventions |
 | [runbooks](runbooks/) | Local development, verification, code generation, and troubleshooting procedures |

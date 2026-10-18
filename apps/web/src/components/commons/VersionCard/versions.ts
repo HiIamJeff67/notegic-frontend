@@ -6,7 +6,7 @@ export type VersionTask = {
 
 export type VersionData = {
   version: string;
-  label: string;
+  label: "Next" | "Current" | "Legacy";
   status: "next" | "current" | "released";
   description: string;
   tasks: readonly VersionTask[];
@@ -41,7 +41,7 @@ export const versionRoadmap: readonly VersionData[] = [
       {
         title: "AI-integrated document blocks",
         description:
-          "Extend the BlockNote schema safely so AI-generated content can work with math, diagrams, calendar configuration, projection, collaboration, and future integrations.",
+          "Bring AI-generated content into structured notes, with support for richer content such as math and diagrams.",
         completed: false,
       },
       {
@@ -56,12 +56,6 @@ export const versionRoadmap: readonly VersionData[] = [
           "Add more guided videos for tutorials and documentation so users can understand core workflows and discover more of Notegic's capabilities.",
         completed: false,
       },
-      {
-        title: "Public API gateway evolution",
-        description:
-          "Continue separating public API gateway responsibilities from client session flows and document compatibility and migration boundaries.",
-        completed: false,
-      },
     ],
   },
   {
@@ -69,48 +63,47 @@ export const versionRoadmap: readonly VersionData[] = [
     label: "Current",
     status: "current",
     description:
-      "The current release extends the original workspace baseline with collaboration, local policy enforcement, public API groundwork, notification delivery, and refined workspace controls.",
+      "The current release improves collaboration, offline change recovery, API key management, notifications, and workspace settings.",
     tasks: [
       {
-        title: "Custom BlockNote blocks",
+        title: "Richer document blocks",
         description:
-          "Add custom document blocks and align the editor schema with the realtime document model.",
+          "Use more structured content types while editing and collaborating on documents.",
         completed: true,
       },
       {
-        title: "Yjs editor write path",
+        title: "Collaborative editing improvements",
         description:
-          "Move editor structural writes to the realtime Yjs channel and retire the legacy REST mutation flow.",
+          "Keep document changes synchronized while multiple people edit together.",
         completed: true,
       },
       {
-        title: "Realtime routine task lifecycle",
-        description:
-          "Deliver user-targeted running and completed task lifecycle events over the realtime connection.",
+        title: "Routine execution updates",
+        description: "See updates when your automation tasks start and finish.",
         completed: true,
       },
       {
         title: "Collaboration permissions",
         description:
-          "Align Owner, Admin, Write, and Read permissions with ownership transfer, self-leave, quota ownership, and realtime channel access.",
+          "Manage Owner, Admin, Write, and Read access, transfer ownership, and leave shared workspaces.",
         completed: true,
       },
       {
-        title: "Local policy and offline queue enforcement",
+        title: "Offline change recovery",
         description:
-          "Connect localVault and offlineQueue settings to local database readiness, transaction retries, terminal failures, logout scoping, and online recovery.",
+          "Manage local data preferences and recover pending changes when your connection returns.",
         completed: true,
       },
       {
-        title: "Public API and API key groundwork",
+        title: "Public API and API key management",
         description:
-          "Add the public API contract, API key management, realtime transport documentation, quota UI, and generated API reference pages.",
+          "Create and revoke integration keys, review usage, and explore the public API reference.",
         completed: true,
       },
       {
         title: "Notification panel and inbox",
         description:
-          "Add notification list, unread, read, and delete contracts together with cache integration, realtime notification frames, the notification popover, and the inbox dialog.",
+          "Read incoming notifications, distinguish unread items, and remove notifications from the panel or inbox.",
         completed: true,
       },
       {
@@ -123,7 +116,7 @@ export const versionRoadmap: readonly VersionData[] = [
   },
   {
     version: "0.1.0",
-    label: "Released",
+    label: "Legacy",
     status: "released",
     description:
       "The previous release brought the core knowledge workspace together with structured editing, materials, routines, and integration controls.",
@@ -131,7 +124,7 @@ export const versionRoadmap: readonly VersionData[] = [
       {
         title: "Account and session flows",
         description:
-          "Support registration, sign-in, password recovery, OAuth redirects, session refresh, and account-level error handling.",
+          "Register, sign in, recover your password, and connect supported sign-in providers.",
         completed: true,
       },
       {
@@ -143,13 +136,13 @@ export const versionRoadmap: readonly VersionData[] = [
       {
         title: "Block Pack editor",
         description:
-          "Create structured documents with BlockNote, custom blocks, diagrams, math, tables, and block-level editing actions.",
+          "Create structured documents with custom blocks, diagrams, math, tables, and block-level editing actions.",
         completed: true,
       },
       {
         title: "Realtime synchronization",
         description:
-          "Synchronize collaborative document changes and workspace mutations while keeping local caches and pending work isolated.",
+          "Keep shared documents and workspace changes up to date while collaborating.",
         completed: true,
       },
       {
@@ -173,7 +166,7 @@ export const versionRoadmap: readonly VersionData[] = [
       {
         title: "Local-first data controls",
         description:
-          "Manage local database, offline queue, attachment cache, private previews, density, language, and theme preferences.",
+          "Choose how data is kept on your device and adjust private previews, display density, language, and theme.",
         completed: true,
       },
       {
@@ -198,7 +191,7 @@ export const versionRoadmap: readonly VersionData[] = [
   },
   {
     version: "0.0.1",
-    label: "Foundation",
+    label: "Legacy",
     status: "released",
     description:
       "The first usable Notegic workspace: an account, a place to organize knowledge, and a dependable local-first editing base.",
@@ -242,11 +235,3 @@ export const versionRoadmap: readonly VersionData[] = [
     ],
   },
 ];
-
-export const getVersionProgress = (versions: readonly VersionData[]) => {
-  const tasks = versions.flatMap(version => version.tasks);
-  return {
-    completed: tasks.filter(task => task.completed).length,
-    total: tasks.length,
-  };
-};

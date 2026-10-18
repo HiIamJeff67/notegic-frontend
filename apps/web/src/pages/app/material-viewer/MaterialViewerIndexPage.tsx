@@ -1,7 +1,8 @@
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
-import { GraduationCapIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { FileTextIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,9 +61,11 @@ const MaterialViewerIndexPage = () => {
         >
           {t("common.confirm")}
         </Button>
-        <Button variant="secondary">
-          <GraduationCapIcon />
-          <span>{t("workspace.navigation.seeTutorial")}</span>
+        <Button variant="secondary" asChild>
+          <Link to="/document" hash="materials">
+            <FileTextIcon />
+            <span>{t("workspace.navigation.seeDocument")}</span>
+          </Link>
         </Button>
       </div>
     </div>

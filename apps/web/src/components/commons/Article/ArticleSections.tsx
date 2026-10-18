@@ -1,7 +1,16 @@
 import { cn } from "@shared/util/utils";
-import type { HTMLAttributes } from "react";
-import { useContext } from "react";
+import type { CSSProperties, HTMLAttributes } from "react";
+import { createContext, useContext } from "react";
 import { ArticleDisplayContext } from "./ArticleContext";
+
+// Visual levels control tone and indentation; separator spacing follows actual nesting.
+const ArticleSubParagraphDepthContext = createContext(0);
+const subParagraphSeparatorSpacing = [
+  "1.5rem",
+  "1rem",
+  "0.75rem",
+  "0.5rem",
+] as const;
 
 const articleTone = (level: number) =>
   level <= 0
@@ -19,22 +28,13 @@ export const ArticleParagraph = ({
   className,
   level = 0,
   id,
+  paddingBlock,
+  style,
   ...props
-}: HTMLAttributes<HTMLElement> & { level?: number }) => (
-  <ArticleParagraphRenderer
-    id={id}
-    className={className}
-    level={level}
-    {...props}
-  />
-);
-
-const ArticleParagraphRenderer = ({
-  className,
-  level,
-  id,
-  ...props
-}: HTMLAttributes<HTMLElement> & { level: number }) => {
+}: HTMLAttributes<HTMLElement> & {
+  level?: number;
+  paddingBlock?: CSSProperties["paddingBlock"];
+}) => {
   const display = useContext(ArticleDisplayContext);
   const isHidden =
     display?.mode === "pagination" && level === 0 && id !== display.pageId;
@@ -44,11 +44,12 @@ const ArticleParagraphRenderer = ({
       id={id}
       data-article-level={level}
       className={cn(
-        "scroll-mt-8 flex w-full flex-col items-center",
+        "scroll-mt-8 flex w-full min-w-0 flex-col items-center py-4",
         articleTone(level),
         isHidden && "hidden",
         className
       )}
+      style={{ paddingBlock, ...style }}
       {...props}
     />
   );
@@ -101,17 +102,25 @@ export const ArticleParagraphRight = ({
   />
 );
 
+// Bleed the line's paint, not layout, so nested sections cannot add horizontal scrolling.
 export const ArticleParagraphSeparator = ({
   className,
+  fullWidth = false,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => {
+}: HTMLAttributes<HTMLDivElement> & { fullWidth?: boolean }) => {
   const display = useContext(ArticleDisplayContext);
   if (display?.mode === "pagination") return null;
 
   return (
     <div
       role="separator"
-      className={cn("mt-8 mb-6 w-full border-t-2 border-border/60", className)}
+      data-article-separator="paragraph"
+      className={cn(
+        "mx-auto my-8 w-full max-w-[calc(var(--article-reading-width,100%)+2rem)] shrink-0 border-t-2 border-foreground/20",
+        fullWidth &&
+          "shadow-[0_0_0_100vmax] shadow-foreground/20 [clip-path:inset(0_-100vmax)]",
+        className
+      )}
       {...props}
     />
   );
@@ -120,18 +129,43 @@ export const ArticleParagraphSeparator = ({
 export const ArticleSubParagraph = ({
   className,
   level = 1,
+  separatorFullWidth = false,
+  paddingBlock,
+  style,
   ...props
-}: HTMLAttributes<HTMLElement> & { level?: number }) => (
-  <section
-    data-article-level={level}
-    className={cn(
-      "scroll-mt-8 flex w-full flex-col items-center [&+&]:before:mx-4 [&+&]:before:my-8 [&+&]:before:block [&+&]:before:h-px [&+&]:before:w-full [&+&]:before:bg-border/35",
-      articleTone(level),
-      className
-    )}
-    {...props}
-  />
-);
+}: HTMLAttributes<HTMLElement> & {
+  level?: number;
+  separatorFullWidth?: boolean;
+  paddingBlock?: CSSProperties["paddingBlock"];
+}) => {
+  const depth = useContext(ArticleSubParagraphDepthContext);
+
+  return (
+    <ArticleSubParagraphDepthContext.Provider value={depth + 1}>
+      <section
+        data-article-level={level}
+        className={cn(
+          "scroll-mt-8 flex w-full min-w-0 flex-col items-center py-2 [&:has(+&)]:mb-0 [&+&]:mt-0 [&+&]:before:my-(--article-separator-spacing) [&+&]:before:block [&+&]:before:h-px [&+&]:before:w-[calc(100%-2rem)] [&+&]:before:max-w-(--article-reading-width) [&+&]:before:shrink-0 [&+&]:before:bg-foreground/10",
+          separatorFullWidth &&
+            "[&+&]:before:shadow-[0_0_0_100vmax] [&+&]:before:shadow-foreground/10 [&+&]:before:[clip-path:inset(0_-100vmax)]",
+          articleTone(level),
+          className
+        )}
+        style={
+          {
+            paddingBlock,
+            "--article-separator-spacing":
+              subParagraphSeparatorSpacing[
+                Math.min(depth, subParagraphSeparatorSpacing.length - 1)
+              ],
+            ...style,
+          } as CSSProperties
+        }
+        {...props}
+      />
+    </ArticleSubParagraphDepthContext.Provider>
+  );
+};
 
 export const ArticleSubParagraphHeader = ({
   className,
@@ -172,11 +206,32 @@ export const ArticleSubParagraphContent = ({
 
 export const ArticleSubParagraphSeparator = ({
   className,
+  fullWidth = false,
+  style,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
-  <div
-    role="separator"
-    className={cn("my-8 h-px bg-border/35", className)}
-    {...props}
-  />
-);
+}: HTMLAttributes<HTMLDivElement> & { fullWidth?: boolean }) => {
+  const depth = useContext(ArticleSubParagraphDepthContext);
+
+  return (
+    <div
+      role="separator"
+      data-article-separator="subparagraph"
+      className={cn(
+        "mx-auto my-(--article-separator-spacing) h-px w-[calc(100%-2rem)] max-w-[min(calc(100%-2rem),var(--article-reading-width,100%))] shrink-0 bg-foreground/10",
+        fullWidth &&
+          "shadow-[0_0_0_100vmax] shadow-foreground/10 [clip-path:inset(0_-100vmax)]",
+        className
+      )}
+      style={
+        {
+          "--article-separator-spacing":
+            subParagraphSeparatorSpacing[
+              Math.min(depth, subParagraphSeparatorSpacing.length - 1)
+            ],
+          ...style,
+        } as CSSProperties
+      }
+      {...props}
+    />
+  );
+};

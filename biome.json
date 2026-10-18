@@ -11,6 +11,7 @@
       "**",
       "!apps/web/src/routeTree.gen.ts",
       "!shared/api/graphql/generated/**",
+      "!apps/web/src/pages/document/api-reference/contracts/**",
       "!apps/web/src/api/local/migrations/meta/**"
     ]
   },

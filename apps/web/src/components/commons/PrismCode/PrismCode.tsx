@@ -1,10 +1,4 @@
-import Prism from "prismjs";
-import "prismjs/components/prism-bash";
-import "prismjs/components/prism-go";
-import "prismjs/components/prism-http";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-python";
-import "prismjs/components/prism-typescript";
+import type Prism from "prismjs";
 import { cn } from "@shared/util/utils";
 import {
   Braces,
@@ -15,7 +9,8 @@ import {
   type LucideIcon,
   Terminal,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import "@/global/styles/prism-code.css";
@@ -65,22 +60,43 @@ const PrismCode = ({
   const languages = Object.entries(code).filter(
     (entry): entry is [PrismLanguage, string] => typeof entry[1] === "string"
   );
-  if (languages.length === 0) return null;
-
   const initialLanguage =
     defaultLanguage && code[defaultLanguage]
       ? defaultLanguage
-      : languages[0][0];
+      : (languages[0]?.[0] ?? "json");
   const [activeLanguage, setActiveLanguage] = useState(initialLanguage);
   const [copied, setCopied] = useState(false);
+  const [prism, setPrism] = useState<typeof Prism | null>(null);
+  const copyTimeout = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(copyTimeout.current), []);
+
+  useEffect(() => {
+    let active = true;
+    // Grammar modules depend on Prism's browser global and must not run in SSR.
+    void import("prismjs")
+      .then(async ({ default: prism }) => {
+        await import("./PrismCodeLanguages");
+        if (active) setPrism(prism);
+      })
+      .catch(() => {
+        // Keep escaped plain text available if optional highlighting cannot load.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (languages.length === 0) return null;
 
   const copyActiveCode = async () => {
     const value = code[activeLanguage];
     if (!value) return;
     try {
-      await navigator.clipboard?.writeText(value);
+      await navigator.clipboard.writeText(value);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1400);
+      window.clearTimeout(copyTimeout.current);
+      copyTimeout.current = window.setTimeout(() => setCopied(false), 1400);
     } catch {
       setCopied(false);
     }
@@ -89,13 +105,13 @@ const PrismCode = ({
   return (
     <Tabs
       className={cn(
-        "gap-0 overflow-hidden rounded-sm border border-border",
+        "min-w-0 max-w-full gap-0 overflow-hidden rounded-sm border border-border",
         className
       )}
       value={activeLanguage}
       onValueChange={value => setActiveLanguage(value as PrismLanguage)}
     >
-      <div className="flex min-h-10 items-center justify-between gap-3 border-b border-border bg-background/50 px-2">
+      <div className="flex min-h-10 items-center justify-between gap-3 border-b border-border bg-popover px-2">
         <div className="min-w-0 flex-1 truncate px-1 text-xs font-medium text-foreground">
           {title}
         </div>
@@ -104,7 +120,10 @@ const PrismCode = ({
           type="single"
           value={activeLanguage}
           onValueChange={value => {
-            if (value) setActiveLanguage(value as PrismLanguage);
+            if (value) {
+              setActiveLanguage(value as PrismLanguage);
+              setCopied(false);
+            }
           }}
         >
           {languages.map(([language]) => {
@@ -116,7 +135,7 @@ const PrismCode = ({
                 key={language}
                 value={language}
               >
-                <Icon className="size-3.5 text-black dark:text-white" />
+                <Icon className="size-3.5 text-foreground" />
                 {languageLabel[language]}
               </ToggleGroupItem>
             );
@@ -124,31 +143,42 @@ const PrismCode = ({
         </ToggleGroup>
       </div>
       {languages.map(([language, value]) => {
-        const grammar = Prism.languages[prismGrammar[language]];
-        const highlighted = grammar
-          ? Prism.highlight(value, grammar, prismGrammar[language])
-          : value;
+        const grammar = prism?.languages[prismGrammar[language]];
+        const highlighted =
+          prism && grammar
+            ? prism.highlight(value, grammar, prismGrammar[language])
+            : null;
 
         return (
-          <TabsContent className="m-0" key={language} value={language}>
-            <pre className="prism-code relative max-h-72 overflow-auto bg-background p-4 font-mono text-sm leading-6">
-              <button
-                aria-label={copied ? "Copied" : "Copy code"}
-                className="absolute top-2 right-2 inline-flex size-7 items-center justify-center rounded-sm bg-background/90 text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                type="button"
-                onClick={() => void copyActiveCode()}
-              >
-                {copied ? (
-                  <Check className="size-3.5" />
-                ) : (
-                  <Copy className="size-3.5" />
-                )}
-              </button>
-              <code
-                className="block min-w-max"
-                dangerouslySetInnerHTML={{ __html: highlighted }}
-              />
+          <TabsContent
+            className="relative m-0 min-w-0"
+            key={language}
+            value={language}
+          >
+            <pre className="prism-code max-h-72 overflow-auto bg-background p-4 pr-12 font-mono text-sm leading-6">
+              {highlighted === null ? (
+                <code className="block min-w-max">{value}</code>
+              ) : (
+                <code
+                  className="block min-w-max"
+                  dangerouslySetInnerHTML={{ __html: highlighted }}
+                />
+              )}
             </pre>
+            <Button
+              aria-label={copied ? "Copied" : "Copy code"}
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 size-7 rounded-sm bg-background/90 text-muted-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+              type="button"
+              onClick={() => void copyActiveCode()}
+            >
+              {copied ? (
+                <Check className="size-3.5" />
+              ) : (
+                <Copy className="size-3.5" />
+              )}
+            </Button>
           </TabsContent>
         );
       })}

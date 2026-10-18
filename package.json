@@ -36,7 +36,7 @@
     "devlog:fetch": "git fetch origin --prune",
     "devlog:backfill": "node scripts/devlog.mjs --backfill --ref origin/main",
     "install-hooks": "git config core.hooksPath .githooks",
-    "generate:public-api": "node scripts/generatePublicApiData.mjs && biome format apps/web/src/pages/document/publicApiData.ts --write",
+    "generate:public-api": "node scripts/generatePublicApiData.mjs && biome format apps/web/src/pages/document/api-reference/generated/publicAPIData.ts --write",
     "generate:public-api:help": "node scripts/generatePublicApiData.mjs --help",
     "recodegen:mac": "npm run codegen",
     "recodegen:win": "npm run codegen",

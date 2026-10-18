@@ -22,6 +22,8 @@ export default {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
   },
   moduleNameMapper: {
+    // Jest runs CommonJS; use the same parser's published UMD build.
+    "^marked$": "<rootDir>/node_modules/marked/lib/marked.umd.js",
     "^@/(.*)$": "<rootDir>/apps/web/src/$1",
     "^@assets/(.*)$": "<rootDir>/apps/web/assets/$1",
     "^@shared/(.*)$": "<rootDir>/shared/$1",

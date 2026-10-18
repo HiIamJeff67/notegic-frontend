@@ -224,7 +224,7 @@ const AccountSettingsPage = ({
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }
         />
-        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)] [&>[role=separator]]:!my-6">
+        <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)]">
           <ArticleParagraph id="personal">
             <ArticleParagraphHeader>
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">

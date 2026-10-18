@@ -18,6 +18,26 @@
 @custom-variant citrus (&:is(.citrus *));
 
 @theme inline {
+  --color-http-get: var(--color-emerald-500);
+  --color-http-get-foreground: var(
+    --http-get-foreground,
+    var(--color-emerald-700)
+  );
+  --color-http-post: var(--color-yellow-500);
+  --color-http-post-foreground: var(
+    --http-post-foreground,
+    var(--color-yellow-700)
+  );
+  --color-http-put: var(--color-blue-500);
+  --color-http-put-foreground: var(
+    --http-put-foreground,
+    var(--color-blue-700)
+  );
+  --color-http-patch: var(--color-violet-500);
+  --color-http-patch-foreground: var(
+    --http-patch-foreground,
+    var(--color-violet-700)
+  );
   --color-canvas: var(--canvas);
   --color-inset: var(--inset);
   --color-overlay: var(--overlay);
@@ -164,6 +184,10 @@ since both of them offer some default colors in ShadCN component
 */
 
 .dark {
+  --http-get-foreground: var(--color-emerald-300);
+  --http-post-foreground: var(--color-yellow-300);
+  --http-put-foreground: var(--color-blue-300);
+  --http-patch-foreground: var(--color-violet-300);
   --canvas: oklch(0.185 0 0);
   --inset: oklch(0.215 0 0);
   --background: oklch(0.32 0 0);
