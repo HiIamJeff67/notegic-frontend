@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
   GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
@@ -14,10 +13,10 @@ import type {
   VisualizeMyRoutineTaskRecordStatusCountResponse,
 } from "@shared/api/interfaces/routineTaskRecord.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
@@ -145,17 +144,10 @@ export const GetMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
 
       return formattedResponse;
     }

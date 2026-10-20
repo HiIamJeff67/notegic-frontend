@@ -5,7 +5,7 @@ fragment FragmentedBasicPrivateRoutineTask on PrivateRoutineTask {
   x
   y
   title
-  purpose
+  payload
   priority
   maxAttempts
   previousRoutineTaskIds

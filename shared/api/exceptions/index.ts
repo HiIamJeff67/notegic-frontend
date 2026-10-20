@@ -51,8 +51,15 @@ export class NotegicException {
   public origin?: string;
   public retryable?: boolean;
 
-  constructor(obj: any) {
+  constructor(obj: unknown, httpStatus?: number) {
     const validated = NotegicExceptionSchema.parse(obj);
+    const status =
+      typeof httpStatus === "number" &&
+      Number.isInteger(httpStatus) &&
+      httpStatus >= 400 &&
+      httpStatus <= 599
+        ? httpStatus
+        : undefined;
     this.reason = validated.reason;
     this.message = validated.message;
     this.retryable = validated.retryable;
@@ -60,15 +67,15 @@ export class NotegicException {
     if ("code" in validated) {
       this.code = validated.code;
       this.prefix = validated.prefix;
-      this.status = validated.status;
+      this.status = status ?? validated.status;
       this.details = validated.details;
       this.origin = validated.origin;
       return;
     }
 
-    this.code = 500;
+    this.code = status ?? 500;
     this.prefix = validated.domain;
-    this.status = 500;
+    this.status = status ?? 500;
   }
 
   static nullable(value: any): value is null | undefined {

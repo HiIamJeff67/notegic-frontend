@@ -1,12 +1,12 @@
+import { matchesSearch } from "@shared/lib/search-page";
+import { routineSearchPage } from "@/api/routine.search";
 import {
   toGraphQLRoutinePeriod,
   toGraphQLRoutinePhase,
 } from "@shared/api/graphql/conversions";
 import {
   type SearchRoutineInput,
-  SearchRoutineSortBy,
   type SearchRoutinesQuery,
-  SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import {
   AccessControlPermission,
@@ -143,12 +143,18 @@ export class RoutineLocalSimulator {
                   routineId: RoutinesToTags.routineId,
                 })
                 .from(RoutinesToTags)
-                .where(inArray(RoutinesToTags.tagId, input.tagIds))
+                .innerJoin(RoutineTag, eq(RoutineTag.id, RoutinesToTags.tagId))
+                .where(
+                  and(
+                    inArray(RoutinesToTags.tagId, input.tagIds),
+                    eq(RoutineTag.ownerPublicId, loggedInUser.publicId)
+                  )
+                )
             ).map(relation => relation.routineId)
           );
-    const normalizedQuery = input.query.trim().toLowerCase();
     const routines = accessibleRoutines.filter(routine => {
-      if (routine.deletedAt !== null) return false;
+      if ((routine.deletedAt !== null) !== (input.isDeletedAt === true))
+        return false;
       if (
         input.stationIds.length > 0 &&
         !(input.stationIds as string[]).includes(routine.stationId)
@@ -156,56 +162,11 @@ export class RoutineLocalSimulator {
         return false;
       }
       if (routineIdsByTag && !routineIdsByTag.has(routine.id)) return false;
-      if (normalizedQuery.length === 0) return true;
-      return routine.title.toLowerCase().includes(normalizedQuery);
+      return matchesSearch(routine.title, input.query);
     });
 
-    routines.sort((left, right) => {
-      const sortBy = input.sortBy ?? SearchRoutineSortBy.Relevance;
-      const sortOrder = input.sortOrder ?? SearchSortOrder.Asc;
-      let comparison = 0;
-
-      if (sortBy === SearchRoutineSortBy.ScheduledStartAt) {
-        comparison =
-          left.scheduledStartAt.getTime() - right.scheduledStartAt.getTime();
-      } else if (sortBy === SearchRoutineSortBy.ScheduledEndAt) {
-        comparison =
-          left.scheduledEndAt.getTime() - right.scheduledEndAt.getTime();
-      } else if (sortBy === SearchRoutineSortBy.Period) {
-        comparison = (left.period ?? "").localeCompare(right.period ?? "");
-      } else if (sortBy === SearchRoutineSortBy.LastUpdate) {
-        comparison = left.updatedAt.getTime() - right.updatedAt.getTime();
-      } else if (sortBy === SearchRoutineSortBy.CreatedAt) {
-        comparison = left.createdAt.getTime() - right.createdAt.getTime();
-      } else {
-        comparison = left.title.localeCompare(right.title);
-      }
-      if (comparison === 0) {
-        comparison = left.title.localeCompare(right.title);
-      }
-      return sortOrder === SearchSortOrder.Desc ? -comparison : comparison;
-    });
-
-    let afterId: string | null = null;
-    if (input.after) {
-      try {
-        const decoded = JSON.parse(atob(input.after)) as {
-          id?: unknown;
-          fields?: { id?: unknown };
-        };
-        const decodedId = decoded.id ?? decoded.fields?.id;
-        afterId = typeof decodedId === "string" ? decodedId : null;
-      } catch {
-        afterId = null;
-      }
-    }
-    const afterIndex =
-      afterId === null
-        ? -1
-        : routines.findIndex(routine => routine.id === afterId);
-    const startIndex = afterIndex >= 0 ? afterIndex + 1 : 0;
-    const first = Math.max(0, input.first ?? 10);
-    const pagedRoutines = routines.slice(startIndex, startIndex + first);
+    const page = routineSearchPage(input, routines);
+    const pagedRoutines = page.rows;
     const pagedRoutineIds = pagedRoutines.map(routine => routine.id);
     const linkedTags =
       pagedRoutineIds.length === 0
@@ -244,7 +205,7 @@ export class RoutineLocalSimulator {
         const period = toGraphQLRoutinePeriod(routine.period);
         return {
           __typename: "SearchRoutineEdge",
-          encodedSearchCursor: btoa(JSON.stringify({ id: routine.id })),
+          encodedSearchCursor: page.cursors.get(routine.id)!,
           node: {
             __typename: "PrivateRoutine",
             id: routine.id,
@@ -275,24 +236,8 @@ export class RoutineLocalSimulator {
           },
         };
       }),
-      searchPageInfo: {
-        __typename: "SearchPageInfo",
-        hasNextPage: startIndex + pagedRoutines.length < routines.length,
-        hasPreviousPage: startIndex > 0,
-        startEncodedSearchCursor:
-          pagedRoutines.length > 0
-            ? btoa(JSON.stringify({ id: pagedRoutines[0].id }))
-            : null,
-        endEncodedSearchCursor:
-          pagedRoutines.length > 0
-            ? btoa(
-                JSON.stringify({
-                  id: pagedRoutines[pagedRoutines.length - 1].id,
-                })
-              )
-            : null,
-      },
-      totalCount: routines.length,
+      searchPageInfo: page.pageInfo,
+      totalCount: pagedRoutines.length,
       searchTime: performance.now() - startedAt,
     } as unknown as SearchRoutinesQuery["searchRoutines"];
   };

@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
 import { lazy, Suspense } from "react";
@@ -16,7 +17,7 @@ const RoutineMenu = ({ routines, station }: RoutineMenuProps) => {
   return (
     <>
       <Suspense fallback={<RoutineMenuItemSkeleton />}>
-        {routines.map(routine => {
+        {[...routines].sort(compareEntityNames).map(routine => {
           const currentStation =
             station ?? stationRoutineManager.getStationById(routine.stationId);
           if (!currentStation) return null;

@@ -1,5 +1,4 @@
 import type { UUID } from "node:crypto";
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateRootShelfRequest,
   CreateRootShelfResponse,
@@ -33,10 +32,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyRootShelfById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRootShelfByIdRequest) => data)
@@ -60,17 +59,10 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyRootShelfByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyRootShelfByIdResponse;
 
     return formattedResponse;
   });
@@ -98,17 +90,10 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateRootShelfResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateRootShelfResponse;
 
     return formattedResponse;
   });
@@ -136,17 +121,10 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateRootShelvesResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateRootShelvesResponse;
 
     return formattedResponse;
   });
@@ -180,17 +158,10 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpsertRootShelfPermissionResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpsertRootShelfPermissionResponse;
 
       return formattedResponse;
     }
@@ -233,17 +204,9 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
         };
       }
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
-
-      const formattedResponse =
-        (await response.json()) as DeleteRootShelfPermissionsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteRootShelfPermissionsResponse;
 
       return formattedResponse;
     }
@@ -282,15 +245,12 @@ const fetchRootShelfMembership = async <T>(
   forwardUpstreamSetCookies(response);
   if (response.status === 204)
     return { success: true, data: null, exception: null } as T;
-  if (!isJsonResponse(response)) throw new Error("error.encounterUnknownError");
-  const formattedResponse = (await response.json()) as T & {
+
+  const formattedResponse = (await readAPIResponse(response)) as T & {
     exception?: unknown;
     refreshableTokens?: { newCSRFToken?: string };
   };
-  if (formattedResponse.exception != null)
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception as any)
-    );
+
   return formattedResponse;
 };
 
@@ -344,17 +304,10 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyRootShelfByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyRootShelfByIdResponse;
 
       return formattedResponse;
     }
@@ -388,17 +341,10 @@ export const UpdateMyRootShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyRootShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyRootShelvesByIdsResponse;
 
       return formattedResponse;
     }
@@ -430,17 +376,10 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyRootShelfByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyRootShelfByIdResponse;
 
       return formattedResponse;
     }
@@ -474,17 +413,10 @@ export const RestoreMyRootShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyRootShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyRootShelvesByIdsResponse;
 
       return formattedResponse;
     }
@@ -516,17 +448,10 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyRootShelfByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyRootShelfByIdResponse;
 
       return formattedResponse;
     }
@@ -560,17 +485,10 @@ export const DeleteMyRootShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyRootShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyRootShelvesByIdsResponse;
 
       return formattedResponse;
     }

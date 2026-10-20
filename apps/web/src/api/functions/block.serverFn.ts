@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMyBlockByIdRequest,
   GetMyBlockByIdResponse,
@@ -8,10 +7,10 @@ import {
   GetMyBlocksByIdsResponse,
 } from "@shared/api/interfaces/block.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyBlockById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlockByIdRequest) => data)
@@ -34,18 +33,11 @@ export const GetMyBlockById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-
     forwardUpstreamSetCookies(response);
 
-    const formattedResponse = (await response.json()) as GetMyBlockByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyBlockByIdResponse;
 
     return formattedResponse;
   });
@@ -74,19 +66,11 @@ export const GetMyBlocksByIds = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-
     forwardUpstreamSetCookies(response);
 
-    const formattedResponse =
-      (await response.json()) as GetMyBlocksByIdsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyBlocksByIdsResponse;
 
     return formattedResponse;
   });
@@ -117,19 +101,11 @@ export const GetMyBlocksByBlockPackId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
-
       forwardUpstreamSetCookies(response);
 
-      const formattedResponse =
-        (await response.json()) as GetMyBlocksByBlockPackIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyBlocksByBlockPackIdResponse;
 
       return formattedResponse;
     }

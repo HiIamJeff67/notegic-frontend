@@ -25,6 +25,7 @@ independent from the Web runtime adapters under `apps/web/src/api/`.
 | Document | Scope |
 | --- | --- |
 | [Frontend contracts and codegen](frontend-contracts-and-codegen.md) | Backend contract ownership, GraphQL inputs, generated output, and codegen workflow |
+| [Search pagination](search-pagination.md) | Stable ordering, opaque cursors, offline search, and Apollo page merging |
 | [API, query, storage, and platform boundaries](../systems/api-query-storage-platform-boundaries.md) | Shared responsibilities and app/runtime adapters |
 
 ## Design artifacts

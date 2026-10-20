@@ -1,5 +1,5 @@
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
-import { searchRoutinesLocalAdapter } from "./searchLocalAdapters";
+import { searchRoutinesLocalAdapter } from "./searchLocal.adapter";
 
 jest.mock("@/api/local/synchronizers/routine.synchronizer", () => ({
   RoutineLocalSynchronizer: { syncSearchRoutines: jest.fn() },

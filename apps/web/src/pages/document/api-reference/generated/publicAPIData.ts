@@ -4121,16 +4121,20 @@ const responseSpecifications: DocumentResponse[] = [
           {
             createdAt: "2026-01-01T00:00:00Z",
             id: "00000000-0000-4000-8000-000000000001",
+            kind: "Start",
             maxAttempts: 0,
             payload: {
+              purpose: "GetSubShelf",
+              schemaVersion: 1,
               subShelfId: "00000000-0000-4000-8000-000000000001",
             },
             previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
             priority: 0,
-            purpose: "GetSubShelf",
             routineId: "00000000-0000-4000-8000-000000000001",
             title: "example",
             updatedAt: "2026-01-01T00:00:00Z",
+            x: 0,
+            y: 0,
           },
         ],
         constraints: [],
@@ -4156,6 +4160,15 @@ const responseSpecifications: DocumentResponse[] = [
             children: [],
           },
           {
+            name: "kind",
+            type: '"Start" | "Action"',
+            required: true,
+            enum: ["Start", "Action"],
+            example: "Start",
+            constraints: [],
+            children: [],
+          },
+          {
             name: "maxAttempts",
             type: "integer (int32)",
             required: true,
@@ -4170,12 +4183,32 @@ const responseSpecifications: DocumentResponse[] = [
             type: "object",
             required: true,
             description:
-              "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
             example: {
+              purpose: "GetSubShelf",
+              schemaVersion: 1,
               subShelfId: "00000000-0000-4000-8000-000000000001",
             },
             constraints: [],
             children: [
+              {
+                name: "purpose",
+                type: '"DeleteMaterial"',
+                required: false,
+                description:
+                  "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+                example: "DeleteMaterial",
+                constraints: [],
+                children: [],
+              },
+              {
+                name: "schemaVersion",
+                type: "1",
+                required: false,
+                example: 1,
+                constraints: [],
+                children: [],
+              },
               {
                 name: "subShelfId",
                 type: "string (uuid)",
@@ -4625,12 +4658,20 @@ const responseSpecifications: DocumentResponse[] = [
               },
               {
                 name: "description",
-                type: "string | null",
+                type: "string",
                 required: false,
                 description:
                   "Optional human-readable description of this resource or dependency.",
-                example: null,
+                example: "example",
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "isActive",
+                type: "boolean",
+                required: false,
+                example: false,
+                constraints: ["default: true"],
                 children: [],
               },
               {
@@ -4806,34 +4847,6 @@ const responseSpecifications: DocumentResponse[] = [
             children: [],
           },
           {
-            name: "purpose",
-            type: '"GetSubShelf" | "CreateSubShelf" | "UpdateSubShelf" | "DeleteSubShelf" | "GetBlockPack" | "CreateBlockPack" | "UpdateBlockPack" | "DeleteBlockPack" | "GetRoutine" | "CreateRoutine" | "UpdateRoutine" | "DeleteRoutine" | "GetMaterial" | "CreateMaterial" | "UpdateMaterial" | "DeleteMaterial"',
-            required: true,
-            description:
-              "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-            enum: [
-              "GetSubShelf",
-              "CreateSubShelf",
-              "UpdateSubShelf",
-              "DeleteSubShelf",
-              "GetBlockPack",
-              "CreateBlockPack",
-              "UpdateBlockPack",
-              "DeleteBlockPack",
-              "GetRoutine",
-              "CreateRoutine",
-              "UpdateRoutine",
-              "DeleteRoutine",
-              "GetMaterial",
-              "CreateMaterial",
-              "UpdateMaterial",
-              "DeleteMaterial",
-            ],
-            example: "GetSubShelf",
-            constraints: [],
-            children: [],
-          },
-          {
             name: "routineId",
             type: "string (uuid)",
             required: true,
@@ -4860,6 +4873,24 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "x",
+            type: "number (double)",
+            required: true,
+            description:
+              "Label for this aggregate result's category or time bucket.",
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "y",
+            type: "number (double)",
+            required: true,
+            example: 0,
             constraints: [],
             children: [],
           },
@@ -4913,16 +4944,20 @@ const responseSpecifications: DocumentResponse[] = [
         {
           createdAt: "2026-01-01T00:00:00Z",
           id: "00000000-0000-4000-8000-000000000001",
+          kind: "Action",
           maxAttempts: 1,
           payload: {
+            purpose: "GetSubShelf",
+            schemaVersion: 1,
             subShelfId: "00000000-0000-4000-8000-000000000003",
           },
           previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
           priority: 1,
-          purpose: "GetSubShelf",
           routineId: "00000000-0000-4000-8000-000000000001",
           title: "example",
           updatedAt: "2026-01-01T00:00:00Z",
+          x: 1,
+          y: 1,
         },
       ],
       exception: null,
@@ -4943,16 +4978,20 @@ const responseSpecifications: DocumentResponse[] = [
         example: {
           createdAt: "2026-01-01T00:00:00Z",
           id: "00000000-0000-4000-8000-000000000001",
+          kind: "Start",
           maxAttempts: 0,
           payload: {
+            purpose: "GetSubShelf",
+            schemaVersion: 1,
             subShelfId: "00000000-0000-4000-8000-000000000001",
           },
           previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
           priority: 0,
-          purpose: "GetSubShelf",
           routineId: "00000000-0000-4000-8000-000000000001",
           title: "example",
           updatedAt: "2026-01-01T00:00:00Z",
+          x: 0,
+          y: 0,
         },
         constraints: [],
         children: [
@@ -4977,6 +5016,15 @@ const responseSpecifications: DocumentResponse[] = [
             children: [],
           },
           {
+            name: "kind",
+            type: '"Start" | "Action"',
+            required: true,
+            enum: ["Start", "Action"],
+            example: "Start",
+            constraints: [],
+            children: [],
+          },
+          {
             name: "maxAttempts",
             type: "integer (int32)",
             required: true,
@@ -4991,12 +5039,32 @@ const responseSpecifications: DocumentResponse[] = [
             type: "object",
             required: true,
             description:
-              "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
             example: {
+              purpose: "GetSubShelf",
+              schemaVersion: 1,
               subShelfId: "00000000-0000-4000-8000-000000000001",
             },
             constraints: [],
             children: [
+              {
+                name: "purpose",
+                type: '"DeleteMaterial"',
+                required: false,
+                description:
+                  "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+                example: "DeleteMaterial",
+                constraints: [],
+                children: [],
+              },
+              {
+                name: "schemaVersion",
+                type: "1",
+                required: false,
+                example: 1,
+                constraints: [],
+                children: [],
+              },
               {
                 name: "subShelfId",
                 type: "string (uuid)",
@@ -5446,12 +5514,20 @@ const responseSpecifications: DocumentResponse[] = [
               },
               {
                 name: "description",
-                type: "string | null",
+                type: "string",
                 required: false,
                 description:
                   "Optional human-readable description of this resource or dependency.",
-                example: null,
+                example: "example",
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "isActive",
+                type: "boolean",
+                required: false,
+                example: false,
+                constraints: ["default: true"],
                 children: [],
               },
               {
@@ -5627,34 +5703,6 @@ const responseSpecifications: DocumentResponse[] = [
             children: [],
           },
           {
-            name: "purpose",
-            type: '"GetSubShelf" | "CreateSubShelf" | "UpdateSubShelf" | "DeleteSubShelf" | "GetBlockPack" | "CreateBlockPack" | "UpdateBlockPack" | "DeleteBlockPack" | "GetRoutine" | "CreateRoutine" | "UpdateRoutine" | "DeleteRoutine" | "GetMaterial" | "CreateMaterial" | "UpdateMaterial" | "DeleteMaterial"',
-            required: true,
-            description:
-              "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-            enum: [
-              "GetSubShelf",
-              "CreateSubShelf",
-              "UpdateSubShelf",
-              "DeleteSubShelf",
-              "GetBlockPack",
-              "CreateBlockPack",
-              "UpdateBlockPack",
-              "DeleteBlockPack",
-              "GetRoutine",
-              "CreateRoutine",
-              "UpdateRoutine",
-              "DeleteRoutine",
-              "GetMaterial",
-              "CreateMaterial",
-              "UpdateMaterial",
-              "DeleteMaterial",
-            ],
-            example: "GetSubShelf",
-            constraints: [],
-            children: [],
-          },
-          {
             name: "routineId",
             type: "string (uuid)",
             required: true,
@@ -5681,6 +5729,24 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "x",
+            type: "number (double)",
+            required: true,
+            description:
+              "Label for this aggregate result's category or time bucket.",
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "y",
+            type: "number (double)",
+            required: true,
+            example: 0,
             constraints: [],
             children: [],
           },
@@ -5733,16 +5799,20 @@ const responseSpecifications: DocumentResponse[] = [
       data: {
         createdAt: "2026-01-01T00:00:00Z",
         id: "00000000-0000-4000-8000-000000000001",
+        kind: "Action",
         maxAttempts: 1,
         payload: {
+          purpose: "GetSubShelf",
+          schemaVersion: 1,
           subShelfId: "00000000-0000-4000-8000-000000000003",
         },
         previousRoutineTaskIds: ["00000000-0000-4000-8000-000000000001"],
         priority: 1,
-        purpose: "GetSubShelf",
         routineId: "00000000-0000-4000-8000-000000000001",
         title: "example",
         updatedAt: "2026-01-01T00:00:00Z",
+        x: 1,
+        y: 1,
       },
       exception: null,
       success: true,
@@ -5890,6 +5960,285 @@ const responseSpecifications: DocumentResponse[] = [
     },
   },
   {
+    status: "201",
+    description: "Completed",
+    hasBody: true,
+    fields: [
+      {
+        name: "data",
+        type: "object",
+        required: true,
+        description:
+          "Operation result; its shape is defined by this response schema.",
+        example: {
+          createdAt: "2026-01-01T00:00:00Z",
+          definitionVersion: 0,
+          id: "00000000-0000-4000-8000-000000000001",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "createdAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "id",
+            type: "string (uuid)",
+            required: true,
+            description:
+              "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "embedded",
+        type: "object",
+        required: false,
+        description:
+          "Optional authenticated-user context attached to the response.",
+        example: {
+          publicId: "00000000-0000-4000-8000-000000000001",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "publicId",
+            type: "string (uuid)",
+            required: true,
+            description:
+              "Public identifier of the represented user or resource.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "exception",
+        type: "null",
+        required: true,
+        description:
+          "Public error details when success is false; otherwise null.",
+        example: null,
+        constraints: [],
+        children: [],
+      },
+      {
+        name: "success",
+        type: "true",
+        required: true,
+        description: "Whether the request completed successfully.",
+        example: true,
+        constraints: [],
+        children: [],
+      },
+    ],
+    example: {
+      data: {
+        createdAt: "2026-01-01T00:00:00Z",
+        definitionVersion: 1,
+        id: "00000000-0000-4000-8000-000000000001",
+      },
+      exception: null,
+      success: true,
+    },
+  },
+  {
+    status: "200",
+    description: "Completed",
+    hasBody: true,
+    fields: [
+      {
+        name: "data",
+        type: "object",
+        required: true,
+        description:
+          "Operation result; its shape is defined by this response schema.",
+        example: {
+          definitionVersion: 0,
+          updatedAt: "2026-01-01T00:00:00Z",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "updatedAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "embedded",
+        type: "object",
+        required: false,
+        description:
+          "Optional authenticated-user context attached to the response.",
+        example: {
+          publicId: "00000000-0000-4000-8000-000000000001",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "publicId",
+            type: "string (uuid)",
+            required: true,
+            description:
+              "Public identifier of the represented user or resource.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "exception",
+        type: "null",
+        required: true,
+        description:
+          "Public error details when success is false; otherwise null.",
+        example: null,
+        constraints: [],
+        children: [],
+      },
+      {
+        name: "success",
+        type: "true",
+        required: true,
+        description: "Whether the request completed successfully.",
+        example: true,
+        constraints: [],
+        children: [],
+      },
+    ],
+    example: {
+      data: {
+        definitionVersion: 1,
+        updatedAt: "2026-01-01T00:00:00Z",
+      },
+      exception: null,
+      success: true,
+    },
+  },
+  {
+    status: "200",
+    description: "Completed",
+    hasBody: true,
+    fields: [
+      {
+        name: "data",
+        type: "object",
+        required: true,
+        description:
+          "Operation result; its shape is defined by this response schema.",
+        example: {
+          definitionVersion: 0,
+          deletedAt: "2026-01-01T00:00:00Z",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "deletedAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "embedded",
+        type: "object",
+        required: false,
+        description:
+          "Optional authenticated-user context attached to the response.",
+        example: {
+          publicId: "00000000-0000-4000-8000-000000000001",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "publicId",
+            type: "string (uuid)",
+            required: true,
+            description:
+              "Public identifier of the represented user or resource.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "exception",
+        type: "null",
+        required: true,
+        description:
+          "Public error details when success is false; otherwise null.",
+        example: null,
+        constraints: [],
+        children: [],
+      },
+      {
+        name: "success",
+        type: "true",
+        required: true,
+        description: "Whether the request completed successfully.",
+        example: true,
+        constraints: [],
+        children: [],
+      },
+    ],
+    example: {
+      data: {
+        definitionVersion: 1,
+        deletedAt: "2026-01-01T00:00:00Z",
+      },
+      exception: null,
+      success: true,
+    },
+  },
+  {
     status: "200",
     description: "Completed",
     hasBody: true,
@@ -5902,10 +6251,13 @@ const responseSpecifications: DocumentResponse[] = [
           "Operation result; its shape is defined by this response schema.",
         example: [
           {
+            admissionState: "Paused",
             createdAt: "2026-01-01T00:00:00Z",
+            definitionVersion: 0,
             deletedAt: "2026-01-01T00:00:00Z",
             description: "example",
             id: "00000000-0000-4000-8000-000000000001",
+            isActive: false,
             isPinned: false,
             itemIds: ["00000000-0000-4000-8000-000000000001"],
             period: "Daily",
@@ -5924,12 +6276,36 @@ const responseSpecifications: DocumentResponse[] = [
         constraints: [],
         children: [
           {
+            name: "admissionState",
+            type: '"Paused" | "NoEntry" | "QuotaBlocked" | "DependencyBlocked" | "Eligible" | "Unavailable"',
+            required: false,
+            enum: [
+              "Paused",
+              "NoEntry",
+              "QuotaBlocked",
+              "DependencyBlocked",
+              "Eligible",
+              "Unavailable",
+            ],
+            example: "Paused",
+            constraints: [],
+            children: [],
+          },
+          {
             name: "createdAt",
             type: "string (date-time)",
             required: true,
             description:
               "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
             constraints: [],
             children: [],
           },
@@ -5960,6 +6336,14 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "isActive",
+            type: "boolean",
+            required: true,
+            example: false,
             constraints: [],
             children: [],
           },
@@ -6142,10 +6526,13 @@ const responseSpecifications: DocumentResponse[] = [
     example: {
       data: [
         {
+          admissionState: "Paused",
           createdAt: "2026-01-01T00:00:00Z",
+          definitionVersion: 1,
           deletedAt: null,
           description: "example",
           id: "00000000-0000-4000-8000-000000000001",
+          isActive: true,
           isPinned: true,
           itemIds: ["00000000-0000-4000-8000-000000000001"],
           period: null,
@@ -6177,10 +6564,13 @@ const responseSpecifications: DocumentResponse[] = [
         description:
           "Operation result; its shape is defined by this response schema.",
         example: {
+          admissionState: "Paused",
           createdAt: "2026-01-01T00:00:00Z",
+          definitionVersion: 0,
           deletedAt: "2026-01-01T00:00:00Z",
           description: "example",
           id: "00000000-0000-4000-8000-000000000001",
+          isActive: false,
           isPinned: false,
           itemIds: ["00000000-0000-4000-8000-000000000001"],
           period: "Daily",
@@ -6198,12 +6588,36 @@ const responseSpecifications: DocumentResponse[] = [
         constraints: [],
         children: [
           {
+            name: "admissionState",
+            type: '"Paused" | "NoEntry" | "QuotaBlocked" | "DependencyBlocked" | "Eligible" | "Unavailable"',
+            required: false,
+            enum: [
+              "Paused",
+              "NoEntry",
+              "QuotaBlocked",
+              "DependencyBlocked",
+              "Eligible",
+              "Unavailable",
+            ],
+            example: "Paused",
+            constraints: [],
+            children: [],
+          },
+          {
             name: "createdAt",
             type: "string (date-time)",
             required: true,
             description:
               "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
             constraints: [],
             children: [],
           },
@@ -6234,6 +6648,14 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "isActive",
+            type: "boolean",
+            required: true,
+            example: false,
             constraints: [],
             children: [],
           },
@@ -6415,10 +6837,13 @@ const responseSpecifications: DocumentResponse[] = [
     ],
     example: {
       data: {
+        admissionState: "Paused",
         createdAt: "2026-01-01T00:00:00Z",
+        definitionVersion: 1,
         deletedAt: null,
         description: "example",
         id: "00000000-0000-4000-8000-000000000001",
+        isActive: true,
         isPinned: true,
         itemIds: ["00000000-0000-4000-8000-000000000001"],
         period: null,
@@ -11818,6 +12243,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         ],
         requestExample: {
           description: "example",
+          expectedDefinitionVersion: 1,
           previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
           progress: 1,
           routineTaskId: "00000000-0000-4000-8000-000000000001",
@@ -11831,6 +12257,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Optional human-readable description of this resource or dependency.",
             example: "example",
             constraints: ["maxLength: 128"],
+            children: [],
+          },
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
             children: [],
           },
           {
@@ -11865,9 +12299,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}\'',
-          http: 'POST https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "progress": 1,\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "expectedDefinitionVersion": 1,\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}\'',
+          http: 'POST https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "expectedDefinitionVersion": 1,\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "expectedDefinitionVersion": 1,\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "progress": 1,\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -11919,11 +12353,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           dependencies: [
             {
               description: "example",
+              expectedDefinitionVersion: 1,
               previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
               progress: 1,
               routineTaskId: "00000000-0000-4000-8000-000000000001",
             },
           ],
+          expectedDefinitionVersion: 1,
         },
         requestFields: [
           {
@@ -11935,6 +12371,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: [
               {
                 description: "example",
+                expectedDefinitionVersion: null,
                 previousRoutineTaskId: "00000000-0000-4000-8000-000000000001",
                 progress: 0,
                 routineTaskId: "00000000-0000-4000-8000-000000000001",
@@ -11950,6 +12387,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Optional human-readable description of this resource or dependency.",
                 example: "example",
                 constraints: ["maxLength: 128"],
+                children: [],
+              },
+              {
+                name: "expectedDefinitionVersion",
+                type: "integer | null",
+                required: false,
+                example: null,
+                constraints: ["minimum: 1"],
                 children: [],
               },
               {
@@ -11984,11 +12429,19 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
             ],
           },
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "dependencies": [\n    {\n      "description": "example",\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ]\n}\'',
-          http: 'POST https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "description": "example",\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "description": "example",\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "progress": 1,\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "dependencies": [\n    {\n      "description": "example",\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}\'',
+          http: 'POST https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "description": "example",\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "description": "example",\n        "expectedDefinitionVersion": 1,\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "progress": 1,\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ],\n    "expectedDefinitionVersion": 1\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -12038,6 +12491,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         ],
         requestExample: {
           description: "example",
+          expectedDefinitionVersion: 1,
           previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
           progress: 1,
           routineTaskId: "00000000-0000-4000-8000-000000000001",
@@ -12051,6 +12505,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Optional human-readable description of this resource or dependency.",
             example: null,
             constraints: ["maxLength: 128"],
+            children: [],
+          },
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
             children: [],
           },
           {
@@ -12085,9 +12547,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "progress": 1,\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "expectedDefinitionVersion": 1,\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "expectedDefinitionVersion": 1,\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "progress": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "expectedDefinitionVersion": 1,\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "progress": 1,\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -12139,11 +12601,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           dependencies: [
             {
               description: "example",
+              expectedDefinitionVersion: 1,
               previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
               progress: 1,
               routineTaskId: "00000000-0000-4000-8000-000000000001",
             },
           ],
+          expectedDefinitionVersion: 1,
         },
         requestFields: [
           {
@@ -12155,6 +12619,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: [
               {
                 description: null,
+                expectedDefinitionVersion: null,
                 previousRoutineTaskId: "00000000-0000-4000-8000-000000000001",
                 progress: null,
                 routineTaskId: "00000000-0000-4000-8000-000000000001",
@@ -12170,6 +12635,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Optional human-readable description of this resource or dependency.",
                 example: null,
                 constraints: ["maxLength: 128"],
+                children: [],
+              },
+              {
+                name: "expectedDefinitionVersion",
+                type: "integer | null",
+                required: false,
+                example: null,
+                constraints: ["minimum: 1"],
                 children: [],
               },
               {
@@ -12204,11 +12677,19 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
             ],
           },
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "dependencies": [\n    {\n      "description": "example",\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ]\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "description": "example",\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "description": "example",\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "progress": 1,\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "dependencies": [\n    {\n      "description": "example",\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "description": "example",\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "progress": 1,\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "description": "example",\n        "expectedDefinitionVersion": 1,\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "progress": 1,\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ],\n    "expectedDefinitionVersion": 1\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -12257,10 +12738,19 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         requestExample: {
+          expectedDefinitionVersion: 1,
           previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
           routineTaskId: "00000000-0000-4000-8000-000000000001",
         },
         requestFields: [
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
           {
             name: "previousRoutineTaskId",
             type: "string (uuid)",
@@ -12283,9 +12773,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: "curl --request DELETE 'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001' \\\n  -H 'X-API-Key: <YOUR_API_KEY>' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"previousRoutineTaskId\": \"00000000-0000-4000-8000-000000000002\",\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
-          http: 'DELETE https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
+          curl: "curl --request DELETE 'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001' \\\n  -H 'X-API-Key: <YOUR_API_KEY>' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"expectedDefinitionVersion\": 1,\n  \"previousRoutineTaskId\": \"00000000-0000-4000-8000-000000000002\",\n  \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n}'",
+          http: 'DELETE https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "expectedDefinitionVersion": 1,\n  "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n  "routineTaskId": "00000000-0000-4000-8000-000000000001"\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "expectedDefinitionVersion": 1,\n    "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n    "routineTaskId": "00000000-0000-4000-8000-000000000001"\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -12335,10 +12825,12 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         requestExample: {
           dependencies: [
             {
+              expectedDefinitionVersion: 1,
               previousRoutineTaskId: "00000000-0000-4000-8000-000000000002",
               routineTaskId: "00000000-0000-4000-8000-000000000001",
             },
           ],
+          expectedDefinitionVersion: 1,
         },
         requestFields: [
           {
@@ -12349,12 +12841,21 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Task dependency pairs within the Routine named in the URL. Each pair identifies a task and its prerequisite.",
             example: [
               {
+                expectedDefinitionVersion: null,
                 previousRoutineTaskId: "00000000-0000-4000-8000-000000000001",
                 routineTaskId: "00000000-0000-4000-8000-000000000001",
               },
             ],
             constraints: ["minItems: 1", "maxItems: 1024"],
             children: [
+              {
+                name: "expectedDefinitionVersion",
+                type: "integer | null",
+                required: false,
+                example: null,
+                constraints: ["minimum: 1"],
+                children: [],
+              },
               {
                 name: "previousRoutineTaskId",
                 type: "string (uuid)",
@@ -12377,11 +12878,19 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
             ],
           },
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
         ],
         examples: {
-          curl: "curl --request DELETE 'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch' \\\n  -H 'X-API-Key: <YOUR_API_KEY>' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"dependencies\": [\n    {\n      \"previousRoutineTaskId\": \"00000000-0000-4000-8000-000000000002\",\n      \"routineTaskId\": \"00000000-0000-4000-8000-000000000001\"\n    }\n  ]\n}'",
-          http: 'DELETE https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request DELETE \'https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "dependencies": [\n    {\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}\'',
+          http: 'DELETE https://api.notegic.com/v1/routine-task-dependencies/routine/00000000-0000-4000-8000-000000000001/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "dependencies": [\n    {\n      "expectedDefinitionVersion": 1,\n      "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n      "routineTaskId": "00000000-0000-4000-8000-000000000001"\n    }\n  ],\n  "expectedDefinitionVersion": 1\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "dependencies": [\n      {\n        "expectedDefinitionVersion": 1,\n        "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",\n        "routineTaskId": "00000000-0000-4000-8000-000000000001"\n      }\n    ],\n    "expectedDefinitionVersion": 1\n  }\n}',
         },
         tag: "routine-task-dependencies",
         responses: [
@@ -12716,16 +13225,49 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         requestExample: {
+          expectedDefinitionVersion: 1,
+          id: "00000000-0000-4000-8000-000000000001",
+          kind: "Action",
           maxAttempts: 1,
           payload: {
+            purpose: "GetSubShelf",
+            schemaVersion: 1,
             subShelfId: "00000000-0000-4000-8000-000000000003",
           },
           priority: 1,
-          purpose: "GetSubShelf",
           routineId: "00000000-0000-4000-8000-000000000001",
           title: "example",
+          x: 1,
+          y: 1,
         },
         requestFields: [
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
+          {
+            name: "id",
+            type: "string | null",
+            required: false,
+            description:
+              "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "kind",
+            type: '"Start" | "Action"',
+            required: false,
+            enum: ["Start", "Action"],
+            example: "Start",
+            constraints: [],
+            children: [],
+          },
           {
             name: "maxAttempts",
             type: "integer (int32)",
@@ -12741,12 +13283,32 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             type: "object",
             required: true,
             description:
-              "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
             example: {
+              purpose: "GetSubShelf",
+              schemaVersion: 1,
               subShelfId: "00000000-0000-4000-8000-000000000001",
             },
             constraints: [],
             children: [
+              {
+                name: "purpose",
+                type: '"DeleteMaterial"',
+                required: false,
+                description:
+                  "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+                example: "DeleteMaterial",
+                constraints: [],
+                children: [],
+              },
+              {
+                name: "schemaVersion",
+                type: "1",
+                required: false,
+                example: 1,
+                constraints: [],
+                children: [],
+              },
               {
                 name: "subShelfId",
                 type: "string (uuid)",
@@ -13196,12 +13758,20 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               },
               {
                 name: "description",
-                type: "string | null",
+                type: "string",
                 required: false,
                 description:
                   "Optional human-readable description of this resource or dependency.",
-                example: null,
+                example: "example",
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "isActive",
+                type: "boolean",
+                required: false,
+                example: false,
+                constraints: ["default: true"],
                 children: [],
               },
               {
@@ -13369,7 +13939,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           {
             name: "purpose",
             type: '"GetSubShelf" | "CreateSubShelf" | "UpdateSubShelf" | "DeleteSubShelf" | "GetBlockPack" | "CreateBlockPack" | "UpdateBlockPack" | "DeleteBlockPack" | "GetRoutine" | "CreateRoutine" | "UpdateRoutine" | "DeleteRoutine" | "GetMaterial" | "CreateMaterial" | "UpdateMaterial" | "DeleteMaterial"',
-            required: true,
+            required: false,
             description:
               "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
             enum: [
@@ -13414,15 +13984,33 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             constraints: ["minLength: 1", "maxLength: 128"],
             children: [],
           },
+          {
+            name: "x",
+            type: "number (double)",
+            required: false,
+            description:
+              "Label for this aggregate result's category or time bucket.",
+            example: 0,
+            constraints: ["minimum: -1000000", "maximum: 1000000"],
+            children: [],
+          },
+          {
+            name: "y",
+            type: "number (double)",
+            required: false,
+            example: 0,
+            constraints: ["minimum: -1000000", "maximum: 1000000"],
+            children: [],
+          },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "maxAttempts": 1,\n  "payload": {\n    "subShelfId": "00000000-0000-4000-8000-000000000003"\n  },\n  "priority": 1,\n  "purpose": "GetSubShelf",\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "title": "example"\n}\'',
-          http: 'POST https://api.notegic.com/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "maxAttempts": 1,\n  "payload": {\n    "subShelfId": "00000000-0000-4000-8000-000000000003"\n  },\n  "priority": 1,\n  "purpose": "GetSubShelf",\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "title": "example"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "maxAttempts": 1,\n    "payload": {\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "purpose": "GetSubShelf",\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example"\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "expectedDefinitionVersion": 1,\n  "id": "00000000-0000-4000-8000-000000000001",\n  "kind": "Action",\n  "maxAttempts": 1,\n  "payload": {\n    "purpose": "GetSubShelf",\n    "schemaVersion": 1,\n    "subShelfId": "00000000-0000-4000-8000-000000000003"\n  },\n  "priority": 1,\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "title": "example",\n  "x": 1,\n  "y": 1\n}\'',
+          http: 'POST https://api.notegic.com/v1/routine-tasks/routine/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "expectedDefinitionVersion": 1,\n  "id": "00000000-0000-4000-8000-000000000001",\n  "kind": "Action",\n  "maxAttempts": 1,\n  "payload": {\n    "purpose": "GetSubShelf",\n    "schemaVersion": 1,\n    "subShelfId": "00000000-0000-4000-8000-000000000003"\n  },\n  "priority": 1,\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "title": "example",\n  "x": 1,\n  "y": 1\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "expectedDefinitionVersion": 1,\n    "id": "00000000-0000-4000-8000-000000000001",\n    "kind": "Action",\n    "maxAttempts": 1,\n    "payload": {\n      "purpose": "GetSubShelf",\n      "schemaVersion": 1,\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example",\n    "x": 1,\n    "y": 1\n  }\n}',
         },
         tag: "routine-tasks",
         responses: [
-          responseSpecifications[7],
+          responseSpecifications[33],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -13464,20 +14052,32 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         requestExample: {
+          expectedDefinitionVersion: 1,
           routineTaskId: "00000000-0000-4000-8000-000000000001",
           setNull: {},
           values: {
             maxAttempts: 1,
             payload: {
+              purpose: "GetSubShelf",
+              schemaVersion: 1,
               subShelfId: "00000000-0000-4000-8000-000000000003",
             },
             priority: 1,
-            purpose: "GetSubShelf",
             routineId: "00000000-0000-4000-8000-000000000001",
             title: "example",
+            x: 1,
+            y: 1,
           },
         },
         requestFields: [
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
           {
             name: "routineTaskId",
             type: "string (uuid)",
@@ -13507,12 +14107,16 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: {
               maxAttempts: null,
               payload: {
+                purpose: "GetSubShelf",
+                schemaVersion: 1,
                 subShelfId: "00000000-0000-4000-8000-000000000001",
               },
               priority: null,
               purpose: "GetSubShelf",
               routineId: "00000000-0000-4000-8000-000000000001",
               title: null,
+              x: null,
+              y: null,
             },
             constraints: [],
             children: [
@@ -13531,12 +14135,32 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 type: "object | null",
                 required: false,
                 description:
-                  "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+                  "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
                 example: {
+                  purpose: "GetSubShelf",
+                  schemaVersion: 1,
                   subShelfId: "00000000-0000-4000-8000-000000000001",
                 },
                 constraints: [],
                 children: [
+                  {
+                    name: "purpose",
+                    type: '"DeleteMaterial"',
+                    required: false,
+                    description:
+                      "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+                    example: "DeleteMaterial",
+                    constraints: [],
+                    children: [],
+                  },
+                  {
+                    name: "schemaVersion",
+                    type: "1",
+                    required: false,
+                    example: 1,
+                    constraints: [],
+                    children: [],
+                  },
                   {
                     name: "subShelfId",
                     type: "string (uuid)",
@@ -13995,6 +14619,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                     children: [],
                   },
                   {
+                    name: "isActive",
+                    type: "boolean | null",
+                    required: false,
+                    example: null,
+                    constraints: [],
+                    children: [],
+                  },
+                  {
                     name: "isPinned",
                     type: "boolean | null",
                     required: false,
@@ -14205,17 +14837,35 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 constraints: ["minLength: 1", "maxLength: 128"],
                 children: [],
               },
+              {
+                name: "x",
+                type: "number | null",
+                required: false,
+                description:
+                  "Label for this aggregate result's category or time bucket.",
+                example: null,
+                constraints: ["minimum: -1000000", "maximum: 1000000"],
+                children: [],
+              },
+              {
+                name: "y",
+                type: "number | null",
+                required: false,
+                example: null,
+                constraints: ["minimum: -1000000", "maximum: 1000000"],
+                children: [],
+              },
             ],
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-tasks/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineTaskId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "maxAttempts": 1,\n    "payload": {\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "purpose": "GetSubShelf",\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example"\n  }\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routine-tasks/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineTaskId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "maxAttempts": 1,\n    "payload": {\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "purpose": "GetSubShelf",\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example"\n  }\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineTaskId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "maxAttempts": 1,\n      "payload": {\n        "subShelfId": "00000000-0000-4000-8000-000000000003"\n      },\n      "priority": 1,\n      "purpose": "GetSubShelf",\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "title": "example"\n    }\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routine-tasks/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "expectedDefinitionVersion": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "maxAttempts": 1,\n    "payload": {\n      "purpose": "GetSubShelf",\n      "schemaVersion": 1,\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example",\n    "x": 1,\n    "y": 1\n  }\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routine-tasks/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "expectedDefinitionVersion": 1,\n  "routineTaskId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "maxAttempts": 1,\n    "payload": {\n      "purpose": "GetSubShelf",\n      "schemaVersion": 1,\n      "subShelfId": "00000000-0000-4000-8000-000000000003"\n    },\n    "priority": 1,\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "title": "example",\n    "x": 1,\n    "y": 1\n  }\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "expectedDefinitionVersion": 1,\n    "routineTaskId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "maxAttempts": 1,\n      "payload": {\n        "purpose": "GetSubShelf",\n        "schemaVersion": 1,\n        "subShelfId": "00000000-0000-4000-8000-000000000003"\n      },\n      "priority": 1,\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "title": "example",\n      "x": 1,\n      "y": 1\n    }\n  }\n}',
         },
         tag: "routine-tasks",
         responses: [
-          responseSpecifications[8],
+          responseSpecifications[34],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -14265,7 +14915,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routine-tasks",
         responses: [
-          responseSpecifications[10],
+          responseSpecifications[35],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -14298,9 +14948,18 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         requestExample: {
+          expectedDefinitionVersion: 1,
           routineTaskIds: ["00000000-0000-4000-8000-000000000001"],
         },
         requestFields: [
+          {
+            name: "expectedDefinitionVersion",
+            type: "integer | null",
+            required: false,
+            example: null,
+            constraints: ["minimum: 1"],
+            children: [],
+          },
           {
             name: "routineTaskIds",
             type: "string (uuid)[]",
@@ -14313,9 +14972,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: "curl --request DELETE 'https://api.notegic.com/v1/routine-tasks/batch/permanently' \\\n  -H 'X-API-Key: <YOUR_API_KEY>' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
-          http: 'DELETE https://api.notegic.com/v1/routine-tasks/batch/permanently\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineTaskIds": [\n    "00000000-0000-4000-8000-000000000001"\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineTaskIds": [\n      "00000000-0000-4000-8000-000000000001"\n    ]\n  }\n}',
+          curl: "curl --request DELETE 'https://api.notegic.com/v1/routine-tasks/batch/permanently' \\\n  -H 'X-API-Key: <YOUR_API_KEY>' \\\n  -H 'User-Agent: NotegicIntegration/1.0' \\\n  -H 'Content-Type: application/json' \\\n  --data-raw '{\n  \"expectedDefinitionVersion\": 1,\n  \"routineTaskIds\": [\n    \"00000000-0000-4000-8000-000000000001\"\n  ]\n}'",
+          http: 'DELETE https://api.notegic.com/v1/routine-tasks/batch/permanently\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "expectedDefinitionVersion": 1,\n  "routineTaskIds": [\n    "00000000-0000-4000-8000-000000000001"\n  ]\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "expectedDefinitionVersion": 1,\n    "routineTaskIds": [\n      "00000000-0000-4000-8000-000000000001"\n    ]\n  }\n}',
         },
         tag: "routine-tasks",
         responses: [
@@ -14406,7 +15065,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routines",
         responses: [
-          responseSpecifications[33],
+          responseSpecifications[36],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -14466,7 +15125,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routines",
         responses: [
-          responseSpecifications[34],
+          responseSpecifications[37],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -14526,7 +15185,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routines",
         responses: [
-          responseSpecifications[33],
+          responseSpecifications[36],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -14824,6 +15483,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             {
               description: "example",
               id: "00000000-0000-4000-8000-000000000001",
+              isActive: true,
               isPinned: true,
               period: "Daily",
               scheduledEndAt: "2026-01-02T00:00:00Z",
@@ -14846,6 +15506,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               {
                 description: "example",
                 id: "00000000-0000-4000-8000-000000000001",
+                isActive: null,
                 isPinned: null,
                 period: "Daily",
                 scheduledEndAt: "2026-01-01T00:00:00Z",
@@ -14875,6 +15536,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 description:
                   "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
                 example: "00000000-0000-4000-8000-000000000001",
+                constraints: [],
+                children: [],
+              },
+              {
+                name: "isActive",
+                type: "boolean | null",
+                required: false,
+                example: null,
                 constraints: [],
                 children: [],
               },
@@ -14963,9 +15632,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}\'',
-          http: 'POST https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}\'',
+          http: 'POST https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -15218,6 +15887,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         requestExample: {
           description: "example",
           id: "00000000-0000-4000-8000-000000000001",
+          isActive: true,
           isPinned: true,
           period: "Daily",
           scheduledEndAt: "2026-01-02T00:00:00Z",
@@ -15245,6 +15915,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             description:
               "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "isActive",
+            type: "boolean | null",
+            required: false,
+            example: null,
             constraints: [],
             children: [],
           },
@@ -15330,9 +16008,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}\'',
-          http: 'POST https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}\'',
+          http: 'POST https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -15503,6 +16181,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           setNull: {},
           values: {
             description: "example",
+            isActive: true,
             isPinned: true,
             period: "Daily",
             scheduledEndAt: "2026-01-02T00:00:00Z",
@@ -15542,6 +16221,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Fields to replace in a partial update. Omitted fields are unchanged; use setNull for an explicit null where the field permits it. Empty strings and arrays are values, not omissions.",
             example: {
               description: null,
+              isActive: null,
               isPinned: null,
               period: "Daily",
               scheduledEndAt: "2026-01-01T00:00:00Z",
@@ -15561,6 +16241,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Optional human-readable description of this resource or dependency.",
                 example: null,
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "isActive",
+                type: "boolean | null",
+                required: false,
+                example: null,
+                constraints: [],
                 children: [],
               },
               {
@@ -15648,9 +16336,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -15692,6 +16380,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               setNull: {},
               values: {
                 description: "example",
+                isActive: true,
                 isPinned: true,
                 period: "Daily",
                 scheduledEndAt: "2026-01-02T00:00:00Z",
@@ -15717,6 +16406,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 setNull: {},
                 values: {
                   description: null,
+                  isActive: null,
                   isPinned: null,
                   period: "Daily",
                   scheduledEndAt: "2026-01-01T00:00:00Z",
@@ -15758,6 +16448,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Fields to replace in a partial update. Omitted fields are unchanged; use setNull for an explicit null where the field permits it. Empty strings and arrays are values, not omissions.",
                 example: {
                   description: null,
+                  isActive: null,
                   isPinned: null,
                   period: "Daily",
                   scheduledEndAt: "2026-01-01T00:00:00Z",
@@ -15777,6 +16468,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                       "Optional human-readable description of this resource or dependency.",
                     example: null,
                     constraints: ["maxLength: 1024"],
+                    children: [],
+                  },
+                  {
+                    name: "isActive",
+                    type: "boolean | null",
+                    required: false,
+                    example: null,
+                    constraints: [],
                     children: [],
                   },
                   {
@@ -15866,9 +16565,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-02T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timeoutSeconds": 60,\n          "timezone": "Asia/Taipei",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "isActive": true,\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-02T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timeoutSeconds": 60,\n          "timezone": "Asia/Taipei",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -15922,7 +16621,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routines",
         responses: [
-          responseSpecifications[34],
+          responseSpecifications[37],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -15975,7 +16674,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "routines",
         responses: [
-          responseSpecifications[33],
+          responseSpecifications[36],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16239,7 +16938,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[35],
+          responseSpecifications[38],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16299,7 +16998,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[36],
+          responseSpecifications[39],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16350,7 +17049,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[37],
+          responseSpecifications[40],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16724,7 +17423,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[38],
+          responseSpecifications[41],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -17342,7 +18041,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[39],
+          responseSpecifications[42],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -17395,7 +18094,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[40],
+          responseSpecifications[43],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -17947,7 +18646,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[41],
+          responseSpecifications[44],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18014,7 +18713,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[42],
+          responseSpecifications[45],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18075,7 +18774,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[43],
+          responseSpecifications[46],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18135,7 +18834,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[43],
+          responseSpecifications[46],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18196,7 +18895,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[44],
+          responseSpecifications[47],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18900,7 +19599,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[42],
+          responseSpecifications[45],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18953,7 +19652,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[43],
+          responseSpecifications[46],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],

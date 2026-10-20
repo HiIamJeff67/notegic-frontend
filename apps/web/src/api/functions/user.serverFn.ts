@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMeRequest,
   GetMeResponse,
@@ -9,10 +8,11 @@ import {
   UpdateMeResponse,
 } from "@shared/api/interfaces/user.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { isJsonResponse } from "@shared/util/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetUserData = createServerFn({ method: "GET" })
   .inputValidator((data: GetUserDataRequest) => data)
@@ -36,16 +36,10 @@ export const GetUserData = createServerFn({ method: "GET" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as GetUserDataResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetUserDataResponse;
 
     return formattedResponse;
   });
@@ -94,7 +88,7 @@ export const TryGetUserData = createServerFn({ method: "GET" })
       if (!response.ok || !isJsonResponse(response)) return false;
 
       const parsedResponse = GetUserDataResponseSchema.safeParse(
-        await response.json()
+        await readAPIResponse(response)
       );
       return (
         parsedResponse.success &&
@@ -128,16 +122,10 @@ export const GetMe = createServerFn({ method: "GET" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as GetMeResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMeResponse;
 
     return formattedResponse;
   });
@@ -165,16 +153,10 @@ export const UpdateMe = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as UpdateMeResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UpdateMeResponse;
 
     return formattedResponse;
   });

@@ -193,6 +193,15 @@
             "description": "Named template bindings. Each entry selects a supported source and any required source resource; these bindings are evaluated during task execution.",
             "type": "object"
           },
+          "purpose": {
+            "const": "CreateBlockPack",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
+          },
           "targetSubShelfId": {
             "description": "UUID identifier or identifiers of the target sub shelf selected by this field.",
             "pattern": "^(?:[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}|f_[0-9A-Fa-f]{32})$",
@@ -539,6 +548,15 @@
             },
             "description": "Named template bindings. Each entry selects a supported source and any required source resource; these bindings are evaluated during task execution.",
             "type": "object"
+          },
+          "purpose": {
+            "const": "CreateMaterial",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -926,6 +944,12 @@
             "format": "uuid",
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "isActive": {
+            "type": [
+              "boolean",
               "null"
             ]
           },
@@ -1681,10 +1705,151 @@
                 }
               }
             }
+          },
+          {
+            "description": "JSON fields accepted by this operation.",
+            "else": {
+              "description": "JSON fields accepted by this operation.",
+              "properties": {
+                "payload": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/GetSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    }
+                  ],
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                }
+              }
+            },
+            "if": {
+              "description": "JSON fields accepted by this operation.",
+              "properties": {
+                "kind": {
+                  "const": "Start"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "description": "JSON fields accepted by this operation.",
+              "not": {
+                "required": [
+                  "purpose"
+                ]
+              },
+              "properties": {
+                "payload": {
+                  "additionalProperties": false,
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                  "properties": {
+                    "description": {
+                      "description": "Optional human-readable description of this resource or dependency.",
+                      "maxLength": 1024,
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "schemaVersion": {
+                      "const": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
           }
         ],
         "description": "JSON fields accepted by this operation.",
         "properties": {
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "id": {
+            "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "Start",
+              "Action"
+            ],
+            "type": "string"
+          },
           "maxAttempts": {
             "description": "Maximum execution attempts for this task, including the initial attempt; new tasks default to 1.",
             "format": "int32",
@@ -1758,9 +1923,29 @@
               {
                 "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
                 "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+              },
+              {
+                "additionalProperties": false,
+                "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                "properties": {
+                  "description": {
+                    "description": "Optional human-readable description of this resource or dependency.",
+                    "maxLength": 1024,
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "schemaVersion": {
+                    "const": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
               }
             ],
-            "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+            "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
             "type": "object"
           },
           "priority": {
@@ -1771,6 +1956,7 @@
             "type": "integer"
           },
           "purpose": {
+            "deprecated": true,
             "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
             "enum": [
               "GetSubShelf",
@@ -1802,12 +1988,24 @@
             "maxLength": 128,
             "minLength": 1,
             "type": "string"
+          },
+          "x": {
+            "description": "Label for this aggregate result's category or time bucket.",
+            "format": "double",
+            "maximum": 1000000,
+            "minimum": -1000000,
+            "type": "number"
+          },
+          "y": {
+            "format": "double",
+            "maximum": 1000000,
+            "minimum": -1000000,
+            "type": "number"
           }
         },
         "required": [
           "routineId",
           "title",
-          "purpose",
           "payload"
         ],
         "type": "object"
@@ -1820,6 +2018,10 @@
             "format": "date-time",
             "type": "string"
           },
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
+          },
           "id": {
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
@@ -1828,6 +2030,7 @@
         },
         "required": [
           "id",
+          "definitionVersion",
           "createdAt"
         ],
         "type": "object"
@@ -1881,6 +2084,14 @@
                   "maxLength": 128,
                   "type": "string"
                 },
+                "expectedDefinitionVersion": {
+                  "format": "int64",
+                  "minimum": 1,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
                 "previousRoutineTaskId": {
                   "description": "Prerequisite task ID or IDs. Prerequisites must belong to the same Routine and cannot create a self-dependency or cycle.",
                   "format": "uuid",
@@ -1908,6 +2119,14 @@
             "maxItems": 1024,
             "minItems": 1,
             "type": "array"
+          },
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -2005,6 +2224,14 @@
             "description": "Optional human-readable description of this resource or dependency.",
             "maxLength": 128,
             "type": "string"
+          },
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "previousRoutineTaskId": {
             "description": "Prerequisite task ID or IDs. Prerequisites must belong to the same Routine and cannot create a self-dependency or cycle.",
@@ -2126,6 +2353,12 @@
               "null"
             ]
           },
+          "isActive": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "isPinned": {
             "description": "Whether the Routine is pinned in the application.",
             "type": [
@@ -2209,6 +2442,11 @@
               "null"
             ]
           },
+          "purpose": {
+            "const": "CreateRoutine",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
           "scheduledEndAt": {
             "description": "Scheduled start or end of the Routine as an RFC 3339 timestamp; null means it is unset.",
             "format": "date-time",
@@ -2224,6 +2462,10 @@
               "string",
               "null"
             ]
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           },
           "stationId": {
             "description": "UUID identifier or identifiers of the station selected by this field.",
@@ -2270,6 +2512,12 @@
                   "format": "uuid",
                   "type": [
                     "string",
+                    "null"
+                  ]
+                },
+                "isActive": {
+                  "type": [
+                    "boolean",
                     "null"
                   ]
                 },
@@ -2867,10 +3115,19 @@
               "null"
             ]
           },
+          "purpose": {
+            "const": "CreateSubShelf",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
           "rootShelfId": {
             "description": "UUID identifier or identifiers of the root shelf selected by this field.",
             "format": "uuid",
             "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -3000,6 +3257,15 @@
             "description": "UUID identifier or identifiers of the block pack selected by this field.",
             "format": "uuid",
             "type": "string"
+          },
+          "purpose": {
+            "const": "DeleteBlockPack",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -3015,6 +3281,15 @@
             "description": "UUID identifier or identifiers of the material selected by this field.",
             "format": "uuid",
             "type": "string"
+          },
+          "purpose": {
+            "const": "DeleteMaterial",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -3869,6 +4144,14 @@
             "description": "Task dependency pairs within the Routine named in the URL. Each pair identifies a task and its prerequisite.",
             "items": {
               "properties": {
+                "expectedDefinitionVersion": {
+                  "format": "int64",
+                  "minimum": 1,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
                 "previousRoutineTaskId": {
                   "description": "Prerequisite task ID or IDs. Prerequisites must belong to the same Routine and cannot create a self-dependency or cycle.",
                   "format": "uuid",
@@ -3889,6 +4172,14 @@
             "maxItems": 1024,
             "minItems": 1,
             "type": "array"
+          },
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -3950,6 +4241,14 @@
       "DeleteRoutineTaskDependencyByRoutineIdRequestBody": {
         "description": "JSON fields accepted by this operation.",
         "properties": {
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "previousRoutineTaskId": {
             "description": "Prerequisite task ID or IDs. Prerequisites must belong to the same Routine and cannot create a self-dependency or cycle.",
             "format": "uuid",
@@ -4021,10 +4320,19 @@
       "DeleteRoutineTaskPayload": {
         "description": "Input for a Task with purpose DeleteRoutine. Resource access is checked when the task executes.",
         "properties": {
+          "purpose": {
+            "const": "DeleteRoutine",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
           "routineId": {
             "description": "UUID of the Routine definition that owns or is selected by this operation.",
             "format": "uuid",
             "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -4036,6 +4344,15 @@
       "DeleteSubShelfTaskPayload": {
         "description": "Input for a Task with purpose DeleteSubShelf. Resource access is checked when the task executes.",
         "properties": {
+          "purpose": {
+            "const": "DeleteSubShelf",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
+          },
           "subShelfId": {
             "description": "UUID identifier or identifiers of the sub shelf selected by this field.",
             "format": "uuid",
@@ -4583,6 +4900,120 @@
                   }
                 }
               }
+            },
+            {
+              "else": {
+                "properties": {
+                  "payload": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/GetSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      }
+                    ],
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "Start"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "purpose"
+                  ]
+                },
+                "properties": {
+                  "payload": {
+                    "additionalProperties": false,
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                    "properties": {
+                      "description": {
+                        "description": "Optional human-readable description of this resource or dependency.",
+                        "maxLength": 1024,
+                        "type": "string"
+                      },
+                      "isActive": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "schemaVersion": {
+                        "const": 1,
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              }
             }
           ],
           "properties": {
@@ -4594,6 +5025,13 @@
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "Start",
+                "Action"
+              ],
               "type": "string"
             },
             "maxAttempts": {
@@ -4667,9 +5105,29 @@
                 {
                   "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
                   "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                },
+                {
+                  "additionalProperties": false,
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                  "properties": {
+                    "description": {
+                      "description": "Optional human-readable description of this resource or dependency.",
+                      "maxLength": 1024,
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "schemaVersion": {
+                      "const": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
                 }
               ],
-              "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
               "type": "object"
             },
             "previousRoutineTaskIds": {
@@ -4685,28 +5143,6 @@
               "format": "int32",
               "type": "integer"
             },
-            "purpose": {
-              "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-              "enum": [
-                "GetSubShelf",
-                "CreateSubShelf",
-                "UpdateSubShelf",
-                "DeleteSubShelf",
-                "GetBlockPack",
-                "CreateBlockPack",
-                "UpdateBlockPack",
-                "DeleteBlockPack",
-                "GetRoutine",
-                "CreateRoutine",
-                "UpdateRoutine",
-                "DeleteRoutine",
-                "GetMaterial",
-                "CreateMaterial",
-                "UpdateMaterial",
-                "DeleteMaterial"
-              ],
-              "type": "string"
-            },
             "routineId": {
               "description": "UUID of the Routine definition that owns or is selected by this operation.",
               "format": "uuid",
@@ -4720,13 +5156,24 @@
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "x": {
+              "description": "Label for this aggregate result's category or time bucket.",
+              "format": "double",
+              "type": "number"
+            },
+            "y": {
+              "format": "double",
+              "type": "number"
             }
           },
           "required": [
             "id",
             "routineId",
+            "kind",
+            "x",
+            "y",
             "title",
-            "purpose",
             "payload",
             "priority",
             "maxAttempts",
@@ -4889,6 +5336,15 @@
             "description": "UUID identifier or identifiers of the block pack selected by this field.",
             "format": "uuid",
             "type": "string"
+          },
+          "purpose": {
+            "const": "GetBlockPack",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -4904,6 +5360,15 @@
             "description": "UUID identifier or identifiers of the material selected by this field.",
             "format": "uuid",
             "type": "string"
+          },
+          "purpose": {
+            "const": "GetMaterial",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -5940,10 +6405,25 @@
       "GetMyRoutineByIdResponseData": {
         "description": "Operation result; its shape is defined by this response schema.",
         "properties": {
+          "admissionState": {
+            "enum": [
+              "Paused",
+              "NoEntry",
+              "QuotaBlocked",
+              "DependencyBlocked",
+              "Eligible",
+              "Unavailable"
+            ],
+            "type": "string"
+          },
           "createdAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
             "type": "string"
+          },
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
           },
           "deletedAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
@@ -5961,6 +6441,9 @@
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
             "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
           },
           "isPinned": {
             "description": "Whether the Routine is pinned in the application.",
@@ -6058,6 +6541,8 @@
           "description",
           "phase",
           "isPinned",
+          "definitionVersion",
+          "isActive",
           "timeoutSeconds",
           "scheduledStartAt",
           "scheduledEndAt",
@@ -6575,6 +7060,124 @@
                 }
               }
             }
+          },
+          {
+            "description": "Operation result; its shape is defined by this response schema.",
+            "else": {
+              "description": "Operation result; its shape is defined by this response schema.",
+              "properties": {
+                "payload": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/GetSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteSubShelfTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteBlockPackTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteRoutineTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/GetMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/UpdateMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
+                      "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                    }
+                  ],
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                }
+              }
+            },
+            "if": {
+              "description": "Operation result; its shape is defined by this response schema.",
+              "properties": {
+                "kind": {
+                  "const": "Start"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "description": "Operation result; its shape is defined by this response schema.",
+              "not": {
+                "required": [
+                  "purpose"
+                ]
+              },
+              "properties": {
+                "payload": {
+                  "additionalProperties": false,
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                  "properties": {
+                    "description": {
+                      "description": "Optional human-readable description of this resource or dependency.",
+                      "maxLength": 1024,
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "schemaVersion": {
+                      "const": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
           }
         ],
         "description": "Operation result; its shape is defined by this response schema.",
@@ -6587,6 +7190,13 @@
           "id": {
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "Start",
+              "Action"
+            ],
             "type": "string"
           },
           "maxAttempts": {
@@ -6660,9 +7270,29 @@
               {
                 "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
                 "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+              },
+              {
+                "additionalProperties": false,
+                "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                "properties": {
+                  "description": {
+                    "description": "Optional human-readable description of this resource or dependency.",
+                    "maxLength": 1024,
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "schemaVersion": {
+                    "const": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
               }
             ],
-            "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+            "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
             "type": "object"
           },
           "previousRoutineTaskIds": {
@@ -6678,28 +7308,6 @@
             "format": "int32",
             "type": "integer"
           },
-          "purpose": {
-            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-            "enum": [
-              "GetSubShelf",
-              "CreateSubShelf",
-              "UpdateSubShelf",
-              "DeleteSubShelf",
-              "GetBlockPack",
-              "CreateBlockPack",
-              "UpdateBlockPack",
-              "DeleteBlockPack",
-              "GetRoutine",
-              "CreateRoutine",
-              "UpdateRoutine",
-              "DeleteRoutine",
-              "GetMaterial",
-              "CreateMaterial",
-              "UpdateMaterial",
-              "DeleteMaterial"
-            ],
-            "type": "string"
-          },
           "routineId": {
             "description": "UUID of the Routine definition that owns or is selected by this operation.",
             "format": "uuid",
@@ -6713,13 +7321,24 @@
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
             "type": "string"
+          },
+          "x": {
+            "description": "Label for this aggregate result's category or time bucket.",
+            "format": "double",
+            "type": "number"
+          },
+          "y": {
+            "format": "double",
+            "type": "number"
           }
         },
         "required": [
           "id",
           "routineId",
+          "kind",
+          "x",
+          "y",
           "title",
-          "purpose",
           "payload",
           "priority",
           "maxAttempts",
@@ -7105,6 +7724,120 @@
                   }
                 }
               }
+            },
+            {
+              "else": {
+                "properties": {
+                  "payload": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/GetSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      }
+                    ],
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "Start"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "purpose"
+                  ]
+                },
+                "properties": {
+                  "payload": {
+                    "additionalProperties": false,
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                    "properties": {
+                      "description": {
+                        "description": "Optional human-readable description of this resource or dependency.",
+                        "maxLength": 1024,
+                        "type": "string"
+                      },
+                      "isActive": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "schemaVersion": {
+                        "const": 1,
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              }
             }
           ],
           "properties": {
@@ -7116,6 +7849,13 @@
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "Start",
+                "Action"
+              ],
               "type": "string"
             },
             "maxAttempts": {
@@ -7189,9 +7929,29 @@
                 {
                   "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
                   "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                },
+                {
+                  "additionalProperties": false,
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                  "properties": {
+                    "description": {
+                      "description": "Optional human-readable description of this resource or dependency.",
+                      "maxLength": 1024,
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "schemaVersion": {
+                      "const": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
                 }
               ],
-              "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
               "type": "object"
             },
             "previousRoutineTaskIds": {
@@ -7207,28 +7967,6 @@
               "format": "int32",
               "type": "integer"
             },
-            "purpose": {
-              "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-              "enum": [
-                "GetSubShelf",
-                "CreateSubShelf",
-                "UpdateSubShelf",
-                "DeleteSubShelf",
-                "GetBlockPack",
-                "CreateBlockPack",
-                "UpdateBlockPack",
-                "DeleteBlockPack",
-                "GetRoutine",
-                "CreateRoutine",
-                "UpdateRoutine",
-                "DeleteRoutine",
-                "GetMaterial",
-                "CreateMaterial",
-                "UpdateMaterial",
-                "DeleteMaterial"
-              ],
-              "type": "string"
-            },
             "routineId": {
               "description": "UUID of the Routine definition that owns or is selected by this operation.",
               "format": "uuid",
@@ -7242,13 +7980,24 @@
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "x": {
+              "description": "Label for this aggregate result's category or time bucket.",
+              "format": "double",
+              "type": "number"
+            },
+            "y": {
+              "format": "double",
+              "type": "number"
             }
           },
           "required": [
             "id",
             "routineId",
+            "kind",
+            "x",
+            "y",
             "title",
-            "purpose",
             "payload",
             "priority",
             "maxAttempts",
@@ -7636,6 +8385,120 @@
                   }
                 }
               }
+            },
+            {
+              "else": {
+                "properties": {
+                  "payload": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/GetSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteSubShelfTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteBlockPackTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteRoutineTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/GetMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/CreateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/UpdateMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      },
+                      {
+                        "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
+                        "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                      }
+                    ],
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "Start"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "purpose"
+                  ]
+                },
+                "properties": {
+                  "payload": {
+                    "additionalProperties": false,
+                    "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                    "properties": {
+                      "description": {
+                        "description": "Optional human-readable description of this resource or dependency.",
+                        "maxLength": 1024,
+                        "type": "string"
+                      },
+                      "isActive": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "schemaVersion": {
+                        "const": 1,
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              }
             }
           ],
           "properties": {
@@ -7647,6 +8510,13 @@
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "Start",
+                "Action"
+              ],
               "type": "string"
             },
             "maxAttempts": {
@@ -7720,9 +8590,29 @@
                 {
                   "$ref": "#/components/schemas/DeleteMaterialTaskPayload",
                   "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose."
+                },
+                {
+                  "additionalProperties": false,
+                  "description": "Purpose-specific Task input. It must match the selected purpose; changing only the purpose also validates the existing payload against the new purpose.",
+                  "properties": {
+                    "description": {
+                      "description": "Optional human-readable description of this resource or dependency.",
+                      "maxLength": 1024,
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "schemaVersion": {
+                      "const": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
                 }
               ],
-              "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+              "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
               "type": "object"
             },
             "previousRoutineTaskIds": {
@@ -7738,28 +8628,6 @@
               "format": "int32",
               "type": "integer"
             },
-            "purpose": {
-              "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
-              "enum": [
-                "GetSubShelf",
-                "CreateSubShelf",
-                "UpdateSubShelf",
-                "DeleteSubShelf",
-                "GetBlockPack",
-                "CreateBlockPack",
-                "UpdateBlockPack",
-                "DeleteBlockPack",
-                "GetRoutine",
-                "CreateRoutine",
-                "UpdateRoutine",
-                "DeleteRoutine",
-                "GetMaterial",
-                "CreateMaterial",
-                "UpdateMaterial",
-                "DeleteMaterial"
-              ],
-              "type": "string"
-            },
             "routineId": {
               "description": "UUID of the Routine definition that owns or is selected by this operation.",
               "format": "uuid",
@@ -7773,13 +8641,24 @@
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "x": {
+              "description": "Label for this aggregate result's category or time bucket.",
+              "format": "double",
+              "type": "number"
+            },
+            "y": {
+              "format": "double",
+              "type": "number"
             }
           },
           "required": [
             "id",
             "routineId",
+            "kind",
+            "x",
+            "y",
             "title",
-            "purpose",
             "payload",
             "priority",
             "maxAttempts",
@@ -7832,10 +8711,25 @@
         "description": "Operation result; its shape is defined by this response schema.",
         "items": {
           "properties": {
+            "admissionState": {
+              "enum": [
+                "Paused",
+                "NoEntry",
+                "QuotaBlocked",
+                "DependencyBlocked",
+                "Eligible",
+                "Unavailable"
+              ],
+              "type": "string"
+            },
             "createdAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "definitionVersion": {
+              "format": "int64",
+              "type": "integer"
             },
             "deletedAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
@@ -7853,6 +8747,9 @@
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
               "type": "string"
+            },
+            "isActive": {
+              "type": "boolean"
             },
             "isPinned": {
               "description": "Whether the Routine is pinned in the application.",
@@ -7950,6 +8847,8 @@
             "description",
             "phase",
             "isPinned",
+            "definitionVersion",
+            "isActive",
             "timeoutSeconds",
             "scheduledStartAt",
             "scheduledEndAt",
@@ -8007,10 +8906,25 @@
         "description": "Operation result; its shape is defined by this response schema.",
         "items": {
           "properties": {
+            "admissionState": {
+              "enum": [
+                "Paused",
+                "NoEntry",
+                "QuotaBlocked",
+                "DependencyBlocked",
+                "Eligible",
+                "Unavailable"
+              ],
+              "type": "string"
+            },
             "createdAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "definitionVersion": {
+              "format": "int64",
+              "type": "integer"
             },
             "deletedAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
@@ -8028,6 +8942,9 @@
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
               "type": "string"
+            },
+            "isActive": {
+              "type": "boolean"
             },
             "isPinned": {
               "description": "Whether the Routine is pinned in the application.",
@@ -8125,6 +9042,8 @@
             "description",
             "phase",
             "isPinned",
+            "definitionVersion",
+            "isActive",
             "timeoutSeconds",
             "scheduledStartAt",
             "scheduledEndAt",
@@ -9029,10 +9948,19 @@
       "GetRoutineTaskPayload": {
         "description": "Input for a Task with purpose GetRoutine. Resource access is checked when the task executes.",
         "properties": {
+          "purpose": {
+            "const": "GetRoutine",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
           "routineId": {
             "description": "UUID of the Routine definition that owns or is selected by this operation.",
             "format": "uuid",
             "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -9044,6 +9972,15 @@
       "GetSubShelfTaskPayload": {
         "description": "Input for a Task with purpose GetSubShelf. Resource access is checked when the task executes.",
         "properties": {
+          "purpose": {
+            "const": "GetSubShelf",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
+          },
           "subShelfId": {
             "description": "UUID identifier or identifiers of the sub shelf selected by this field.",
             "format": "uuid",
@@ -9231,6 +10168,10 @@
       "HardDeleteMyRoutineTaskByIdResponseData": {
         "description": "Operation result; its shape is defined by this response schema.",
         "properties": {
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
+          },
           "deletedAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
@@ -9238,6 +10179,7 @@
           }
         },
         "required": [
+          "definitionVersion",
           "deletedAt"
         ],
         "type": "object"
@@ -9282,6 +10224,14 @@
       "HardDeleteMyRoutineTasksByIdsRequestBody": {
         "description": "JSON fields accepted by this operation.",
         "properties": {
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "routineTaskIds": {
             "description": "UUID identifier or identifiers of the routine task selected by this field.",
             "items": {
@@ -11096,10 +12046,25 @@
       "RestoreMyRoutineByIdResponseData": {
         "description": "Operation result; its shape is defined by this response schema.",
         "properties": {
+          "admissionState": {
+            "enum": [
+              "Paused",
+              "NoEntry",
+              "QuotaBlocked",
+              "DependencyBlocked",
+              "Eligible",
+              "Unavailable"
+            ],
+            "type": "string"
+          },
           "createdAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
             "type": "string"
+          },
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
           },
           "deletedAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
@@ -11117,6 +12082,9 @@
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
             "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
           },
           "isPinned": {
             "description": "Whether the Routine is pinned in the application.",
@@ -11214,6 +12182,8 @@
           "description",
           "phase",
           "isPinned",
+          "definitionVersion",
+          "isActive",
           "timeoutSeconds",
           "scheduledStartAt",
           "scheduledEndAt",
@@ -11288,10 +12258,25 @@
         "description": "Operation result; its shape is defined by this response schema.",
         "items": {
           "properties": {
+            "admissionState": {
+              "enum": [
+                "Paused",
+                "NoEntry",
+                "QuotaBlocked",
+                "DependencyBlocked",
+                "Eligible",
+                "Unavailable"
+              ],
+              "type": "string"
+            },
             "createdAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
               "format": "date-time",
               "type": "string"
+            },
+            "definitionVersion": {
+              "format": "int64",
+              "type": "integer"
             },
             "deletedAt": {
               "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
@@ -11309,6 +12294,9 @@
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
               "type": "string"
+            },
+            "isActive": {
+              "type": "boolean"
             },
             "isPinned": {
               "description": "Whether the Routine is pinned in the application.",
@@ -11406,6 +12394,8 @@
             "description",
             "phase",
             "isPinned",
+            "definitionVersion",
+            "isActive",
             "timeoutSeconds",
             "scheduledStartAt",
             "scheduledEndAt",
@@ -12187,6 +13177,15 @@
             },
             "description": "Named template bindings. Each entry selects a supported source and any required source resource; these bindings are evaluated during task execution.",
             "type": "object"
+          },
+          "purpose": {
+            "const": "UpdateBlockPack",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           }
         },
         "required": [
@@ -12389,6 +13388,15 @@
             },
             "description": "Named template bindings. Each entry selects a supported source and any required source resource; these bindings are evaluated during task execution.",
             "type": "object"
+          },
+          "purpose": {
+            "const": "UpdateMaterial",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           },
           "size": {
             "description": "Content size in bytes.",
@@ -12960,6 +13968,12 @@
                   "null"
                 ]
               },
+              "isActive": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
               "isPinned": {
                 "description": "Whether the Routine is pinned in the application.",
                 "type": [
@@ -13347,6 +14361,14 @@
       "UpdateMyRoutineTaskByIdRequestBody": {
         "description": "JSON fields accepted by this operation.",
         "properties": {
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "routineTaskId": {
             "description": "UUID identifier or identifiers of the routine task selected by this field.",
             "format": "uuid",
@@ -13977,7 +14999,7 @@
                     "type": "null"
                   }
                 ],
-                "description": "Purpose-specific JSON input, limited to 16 MiB in the request. Use the payload schema whose title matches purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
+                "description": "Versioned JSON payload, limited to 16 MiB in the request. Action purpose is stored inside payload.purpose; the optional top-level write field is legacy input only. Start has no purpose. Get/Delete purposes select the named resource; Create/Update purposes change resources when the Task executes. Material purposes operate on existing content references and do not expose a direct file-upload API.",
                 "type": [
                   "object",
                   "null"
@@ -13994,6 +15016,7 @@
                 ]
               },
               "purpose": {
+                "deprecated": true,
                 "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
                 "enum": [
                   "GetSubShelf",
@@ -14035,6 +15058,25 @@
                   "string",
                   "null"
                 ]
+              },
+              "x": {
+                "description": "Label for this aggregate result's category or time bucket.",
+                "format": "double",
+                "maximum": 1000000,
+                "minimum": -1000000,
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "y": {
+                "format": "double",
+                "maximum": 1000000,
+                "minimum": -1000000,
+                "type": [
+                  "number",
+                  "null"
+                ]
               }
             },
             "type": "object"
@@ -14048,6 +15090,10 @@
       "UpdateMyRoutineTaskByIdResponseData": {
         "description": "Operation result; its shape is defined by this response schema.",
         "properties": {
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
+          },
           "updatedAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
@@ -14055,6 +15101,7 @@
           }
         },
         "required": [
+          "definitionVersion",
           "updatedAt"
         ],
         "type": "object"
@@ -14127,6 +15174,12 @@
                       "maxLength": 1024,
                       "type": [
                         "string",
+                        "null"
+                      ]
+                    },
+                    "isActive": {
+                      "type": [
+                        "boolean",
                         "null"
                       ]
                     },
@@ -14831,6 +15884,14 @@
                     "null"
                   ]
                 },
+                "expectedDefinitionVersion": {
+                  "format": "int64",
+                  "minimum": 1,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
                 "previousRoutineTaskId": {
                   "description": "Prerequisite task ID or IDs. Prerequisites must belong to the same Routine and cannot create a self-dependency or cycle.",
                   "format": "uuid",
@@ -14861,6 +15922,14 @@
             "maxItems": 1024,
             "minItems": 1,
             "type": "array"
+          },
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -14959,6 +16028,14 @@
             "maxLength": 128,
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "expectedDefinitionVersion": {
+            "format": "int64",
+            "minimum": 1,
+            "type": [
+              "integer",
               "null"
             ]
           },
@@ -15080,6 +16157,12 @@
               "null"
             ]
           },
+          "isActive": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "isPinned": {
             "description": "Whether the Routine is pinned in the application.",
             "type": [
@@ -15163,6 +16246,11 @@
               "null"
             ]
           },
+          "purpose": {
+            "const": "UpdateRoutine",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
           "routineId": {
             "description": "UUID of the Routine definition that owns or is selected by this operation.",
             "format": "uuid",
@@ -15183,6 +16271,10 @@
               "string",
               "null"
             ]
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           },
           "timezone": {
             "description": "IANA time-zone name used to interpret the Routine schedule, for example Asia/Taipei.",
@@ -15282,6 +16374,15 @@
             },
             "description": "Named template bindings. Each entry selects a supported source and any required source resource; these bindings are evaluated during task execution.",
             "type": "object"
+          },
+          "purpose": {
+            "const": "UpdateSubShelf",
+            "description": "Task purpose. The selected purpose determines the accepted task payload and execution behavior.",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 1,
+            "type": "integer"
           },
           "subShelfId": {
             "description": "UUID identifier or identifiers of the sub shelf selected by this field.",
@@ -29807,6 +30908,7 @@
           "content": {
             "application/json": {
               "example": {
+                "expectedDefinitionVersion": 1,
                 "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                 "routineTaskId": "00000000-0000-4000-8000-000000000001"
               },
@@ -30505,6 +31607,7 @@
             "application/json": {
               "example": {
                 "description": "example",
+                "expectedDefinitionVersion": 1,
                 "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                 "progress": 1,
                 "routineTaskId": "00000000-0000-4000-8000-000000000001"
@@ -30907,6 +32010,7 @@
             "application/json": {
               "example": {
                 "description": "example",
+                "expectedDefinitionVersion": 1,
                 "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                 "progress": 1,
                 "routineTaskId": "00000000-0000-4000-8000-000000000001"
@@ -31312,10 +32416,12 @@
               "example": {
                 "dependencies": [
                   {
+                    "expectedDefinitionVersion": 1,
                     "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                     "routineTaskId": "00000000-0000-4000-8000-000000000001"
                   }
-                ]
+                ],
+                "expectedDefinitionVersion": 1
               },
               "schema": {
                 "$ref": "#/components/schemas/DeleteRoutineTaskDependenciesByRoutineIdRequestBody"
@@ -31669,11 +32775,13 @@
                 "dependencies": [
                   {
                     "description": "example",
+                    "expectedDefinitionVersion": 1,
                     "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                     "progress": 1,
                     "routineTaskId": "00000000-0000-4000-8000-000000000001"
                   }
-                ]
+                ],
+                "expectedDefinitionVersion": 1
               },
               "schema": {
                 "$ref": "#/components/schemas/CreateRoutineTaskDependenciesByRoutineIdRequestBody"
@@ -32077,11 +33185,13 @@
                 "dependencies": [
                   {
                     "description": "example",
+                    "expectedDefinitionVersion": 1,
                     "previousRoutineTaskId": "00000000-0000-4000-8000-000000000002",
                     "progress": 1,
                     "routineTaskId": "00000000-0000-4000-8000-000000000001"
                   }
-                ]
+                ],
+                "expectedDefinitionVersion": 1
               },
               "schema": {
                 "$ref": "#/components/schemas/UpdateRoutineTaskDependenciesByRoutineIdRequestBody"
@@ -32491,18 +33601,22 @@
                     {
                       "createdAt": "2026-01-01T00:00:00Z",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "kind": "Action",
                       "maxAttempts": 1,
                       "payload": {
+                        "purpose": "GetSubShelf",
+                        "schemaVersion": 1,
                         "subShelfId": "00000000-0000-4000-8000-000000000003"
                       },
                       "previousRoutineTaskIds": [
                         "00000000-0000-4000-8000-000000000001"
                       ],
                       "priority": 1,
-                      "purpose": "GetSubShelf",
                       "routineId": "00000000-0000-4000-8000-000000000001",
                       "title": "example",
-                      "updatedAt": "2026-01-01T00:00:00Z"
+                      "updatedAt": "2026-01-01T00:00:00Z",
+                      "x": 1,
+                      "y": 1
                     }
                   ],
                   "exception": null,
@@ -32787,6 +33901,7 @@
           "content": {
             "application/json": {
               "example": {
+                "expectedDefinitionVersion": 1,
                 "routineTaskIds": [
                   "00000000-0000-4000-8000-000000000001"
                 ]
@@ -33117,18 +34232,22 @@
                     {
                       "createdAt": "2026-01-01T00:00:00Z",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "kind": "Action",
                       "maxAttempts": 1,
                       "payload": {
+                        "purpose": "GetSubShelf",
+                        "schemaVersion": 1,
                         "subShelfId": "00000000-0000-4000-8000-000000000003"
                       },
                       "previousRoutineTaskIds": [
                         "00000000-0000-4000-8000-000000000001"
                       ],
                       "priority": 1,
-                      "purpose": "GetSubShelf",
                       "routineId": "00000000-0000-4000-8000-000000000001",
                       "title": "example",
-                      "updatedAt": "2026-01-01T00:00:00Z"
+                      "updatedAt": "2026-01-01T00:00:00Z",
+                      "x": 1,
+                      "y": 1
                     }
                   ],
                   "exception": null,
@@ -33422,14 +34541,20 @@
           "content": {
             "application/json": {
               "example": {
+                "expectedDefinitionVersion": 1,
+                "id": "00000000-0000-4000-8000-000000000001",
+                "kind": "Action",
                 "maxAttempts": 1,
                 "payload": {
+                  "purpose": "GetSubShelf",
+                  "schemaVersion": 1,
                   "subShelfId": "00000000-0000-4000-8000-000000000003"
                 },
                 "priority": 1,
-                "purpose": "GetSubShelf",
                 "routineId": "00000000-0000-4000-8000-000000000001",
-                "title": "example"
+                "title": "example",
+                "x": 1,
+                "y": 1
               },
               "schema": {
                 "$ref": "#/components/schemas/CreateRoutineTaskByRoutineIdRequestBody"
@@ -33445,6 +34570,7 @@
                 "example": {
                   "data": {
                     "createdAt": "2026-01-01T00:00:00Z",
+                    "definitionVersion": 1,
                     "id": "00000000-0000-4000-8000-000000000001"
                   },
                   "exception": null,
@@ -33765,18 +34891,22 @@
                     {
                       "createdAt": "2026-01-01T00:00:00Z",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "kind": "Action",
                       "maxAttempts": 1,
                       "payload": {
+                        "purpose": "GetSubShelf",
+                        "schemaVersion": 1,
                         "subShelfId": "00000000-0000-4000-8000-000000000003"
                       },
                       "previousRoutineTaskIds": [
                         "00000000-0000-4000-8000-000000000001"
                       ],
                       "priority": 1,
-                      "purpose": "GetSubShelf",
                       "routineId": "00000000-0000-4000-8000-000000000001",
                       "title": "example",
-                      "updatedAt": "2026-01-01T00:00:00Z"
+                      "updatedAt": "2026-01-01T00:00:00Z",
+                      "x": 1,
+                      "y": 1
                     }
                   ],
                   "exception": null,
@@ -34398,18 +35528,22 @@
                   "data": {
                     "createdAt": "2026-01-01T00:00:00Z",
                     "id": "00000000-0000-4000-8000-000000000001",
+                    "kind": "Action",
                     "maxAttempts": 1,
                     "payload": {
+                      "purpose": "GetSubShelf",
+                      "schemaVersion": 1,
                       "subShelfId": "00000000-0000-4000-8000-000000000003"
                     },
                     "previousRoutineTaskIds": [
                       "00000000-0000-4000-8000-000000000001"
                     ],
                     "priority": 1,
-                    "purpose": "GetSubShelf",
                     "routineId": "00000000-0000-4000-8000-000000000001",
                     "title": "example",
-                    "updatedAt": "2026-01-01T00:00:00Z"
+                    "updatedAt": "2026-01-01T00:00:00Z",
+                    "x": 1,
+                    "y": 1
                   },
                   "exception": null,
                   "success": true
@@ -34702,17 +35836,21 @@
           "content": {
             "application/json": {
               "example": {
+                "expectedDefinitionVersion": 1,
                 "routineTaskId": "00000000-0000-4000-8000-000000000001",
                 "setNull": {},
                 "values": {
                   "maxAttempts": 1,
                   "payload": {
+                    "purpose": "GetSubShelf",
+                    "schemaVersion": 1,
                     "subShelfId": "00000000-0000-4000-8000-000000000003"
                   },
                   "priority": 1,
-                  "purpose": "GetSubShelf",
                   "routineId": "00000000-0000-4000-8000-000000000001",
-                  "title": "example"
+                  "title": "example",
+                  "x": 1,
+                  "y": 1
                 }
               },
               "schema": {
@@ -34728,6 +35866,7 @@
               "application/json": {
                 "example": {
                   "data": {
+                    "definitionVersion": 1,
                     "updatedAt": "2026-01-01T00:00:00Z"
                   },
                   "exception": null,
@@ -35025,6 +36164,7 @@
               "application/json": {
                 "example": {
                   "data": {
+                    "definitionVersion": 1,
                     "deletedAt": "2026-01-01T00:00:00Z"
                   },
                   "exception": null,
@@ -35365,10 +36505,13 @@
                 "example": {
                   "data": [
                     {
+                      "admissionState": "Paused",
                       "createdAt": "2026-01-01T00:00:00Z",
+                      "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "isActive": true,
                       "isPinned": true,
                       "itemIds": [
                         "00000000-0000-4000-8000-000000000001"
@@ -35975,6 +37118,7 @@
                   {
                     "description": "example",
                     "id": "00000000-0000-4000-8000-000000000001",
+                    "isActive": true,
                     "isPinned": true,
                     "period": "Daily",
                     "scheduledEndAt": "2026-01-02T00:00:00Z",
@@ -36290,6 +37434,7 @@
                     "setNull": {},
                     "values": {
                       "description": "example",
+                      "isActive": true,
                       "isPinned": true,
                       "period": "Daily",
                       "scheduledEndAt": "2026-01-02T00:00:00Z",
@@ -36918,10 +38063,13 @@
                 "example": {
                   "data": [
                     {
+                      "admissionState": "Paused",
                       "createdAt": "2026-01-01T00:00:00Z",
+                      "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "isActive": true,
                       "isPinned": true,
                       "itemIds": [
                         "00000000-0000-4000-8000-000000000001"
@@ -37558,10 +38706,13 @@
                 "example": {
                   "data": [
                     {
+                      "admissionState": "Paused",
                       "createdAt": "2026-01-01T00:00:00Z",
+                      "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
                       "id": "00000000-0000-4000-8000-000000000001",
+                      "isActive": true,
                       "isPinned": true,
                       "itemIds": [
                         "00000000-0000-4000-8000-000000000001"
@@ -37876,6 +39027,7 @@
               "example": {
                 "description": "example",
                 "id": "00000000-0000-4000-8000-000000000001",
+                "isActive": true,
                 "isPinned": true,
                 "period": "Daily",
                 "scheduledEndAt": "2026-01-02T00:00:00Z",
@@ -40113,10 +41265,13 @@
               "application/json": {
                 "example": {
                   "data": {
+                    "admissionState": "Paused",
                     "createdAt": "2026-01-01T00:00:00Z",
+                    "definitionVersion": 1,
                     "deletedAt": null,
                     "description": "example",
                     "id": "00000000-0000-4000-8000-000000000001",
+                    "isActive": true,
                     "isPinned": true,
                     "itemIds": [
                       "00000000-0000-4000-8000-000000000001"
@@ -40432,6 +41587,7 @@
                 "setNull": {},
                 "values": {
                   "description": "example",
+                  "isActive": true,
                   "isPinned": true,
                   "period": "Daily",
                   "scheduledEndAt": "2026-01-02T00:00:00Z",
@@ -41357,10 +42513,13 @@
               "application/json": {
                 "example": {
                   "data": {
+                    "admissionState": "Paused",
                     "createdAt": "2026-01-01T00:00:00Z",
+                    "definitionVersion": 1,
                     "deletedAt": null,
                     "description": "example",
                     "id": "00000000-0000-4000-8000-000000000001",
+                    "isActive": true,
                     "isPinned": true,
                     "itemIds": [
                       "00000000-0000-4000-8000-000000000001"

@@ -1,8 +1,7 @@
+import { matchesSearch, searchPage } from "@shared/lib/search-page";
 import { toGraphQLSupportedIcon } from "@shared/api/graphql/conversions";
 import {
-  SearchSortOrder,
   type SearchStationInput,
-  SearchStationSortBy,
   type SearchStationsQuery,
   UserPlan,
   UserRole,
@@ -108,53 +107,20 @@ export class StationLocalSimulator {
         )
       );
 
-    const normalizedQuery = input.query.trim().toLowerCase();
     const stations = accessibleStations.filter(station => {
-      if (station.deletedAt !== null) return false;
-      if (normalizedQuery.length === 0) return true;
-      return station.name.toLowerCase().includes(normalizedQuery);
+      if ((station.deletedAt !== null) !== (input.isDeletedAt === true))
+        return false;
+      return matchesSearch(station.name, input.query);
     });
 
-    stations.sort((left, right) => {
-      const sortBy = input.sortBy ?? SearchStationSortBy.Relevance;
-      const sortOrder = input.sortOrder ?? SearchSortOrder.Asc;
-      let comparison = 0;
-
-      if (sortBy === SearchStationSortBy.RoutineCount) {
-        comparison = left.routineCount - right.routineCount;
-      } else if (sortBy === SearchStationSortBy.LastUpdate) {
-        comparison = left.updatedAt.getTime() - right.updatedAt.getTime();
-      } else if (sortBy === SearchStationSortBy.CreatedAt) {
-        comparison = left.createdAt.getTime() - right.createdAt.getTime();
-      } else {
-        comparison = left.name.localeCompare(right.name);
-      }
-      if (comparison === 0) {
-        comparison = left.name.localeCompare(right.name);
-      }
-      return sortOrder === SearchSortOrder.Desc ? -comparison : comparison;
+    const page = searchPage("stations", input, stations, {
+      RELEVANCE: row => row.name,
+      NAME: row => row.name,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
+      ROUTINE_COUNT: row => row.routineCount,
     });
-
-    let afterId: string | null = null;
-    if (input.after) {
-      try {
-        const decoded = JSON.parse(atob(input.after)) as {
-          id?: unknown;
-          fields?: { id?: unknown };
-        };
-        const decodedId = decoded.id ?? decoded.fields?.id;
-        afterId = typeof decodedId === "string" ? decodedId : null;
-      } catch {
-        afterId = null;
-      }
-    }
-    const afterIndex =
-      afterId === null
-        ? -1
-        : stations.findIndex(station => station.id === afterId);
-    const startIndex = afterIndex >= 0 ? afterIndex + 1 : 0;
-    const first = Math.max(0, input.first ?? 10);
-    const pagedStations = stations.slice(startIndex, startIndex + first);
+    const pagedStations = page.rows;
 
     return {
       __typename: "SearchStationConnection",
@@ -163,7 +129,7 @@ export class StationLocalSimulator {
 
         return {
           __typename: "SearchStationEdge",
-          encodedSearchCursor: btoa(JSON.stringify({ id: station.id })),
+          encodedSearchCursor: page.cursors.get(station.id)!,
           node: {
             __typename: "PrivateStation",
             id: station.id,
@@ -190,23 +156,7 @@ export class StationLocalSimulator {
           },
         };
       }),
-      searchPageInfo: {
-        __typename: "SearchPageInfo",
-        hasNextPage: startIndex + first < stations.length,
-        hasPreviousPage: startIndex > 0,
-        startEncodedSearchCursor:
-          pagedStations.length > 0
-            ? btoa(JSON.stringify({ id: pagedStations[0].id }))
-            : null,
-        endEncodedSearchCursor:
-          pagedStations.length > 0
-            ? btoa(
-                JSON.stringify({
-                  id: pagedStations[pagedStations.length - 1].id,
-                })
-              )
-            : null,
-      },
+      searchPageInfo: page.pageInfo,
       totalCount: pagedStations.length,
       searchTime: performance.now() - startedAt,
     } as unknown as SearchStationsQuery["searchStations"];

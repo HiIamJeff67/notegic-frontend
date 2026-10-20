@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, SquarePen, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import SeparatableTable from "@/components/commons/SeparatableTable/SeparatableTable";
 import { Button } from "@/components/ui/button";
@@ -248,7 +248,7 @@ const TemplatePatternEditor = ({
                               })
                             }
                           >
-                            <PencilIcon className="size-4" />
+                            <SquarePen className="size-4" />
                           </Button>
                           <Button
                             type="button"

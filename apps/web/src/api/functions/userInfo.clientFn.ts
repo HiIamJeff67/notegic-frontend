@@ -1,10 +1,9 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   UpdateMyInfoRequest,
   UpdateMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 
 export async function UpdateMyInfo(
   request: UpdateMyInfoRequest
@@ -36,15 +35,9 @@ export async function UpdateMyInfo(
     }
   );
 
-  if (!isJsonResponse(response)) {
-    throw new Error("error.encounterUnknownError");
-  }
-  const formattedResponse = (await response.json()) as UpdateMyInfoResponse;
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception)
-    );
-  }
+  const formattedResponse = (await readAPIResponse(
+    response
+  )) as UpdateMyInfoResponse;
 
   return formattedResponse;
 }

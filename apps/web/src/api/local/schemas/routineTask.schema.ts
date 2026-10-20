@@ -1,4 +1,3 @@
-import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { relations } from "drizzle-orm";
 import {
   index,
@@ -21,10 +20,6 @@ export const RoutineTask = sqliteTable(
     x: real("x").notNull().default(0),
     y: real("y").notNull().default(0),
     title: text("title").notNull().default("undefined"),
-    purpose: text("purpose")
-      .$type<RoutineTaskPurpose | "">()
-      .notNull()
-      .default(""),
     payload: text("payload", { mode: "json" }).$type<unknown>().notNull(),
     priority: integer("priority").notNull().default(0),
     maxAttempts: integer("max_attempts").notNull().default(1),

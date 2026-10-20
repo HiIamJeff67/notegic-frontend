@@ -1,5 +1,9 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Download, Plus, RefreshCw, RotateCcw } from "lucide-react";
+import { Download, Plus, RefreshCw } from "lucide-react";
+import {
+  RoutineTaskActionIcon,
+  RoutineTaskStartIcon,
+} from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -16,8 +20,6 @@ import {
 
 interface RoutineTaskDependencyGraphToolbarProps {
   isAddMenuOpen: boolean;
-  isDirty: boolean;
-  isLoading: boolean;
   isRetryingSync: boolean;
   isSaving: boolean;
   pendingSyncCount: number;
@@ -25,16 +27,12 @@ interface RoutineTaskDependencyGraphToolbarProps {
   onOpenCreateRoutineTaskDialog: () => void;
   onAddStartingNode: () => void;
   canAddStartingNode: boolean;
-  onReset: () => void;
   onRetryPendingSync: () => void;
   onExport: () => void;
-  onRefresh: () => void;
 }
 
 const RoutineTaskDependencyGraphToolbar = ({
   isAddMenuOpen,
-  isDirty,
-  isLoading,
   isRetryingSync,
   isSaving,
   pendingSyncCount,
@@ -42,34 +40,13 @@ const RoutineTaskDependencyGraphToolbar = ({
   onOpenCreateRoutineTaskDialog,
   onAddStartingNode,
   canAddStartingNode,
-  onReset,
   onRetryPendingSync,
   onExport,
-  onRefresh,
 }: RoutineTaskDependencyGraphToolbarProps) => {
   const { t } = useTranslation();
 
   return (
     <ButtonGroup className="shrink-0">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-7 w-7 px-0 [&_svg]:size-3.5"
-            disabled={isLoading}
-            onClick={onRefresh}
-            aria-label={t("workspace.viewer.refresh")}
-          >
-            <RefreshCw className={isLoading ? "animate-spin" : ""} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          {t("workspace.viewer.refresh")}
-        </TooltipContent>
-      </Tooltip>
-
       <DropdownMenu open={isAddMenuOpen} onOpenChange={onAddMenuOpenChange}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -77,7 +54,7 @@ const RoutineTaskDependencyGraphToolbar = ({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
+                size="icon"
                 className="h-7 w-7 px-0 [&_svg]:size-3.5"
                 aria-label={t("workspace.fields.create")}
               >
@@ -94,12 +71,12 @@ const RoutineTaskDependencyGraphToolbar = ({
             disabled={!canAddStartingNode}
             onSelect={onAddStartingNode}
           >
-            <Plus />
+            <RoutineTaskStartIcon />
             {t("workspace.fields.startingNode")}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={onOpenCreateRoutineTaskDialog}>
-            <Plus />
-            {t("workspace.fields.routineTask")}
+            <RoutineTaskActionIcon />
+            {t("workspace.fields.action")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -110,7 +87,7 @@ const RoutineTaskDependencyGraphToolbar = ({
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              size="icon"
               className="h-7 w-7 px-0 [&_svg]:size-3.5"
               disabled={isSaving}
               onClick={onRetryPendingSync}
@@ -130,7 +107,7 @@ const RoutineTaskDependencyGraphToolbar = ({
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="icon"
             className="h-7 w-7 px-0 [&_svg]:size-3.5"
             onClick={onExport}
             aria-label={t("workspace.viewer.export")}
@@ -140,25 +117,6 @@ const RoutineTaskDependencyGraphToolbar = ({
         </TooltipTrigger>
         <TooltipContent side="bottom">
           {t("workspace.viewer.export")}
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-7 w-7 px-0 [&_svg]:size-3.5"
-            disabled={!isDirty || isSaving}
-            onClick={onReset}
-            aria-label={t("workspace.fields.reset")}
-          >
-            <RotateCcw />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          {t("workspace.fields.reset")}
         </TooltipContent>
       </Tooltip>
     </ButtonGroup>

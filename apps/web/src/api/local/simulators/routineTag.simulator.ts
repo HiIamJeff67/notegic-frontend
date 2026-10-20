@@ -1,9 +1,8 @@
+import { matchesSearch, searchPage } from "@shared/lib/search-page";
 import { toGraphQLSupportedIcon } from "@shared/api/graphql/conversions";
 import {
   type SearchRoutineTagInput,
-  SearchRoutineTagSortBy,
   type SearchRoutineTagsQuery,
-  SearchSortOrder,
   UserPlan,
   UserRole,
   UserStatus,
@@ -69,48 +68,17 @@ export class RoutineTagLocalSimulator {
       .from(RoutineTag)
       .where(eq(RoutineTag.ownerPublicId, loggedInUser.publicId));
 
-    const normalizedQuery = input.query.trim().toLowerCase();
     const tags = accessibleTags.filter(tag => {
-      if (normalizedQuery.length === 0) return true;
-      return tag.name.toLowerCase().includes(normalizedQuery);
+      return matchesSearch(tag.name, input.query);
     });
 
-    tags.sort((left, right) => {
-      const sortBy = input.sortBy ?? SearchRoutineTagSortBy.Relevance;
-      const sortOrder = input.sortOrder ?? SearchSortOrder.Asc;
-      let comparison = 0;
-
-      if (sortBy === SearchRoutineTagSortBy.LastUpdate) {
-        comparison = left.updatedAt.getTime() - right.updatedAt.getTime();
-      } else if (sortBy === SearchRoutineTagSortBy.CreatedAt) {
-        comparison = left.createdAt.getTime() - right.createdAt.getTime();
-      } else {
-        comparison = left.name.localeCompare(right.name);
-      }
-      if (comparison === 0) {
-        comparison = left.name.localeCompare(right.name);
-      }
-      return sortOrder === SearchSortOrder.Desc ? -comparison : comparison;
+    const page = searchPage("routineTags", input, tags, {
+      RELEVANCE: row => row.name,
+      NAME: row => row.name,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
     });
-
-    let afterId: string | null = null;
-    if (input.after) {
-      try {
-        const decoded = JSON.parse(atob(input.after)) as {
-          id?: unknown;
-          fields?: { id?: unknown };
-        };
-        const decodedId = decoded.id ?? decoded.fields?.id;
-        afterId = typeof decodedId === "string" ? decodedId : null;
-      } catch {
-        afterId = null;
-      }
-    }
-    const afterIndex =
-      afterId === null ? -1 : tags.findIndex(tag => tag.id === afterId);
-    const startIndex = afterIndex >= 0 ? afterIndex + 1 : 0;
-    const first = Math.max(0, input.first ?? 10);
-    const pagedTags = tags.slice(startIndex, startIndex + first);
+    const pagedTags = page.rows;
 
     return {
       __typename: "SearchRoutineTagConnection",
@@ -119,7 +87,7 @@ export class RoutineTagLocalSimulator {
 
         return {
           __typename: "SearchRoutineTagEdge",
-          encodedSearchCursor: btoa(JSON.stringify({ id: tag.id })),
+          encodedSearchCursor: page.cursors.get(tag.id)!,
           node: {
             __typename: "PrivateRoutineTag",
             id: tag.id,
@@ -131,23 +99,7 @@ export class RoutineTagLocalSimulator {
           },
         };
       }),
-      searchPageInfo: {
-        __typename: "SearchPageInfo",
-        hasNextPage: startIndex + first < tags.length,
-        hasPreviousPage: startIndex > 0,
-        startEncodedSearchCursor:
-          pagedTags.length > 0
-            ? btoa(JSON.stringify({ id: pagedTags[0].id }))
-            : null,
-        endEncodedSearchCursor:
-          pagedTags.length > 0
-            ? btoa(
-                JSON.stringify({
-                  id: pagedTags[pagedTags.length - 1].id,
-                })
-              )
-            : null,
-      },
+      searchPageInfo: page.pageInfo,
       totalCount: pagedTags.length,
       searchTime: performance.now() - startedAt,
     } as unknown as SearchRoutineTagsQuery["searchRoutineTags"];

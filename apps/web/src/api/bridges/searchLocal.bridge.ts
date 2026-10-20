@@ -1,8 +1,8 @@
 import { useLazyQuery, useQuery } from "@apollo/client/react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
-import { isNetworkFallbackError } from "./graphql/hooks/error";
-import type { SearchLocalAdapter } from "./searchLocalAdapters";
+import { isNetworkFallbackError } from "@/api/graphql/hooks/error";
+import type { SearchLocalAdapter } from "../adapters/searchLocal.adapter";
 
 export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
   document: any,
@@ -76,10 +76,31 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
         return fetchResult;
       } catch (error) {
         if (!isNetworkFallbackError(error)) throw error;
-        return writeFallback(fetchMoreOptions.variables as TVariables);
+        const current = resultRef.current;
+        const variables = {
+          ...current.variables,
+          ...fetchMoreOptions.variables,
+          input: {
+            ...(current.variables as any)?.input,
+            ...(fetchMoreOptions.variables as any)?.input,
+          },
+        } as TVariables;
+        const fallback = await writeFallback(variables);
+        if (fetchMoreOptions.updateQuery && current.data) {
+          const data = fetchMoreOptions.updateQuery(current.data, {
+            fetchMoreResult: fallback.data,
+            variables,
+          } as any);
+          current.client.writeQuery({
+            query: document,
+            variables: current.variables,
+            data,
+          });
+        }
+        return fallback;
       }
     }) as typeof result.fetchMore,
-    [syncOnce, writeFallback]
+    [document, syncOnce, writeFallback]
   );
 
   return [
@@ -162,7 +183,27 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
       return fetchResult;
     } catch (error) {
       if (!isNetworkFallbackError(error)) throw error;
-      return writeFallback(fetchMoreOptions.variables as TVariables);
+      const fallbackVariables = {
+        ...queryResult.variables,
+        ...fetchMoreOptions.variables,
+        input: {
+          ...(queryResult.variables as any)?.input,
+          ...(fetchMoreOptions.variables as any)?.input,
+        },
+      } as TVariables;
+      const fallback = await writeFallback(fallbackVariables);
+      if (fetchMoreOptions.updateQuery && queryResult.data) {
+        const data = fetchMoreOptions.updateQuery(queryResult.data, {
+          fetchMoreResult: fallback.data,
+          variables: fallbackVariables,
+        } as any);
+        queryResult.client.writeQuery({
+          query: document,
+          variables: queryResult.variables,
+          data,
+        });
+      }
+      return fallback;
     }
   }) as typeof queryResult.fetchMore;
 

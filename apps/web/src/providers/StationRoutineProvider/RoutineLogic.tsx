@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
@@ -199,9 +200,7 @@ export const useRoutineLogic = ({
           );
           if (!wasLinked) {
             routineTagNode.routines.push(currentRoutine);
-            routineTagNode.routines.sort((leftRoutine, rightRoutine) =>
-              leftRoutine.title.localeCompare(rightRoutine.title)
-            );
+            routineTagNode.routines.sort(compareEntityNames);
           }
           if (tagIds.length === 0 && !wasLinked) {
             routineTagNode.routineCount++;
@@ -237,9 +236,7 @@ export const useRoutineLogic = ({
             }
           }
         }
-        stationNode.routines.sort((leftRoutine, rightRoutine) =>
-          leftRoutine.title.localeCompare(rightRoutine.title)
-        );
+        stationNode.routines.sort(compareEntityNames);
         if (stationIds.length === 1 && stationIds[0] === searchedStationId) {
           stationNode.routineCount =
             result.data?.searchRoutines.totalCount ?? searchedRoutines.length;
@@ -265,9 +262,7 @@ export const useRoutineLogic = ({
                   ),
                   ...searchedRoutines,
                 ];
-          routineTagNode.routines.sort((leftRoutine, rightRoutine) =>
-            leftRoutine.title.localeCompare(rightRoutine.title)
-          );
+          routineTagNode.routines.sort(compareEntityNames);
           routineTagNode.routineCount =
             result.data?.searchRoutines.totalCount ?? searchedRoutines.length;
         }
@@ -362,9 +357,7 @@ export const useRoutineLogic = ({
           (routineTask): routineTask is RoutineTaskNode =>
             routineTask !== undefined
         );
-      routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-        leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-      );
+      routineNode.routineTasks.sort(compareEntityNames);
       routineNode.isOpen = true;
       routineNode.isExpanded = true;
       forceUpdate();
@@ -494,9 +487,7 @@ export const useRoutineLogic = ({
       } else {
         stationNode.routines.push(routineNode);
       }
-      stationNode.routines.sort((leftRoutine, rightRoutine) =>
-        leftRoutine.title.localeCompare(rightRoutine.title)
-      );
+      stationNode.routines.sort(compareEntityNames);
 
       const persistedRoutine = existingRoutine ?? routineNode;
       for (const routineTagNode of routineTagsRef.current.values()) {
@@ -505,9 +496,7 @@ export const useRoutineLogic = ({
         );
         if (persistedRoutine.routineTagIds.includes(routineTagNode.id)) {
           routineTagNode.routines.push(persistedRoutine);
-          routineTagNode.routines.sort((leftRoutine, rightRoutine) =>
-            leftRoutine.title.localeCompare(rightRoutine.title)
-          );
+          routineTagNode.routines.sort(compareEntityNames);
         }
       }
 

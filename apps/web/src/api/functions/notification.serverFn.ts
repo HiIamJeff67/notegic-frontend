@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   DeleteNotificationsRequest,
   DeleteNotificationsResponse,
@@ -10,44 +9,10 @@ import type {
   MarkNotificationsReadResponse,
 } from "@shared/api/interfaces/notification.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
-
-const toNotificationException = (exception: unknown): NotegicException => {
-  const value =
-    typeof exception === "object" && exception !== null
-      ? (exception as Record<string, unknown>)
-      : {};
-  const status =
-    typeof value.status === "number" && value.status > 0 ? value.status : 500;
-  const reason =
-    typeof value.reason === "string"
-      ? value.reason
-      : "NotificationRequestFailed";
-  const message =
-    typeof value.message === "string"
-      ? value.message
-      : "Notification request failed.";
-
-  return new NotegicException({
-    code:
-      typeof value.code === "number" && value.code > 0 ? value.code : status,
-    prefix:
-      typeof value.prefix === "string"
-        ? value.prefix
-        : typeof value.domain === "string"
-          ? value.domain
-          : "Gateway",
-    reason,
-    message,
-    status,
-    retryable: value.retryable === true,
-    ...(value.details !== undefined ? { details: value.details } : {}),
-    ...(typeof value.origin === "string" ? { origin: value.origin } : {}),
-  });
-};
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const fetchNotificationResponse = async <T>(
   request: {
@@ -84,18 +49,12 @@ const fetchNotificationResponse = async <T>(
     ...(method === "GET" ? {} : { body: JSON.stringify(request.body ?? {}) }),
     credentials: "include",
   });
-  if (!isJsonResponse(response)) {
-    throw new Error("error.encounterUnknownError");
-  }
+
   forwardUpstreamSetCookies(response);
-  const formattedResponse = (await response.json()) as T & {
+  const formattedResponse = (await readAPIResponse(response)) as T & {
     exception?: unknown;
   };
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      toNotificationException(formattedResponse.exception)
-    );
-  }
+
   return formattedResponse;
 };
 

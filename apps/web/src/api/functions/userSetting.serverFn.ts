@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMySettingRequest,
   GetMySettingResponse,
@@ -7,10 +6,10 @@ import {
 } from "@shared/api/interfaces/userSetting.interface";
 import { getRetryAt } from "@shared/api/retry";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const requestUpstream = async (
   request: GetMySettingRequest | UpdateMySettingRequest,
@@ -42,14 +41,10 @@ const requestUpstream = async (
       rateLimitedUntil: getRetryAt(response.headers.get("Retry-After")),
     };
   }
-  if (!isJsonResponse(response)) throw new Error("error.encounterUnknownError");
+
   forwardUpstreamSetCookies(response);
-  const formattedResponse = await response.json();
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception)
-    );
-  }
+  const formattedResponse = await readAPIResponse(response);
+
   return formattedResponse;
 };
 

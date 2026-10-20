@@ -437,6 +437,7 @@ export const SimpleChineseWorkspaceTranslation = {
   },
   fields: {
     startingNode: "起点",
+    action: "动作",
     active: "启用",
     get: "获取",
     create: "创建",
@@ -839,6 +840,7 @@ export const SimpleChineseWorkspaceTranslation = {
     text: "文本",
     drawing: "绘图",
     cancel: "取消",
+    clearAnnotations: "清除批注",
     zoomOut: "缩小",
     resetZoom: "重置缩放（{{percent}}%）",
     zoomIn: "放大",

@@ -1,13 +1,12 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMyInfoRequest,
   GetMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyInfo = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyInfoRequest) => data)
@@ -31,16 +30,10 @@ export const GetMyInfo = createServerFn({ method: "GET" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as GetMyInfoResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyInfoResponse;
 
     return formattedResponse;
   });

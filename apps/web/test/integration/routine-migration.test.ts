@@ -63,6 +63,12 @@ describe("Routine graph SQLite transition", () => {
         .prepare("SELECT * FROM RoutineTaskDependencyGraphDraftTable")
         .all();
       apply(db, up, 4);
+      expect(
+        db
+          .prepare("PRAGMA table_info(RoutineTaskTable)")
+          .all()
+          .some(column => column.name === "purpose")
+      ).toBe(false);
       expect(db.prepare("SELECT is_active FROM RoutineTable").get()).toEqual({
         is_active: 1,
       });
@@ -164,6 +170,31 @@ describe("Routine graph SQLite transition", () => {
           .prepare("SELECT is_active,definition_version FROM RoutineTable")
           .get()
       ).toEqual({ is_active: 0, definition_version: 1 });
+      db.exec(
+        `INSERT INTO RoutineTaskTable (id,routine_id,payload) VALUES ('fresh-action','new','{"schemaVersion":1,"purpose":"GetRoutine","routineId":"target"}'); PRAGMA user_version=4;`
+      );
+      apply(db, down, 3);
+      expect(
+        db
+          .prepare(
+            "SELECT purpose,payload FROM RoutineTaskTable WHERE id='fresh-action'"
+          )
+          .get()
+      ).toEqual({ purpose: "GetRoutine", payload: '{"routineId":"target"}' });
+      apply(db, up, 4);
+      expect(
+        db
+          .prepare("PRAGMA table_info(RoutineTaskTable)")
+          .all()
+          .some(column => column.name === "purpose")
+      ).toBe(false);
+      expect(
+        db
+          .prepare(
+            "SELECT json_extract(payload,'$.purpose') AS purpose FROM RoutineTaskTable WHERE id='fresh-action'"
+          )
+          .get()
+      ).toEqual({ purpose: "GetRoutine" });
     } finally {
       db.close();
     }

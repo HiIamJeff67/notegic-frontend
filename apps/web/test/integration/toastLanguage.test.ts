@@ -75,11 +75,6 @@ const mocks: Record<string, string> = {
   }`,
   "@/components/paths/ItemPath/ItemPath": `export default () => null;`,
   "@/components/ui/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
-  "@/components/ui/menubar": `import React from 'react';
-    const Menu = ({ children }) => <div>{children}</div>;
-    export { Menu as Menubar, Menu as MenubarContent, Menu as MenubarItem,
-      Menu as MenubarMenu, Menu as MenubarSeparator, Menu as MenubarSub,
-      Menu as MenubarSubContent, Menu as MenubarSubTrigger, Menu as MenubarTrigger };`,
 };
 
 describe("toast language in Chromium", () => {
@@ -196,6 +191,9 @@ describe("toast language in Chromium", () => {
     ["finishImport", "已匯入 note.txt。"],
     ["failImport", "提交的資料有部分格式不正確。"],
   ])("translates %s after switching language during a pending import", async (finish, message) => {
+    await page.getByRole("button", { name: "File", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Import", exact: true }).click();
+    await page.waitForFunction("typeof window.startImport === 'function'");
     await page.evaluate("void startImport();");
     await page.waitForFunction("state.requests === 1");
     await page.evaluate("changeLanguage('zh-TW');");

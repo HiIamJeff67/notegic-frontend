@@ -75,3 +75,4 @@ UPDATE RoutineTaskTable SET previous_routine_task_ids = (
 );
 UPDATE RoutineGraphUpdownBackup SET initialized = 1;
 DROP TABLE RoutineGraphMigrationCheck;
+ALTER TABLE RoutineTaskTable DROP COLUMN purpose;

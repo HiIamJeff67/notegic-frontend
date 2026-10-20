@@ -126,7 +126,6 @@ const RoutineTaskInspector = ({
           setValues(current => ({ ...current, title: response.data.title }));
           return;
         }
-        if (response.data.purpose === "") return;
         const parentRoutine = stationRoutineManager.getRoutineById(
           response.data.routineId as UUID
         );
@@ -135,7 +134,6 @@ const RoutineTaskInspector = ({
           routineId: response.data.routineId as UUID,
           stationId: parentRoutine?.stationId ?? ("" as UUID),
           title: response.data.title,
-          purpose: response.data.purpose,
           payload: response.data.payload,
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
@@ -147,7 +145,7 @@ const RoutineTaskInspector = ({
         stationRoutineManager.upsertRoutineTaskNode(routineTaskNode);
         setValues({
           title: response.data.title,
-          purpose: response.data.purpose,
+          purpose: response.data.payload.purpose,
           payload: JSON.stringify(response.data.payload ?? {}, null, 2),
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
@@ -205,8 +203,11 @@ const RoutineTaskInspector = ({
     try {
       await stationRoutineManager.updateRoutineTask(routineTaskId, {
         title,
-        purpose: values.purpose,
-        payload,
+        payload: {
+          ...(payload as Record<string, unknown>),
+          schemaVersion: 1,
+          purpose: values.purpose,
+        },
         priority: values.priority,
         maxAttempts: values.maxAttempts,
       });

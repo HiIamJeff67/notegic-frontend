@@ -1,5 +1,4 @@
 import type { UUID } from "node:crypto";
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateMyBlockPackChannelTicketRequest,
   CreateMyBlockPackChannelTicketResponse,
@@ -14,10 +13,10 @@ import {
   CurrentRealtimeBaseURL,
   getRealtimeHTTPURL,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const CreateMyRealtimeConnectionTicket = createServerFn({
   method: "POST",
@@ -49,17 +48,10 @@ export const CreateMyRealtimeConnectionTicket = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateMyRealtimeConnectionTicketResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateMyRealtimeConnectionTicketResponse;
 
       return formattedResponse;
     }
@@ -95,17 +87,10 @@ export const CreateMyBlockPackChannelTicket = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateMyBlockPackChannelTicketResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateMyBlockPackChannelTicketResponse;
 
       return formattedResponse;
     }
@@ -136,17 +121,10 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetBlockPackParticipantsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetBlockPackParticipantsResponse;
 
       return formattedResponse;
     }

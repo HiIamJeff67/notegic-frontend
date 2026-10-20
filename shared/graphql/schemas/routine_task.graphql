@@ -5,7 +5,6 @@ type PrivateRoutineTask {
   x: Float!
   y: Float!
   title: String!
-  purpose: RoutineTaskPurpose
   payload: RawJSON!
   priority: Int32!
   maxAttempts: Int32!

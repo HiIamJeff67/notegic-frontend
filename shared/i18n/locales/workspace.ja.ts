@@ -449,6 +449,7 @@ export const JapaneseWorkspaceTranslation = {
   },
   fields: {
     startingNode: "開始ノード",
+    action: "アクション",
     active: "有効",
     get: "取得",
     create: "作成",
@@ -874,6 +875,7 @@ export const JapaneseWorkspaceTranslation = {
     text: "テキスト",
     drawing: "描画",
     cancel: "キャンセル",
+    clearAnnotations: "注釈をクリア",
     zoomOut: "縮小",
     resetZoom: "ズームをリセット（{{percent}}%）",
     zoomIn: "拡大",

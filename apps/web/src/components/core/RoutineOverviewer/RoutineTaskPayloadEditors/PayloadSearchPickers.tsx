@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import {
   SearchRootShelfSortBy,
@@ -176,12 +177,12 @@ const SearchPicker = ({
         });
 
         setOptions(previousOptions => {
-          if (reset) return result.options;
+          if (reset) return [...result.options].sort(compareEntityNames);
           const nextIds = new Set(result.options.map(option => option.id));
           return [
             ...previousOptions.filter(option => !nextIds.has(option.id)),
             ...result.options,
-          ];
+          ].sort(compareEntityNames);
         });
         setCursor(result.cursor);
         setHasMore(result.hasMore);
@@ -342,8 +343,8 @@ export const RootShelfPicker = ({
             query,
             after,
             first,
-            sortBy: SearchRootShelfSortBy.LastUpdate,
-            sortOrder: SearchSortOrder.Desc,
+            sortBy: SearchRootShelfSortBy.Name,
+            sortOrder: SearchSortOrder.Asc,
           },
         },
       }).retain();
@@ -482,8 +483,8 @@ export const StationPicker = ({
             query,
             after,
             first,
-            sortBy: SearchStationSortBy.LastUpdate,
-            sortOrder: SearchSortOrder.Desc,
+            sortBy: SearchStationSortBy.Name,
+            sortOrder: SearchSortOrder.Asc,
           },
         },
       }).retain();
@@ -606,8 +607,8 @@ export const SubShelfPicker = ({
             after,
             first,
             ...(rootShelfId ? { rootShelfId: rootShelfId as UUID } : {}),
-            sortBy: SearchSubShelfSortBy.LastUpdate,
-            sortOrder: SearchSortOrder.Desc,
+            sortBy: SearchSubShelfSortBy.Name,
+            sortOrder: SearchSortOrder.Asc,
           },
         },
       }).retain();
@@ -778,8 +779,8 @@ export const ShelfLocationPicker = ({
               query: rootQuery.trim(),
               after: reset ? undefined : (rootCursor ?? undefined),
               first: reset ? 20 : 10,
-              sortBy: SearchRootShelfSortBy.LastUpdate,
-              sortOrder: SearchSortOrder.Desc,
+              sortBy: SearchRootShelfSortBy.Name,
+              sortOrder: SearchSortOrder.Asc,
             },
           },
         }).retain();
@@ -868,12 +869,12 @@ export const ShelfLocationPicker = ({
           }) ?? [];
 
         setRootOptions(previousOptions => {
-          if (reset) return nextOptions;
+          if (reset) return nextOptions.sort(compareEntityNames);
           const nextIds = new Set(nextOptions.map(option => option.id));
           return [
             ...previousOptions.filter(option => !nextIds.has(option.id)),
             ...nextOptions,
-          ];
+          ].sort(compareEntityNames);
         });
         setRootCursor(
           result.data?.searchRootShelves.searchPageInfo
@@ -919,8 +920,8 @@ export const ShelfLocationPicker = ({
               query: subShelfQuery.trim(),
               after: reset ? undefined : (subShelfCursor ?? undefined),
               first: reset ? 20 : 10,
-              sortBy: SearchSubShelfSortBy.LastUpdate,
-              sortOrder: SearchSortOrder.Desc,
+              sortBy: SearchSubShelfSortBy.Name,
+              sortOrder: SearchSortOrder.Asc,
             },
           },
         }).retain();
@@ -996,12 +997,12 @@ export const ShelfLocationPicker = ({
           }) ?? [];
 
         setSubShelfOptions(previousOptions => {
-          if (reset) return nextOptions;
+          if (reset) return nextOptions.sort(compareEntityNames);
           const nextIds = new Set(nextOptions.map(option => option.id));
           return [
             ...previousOptions.filter(option => !nextIds.has(option.id)),
             ...nextOptions,
-          ];
+          ].sort(compareEntityNames);
         });
         setSubShelfCursor(
           result.data?.searchSubShelves.searchPageInfo.endEncodedSearchCursor ??

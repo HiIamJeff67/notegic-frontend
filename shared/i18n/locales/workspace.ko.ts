@@ -446,6 +446,7 @@ export const KoreanWorkspaceTranslation = {
   },
   fields: {
     startingNode: "시작 노드",
+    action: "동작",
     active: "활성",
     get: "가져오기",
     create: "만들기",
@@ -866,6 +867,7 @@ export const KoreanWorkspaceTranslation = {
     text: "텍스트",
     drawing: "그리기",
     cancel: "취소",
+    clearAnnotations: "주석 지우기",
     zoomOut: "축소",
     resetZoom: "확대/축소 재설정({{percent}}%)",
     zoomIn: "확대",

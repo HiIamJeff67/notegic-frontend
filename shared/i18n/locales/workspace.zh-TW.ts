@@ -439,6 +439,7 @@ export const TraditionalChineseWorkspaceTranslation = {
   },
   fields: {
     startingNode: "起點",
+    action: "動作",
     active: "啟用",
     get: "取得",
     create: "建立",
@@ -843,6 +844,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     text: "文字",
     drawing: "繪圖",
     cancel: "取消",
+    clearAnnotations: "清除註記",
     zoomOut: "縮小",
     resetZoom: "重設縮放（{{percent}}%）",
     zoomIn: "放大",

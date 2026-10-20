@@ -1,6 +1,7 @@
 import {
   AccessControlPermission,
   AllAccessControlPermissions,
+  type RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
 import type {
   CreateRoutineTaskByRoutineIdRequest,
@@ -101,7 +102,6 @@ export class RoutineTaskLocalSimulator {
         x: request.body.x ?? 0,
         y: request.body.y ?? 0,
         title: request.body.title,
-        purpose: normalized.purpose,
         payload: normalized.payload,
         priority: request.body.priority ?? 0,
         maxAttempts: request.body.maxAttempts ?? 1,
@@ -170,9 +170,10 @@ export class RoutineTaskLocalSimulator {
         purpose:
           entry.task.kind === "Start"
             ? request.body.values.purpose
-            : (request.body.values.purpose ??
-              request.body.values.payload?.purpose ??
-              entry.task.purpose),
+            : ((request.body.values.purpose ??
+                request.body.values.payload?.purpose ??
+                (entry.task.payload as Record<string, unknown>)
+                  ?.purpose) as RoutineTaskPurpose),
       });
       const updatedAt = new Date();
       await tx
@@ -180,7 +181,6 @@ export class RoutineTaskLocalSimulator {
         .set({
           ...request.body.values,
           payload: normalized.payload,
-          purpose: normalized.purpose,
           updatedAt,
         })
         .where(eq(RoutineTask.id, entry.task.id));
@@ -193,7 +193,6 @@ export class RoutineTaskLocalSimulator {
           values: {
             ...request.body.values,
             payload: normalized.payload,
-            purpose: normalized.purpose || undefined,
           },
           expectedDefinitionVersion:
             request.body.expectedDefinitionVersion ??
@@ -322,7 +321,6 @@ export class RoutineTaskLocalSimulator {
         x: RoutineTask.x,
         y: RoutineTask.y,
         title: RoutineTask.title,
-        purpose: RoutineTask.purpose,
         payload: RoutineTask.payload,
         priority: RoutineTask.priority,
         maxAttempts: RoutineTask.maxAttempts,
@@ -378,7 +376,6 @@ export class RoutineTaskLocalSimulator {
         x: RoutineTask.x,
         y: RoutineTask.y,
         title: RoutineTask.title,
-        purpose: RoutineTask.purpose,
         payload: RoutineTask.payload,
         priority: RoutineTask.priority,
         maxAttempts: RoutineTask.maxAttempts,

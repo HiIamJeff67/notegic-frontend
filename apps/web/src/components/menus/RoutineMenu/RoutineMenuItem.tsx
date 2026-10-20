@@ -12,7 +12,6 @@ import type { UUID } from "crypto";
 import {
   Bookmark,
   CheckIcon,
-  ClipboardList,
   Copy,
   HistoryIcon,
   LoaderCircle,
@@ -28,6 +27,7 @@ import {
   BlockPackIcon,
   MaterialIcon,
   RoutineTagIcon,
+  RoutineTaskIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
 import RoutineTaskMenuItemSkeleton from "@/components/menus/RoutineTaskMenu/RoutineTaskMenuItemSkeleton";
@@ -82,25 +82,29 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
   const shelfItemManager = useShelfItem();
 
   const searchedItems =
-    shelfItemManager.itemSearch.data?.searchItems?.searchEdges?.map(edge => {
-      const item = edge.node as unknown as {
-        id: UUID;
-        type: GraphQLItemType;
-        rootShelf?: { name?: string } | null;
-        parentSubShelf?: { name?: string } | null;
-      };
-      return {
-        id: item.id,
-        type:
-          item.type === GraphQLItemType.ItemTypeBlockPack
-            ? ItemType.BlockPack
-            : ItemType.Material,
-        rootShelfName:
-          item.rootShelf?.name ?? t("workspace.menu.unknownRootShelf"),
-        parentSubShelfName:
-          item.parentSubShelf?.name ?? t("workspace.menu.unknownSubShelf"),
-      };
-    }) ?? [];
+    shelfItemManager.itemSearch.data?.searchItems?.searchEdges
+      ?.map(edge => {
+        const item = edge.node as unknown as {
+          id: UUID;
+          type: GraphQLItemType;
+          rootShelf?: { name?: string } | null;
+          parentSubShelf?: { name?: string } | null;
+        };
+        return {
+          id: item.id,
+          type:
+            item.type === GraphQLItemType.ItemTypeBlockPack
+              ? ItemType.BlockPack
+              : ItemType.Material,
+          rootShelfName:
+            item.rootShelf?.name ?? t("workspace.menu.unknownRootShelf"),
+          parentSubShelfName:
+            item.parentSubShelf?.name ?? t("workspace.menu.unknownSubShelf"),
+        };
+      })
+      .sort((left, right) =>
+        left.id < right.id ? -1 : left.id > right.id ? 1 : 0
+      ) ?? [];
 
   const handleRenameRoutineOnSubmit = useCallback(
     async () =>
@@ -315,7 +319,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                   })
                 }
               >
-                <ClipboardList className="mr-2 size-4" />
+                <RoutineTaskIcon className="mr-2 size-4" />
                 {t("workspace.table.task")}
               </ContextMenuItem>
             </ContextMenuGroup>

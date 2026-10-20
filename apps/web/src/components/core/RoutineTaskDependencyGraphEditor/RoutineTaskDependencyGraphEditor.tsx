@@ -34,7 +34,7 @@ import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
-import { ChevronDownIcon, Pencil, Trash2 } from "lucide-react";
+import { ChevronDownIcon, SquarePen, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
@@ -95,7 +95,10 @@ const RoutineTaskDependencyGraphEditor = ({
     loadDraft,
     saveDraft,
   } = useRoutineTaskDependencyGraphDraft();
-  const routineQuery = useGetMyRoutineById();
+  const routineQuery = useGetMyRoutineById({
+    header: getClientRequestHeaders(),
+    param: { routineId },
+  });
   const createNode = useCreateRoutineTaskByRoutineId();
   const updateNode = useUpdateMyRoutineTaskById();
   const [pendingNodeCount, setPendingNodeCount] = useState(0);
@@ -276,7 +279,13 @@ const RoutineTaskDependencyGraphEditor = ({
     return () => {
       cancelled = true;
     };
-  }, [loadDraft, reloadVersion, routineId, startAsyncTransactionLoading]);
+  }, [
+    loadDraft,
+    reloadVersion,
+    routineId,
+    routineQuery.data?.data?.definitionVersion,
+    startAsyncTransactionLoading,
+  ]);
 
   const graphNodes = useMemo<RoutineTaskGraphNodeType[]>(
     () =>
@@ -323,7 +332,6 @@ const RoutineTaskDependencyGraphEditor = ({
             }
           },
           title: task.title,
-          purpose: task.purpose,
           executionStatus: routine?.routineTasks.find(
             routineTask => routineTask.id === task.id
           )?.executionStatus,
@@ -935,15 +943,6 @@ const RoutineTaskDependencyGraphEditor = ({
     }
   };
 
-  const handleReset = () => {
-    if (!routine) return;
-    clearTimeout(positionTimer.current);
-    pendingPositions.current.clear();
-    setNodes(graphNodes);
-    setEdges(graphEdges);
-    setIsDirty(false);
-  };
-
   const handleExport = () => {
     if (!routine) return;
 
@@ -960,7 +959,6 @@ const RoutineTaskDependencyGraphEditor = ({
           title: node.data.title,
           kind: node.data.kind,
           payload: node.data.payload,
-          purpose: node.data.purpose,
         },
       })),
       edges: edges.map(edge => {
@@ -1210,7 +1208,7 @@ const RoutineTaskDependencyGraphEditor = ({
 
   return (
     <main className="flex h-full min-h-0 flex-1 flex-col bg-background">
-      <header className="flex h-12 w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
+      <header className="flex h-[var(--app-toolbar-height)] w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
           <DropdownMenu
@@ -1248,8 +1246,6 @@ const RoutineTaskDependencyGraphEditor = ({
 
         <RoutineTaskDependencyGraphToolbar
           isAddMenuOpen={isAddMenuOpen}
-          isDirty={isDirty}
-          isLoading={isLoading}
           isRetryingSync={isRetryingSync}
           isSaving={isSaving}
           pendingSyncCount={pendingSyncCount}
@@ -1286,14 +1282,12 @@ const RoutineTaskDependencyGraphEditor = ({
               }
             })();
           }}
-          onReset={handleReset}
           onRetryPendingSync={() => void handleRetryPendingSync()}
           onExport={handleExport}
-          onRefresh={() => setReloadVersion(version => version + 1)}
         />
       </header>
       {station && (
-        <div className="flex min-h-8 w-full flex-wrap items-center gap-x-3 gap-y-1 border-y px-4 py-1 text-sm">
+        <div className="flex h-[calc(var(--app-navigation-height)-var(--app-toolbar-height))] w-full shrink-0 items-center gap-3 overflow-x-auto whitespace-nowrap border-b border-sidebar-border bg-inset px-4 text-sm [&>span]:shrink-0">
           <span className="inline-flex min-w-0 items-center gap-1.5 font-semibold text-secondary-foreground/80">
             <span className="max-w-64 truncate">{station.name}</span>
           </span>
@@ -1383,7 +1377,7 @@ const RoutineTaskDependencyGraphEditor = ({
                 if (edgeMenu) setSelectedEdgeId(edgeMenu.id);
               }}
             >
-              <Pencil />
+              <SquarePen />
               {t("common.edit")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />

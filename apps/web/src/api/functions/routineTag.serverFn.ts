@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateRoutineTagRequest,
   CreateRoutineTagResponse,
@@ -22,10 +21,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyRoutineTagById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineTagByIdRequest) => data)
@@ -70,17 +69,10 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyRoutineTagByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyRoutineTagByIdResponse;
 
     return formattedResponse;
   });
@@ -115,17 +107,10 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetAllMyRoutineTagsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetAllMyRoutineTagsResponse;
 
     return formattedResponse;
   });
@@ -156,17 +141,10 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateRoutineTagResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateRoutineTagResponse;
 
     return formattedResponse;
   });
@@ -197,17 +175,10 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateRoutineTagsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateRoutineTagsResponse;
 
     return formattedResponse;
   });
@@ -243,17 +214,10 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyRoutineTagByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyRoutineTagByIdResponse;
 
       return formattedResponse;
     }
@@ -288,17 +252,10 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyRoutineTagsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyRoutineTagsByIdsResponse;
 
       return formattedResponse;
     }
@@ -335,17 +292,10 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyRoutineTagByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyRoutineTagByIdResponse;
 
       return formattedResponse;
     }
@@ -382,17 +332,10 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyRoutineTagsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyRoutineTagsByIdsResponse;
 
       return formattedResponse;
     }

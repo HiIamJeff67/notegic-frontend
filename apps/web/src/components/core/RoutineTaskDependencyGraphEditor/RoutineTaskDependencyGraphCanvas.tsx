@@ -13,6 +13,7 @@ import {
   useStore,
 } from "@xyflow/react";
 import { Map as MapIcon, X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useScreen } from "@/hooks";
 import RoutineTaskGraphNode, {
@@ -34,6 +35,7 @@ interface RoutineTaskDependencyGraphCanvasProps {
 
 interface RoutineTaskDependencyMiniMapProps {
   fallbackAspectRatio: number;
+  isInteractive: boolean;
   onMiniMapVisibilityChange: (visible: boolean) => void;
 }
 
@@ -41,6 +43,7 @@ const nodeTypes = { routineTask: RoutineTaskGraphNode };
 
 const RoutineTaskDependencyMiniMap = ({
   fallbackAspectRatio,
+  isInteractive,
   onMiniMapVisibilityChange,
 }: RoutineTaskDependencyMiniMapProps) => {
   const { t } = useTranslation();
@@ -62,8 +65,8 @@ const RoutineTaskDependencyMiniMap = ({
     <Panel position="bottom-right">
       <div className="relative">
         <MiniMap
-          pannable
-          zoomable
+          pannable={isInteractive}
+          zoomable={isInteractive}
           bgColor="var(--inset)"
           maskColor="var(--inset)"
           offsetScale={0}
@@ -103,6 +106,7 @@ const RoutineTaskDependencyGraphCanvas = ({
 }: RoutineTaskDependencyGraphCanvasProps) => {
   const { t } = useTranslation();
   const screenManager = useScreen();
+  const [isInteractive, setIsInteractive] = useState(true);
   const fallbackAspectRatio =
     screenManager.width > 0 && screenManager.height > 0
       ? screenManager.width / screenManager.height
@@ -118,15 +122,58 @@ const RoutineTaskDependencyGraphCanvas = ({
       onConnect={onConnect}
       onEdgeClick={onEdgeClick}
       onPaneClick={onPaneClick}
+      nodesDraggable={isInteractive}
+      nodesConnectable={isInteractive}
+      elementsSelectable={isInteractive}
+      panOnDrag={isInteractive}
+      panActivationKeyCode={isInteractive ? "Space" : null}
+      zoomOnScroll={isInteractive}
+      zoomOnPinch={isInteractive}
+      zoomOnDoubleClick={isInteractive}
+      zoomActivationKeyCode={isInteractive ? undefined : null}
+      autoPanOnNodeFocus={isInteractive}
+      onKeyDownCapture={event => {
+        if (
+          event.key !== "Enter" ||
+          event.repeat ||
+          !(event.target instanceof HTMLElement) ||
+          !event.target.matches(".react-flow__node, [data-node-kind]")
+        )
+          return;
+
+        const card = event.target.matches("[data-node-kind]")
+          ? event.target
+          : event.target.querySelector<HTMLElement>("[data-node-kind]");
+        if (!card) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        const bounds = card.getBoundingClientRect();
+        // Reuse the node's native context-menu trigger for keyboard entry.
+        card.dispatchEvent(
+          new MouseEvent("contextmenu", {
+            bubbles: true,
+            cancelable: true,
+            button: 2,
+            clientX: bounds.left + bounds.width / 2,
+            clientY: bounds.top + bounds.height / 2,
+          })
+        );
+      }}
       fitView
       colorMode={colorMode}
       proOptions={{ hideAttribution: true }}
     >
       <Background />
-      <Controls />
+      <Controls
+        onInteractiveChange={setIsInteractive}
+        showZoom={isInteractive}
+        showFitView={isInteractive}
+      />
       {isMiniMapVisible && (
         <RoutineTaskDependencyMiniMap
           fallbackAspectRatio={fallbackAspectRatio}
+          isInteractive={isInteractive}
           onMiniMapVisibilityChange={onMiniMapVisibilityChange}
         />
       )}

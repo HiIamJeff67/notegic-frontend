@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
   CreateMyAPIKeyResponse,
@@ -8,10 +7,10 @@ import type {
   RevokeMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const CreateMyAPIKey = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMyAPIKeyRequest) => data)
@@ -37,16 +36,11 @@ export const CreateMyAPIKey = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as CreateMyAPIKeyResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateMyAPIKeyResponse;
+
     return formattedResponse;
   });
 
@@ -73,16 +67,11 @@ export const ListMyAPIKeys = createServerFn({ method: "GET" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as ListMyAPIKeysResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as ListMyAPIKeysResponse;
+
     return formattedResponse;
   });
 
@@ -109,15 +98,10 @@ export const RevokeMyAPIKey = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as RevokeMyAPIKeyResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RevokeMyAPIKeyResponse;
+
     return formattedResponse;
   });

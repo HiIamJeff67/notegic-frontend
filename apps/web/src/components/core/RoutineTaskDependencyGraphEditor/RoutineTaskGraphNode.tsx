@@ -9,7 +9,7 @@ import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskReco
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
-import { Pencil, Trash2 } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   ContextMenu,
@@ -24,7 +24,6 @@ import { useModal } from "@/hooks";
 export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
   title: string;
   kind: "Start" | "Action";
-  purpose: RoutineTaskPurpose | "";
   payload: Record<string, unknown>;
   expectedDefinitionVersion?: number;
   onUpdated?: (values: {
@@ -51,6 +50,7 @@ const RoutineTaskGraphNode = ({
   const modalManager = useModal();
   const isStart = data.kind === "Start";
   const isActive = data.payload.isActive !== false;
+  const purpose = data.payload.purpose as RoutineTaskPurpose | undefined;
 
   return (
     <ContextMenu>
@@ -86,8 +86,8 @@ const RoutineTaskGraphNode = ({
           {!isStart && (
             <>
               <div className="mt-1 truncate text-xs text-muted-foreground">
-                {data.purpose
-                  ? `${t(routineTaskPurposeTKeys[data.purpose].action)} · ${t(routineTaskPurposeTKeys[data.purpose].target)}`
+                {purpose
+                  ? `${t(routineTaskPurposeTKeys[purpose].action)} · ${t(routineTaskPurposeTKeys[purpose].target)}`
                   : ""}
               </div>
               <div className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -116,7 +116,7 @@ const RoutineTaskGraphNode = ({
         }}
       >
         <ContextMenuItem onSelect={() => data.onEdit?.()}>
-          <Pencil className="mr-2 size-4" />
+          <SquarePen className="mr-2 size-4" />
           {t("common.edit")}
         </ContextMenuItem>
         {isStart && (

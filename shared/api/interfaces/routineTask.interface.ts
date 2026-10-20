@@ -72,8 +72,11 @@ export const normalizeRoutineTaskDefinition = (
   input: z.input<typeof CreateRoutineTaskBodySchema>
 ) => {
   const body = CreateRoutineTaskBodySchema.parse(input);
+  const { purpose: compatibilityPurpose, ...definition } = body;
   const purpose =
-    body.kind === "Start" ? "" : (body.purpose ?? body.payload.purpose);
+    body.kind === "Start"
+      ? undefined
+      : (compatibilityPurpose ?? body.payload.purpose);
   const payload =
     body.kind === "Start"
       ? {
@@ -82,7 +85,7 @@ export const normalizeRoutineTaskDefinition = (
           isActive: body.payload.isActive ?? true,
         }
       : { ...body.payload, schemaVersion: 1, purpose };
-  return { ...body, purpose, payload };
+  return { ...definition, payload };
 };
 
 const RoutineTaskDefinitionSchema = z.object({
@@ -92,7 +95,6 @@ const RoutineTaskDefinitionSchema = z.object({
   x: z.number().finite().default(0),
   y: z.number().finite().default(0),
   title: z.string(),
-  purpose: z.enum(AllRoutineTaskPurposes).or(z.literal("")),
   payload: z.any(),
   priority: z.int32(),
   maxAttempts: z.int32(),

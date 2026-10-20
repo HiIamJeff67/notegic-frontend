@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
@@ -255,8 +256,8 @@ export const StationRoutineProvider = ({
       );
   }, [routineTaskLogic.handleRealtimeRoutineTaskLifecycle]);
 
-  const stations = stationsRef.current.values();
-  const routineTags = routineTagsRef.current.values();
+  const stations = stationsRef.current.values().sort(compareEntityNames);
+  const routineTags = routineTagsRef.current.values().sort(compareEntityNames);
   const stationIdsSignature = stations.map(station => station.id).join(",");
   const routineTagIdsSignature = routineTags
     .map(routineTag => routineTag.id)
@@ -427,12 +428,19 @@ export const StationRoutineProvider = ({
       }
     }
   }
-  const routineTasks = Array.from(routineTasksMap.values());
+  routines.sort(compareEntityNames);
+  const routineTasks = Array.from(routineTasksMap.values()).sort(
+    compareEntityNames
+  );
 
   const activeStation =
     stations.find(station => station.id === activeStationId) ?? null;
-  const activeStationRoutines = activeStation?.routines ?? [];
-  const activeStationRoutineTasks = activeStation?.routineTasks ?? [];
+  const activeStationRoutines = [...(activeStation?.routines ?? [])].sort(
+    compareEntityNames
+  );
+  const activeStationRoutineTasks = [
+    ...(activeStation?.routineTasks ?? []),
+  ].sort(compareEntityNames);
   const activeStationRoutineTagIds = new Set(
     activeStationRoutines.flatMap(routine => routine.routineTagIds)
   );

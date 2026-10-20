@@ -1,3 +1,4 @@
+import type { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import type {
   CreateRoutineTaskByRoutineIdRequest,
   CreateRoutineTaskByRoutineIdResponse,
@@ -124,16 +125,16 @@ export class RoutineTaskLocalSynchronizer {
       purpose:
         existing.kind === "Start"
           ? request.body.values.purpose
-          : (request.body.values.purpose ??
-            request.body.values.payload?.purpose ??
-            existing.purpose),
+          : ((request.body.values.purpose ??
+              request.body.values.payload?.purpose ??
+              (existing.payload as Record<string, unknown>)
+                ?.purpose) as RoutineTaskPurpose),
     });
     await localDB
       .update(RoutineTask)
       .set({
         ...request.body.values,
         payload: normalized.payload,
-        purpose: normalized.purpose,
         updatedAt: response.data.updatedAt,
       })
       .where(eq(RoutineTask.id, request.body.routineTaskId));
@@ -184,7 +185,6 @@ export class RoutineTaskLocalSynchronizer {
           x: request.body.x ?? 0,
           y: request.body.y ?? 0,
           title: request.body.title,
-          purpose: normalized.purpose,
           payload: normalized.payload,
           priority: request.body.priority ?? 0,
           maxAttempts: request.body.maxAttempts ?? 1,
@@ -200,7 +200,6 @@ export class RoutineTaskLocalSynchronizer {
             x: request.body.x ?? 0,
             y: request.body.y ?? 0,
             title: request.body.title,
-            purpose: normalized.purpose,
             payload: normalized.payload,
             priority: request.body.priority ?? 0,
             maxAttempts: request.body.maxAttempts ?? 1,
@@ -252,7 +251,6 @@ export class RoutineTaskLocalSynchronizer {
           x: response.data.x,
           y: response.data.y,
           title: response.data.title,
-          purpose: response.data.purpose,
           payload: response.data.payload,
           priority: response.data.priority,
           maxAttempts: response.data.maxAttempts,
@@ -290,7 +288,6 @@ export class RoutineTaskLocalSynchronizer {
           x: routineTask.x,
           y: routineTask.y,
           title: routineTask.title,
-          purpose: routineTask.purpose,
           payload: routineTask.payload,
           priority: routineTask.priority,
           maxAttempts: routineTask.maxAttempts,
@@ -307,7 +304,6 @@ export class RoutineTaskLocalSynchronizer {
           x: sql`excluded.x`,
           y: sql`excluded.y`,
           title: sql`excluded.title`,
-          purpose: sql`excluded.purpose`,
           payload: sql`excluded.payload`,
           priority: sql`excluded.priority`,
           maxAttempts: sql`excluded.max_attempts`,

@@ -38,14 +38,122 @@ const mountLayoutEditor = async (page: Page) => {
   return editor;
 };
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
   test.skip(
     process.env.E2E_PRODUCTION === "true",
     "The source fixture is served by Vite in development."
   );
+  if (testInfo.title.startsWith("layout debounce")) await page.clock.install();
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Get Started" })).toBeVisible();
   await page.locator("html[data-density]").waitFor();
+});
+
+test("canvas lock freezes the viewport and nodes until unlocked", async ({
+  page,
+}) => {
+  const editor = await mountLayoutEditor(page);
+  await expect(
+    editor.getByRole("button", { name: "Refresh", exact: true })
+  ).toHaveCount(0);
+  await expect(
+    editor.getByRole("button", { name: "Reset", exact: true })
+  ).toHaveCount(0);
+  const viewport = editor.locator(".react-flow__viewport");
+  const pane = editor.locator(".react-flow__pane");
+  const start = editor.locator(".react-flow__node").first();
+  const transform = await viewport.evaluate(
+    node => getComputedStyle(node).transform
+  );
+  const position = await start.evaluate(
+    node => getComputedStyle(node).transform
+  );
+  const lock = editor.getByRole("button", { name: "Toggle Interactivity" });
+  await lock.click();
+
+  const drag = async (target: Locator) => {
+    const box = (await target.boundingBox())!;
+    await page.mouse.move(box.x + 40, box.y + 40);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 120, box.y + 80, { steps: 5 });
+    await page.mouse.up();
+  };
+  await drag(pane);
+  await expect(viewport).toHaveCSS("transform", transform);
+  await page.keyboard.down("Space");
+  await drag(pane);
+  await page.keyboard.up("Space");
+  await expect(viewport).toHaveCSS("transform", transform);
+  await drag(start);
+  await expect(start).toHaveCSS("transform", position);
+  await pane.dblclick({ position: { x: 20, y: 20 } });
+  await page.mouse.wheel(0, -200);
+  await page.keyboard.down("Control");
+  await page.mouse.wheel(0, -200);
+  await page.keyboard.up("Control");
+  await page.evaluate(
+    () =>
+      new Promise(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      )
+  );
+  await expect(viewport).toHaveCSS("transform", transform);
+
+  const miniMap = editor.locator(".react-flow__minimap");
+  await drag(miniMap);
+  await miniMap.hover();
+  await page.mouse.wheel(0, -200);
+  await page.evaluate(
+    () =>
+      new Promise(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      )
+  );
+  await expect(viewport).toHaveCSS("transform", transform);
+  await expect(
+    editor.getByRole("button", { name: "Zoom In", exact: true })
+  ).toHaveCount(0);
+  await expect(
+    editor.getByRole("button", { name: "Fit View", exact: true })
+  ).toHaveCount(0);
+
+  await lock.click();
+  await expect(
+    editor.getByRole("button", { name: "Zoom In", exact: true })
+  ).toBeVisible();
+  await expect(
+    editor.getByRole("button", { name: "Fit View", exact: true })
+  ).toBeVisible();
+  await drag(pane);
+  await expect(viewport).not.toHaveCSS("transform", transform);
+  await dragNode(page, start, 40, 20);
+});
+
+test("graph status bar follows expanded sidebar geometry at every density", async ({
+  page,
+}) => {
+  const editor = await mountLayoutEditor(page);
+  for (const [density, height] of [
+    ["compact", 77],
+    ["standard", 85],
+    ["comfortable", 93],
+  ] as const) {
+    await page.evaluate(value => {
+      document.documentElement.dataset.density = value;
+    }, density);
+    const geometry = await editor
+      .locator("main > header + div")
+      .evaluate(bar => ({
+        height:
+          bar.getBoundingClientRect().bottom -
+          bar.parentElement!.getBoundingClientRect().top,
+        background: getComputedStyle(bar).backgroundColor,
+        topBorder: getComputedStyle(bar).borderTopWidth,
+      }));
+    expect(geometry.height).toBe(height);
+    expect(geometry.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(geometry.topBorder).toBe("0px");
+  }
 });
 
 test("layout debounce keeps final Start and Action positions without remounting the canvas", async ({
@@ -78,6 +186,7 @@ test("layout debounce keeps final Start and Action positions without remounting 
   const viewport = await editor
     .locator(".react-flow__viewport")
     .evaluate(node => (node as HTMLElement).style.transform);
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
   await dragNode(page, start, 60, 30);
   await dragNode(page, start, 45, 15);
   await dragNode(page, action, 20, 50);
@@ -87,6 +196,10 @@ test("layout debounce keeps final Start and Action positions without remounting 
       nodes.map(node => (node as HTMLElement).style.transform)
     );
   expect(writes).toHaveLength(0);
+  await page.clock.runFor(749);
+  expect(writes).toHaveLength(0);
+  await page.clock.runFor(1);
+  await page.clock.resume();
   await expect.poll(() => writes.length).toBe(2);
   await expect(start).toHaveAttribute("data-retained", "true");
   await expect
@@ -205,6 +318,11 @@ test("handle dragging creates a dependency and its left-click menu edits or dele
   await expect(
     page.getByRole("menuitem", { name: "Edit", exact: true })
   ).toBeVisible();
+  await expect(
+    page
+      .getByRole("menuitem", { name: "Edit", exact: true })
+      .locator("svg.lucide-square-pen")
+  ).toBeVisible();
   await expect(page.locator("#routine-dependency-description")).toHaveCount(0);
   await page.getByRole("menuitem", { name: "Edit", exact: true }).click();
   await expect(page.locator("#routine-dependency-description")).toBeVisible();
@@ -303,9 +421,23 @@ test("starting nodes expose only outgoing handles, remain draggable, and edit th
   });
   const fixture = page.locator("#routine-graph-test-root");
   await fixture.getByRole("button", { name: "Create", exact: true }).click();
-  await page
-    .getByRole("menuitem", { name: "Starting node", exact: true })
-    .click();
+  await expect(
+    page.getByRole("menuitem", { name: "Action", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("menuitem", { name: "Routine task", exact: true })
+  ).toHaveCount(0);
+  await expect(
+    page
+      .getByRole("menuitem", { name: "Start", exact: true })
+      .locator(".lucide-git-fork")
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("menuitem", { name: "Action", exact: true })
+      .locator(".lucide-square-function")
+  ).toBeVisible();
+  await page.getByRole("menuitem", { name: "Start", exact: true }).click();
   const start = fixture.locator('.react-flow__node[data-id="start-1"]');
   await expect(start.locator(".react-flow__handle.target")).toHaveCount(0);
   await expect(start.locator(".react-flow__handle.source")).toHaveCount(1);
@@ -315,6 +447,8 @@ test("starting nodes expose only outgoing handles, remain draggable, and edit th
     )
   ).toHaveCount(1);
   const circle = start.locator('[data-node-kind="Start"]');
+  await expect(circle).toBeVisible();
+  await fixture.getByRole("button", { name: "Fit View", exact: true }).click();
   await expect(circle).toHaveClass(/rounded-full/);
   await expect(circle).toHaveAttribute("data-active", "true");
   await expect(start.getByRole("textbox")).toHaveCount(0);
@@ -323,6 +457,27 @@ test("starting nodes expose only outgoing handles, remain draggable, and edit th
   await expect(fixture.getByLabel("Editing node")).toHaveText("");
   await expect(page.getByRole("menu")).toHaveCount(0);
   await expect(start.getByRole("button", { name: /^More:/ })).toHaveCount(0);
+  await circle.focus();
+  await circle.press("Enter");
+  await expect(
+    page.getByRole("menuitem", { name: "Edit", exact: true })
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("menuitem", { name: "Edit", exact: true })
+      .locator("svg.lucide-square-pen")
+  ).toBeVisible();
+  await expect(
+    page.getByRole("menuitemcheckbox", { name: "Active", exact: true })
+  ).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await start.focus();
+  await start.press("Enter");
+  await expect(
+    page.getByRole("menuitemcheckbox", { name: "Active", exact: true })
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
   await start.click({ button: "right", position: { x: 20, y: 40 } });
   await expect(
     page.getByRole("menuitem", { name: "Edit", exact: true })
@@ -362,12 +517,18 @@ test("starting nodes expose only outgoing handles, remain draggable, and edit th
   await page.keyboard.press("Escape");
   const actionCard = action.locator('[data-node-kind="Action"]');
   await actionCard.focus();
-  await actionCard.press("Shift+F10");
+  await actionCard.press("Enter");
   await expect(
     page.getByRole("menuitem", { name: "Edit", exact: true })
   ).toBeVisible();
   await page.keyboard.press("Escape");
-  await actionCard.press("Enter");
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await action.focus();
+  await action.press("Enter");
+  await expect(page.getByRole("menuitemcheckbox")).toHaveCount(0);
+  await page
+    .getByRole("menuitem", { name: "Edit", exact: true })
+    .press("Enter");
   await expect(page.getByRole("menu")).toHaveCount(0);
   await start.locator(".react-flow__handle.source").click();
   await expect(page.getByRole("menu")).toHaveCount(0);
@@ -612,7 +773,10 @@ test("offline routine activation and canonical local payloads survive storage an
       },
     });
     const canonical = await localDB.all(
-      "SELECT purpose, json_extract(payload,'$.purpose') FROM RoutineTaskTable"
+      "SELECT json_extract(payload,'$.purpose') FROM RoutineTaskTable"
+    );
+    const columns: unknown[][] = await localDB.all(
+      "PRAGMA table_info(RoutineTaskTable)"
     );
     let rejected = false;
     try {
@@ -651,9 +815,10 @@ test("offline routine activation and canonical local payloads survive storage an
       "/test/e2e/routine-graph-test-support.tsx"
     );
     await mountRoutineEditor();
-    return { canonical, rejected, durable, draft };
+    return { canonical, columns, rejected, durable, draft };
   });
-  expect(result.canonical).toEqual([["DeleteRoutine", "DeleteRoutine"]]);
+  expect(result.canonical).toEqual([["DeleteRoutine"]]);
+  expect(result.columns.map(column => column[1])).not.toContain("purpose");
   expect(result.rejected).toBe(true);
   expect(result.durable).toEqual([[8]]);
   expect(result.draft).toEqual([[8]]);

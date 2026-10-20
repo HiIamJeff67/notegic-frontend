@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
@@ -80,13 +81,15 @@ const RoutineTaskTable = () => {
             id: UUID;
             routineId: UUID;
             title: string;
-            purpose: string;
+            kind: string;
+            payload: RoutineTaskNode["payload"];
             priority: number;
             maxAttempts: number;
             previousRoutineTaskIds: UUID[];
             updatedAt: Date | string | number;
             createdAt: Date | string | number;
           };
+          if (node.kind === "Start") return null;
           const linkedRoutine = stationRoutineManager.getRoutineById(
             node.routineId
           );
@@ -106,11 +109,7 @@ const RoutineTaskTable = () => {
             routineId: node.routineId,
             stationId: linkedRoutine?.stationId ?? ("" as UUID),
             title: node.title,
-            purpose: node.purpose.replace(
-              "RoutineTaskPurpose_",
-              ""
-            ) as RoutineTaskPurpose,
-            payload: {},
+            payload: node.payload,
             priority: node.priority,
             maxAttempts: node.maxAttempts,
             previousRoutineTaskIds: node.previousRoutineTaskIds,
@@ -142,7 +141,7 @@ const RoutineTaskTable = () => {
           } => routineTask !== null
         );
 
-      setRoutineTasks(searchedRoutineTasks);
+      setRoutineTasks(searchedRoutineTasks.sort(compareEntityNames));
       setRoutineTaskTotalCount(data?.searchRoutineTasks.totalCount ?? 0);
       setRoutineTaskSearchCursor(
         data?.searchRoutineTasks.searchPageInfo.endEncodedSearchCursor ?? null
@@ -253,7 +252,8 @@ const RoutineTaskTable = () => {
 
   const filteredRoutineTasks = useMemo(() => {
     return routineTasks.filter(routineTask => {
-      if (purpose !== "All" && routineTask.purpose !== purpose) return false;
+      if (purpose !== "All" && routineTask.payload.purpose !== purpose)
+        return false;
 
       const selectedRoutineTagIds = new Set(
         stationRoutineManager.presence.routineTagIds
@@ -426,7 +426,7 @@ const RoutineTaskTable = () => {
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
                     <span className="break-words">
-                      {`${t(routineTaskPurposeTKeys[routineTask.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.purpose].target)}`}
+                      {`${t(routineTaskPurposeTKeys[routineTask.payload.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.payload.purpose].target)}`}
                     </span>
                   </TableCell>
                   <TableCell className="px-2 py-2.5">

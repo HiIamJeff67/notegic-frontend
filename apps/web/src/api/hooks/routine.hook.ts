@@ -80,6 +80,8 @@ import {
 } from "@/api/invokers/routine.invoker";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
+import { routineSearchPage } from "@/api/routine.search";
+import { matchesSearch } from "@shared/lib/search-page";
 import { useVisualizeQuery } from "./visualize.hook";
 
 const getRoutineSearchInput = (storeFieldName: string) =>
@@ -489,13 +491,14 @@ export const useCreateRoutineByStationId = () => {
       };
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName }) {
+          searchRoutines(existing, { readField, storeFieldName, DELETE }) {
             if (!existing?.searchEdges) return existing;
             const input = getRoutineSearchInput(storeFieldName);
+            if (input.isDeletedAt === true) return DELETE;
             if (input.after) return existing;
-            const query = input.query.trim().toLowerCase();
+            const query = input.query;
             if (
-              (query && !routine.title.toLowerCase().includes(query)) ||
+              (query && !matchesSearch(routine.title, query)) ||
               (input.stationIds.length > 0 &&
                 !input.stationIds.includes(routine.stationId)) ||
               (input.tagIds.length > 0 &&
@@ -514,7 +517,9 @@ export const useCreateRoutineByStationId = () => {
             const searchEdges = [
               {
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routine.id,
+                encodedSearchCursor: routineSearchPage(input, [
+                  routine,
+                ]).cursors.get(routine.id)!,
                 node: routine,
               },
               ...edges,
@@ -616,13 +621,14 @@ export const useCreateRoutinesByStationIds = () => {
         };
         apolloClient.cache.modify({
           fields: {
-            searchRoutines(existing, { readField, storeFieldName }) {
+            searchRoutines(existing, { readField, storeFieldName, DELETE }) {
               if (!existing?.searchEdges) return existing;
               const input = getRoutineSearchInput(storeFieldName);
+              if (input.isDeletedAt === true) return DELETE;
               if (input.after) return existing;
-              const query = input.query.trim().toLowerCase();
+              const query = input.query;
               if (
-                (query && !routineNode.title.toLowerCase().includes(query)) ||
+                (query && !matchesSearch(routineNode.title, query)) ||
                 (input.stationIds.length > 0 &&
                   !input.stationIds.includes(routineNode.stationId)) ||
                 (input.tagIds.length > 0 &&
@@ -641,7 +647,9 @@ export const useCreateRoutinesByStationIds = () => {
               const searchEdges = [
                 {
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineNode.id,
+                  encodedSearchCursor: routineSearchPage(input, [
+                    routineNode,
+                  ]).cursors.get(routineNode.id)!,
                   node: routineNode,
                 },
                 ...edges,
@@ -747,10 +755,11 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
       };
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName }) {
+          searchRoutines(existing, { readField, storeFieldName, DELETE }) {
             if (!existing?.searchEdges) return existing;
             const input = getRoutineSearchInput(storeFieldName);
-            const query = input.query.trim().toLowerCase();
+            if (input.isDeletedAt === true) return DELETE;
+            const query = input.query;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
               if (readField("id", edge.node) !== request.body.routineId) {
                 return [edge];
@@ -763,7 +772,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
                 tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
                 ...patch,
               };
-              return query && !node.title.toLowerCase().includes(query)
+              return query && !matchesSearch(node.title, query)
                 ? []
                 : input.stationIds.length > 0 &&
                     !input.stationIds.includes(node.stationId)
@@ -851,10 +860,11 @@ export const useUpdateMyRoutinesByIds = () => {
         };
         apolloClient.cache.modify({
           fields: {
-            searchRoutines(existing, { readField, storeFieldName }) {
+            searchRoutines(existing, { readField, storeFieldName, DELETE }) {
               if (!existing?.searchEdges) return existing;
               const input = getRoutineSearchInput(storeFieldName);
-              const query = input.query.trim().toLowerCase();
+              if (input.isDeletedAt === true) return DELETE;
+              const query = input.query;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
                 if (readField("id", edge.node) !== routine.routineId) {
                   return [edge];
@@ -867,7 +877,7 @@ export const useUpdateMyRoutinesByIds = () => {
                   tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
                   ...patch,
                 };
-                return query && !node.title.toLowerCase().includes(query)
+                return query && !matchesSearch(node.title, query)
                   ? []
                   : input.stationIds.length > 0 &&
                       !input.stationIds.includes(node.stationId)
@@ -977,10 +987,14 @@ export const useLinkRoutineTagById = () => {
       }
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+          searchRoutines(
+            existing,
+            { readField, storeFieldName, toReference, DELETE }
+          ) {
             if (!existing?.searchEdges) return existing;
             const input = getRoutineSearchInput(storeFieldName);
-            const query = input.query.trim().toLowerCase();
+            if (input.isDeletedAt === true) return DELETE;
+            const query = input.query;
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
               if (readField("id", edge.node) !== routineId) return [edge];
@@ -994,7 +1008,7 @@ export const useLinkRoutineTagById = () => {
                 title: readField("title", edge.node),
                 tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
               };
-              return query && !node.title.toLowerCase().includes(query)
+              return query && !matchesSearch(node.title, query)
                 ? []
                 : input.stationIds.length > 0 &&
                     !input.stationIds.includes(node.stationId)
@@ -1017,7 +1031,7 @@ export const useLinkRoutineTagById = () => {
             if (
               !existed &&
               patchedRoutine &&
-              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (!query || matchesSearch(patchedRoutine.title, query)) &&
               (input.stationIds.length === 0 ||
                 input.stationIds.includes(patchedRoutine.stationId)) &&
               (input.tagIds.length === 0 ||
@@ -1027,7 +1041,9 @@ export const useLinkRoutineTagById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineId,
+                encodedSearchCursor: routineSearchPage(input, [
+                  patchedRoutine,
+                ]).cursors.get(routineId)!,
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1131,11 +1147,12 @@ export const useLinkRoutineTagsByIds = () => {
           fields: {
             searchRoutines(
               existing,
-              { readField, storeFieldName, toReference }
+              { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
               const input = getRoutineSearchInput(storeFieldName);
-              const query = input.query.trim().toLowerCase();
+              if (input.isDeletedAt === true) return DELETE;
+              const query = input.query;
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
                 if (readField("id", edge.node) !== routineId) return [edge];
@@ -1149,7 +1166,7 @@ export const useLinkRoutineTagsByIds = () => {
                   title: readField("title", edge.node),
                   tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
                 };
-                return query && !node.title.toLowerCase().includes(query)
+                return query && !matchesSearch(node.title, query)
                   ? []
                   : input.stationIds.length > 0 &&
                       !input.stationIds.includes(node.stationId)
@@ -1172,8 +1189,7 @@ export const useLinkRoutineTagsByIds = () => {
               if (
                 !existed &&
                 patchedRoutine &&
-                (!query ||
-                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (!query || matchesSearch(patchedRoutine.title, query)) &&
                 (input.stationIds.length === 0 ||
                   input.stationIds.includes(patchedRoutine.stationId)) &&
                 (input.tagIds.length === 0 ||
@@ -1183,7 +1199,9 @@ export const useLinkRoutineTagsByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineId,
+                  encodedSearchCursor: routineSearchPage(input, [
+                    patchedRoutine,
+                  ]).cursors.get(routineId)!,
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }
@@ -1276,10 +1294,14 @@ export const useLinkRoutineTaskById = () => {
       }
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+          searchRoutines(
+            existing,
+            { readField, storeFieldName, toReference, DELETE }
+          ) {
             if (!existing?.searchEdges) return existing;
             const input = getRoutineSearchInput(storeFieldName);
-            const query = input.query.trim().toLowerCase();
+            if (input.isDeletedAt === true) return DELETE;
+            const query = input.query;
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
               if (readField("id", edge.node) !== routineId) return [edge];
@@ -1293,7 +1315,7 @@ export const useLinkRoutineTaskById = () => {
                 title: readField("title", edge.node),
                 tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
               };
-              return query && !node.title.toLowerCase().includes(query)
+              return query && !matchesSearch(node.title, query)
                 ? []
                 : input.stationIds.length > 0 &&
                     !input.stationIds.includes(node.stationId)
@@ -1316,7 +1338,7 @@ export const useLinkRoutineTaskById = () => {
             if (
               !existed &&
               patchedRoutine &&
-              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (!query || matchesSearch(patchedRoutine.title, query)) &&
               (input.stationIds.length === 0 ||
                 input.stationIds.includes(patchedRoutine.stationId)) &&
               (input.tagIds.length === 0 ||
@@ -1326,7 +1348,9 @@ export const useLinkRoutineTaskById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineId,
+                encodedSearchCursor: routineSearchPage(input, [
+                  patchedRoutine,
+                ]).cursors.get(routineId)!,
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1433,11 +1457,12 @@ export const useLinkRoutineTasksByIds = () => {
           fields: {
             searchRoutines(
               existing,
-              { readField, storeFieldName, toReference }
+              { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
               const input = getRoutineSearchInput(storeFieldName);
-              const query = input.query.trim().toLowerCase();
+              if (input.isDeletedAt === true) return DELETE;
+              const query = input.query;
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
                 if (readField("id", edge.node) !== routineId) return [edge];
@@ -1451,7 +1476,7 @@ export const useLinkRoutineTasksByIds = () => {
                   title: readField("title", edge.node),
                   tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
                 };
-                return query && !node.title.toLowerCase().includes(query)
+                return query && !matchesSearch(node.title, query)
                   ? []
                   : input.stationIds.length > 0 &&
                       !input.stationIds.includes(node.stationId)
@@ -1474,8 +1499,7 @@ export const useLinkRoutineTasksByIds = () => {
               if (
                 !existed &&
                 patchedRoutine &&
-                (!query ||
-                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (!query || matchesSearch(patchedRoutine.title, query)) &&
                 (input.stationIds.length === 0 ||
                   input.stationIds.includes(patchedRoutine.stationId)) &&
                 (input.tagIds.length === 0 ||
@@ -1485,7 +1509,9 @@ export const useLinkRoutineTasksByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineId,
+                  encodedSearchCursor: routineSearchPage(input, [
+                    patchedRoutine,
+                  ]).cursors.get(routineId)!,
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }
@@ -1594,10 +1620,14 @@ export const useLinkRoutineItemById = () => {
       }
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName, toReference }) {
+          searchRoutines(
+            existing,
+            { readField, storeFieldName, toReference, DELETE }
+          ) {
             if (!existing?.searchEdges) return existing;
             const input = getRoutineSearchInput(storeFieldName);
-            const query = input.query.trim().toLowerCase();
+            if (input.isDeletedAt === true) return DELETE;
+            const query = input.query;
             let existed = false;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
               if (readField("id", edge.node) !== routineId) return [edge];
@@ -1611,7 +1641,7 @@ export const useLinkRoutineItemById = () => {
                 title: readField("title", edge.node),
                 tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
               };
-              return query && !node.title.toLowerCase().includes(query)
+              return query && !matchesSearch(node.title, query)
                 ? []
                 : input.stationIds.length > 0 &&
                     !input.stationIds.includes(node.stationId)
@@ -1634,7 +1664,7 @@ export const useLinkRoutineItemById = () => {
             if (
               !existed &&
               patchedRoutine &&
-              (!query || patchedRoutine.title.toLowerCase().includes(query)) &&
+              (!query || matchesSearch(patchedRoutine.title, query)) &&
               (input.stationIds.length === 0 ||
                 input.stationIds.includes(patchedRoutine.stationId)) &&
               (input.tagIds.length === 0 ||
@@ -1644,7 +1674,9 @@ export const useLinkRoutineItemById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineId,
+                encodedSearchCursor: routineSearchPage(input, [
+                  patchedRoutine,
+                ]).cursors.get(routineId)!,
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1745,11 +1777,12 @@ export const useLinkRoutineItemsByIds = () => {
           fields: {
             searchRoutines(
               existing,
-              { readField, storeFieldName, toReference }
+              { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
               const input = getRoutineSearchInput(storeFieldName);
-              const query = input.query.trim().toLowerCase();
+              if (input.isDeletedAt === true) return DELETE;
+              const query = input.query;
               let existed = false;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
                 if (readField("id", edge.node) !== routineId) return [edge];
@@ -1763,7 +1796,7 @@ export const useLinkRoutineItemsByIds = () => {
                   title: readField("title", edge.node),
                   tagIds: (readField("tagIds", edge.node) as string[]) ?? [],
                 };
-                return query && !node.title.toLowerCase().includes(query)
+                return query && !matchesSearch(node.title, query)
                   ? []
                   : input.stationIds.length > 0 &&
                       !input.stationIds.includes(node.stationId)
@@ -1786,8 +1819,7 @@ export const useLinkRoutineItemsByIds = () => {
               if (
                 !existed &&
                 patchedRoutine &&
-                (!query ||
-                  patchedRoutine.title.toLowerCase().includes(query)) &&
+                (!query || matchesSearch(patchedRoutine.title, query)) &&
                 (input.stationIds.length === 0 ||
                   input.stationIds.includes(patchedRoutine.stationId)) &&
                 (input.tagIds.length === 0 ||
@@ -1797,7 +1829,9 @@ export const useLinkRoutineItemsByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineId,
+                  encodedSearchCursor: routineSearchPage(input, [
+                    patchedRoutine,
+                  ]).cursors.get(routineId)!,
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }

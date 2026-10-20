@@ -1,44 +1,13 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   SubmitFeedbackReportRequestSchema,
   SubmitFeedbackReportResponseSchema,
   type SubmitFeedbackReportResponse,
 } from "@shared/api/interfaces/feedback.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
-
-const toFeedbackException = (exception: unknown): NotegicException => {
-  const value =
-    typeof exception === "object" && exception !== null
-      ? (exception as Record<string, unknown>)
-      : {};
-  const status =
-    typeof value.status === "number" && value.status > 0 ? value.status : 500;
-
-  return new NotegicException({
-    code:
-      typeof value.code === "number" && value.code > 0 ? value.code : status,
-    prefix:
-      typeof value.prefix === "string"
-        ? value.prefix
-        : typeof value.domain === "string"
-          ? value.domain
-          : "Gateway",
-    reason:
-      typeof value.reason === "string" ? value.reason : "FeedbackRequestFailed",
-    message:
-      typeof value.message === "string"
-        ? value.message
-        : "Feedback request failed.",
-    status,
-    retryable: value.retryable === true,
-    ...(value.details !== undefined ? { details: value.details } : {}),
-    ...(typeof value.origin === "string" ? { origin: value.origin } : {}),
-  });
-};
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const SubmitFeedbackReport = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
@@ -68,19 +37,12 @@ export const SubmitFeedbackReport = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as SubmitFeedbackReportResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        toFeedbackException(formattedResponse.exception)
-      );
-    }
-    if (!response.ok || formattedResponse.success !== true) {
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as SubmitFeedbackReportResponse;
+
+    if (formattedResponse.success !== true) {
       throw new Error("error.encounterUnknownError");
     }
 

@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelfByRootShelfIdResponse,
@@ -36,10 +35,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMySubShelfById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMySubShelfByIdRequest) => data)
@@ -63,17 +62,10 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMySubShelfByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMySubShelfByIdResponse;
 
     return formattedResponse;
   });
@@ -107,17 +99,10 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMySubShelvesByPrevSubShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMySubShelvesByPrevSubShelfIdResponse;
 
       return formattedResponse;
     }
@@ -152,17 +137,10 @@ export const GetMySubShelvesByRootShelfId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMySubShelvesByRootShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMySubShelvesByRootShelfIdResponse;
 
       return formattedResponse;
     }
@@ -199,17 +177,10 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
 
       return formattedResponse;
     }
@@ -243,17 +214,10 @@ export const CreateSubShelfByRootShelfId = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateSubShelfByRootShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateSubShelfByRootShelfIdResponse;
 
       return formattedResponse;
     }
@@ -289,17 +253,10 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateSubShelvesByRootShelfIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateSubShelvesByRootShelfIdsResponse;
 
       return formattedResponse;
     }
@@ -328,17 +285,10 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as UpdateMySubShelfByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UpdateMySubShelfByIdResponse;
 
     return formattedResponse;
   });
@@ -371,17 +321,10 @@ export const UpdateMySubShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMySubShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMySubShelvesByIdsResponse;
 
       return formattedResponse;
     }
@@ -412,16 +355,10 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as MoveMySubShelfResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as MoveMySubShelfResponse;
 
     return formattedResponse;
   });
@@ -454,17 +391,10 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as MoveMySubShelvesByRootShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as MoveMySubShelvesByRootShelfIdResponse;
 
       return formattedResponse;
     }
@@ -498,17 +428,10 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as MoveMySubShelvesByRootShelfIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as MoveMySubShelvesByRootShelfIdsResponse;
 
       return formattedResponse;
     }
@@ -540,17 +463,10 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMySubShelfByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMySubShelfByIdResponse;
 
       return formattedResponse;
     }
@@ -584,17 +500,10 @@ export const RestoreMySubShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMySubShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMySubShelvesByIdsResponse;
 
       return formattedResponse;
     }
@@ -623,17 +532,10 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as DeleteMySubShelfByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as DeleteMySubShelfByIdResponse;
 
     return formattedResponse;
   });
@@ -666,17 +568,10 @@ export const DeleteMySubShelvesByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMySubShelvesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMySubShelvesByIdsResponse;
 
       return formattedResponse;
     }

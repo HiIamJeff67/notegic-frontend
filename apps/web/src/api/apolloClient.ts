@@ -7,6 +7,7 @@ import {
 } from "@apollo/client-integration-tanstack-start";
 import { CurrentAPIBaseURL } from "@shared/api/url";
 import { getClientCSRFToken } from "@/api/clientHeaders";
+import { searchPaginationPolicy } from "./policies/searchPagination.policy";
 
 export const createApolloClient = () => {
   const apiDomainURL = import.meta.env.VITE_API_DOMAIN_URL || "";
@@ -41,121 +42,23 @@ export const createApolloClient = () => {
 
   const cache = new InMemoryCache({
     typePolicies: {
+      PrivateItem: { keyFields: ["id", "type"] },
       Query: {
         fields: {
-          searchRootShelves: {
-            keyArgs: ["input", ["query", "sortBy", "sortOrder"]],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-
-              return incoming;
-            },
-          },
-          searchItems: {
-            keyArgs: [
-              "input",
-              [
-                "query",
-                "sortBy",
-                "sortOrder",
-                "rootShelfId",
-                "parentSubShelfId",
-              ],
-            ],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-              return incoming;
-            },
-          },
-          searchStations: {
-            keyArgs: ["input", ["query", "sortBy", "sortOrder"]],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-              return incoming;
-            },
-          },
-          searchRoutines: {
-            keyArgs: [
-              "input",
-              ["query", "sortBy", "sortOrder", "stationIds", "tagIds"],
-            ],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-              return incoming;
-            },
-          },
-          searchRoutineTags: {
-            keyArgs: ["input", ["query", "sortBy", "sortOrder"]],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-              return incoming;
-            },
-          },
-          searchRoutineTasks: {
-            keyArgs: [
-              "input",
-              ["query", "sortBy", "sortOrder", "stationId", "routineIds"],
-            ],
-            merge(existing, incoming, { args }) {
-              if (!existing) return incoming;
-              if (args?.input?.after) {
-                return {
-                  ...incoming,
-                  searchEdges: [
-                    ...(existing.searchEdges || []),
-                    ...(incoming.searchEdges || []),
-                  ],
-                };
-              }
-              return incoming;
-            },
-          },
+          searchRootShelves: searchPaginationPolicy,
+          searchSubShelves: searchPaginationPolicy,
+          searchItems: searchPaginationPolicy,
+          searchBlockPacks: searchPaginationPolicy,
+          searchBlocks: searchPaginationPolicy,
+          searchMaterials: searchPaginationPolicy,
+          searchStations: searchPaginationPolicy,
+          searchRoutines: searchPaginationPolicy,
+          searchRoutineTasks: searchPaginationPolicy,
+          searchRoutineTags: searchPaginationPolicy,
+          searchRoutineRecords: searchPaginationPolicy,
+          searchRoutineTaskRecords: searchPaginationPolicy,
+          searchUsers: searchPaginationPolicy,
+          searchThemes: searchPaginationPolicy,
           user: {
             keyArgs: ["id"],
           },

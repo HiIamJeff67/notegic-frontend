@@ -88,6 +88,7 @@ for (const operation of [
       searchEdges:Array.from({length:30},(_,index)=>({node:{
         id:'record-'+index, routineId:'routine', routineTaskId:'task',
         title:'Create Chapter '+index+' Daily Review Notes',
+        kind:'Action', payload:{schemaVersion:1,purpose:'CreateBlockPack'},
         purpose:'RoutineTaskPurpose_CreateBlockPack', status:'${status}',
         errorCode:null, errorReason:'Timeout', previousRoutineTaskIds:[],
         priority:0, maxAttempts:1, attempts:1, actualStartedAt:'2026-10-10T08:00:00Z',

@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
@@ -179,7 +180,7 @@ const RoutineTable = () => {
             routine !== null
         );
 
-      setRoutines(searchedRoutines);
+      setRoutines(searchedRoutines.sort(compareEntityNames));
       setRoutineTotalCount(data?.searchRoutines.totalCount ?? 0);
       setRoutineSearchCursor(
         data?.searchRoutines.searchPageInfo.endEncodedSearchCursor ?? null
@@ -480,12 +481,7 @@ const RoutineTable = () => {
                     stationRoutineManager.getRoutineTagById(routineTagId);
                   return routineTag ? [routineTag] : [];
                 })
-                .sort((left, right) => {
-                  const nameComparison = left.name.localeCompare(right.name);
-                  return nameComparison === 0
-                    ? left.id.localeCompare(right.id)
-                    : nameComparison;
-                });
+                .sort(compareEntityNames);
               const presentRoutineTags = routineTags.slice(0, 3);
               const hiddenRoutineTags = routineTags.slice(3);
               const routineTaskCount =
@@ -678,29 +674,31 @@ const RoutineTable = () => {
                               </p>
                             ) : (
                               <div className="flex max-h-56 flex-col gap-1.5 overflow-y-auto">
-                                {routine.routineTasks.map(routineTask => (
-                                  <div
-                                    key={routineTask.id}
-                                    className="flex min-w-0 items-center gap-2 text-sm"
-                                  >
-                                    <RoutineTaskStatusDot
-                                      className="size-2.5"
-                                      status={routineTask.executionStatus}
-                                    />
-                                    <span className="min-w-0 flex-1 truncate">
-                                      {routineTask.title}
-                                    </span>
-                                    <span className="shrink-0 text-xs text-muted-foreground">
-                                      {routineTask.executionStatus
-                                        ? t(
-                                            routineTaskRecordStatusTKeys[
-                                              routineTask.executionStatus
-                                            ]
-                                          )
-                                        : "—"}
-                                    </span>
-                                  </div>
-                                ))}
+                                {[...routine.routineTasks]
+                                  .sort(compareEntityNames)
+                                  .map(routineTask => (
+                                    <div
+                                      key={routineTask.id}
+                                      className="flex min-w-0 items-center gap-2 text-sm"
+                                    >
+                                      <RoutineTaskStatusDot
+                                        className="size-2.5"
+                                        status={routineTask.executionStatus}
+                                      />
+                                      <span className="min-w-0 flex-1 truncate">
+                                        {routineTask.title}
+                                      </span>
+                                      <span className="shrink-0 text-xs text-muted-foreground">
+                                        {routineTask.executionStatus
+                                          ? t(
+                                              routineTaskRecordStatusTKeys[
+                                                routineTask.executionStatus
+                                              ]
+                                            )
+                                          : "—"}
+                                      </span>
+                                    </div>
+                                  ))}
                               </div>
                             )}
                           </div>

@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateBlockPackRequest,
   CreateBlockPackResponse,
@@ -34,10 +33,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyBlockPackById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlockPackByIdRequest) => data)
@@ -61,17 +60,10 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyBlockPackByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyBlockPackByIdResponse;
 
     return formattedResponse;
   });
@@ -105,17 +97,10 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyBlockPacksByParentSubShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyBlockPacksByParentSubShelfIdResponse;
 
       return formattedResponse;
     }
@@ -150,17 +135,10 @@ export const GetMyBlockPacksByRootShelfId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyBlockPacksByRootShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyBlockPacksByRootShelfIdResponse;
 
       return formattedResponse;
     }
@@ -191,17 +169,10 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateBlockPackResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateBlockPackResponse;
 
     return formattedResponse;
   });
@@ -229,17 +200,10 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateBlockPacksResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateBlockPacksResponse;
 
     return formattedResponse;
   });
@@ -270,17 +234,10 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyBlockPackByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyBlockPackByIdResponse;
 
       return formattedResponse;
     }
@@ -314,17 +271,10 @@ export const UpdateMyBlockPacksByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyBlockPacksByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyBlockPacksByIdsResponse;
 
       return formattedResponse;
     }
@@ -353,17 +303,10 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as MoveMyBlockPackByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as MoveMyBlockPackByIdResponse;
 
     return formattedResponse;
   });
@@ -398,17 +341,10 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as MoveMyBlockPacksByParentSubShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as MoveMyBlockPacksByParentSubShelfIdResponse;
 
       return formattedResponse;
     }
@@ -444,17 +380,10 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as MoveMyBlockPacksByParentSubShelfIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as MoveMyBlockPacksByParentSubShelfIdsResponse;
 
       return formattedResponse;
     }
@@ -486,17 +415,10 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyBlockPackByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyBlockPackByIdResponse;
 
       return formattedResponse;
     }
@@ -530,17 +452,10 @@ export const RestoreMyBlockPacksByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyBlockPacksByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyBlockPacksByIdsResponse;
 
       return formattedResponse;
     }
@@ -572,17 +487,10 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyBlockPackByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyBlockPackByIdResponse;
 
       return formattedResponse;
     }
@@ -616,17 +524,10 @@ export const DeleteMyBlockPacksByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyBlockPacksByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyBlockPacksByIdsResponse;
 
       return formattedResponse;
     }

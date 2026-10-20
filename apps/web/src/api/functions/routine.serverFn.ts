@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyRoutinePeriodCountRequest,
   VisualizeMyRoutinePeriodCountResponse,
@@ -54,10 +53,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineStatusCount = createServerFn({ method: "GET" })
@@ -151,17 +150,10 @@ export const GetMyRoutineById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyRoutineByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyRoutineByIdResponse;
 
     return formattedResponse;
   });
@@ -211,17 +203,10 @@ export const GetMyRoutinesByStationId = createServerFn({ method: "GET" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyRoutinesByStationIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyRoutinesByStationIdResponse;
 
       return formattedResponse;
     }
@@ -270,17 +255,10 @@ export const GetMyRoutinesByTimeRange = createServerFn({ method: "GET" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyRoutinesByTimeRangeResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyRoutinesByTimeRangeResponse;
 
       return formattedResponse;
     }
@@ -317,17 +295,10 @@ export const CreateRoutineByStationId = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateRoutineByStationIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateRoutineByStationIdResponse;
 
       return formattedResponse;
     }
@@ -362,17 +333,10 @@ export const CreateRoutinesByStationIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateRoutinesByStationIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateRoutinesByStationIdsResponse;
 
       return formattedResponse;
     }
@@ -404,17 +368,10 @@ export const UpdateMyRoutineById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as UpdateMyRoutineByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UpdateMyRoutineByIdResponse;
 
     return formattedResponse;
   });
@@ -448,17 +405,10 @@ export const UpdateMyRoutinesByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyRoutinesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyRoutinesByIdsResponse;
 
       return formattedResponse;
     }
@@ -495,17 +445,10 @@ export const LinkRoutineTagById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as LinkRoutineTagByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LinkRoutineTagByIdResponse;
 
     return formattedResponse;
   });
@@ -536,17 +479,10 @@ export const LinkRoutineTagsByIds = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as LinkRoutineTagsByIdsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LinkRoutineTagsByIdsResponse;
 
     return formattedResponse;
   });
@@ -582,17 +518,10 @@ export const LinkRoutineTaskById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as LinkRoutineTaskByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LinkRoutineTaskByIdResponse;
 
     return formattedResponse;
   });
@@ -626,17 +555,10 @@ export const LinkRoutineTasksByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as LinkRoutineTasksByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as LinkRoutineTasksByIdsResponse;
 
       return formattedResponse;
     }
@@ -673,17 +595,10 @@ export const LinkRoutineItemById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as LinkRoutineItemByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LinkRoutineItemByIdResponse;
 
     return formattedResponse;
   });
@@ -717,17 +632,10 @@ export const LinkRoutineItemsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as LinkRoutineItemsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as LinkRoutineItemsByIdsResponse;
 
       return formattedResponse;
     }
@@ -759,17 +667,10 @@ export const RestoreMyRoutineById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as RestoreMyRoutineByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RestoreMyRoutineByIdResponse;
 
     return formattedResponse;
   });
@@ -803,17 +704,10 @@ export const RestoreMyRoutinesByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyRoutinesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyRoutinesByIdsResponse;
 
       return formattedResponse;
     }
@@ -845,17 +739,10 @@ export const DeleteMyRoutineById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as DeleteMyRoutineByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as DeleteMyRoutineByIdResponse;
 
     return formattedResponse;
   });
@@ -889,17 +776,10 @@ export const DeleteMyRoutinesByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyRoutinesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyRoutinesByIdsResponse;
 
       return formattedResponse;
     }
@@ -936,17 +816,10 @@ export const HardDeleteMyRoutineById = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyRoutineByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyRoutineByIdResponse;
 
       return formattedResponse;
     }
@@ -981,17 +854,10 @@ export const HardDeleteMyRoutinesByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyRoutinesByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyRoutinesByIdsResponse;
 
       return formattedResponse;
     }

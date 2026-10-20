@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   CreateRoutineTaskDependencyByRoutineIdRequest,
   CreateRoutineTaskDependencyByRoutineIdResponse,
@@ -10,10 +9,10 @@ import type {
   UpdateRoutineTaskDependencyByRoutineIdResponse,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
   method: "GET",
@@ -48,17 +47,10 @@ export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetRoutineTaskDependenciesByRoutineIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetRoutineTaskDependenciesByRoutineIdResponse;
 
       return formattedResponse;
     }
@@ -98,17 +90,10 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as CreateRoutineTaskDependencyByRoutineIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as CreateRoutineTaskDependencyByRoutineIdResponse;
 
       return formattedResponse;
     }
@@ -148,17 +133,10 @@ export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateRoutineTaskDependencyByRoutineIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateRoutineTaskDependencyByRoutineIdResponse;
 
       return formattedResponse;
     }
@@ -198,17 +176,10 @@ export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteRoutineTaskDependencyByRoutineIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteRoutineTaskDependencyByRoutineIdResponse;
 
       return formattedResponse;
     }

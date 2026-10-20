@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   CreateMaterialObjectTicketRequest,
   CreateMaterialObjectTicketResponse,
@@ -34,10 +33,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const forwardMaterialObjectTicketRequest = async <TResponse>(
   request: {
@@ -65,18 +64,12 @@ const forwardMaterialObjectTicketRequest = async <TResponse>(
       credentials: "include",
     }
   );
-  if (!isJsonResponse(response)) {
-    throw new Error("error.encounterUnknownError");
-  }
+
   forwardUpstreamSetCookies(response);
-  const formattedResponse = (await response.json()) as TResponse & {
+  const formattedResponse = (await readAPIResponse(response)) as TResponse & {
     exception?: Record<string, unknown> | null;
   };
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception as never)
-    );
-  }
+
   return formattedResponse;
 };
 
@@ -102,17 +95,10 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyMaterialByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyMaterialByIdResponse;
 
     return formattedResponse;
   });
@@ -146,17 +132,10 @@ export const GetMyMaterialAndItsParentById = createServerFn({
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyMaterialAndItsParentByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyMaterialAndItsParentByIdResponse;
 
       return formattedResponse;
     }
@@ -195,17 +174,10 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyMaterialsByParentSubShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyMaterialsByParentSubShelfIdResponse;
 
       return formattedResponse;
     }
@@ -242,17 +214,10 @@ export const GetMyMaterialsByRootShelfId = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as GetMyMaterialsByRootShelfIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as GetMyMaterialsByRootShelfIdResponse;
 
       return formattedResponse;
     }
@@ -283,17 +248,10 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as CreateMyMaterialResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateMyMaterialResponse;
 
     return formattedResponse;
   });
@@ -321,17 +279,10 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as UpdateMyMaterialByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UpdateMyMaterialByIdResponse;
 
     return formattedResponse;
   });
@@ -359,17 +310,10 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as MoveMyMaterialByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as MoveMyMaterialByIdResponse;
 
     return formattedResponse;
   });
@@ -397,17 +341,10 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as MoveMyMaterialsByIdsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as MoveMyMaterialsByIdsResponse;
 
     return formattedResponse;
   });
@@ -438,17 +375,10 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyMaterialByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyMaterialByIdResponse;
 
       return formattedResponse;
     }
@@ -482,17 +412,10 @@ export const RestoreMyMaterialsByIds = createServerFn({
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyMaterialsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyMaterialsByIdsResponse;
 
       return formattedResponse;
     }
@@ -521,17 +444,10 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as DeleteMyMaterialByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as DeleteMyMaterialByIdResponse;
 
     return formattedResponse;
   });
@@ -562,17 +478,10 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
         }
       );
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyMaterialsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyMaterialsByIdsResponse;
 
       return formattedResponse;
     }

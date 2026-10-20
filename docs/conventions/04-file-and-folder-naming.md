@@ -98,6 +98,22 @@ The `apps/web/src/components/ui/` directory is a shadcn-style primitive collecti
 uses kebab-case files. Do not make a new primitive there PascalCase merely to
 match feature components.
 
+### `apps/web/src/api/`
+
+Group cross-feature API modules by responsibility and retain the
+`domain.role.ts` filename pattern:
+
+- `adapters/`: transport serialization and local search adaptation, such as
+  `exceptionSerialization.adapter.ts` and `searchLocal.adapter.ts`.
+- `policies/`: Apollo cache policies, such as `searchPagination.policy.ts`.
+- `bridges/`: coordination between API/runtime boundaries, such as
+  `cookie.bridge.ts` and `searchLocal.bridge.ts`.
+
+Keep unit tests beside their owner as `domain.role.unit.test.ts`. Import the
+owning module directly; do not leave compatibility re-export files at the API
+root. Storage-specific policies remain under `api/local/`; these categories
+do not override narrower ownership or server/client runtime boundaries.
+
 ### `apps/web/src/pages/`
 
 Use lowercase kebab-case for route-oriented folders, such as

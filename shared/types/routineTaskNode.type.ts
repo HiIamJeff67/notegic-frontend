@@ -11,8 +11,7 @@ export interface RoutineTaskNode {
   // UI-only denormalized field derived from the parent routine.
   stationId: UUID;
   title: string;
-  purpose: RoutineTaskPurpose;
-  payload: any;
+  payload: { purpose: RoutineTaskPurpose; [key: string]: any };
   priority: number;
   previousRoutineTaskIds: UUID[];
   executionStatus?: RoutineTaskRecordStatus | null;
@@ -30,8 +29,7 @@ export const getDefaultRoutineTaskNode = (
   routineId,
   stationId,
   title: "Untitled",
-  purpose: RoutineTaskPurpose.GetBlockPack,
-  payload: {},
+  payload: { schemaVersion: 1, purpose: RoutineTaskPurpose.GetBlockPack },
   priority: 0,
   previousRoutineTaskIds: [],
   maxAttempts: 1,

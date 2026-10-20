@@ -1,8 +1,8 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
+import type { NotegicException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 interface VisualizeServerRequest {
   header?: {
@@ -58,19 +58,11 @@ export async function fetchVisualizeResponse<TResponse>(
     credentials: "include",
   });
 
-  if (!isJsonResponse(response)) {
-    throw new Error("error.encounterUnknownError");
-  }
   forwardUpstreamSetCookies(response);
-  const formattedResponse = (await response.json()) as TResponse & {
+  const formattedResponse = (await readAPIResponse(response)) as TResponse & {
     exception: ConstructorParameters<typeof NotegicException>[0] | null;
     refreshableTokens?: { newCSRFToken?: string };
   };
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception)
-    );
-  }
 
   return formattedResponse;
 }

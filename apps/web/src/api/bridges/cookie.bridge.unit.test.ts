@@ -8,7 +8,7 @@ import {
   forwardUpstreamSetCookies,
   getSetCookieValues,
   mergeCookieHeader,
-} from "@/api/cookieBridge";
+} from "@/api/bridges/cookie.bridge";
 
 describe("SSR cookie bridge", () => {
   beforeEach(() => setResponseHeader.mockReset());

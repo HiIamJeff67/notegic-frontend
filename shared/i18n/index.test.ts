@@ -57,6 +57,20 @@ describe("i18n resources", () => {
   });
 
   test.each([
+    ["en", "Start", "Action"],
+    ["zh-TW", "起點", "動作"],
+    ["zh-CN", "起点", "动作"],
+    ["ja", "開始ノード", "アクション"],
+    ["ko", "시작 노드", "동작"],
+  ] as const)("localizes Routine node kinds in %s", async (language, start, action) => {
+    const i18n = createInstance();
+    await i18n.init({ resources, lng: language, fallbackLng: "en" });
+
+    expect(i18n.t("workspace.fields.startingNode")).toBe(start);
+    expect(i18n.t("workspace.fields.action")).toBe(action);
+  });
+
+  test.each([
     ["en", "Appearance", "Account settings"],
     ["zh-TW", "外觀", "帳戶設定"],
     ["zh-CN", "外观", "账户设置"],

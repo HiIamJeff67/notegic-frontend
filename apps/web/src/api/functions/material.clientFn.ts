@@ -1,10 +1,9 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   SaveMyMaterialByIdRequest,
   SaveMyMaterialByIdResponse,
 } from "@shared/api/interfaces/material.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 
 export async function SaveMyMaterialById(
   request: SaveMyMaterialByIdRequest
@@ -28,16 +27,9 @@ export async function SaveMyMaterialById(
     }
   );
 
-  if (!isJsonResponse(response)) {
-    throw new Error("error.encounterUnknownError");
-  }
-  const formattedResponse =
-    (await response.json()) as SaveMyMaterialByIdResponse;
-  if (formattedResponse.exception != null) {
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception)
-    );
-  }
+  const formattedResponse = (await readAPIResponse(
+    response
+  )) as SaveMyMaterialByIdResponse;
 
   return formattedResponse;
 }

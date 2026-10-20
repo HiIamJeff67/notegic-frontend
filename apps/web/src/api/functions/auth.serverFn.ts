@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   DeleteMeRequest,
   DeleteMeResponse,
@@ -24,10 +23,10 @@ import {
   ValidateEmailResponse,
 } from "@shared/api/interfaces/auth.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() => {
   const cookieHeader = getRequestHeader("cookie") ?? "";
@@ -68,16 +67,11 @@ export const Register = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as RegisterResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RegisterResponse;
+
     return formattedResponse;
   });
 
@@ -103,15 +97,12 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-    if (!isJsonResponse(response))
-      throw new Error("error.encounterUnknownError");
+
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as RegisterViaGoogleResponse;
-    if (formattedResponse.exception != null)
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RegisterViaGoogleResponse;
+
     return formattedResponse;
   });
 
@@ -137,14 +128,12 @@ export const Login = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-    if (!isJsonResponse(response))
-      throw new Error("error.encounterUnknownError");
+
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as LoginResponse;
-    if (formattedResponse.exception != null)
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LoginResponse;
+
     return formattedResponse;
   });
 
@@ -170,14 +159,12 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-    if (!isJsonResponse(response))
-      throw new Error("error.encounterUnknownError");
+
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as LoginViaGoogleResponse;
-    if (formattedResponse.exception != null)
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LoginViaGoogleResponse;
+
     return formattedResponse;
   });
 
@@ -202,18 +189,16 @@ export const Logout = createServerFn({ method: "POST" })
         credentials: "include",
       }
     );
-    if (!isJsonResponse(response))
-      throw new Error("error.encounterUnknownError");
+
     forwardUpstreamSetCookies(response);
-    const rawResponse = (await response.json()) as Partial<LogoutResponse>;
+    const rawResponse = (await readAPIResponse(
+      response
+    )) as Partial<LogoutResponse>;
     const formattedResponse = {
       ...rawResponse,
       exception: rawResponse.exception ?? null,
     } as LogoutResponse;
-    if (formattedResponse.exception != null)
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
+
     return formattedResponse;
   });
 
@@ -241,15 +226,9 @@ export const SendAuthCode = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-    const formattedResponse = (await response.json()) as SendAuthCodeResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as SendAuthCodeResponse;
 
     return formattedResponse;
   });
@@ -275,16 +254,10 @@ export const ValidateEmail = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as ValidateEmailResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as ValidateEmailResponse;
 
     return formattedResponse;
   });
@@ -310,16 +283,10 @@ export const ResetEmail = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as ResetEmailResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as ResetEmailResponse;
 
     return formattedResponse;
   });
@@ -345,15 +312,9 @@ export const ForgetPassword = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-    const formattedResponse = (await response.json()) as ForgetPasswordResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as ForgetPasswordResponse;
 
     return formattedResponse;
   });
@@ -379,16 +340,10 @@ export const ResetMe = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as ResetMeResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as ResetMeResponse;
 
     return formattedResponse;
   });
@@ -414,15 +369,9 @@ export const DeleteMe = createServerFn({ method: "POST" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
-    const formattedResponse = (await response.json()) as DeleteMeResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as DeleteMeResponse;
 
     return formattedResponse;
   });

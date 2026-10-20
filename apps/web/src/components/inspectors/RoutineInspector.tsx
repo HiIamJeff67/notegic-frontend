@@ -139,6 +139,7 @@ const RoutineInspector = ({
           description: response.data.description,
           phase: response.data.phase,
           isActive: response.data.isActive,
+          definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -373,12 +374,13 @@ const RoutineInspector = ({
                   max={60}
                   step={1}
                   value={values.timeoutMinutes}
-                  onChange={event =>
+                  onChange={event => {
+                    const value = event.currentTarget.value;
                     setValues(current => ({
                       ...current,
-                      timeoutMinutes: Number(event.currentTarget.value),
-                    }))
-                  }
+                      timeoutMinutes: Number(value),
+                    }));
+                  }}
                 />
               </div>
 

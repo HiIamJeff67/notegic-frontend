@@ -446,7 +446,8 @@ export const EnglishWorkspaceTranslation = {
     routineTaskRecordTable: "Routine task record table",
   },
   fields: {
-    startingNode: "Starting node",
+    startingNode: "Start",
+    action: "Action",
     active: "Active",
     get: "Get",
     create: "Create",
@@ -874,6 +875,7 @@ export const EnglishWorkspaceTranslation = {
     text: "Text",
     drawing: "Drawing",
     cancel: "Cancel",
+    clearAnnotations: "Clear annotations",
     zoomOut: "Zoom out",
     resetZoom: "Reset zoom ({{percent}}%)",
     zoomIn: "Zoom in",

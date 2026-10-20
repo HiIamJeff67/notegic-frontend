@@ -1,9 +1,8 @@
+import { matchesSearch, searchPage } from "@shared/lib/search-page";
 import { toGraphQLUserStatus } from "@shared/api/graphql/conversions";
 import {
   SearchRootShelfInput,
-  SearchRootShelfSortBy,
   SearchRootShelvesQuery,
-  SearchSortOrder,
   UserPlan,
   UserRole,
 } from "@shared/api/graphql/generated/graphql";
@@ -54,20 +53,6 @@ export class RootShelfLocalSimulator {
         )
     );
 
-  private static encodeSearchCursor = (rootShelfId: string): string =>
-    btoa(JSON.stringify({ id: rootShelfId }));
-
-  private static decodeSearchCursor = (encodedCursor?: string | null) => {
-    if (!encodedCursor) return null;
-
-    try {
-      const decodedCursor = JSON.parse(atob(encodedCursor)) as { id?: unknown };
-      return typeof decodedCursor.id === "string" ? decodedCursor.id : null;
-    } catch {
-      return null;
-    }
-  };
-
   static simulateSearchRootShelves = async (
     input: SearchRootShelfInput
   ): Promise<SearchRootShelvesQuery["searchRootShelves"]> => {
@@ -115,54 +100,19 @@ export class RootShelfLocalSimulator {
         )
       );
 
-    const normalizedQuery = input.query.trim().toLowerCase();
     const matchedRootShelves = allAccessibleRootShelves.filter(rootShelf => {
-      if (rootShelf.deletedAt !== null) return false;
-      if (normalizedQuery.length === 0) return true;
-      return rootShelf.name.toLowerCase().includes(normalizedQuery);
+      if ((rootShelf.deletedAt !== null) !== (input.isDeletedAt === true))
+        return false;
+      return matchesSearch(rootShelf.name, input.query);
     });
 
-    matchedRootShelves.sort((left, right) => {
-      const sortOrder = input.sortOrder ?? SearchSortOrder.Asc;
-      const sortBy = input.sortBy ?? SearchRootShelfSortBy.Relevance;
-
-      const compareResult = (() => {
-        if (sortBy === SearchRootShelfSortBy.CreatedAt) {
-          return left.createdAt.getTime() - right.createdAt.getTime();
-        }
-        if (sortBy === SearchRootShelfSortBy.LastUpdate) {
-          return left.updatedAt.getTime() - right.updatedAt.getTime();
-        }
-        if (sortBy === SearchRootShelfSortBy.Name) {
-          return left.name.localeCompare(right.name);
-        }
-
-        if (normalizedQuery.length === 0) {
-          return left.name.localeCompare(right.name);
-        }
-
-        const leftIndex = left.name.toLowerCase().indexOf(normalizedQuery);
-        const rightIndex = right.name.toLowerCase().indexOf(normalizedQuery);
-        if (leftIndex !== rightIndex) return leftIndex - rightIndex;
-        return left.name.localeCompare(right.name);
-      })();
-
-      return sortOrder === SearchSortOrder.Desc
-        ? -compareResult
-        : compareResult;
+    const page = searchPage("rootShelves", input, matchedRootShelves, {
+      RELEVANCE: row => row.name,
+      NAME: row => row.name,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
     });
-
-    const first = Math.max(0, input.first ?? matchedRootShelves.length);
-    const afterId = RootShelfLocalSimulator.decodeSearchCursor(input.after);
-    const afterIndex =
-      afterId === null
-        ? -1
-        : matchedRootShelves.findIndex(rootShelf => rootShelf.id === afterId);
-    const startIndex = afterIndex >= 0 ? afterIndex + 1 : 0;
-    const pagedRootShelves = matchedRootShelves.slice(
-      startIndex,
-      startIndex + first
-    );
+    const pagedRootShelves = page.rows;
     const pagedRootShelfIds = pagedRootShelves.map(rootShelf => rootShelf.id);
     const usersToShelves =
       pagedRootShelfIds.length === 0
@@ -191,9 +141,7 @@ export class RootShelfLocalSimulator {
       __typename: "SearchRootShelfConnection",
       searchEdges: pagedRootShelves.map(rootShelf => ({
         __typename: "SearchRootShelfEdge",
-        encodedSearchCursor: RootShelfLocalSimulator.encodeSearchCursor(
-          rootShelf.id
-        ),
+        encodedSearchCursor: page.cursors.get(rootShelf.id)!,
         node: (() => {
           const shelfUsers = usersByRootShelfId.get(rootShelf.id) ?? [];
           const owner =
@@ -241,22 +189,8 @@ export class RootShelfLocalSimulator {
           };
         })(),
       })),
-      searchPageInfo: {
-        __typename: "SearchPageInfo",
-        hasNextPage: startIndex + first < matchedRootShelves.length,
-        hasPreviousPage: startIndex > 0,
-        startEncodedSearchCursor:
-          pagedRootShelves.length > 0
-            ? RootShelfLocalSimulator.encodeSearchCursor(pagedRootShelves[0].id)
-            : null,
-        endEncodedSearchCursor:
-          pagedRootShelves.length > 0
-            ? RootShelfLocalSimulator.encodeSearchCursor(
-                pagedRootShelves[pagedRootShelves.length - 1].id
-              )
-            : null,
-      },
-      totalCount: matchedRootShelves.length,
+      searchPageInfo: page.pageInfo,
+      totalCount: pagedRootShelves.length,
       searchTime: performance.now() - startedAt,
     };
   };

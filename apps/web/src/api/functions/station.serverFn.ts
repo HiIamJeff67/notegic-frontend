@@ -1,4 +1,3 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import type {
   VisualizeMyTotalCountRequest,
   VisualizeMyTotalCountResponse,
@@ -38,10 +37,10 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyTotalCount = createServerFn({ method: "GET" })
@@ -85,15 +84,12 @@ const fetchStationMembership = async <T>(
   forwardUpstreamSetCookies(response);
   if (response.status === 204)
     return { success: true, data: null, exception: null } as T;
-  if (!isJsonResponse(response)) throw new Error("error.encounterUnknownError");
-  const formattedResponse = (await response.json()) as T & {
+
+  const formattedResponse = (await readAPIResponse(response)) as T & {
     exception?: unknown;
     refreshableTokens?: { newCSRFToken?: string };
   };
-  if (formattedResponse.exception != null)
-    throw new NotegicAPIError(
-      new NotegicException(formattedResponse.exception as any)
-    );
+
   return formattedResponse;
 };
 
@@ -164,17 +160,10 @@ export const GetMyStationById = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetMyStationByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyStationByIdResponse;
 
     return formattedResponse;
   });
@@ -207,17 +196,10 @@ export const GetAllMyStations = createServerFn({ method: "GET" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as GetAllMyStationsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetAllMyStationsResponse;
 
     return formattedResponse;
   });
@@ -248,16 +230,10 @@ export const CreateStation = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as CreateStationResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateStationResponse;
 
     return formattedResponse;
   });
@@ -288,16 +264,10 @@ export const CreateStations = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as CreateStationsResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as CreateStationsResponse;
 
     return formattedResponse;
   });
@@ -328,17 +298,10 @@ export const UpdateMyStationById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as UpdateMyStationByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UpdateMyStationByIdResponse;
 
     return formattedResponse;
   });
@@ -372,17 +335,10 @@ export const UpdateMyStationsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as UpdateMyStationsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as UpdateMyStationsByIdsResponse;
 
       return formattedResponse;
     }
@@ -414,17 +370,10 @@ export const RestoreMyStationById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as RestoreMyStationByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RestoreMyStationByIdResponse;
 
     return formattedResponse;
   });
@@ -458,17 +407,10 @@ export const RestoreMyStationsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as RestoreMyStationsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as RestoreMyStationsByIdsResponse;
 
       return formattedResponse;
     }
@@ -500,17 +442,10 @@ export const DeleteMyStationById = createServerFn({ method: "POST" })
       credentials: "include",
     });
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse =
-      (await response.json()) as DeleteMyStationByIdResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as DeleteMyStationByIdResponse;
 
     return formattedResponse;
   });
@@ -544,17 +479,10 @@ export const DeleteMyStationsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as DeleteMyStationsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as DeleteMyStationsByIdsResponse;
 
       return formattedResponse;
     }
@@ -591,17 +519,10 @@ export const HardDeleteMyStationById = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyStationByIdResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyStationByIdResponse;
 
       return formattedResponse;
     }
@@ -636,17 +557,10 @@ export const HardDeleteMyStationsByIds = createServerFn({ method: "POST" })
         credentials: "include",
       });
 
-      if (!isJsonResponse(response)) {
-        throw new Error("error.encounterUnknownError");
-      }
       forwardUpstreamSetCookies(response);
-      const formattedResponse =
-        (await response.json()) as HardDeleteMyStationsByIdsResponse;
-      if (formattedResponse.exception != null) {
-        throw new NotegicAPIError(
-          new NotegicException(formattedResponse.exception)
-        );
-      }
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyStationsByIdsResponse;
 
       return formattedResponse;
     }

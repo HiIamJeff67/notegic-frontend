@@ -1,13 +1,12 @@
-import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   GetMyQuotaRequest,
   GetMyQuotaResponse,
 } from "@shared/api/interfaces/userQuota.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { forwardUpstreamSetCookies } from "@/api/cookieBridge";
+import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyQuota = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyQuotaRequest) => data)
@@ -31,16 +30,10 @@ export const GetMyQuota = createServerFn({ method: "GET" })
       }
     );
 
-    if (!isJsonResponse(response)) {
-      throw new Error("error.encounterUnknownError");
-    }
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await response.json()) as GetMyQuotaResponse;
-    if (formattedResponse.exception != null) {
-      throw new NotegicAPIError(
-        new NotegicException(formattedResponse.exception)
-      );
-    }
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as GetMyQuotaResponse;
 
     return formattedResponse;
   });

@@ -4,11 +4,11 @@ import {
   type SearchRootShelvesQuery,
   type SearchRootShelvesQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
-import { searchRootShelvesLocalAdapter } from "@/api/searchLocalAdapters";
+import { searchRootShelvesLocalAdapter } from "@/api/adapters/searchLocal.adapter";
 import {
   useLocalSearchLazyQuery,
   useLocalSearchQuery,
-} from "@/api/searchLocalBridge";
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchRootShelvesLazyQuery = (
   options?: useLazyQuery.Options<

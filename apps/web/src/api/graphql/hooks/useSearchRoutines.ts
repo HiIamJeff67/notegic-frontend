@@ -4,11 +4,11 @@ import {
   type SearchRoutinesQuery,
   type SearchRoutinesQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
-import { searchRoutinesLocalAdapter } from "@/api/searchLocalAdapters";
+import { searchRoutinesLocalAdapter } from "@/api/adapters/searchLocal.adapter";
 import {
   useLocalSearchLazyQuery,
   useLocalSearchQuery,
-} from "@/api/searchLocalBridge";
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchRoutinesLazyQuery = (
   options?: useLazyQuery.Options<

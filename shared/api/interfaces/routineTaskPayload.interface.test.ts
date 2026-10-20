@@ -217,10 +217,10 @@ describe("canonical local node projection", () => {
       routineId: "12345678-1234-4234-8234-123456789abc",
     },
   };
-  it("derives the compatibility projection from canonical payload-only input", () => {
+  it("keeps the discriminator only in canonical payload", () => {
     const normalized = normalizeRoutineTaskDefinition(input);
-    expect(normalized.purpose).toBe(RoutineTaskPurpose.GetRoutine);
-    expect(normalized.payload.purpose).toBe(normalized.purpose);
+    expect(normalized).not.toHaveProperty("purpose");
+    expect(normalized.payload.purpose).toBe(RoutineTaskPurpose.GetRoutine);
   });
   it("normalizes legacy input without losing operation fields", () => {
     const normalized = normalizeRoutineTaskDefinition({
@@ -236,8 +236,8 @@ describe("canonical local node projection", () => {
         ...input,
         kind: "Start",
         payload: { isActive: false },
-      }).purpose
-    ).toBe("");
+      }).payload
+    ).not.toHaveProperty("purpose");
     expect(() =>
       normalizeRoutineTaskDefinition({
         ...input,

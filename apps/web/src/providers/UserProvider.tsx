@@ -78,6 +78,7 @@ export const UserProvider = ({
   const [userQuota, setUserQuota] = useState<UserQuota | null>(null);
 
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
+  const hasExpiredSessionRef = useRef(false);
   const hasAttemptedInitialUserDataFetchRef = useRef(false);
   const initialQuotaFetchUserPublicIdRef = useRef<string | null>(null);
 
@@ -116,19 +117,33 @@ export const UserProvider = ({
   }, [isOnline, logoutMutator]);
 
   const expireSession = useCallback(async () => {
+    if (hasExpiredSessionRef.current) return;
+    hasExpiredSessionRef.current = true;
+
     try {
       await logout();
     } catch (error) {
       console.error("failed to notify the server about session expiry", error);
     } finally {
       if (
-        !router.isSamePath(router.getCurrentPath(), WebURLPathDictionary.home)
+        !router.isSamePath(
+          router.getCurrentPath(),
+          WebURLPathDictionary.home
+        ) &&
+        !router.isSamePath(
+          router.getCurrentPath(),
+          WebURLPathDictionary.auth.login
+        )
       ) {
         toast.error(t("workspace.notifications.sessionExpired"));
         router.push(WebURLPathDictionary.auth.login);
       }
     }
-  }, [logout, router]);
+  }, [logout, router, t]);
+
+  useEffect(() => {
+    if (userData !== null) hasExpiredSessionRef.current = false;
+  }, [userData]);
 
   const fetchUserData = useCallback(
     async () =>

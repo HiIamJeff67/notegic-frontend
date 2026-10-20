@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
@@ -101,8 +102,7 @@ export const useRoutineTaskLogic = ({
         routines.map(routine => [routine.id, routine])
       );
       const routineTaskNodes = routineTasks.flatMap(routineTask => {
-        if (routineTask.kind === "Start" || routineTask.purpose === "")
-          return [];
+        if (routineTask.kind === "Start") return [];
         const routineNode = routineById.get(routineTask.routineId as UUID);
         if (!routineNode) return [];
         const stationNode = stationsRef.current.get(routineNode.stationId);
@@ -119,7 +119,6 @@ export const useRoutineTaskLogic = ({
           routineId: routineTask.routineId as UUID,
           stationId: routineNode.stationId,
           title: routineTask.title,
-          purpose: routineTask.purpose,
           payload: routineTask.payload,
           priority: routineTask.priority,
           maxAttempts: routineTask.maxAttempts,
@@ -142,12 +141,8 @@ export const useRoutineTaskLogic = ({
           ),
           persistedRoutineTask,
         ];
-        routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-          leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-        );
-        stationNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-          leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-        );
+        routineNode.routineTasks.sort(compareEntityNames);
+        stationNode.routineTasks.sort(compareEntityNames);
         return [persistedRoutineTask];
       });
 
@@ -277,14 +272,14 @@ export const useRoutineTaskLogic = ({
             routineId: UUID;
             title: string;
             kind?: string;
-            purpose: string | null;
+            payload: any;
             priority: number;
             maxAttempts: number;
             previousRoutineTaskIds: UUID[];
             updatedAt: Date | string | number;
             createdAt: Date | string | number;
           };
-          if (node.kind === "Start" || !node.purpose) return null;
+          if (node.kind === "Start") return null;
           const routineNode = routines.find(
             routine => routine.id === node.routineId
           );
@@ -303,11 +298,7 @@ export const useRoutineTaskLogic = ({
             routineId: node.routineId,
             stationId: routineNode.stationId,
             title: node.title,
-            purpose: node.purpose.replace(
-              "RoutineTaskPurpose_",
-              ""
-            ) as RoutineTaskPurpose,
-            payload: existingRoutineTask?.payload ?? {},
+            payload: node.payload,
             priority: node.priority,
             maxAttempts: node.maxAttempts,
             previousRoutineTaskIds: node.previousRoutineTaskIds,
@@ -345,9 +336,7 @@ export const useRoutineTaskLogic = ({
             ),
             searchedRoutineTask,
           ];
-          stationNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-            leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-          );
+          stationNode.routineTasks.sort(compareEntityNames);
           routineNode.routineTaskIds = Array.from(
             new Set([...routineNode.routineTaskIds, searchedRoutineTask.id])
           );
@@ -357,9 +346,7 @@ export const useRoutineTaskLogic = ({
             ),
             searchedRoutineTask,
           ];
-          routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-            leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-          );
+          routineNode.routineTasks.sort(compareEntityNames);
         }
       }
       forceUpdate();
@@ -452,8 +439,11 @@ export const useRoutineTaskLogic = ({
           expectedDefinitionVersion:
             expectedDefinitionVersion ?? routineNode.definitionVersion,
           title: title.trim(),
-          purpose,
-          payload,
+          payload: {
+            ...(payload as Record<string, unknown>),
+            schemaVersion: 1,
+            purpose,
+          },
           priority,
           maxAttempts,
         },
@@ -479,7 +469,6 @@ export const useRoutineTaskLogic = ({
         routineId,
         stationId: routineNode.stationId,
         title: body.title,
-        purpose: body.purpose ?? purpose,
         payload: body.payload,
         priority: body.priority ?? 0,
         maxAttempts: body.maxAttempts ?? 1,
@@ -488,9 +477,7 @@ export const useRoutineTaskLogic = ({
         createdAt: response.data.createdAt,
       };
       stationNode.routineTasks.push(routineTaskNode);
-      stationNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-        leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-      );
+      stationNode.routineTasks.sort(compareEntityNames);
       routineNode.routineTaskIds = Array.from(
         new Set([...routineNode.routineTaskIds, routineTaskNode.id])
       );
@@ -500,9 +487,7 @@ export const useRoutineTaskLogic = ({
         ),
         routineTaskNode,
       ];
-      routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-        leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-      );
+      routineNode.routineTasks.sort(compareEntityNames);
       forceUpdate();
       return routineTaskNode;
     },
@@ -523,7 +508,7 @@ export const useRoutineTaskLogic = ({
       return await createRoutineTask(
         sourceRoutineTask.routineId,
         `${sourceRoutineTask.title} Copy`,
-        sourceRoutineTask.purpose,
+        sourceRoutineTask.payload.purpose,
         sourceRoutineTask.payload,
         sourceRoutineTask.priority,
         sourceRoutineTask.maxAttempts
@@ -558,9 +543,7 @@ export const useRoutineTaskLogic = ({
       } else {
         stationNode.routineTasks.push(routineTaskNode);
       }
-      stationNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-        leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-      );
+      stationNode.routineTasks.sort(compareEntityNames);
 
       const persistedRoutineTask = existingRoutineTask ?? routineTaskNode;
       routineNode.routineTaskIds = Array.from(
@@ -572,9 +555,7 @@ export const useRoutineTaskLogic = ({
         ),
         persistedRoutineTask,
       ];
-      routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-        leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-      );
+      routineNode.routineTasks.sort(compareEntityNames);
 
       forceUpdate();
       return persistedRoutineTask;
@@ -653,13 +634,9 @@ export const useRoutineTaskLogic = ({
         }
       }
       for (const stationNode of stationsRef.current.values()) {
-        stationNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-          leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-        );
+        stationNode.routineTasks.sort(compareEntityNames);
         for (const routineNode of stationNode.routines) {
-          routineNode.routineTasks.sort((leftRoutineTask, rightRoutineTask) =>
-            leftRoutineTask.title.localeCompare(rightRoutineTask.title)
-          );
+          routineNode.routineTasks.sort(compareEntityNames);
         }
       }
       forceUpdate();

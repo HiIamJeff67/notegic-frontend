@@ -781,14 +781,6 @@
           "autoincrement": false,
           "default": "'undefined'"
         },
-        "purpose": {
-          "name": "purpose",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
         "payload": {
           "name": "payload",
           "type": "text",
@@ -826,7 +818,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-10-17T11:57:54.439Z\"'"
+          "default": "'\"2026-10-18T15:22:18.977Z\"'"
         },
         "created_at": {
           "name": "created_at",
@@ -834,7 +826,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2026-10-17T11:57:54.439Z\"'"
+          "default": "'\"2026-10-18T15:22:18.977Z\"'"
         }
       },
       "indexes": {

@@ -84,7 +84,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
                 },
                 {
                   field: t("workspace.table.purpose"),
-                  value: `${t(routineTaskPurposeTKeys[routineTask.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.purpose].target)}`,
+                  value: `${t(routineTaskPurposeTKeys[routineTask.payload.purpose].action)} · ${t(routineTaskPurposeTKeys[routineTask.payload.purpose].target)}`,
                 },
                 {
                   field: t("workspace.fields.priority"),

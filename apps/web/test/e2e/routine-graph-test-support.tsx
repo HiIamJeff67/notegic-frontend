@@ -21,16 +21,13 @@ import { ThemeContext } from "@/providers/ThemeProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import "@xyflow/react/dist/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { applyNodeChanges, type NodeChange, ReactFlow } from "@xyflow/react";
+import { applyNodeChanges, type NodeChange } from "@xyflow/react";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
+import RoutineTaskDependencyGraphCanvas from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas";
 import RoutineTaskDependencyGraphToolbar from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphToolbar";
-import RoutineTaskGraphNode, {
-  type RoutineTaskGraphNode as GraphNode,
-} from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode";
+import type { RoutineTaskGraphNode as GraphNode } from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode";
 import { ModalProvider } from "@/providers/ModalProvider";
-
-const nodeTypes = { routineTask: RoutineTaskGraphNode };
 
 const RoutineGraphFixture = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -43,8 +40,7 @@ const RoutineGraphFixture = () => {
       data: {
         title: "Read routine",
         kind: "Action",
-        purpose: RoutineTaskPurpose.GetRoutine,
-        payload: {},
+        payload: { schemaVersion: 1, purpose: RoutineTaskPurpose.GetRoutine },
         onEdit: () => setEditingId("action"),
       },
     },
@@ -60,7 +56,6 @@ const RoutineGraphFixture = () => {
         data: {
           title: "Daily entry",
           kind: "Start",
-          purpose: "",
           payload: { schemaVersion: 1, isActive: true },
           onEdit: () => setEditingId(id),
           onUpdated: async values => {
@@ -83,8 +78,6 @@ const RoutineGraphFixture = () => {
         <RoutineTaskDependencyGraphToolbar
           isAddMenuOpen={menuOpen}
           onAddMenuOpenChange={setMenuOpen}
-          isDirty={false}
-          isLoading={false}
           isRetryingSync={false}
           isSaving={false}
           pendingSyncCount={0}
@@ -93,15 +86,20 @@ const RoutineGraphFixture = () => {
             nodes.filter(node => node.data.kind === "Start").length < 16
           }
           onOpenCreateRoutineTaskDialog={() => {}}
-          onReset={() => {}}
           onRetryPendingSync={() => {}}
           onExport={() => {}}
-          onRefresh={() => {}}
         />
         <div className="min-h-0 flex-1">
-          <ReactFlow
+          <RoutineTaskDependencyGraphCanvas
+            colorMode="dark"
             nodes={nodes}
-            nodeTypes={nodeTypes}
+            edges={[]}
+            isMiniMapVisible={false}
+            onConnect={() => {}}
+            onEdgeClick={() => {}}
+            onEdgesChange={() => {}}
+            onMiniMapVisibilityChange={() => {}}
+            onPaneClick={() => {}}
             onNodesChange={(changes: NodeChange<GraphNode>[]) =>
               setNodes(current => applyNodeChanges(changes, current))
             }
@@ -121,7 +119,11 @@ export const mountRoutineGraph = () => {
     zIndex: "40",
   });
   document.body.append(container);
-  createRoot(container).render(<RoutineGraphFixture />);
+  createRoot(container).render(
+    <ScreenProvider>
+      <RoutineGraphFixture />
+    </ScreenProvider>
+  );
 };
 
 export const editorRoutineId = "12345678-1234-4234-8234-123456789abc";
@@ -145,7 +147,7 @@ export const mountRoutineLayoutEditor = async () => {
     `INSERT INTO RoutineTaskTable (id,routine_id,kind,title,payload,x,y) VALUES ('22345678-1234-4234-8234-123456789abc','${editorRoutineId}','Start','Daily entry','{"schemaVersion":1,"isActive":true}',-200,0)`
   );
   await localDB.run(
-    `INSERT INTO RoutineTaskTable (id,routine_id,kind,title,purpose,payload,x,y) VALUES ('42345678-1234-4234-8234-123456789abc','${editorRoutineId}','Action','Read routine','GetRoutine','{"schemaVersion":1,"purpose":"GetRoutine","routineId":"${editorRoutineId}"}',300,0)`
+    `INSERT INTO RoutineTaskTable (id,routine_id,kind,title,payload,x,y) VALUES ('42345678-1234-4234-8234-123456789abc','${editorRoutineId}','Action','Read routine','{"schemaVersion":1,"purpose":"GetRoutine","routineId":"${editorRoutineId}"}',300,0)`
   );
   Object.defineProperty(navigator, "onLine", {
     configurable: true,
