@@ -34,6 +34,10 @@ describe backend implementation as if it belongs to this repository.
 
 ## Design map
 
+Before choosing or introducing an icon, consult the
+[Icon map](conventions/icon-map.md) and
+[Icons and Images conventions](conventions/03-icons-and-images.md).
+
 - [Routes](designs/routes/README.md) documents frontend transport entry points,
   contracts, and client-facing API concerns.
 - [Codebases](designs/codebases/README.md) documents Web structure, target

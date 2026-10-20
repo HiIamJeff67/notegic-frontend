@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { MaxShelfDepth } from "@shared/constants";
 import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
@@ -358,8 +359,11 @@ const SubShelfMenuItem = ({
             ) : (
               <>
                 {Object.keys(current.children).length > 0 &&
-                  Object.entries(current.children).map(
-                    ([subShelfId, subShelfNode]) => {
+                  Object.entries(current.children)
+                    .sort(([, left], [, right]) =>
+                      compareEntityNames(left, right)
+                    )
+                    .map(([subShelfId, subShelfNode]) => {
                       return (
                         <Suspense
                           fallback={<SubShelfMenuItemSkeleton number={1} />}
@@ -428,8 +432,7 @@ const SubShelfMenuItem = ({
                           )}
                         </Suspense>
                       );
-                    }
-                  )}
+                    })}
                 <MaterialMenu parent={current} />
                 <BlockPackMenu parent={current} />
               </>

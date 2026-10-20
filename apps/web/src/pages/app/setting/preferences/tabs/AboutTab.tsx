@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { ClipboardIcon, RotateCcwIcon } from "lucide-react";
+import { CopyIcon, RotateCcwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalPreferences } from "@/hooks/localPreferences";
 import { Section, SettingRow } from "./PreferenceRows";
@@ -34,7 +34,7 @@ const AboutTab = ({ layout = "panel" }: AboutTabProps) => {
             size="sm"
             onClick={copyPreferences}
           >
-            <ClipboardIcon className="size-4" />
+            <CopyIcon className="size-4" />
             {clipboardState === "copied"
               ? t("settingsPage.preferences.about.copied")
               : clipboardState === "failed"

@@ -5,16 +5,15 @@ import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 import toast from "@shared/lib/toast";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import {
+  BookOpenIcon,
   ChevronDown,
   ChevronRight,
-  FileTextIcon,
   LayoutDashboardIcon,
   LogOutIcon,
   MessageSquareWarningIcon,
   PlusIcon,
   SettingsIcon,
   SlidersHorizontalIcon,
-  TagIcon,
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
@@ -24,6 +23,7 @@ import AvatarIcon from "@/components/icons/AvatarIcon";
 import ShelfCaseIcon from "@/components/icons/ShelfCaseIcon";
 import {
   RoutineIcon,
+  RoutineTagIcon,
   StationIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
@@ -149,7 +149,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
       collapsible="icon"
       className="p-0 m-0 overflow-hidden"
     >
-      <SidebarHeader className="flex flex-col justify-center items-center p-0">
+      <SidebarHeader className="flex min-h-[calc(var(--app-navigation-height)-1px)] flex-col justify-center items-center p-0">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -275,7 +275,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                         <div className="my-2 flex flex-col gap-1 border-t border-sidebar-border pt-2">
                           <div className="group/routine-tags-label flex h-7 items-center justify-between px-2 text-xs text-muted-foreground">
                             <div className="flex min-w-0 items-center gap-2">
-                              <TagIcon className="size-3.5 shrink-0" />
+                              <RoutineTagIcon className="size-3.5 shrink-0" />
                               <span className="truncate">
                                 {t("workspace.navigation.routineTags")}
                               </span>
@@ -329,7 +329,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                 } items-center select-none hover:bg-primary`}
                 onClick={() => router.push(WebURLPathDictionary.document)}
               >
-                <FileTextIcon />
+                <BookOpenIcon />
                 {isSidebarExpanded && (
                   <span className="truncate">
                     {t("workspace.navigation.document")}

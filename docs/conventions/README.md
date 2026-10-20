@@ -21,6 +21,7 @@ recurring patterns into explicit rules for new work.
 | [01-ui.md](01-ui.md) | UI primitives, composition, accessibility, and responsive layout |
 | [02-styles.md](02-styles.md) | Tailwind tokens, global CSS, density, motion, and visual language |
 | [03-icons-and-images.md](03-icons-and-images.md) | Entity icons, action icons, images, and media ownership |
+| [Icon map](icon-map.md) | Searchable inventory of existing icon meanings, exports, aliases, sources and reuse boundaries |
 | [04-file-and-folder-naming.md](04-file-and-folder-naming.md) | TypeScript file names, folder names, route names, and role suffixes |
 | [05-helpers-and-abstractions.md](05-helpers-and-abstractions.md) | Helper functions, shared utilities, abstraction boundaries, and directness |
 | [06-react-hooks.md](06-react-hooks.md) | Hook ownership, lifecycle boundaries, local logic, and hook-specific reuse |

@@ -12,6 +12,7 @@ import {
   PencilIcon,
   PlusIcon,
   SaveIcon,
+  SquarePen,
   TypeIcon,
   XIcon,
 } from "lucide-react";
@@ -30,18 +31,23 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenu,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useAppRouter } from "@/hooks";
 import MaterialViewerFrame from "./MaterialViewerFrame";
@@ -591,41 +597,45 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
       contentClassName="p-0 overflow-hidden"
       toolbarChildren={
         <>
-          <ButtonGroup>
-            <ButtonGroup>
-              <Button
-                disabled={scale <= 0.5 || isLoading}
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setScale(currentScale => Math.max(0.5, currentScale - 0.25))
-                }
-              >
-                <MinusIcon />
-              </Button>
-              <Button
-                disabled={scale >= 3 || isLoading}
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setScale(currentScale => Math.min(3, currentScale + 0.25))
-                }
-              >
-                <PlusIcon />
-              </Button>
-            </ButtonGroup>
-            <ButtonGroup>
-              <Button
-                disabled={annotations.length === 0 || isLoading}
-                variant="outline"
-                size="sm"
-                onClick={() => setAnnotations([])}
-              >
-                <EraserIcon />
-              </Button>
-            </ButtonGroup>
+          <ButtonGroup className="shrink-0">
+            <Button
+              aria-label={t("workspace.viewer.zoomOut")}
+              disabled={scale <= 0.5 || isLoading}
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 px-0 [&_svg]:size-3.5"
+              onClick={() =>
+                setScale(currentScale => Math.max(0.5, currentScale - 0.25))
+              }
+            >
+              <MinusIcon />
+            </Button>
+            <Button
+              aria-label={t("workspace.viewer.zoomIn")}
+              disabled={scale >= 3 || isLoading}
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 px-0 [&_svg]:size-3.5"
+              onClick={() =>
+                setScale(currentScale => Math.min(3, currentScale + 0.25))
+              }
+            >
+              <PlusIcon />
+            </Button>
+
+            <Button
+              aria-label={t("workspace.viewer.clearAnnotations")}
+              disabled={annotations.length === 0 || isLoading}
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 px-0 [&_svg]:size-3.5"
+              onClick={() => setAnnotations([])}
+            >
+              <EraserIcon />
+            </Button>
           </ButtonGroup>
           <ToggleGroup
+            asChild
             type="single"
             value={currentTool}
             onValueChange={value =>
@@ -634,42 +644,65 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
             variant="outline"
             size="sm"
           >
-            <ToggleGroupItem
-              disabled={!pdfDocument || isLoading}
-              value="highlight"
-              aria-label={t("workspace.viewer.highlight")}
-            >
-              <HighlighterIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              disabled={!pdfDocument || isLoading}
-              value="text"
-              aria-label={t("workspace.viewer.text")}
-            >
-              <TypeIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              disabled={!pdfDocument || isLoading}
-              value="drawing"
-              aria-label={t("workspace.viewer.drawing")}
-            >
-              <PencilIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              disabled={!pdfDocument || isLoading}
-              value="cursor"
-              aria-label={t("workspace.viewer.cancel")}
-            >
-              <MousePointer />
-            </ToggleGroupItem>
+            <ButtonGroup className="shrink-0 gap-0">
+              <ToggleGroupItem
+                className="h-7 w-7 min-w-0 bg-background px-0 [&_svg]:size-3.5"
+                disabled={!pdfDocument || isLoading}
+                value="highlight"
+                aria-label={t("workspace.viewer.highlight")}
+              >
+                <HighlighterIcon />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                className="h-7 w-7 min-w-0 bg-background px-0 [&_svg]:size-3.5"
+                disabled={!pdfDocument || isLoading}
+                value="text"
+                aria-label={t("workspace.viewer.text")}
+              >
+                <TypeIcon />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                className="h-7 w-7 min-w-0 bg-background px-0 [&_svg]:size-3.5"
+                disabled={!pdfDocument || isLoading}
+                value="drawing"
+                aria-label={t("workspace.viewer.drawing")}
+              >
+                <PencilIcon />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                className="h-7 w-7 min-w-0 bg-background px-0 [&_svg]:size-3.5"
+                disabled={!pdfDocument || isLoading}
+                value="cursor"
+                aria-label={t("workspace.viewer.cancel")}
+              >
+                <MousePointer />
+              </ToggleGroupItem>
+            </ButtonGroup>
           </ToggleGroup>
         </>
       }
-      menubarChildren={
-        <MenubarMenu>
-          <MenubarTrigger>{t("workspace.viewer.edit")}</MenubarTrigger>
-          <MenubarContent align="end" side="bottom">
-            <MenubarItem
+      menuChildren={
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                  aria-label={t("workspace.viewer.edit")}
+                >
+                  <SquarePen />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {t("workspace.viewer.edit")}
+            </TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="end" side="bottom">
+            <DropdownMenuItem
               disabled={scale <= 0.5 || isLoading}
               onSelect={() =>
                 setScale(currentScale => Math.max(0.5, currentScale - 0.25))
@@ -677,15 +710,15 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
             >
               <MinusIcon />
               {t("workspace.viewer.zoomOut")}
-              <MenubarShortcut>-</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem disabled={isLoading} onSelect={() => setScale(1)}>
+              <DropdownMenuShortcut>-</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled={isLoading} onSelect={() => setScale(1)}>
               {t("workspace.viewer.resetZoom", {
                 percent: Math.round(scale * 100),
               })}
-              <MenubarShortcut>0</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem
+              <DropdownMenuShortcut>0</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem
               disabled={scale >= 3 || isLoading}
               onSelect={() =>
                 setScale(currentScale => Math.min(3, currentScale + 0.25))
@@ -693,17 +726,17 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
             >
               <PlusIcon />
               {t("workspace.viewer.zoomIn")}
-              <MenubarShortcut>+</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem
+              <DropdownMenuShortcut>+</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
               disabled={currentPage <= 1 || isLoading}
               onSelect={() => setCurrentPage(page => Math.max(1, page - 1))}
             >
               {t("workspace.viewer.previousPage")}
-              <MenubarShortcut>←</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem
+              <DropdownMenuShortcut>←</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem
               disabled={currentPage >= totalPages || isLoading}
               onSelect={() =>
                 setCurrentPage(page => Math.min(totalPages, page + 1))
@@ -713,32 +746,32 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
                 current: currentPage,
                 total: totalPages || 1,
               })}
-              <MenubarShortcut>→</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
+              <DropdownMenuShortcut>→</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       }
-      fileAdditionalMenubarChildren={
+      fileMenuChildren={
         <>
-          <MenubarItem disabled={!pdfBytes} onSelect={handleDownloadPdf}>
+          <DropdownMenuItem disabled={!pdfBytes} onSelect={handleDownloadPdf}>
             <DownloadIcon />
             {t("workspace.viewer.downloadPdf")}
-          </MenubarItem>
-          <MenubarItem
+          </DropdownMenuItem>
+          <DropdownMenuItem
             disabled={annotations.length === 0 || isApplyingAnnotations}
             onSelect={handleDownloadAnnotatedPdf}
           >
             <DownloadIcon />
             {t("workspace.viewer.downloadAnnotatedPdf")}
-          </MenubarItem>
-          <MenubarItem
+          </DropdownMenuItem>
+          <DropdownMenuItem
             disabled={annotations.length === 0 || isApplyingAnnotations}
             onSelect={handleSave}
           >
             <SaveIcon />
             {t("workspace.viewer.saveAnnotations")}
-            <MenubarShortcut>⌘S</MenubarShortcut>
-          </MenubarItem>
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
         </>
       }
     >

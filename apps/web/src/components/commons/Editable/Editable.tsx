@@ -1,4 +1,4 @@
-import { PenLineIcon } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { CSSProperties } from "react";
 
 interface EditableProps {
@@ -36,7 +36,7 @@ const Editable = ({
             onClick={onEdit}
             type="button"
           >
-            <PenLineIcon size={size ?? 8} />
+            <SquarePen size={size ?? 8} />
           </button>
         )}
         {children}
@@ -65,7 +65,7 @@ const Editable = ({
           onClick={onEdit}
           type="button"
         >
-          <PenLineIcon size={size ?? 8} />
+          <SquarePen size={size ?? 8} />
         </button>
       )}
       {children}

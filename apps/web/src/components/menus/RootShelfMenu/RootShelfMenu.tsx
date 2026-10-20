@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { Suspense } from "react";
 import RootShelfMenuItem from "@/components/menus/RootShelfMenu/RootShelfMenuItem";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
@@ -7,12 +8,20 @@ import { useShelfItem } from "@/hooks";
 const RootShelfMenu = () => {
   const shelfItemManager = useShelfItem();
 
+  const rootShelfEdges = [...shelfItemManager.rootShelfEdges].sort(
+    (left, right) =>
+      compareEntityNames(
+        shelfItemManager.expandedShelves.get(left.node.id)?.root ?? left.node,
+        shelfItemManager.expandedShelves.get(right.node.id)?.root ?? right.node
+      )
+  );
+
   return (
     <SidebarMenu className="overflow-hidden">
       <Suspense fallback={<RootShelfMenuItemSkeleton />}>
-        {shelfItemManager.rootShelfEdges.map((edge, index) => (
-          <Suspense fallback={<RootShelfMenuItemSkeleton />} key={index}>
-            <RootShelfMenuItem key={index} rootShelfEdge={edge} index={index} />
+        {rootShelfEdges.map(edge => (
+          <Suspense fallback={<RootShelfMenuItemSkeleton />} key={edge.node.id}>
+            <RootShelfMenuItem rootShelfEdge={edge} />
           </Suspense>
         ))}
       </Suspense>

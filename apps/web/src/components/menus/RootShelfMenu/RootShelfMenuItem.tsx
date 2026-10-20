@@ -53,13 +53,9 @@ import { useModal } from "@/hooks/useModal";
 
 interface RootShelfMenuItemProps {
   rootShelfEdge: SearchRootShelfEdge;
-  index: number;
 }
 
-const RootShelfMenuItem = ({
-  rootShelfEdge,
-  index,
-}: RootShelfMenuItemProps) => {
+const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
   const loadingManager = useLoading();
   const isMobile = useMobile();
   const { i18n, t } = useTranslation();
@@ -96,7 +92,7 @@ const RootShelfMenuItem = ({
     [shelfItemManager]
   );
 
-  if (!summary) return <RootShelfMenuItemSkeleton key={index} />;
+  if (!summary) return <RootShelfMenuItemSkeleton />;
 
   return (
     <Collapsible open={summary.root.isOpen}>

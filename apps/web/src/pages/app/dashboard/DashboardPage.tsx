@@ -15,6 +15,7 @@ import {
   CheckIcon,
   ChevronsRightLeftIcon,
   PlusIcon,
+  SquarePen,
   WrenchIcon,
 } from "lucide-react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -27,7 +28,6 @@ import Extendable from "@/components/commons/Extendable/Extendable";
 import XYResizable from "@/components/commons/Resizable/XYResizable";
 import CreateWidgetDialog from "@/components/dialogs/WidgetDialog/CreateWidgetDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
-import EditIcon from "@/components/icons/EditIcon";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
@@ -917,7 +917,7 @@ const DashboardPage = () => {
               "
               onClick={() => setIsEditing(true)}
             >
-              <EditIcon size={18} />
+              <SquarePen size={18} />
             </Button>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
@@ -29,8 +30,9 @@ const BlockPackMenu = ({ parent }: BlockPackMenuProps) => {
 
   return (
     <Suspense fallback={<BlockPackMenuItemSkeleton />}>
-      {Object.entries(parent.blockPackNodes).map(
-        ([blockPackId, blockPackNode]) => {
+      {Object.entries(parent.blockPackNodes)
+        .sort(([, left], [, right]) => compareEntityNames(left, right))
+        .map(([blockPackId, blockPackNode]) => {
           return (
             <Suspense
               fallback={<BlockPackMenuItemSkeleton />}
@@ -88,8 +90,7 @@ const BlockPackMenu = ({ parent }: BlockPackMenuProps) => {
               )}
             </Suspense>
           );
-        }
-      )}
+        })}
     </Suspense>
   );
 };

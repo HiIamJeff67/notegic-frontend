@@ -94,6 +94,14 @@
   --density-content-gap: 1rem;
   --density-content-padding: 1rem;
   --density-menu-item-height: 2rem;
+  /* Align editor context rows with the sidebar navigation rows and separator. */
+  --app-toolbar-height: 3rem;
+  --app-navigation-height: calc(
+    2 *
+    var(--density-menu-item-height) +
+    1.25rem +
+    1px
+  );
   --density-table-cell-padding: 1rem;
   --canvas: oklch(0.185 0 0);
   --foreground: oklch(0.985 0 0);

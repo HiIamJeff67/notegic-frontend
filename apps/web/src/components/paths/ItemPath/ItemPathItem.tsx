@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
@@ -90,28 +91,31 @@ const ItemPathItem = ({
             Object.entries(subShelfNode.blockPackNodes).length !== 0 ||
             Object.entries(subShelfNode.materialNodes).length !== 0) && (
             <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
-              {Object.entries(subShelfNode.children).map(([id, child]) => {
-                return (
-                  <DropdownMenuItem
-                    key={id}
-                    onClick={async () => {
-                      if (!child.isExpanded) {
-                        await shelfItemManager.expandSubShelf(
-                          rootShelfNode,
-                          child
-                        );
-                      }
-                      shelfItemManager.toggleSubShelf(child);
-                    }}
-                  >
-                    <SubShelfIcon />
-                    <ChevronRightIcon />
-                    <span>{child.name}</span>
-                  </DropdownMenuItem>
-                );
-              })}
-              {Object.entries(subShelfNode.blockPackNodes).map(
-                ([id, blockPackNode]) => {
+              {Object.entries(subShelfNode.children)
+                .sort(([, left], [, right]) => compareEntityNames(left, right))
+                .map(([id, child]) => {
+                  return (
+                    <DropdownMenuItem
+                      key={id}
+                      onClick={async () => {
+                        if (!child.isExpanded) {
+                          await shelfItemManager.expandSubShelf(
+                            rootShelfNode,
+                            child
+                          );
+                        }
+                        shelfItemManager.toggleSubShelf(child);
+                      }}
+                    >
+                      <SubShelfIcon />
+                      <ChevronRightIcon />
+                      <span>{child.name}</span>
+                    </DropdownMenuItem>
+                  );
+                })}
+              {Object.entries(subShelfNode.blockPackNodes)
+                .sort(([, left], [, right]) => compareEntityNames(left, right))
+                .map(([id, blockPackNode]) => {
                   return (
                     <DropdownMenuItem
                       key={id}
@@ -121,10 +125,10 @@ const ItemPathItem = ({
                       {blockPackNode.name}
                     </DropdownMenuItem>
                   );
-                }
-              )}
-              {Object.entries(subShelfNode.materialNodes).map(
-                ([id, materialNode]) => {
+                })}
+              {Object.entries(subShelfNode.materialNodes)
+                .sort(([, left], [, right]) => compareEntityNames(left, right))
+                .map(([id, materialNode]) => {
                   return (
                     <DropdownMenuItem
                       key={id}
@@ -136,8 +140,7 @@ const ItemPathItem = ({
                       {materialNode.name}
                     </DropdownMenuItem>
                   );
-                }
-              )}
+                })}
             </DropdownMenuContent>
           )}
         </DropdownMenu>

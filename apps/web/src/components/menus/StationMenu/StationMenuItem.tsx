@@ -8,7 +8,6 @@ import {
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  ClipboardList,
   Crown,
   ExternalLink,
   LogOut,
@@ -20,6 +19,7 @@ import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   RoutineIcon,
+  RoutineTaskIcon,
   StationIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
@@ -375,7 +375,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                     align="center"
                     className="flex w-auto items-center gap-2 rounded-sm px-3 py-2"
                   >
-                    <ClipboardList className="size-4 text-muted-foreground" />
+                    <RoutineTaskIcon className="size-4 text-muted-foreground" />
                     <span className="text-xs">
                       {t("workspace.menu.totalRoutineTasks", {
                         count: routineTaskCount,

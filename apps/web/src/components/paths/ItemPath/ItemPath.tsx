@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { ItemType } from "@shared/types/itemNodes.type";
 import { SubShelfNode } from "@shared/types/shelfNodes.type";
@@ -95,7 +96,7 @@ const ItemPath = ({
   if (hasSummaryPath) {
     return (
       <Breadcrumb
-        className={`h-9 min-w-0 w-full shrink-0 border-y bg-transparent overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
+        className={`h-[calc(var(--app-navigation-height)-var(--app-toolbar-height))] min-w-0 w-full shrink-0 border-b border-sidebar-border bg-inset overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
         onWheel={handlePathWheel}
       >
         <BreadcrumbList
@@ -116,14 +117,18 @@ const ItemPath = ({
               </DropdownMenuTrigger>
               {Object.entries(summary.root.children).length !== 0 && (
                 <DropdownMenuContent className="max-h-[min(18rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
-                  {Object.entries(summary.root.children).map(([id, child]) => {
-                    return (
-                      <DropdownMenuItem key={id}>
-                        <ChevronRightIcon />
-                        <span>{child.name}</span>
-                      </DropdownMenuItem>
-                    );
-                  })}
+                  {Object.entries(summary.root.children)
+                    .sort(([, left], [, right]) =>
+                      compareEntityNames(left, right)
+                    )
+                    .map(([id, child]) => {
+                      return (
+                        <DropdownMenuItem key={id}>
+                          <ChevronRightIcon />
+                          <span>{child.name}</span>
+                        </DropdownMenuItem>
+                      );
+                    })}
                 </DropdownMenuContent>
               )}
             </DropdownMenu>
@@ -207,7 +212,7 @@ const ItemPath = ({
 
   return (
     <Breadcrumb
-      className={`h-9 min-w-0 w-full shrink-0 border-y bg-transparent overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
+      className={`h-[calc(var(--app-navigation-height)-var(--app-toolbar-height))] min-w-0 w-full shrink-0 border-b border-sidebar-border bg-inset overflow-y-hidden ${isScrollable ? "overflow-x-auto overscroll-x-contain" : "overflow-x-hidden"}`}
       onWheel={handlePathWheel}
     >
       <BreadcrumbList

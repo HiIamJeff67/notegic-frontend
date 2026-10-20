@@ -1,4 +1,4 @@
-import { Code2Icon, FileTextIcon } from "lucide-react";
+import { BookOpenIcon, Code2Icon } from "lucide-react";
 import {
   type ComponentType,
   Fragment,
@@ -166,7 +166,7 @@ const ArticleCommand = ({
     item: ArticleCommandItem,
     className?: string
   ) => {
-    const ItemIcon = item.icon ?? group.icon ?? FileTextIcon;
+    const ItemIcon = item.icon ?? group.icon ?? BookOpenIcon;
     return (
       <CommandItem
         key={`${group.id}-${item.id}`}

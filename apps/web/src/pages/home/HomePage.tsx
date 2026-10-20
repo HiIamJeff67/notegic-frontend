@@ -1,6 +1,6 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { BookTextIcon, LoaderCircleIcon } from "lucide-react";
+import { BookOpenIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { TryGetUserData } from "@/api/functions/user.serverFn";
@@ -146,7 +146,7 @@ export const HomePage = () => {
                   router.push(WebURLPathDictionary.document);
                 }}
               >
-                <BookTextIcon size={18} />
+                <BookOpenIcon size={18} />
                 {t("homePage.viewDocs")}
               </Button>
               <Button

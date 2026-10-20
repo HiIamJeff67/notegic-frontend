@@ -2,7 +2,7 @@ import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { Link } from "@tanstack/react-router";
-import { FileTextIcon } from "lucide-react";
+import { BookOpenIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,7 @@ const BlockPackEditorIndexPage = () => {
         </Button>
         <Button variant="secondary" asChild>
           <Link to="/document" hash="block-packs">
-            <FileTextIcon />
+            <BookOpenIcon />
             <span>{t("workspace.navigation.seeDocument")}</span>
           </Link>
         </Button>

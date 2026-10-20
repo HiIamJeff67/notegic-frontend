@@ -26,6 +26,11 @@ test("@environment visitors can open the published API documentation", async ({
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 
+  await expect(
+    page
+      .getByRole("button", { name: "View Docs" })
+      .locator("svg.lucide-book-open")
+  ).toBeVisible();
   await page.getByRole("button", { name: "View Docs" }).click();
   await expect(page).toHaveURL(/\/document$/);
   await expect(page.getByRole("heading", { name: "Document" })).toBeVisible();

@@ -1,5 +1,14 @@
 # Icons and Images Conventions
 
+## Find and register icons
+
+Check the [Icon map](icon-map.md) before choosing an icon. It lists existing
+semantic entity aliases, Lucide exports and aliases, custom/OAuth components,
+user emoji and inline/brand exceptions with source references. Reuse the
+existing choice for the same meaning; add a new entry in the same change only
+when no suitable icon exists. Keep this Markdown inventory current instead of
+adding a second runtime icon registry or duplicating SVGs in feature code.
+
 ## Canonical workspace entity icons
 
 Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same base icon must appear in navigation, context menus, linked-item pickers, Trash, empty states and future search results.
@@ -18,7 +27,8 @@ Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity.
 ## Entity identity vs. actions
 
 - Render the base entity icon next to an existing object, even when that object is deleted, linked, selected or shown in a hover card.
-- Use an action-specific Lucide icon for verbs: `PlusIcon`/`FolderPlus` for create, `PencilIcon` for rename/edit, `Trash2Icon` for delete, `ArchiveRestoreIcon` for restore, `ExternalLinkIcon` for open, `SearchIcon` for search, and `GripVerticalIcon` for drag.
+- Use an action-specific Lucide icon for verbs: `PlusIcon`/`FolderPlus` for create, `SquarePen` for edit/open Inspector, `Pencil` for rename, `Trash2Icon` for delete, `ArchiveRestoreIcon` for restore, `ExternalLinkIcon` for open, `SearchIcon` for search, and `GripVerticalIcon` for drag. PDF drawing may keep `PencilIcon`; drawing is not an Inspector action.
+- Use `BookOpenIcon` for Document navigation and guide links, `RefreshCw`/`RefreshCwIcon` for refresh/retry, and `CopyIcon`/`Copy` for copying. Preserve `RotateCcwIcon` for reset, and `CheckIcon` for confirmed-copy feedback; these are different states/actions, not competing glyphs.
 - Do not use a generic archive, blocks, tree or file icon as a substitute for an entity when a canonical icon exists.
 - Custom user emoji is content, not a replacement for the canonical fallback. Show it where the object supports customization; fall back to the canonical icon when it is absent.
 

@@ -17,19 +17,13 @@ import BlockPackParticipantsDropdown from "@/components/core/BlockPackEditor/Blo
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -228,8 +222,8 @@ const BlockPackEditorContent = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-start bg-cover bg-center bg-no-repeat">
-      <header className="flex h-12 w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
+    <div className="flex h-full w-full min-h-0 min-w-0 flex-col bg-background">
+      <header className="flex h-[var(--app-toolbar-height)] w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
@@ -338,27 +332,27 @@ const BlockPackEditorContent = ({
             rootShelfId={blockPackMeta.rootId}
             isEditorReady={state === "ready" || state === "readOnly"}
           />
-          <Menubar>
-            <MenubarMenu>
+          <ButtonGroup className="shrink-0">
+            <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <MenubarTrigger
-                    data-density-static
-                    className="h-7 w-7 justify-center px-0 py-0 text-sm leading-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                    aria-label={t("workspace.viewer.import")}
-                  >
-                    {isImporting ? (
-                      <Spinner />
-                    ) : (
-                      <Import className="size-3.5" />
-                    )}
-                  </MenubarTrigger>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                      aria-label={t("workspace.viewer.import")}
+                    >
+                      {isImporting ? <Spinner /> : <Import />}
+                    </Button>
+                  </DropdownMenuTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
                   {t("workspace.viewer.import")}
                 </TooltipContent>
               </Tooltip>
-              <MenubarContent align="end" side="bottom">
+              <DropdownMenuContent align="end" side="bottom">
                 <DropFileZone
                   disabled={!editor}
                   width="300px"
@@ -369,29 +363,29 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.dropFiles")}
                   </p>
                 </DropFileZone>
-              </MenubarContent>
-            </MenubarMenu>
-            <MenubarMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <MenubarTrigger
-                    data-density-static
-                    className="h-7 w-7 justify-center px-0 py-0 text-sm leading-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                    aria-label={t("workspace.viewer.export")}
-                  >
-                    {isExporting ? (
-                      <Spinner />
-                    ) : (
-                      <Download className="size-3.5" />
-                    )}
-                  </MenubarTrigger>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                      aria-label={t("workspace.viewer.export")}
+                    >
+                      {isExporting ? <Spinner /> : <Download />}
+                    </Button>
+                  </DropdownMenuTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
                   {t("workspace.viewer.export")}
                 </TooltipContent>
               </Tooltip>
-              <MenubarContent align="end" side="bottom">
-                <MenubarItem
+              <DropdownMenuContent align="end" side="bottom">
+                <DropdownMenuItem
                   onClick={async () => {
                     const blob = await convertBlocksToMarkdown(editor);
                     await handleExportFiles(ContentType.Markdown);
@@ -401,8 +395,8 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.markdown")}
                   </span>
                   <span className="text-muted-foreground">(.md)</span>
-                </MenubarItem>
-                <MenubarItem
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={async () =>
                     await handleExportFiles(ContentType.HTML)
                   }
@@ -411,8 +405,8 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.html")}
                   </span>
                   <span className="text-muted-foreground">(.html)</span>
-                </MenubarItem>
-                <MenubarItem
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={async () =>
                     await handleExportFiles(ContentType.PlainText)
                   }
@@ -421,8 +415,8 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.plainText")}
                   </span>
                   <span className="text-muted-foreground">(.txt)</span>
-                </MenubarItem>
-                <MenubarItem
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={async () =>
                     await handleExportFiles(ContentType.JSON)
                   }
@@ -431,16 +425,16 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.rawJson")}
                   </span>
                   <span className="text-muted-foreground">(.json)</span>
-                </MenubarItem>
-                <MenubarItem
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={async () => await handleExportFiles(ContentType.PDF)}
                 >
                   <span className="font-semibold">
                     {t("workspace.viewer.pdf")}
                   </span>
                   <span className="text-muted-foreground">(.pdf)</span>
-                </MenubarItem>
-                <MenubarItem
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={async () =>
                     await handleExportFiles(ContentType.DOCX)
                   }
@@ -449,10 +443,10 @@ const BlockPackEditorContent = ({
                     {t("workspace.viewer.word")}
                   </span>
                   <span className="text-muted-foreground">(.docx)</span>
-                </MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </ButtonGroup>
         </div>
       </header>
       <ItemPath
@@ -466,7 +460,7 @@ const BlockPackEditorContent = ({
           blockPackMeta.rootId.toString()
         )}
       />
-      <div className="z-0 h-full w-full overflow-auto rounded-none p-4">
+      <div className="z-0 h-full w-full overflow-auto rounded-none bg-canvas p-4">
         <div
           className={cn(
             "mx-auto min-h-full w-full",

@@ -1,12 +1,7 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
-import {
-  BookOpenIcon,
-  CircleHelpIcon,
-  FileTextIcon,
-  MailIcon,
-} from "lucide-react";
+import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -412,8 +407,6 @@ export const ArticleSidebar = ({
           )
             .slice(1)
             .map(link => {
-              const LinkIcon =
-                link.label === "Document" ? FileTextIcon : BookOpenIcon;
               return (
                 <SidebarMenuItem key={link.href}>
                   <SidebarMenuButton asChild>
@@ -424,7 +417,7 @@ export const ArticleSidebar = ({
                         router.push(link.href);
                       }}
                     >
-                      <LinkIcon className="size-4 shrink-0" />
+                      <BookOpenIcon className="size-4 shrink-0" />
                       <span>{link.label}</span>
                     </a>
                   </SidebarMenuButton>

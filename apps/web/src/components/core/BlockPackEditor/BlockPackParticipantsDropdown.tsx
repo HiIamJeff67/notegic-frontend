@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import type { UUID } from "node:crypto";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
@@ -179,32 +180,6 @@ const BlockPackParticipantsDropdown = ({
       );
     };
   }, [blockPackId]);
-  const displayedParticipants = useMemo(() => {
-    const participants = new Map(awarenessUsersByPublicId);
-    for (const participant of presenceParticipants.values()) {
-      const awarenessParticipant = participants.get(participant.userPublicId);
-      participants.set(participant.userPublicId, {
-        userPublicId: participant.userPublicId,
-        displayName: awarenessParticipant?.displayName ?? "",
-        name: awarenessParticipant?.name ?? "",
-        count: participant.connectionCount,
-      });
-    }
-
-    return Array.from(participants.values()).filter(
-      participant =>
-        participant.count > 0 &&
-        !removedUserPublicIds.has(participant.userPublicId)
-    );
-  }, [awarenessUsersByPublicId, presenceParticipants, removedUserPublicIds]);
-  const connectionCountsByPublicId = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const participant of displayedParticipants) {
-      map.set(participant.userPublicId, participant.count);
-    }
-
-    return map;
-  }, [displayedParticipants]);
   const rootShelf = useMemo(() => {
     for (const edge of searchRootShelvesQuery.data?.searchRootShelves
       ?.searchEdges ?? []) {
@@ -229,6 +204,56 @@ const BlockPackParticipantsDropdown = ({
 
     return map;
   }, [rootShelf]);
+  const displayedParticipants = useMemo(() => {
+    const participants = new Map(awarenessUsersByPublicId);
+    for (const participant of presenceParticipants.values()) {
+      const awarenessParticipant = participants.get(participant.userPublicId);
+      participants.set(participant.userPublicId, {
+        userPublicId: participant.userPublicId,
+        displayName: awarenessParticipant?.displayName ?? "",
+        name: awarenessParticipant?.name ?? "",
+        count: participant.connectionCount,
+      });
+    }
+
+    return Array.from(participants.values())
+      .filter(
+        participant =>
+          participant.count > 0 &&
+          !removedUserPublicIds.has(participant.userPublicId)
+      )
+      .sort((left, right) =>
+        compareEntityNames(
+          {
+            id: left.userPublicId,
+            name:
+              publicUsersByPublicId.get(left.userPublicId)?.displayName ||
+              left.displayName ||
+              left.name,
+          },
+          {
+            id: right.userPublicId,
+            name:
+              publicUsersByPublicId.get(right.userPublicId)?.displayName ||
+              right.displayName ||
+              right.name,
+          }
+        )
+      );
+  }, [
+    awarenessUsersByPublicId,
+    presenceParticipants,
+    removedUserPublicIds,
+    publicUsersByPublicId,
+  ]);
+  const connectionCountsByPublicId = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const participant of displayedParticipants) {
+      map.set(participant.userPublicId, participant.count);
+    }
+
+    return map;
+  }, [displayedParticipants]);
   const overviewRows = useMemo(() => {
     const rows = new Map<string, ShelfSharingOverviewRow>();
 
@@ -327,16 +352,23 @@ const BlockPackParticipantsDropdown = ({
     }
 
     const normalizedQuery = overviewQuery.trim().toLowerCase();
-    return Array.from(rows.values()).filter(row => {
-      if (!normalizedQuery) return true;
+    return Array.from(rows.values())
+      .filter(row => {
+        if (!normalizedQuery) return true;
 
-      return (
-        row.displayName.toLowerCase().includes(normalizedQuery) ||
-        row.userPublicId.toLowerCase().includes(normalizedQuery) ||
-        row.permission.toLowerCase().includes(normalizedQuery) ||
-        row.status.toLowerCase().includes(normalizedQuery)
+        return (
+          row.displayName.toLowerCase().includes(normalizedQuery) ||
+          row.userPublicId.toLowerCase().includes(normalizedQuery) ||
+          row.permission.toLowerCase().includes(normalizedQuery) ||
+          row.status.toLowerCase().includes(normalizedQuery)
+        );
+      })
+      .sort((left, right) =>
+        compareEntityNames(
+          { id: left.userPublicId, name: left.displayName },
+          { id: right.userPublicId, name: right.displayName }
+        )
       );
-    });
   }, [
     connectionCountsByPublicId,
     currentUserPublicId,

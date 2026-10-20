@@ -1,3 +1,4 @@
+import { compareEntityNames } from "@shared/util/compare-entity-names";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
@@ -31,8 +32,9 @@ const MaterialMenu = ({ parent }: MaterialMenuProps) => {
 
   return (
     <Suspense fallback={<MaterialMenuItemSkeleton />}>
-      {Object.entries(parent.materialNodes).map(
-        ([materialId, materialNode]) => {
+      {Object.entries(parent.materialNodes)
+        .sort(([, left], [, right]) => compareEntityNames(left, right))
+        .map(([materialId, materialNode]) => {
           return (
             <Suspense fallback={<MaterialMenuItemSkeleton />} key={materialId}>
               {shelfItemManager.isItemNodeEditing(materialNode.id) ? (
@@ -87,8 +89,7 @@ const MaterialMenu = ({ parent }: MaterialMenuProps) => {
               )}
             </Suspense>
           );
-        }
-      )}
+        })}
     </Suspense>
   );
 };

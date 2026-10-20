@@ -1,6 +1,6 @@
 ---
 name: coding-style-and-abstractions
-description: Apply this repository's frontend UI, styling, naming, React hook, helper, and abstraction conventions before changing code. Use when implementing, refactoring, reviewing, or deciding whether to introduce a component, hook, helper, wrapper, or dependency.
+description: Apply this repository's frontend UI, styling, icon reuse, naming, React hook, helper, and abstraction conventions before changing code. Use when implementing, refactoring, reviewing, or deciding whether to introduce a component, hook, helper, wrapper, or dependency.
 ---
 
 # Coding style and abstractions
@@ -10,6 +10,7 @@ Use the repository documentation as the source of truth. Before editing, read on
 - `docs/conventions/01-ui.md`
 - `docs/conventions/02-styles.md`
 - `docs/conventions/03-icons-and-images.md`
+- [Icon map](../../../docs/conventions/icon-map.md) — required whenever selecting, using, reusing, adding, replacing, or removing an icon.
 - `docs/conventions/04-file-and-folder-naming.md`
 - `docs/conventions/05-helpers-and-abstractions.md`
 - `docs/conventions/06-react-hooks.md`
@@ -26,6 +27,7 @@ documented architecture requires a deliberate deviation.
 ## Rules
 
 - Reuse existing shadcn primitives, Tailwind v4 semantic tokens, canonical icons, and established components.
+- Before any icon use or change, read the relevant entries in the [Icon map](../../../docs/conventions/icon-map.md) and inspect their source references; do not choose from memory or assume a familiar Lucide name is the established choice. Reuse the mapped glyph for the same meaning and import workspace entities through `WorkspaceEntityIcons.ts`. Only when no suitable entry exists, select an installed Lucide glyph first and register its meaning, exact export, source/first consumer, and scope in the map in the same change. Update the map for replacements/removals too; do not duplicate its catalog in this skill or introduce an icon registry/wrapper just to centralize names.
 - Trace existing entry points before changing an interaction. The same action must share one owning UI component; pass entry-specific context or completion callbacks instead of copying its markup or state flow.
 - Prefer concise names in pure algorithm/data-structure and runtime-neutral library code when package context is clear; use complete, non-sentence-like domain names for business workflows and primary components. Treat `...For...` and `...And...` as warning signs: avoid `For` except for established external/protocol vocabulary, and split independent responsibilities instead of naming them with `And`. Use `...With...` only for established options/configuration or similar APIs, and keep it restrained.
 - Keep feature logic close to its route/component. Extract only for real reuse, a meaningful concept, a stable boundary, or a test seam.
@@ -38,3 +40,5 @@ documented architecture requires a deliberate deviation.
 ## Check
 
 For every proposed abstraction, identify existing callers, ownership, why local code is insufficient, and why its name is more informative than the inline code. If the name describes obvious mechanics or multiple unrelated actions, inline it or split the responsibilities. Keep the smallest correct diff and run the narrowest relevant formatter/test after editing.
+
+For icon changes, run `npm run test:unit -- apps/web/test/integration/iconConventions.test.ts` to check semantic choices, entity aliases, inventory drift, map links, and obsolete custom components. This source/contract check does not replace browser checks when the interaction also changes.
