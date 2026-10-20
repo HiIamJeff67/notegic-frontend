@@ -85,6 +85,50 @@ Run intentional browser authentication failures last: they must still signal
 session expiry. The unit suites cover the full 400–599 range, legacy status
 fallbacks, serialization/redaction and query/mutation retry classification.
 
+### Routine statistics session headers
+
+The shared statistics hook builds session headers when each request executes,
+not when the chart renders. All eleven statistics queries must use the current
+CSRF token on initial load, refetch and imperative fetch; successful token
+refresh metadata remains stored through the existing session-storage boundary.
+Do not disable backend CSRF checks or suppress authentication failures to keep
+Overview open.
+
+Run `npm run test:e2e -- routine-charts.spec.ts --workers=1` for the real chart
+components and all eleven query hooks with controlled RPC responses. To include
+real login, Overview navigation, token rotation and missing/incorrect-token
+rejection for every statistics route, use the retained isolated backend:
+
+```sh
+E2E_RUN_VISUALIZE_BACKEND=true \
+E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
+E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
+npm run test:e2e -- routine-charts.spec.ts --workers=1
+```
+
+The live case retains unique fixture accounts and uses isolated browser
+storage. It does not migrate or clear data. Repeated query rounds run serially
+to respect the existing Gateway burst limit. Both browser cases are local-only
+and have no CI environment-smoke marker. Hook/header/error-boundary unit tests
+also cover response-token renewal and clearing stale request tokens.
+
+With the same isolated endpoints, run the opt-in authenticated page tour:
+
+```sh
+E2E_RUN_PAGE_BACKEND=true \
+E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
+E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
+npm run test:e2e -- authenticated-pages.spec.ts --workers=1
+```
+
+It retains a unique test account and an inactive Routine with a Start node.
+The nine authenticated routes cover Dashboard, Routine overview and Station,
+the dependency graph editor, account/preferences settings, Trash and the
+empty Material/BlockPack editor entry pages. It checks session retention,
+authentication-error events and HTTP/RPC authentication failures; it is not
+full material editing, Yjs synchronization, OAuth-provider or destructive
+account-operation acceptance. It has no CI environment-smoke marker.
+
 ### Server-function response injection
 
 Keep TanStack Start at or above the patched versions in

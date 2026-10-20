@@ -1,3 +1,4 @@
+import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
@@ -24,7 +25,10 @@ interface VisualizeResponseEnvelope {
 }
 
 export function useVisualizeQuery<
-  TRequest,
+  TRequest extends {
+    header?: { userAgent?: string; csrfToken?: string };
+    param: Record<string, unknown>;
+  },
   TResponse extends VisualizeResponseEnvelope,
 >(
   hookRequest: TRequest | undefined,
@@ -44,7 +48,10 @@ export function useVisualizeQuery<
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
-    const response = await queryFunction(request);
+    const response = await queryFunction({
+      ...request,
+      header: getClientRequestHeaders(request.header?.userAgent),
+    });
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken
