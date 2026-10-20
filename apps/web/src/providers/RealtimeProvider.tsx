@@ -105,6 +105,7 @@ export const RealtimeProvider = ({
 }) => {
   const { t } = useTranslation();
   const { userData } = useUser();
+  const userPublicId = userData?.publicId ?? null;
   const { isOnline } = useNetwork();
   const { preferences, notificationPermission } = useLocalPreferences();
   const apolloClient = useApolloClient();
@@ -327,7 +328,7 @@ export const RealtimeProvider = ({
   useEffect(() => {
     if (typeof window === "undefined") return;
     // Retained t stays current without reconnecting when the language changes.
-    if (!userData || !isOnline) {
+    if (!userPublicId || !isOnline) {
       clientRef.current?.stop();
       clientRef.current = null;
       setRootState("idle");
@@ -376,10 +377,10 @@ export const RealtimeProvider = ({
         showSyncConnected();
       },
       onNotification: frame => {
-        if (!userData) return;
+        if (!userPublicId) return;
         mergeRealtimeNotificationIntoCache({
           id: frame.notificationId,
-          recipientUserPublicId: userData.publicId,
+          recipientUserPublicId: userPublicId,
           type: frame.notificationType,
           priority: frame.priority,
           templateKey: frame.templateKey,
@@ -506,7 +507,7 @@ export const RealtimeProvider = ({
                 await channel.provider.snapshotLocalDocument();
               if (!localDB.isReadOnly) {
                 await LocalYjsDocumentStore.saveRejectedDraft(
-                  userData?.publicId ?? null,
+                  userPublicId,
                   channel.blockPackId,
                   rejectedUpdate
                 );
@@ -600,7 +601,7 @@ export const RealtimeProvider = ({
     showDesktopNotification,
     showSyncConnected,
     showSyncError,
-    userData,
+    userPublicId,
   ]);
 
   const createBlockPackChannel = useCallback(

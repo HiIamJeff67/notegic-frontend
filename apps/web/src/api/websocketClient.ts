@@ -68,6 +68,8 @@ const logRealtimeClient = (message: string, data?: Record<string, unknown>) => {
 const MAX_REALTIME_RECONNECT_ATTEMPTS = 5;
 const REALTIME_RECONNECT_BASE_DELAY_MS = 1_000;
 const REALTIME_RECONNECT_MAX_DELAY_MS = 10_000;
+const REALTIME_HEARTBEAT_INTERVAL_MS = 30_000;
+const REALTIME_HEARTBEAT_TIMEOUT_MS = 10_000;
 
 const serverDetachedChannelCodes = new Set<RealtimeErrorFrame["code"]>([
   "permission_revoked",
@@ -83,6 +85,10 @@ export class RealtimeClient {
   private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
   private shouldReconnect = false;
+  private connectionVersion = 0;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  private heartbeatTimeout: ReturnType<typeof setTimeout> | null = null;
+  private heartbeatRequestId: string | null = null;
   private readonly channels = new Map<string, RealtimeRegisteredChannel>();
   private readonly channelByConnectorId = new Map<number, string>();
   private readonly channelByRequestId = new Map<string, string>();
@@ -98,12 +104,15 @@ export class RealtimeClient {
 
   start() {
     if (this.socket !== null || this.shouldReconnect) return;
+    this.reconnectAttempt = 0;
     this.shouldReconnect = true;
     void this.connect();
   }
 
   stop() {
     this.shouldReconnect = false;
+    this.connectionVersion += 1;
+    this.clearHeartbeat();
     this.hasEstablishedConnection = false;
     this.seenResourceEventIds.clear();
     this.seenResourceEventOrder.length = 0;
@@ -295,7 +304,14 @@ export class RealtimeClient {
   }
 
   private async connect() {
-    if (typeof WebSocket === "undefined" || !this.shouldReconnect) return;
+    if (
+      typeof WebSocket === "undefined" ||
+      !this.shouldReconnect ||
+      this.socket !== null
+    )
+      return;
+
+    const connectionVersion = ++this.connectionVersion;
 
     this.options.onState?.(
       this.reconnectAttempt > 0 ? "reconnecting" : "connecting"
@@ -303,7 +319,8 @@ export class RealtimeClient {
 
     try {
       const ticket = await this.options.getConnectionTicket();
-      if (!this.shouldReconnect) return;
+      if (!this.shouldReconnect || connectionVersion !== this.connectionVersion)
+        return;
 
       const socket = new WebSocket(
         getRealtimeWebSocketURL(ticket.realtimeEndpoint),
@@ -313,6 +330,7 @@ export class RealtimeClient {
       this.socket = socket;
 
       socket.onopen = () => {
+        if (this.socket !== socket || !this.shouldReconnect) return;
         logRealtimeClient("socket opened", {
           reconnectAttempt: this.reconnectAttempt,
         });
@@ -320,15 +338,21 @@ export class RealtimeClient {
       };
 
       socket.onmessage = event => {
-        this.handleMessage(event);
+        if (this.socket !== socket || !this.shouldReconnect) return;
+        void this.handleMessage(event, socket);
       };
 
-      socket.onerror = event => {
-        this.options.onState?.("error");
-        this.options.onError?.(event);
+      socket.onerror = () => {
+        if (this.socket !== socket || !this.shouldReconnect) return;
+        console.warn("[RealtimeClient] reconnecting after socket error", {
+          readyState: socket.readyState,
+          reconnectAttempt: this.reconnectAttempt,
+        });
+        this.reconnect(socket);
       };
 
       socket.onclose = event => {
+        if (this.socket !== socket || !this.shouldReconnect) return;
         const closeDetails = {
           code: event.code,
           reason: event.reason,
@@ -343,24 +367,67 @@ export class RealtimeClient {
         } else {
           logRealtimeClient("socket closed", closeDetails);
         }
-        if (this.socket === socket) this.socket = null;
-        this.clearConnectorState();
-        if (this.shouldReconnect) this.scheduleReconnect();
-        else this.options.onState?.("closed");
+        this.reconnect(socket);
       };
     } catch (error) {
-      this.options.onState?.("error");
+      if (!this.shouldReconnect || connectionVersion !== this.connectionVersion)
+        return;
+
       if (isAuthenticationFailure(error)) {
         this.stop();
         this.options.onAuthFailure?.();
         return;
       }
-      this.options.onError?.(error);
-      if (this.shouldReconnect) this.scheduleReconnect();
+      this.scheduleReconnect();
     }
   }
 
-  private handleMessage(event: MessageEvent) {
+  private reconnect(socket: WebSocket) {
+    if (this.socket !== socket || !this.shouldReconnect) return;
+
+    this.socket = null;
+    this.clearHeartbeat();
+    this.clearConnectorState();
+    if (socket.readyState < WebSocket.CLOSING) {
+      socket.close(1000, "Realtime connection replaced.");
+    }
+    this.scheduleReconnect();
+  }
+
+  private clearHeartbeat() {
+    if (this.heartbeatInterval !== null) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+    if (this.heartbeatTimeout !== null) {
+      clearTimeout(this.heartbeatTimeout);
+      this.heartbeatTimeout = null;
+    }
+    this.heartbeatRequestId = null;
+  }
+
+  private ping() {
+    const socket = this.socket;
+    if (!socket || !this.isSocketOpen() || this.heartbeatRequestId !== null)
+      return;
+
+    this.heartbeatRequestId = this.createRequestId("ping");
+    this.heartbeatTimeout = setTimeout(() => {
+      if (this.socket !== socket || !this.shouldReconnect) return;
+      console.warn("[RealtimeClient] heartbeat timed out");
+      this.reconnect(socket);
+    }, REALTIME_HEARTBEAT_TIMEOUT_MS);
+    try {
+      this.sendControlFrame(
+        "ping",
+        encodeRealtimePingFrame(this.heartbeatRequestId)
+      );
+    } catch {
+      this.reconnect(socket);
+    }
+  }
+
+  private async handleMessage(event: MessageEvent, socket: WebSocket) {
     try {
       if (typeof event.data === "string") {
         this.handleControlMessage(event.data);
@@ -385,23 +452,18 @@ export class RealtimeClient {
       }
 
       if (event.data instanceof Blob) {
-        void event.data.arrayBuffer().then(buffer => {
-          const frame = parseRealtimeBinaryFrame(buffer);
-          const blockPackId = this.channelByConnectorId.get(
-            frame.connectorChannelId
-          );
-          if (blockPackId) {
-            logRealtimeClient("received binary frame", {
-              blockPackId,
-              connectorChannelId: frame.connectorChannelId,
-              type: frame.type,
-              byteLength: frame.payload.byteLength,
-            });
-            this.options.onChannelBinary?.(blockPackId, frame);
-          }
-        });
+        const buffer = await event.data.arrayBuffer();
+        if (this.socket !== socket || !this.shouldReconnect) return;
+        const frame = parseRealtimeBinaryFrame(buffer);
+        const blockPackId = this.channelByConnectorId.get(
+          frame.connectorChannelId
+        );
+        if (blockPackId) {
+          this.options.onChannelBinary?.(blockPackId, frame);
+        }
       }
     } catch (error) {
+      if (this.socket !== socket || !this.shouldReconnect) return;
       this.options.onError?.(error);
     }
   }
@@ -422,10 +484,11 @@ export class RealtimeClient {
         });
         this.options.onState?.("ready");
         this.options.onReady?.(frame.connectionId);
-        this.sendControlFrame(
-          "ping",
-          encodeRealtimePingFrame(this.createRequestId("ping"))
-        );
+        this.clearHeartbeat();
+        this.heartbeatInterval = setInterval(() => {
+          this.ping();
+        }, REALTIME_HEARTBEAT_INTERVAL_MS);
+        this.ping();
         if (frame.resubscribeRequired) {
           this.clearConnectorState();
         }
@@ -439,6 +502,12 @@ export class RealtimeClient {
         }
         break;
       case "pong":
+        if (frame.requestId !== this.heartbeatRequestId) return;
+        if (this.heartbeatTimeout !== null) {
+          clearTimeout(this.heartbeatTimeout);
+          this.heartbeatTimeout = null;
+        }
+        this.heartbeatRequestId = null;
         this.options.onState?.("connected");
         break;
       case "subscribed":
@@ -502,6 +571,7 @@ export class RealtimeClient {
       return;
     }
 
+    const socket = this.socket;
     const requestId = this.createRequestId("subscribe");
     channel.pendingRequestId = requestId;
     this.options.onChannelStatus?.(channel.blockPackId, "ticketing");
@@ -512,7 +582,9 @@ export class RealtimeClient {
       );
       if (
         !this.isSocketOpen() ||
-        !this.channels.has(channel.blockPackId) ||
+        this.socket !== socket ||
+        !this.shouldReconnect ||
+        this.channels.get(channel.blockPackId) !== channel ||
         channel.pendingRequestId !== requestId
       )
         return;
@@ -539,6 +611,14 @@ export class RealtimeClient {
         })
       );
     } catch (error) {
+      if (
+        this.socket !== socket ||
+        !this.shouldReconnect ||
+        this.channels.get(channel.blockPackId) !== channel ||
+        channel.pendingRequestId !== requestId
+      )
+        return;
+
       if (channel.pendingRequestId === requestId) {
         channel.pendingRequestId = null;
       }
@@ -704,6 +784,7 @@ export class RealtimeClient {
   }
 
   private scheduleReconnect() {
+    if (!this.shouldReconnect || this.reconnectTimeout !== null) return;
     if (this.reconnectAttempt >= MAX_REALTIME_RECONNECT_ATTEMPTS) {
       this.shouldReconnect = false;
       this.options.onState?.("error");
@@ -734,7 +815,6 @@ export class RealtimeClient {
     logRealtimeClient("send control frame", {
       label,
       byteLength: this.textEncoder.encode(payload).byteLength,
-      preview: payload,
     });
     this.socket?.send(payload);
   }
