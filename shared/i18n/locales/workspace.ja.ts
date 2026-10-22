@@ -412,6 +412,12 @@ export const JapaneseWorkspaceTranslation = {
     presentSummary: "{{title}}: {{total}} 件中 {{shown}} 件を表示",
   },
   table: {
+    searchRoutines: "ルーティンを検索",
+    searchRoutineTasks: "ルーティンタスクを検索",
+    routineFilters: "ルーティンのフィルター",
+    routineTaskFilters: "ルーティンタスクのフィルター",
+    sortRoutines: "ルーティンの並べ替え",
+    sortRoutineTasks: "ルーティンタスクの並べ替え",
     attempts: "試行回数",
     cost: "コスト",
     routineTable: "ルーティン表",

@@ -410,6 +410,12 @@ export const EnglishWorkspaceTranslation = {
     presentSummary: "{{title}}: {{shown}} of {{total}} present",
   },
   table: {
+    searchRoutines: "Search routines",
+    searchRoutineTasks: "Search routine tasks",
+    routineFilters: "Routine filters",
+    routineTaskFilters: "Routine task filters",
+    sortRoutines: "Sort routines",
+    sortRoutineTasks: "Sort routine tasks",
     attempts: "Attempts",
     cost: "Cost",
     routineTable: "Routine table",

@@ -404,6 +404,12 @@ export const TraditionalChineseWorkspaceTranslation = {
     presentSummary: "{{title}}：顯示 {{shown}} / {{total}}",
   },
   table: {
+    searchRoutines: "搜尋流程",
+    searchRoutineTasks: "搜尋流程任務",
+    routineFilters: "流程篩選",
+    routineTaskFilters: "流程任務篩選",
+    sortRoutines: "流程排序",
+    sortRoutineTasks: "流程任務排序",
     attempts: "嘗試次數",
     cost: "成本",
     routineTable: "流程表格",

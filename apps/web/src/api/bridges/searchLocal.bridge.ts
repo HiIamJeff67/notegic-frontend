@@ -115,7 +115,7 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
 export const useLocalSearchQuery = <TData, TVariables extends object>(
   document: any,
   variables: TVariables,
-  options: useQuery.Options<TData, TVariables> | undefined,
+  options: Omit<useQuery.Options<TData, TVariables>, "variables"> | undefined,
   adapter: SearchLocalAdapter
 ) => {
   const queryResult = useQuery<TData, TVariables>(document, {

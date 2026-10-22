@@ -16,10 +16,10 @@ import toast from "@shared/lib/toast";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { UUID } from "crypto";
 import { and, eq } from "drizzle-orm";
-import { Bookmark, SquarePen } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Bookmark, ListFilter, SquarePen } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
+import { useSearchRoutinesQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";
 import { localDB } from "@/api/local/db";
 import { Transaction, User } from "@/api/local/schemas";
@@ -34,6 +34,15 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
+import { useDebounceValue } from "@/hooks/useDebounce";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -48,28 +57,19 @@ import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 
 const RoutineTable = () => {
   const { i18n, t } = useTranslation();
+  const id = useId();
   const stationRoutineManager = useStationRoutine();
   const updateRoutine = useUpdateMyRoutineById();
   const { synchronizationRevision } = useTransactionSynchronizer();
-  const [executeSearchRoutines, routineSearch] = useSearchRoutinesLazyQuery({
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
+  const [searchQuery, setSearchQuery] = useState("");
+  const query = useDebounceValue(searchQuery);
+  const [order, setOrder] = useState({
+    sortBy: SearchRoutineSortBy.Title,
+    sortOrder: SearchSortOrder.Asc,
   });
   const [pendingActive, setPendingActive] = useState<Record<string, boolean>>(
     {}
   );
-  const [routines, setRoutines] = useState<
-    Array<RoutineNode & { routineTaskIds: UUID[] }>
-  >([]);
-  const [routineTotalCount, setRoutineTotalCount] = useState<number>(0);
-  const [routineSearchCursor, setRoutineSearchCursor] = useState<string | null>(
-    null
-  );
-  const [hasMoreRoutines, setHasMoreRoutines] = useState<boolean>(true);
-  const [isSearchingRoutines, setIsSearchingRoutines] =
-    useState<boolean>(false);
-  const isSearchingRoutinesRef = useRef<boolean>(false);
-  const hasExecutedInitialSearchRef = useRef<boolean>(false);
   const [startsAfter, setStartsAfter] = useState<Date | undefined>();
   const [endsBefore, setEndsBefore] = useState<Date | undefined>();
   const [showUnscheduled, setShowUnscheduled] = useState<boolean>(true);
@@ -78,243 +78,173 @@ const RoutineTable = () => {
     stationRoutineManager.activeStationId
       ? [stationRoutineManager.activeStationId]
       : stationRoutineManager.presence.stationIds;
-  const stationPresenceSignature = effectiveStationIds.join("|");
-  const routineTagPresenceSignature =
-    stationRoutineManager.presence.routineTagIds.join("|");
-
-  const applySearchRoutinesData = useCallback(
-    (data?: any): void => {
-      const isAllRoutineTagsSelected =
-        stationRoutineManager.routineTags.length === 0 ||
-        stationRoutineManager.presence.routineTagIds.length ===
-          stationRoutineManager.routineTags.length;
-      const shouldFilterRoutineTagsInView =
-        stationRoutineManager.routineTags.length > 0 &&
-        stationRoutineManager.presence.showUntaggedRoutines &&
-        !isAllRoutineTagsSelected;
-      const shouldShowOnlyUntaggedRoutines =
-        stationRoutineManager.routineTags.length > 0 &&
-        stationRoutineManager.presence.showUntaggedRoutines &&
-        stationRoutineManager.presence.routineTagIds.length === 0;
-      const searchedRoutines = (data?.searchRoutines.searchEdges ?? [])
-        .map((edge: any) => {
-          const node = edge.node as unknown as {
-            id: UUID;
-            stationId: UUID;
-            title: string;
-            phase?: GraphQLRoutinePhase | null;
-            admissionState: RoutineAdmissionState;
-            isActive: boolean;
-            definitionVersion: number;
-            isPinned: boolean;
-            scheduledStartAt: Date | string | number;
-            scheduledEndAt: Date | string | number;
-            period: GraphQLRoutinePeriod | null;
-            timezone: string;
-            deletedAt: Date | string | number | null;
-            updatedAt: Date | string | number;
-            createdAt: Date | string | number;
-            tagIds?: UUID[];
-            taskIds?: UUID[];
-            itemIds?: UUID[];
-          };
-          const routineTagIds = node.tagIds ?? [];
-          if (shouldShowOnlyUntaggedRoutines && routineTagIds.length > 0) {
-            return null;
-          }
-          if (
-            shouldFilterRoutineTagsInView &&
-            routineTagIds.length > 0 &&
-            !routineTagIds.some(routineTagId =>
-              stationRoutineManager.presence.routineTagIds.includes(
-                routineTagId
-              )
-            )
-          ) {
-            return null;
-          }
-
-          const routineTaskIds = node.taskIds ?? [];
-          const routine: RoutineNode & { routineTaskIds: UUID[] } = {
-            id: node.id,
-            stationId: node.stationId,
-            title: node.title,
-            description: "",
-            phase: fromGraphQLRoutinePhase(node.phase),
-            isActive: node.isActive,
-            admissionState: node.admissionState,
-            definitionVersion: node.definitionVersion,
-            isPinned: node.isPinned,
-            scheduledStartAt: new Date(node.scheduledStartAt),
-            scheduledEndAt: new Date(node.scheduledEndAt),
-            period:
-              node.period === GraphQLRoutinePeriod.RoutinePeriodDaily
-                ? RoutinePeriod.Daily
-                : node.period === GraphQLRoutinePeriod.RoutinePeriodWeekly
-                  ? RoutinePeriod.Weekly
-                  : node.period === GraphQLRoutinePeriod.RoutinePeriodMonthly
-                    ? RoutinePeriod.Monthly
-                    : null,
-            timezone: node.timezone,
-            deletedAt:
-              node.deletedAt === null ? null : new Date(node.deletedAt),
-            updatedAt: new Date(node.updatedAt),
-            createdAt: new Date(node.createdAt),
-            isOpen: false,
-            isExpanded: false,
-            routineTagIds,
-            itemIds: node.itemIds ?? [],
-            routineTasks: routineTaskIds.flatMap(routineTaskId => {
-              const routineTask =
-                stationRoutineManager.getRoutineTaskById(routineTaskId);
-              return routineTask ? [routineTask] : [];
-            }),
-            routineTaskIds,
-          };
-          return routine;
-        })
-        .filter(
-          (
-            routine: (RoutineNode & { routineTaskIds: UUID[] }) | null
-          ): routine is RoutineNode & { routineTaskIds: UUID[] } =>
-            routine !== null
-        );
-
-      setRoutines(searchedRoutines.sort(compareEntityNames));
-      setRoutineTotalCount(data?.searchRoutines.totalCount ?? 0);
-      setRoutineSearchCursor(
-        data?.searchRoutines.searchPageInfo.endEncodedSearchCursor ?? null
-      );
-      setHasMoreRoutines(
-        data?.searchRoutines.searchPageInfo.hasNextPage ?? false
-      );
-    },
-    [
-      stationRoutineManager.getRoutineTaskById,
-      stationRoutineManager.presence.routineTagIds,
-      stationRoutineManager.presence.showUntaggedRoutines,
-      stationRoutineManager.routineTags.length,
-    ]
+  const isAllStationsSelected =
+    stationRoutineManager.viewMode !== "station" &&
+    (stationRoutineManager.stations.length === 0 ||
+      effectiveStationIds.length === stationRoutineManager.stations.length);
+  const isAllRoutineTagsSelected =
+    stationRoutineManager.routineTags.length === 0 ||
+    stationRoutineManager.presence.routineTagIds.length ===
+      stationRoutineManager.routineTags.length;
+  const skipSearch =
+    (stationRoutineManager.stations.length > 0 &&
+      effectiveStationIds.length === 0) ||
+    (stationRoutineManager.routineTags.length > 0 &&
+      stationRoutineManager.presence.routineTagIds.length === 0 &&
+      !stationRoutineManager.presence.showUntaggedRoutines);
+  const input = {
+    query,
+    ...order,
+    first: 20,
+    stationIds: isAllStationsSelected ? [] : effectiveStationIds,
+    tagIds:
+      stationRoutineManager.presence.showUntaggedRoutines ||
+      isAllRoutineTagsSelected
+        ? []
+        : stationRoutineManager.presence.routineTagIds,
+  };
+  const routineSearch = useSearchRoutinesQuery(
+    { input },
+    { skip: skipSearch, fetchPolicy: "cache-and-network", ssr: false }
   );
+  const connection = routineSearch.data?.searchRoutines;
+  const routineTotalCount = skipSearch ? 0 : (connection?.totalCount ?? 0);
+  const isSearchingRoutines = routineSearch.loading;
+  const hasMoreRoutines = connection?.searchPageInfo.hasNextPage ?? false;
+  const cursor = connection?.searchPageInfo.endEncodedSearchCursor;
+  const pendingCursor = useRef<string | null>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const searchSignature = JSON.stringify(input);
+  useEffect(() => {
+    viewport.current?.scrollTo({ top: 0 });
+  }, [searchSignature]);
+  const loadMoreRoutines = async () => {
+    if (
+      skipSearch ||
+      isSearchingRoutines ||
+      !hasMoreRoutines ||
+      !cursor ||
+      pendingCursor.current === cursor
+    )
+      return;
+    pendingCursor.current = cursor;
+    try {
+      await routineSearch.fetchMore({
+        variables: { input: { ...input, after: cursor } },
+      });
+    } catch (error) {
+      toast.error(tError(error, t));
+    } finally {
+      if (pendingCursor.current === cursor) pendingCursor.current = null;
+    }
+  };
 
-  const searchRoutines = useCallback(
-    async (reset: boolean): Promise<void> => {
-      if (isSearchingRoutinesRef.current) return;
-      if (!reset && (!hasMoreRoutines || !routineSearchCursor)) return;
-      if (
-        stationRoutineManager.stations.length > 0 &&
-        effectiveStationIds.length === 0
-      ) {
-        if (reset) {
-          setRoutines([]);
-          setRoutineTotalCount(0);
-          setRoutineSearchCursor(null);
-          setHasMoreRoutines(false);
-        }
-        return;
-      }
-      if (
-        stationRoutineManager.routineTags.length > 0 &&
-        stationRoutineManager.presence.routineTagIds.length === 0 &&
-        !stationRoutineManager.presence.showUntaggedRoutines
-      ) {
-        if (reset) {
-          setRoutines([]);
-          setRoutineTotalCount(0);
-          setRoutineSearchCursor(null);
-          setHasMoreRoutines(false);
-        }
-        return;
-      }
-
-      isSearchingRoutinesRef.current = true;
-      setIsSearchingRoutines(true);
-      try {
-        const isAllStationsSelected =
-          stationRoutineManager.viewMode !== "station" &&
-          (stationRoutineManager.stations.length === 0 ||
-            effectiveStationIds.length ===
-              stationRoutineManager.stations.length);
-        const isAllRoutineTagsSelected =
-          stationRoutineManager.routineTags.length === 0 ||
-          stationRoutineManager.presence.routineTagIds.length ===
-            stationRoutineManager.routineTags.length;
-        const shouldFilterRoutineTagsInView =
-          stationRoutineManager.routineTags.length > 0 &&
-          stationRoutineManager.presence.showUntaggedRoutines &&
-          !isAllRoutineTagsSelected;
-        const shouldShowOnlyUntaggedRoutines =
-          stationRoutineManager.routineTags.length > 0 &&
-          stationRoutineManager.presence.showUntaggedRoutines &&
-          stationRoutineManager.presence.routineTagIds.length === 0;
-        const variables = {
-          input: {
-            query: stationRoutineManager.presence.query,
-            after: reset ? undefined : (routineSearchCursor ?? undefined),
-            first: reset ? 20 : 10,
-            stationIds: isAllStationsSelected ? [] : effectiveStationIds,
-            tagIds:
-              shouldFilterRoutineTagsInView ||
-              shouldShowOnlyUntaggedRoutines ||
-              isAllRoutineTagsSelected
-                ? []
-                : stationRoutineManager.presence.routineTagIds,
-            sortBy: SearchRoutineSortBy.Title,
-            sortOrder: SearchSortOrder.Asc,
-          },
+  const routines = useMemo(() => {
+    if (skipSearch) return [];
+    const isAllRoutineTagsSelected =
+      stationRoutineManager.routineTags.length === 0 ||
+      stationRoutineManager.presence.routineTagIds.length ===
+        stationRoutineManager.routineTags.length;
+    const shouldFilterRoutineTagsInView =
+      stationRoutineManager.routineTags.length > 0 &&
+      stationRoutineManager.presence.showUntaggedRoutines &&
+      !isAllRoutineTagsSelected;
+    const shouldShowOnlyUntaggedRoutines =
+      stationRoutineManager.routineTags.length > 0 &&
+      stationRoutineManager.presence.showUntaggedRoutines &&
+      stationRoutineManager.presence.routineTagIds.length === 0;
+    const searchedRoutines = (
+      routineSearch.data?.searchRoutines.searchEdges ?? []
+    )
+      .map((edge: any) => {
+        const node = edge.node as unknown as {
+          id: UUID;
+          stationId: UUID;
+          title: string;
+          phase?: GraphQLRoutinePhase | null;
+          admissionState: RoutineAdmissionState;
+          isActive: boolean;
+          definitionVersion: number;
+          isPinned: boolean;
+          scheduledStartAt: Date | string | number;
+          scheduledEndAt: Date | string | number;
+          period: GraphQLRoutinePeriod | null;
+          timezone: string;
+          deletedAt: Date | string | number | null;
+          updatedAt: Date | string | number;
+          createdAt: Date | string | number;
+          tagIds?: UUID[];
+          taskIds?: UUID[];
+          itemIds?: UUID[];
         };
-
-        if (reset || !hasExecutedInitialSearchRef.current) {
-          hasExecutedInitialSearchRef.current = true;
-          await executeSearchRoutines({ variables }).retain();
-        } else {
-          await routineSearch.fetchMore({
-            variables,
-            updateQuery: (previous, { fetchMoreResult }) => {
-              if (!fetchMoreResult) return previous;
-              const existingRoutineIds = new Set(
-                previous.searchRoutines.searchEdges.map(edge => {
-                  const node = edge.node as unknown as { id: UUID };
-                  return node.id;
-                })
-              );
-              return {
-                ...fetchMoreResult,
-                searchRoutines: {
-                  ...fetchMoreResult.searchRoutines,
-                  searchEdges: [
-                    ...previous.searchRoutines.searchEdges,
-                    ...fetchMoreResult.searchRoutines.searchEdges.filter(
-                      edge => {
-                        const node = edge.node as unknown as { id: UUID };
-                        return !existingRoutineIds.has(node.id);
-                      }
-                    ),
-                  ],
-                },
-              };
-            },
-          });
+        const routineTagIds = node.tagIds ?? [];
+        if (shouldShowOnlyUntaggedRoutines && routineTagIds.length > 0) {
+          return null;
         }
-      } finally {
-        isSearchingRoutinesRef.current = false;
-        setIsSearchingRoutines(false);
-      }
-    },
-    [
-      executeSearchRoutines,
-      stationPresenceSignature,
-      hasMoreRoutines,
-      routineSearchCursor,
-      stationRoutineManager.presence.query,
-      stationRoutineManager.presence.routineTagIds,
-      stationRoutineManager.presence.showUntaggedRoutines,
-      stationRoutineManager.routineTags.length,
-      stationRoutineManager.stations.length,
-      stationRoutineManager.viewMode,
-      routineSearch.fetchMore,
-    ]
-  );
+        if (
+          shouldFilterRoutineTagsInView &&
+          routineTagIds.length > 0 &&
+          !routineTagIds.some(routineTagId =>
+            stationRoutineManager.presence.routineTagIds.includes(routineTagId)
+          )
+        ) {
+          return null;
+        }
+
+        const routineTaskIds = node.taskIds ?? [];
+        const routine: RoutineNode & { routineTaskIds: UUID[] } = {
+          id: node.id,
+          stationId: node.stationId,
+          title: node.title,
+          description: "",
+          phase: fromGraphQLRoutinePhase(node.phase),
+          isActive: node.isActive,
+          admissionState: node.admissionState,
+          definitionVersion: node.definitionVersion,
+          isPinned: node.isPinned,
+          scheduledStartAt: new Date(node.scheduledStartAt),
+          scheduledEndAt: new Date(node.scheduledEndAt),
+          period:
+            node.period === GraphQLRoutinePeriod.RoutinePeriodDaily
+              ? RoutinePeriod.Daily
+              : node.period === GraphQLRoutinePeriod.RoutinePeriodWeekly
+                ? RoutinePeriod.Weekly
+                : node.period === GraphQLRoutinePeriod.RoutinePeriodMonthly
+                  ? RoutinePeriod.Monthly
+                  : null,
+          timezone: node.timezone,
+          deletedAt: node.deletedAt === null ? null : new Date(node.deletedAt),
+          updatedAt: new Date(node.updatedAt),
+          createdAt: new Date(node.createdAt),
+          isOpen: false,
+          isExpanded: false,
+          routineTagIds,
+          itemIds: node.itemIds ?? [],
+          routineTasks: routineTaskIds.flatMap(routineTaskId => {
+            const routineTask =
+              stationRoutineManager.getRoutineTaskById(routineTaskId);
+            return routineTask ? [routineTask] : [];
+          }),
+          routineTaskIds,
+        };
+        return routine;
+      })
+      .filter(
+        (
+          routine: (RoutineNode & { routineTaskIds: UUID[] }) | null
+        ): routine is RoutineNode & { routineTaskIds: UUID[] } =>
+          routine !== null
+      );
+
+    return searchedRoutines;
+  }, [
+    routineSearch.data,
+    skipSearch,
+    stationRoutineManager.getRoutineTaskById,
+    stationRoutineManager.presence.routineTagIds,
+    stationRoutineManager.presence.showUntaggedRoutines,
+    stationRoutineManager.routineTags.length,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -347,7 +277,8 @@ const RoutineTable = () => {
       }
       if (!cancelled) {
         setPendingActive(activeById);
-        if (synchronizationRevision > 0) await searchRoutines(true);
+        if (synchronizationRevision > 0 && !skipSearch)
+          await routineSearch.refetch();
       }
     };
     void reconcilePending().catch(error =>
@@ -356,24 +287,7 @@ const RoutineTable = () => {
     return () => {
       cancelled = true;
     };
-  }, [synchronizationRevision, searchRoutines]);
-
-  useEffect(() => {
-    if (!routineSearch.data) return;
-    applySearchRoutinesData(routineSearch.data);
-  }, [applySearchRoutinesData, routineSearch.data]);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      void searchRoutines(true);
-    }, 250);
-    return () => window.clearTimeout(timeout);
-  }, [
-    stationRoutineManager.presence.query,
-    stationRoutineManager.presence.showUntaggedRoutines,
-    stationPresenceSignature,
-    routineTagPresenceSignature,
-  ]);
+  }, [synchronizationRevision, routineSearch.refetch, skipSearch]);
 
   const filteredRoutines = useMemo(() => {
     return routines.filter(routine => {
@@ -408,42 +322,136 @@ const RoutineTable = () => {
             {routineTotalCount}
           </span>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 @max-[760px]:w-full @max-[760px]:justify-start">
-          <DatePicker
-            value={startsAfter}
-            onValueChange={setStartsAfter}
-            placeholder={t("workspace.table.startsAfter")}
-            className="h-8 w-40 px-3 text-xs @max-[520px]:w-10 @max-[520px]:justify-center @max-[520px]:px-0 @max-[520px]:[&_span]:hidden"
+        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+          <Input
+            aria-label={t("workspace.table.searchRoutines")}
+            placeholder={t("workspace.table.searchRoutines")}
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            className="h-8 w-40 min-w-0 flex-1 text-xs sm:flex-none"
           />
-          <DatePicker
-            value={endsBefore}
-            onValueChange={setEndsBefore}
-            placeholder={t("workspace.table.endsBefore")}
-            className="h-8 w-40 px-3 text-xs @max-[520px]:w-10 @max-[520px]:justify-center @max-[520px]:px-0 @max-[520px]:[&_span]:hidden"
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant={
+                  startsAfter || endsBefore || !showUnscheduled
+                    ? "secondary"
+                    : "outline"
+                }
+                className="size-8 shrink-0 rounded-sm"
+                aria-label={t("workspace.table.routineFilters")}
+                title={t("workspace.table.routineFilters")}
+              >
+                <ListFilter className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              aria-label={t("workspace.table.routineFilters")}
+              className="h-80 w-[min(24rem,calc(100vw-2rem))] max-h-[min(20rem,var(--radix-popover-content-available-height))] overflow-y-auto overscroll-contain p-3"
+            >
+              <p className="mb-4 text-sm font-medium">
+                {t("workspace.table.routineFilters")}
+              </p>
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-center gap-3">
+                <Label htmlFor={`${id}-starts-after`}>
+                  {t("workspace.table.startsAfter")}
+                </Label>
+                <DatePicker
+                  id={`${id}-starts-after`}
+                  value={startsAfter}
+                  onValueChange={setStartsAfter}
+                  placeholder={t("workspace.table.startsAfter")}
+                  className="h-8 w-full min-w-0 text-xs"
+                />
+                <Label htmlFor={`${id}-ends-before`}>
+                  {t("workspace.table.endsBefore")}
+                </Label>
+                <DatePicker
+                  id={`${id}-ends-before`}
+                  value={endsBefore}
+                  onValueChange={setEndsBefore}
+                  placeholder={t("workspace.table.endsBefore")}
+                  className="h-8 w-full min-w-0 text-xs"
+                />
+                <Label htmlFor={`${id}-unscheduled`}>
+                  {t("workspace.table.unscheduled")}
+                </Label>
+                <Checkbox
+                  id={`${id}-unscheduled`}
+                  checked={showUnscheduled}
+                  onCheckedChange={checked =>
+                    setShowUnscheduled(checked === true)
+                  }
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="col-start-2"
+                  onClick={() => {
+                    setStartsAfter(undefined);
+                    setEndsBefore(undefined);
+                    setShowUnscheduled(true);
+                  }}
+                >
+                  {t("workspace.records.resetFilters")}
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <RoutineSearchOrder
+            label={t("workspace.table.sortRoutines")}
+            value={order}
+            defaultValue={{
+              sortBy: SearchRoutineSortBy.Title,
+              sortOrder: SearchSortOrder.Asc,
+            }}
+            onChange={setOrder}
+            options={[
+              {
+                value: SearchRoutineSortBy.Title,
+                label: t("workspace.fields.title"),
+              },
+              {
+                value: SearchRoutineSortBy.ScheduledStartAt,
+                label: t("workspace.fields.starts"),
+              },
+              {
+                value: SearchRoutineSortBy.ScheduledEndAt,
+                label: t("workspace.fields.ends"),
+              },
+              {
+                value: SearchRoutineSortBy.Period,
+                label: t("workspace.payloadEditor.period"),
+              },
+              {
+                value: SearchRoutineSortBy.CreatedAt,
+                label: t("workspace.records.createdAt"),
+              },
+              {
+                value: SearchRoutineSortBy.LastUpdate,
+                label: t("workspace.records.updatedAt"),
+              },
+            ]}
           />
-          <label className="flex h-8 items-center gap-2 rounded-sm bg-transparent px-2 text-xs text-muted-foreground">
-            <Checkbox
-              checked={showUnscheduled}
-              onCheckedChange={checked => setShowUnscheduled(checked === true)}
-            />
-            <span className="@max-[520px]:sr-only">
-              {t("workspace.table.unscheduled")}
-            </span>
-          </label>
         </div>
       </div>
 
       <div
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
+        ref={viewport}
+        className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearchingRoutines || !hasMoreRoutines) return;
 
           const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
           if (scrollTop + clientHeight < scrollHeight * 0.55) return;
-          void searchRoutines(false);
+          void loadMoreRoutines();
         }}
       >
-        <Table className="table-fixed">
+        <Table className="min-w-[56rem] table-fixed">
           <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
             <TableRow>
               <TableHead className="w-[16%] px-3">
@@ -458,7 +466,7 @@ const RoutineTable = () => {
               <TableHead className="w-[18.5%] px-3">
                 {t("workspace.table.schedule")}
               </TableHead>
-              <TableHead className="w-[22%] px-3">
+              <TableHead className="w-[12%] px-3">
                 {t("workspace.table.tags")}
               </TableHead>
               <TableHead className="w-[7%] px-3">
@@ -467,7 +475,7 @@ const RoutineTable = () => {
               <TableHead className="w-[7%] px-2">
                 {t("workspace.fields.active")}
               </TableHead>
-              <TableHead className="w-[5%] px-2" />
+              <TableHead className="w-12 px-2" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -761,7 +769,7 @@ const RoutineTable = () => {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="size-7 rounded-sm"
+                      className="size-7 shrink-0 rounded-sm"
                       onClick={() =>
                         stationRoutineManager.openInspector({
                           type: "routine",

@@ -161,9 +161,26 @@ const RoutineTaskRecordDialog = ({
             {routineTitle}
           </DialogDescription>
         </DialogHeader>
+        <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
+          <RoutineRecordFilters task value={filters} onChange={setFilters} />
+        </div>
+        <p
+          role="status"
+          aria-label={t("workspace.records.summary")}
+          className="overflow-x-auto whitespace-nowrap border-b border-border px-4 py-2 text-xs tabular-nums text-muted-foreground"
+        >
+          {t("workspace.records.loadedSummary", {
+            count: records.length,
+          })}
+          {statusCounts.map(({ status, count }) => (
+            <span
+              key={status}
+            >{` · ${t(routineTaskRecordStatusTKeys[status])} ${count}`}</span>
+          ))}
+        </p>
         <div
           ref={viewport}
-          className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
+          className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible"
           onScroll={event => {
             if (isSearching || !hasMore) return;
             const { clientHeight, scrollHeight, scrollTop } =
@@ -172,48 +189,31 @@ const RoutineTaskRecordDialog = ({
             void loadMoreRecords();
           }}
         >
-          <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
-            <RoutineRecordFilters task value={filters} onChange={setFilters} />
-          </div>
-          <p
-            role="status"
-            aria-label={t("workspace.records.summary")}
-            className="overflow-x-auto whitespace-nowrap border-b border-border px-4 py-2 text-xs tabular-nums text-muted-foreground"
-          >
-            {t("workspace.records.loadedSummary", {
-              count: records.length,
-            })}
-            {statusCounts.map(({ status, count }) => (
-              <span
-                key={status}
-              >{` · ${t(routineTaskRecordStatusTKeys[status])} ${count}`}</span>
-            ))}
-          </p>
-          <Table className="min-w-[64rem] table-fixed text-xs">
+          <Table className="min-w-[calc(50rem+var(--input-width)+var(--result-width))] table-fixed text-xs [--input-width:10rem] [--result-width:10rem] has-[td:nth-child(7)_details[open]]:[--input-width:30rem] has-[td:nth-child(8)_details[open]]:[--result-width:20rem]">
             <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight [&_th]:text-left">
               <TableRow>
-                <TableHead className="h-9 w-[16%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   {t("workspace.table.task")}
                 </TableHead>
-                <TableHead className="h-9 w-[12%] px-2">
+                <TableHead className="h-9 w-28 px-2">
                   {t("workspace.table.status")}
                 </TableHead>
-                <TableHead className="h-9 w-[16%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   {t("workspace.table.purpose")}
                 </TableHead>
-                <TableHead className="h-9 w-[14%] px-2">
+                <TableHead className="h-9 w-36 px-2">
                   {t("workspace.table.started")}
                 </TableHead>
-                <TableHead className="h-9 w-[14%] px-2">
+                <TableHead className="h-9 w-36 px-2">
                   {t("workspace.table.ended")}
                 </TableHead>
-                <TableHead className="h-9 w-[8%] px-2">
+                <TableHead className="h-9 w-20 px-2">
                   {t("workspace.table.attempts")}
                 </TableHead>
-                <TableHead className="h-9 w-[10%] px-2">
+                <TableHead className="h-9 w-[var(--input-width)] px-2">
                   {t("workspace.records.executionInput")}
                 </TableHead>
-                <TableHead className="h-9 w-[10%] px-2">
+                <TableHead className="h-9 w-[var(--result-width)] px-2">
                   {t("workspace.records.executionResult")}
                 </TableHead>
               </TableRow>
@@ -261,7 +261,7 @@ const RoutineTaskRecordDialog = ({
                         <summary className="cursor-pointer text-muted-foreground">
                           {t("workspace.records.executionInput")}
                         </summary>
-                        <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">
+                        <pre className="mt-2 max-h-32 overflow-auto whitespace-pre font-mono text-[11px]">
                           {JSON.stringify(record.payloadSnapshot, null, 2)}
                         </pre>
                       </details>
@@ -273,7 +273,7 @@ const RoutineTaskRecordDialog = ({
                           <summary className="cursor-pointer text-muted-foreground">
                             {t("workspace.records.executionResult")}
                           </summary>
-                          <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">
+                          <pre className="mt-2 max-h-32 overflow-auto whitespace-pre font-mono text-[11px]">
                             {JSON.stringify(record.resultSnapshot, null, 2)}
                           </pre>
                         </details>

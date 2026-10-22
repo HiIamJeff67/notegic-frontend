@@ -1,4 +1,3 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
@@ -8,10 +7,21 @@ import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.t
 import { useTranslation } from "@shared/i18n/useTranslation";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
-import { SquarePen } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
+import { ListFilter, SquarePen } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useSearchRoutineTasksQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
+import { useDebounceValue } from "@/hooks/useDebounce";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -32,29 +42,14 @@ import { useStationRoutine } from "@/hooks";
 
 const RoutineTaskTable = () => {
   const { t } = useTranslation();
+  const id = useId();
   const stationRoutineManager = useStationRoutine();
-  const [executeSearchRoutineTasks, routineTaskSearch] =
-    useSearchRoutineTasksLazyQuery({
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    });
-  const [routineTasks, setRoutineTasks] = useState<
-    Array<
-      RoutineTaskNode & {
-        linkedRoutineIds: UUID[];
-        linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
-      }
-    >
-  >([]);
-  const [routineTaskTotalCount, setRoutineTaskTotalCount] = useState<number>(0);
-  const [routineTaskSearchCursor, setRoutineTaskSearchCursor] = useState<
-    string | null
-  >(null);
-  const [hasMoreRoutineTasks, setHasMoreRoutineTasks] = useState<boolean>(true);
-  const [isSearchingRoutineTasks, setIsSearchingRoutineTasks] =
-    useState<boolean>(false);
-  const isSearchingRoutineTasksRef = useRef<boolean>(false);
-  const hasExecutedInitialSearchRef = useRef<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const query = useDebounceValue(searchQuery);
+  const [order, setOrder] = useState({
+    sortBy: SearchRoutineTaskSortBy.Title,
+    sortOrder: SearchSortOrder.Asc,
+  });
   const [purpose, setPurpose] = useState<RoutineTaskPurpose | "All">("All");
   const [routineId, setRoutineId] = useState<UUID | "All" | "Unlinked">("All");
   const effectiveStationIds =
@@ -72,183 +67,132 @@ const RoutineTaskTable = () => {
     )
     .join("|");
 
-  const applySearchRoutineTasksData = useCallback(
-    (data?: any): void => {
-      const selectedStationIds = new Set(effectiveStationIds);
-      const searchedRoutineTasks = (data?.searchRoutineTasks.searchEdges ?? [])
-        .map((edge: any) => {
-          const node = edge.node as unknown as {
-            id: UUID;
-            routineId: UUID;
-            title: string;
-            kind: string;
-            payload: RoutineTaskNode["payload"];
-            priority: number;
-            maxAttempts: number;
-            previousRoutineTaskIds: UUID[];
-            updatedAt: Date | string | number;
-            createdAt: Date | string | number;
-          };
-          if (node.kind === "Start") return null;
-          const linkedRoutine = stationRoutineManager.getRoutineById(
-            node.routineId
-          );
-          if (
-            stationRoutineManager.stations.length > 0 &&
-            linkedRoutine &&
-            !selectedStationIds.has(linkedRoutine.stationId)
-          ) {
-            return null;
-          }
-          const linkedRoutineIds = [node.routineId];
-          const routineTask: RoutineTaskNode & {
-            linkedRoutineIds: UUID[];
-            linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
-          } = {
-            id: node.id,
-            routineId: node.routineId,
-            stationId: linkedRoutine?.stationId ?? ("" as UUID),
-            title: node.title,
-            payload: node.payload,
-            priority: node.priority,
-            maxAttempts: node.maxAttempts,
-            previousRoutineTaskIds: node.previousRoutineTaskIds,
-            updatedAt: new Date(node.updatedAt),
-            createdAt: new Date(node.createdAt),
-            linkedRoutineIds,
-            linkedRoutines: linkedRoutine
-              ? [
-                  {
-                    id: linkedRoutine.id,
-                    tagIds: linkedRoutine.routineTagIds,
-                  },
-                ]
-              : [],
-          };
-          return routineTask;
-        })
-        .filter(
-          (
-            routineTask:
-              | (RoutineTaskNode & {
-                  linkedRoutineIds: UUID[];
-                  linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
-                })
-              | null
-          ): routineTask is RoutineTaskNode & {
-            linkedRoutineIds: UUID[];
-            linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
-          } => routineTask !== null
-        );
-
-      setRoutineTasks(searchedRoutineTasks.sort(compareEntityNames));
-      setRoutineTaskTotalCount(data?.searchRoutineTasks.totalCount ?? 0);
-      setRoutineTaskSearchCursor(
-        data?.searchRoutineTasks.searchPageInfo.endEncodedSearchCursor ?? null
-      );
-      setHasMoreRoutineTasks(
-        data?.searchRoutineTasks.searchPageInfo.hasNextPage ?? false
-      );
-    },
-    [
-      stationPresenceSignature,
-      stationRoutineManager.getRoutineById,
-      routineLookupSignature,
-      stationRoutineManager.stations.length,
-    ]
+  const skipSearch =
+    stationRoutineManager.stations.length > 0 &&
+    effectiveStationIds.length === 0;
+  const input = {
+    query,
+    ...order,
+    first: 20,
+    routineIds:
+      routineId === "All" || routineId === "Unlinked" ? [] : [routineId],
+  };
+  const routineTaskSearch = useSearchRoutineTasksQuery(
+    { input },
+    { skip: skipSearch, fetchPolicy: "cache-and-network", ssr: false }
   );
+  const connection = routineTaskSearch.data?.searchRoutineTasks;
+  const routineTaskTotalCount = skipSearch ? 0 : (connection?.totalCount ?? 0);
+  const isSearchingRoutineTasks = routineTaskSearch.loading;
+  const hasMoreRoutineTasks = connection?.searchPageInfo.hasNextPage ?? false;
+  const cursor = connection?.searchPageInfo.endEncodedSearchCursor;
+  const pendingCursor = useRef<string | null>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const searchSignature = JSON.stringify(input);
+  useEffect(() => {
+    viewport.current?.scrollTo({ top: 0 });
+  }, [searchSignature]);
+  const loadMoreRoutineTasks = async () => {
+    if (
+      skipSearch ||
+      isSearchingRoutineTasks ||
+      !hasMoreRoutineTasks ||
+      !cursor ||
+      pendingCursor.current === cursor
+    )
+      return;
+    pendingCursor.current = cursor;
+    try {
+      await routineTaskSearch.fetchMore({
+        variables: { input: { ...input, after: cursor } },
+      });
+    } catch (error) {
+      toast.error(tError(error, t));
+    } finally {
+      if (pendingCursor.current === cursor) pendingCursor.current = null;
+    }
+  };
 
-  const searchRoutineTasks = useCallback(
-    async (reset: boolean): Promise<void> => {
-      if (isSearchingRoutineTasksRef.current) return;
-      if (!reset && (!hasMoreRoutineTasks || !routineTaskSearchCursor)) return;
-      if (
-        stationRoutineManager.stations.length > 0 &&
-        effectiveStationIds.length === 0
-      ) {
-        if (reset) {
-          setRoutineTasks([]);
-          setRoutineTaskTotalCount(0);
-          setRoutineTaskSearchCursor(null);
-          setHasMoreRoutineTasks(false);
-        }
-        return;
-      }
-
-      isSearchingRoutineTasksRef.current = true;
-      setIsSearchingRoutineTasks(true);
-      try {
-        const variables = {
-          input: {
-            query: stationRoutineManager.presence.query,
-            after: reset ? undefined : (routineTaskSearchCursor ?? undefined),
-            first: reset ? 20 : 10,
-            routineIds: [],
-            sortBy: SearchRoutineTaskSortBy.Title,
-            sortOrder: SearchSortOrder.Asc,
-          },
+  const routineTasks = useMemo(() => {
+    if (skipSearch) return [];
+    const selectedStationIds = new Set(effectiveStationIds);
+    const searchedRoutineTasks = (
+      routineTaskSearch.data?.searchRoutineTasks.searchEdges ?? []
+    )
+      .map((edge: any) => {
+        const node = edge.node as unknown as {
+          id: UUID;
+          routineId: UUID;
+          title: string;
+          kind: string;
+          payload: RoutineTaskNode["payload"];
+          priority: number;
+          maxAttempts: number;
+          previousRoutineTaskIds: UUID[];
+          updatedAt: Date | string | number;
+          createdAt: Date | string | number;
         };
-
-        if (reset || !hasExecutedInitialSearchRef.current) {
-          hasExecutedInitialSearchRef.current = true;
-          await executeSearchRoutineTasks({ variables }).retain();
-        } else {
-          await routineTaskSearch.fetchMore({
-            variables,
-            updateQuery: (previous, { fetchMoreResult }) => {
-              if (!fetchMoreResult) return previous;
-              const existingRoutineTaskIds = new Set(
-                previous.searchRoutineTasks.searchEdges.map(edge => {
-                  const node = edge.node as unknown as { id: UUID };
-                  return node.id;
-                })
-              );
-              return {
-                ...fetchMoreResult,
-                searchRoutineTasks: {
-                  ...fetchMoreResult.searchRoutineTasks,
-                  searchEdges: [
-                    ...previous.searchRoutineTasks.searchEdges,
-                    ...fetchMoreResult.searchRoutineTasks.searchEdges.filter(
-                      edge => {
-                        const node = edge.node as unknown as { id: UUID };
-                        return !existingRoutineTaskIds.has(node.id);
-                      }
-                    ),
-                  ],
-                },
-              };
-            },
-          });
+        if (node.kind === "Start") return null;
+        const linkedRoutine = stationRoutineManager.getRoutineById(
+          node.routineId
+        );
+        if (
+          stationRoutineManager.stations.length > 0 &&
+          linkedRoutine &&
+          !selectedStationIds.has(linkedRoutine.stationId)
+        ) {
+          return null;
         }
-      } finally {
-        isSearchingRoutineTasksRef.current = false;
-        setIsSearchingRoutineTasks(false);
-      }
-    },
-    [
-      executeSearchRoutineTasks,
-      stationPresenceSignature,
-      hasMoreRoutineTasks,
-      routineTaskSearchCursor,
-      stationRoutineManager.presence.query,
-      stationRoutineManager.stations.length,
-      stationRoutineManager.viewMode,
-      routineTaskSearch.fetchMore,
-    ]
-  );
+        const linkedRoutineIds = [node.routineId];
+        const routineTask: RoutineTaskNode & {
+          linkedRoutineIds: UUID[];
+          linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
+        } = {
+          id: node.id,
+          routineId: node.routineId,
+          stationId: linkedRoutine?.stationId ?? ("" as UUID),
+          title: node.title,
+          payload: node.payload,
+          priority: node.priority,
+          maxAttempts: node.maxAttempts,
+          previousRoutineTaskIds: node.previousRoutineTaskIds,
+          updatedAt: new Date(node.updatedAt),
+          createdAt: new Date(node.createdAt),
+          linkedRoutineIds,
+          linkedRoutines: linkedRoutine
+            ? [
+                {
+                  id: linkedRoutine.id,
+                  tagIds: linkedRoutine.routineTagIds,
+                },
+              ]
+            : [],
+        };
+        return routineTask;
+      })
+      .filter(
+        (
+          routineTask:
+            | (RoutineTaskNode & {
+                linkedRoutineIds: UUID[];
+                linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
+              })
+            | null
+        ): routineTask is RoutineTaskNode & {
+          linkedRoutineIds: UUID[];
+          linkedRoutines: Array<{ id: UUID; tagIds: UUID[] }>;
+        } => routineTask !== null
+      );
 
-  useEffect(() => {
-    if (!routineTaskSearch.data) return;
-    applySearchRoutineTasksData(routineTaskSearch.data);
-  }, [applySearchRoutineTasksData, routineTaskSearch.data]);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      void searchRoutineTasks(true);
-    }, 250);
-    return () => window.clearTimeout(timeout);
-  }, [stationRoutineManager.presence.query, stationPresenceSignature]);
+    return searchedRoutineTasks;
+  }, [
+    routineTaskSearch.data,
+    skipSearch,
+    stationPresenceSignature,
+    stationRoutineManager.getRoutineById,
+    routineLookupSignature,
+    stationRoutineManager.stations.length,
+  ]);
 
   const filteredRoutineTasks = useMemo(() => {
     return routineTasks.filter(routineTask => {
@@ -316,70 +260,169 @@ const RoutineTaskTable = () => {
             {routineTaskTotalCount}
           </span>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 @max-[1040px]:grid @max-[1040px]:w-full @max-[1040px]:grid-cols-[repeat(auto-fit,minmax(6.75rem,1fr))] @max-[1040px]:justify-start">
-          <Select
-            value={purpose}
-            onValueChange={value =>
-              setPurpose(value as RoutineTaskPurpose | "All")
-            }
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-40 min-w-0 rounded-sm text-xs @max-[1040px]:w-full"
+        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+          <Input
+            aria-label={t("workspace.table.searchRoutineTasks")}
+            placeholder={t("workspace.table.searchRoutineTasks")}
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            className="h-8 w-40 min-w-0 flex-1 text-xs sm:flex-none"
+          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant={
+                  purpose !== "All" || routineId !== "All"
+                    ? "secondary"
+                    : "outline"
+                }
+                className="size-8 shrink-0 rounded-sm"
+                aria-label={t("workspace.table.routineTaskFilters")}
+                title={t("workspace.table.routineTaskFilters")}
+              >
+                <ListFilter className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              aria-label={t("workspace.table.routineTaskFilters")}
+              className="h-80 w-[min(24rem,calc(100vw-2rem))] max-h-[min(20rem,var(--radix-popover-content-available-height))] overflow-y-auto overscroll-contain p-3"
             >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="All">
-                {t("workspace.table.allPurpose")}
-              </SelectItem>
-              {Object.values(RoutineTaskPurpose).map(routineTaskPurpose => (
-                <SelectItem key={routineTaskPurpose} value={routineTaskPurpose}>
-                  {`${t(routineTaskPurposeTKeys[routineTaskPurpose].action)} · ${t(routineTaskPurposeTKeys[routineTaskPurpose].target)}`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={routineId}
-            onValueChange={value =>
-              setRoutineId(value as UUID | "All" | "Unlinked")
-            }
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-44 min-w-0 rounded-sm text-xs @max-[1040px]:w-full"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="All">
-                {t("workspace.table.allRoutines")}
-              </SelectItem>
-              <SelectItem value="Unlinked">
-                {t("workspace.table.unlinked")}
-              </SelectItem>
-              {stationRoutineManager.visibleRoutines.map(routine => (
-                <SelectItem key={routine.id} value={routine.id}>
-                  {routine.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              <p className="mb-4 text-sm font-medium">
+                {t("workspace.table.routineTaskFilters")}
+              </p>
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-center gap-3">
+                <Label htmlFor={`${id}-purpose`}>
+                  {t("workspace.table.purpose")}
+                </Label>
+                <Select
+                  value={purpose}
+                  onValueChange={value =>
+                    setPurpose(value as RoutineTaskPurpose | "All")
+                  }
+                >
+                  <SelectTrigger
+                    size="sm"
+                    id={`${id}-purpose`}
+                    aria-label={t("workspace.table.purpose")}
+                    className="h-8 w-full min-w-0 rounded-sm text-xs"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                    <SelectItem value="All">
+                      {t("workspace.table.allPurpose")}
+                    </SelectItem>
+                    {Object.values(RoutineTaskPurpose).map(
+                      routineTaskPurpose => (
+                        <SelectItem
+                          key={routineTaskPurpose}
+                          value={routineTaskPurpose}
+                        >
+                          {`${t(routineTaskPurposeTKeys[routineTaskPurpose].action)} · ${t(routineTaskPurposeTKeys[routineTaskPurpose].target)}`}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+                <Label htmlFor={`${id}-routine`}>
+                  {t("workspace.table.routine")}
+                </Label>
+                <Select
+                  value={routineId}
+                  onValueChange={value =>
+                    setRoutineId(value as UUID | "All" | "Unlinked")
+                  }
+                >
+                  <SelectTrigger
+                    size="sm"
+                    id={`${id}-routine`}
+                    aria-label={t("workspace.table.routine")}
+                    className="h-8 w-full min-w-0 rounded-sm text-xs"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                    <SelectItem value="All">
+                      {t("workspace.table.allRoutines")}
+                    </SelectItem>
+                    <SelectItem value="Unlinked">
+                      {t("workspace.table.unlinked")}
+                    </SelectItem>
+                    {stationRoutineManager.visibleRoutines.map(routine => (
+                      <SelectItem key={routine.id} value={routine.id}>
+                        {routine.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="col-start-2"
+                  onClick={() => {
+                    setPurpose("All");
+                    setRoutineId("All");
+                  }}
+                >
+                  {t("workspace.records.resetFilters")}
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <RoutineSearchOrder
+            label={t("workspace.table.sortRoutineTasks")}
+            value={order}
+            defaultValue={{
+              sortBy: SearchRoutineTaskSortBy.Title,
+              sortOrder: SearchSortOrder.Asc,
+            }}
+            onChange={setOrder}
+            options={[
+              {
+                value: SearchRoutineTaskSortBy.Title,
+                label: t("workspace.fields.title"),
+              },
+              {
+                value: SearchRoutineTaskSortBy.Priority,
+                label: t("workspace.fields.priority"),
+              },
+              {
+                value: SearchRoutineTaskSortBy.MaxAttempts,
+                label: t("workspace.fields.maxAttempts"),
+              },
+              {
+                value: SearchRoutineTaskSortBy.Purpose,
+                label: t("workspace.table.purpose"),
+              },
+              {
+                value: SearchRoutineTaskSortBy.CreatedAt,
+                label: t("workspace.records.createdAt"),
+              },
+              {
+                value: SearchRoutineTaskSortBy.LastUpdate,
+                label: t("workspace.records.updatedAt"),
+              },
+            ]}
+          />
         </div>
       </div>
 
       <div
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
+        ref={viewport}
+        className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearchingRoutineTasks || !hasMoreRoutineTasks) return;
 
           const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
           if (scrollTop + clientHeight < scrollHeight * 0.55) return;
-          void searchRoutineTasks(false);
+          void loadMoreRoutineTasks();
         }}
       >
-        <Table className="w-full table-fixed border-collapse text-xs">
+        <Table className="min-w-[40rem] table-fixed border-collapse text-xs">
           <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight [&_th]:text-left">
             <TableRow>
               <TableHead className="h-9 w-[19%] px-2">

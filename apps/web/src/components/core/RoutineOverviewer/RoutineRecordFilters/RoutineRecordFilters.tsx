@@ -15,7 +15,7 @@ import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { ArrowDownUp, ListFilter } from "lucide-react";
+import { ListFilter } from "lucide-react";
 import { useId } from "react";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import { Button } from "@/components/ui/button";
@@ -26,15 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 import {
   Select,
   SelectContent,
@@ -86,13 +78,13 @@ const RoutineRecordFilters = ({
   );
 
   return (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
       <Input
         aria-label={t("workspace.records.search")}
         placeholder={t("workspace.records.search")}
         value={value.query}
         onChange={event => onChange({ ...value, query: event.target.value })}
-        className="h-8 w-40 min-w-0 text-xs"
+        className="h-8 w-40 min-w-0 flex-1 text-xs sm:flex-none"
       />
       <Popover>
         <PopoverTrigger asChild>
@@ -265,117 +257,50 @@ const RoutineRecordFilters = ({
           </div>
         </PopoverContent>
       </Popover>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            size="icon"
-            variant={
-              value.sortBy !== defaultRoutineRecordFilters.sortBy ||
-              value.sortOrder !== defaultRoutineRecordFilters.sortOrder
-                ? "secondary"
-                : "outline"
-            }
-            className="size-8 shrink-0 rounded-sm"
-            aria-label={t("workspace.records.sort")}
-            title={t("workspace.records.sort")}
-          >
-            <ArrowDownUp className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          aria-label={t("workspace.records.sort")}
-          className="h-80 w-60 max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto overscroll-contain"
-        >
-          <DropdownMenuLabel>{t("workspace.records.sortBy")}</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={value.sortBy}
-            onValueChange={sortBy =>
-              onChange({
-                ...value,
-                sortBy: sortBy as RoutineRecordFiltersValue["sortBy"],
-              })
-            }
-          >
-            <DropdownMenuRadioItem
-              value="ACTUAL_STARTED_AT"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.table.started")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="ACTUAL_ENDED_AT"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.table.ended")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="SCHEDULED_AT"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.table.scheduled")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="CREATED_AT"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.records.createdAt")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="LAST_UPDATE"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.records.updatedAt")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="STATUS"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.table.status")}
-            </DropdownMenuRadioItem>
-            {task && (
-              <DropdownMenuRadioItem
-                value="PURPOSE"
-                onSelect={event => event.preventDefault()}
-              >
-                {t("workspace.table.purpose")}
-              </DropdownMenuRadioItem>
-            )}
-            {task && (
-              <DropdownMenuRadioItem
-                value="ATTEMPTS"
-                onSelect={event => event.preventDefault()}
-              >
-                {t("workspace.table.attempts")}
-              </DropdownMenuRadioItem>
-            )}
-          </DropdownMenuRadioGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>
-            {t("workspace.records.sortOrder")}
-          </DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={value.sortOrder}
-            onValueChange={sortOrder =>
-              onChange({ ...value, sortOrder: sortOrder as SearchSortOrder })
-            }
-          >
-            <DropdownMenuRadioItem
-              value="DESC"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.records.descending")}
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="ASC"
-              onSelect={event => event.preventDefault()}
-            >
-              {t("workspace.records.ascending")}
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RoutineSearchOrder
+        label={t("workspace.records.sort")}
+        value={value}
+        defaultValue={defaultRoutineRecordFilters}
+        onChange={order => onChange({ ...value, ...order })}
+        options={[
+          {
+            value: SearchRoutineRecordSortBy.ActualStartedAt,
+            label: t("workspace.table.started"),
+          },
+          {
+            value: SearchRoutineRecordSortBy.ActualEndedAt,
+            label: t("workspace.table.ended"),
+          },
+          {
+            value: SearchRoutineRecordSortBy.ScheduledAt,
+            label: t("workspace.table.scheduled"),
+          },
+          {
+            value: SearchRoutineRecordSortBy.CreatedAt,
+            label: t("workspace.records.createdAt"),
+          },
+          {
+            value: SearchRoutineRecordSortBy.LastUpdate,
+            label: t("workspace.records.updatedAt"),
+          },
+          {
+            value: SearchRoutineRecordSortBy.Status,
+            label: t("workspace.table.status"),
+          },
+          ...(task
+            ? [
+                {
+                  value: SearchRoutineTaskRecordSortBy.Purpose,
+                  label: t("workspace.table.purpose"),
+                },
+                {
+                  value: SearchRoutineTaskRecordSortBy.Attempts,
+                  label: t("workspace.table.attempts"),
+                },
+              ]
+            : []),
+        ]}
+      />
     </div>
   );
 };

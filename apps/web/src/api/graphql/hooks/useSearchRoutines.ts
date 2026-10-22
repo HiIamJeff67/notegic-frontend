@@ -27,7 +27,10 @@ export const useSearchRoutinesLazyQuery = (
 
 export const useSearchRoutinesQuery = (
   variables: SearchRoutinesQueryVariables,
-  options?: useQuery.Options<SearchRoutinesQuery, SearchRoutinesQueryVariables>
+  options?: Omit<
+    useQuery.Options<SearchRoutinesQuery, SearchRoutinesQueryVariables>,
+    "variables"
+  >
 ) =>
   useLocalSearchQuery(
     SearchRoutinesDocument,

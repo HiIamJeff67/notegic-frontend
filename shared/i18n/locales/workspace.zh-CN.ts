@@ -402,6 +402,12 @@ export const SimpleChineseWorkspaceTranslation = {
     presentSummary: "{{title}}：显示 {{shown}} / {{total}}",
   },
   table: {
+    searchRoutines: "搜索流程",
+    searchRoutineTasks: "搜索流程任务",
+    routineFilters: "流程筛选",
+    routineTaskFilters: "流程任务筛选",
+    sortRoutines: "流程排序",
+    sortRoutineTasks: "流程任务排序",
     attempts: "尝试次数",
     cost: "成本",
     routineTable: "流程表格",

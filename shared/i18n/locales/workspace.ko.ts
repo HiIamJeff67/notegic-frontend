@@ -410,6 +410,12 @@ export const KoreanWorkspaceTranslation = {
     presentSummary: "{{title}}: {{total}}개 중 {{shown}}개 표시",
   },
   table: {
+    searchRoutines: "루틴 검색",
+    searchRoutineTasks: "루틴 작업 검색",
+    routineFilters: "루틴 필터",
+    routineTaskFilters: "루틴 작업 필터",
+    sortRoutines: "루틴 정렬",
+    sortRoutineTasks: "루틴 작업 정렬",
     attempts: "시도 횟수",
     cost: "비용",
     routineTable: "루틴 표",

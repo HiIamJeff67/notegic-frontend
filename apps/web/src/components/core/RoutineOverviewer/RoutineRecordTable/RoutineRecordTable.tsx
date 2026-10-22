@@ -130,7 +130,7 @@ const RoutineRecordTable = () => {
       </div>
       <div
         ref={viewport}
-        className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
+        className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearching || !hasMore) return;
           const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
@@ -138,7 +138,7 @@ const RoutineRecordTable = () => {
           void loadMoreRecords();
         }}
       >
-        <Table className="table-fixed text-xs">
+        <Table className="min-w-[48rem] table-fixed text-xs">
           <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
             <TableRow>
               <TableHead className="h-9 w-[20%] px-2">

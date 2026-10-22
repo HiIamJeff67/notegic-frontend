@@ -38,40 +38,40 @@ const RoutineTaskRecordDialogSkeleton = ({
             </div>
           </DialogDescription>
         </DialogHeader>
+        <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
+          <Skeleton className="h-8 w-32 rounded-sm" />
+          <Skeleton className="size-8 rounded-sm" />
+          <Skeleton className="size-8 rounded-sm" />
+        </div>
+        <div className="border-b border-border px-4 py-2">
+          <Skeleton className="h-4 w-56 max-w-full" />
+        </div>
         <div className="min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible">
-          <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
-            <Skeleton className="h-8 w-32 rounded-sm" />
-            <Skeleton className="size-8 rounded-sm" />
-            <Skeleton className="size-8 rounded-sm" />
-          </div>
-          <div className="border-b border-border px-4 py-2">
-            <Skeleton className="h-4 w-56 max-w-full" />
-          </div>
-          <Table className="min-w-[64rem] table-fixed text-xs">
+          <Table className="min-w-[70rem] table-fixed text-xs">
             <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
               <TableRow>
-                <TableHead className="h-9 w-[16%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   <Skeleton className="h-3 w-16 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[12%] px-2">
+                <TableHead className="h-9 w-28 px-2">
                   <Skeleton className="h-3 w-14 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[16%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   <Skeleton className="h-3 w-16 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[14%] px-2">
+                <TableHead className="h-9 w-36 px-2">
                   <Skeleton className="h-3 w-20 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[14%] px-2">
+                <TableHead className="h-9 w-36 px-2">
                   <Skeleton className="h-3 w-14 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[8%] px-2">
+                <TableHead className="h-9 w-20 px-2">
                   <Skeleton className="h-3 w-8 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[10%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   <Skeleton className="h-3 w-10 rounded-sm" />
                 </TableHead>
-                <TableHead className="h-9 w-[10%] px-2">
+                <TableHead className="h-9 w-40 px-2">
                   <Skeleton className="h-3 w-10 rounded-sm" />
                 </TableHead>
               </TableRow>

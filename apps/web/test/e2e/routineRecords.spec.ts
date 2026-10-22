@@ -25,7 +25,13 @@ const openRecordFilters = async (page: Page) => {
     await trigger.click();
 };
 
-for (const mode of ["routine", "task", "dialog"] as const) {
+for (const mode of [
+  "routine",
+  "task",
+  "dialog",
+  "record-dialog",
+  "task-dialog",
+] as const) {
   test(`${mode} records reset cursor and cache when sorting or filters change`, async ({
     page,
   }) => {
@@ -152,8 +158,13 @@ for (const mode of ["routine", "task", "dialog"] as const) {
       sortBy: "ACTUAL_STARTED_AT",
       sortOrder: "DESC",
     });
-    await page.keyboard.press("Escape");
-    if (mode === "dialog") {
+    await page
+      .getByRole("button", { name: "Record filters", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Record filters", exact: true })
+    ).toHaveAttribute("aria-expanded", "false");
+    if (mode.endsWith("dialog")) {
       await expect(
         page.getByRole("status", { name: "Record summary", exact: true })
       ).toHaveText("Loaded 2 records · Success 2");
@@ -163,11 +174,29 @@ for (const mode of ["routine", "task", "dialog"] as const) {
       await expect(
         page.getByText("No detailed output", { exact: true })
       ).toHaveCount(1);
-      await table
+      const previewWidths = () =>
+        table.locator("thead th").evaluateAll(columns => ({
+          input: columns[6].getBoundingClientRect().width,
+          result: columns[7].getBoundingClientRect().width,
+        }));
+      const compact = await previewWidths();
+      expect(compact.input).toBeLessThan(190);
+      expect(compact.result).toBeLessThan(190);
+      if (mode === "dialog") {
+        await expect(
+          page.getByRole("dialog", { name: "Record filters", exact: true })
+        ).toHaveCount(0);
+        await page.screenshot({
+          path: "/tmp/notegic-record-preview-compact.png",
+        });
+      }
+      const resultPreview = table
         .locator("summary")
-        .filter({ hasText: "Execution result" })
-        .click();
+        .filter({ hasText: "Execution result" });
+      await resultPreview.click();
       await expect(table.locator("pre:visible")).toContainText('"updated": 1');
+      expect((await previewWidths()).result).toBeGreaterThan(310);
+      expect((await previewWidths()).input).toBeLessThan(190);
       await expect(
         table.getByRole("columnheader", {
           name: "Execution input",
@@ -180,7 +209,36 @@ for (const mode of ["routine", "task", "dialog"] as const) {
           exact: true,
         })
       ).toBeVisible();
-      expect(inputs[0].routineTaskIds).toEqual([]);
+      const inputPreviews = table
+        .locator("summary")
+        .filter({ hasText: "Execution input" });
+      await inputPreviews.first().click();
+      const expanded = await previewWidths();
+      expect(expanded.input).toBeGreaterThan(470);
+      expect(expanded.result).toBeGreaterThan(310);
+      expect(expanded.input).toBeGreaterThan(expanded.result);
+      if (mode === "dialog") {
+        await table.evaluate(element => {
+          const viewport = element.closest(".custom-scrollbar")!;
+          viewport.scrollLeft = viewport.scrollWidth;
+        });
+        await page.screenshot({ path: "/tmp/notegic-record-preview-wide.png" });
+      }
+      await resultPreview.click();
+      expect((await previewWidths()).result).toBeLessThan(190);
+      expect((await previewWidths()).input).toBeGreaterThan(470);
+      await inputPreviews.nth(1).click();
+      await inputPreviews.first().click();
+      expect((await previewWidths()).input).toBeGreaterThan(470);
+      await inputPreviews.nth(1).click();
+      await expect.poll(previewWidths).toEqual(compact);
+      expect(inputs[0].routineTaskIds).toEqual(
+        mode === "task-dialog" ? ["00000000-0000-4000-8000-000000000002"] : []
+      );
+      if (mode === "record-dialog")
+        expect(inputs[0].routineRecordId).toBe(
+          "00000000-0000-4000-8000-000000000099"
+        );
     }
     await table.evaluate(element => {
       const viewport = element.closest(".custom-scrollbar")!;
@@ -205,6 +263,11 @@ for (const mode of ["routine", "task", "dialog"] as const) {
     await expect(
       page.getByRole("menuitemradio", { name: "Ascending", exact: true })
     ).toBeChecked();
+    await expect(
+      page
+        .getByRole("menuitemradio", { name: "Ascending", exact: true })
+        .locator("svg.lucide-check")
+    ).toHaveCount(1);
     await page
       .getByRole("menuitemradio", { name: "Updated at", exact: true })
       .click();
@@ -258,7 +321,7 @@ for (const mode of ["routine", "task", "dialog"] as const) {
     );
     await expect(table.locator("tbody tr")).toHaveCount(1);
     await page.keyboard.press("Escape");
-    if (mode === "dialog") {
+    if (mode.endsWith("dialog")) {
       const dialog = page.getByRole("dialog", {
         name: "Routine task records",
         exact: true,
@@ -272,6 +335,29 @@ for (const mode of ["routine", "task", "dialog"] as const) {
       ]) {
         await page.setViewportSize(size);
         await expect(dialog).toBeVisible();
+        const columns = table.locator("thead th");
+        expect((await columns.nth(6).boundingBox())!.width).toBeLessThan(270);
+        expect((await columns.nth(7).boundingBox())!.width).toBeLessThan(270);
+        const scroll = await table.evaluate(element => {
+          const viewport = element.closest(".custom-scrollbar")!;
+          viewport.scrollLeft = viewport.scrollWidth;
+          return {
+            width: viewport.clientWidth,
+            content: viewport.scrollWidth,
+            left: viewport.scrollLeft,
+          };
+        });
+        if (size.width < 1900) {
+          expect(scroll.content).toBeGreaterThan(scroll.width);
+          expect(scroll.left).toBeGreaterThan(0);
+        }
+        if (mode === "dialog" && size.width === 320)
+          await page.screenshot({
+            path: "/tmp/notegic-record-preview-small.png",
+          });
+        await expect(
+          table.locator("tbody tr").last().locator("td").last()
+        ).toBeInViewport();
         const bounds = await dialog.boundingBox();
         expect(bounds!.width).toBeGreaterThan(size.width * 0.85);
         expect(bounds!.x).toBeGreaterThanOrEqual(8);
@@ -803,3 +889,243 @@ test("real backend filters complete Routine history before cursor pagination", a
   }
   await page.evaluate(() => window.routineRecordsSessionClient.stop());
 });
+
+for (const mode of ["routines", "tasks"] as const) {
+  test(`${mode} table searches and orders the API with isolated cursor pages on mobile`, async ({
+    page,
+  }) => {
+    test.skip(
+      process.env.E2E_PRODUCTION === "true",
+      "Uses Vite source imports"
+    );
+    await page.goto("/document");
+    await page.locator("html[data-density]").waitFor();
+    const inputs: Array<Record<string, unknown>> = [];
+    let blockNextPage = false;
+    let release: (() => void) | undefined;
+    let settled = Promise.resolve();
+    const field = mode === "routines" ? "searchRoutines" : "searchRoutineTasks";
+    await page.route("**/record-acceptance/graphql", async route => {
+      const input = route.request().postDataJSON().variables.input;
+      inputs.push(input);
+      let finish: (() => void) | undefined;
+      if (input.after && blockNextPage) {
+        settled = new Promise<void>(resolve => {
+          finish = resolve;
+        });
+        await new Promise<void>(resolve => {
+          release = resolve;
+        });
+      }
+      const ids = input.query
+        ? [4]
+        : input.after
+          ? [3]
+          : input.sortOrder === "DESC"
+            ? [2, 1]
+            : [1, 2];
+      const edges = ids.map(id => ({
+        __typename:
+          mode === "routines" ? "SearchRoutineEdge" : "SearchRoutineTaskEdge",
+        encodedSearchCursor: `entity-${id}-${input.query}-${input.sortBy}-${input.sortOrder}`,
+        node: {
+          __typename:
+            mode === "routines"
+              ? "PrivateSearchableRoutine"
+              : "PrivateRoutineTask",
+          id: `00000000-0000-4000-8000-${String(id).padStart(12, "0")}`,
+          stationId: "00000000-0000-4000-8000-000000000010",
+          routineId: "00000000-0000-4000-8000-000000000001",
+          title:
+            id === 1
+              ? "Alpha"
+              : id === 2
+                ? "Zulu"
+                : id === 3
+                  ? "Next page"
+                  : "Fresh needle",
+          kind: "Action",
+          x: 0,
+          y: 0,
+          payload: { schemaVersion: 1, purpose: "GetRoutine" },
+          priority: id,
+          maxAttempts: 3,
+          previousRoutineTaskIds: [],
+          phase: "RoutinePhase_Plan",
+          timeoutSeconds: 600,
+          isActive: false,
+          admissionState: "Paused",
+          definitionVersion: 1,
+          isPinned: false,
+          scheduledStartAt: "2026-10-22T00:00:00Z",
+          scheduledEndAt: "2026-10-22T01:00:00Z",
+          period: null,
+          timezone: "UTC",
+          deletedAt: null,
+          createdAt: "2026-10-21T00:00:00Z",
+          updatedAt: "2026-10-22T00:00:00Z",
+          tagIds: [],
+          taskIds: [],
+          itemIds: [],
+        },
+      }));
+      await route.fulfill({
+        json: {
+          data: {
+            [field]: {
+              __typename:
+                mode === "routines"
+                  ? "SearchRoutineConnection"
+                  : "SearchRoutineTaskConnection",
+              searchEdges: edges,
+              totalCount: edges.length,
+              searchTime: 0,
+              searchPageInfo: {
+                __typename: "SearchPageInfo",
+                hasNextPage: !input.after && !input.query,
+                hasPreviousPage: Boolean(input.after),
+                startEncodedSearchCursor: edges[0].encodedSearchCursor,
+                endEncodedSearchCursor: edges.at(-1)!.encodedSearchCursor,
+              },
+            },
+          },
+        },
+      });
+      finish?.();
+    });
+    await page.evaluate(async mode => {
+      const path = "/test/e2e/routineRecordsTestSupport.tsx";
+      const { mountRoutineRecords } = await import(/* @vite-ignore */ path);
+      window.routineRecordsExample = mountRoutineRecords(mode);
+    }, mode);
+    const table = page.locator("#routine-record-acceptance table");
+    await expect(table.locator("tbody tr")).toHaveCount(2);
+    const search = page.getByRole("textbox", {
+      name: mode === "routines" ? "Search routines" : "Search routine tasks",
+      exact: true,
+    });
+    const sort = page.getByRole("button", {
+      name: mode === "routines" ? "Sort routines" : "Sort routine tasks",
+      exact: true,
+    });
+    const filter = page.getByRole("button", {
+      name: mode === "routines" ? "Routine filters" : "Routine task filters",
+      exact: true,
+    });
+    const loadMore = () =>
+      table.evaluate(element => {
+        const viewport = element.closest(".custom-scrollbar")!;
+        viewport.scrollTop = viewport.scrollHeight;
+        viewport.dispatchEvent(new Event("scroll", { bubbles: true }));
+      });
+    await loadMore();
+    await expect(table.locator("tbody tr")).toHaveCount(3);
+    expect(inputs.at(-1)?.after).toBeTruthy();
+    await sort.click();
+    await page
+      .getByRole("menuitemradio", { name: "Descending", exact: true })
+      .click();
+    await expect(table.locator("tbody tr")).toHaveCount(2);
+    await expect(table.locator("tbody tr").first()).toContainText("Zulu");
+    expect(inputs.at(-1)?.after).toBeUndefined();
+    expect(inputs.at(-1)?.sortOrder).toBe("DESC");
+    await expect(
+      page
+        .getByRole("menuitemradio", { name: "Descending", exact: true })
+        .locator("svg.lucide-check")
+    ).toHaveCount(1);
+    await page
+      .getByRole("menuitemradio", { name: "Updated at", exact: true })
+      .click();
+    await expect.poll(() => inputs.at(-1)?.sortBy).toBe("LAST_UPDATE");
+    expect(inputs.at(-1)?.after).toBeUndefined();
+    await page.keyboard.press("Escape");
+    blockNextPage = true;
+    await loadMore();
+    await expect.poll(() => Boolean(release)).toBe(true);
+    await search.fill("old");
+    await search.fill("needle");
+    await expect.poll(() => inputs.at(-1)?.query).toBe("needle");
+    expect(inputs.at(-1)?.after).toBeUndefined();
+    await expect(table.locator("tbody tr")).toHaveCount(1);
+    await expect(table.locator("tbody tr")).toContainText("Fresh needle");
+    release?.();
+    await settled;
+    await expect(table.locator("tbody tr")).toHaveCount(1);
+    if (mode === "tasks") {
+      await filter.click();
+      await page
+        .getByRole("combobox", { name: "Routine", exact: true })
+        .click();
+      await page
+        .getByRole("option", { name: "Record acceptance", exact: true })
+        .click();
+      await expect
+        .poll(() => inputs.at(-1)?.routineIds)
+        .toEqual(["00000000-0000-4000-8000-000000000001"]);
+      expect(inputs.at(-1)?.after).toBeUndefined();
+      await page
+        .getByRole("button", { name: "Reset filters", exact: true })
+        .click();
+      await expect.poll(() => inputs.at(-1)?.routineIds).toEqual([]);
+      expect(inputs.at(-1)?.query).toBe("needle");
+      expect(inputs.at(-1)?.sortBy).toBe("LAST_UPDATE");
+      await page.keyboard.press("Escape");
+    }
+    for (const size of [
+      { width: 1280, height: 720 },
+      { width: 390, height: 844 },
+      { width: 320, height: 280 },
+    ]) {
+      await page.setViewportSize(size);
+      await expect(search).toBeInViewport();
+      const searchBox = (await search.boundingBox())!;
+      const filterBox = (await filter.boundingBox())!;
+      expect(searchBox.x + searchBox.width).toBeLessThanOrEqual(filterBox.x);
+      for (const trigger of [filter, sort]) {
+        const label = (await trigger.getAttribute("aria-label"))!;
+        await trigger.click();
+        const panel = page.getByRole(trigger === filter ? "dialog" : "menu", {
+          name: label,
+          exact: true,
+        });
+        await expect(panel).toBeVisible();
+        const bounds = (await panel.boundingBox())!;
+        expect(bounds.height).toBeLessThanOrEqual(321);
+        expect(bounds.x).toBeGreaterThanOrEqual(0);
+        expect(bounds.x + bounds.width).toBeLessThanOrEqual(size.width);
+        await page.keyboard.press("Escape");
+        await expect(panel).toHaveCount(0);
+      }
+      await table.evaluate(element => {
+        const viewport = element.closest(".custom-scrollbar")!;
+        viewport.scrollTop = 0;
+        viewport.scrollLeft = viewport.scrollWidth;
+      });
+      const edit = table.locator("tbody tr").first().getByRole("button").last();
+      await expect(edit).toBeInViewport();
+      const button = (await edit.boundingBox())!;
+      const cell = (await table
+        .locator("tbody tr")
+        .first()
+        .locator("td")
+        .last()
+        .boundingBox())!;
+      expect(button.width).toBeGreaterThanOrEqual(
+        mode === "routines" ? 27 : 23
+      );
+      expect(button.x).toBeGreaterThanOrEqual(cell.x);
+      expect(button.x + button.width).toBeLessThanOrEqual(cell.x + cell.width);
+      if (mode === "routines" && size.width === 390)
+        await page.screenshot({
+          path: "/tmp/notegic-routine-table-mobile.png",
+        });
+    }
+    await table.locator("tbody tr").first().getByRole("button").last().click();
+    await expect(page.locator("#routine-record-acceptance")).toHaveAttribute(
+      "data-inspected-id",
+      "00000000-0000-4000-8000-000000000004"
+    );
+    await page.evaluate(() => window.routineRecordsExample.unmount());
+  });
+}

@@ -45,8 +45,8 @@ content, user uploads and prose emoji are not separate reusable application icon
 | Rename | `Pencil` | Existing object-name editing. PDF `PencilIcon` is a drawing tool, not the edit/Inspector action. |
 | Document navigation | `BookOpenIcon` | Home, app sidebar, viewer/editor guide links and document navigation/fallback entries. |
 | Refresh / retry | `RefreshCw` / `RefreshCwIcon` | Material reload, pending graph sync and browser permission checks. Reset remains `RotateCcwIcon`. |
-| Record filters | `ListFilter` | Status, purpose and date-range controls; [RecordFilters]. |
-| Record sort order | `ArrowDownUp` | Sorting field and direction; [RecordFilters]. |
+| Routine and record filters | `ListFilter` | Status, purpose and date-range controls; [RecordFilters], [RoutineTable], [RoutineTaskTable]. |
+| Routine and record sort order | `ArrowDownUp` | Sorting field and direction; [RoutineSearchOrder]. |
 | Realign dependency graph | `Workflow` | Whole Routine task graph realignment; [GraphToolbar]. |
 | Copy to clipboard / duplicate | `CopyIcon` / `Copy` | Preferences, API keys, code and existing duplicate actions. A successful-copy `CheckIcon` is state feedback. |
 
@@ -87,7 +87,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Activity` | Execution activity / records | [RoutineRecordTable] |
 | `AlertCircleIcon`, `CircleAlertIcon` | Important notification / alert | [NotificationPopover], [NotificationDialog] |
 | `AlertTriangleIcon`, `TriangleAlert` | Warning notification / toast | [NotificationPopover], [Toaster] |
-| `ArrowDownUp` | Record sorting field / direction | [RecordFilters] |
+| `ArrowDownUp` | Routine and record sorting field / direction | [RoutineSearchOrder] |
 | `BellIcon` | Notifications | [NotificationPopover] |
 | `BlocksIcon` | Block content-unit identity in API reference | [APIReference]; not a Block pack identity substitute |
 | `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
@@ -97,7 +97,7 @@ The source column gives a representative existing consumer, not every call site.
 | `CalendarDays`, `CalendarDaysIcon` | Calendar view / date field | [TimeRails], [BlockPackEditorSchema] |
 | `CalendarIcon` | Date picker / profile date | [DatePicker], [ProfileTab] |
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
-| `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [SupportedIconTable] |
+| `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
 | `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field | [Select], [GuideWidget] |
 | `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month | [GuideWidget], [Calendar] |
@@ -105,7 +105,7 @@ The source column gives a representative existing consumer, not every call site.
 | `ChevronUpIcon` | Collapse / previous field | [VersionCard], [CreateRoutineTaskDialog] |
 | `ChevronsRightLeftIcon` | Reduce dashboard width | [DashboardPage] |
 | `ChevronsUpDownIcon` | Combobox / timezone selection | [TimezoneSelector] |
-| `Circle`, `CircleIcon` | Radio-menu selection marker | [ContextMenu], [DropdownMenu] |
+| `Circle`, `CircleIcon` | Radio-menu selection marker | [ContextMenu] |
 | `CircleDotIcon` | Incomplete version-card task | [VersionCard] |
 | `CircleHelpIcon` | Help navigation | [ArticleNavigation] |
 | `ClipboardClockIcon` | Routine base glyph; use `RoutineIcon` | [WorkspaceEntityIcons] |
@@ -140,7 +140,7 @@ The source column gives a representative existing consumer, not every call site.
 | `KeyRoundIcon` | API key documentation | [APIKey] |
 | `LayoutDashboardIcon` | Dashboard navigation | [AppSidebar] |
 | `LinkIcon` | Todo linked item | [TodoWidget] |
-| `ListFilter` | Record filter controls | [RecordFilters] |
+| `ListFilter` | Routine and record filter controls | [RecordFilters], [RoutineTable], [RoutineTaskTable] |
 | `Loader2Icon`, `LoaderCircle`, `LoaderCircleIcon` | Loading / pending work | [Spinner], [RoutineMenu], [HomePage] |
 | `LogOut`, `LogOutIcon` | Sign out / leave shared resource | [AppSidebar], [StationMenu], [RootShelfMenu] |
 | `MailIcon` | Contact/email navigation | [ArticleNavigation] |
@@ -370,3 +370,6 @@ assets or Docker services were removed. No commit or push was performed.
 [ChartFrame]: ../../shared/charts/components/ChartFrame.tsx
 
 [RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx
+
+[RoutineSearchOrder]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineSearchOrder/RoutineSearchOrder.tsx
+[RoutineTaskTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable.tsx
