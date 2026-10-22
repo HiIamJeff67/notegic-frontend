@@ -12,7 +12,7 @@ import type {
   HardDeleteMyRoutineTaskByIdRequest,
   UpdateMyRoutineTaskByIdRequest,
 } from "@shared/api/interfaces/routineTask.interface";
-import { normalizeRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
+import { parseRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
 import { and, asc, desc, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
@@ -68,7 +68,7 @@ export class RoutineTaskLocalSimulator {
   static simulateCreateRoutineTaskByRoutineId = async (
     request: CreateRoutineTaskByRoutineIdRequest
   ) => {
-    const normalized = normalizeRoutineTaskDefinition(request.body);
+    const definition = parseRoutineTaskDefinition(request.body);
     if (!localDB.isReady) await localDB.ensureReady();
     return localDB.transaction(async tx => {
       const user = await tx.query.User.findFirst({
@@ -102,14 +102,14 @@ export class RoutineTaskLocalSimulator {
         x: request.body.x ?? 0,
         y: request.body.y ?? 0,
         title: request.body.title,
-        payload: normalized.payload,
+        payload: definition.payload,
         priority: request.body.priority ?? 0,
         maxAttempts: request.body.maxAttempts ?? 1,
         previousRoutineTaskIds: [],
         createdAt,
         updatedAt: createdAt,
       });
-      if (normalized.kind === "Action")
+      if (definition.kind === "Action")
         await tx.insert(RoutinesToTasks).values({
           routineId: routine.id,
           taskId: request.body.id,
@@ -121,11 +121,11 @@ export class RoutineTaskLocalSimulator {
         actionType: TransactionActionType.CREATE,
         body: {
           ...request.body,
-          payload: normalized.payload,
+          payload: definition.payload,
           expectedDefinitionVersion:
             request.body.expectedDefinitionVersion ?? routine.definitionVersion,
         },
-        affected: { routineId: routine.id, kind: normalized.kind },
+        affected: { routineId: routine.id, kind: definition.kind },
       });
       return { id: request.body.id, createdAt };
     });
@@ -164,7 +164,7 @@ export class RoutineTaskLocalSimulator {
         request.body.values.routineId !== entry.task.routineId
       )
         throw new Error("Moving a node requires an online permission check");
-      const normalized = normalizeRoutineTaskDefinition({
+      const definition = parseRoutineTaskDefinition({
         ...entry.task,
         ...request.body.values,
         purpose:
@@ -180,7 +180,7 @@ export class RoutineTaskLocalSimulator {
         .update(RoutineTask)
         .set({
           ...request.body.values,
-          payload: normalized.payload,
+          payload: definition.payload,
           updatedAt,
         })
         .where(eq(RoutineTask.id, entry.task.id));
@@ -192,7 +192,7 @@ export class RoutineTaskLocalSimulator {
           ...request.body,
           values: {
             ...request.body.values,
-            payload: normalized.payload,
+            payload: definition.payload,
           },
           expectedDefinitionVersion:
             request.body.expectedDefinitionVersion ??

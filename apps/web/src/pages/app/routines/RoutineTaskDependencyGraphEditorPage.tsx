@@ -13,7 +13,7 @@ const RoutineTaskDependencyGraphEditorPage = ({
     key={routineId}
     routineId={routineId}
   >
-    <RoutineTaskDependencyGraphEditor routineId={routineId} />
+    <RoutineTaskDependencyGraphEditor />
   </RoutineTaskDependencyGraphDraftProvider>
 );
 

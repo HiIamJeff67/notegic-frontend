@@ -68,7 +68,7 @@ Run the following from the repository root:
 npm run test:unit -- apps/web/src/api/local/recovery.test.ts apps/web/src/api/local/migrator.test.ts apps/web/src/api/local/cleanup.test.ts
 npm run typecheck
 npx playwright install chromium
-npm run test:e2e -- apps/web/test/e2e/local-database-startup.spec.ts
+npm run test:e2e -- apps/web/test/e2e/localDatabaseStartup.spec.ts
 ```
 
 The Playwright startup test delays worker configuration and exercises two tabs

@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
   const cloudflareWorkerName = env.CLOUDFLARE_WORKER_NAME?.trim();
   const rawBasePath =
     env.VITE_APP_BASE_PATH || (mode === "production" ? "/" : "/development/v1");
-  const normalizedBasePath =
+  const basePath =
     rawBasePath === "/" ? "/" : `/${rawBasePath.replace(/^\/+|\/+$/g, "")}/`;
   const sqliteWasmDistDir = join(
     repositoryRoot,
@@ -34,16 +34,16 @@ export default defineConfig(({ mode }) => {
   const sqliteWasmPathPrefixes = Array.from(
     new Set([
       "/node_modules/@sqlite.org/sqlite-wasm/dist/",
-      `${normalizedBasePath}node_modules/@sqlite.org/sqlite-wasm/dist/`,
+      `${basePath}node_modules/@sqlite.org/sqlite-wasm/dist/`,
       `/@fs${sqliteWasmDistDir}/`,
-      `${normalizedBasePath}@fs${sqliteWasmDistDir}/`,
+      `${basePath}@fs${sqliteWasmDistDir}/`,
     ])
   );
 
   return {
     root: webRoot,
     envDir: webRoot,
-    base: normalizedBasePath,
+    base: basePath,
     server: {
       port: Number(env.VITE_PORT || 6776),
       headers: {
@@ -58,6 +58,11 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       tsconfigPaths: true,
+      // Nested Radix popups must share the Dialog's focus and dismissal stacks.
+      dedupe: [
+        "@radix-ui/react-dismissable-layer",
+        "@radix-ui/react-focus-scope",
+      ],
     },
     ssr: {
       noExternal: ["@blocknote/math-block"],

@@ -1,4 +1,4 @@
-import { compareEntityNames } from "./compare-entity-names";
+import { compareEntityNames } from "./compareEntityNames";
 
 describe("entity display order", () => {
   test("uses string ordering, including numbers and case", () => {

@@ -9,7 +9,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { LocalPreferencesProvider } from '@/providers/LocalPreferencesProvider';
 import { UserSettingsProvider } from '@/providers/UserSettingsProvider';
-import { useLocalPreferences } from '@/hooks/localPreferences';
+import { useLocalPreferences } from '@/hooks/useLocalPreferences';
 import { Language, UserSettingDensity, UserSettingStartSurface } from '@shared/api/interfaces/enums';
 window.state = { reads: 0, writes: [], cachedReads: 0, signals: [], online: true, userId: 'user-1' };
 window.setting = {

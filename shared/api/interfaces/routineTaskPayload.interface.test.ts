@@ -1,6 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { RoutineTaskPayloadSchema } from "@shared/api/interfaces/routineTaskPayload.interface";
-import { normalizeRoutineTaskDefinition } from "./routineTask.interface";
+import { parseRoutineTaskDefinition } from "./routineTask.interface";
 
 const block = {
   id: "73b3a848-bca0-44e4-8fb4-cf6cc6ca6aee",
@@ -218,40 +218,40 @@ describe("canonical local node projection", () => {
     },
   };
   it("keeps the discriminator only in canonical payload", () => {
-    const normalized = normalizeRoutineTaskDefinition(input);
-    expect(normalized).not.toHaveProperty("purpose");
-    expect(normalized.payload.purpose).toBe(RoutineTaskPurpose.GetRoutine);
+    const definition = parseRoutineTaskDefinition(input);
+    expect(definition).not.toHaveProperty("purpose");
+    expect(definition.payload.purpose).toBe(RoutineTaskPurpose.GetRoutine);
   });
-  it("normalizes legacy input without losing operation fields", () => {
-    const normalized = normalizeRoutineTaskDefinition({
+  it("parses legacy input without losing operation fields", () => {
+    const definition = parseRoutineTaskDefinition({
       ...input,
       purpose: RoutineTaskPurpose.GetRoutine,
       payload: { routineId: input.routineId },
     });
-    expect(normalized.payload).toEqual(input.payload);
+    expect(definition.payload).toEqual(input.payload);
   });
   it("keeps Start purpose empty and rejects conflicting or unsupported metadata", () => {
     expect(
-      normalizeRoutineTaskDefinition({
+      parseRoutineTaskDefinition({
         ...input,
         kind: "Start",
         payload: { isActive: false },
       }).payload
     ).not.toHaveProperty("purpose");
     expect(() =>
-      normalizeRoutineTaskDefinition({
+      parseRoutineTaskDefinition({
         ...input,
         purpose: RoutineTaskPurpose.DeleteRoutine,
       })
     ).toThrow();
     expect(() =>
-      normalizeRoutineTaskDefinition({
+      parseRoutineTaskDefinition({
         ...input,
         payload: { ...input.payload, schemaVersion: 2 },
       })
     ).toThrow();
     expect(() =>
-      normalizeRoutineTaskDefinition({
+      parseRoutineTaskDefinition({
         ...input,
         kind: "Start",
         payload: input.payload,

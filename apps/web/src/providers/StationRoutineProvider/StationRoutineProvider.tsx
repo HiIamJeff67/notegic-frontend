@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";

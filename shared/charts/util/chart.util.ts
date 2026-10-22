@@ -188,7 +188,7 @@ export function createBandScale(
   };
 }
 
-export function buildLinearTicks(domain: [number, number], count = 5) {
+export function createLinearTicks(domain: [number, number], count = 5) {
   const safeCount = Math.max(2, Math.floor(count));
   const span = domain[1] - domain[0];
 
@@ -203,7 +203,7 @@ export function buildLinearTicks(domain: [number, number], count = 5) {
   );
 }
 
-export function buildIntegerTicks(domain: [number, number], count = 5) {
+export function createIntegerTicks(domain: [number, number], count = 5) {
   const safeCount = Math.max(2, Math.floor(count));
   const start = Math.floor(domain[0]);
   const end = Math.ceil(domain[1]);

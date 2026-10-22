@@ -17,7 +17,7 @@ const dragNode = async (page: Page, node: Locator, dx: number, dy: number) => {
 
 const mountLayoutEditor = async (page: Page) => {
   await page.evaluate(async () => {
-    const path = "/test/e2e/routine-graph-test-support.tsx";
+    const path = "/test/e2e/routineGraphTestSupport.tsx";
     const { mountRoutineLayoutEditor } = await import(/* @vite-ignore */ path);
     await mountRoutineLayoutEditor();
   });
@@ -415,7 +415,7 @@ test("starting nodes expose only outgoing handles, remain draggable, and edit th
   page,
 }) => {
   await page.evaluate(async () => {
-    const path = "/test/e2e/routine-graph-test-support.tsx";
+    const path = "/test/e2e/routineGraphTestSupport.tsx";
     const { mountRoutineGraph } = await import(/* @vite-ignore */ path);
     mountRoutineGraph();
   });
@@ -545,12 +545,10 @@ test("SQLocal preserves a populated Routine graph, queue and draft across down/u
       "/src/api/local/migrator.ts"
     );
     const { getOrderedMigrations } = await importModule(
-      "/src/api/local/migration-catalog.ts"
+      "/src/api/local/migrationCatalog.ts"
     );
     await localDB.ensureReady();
-    const { sql } = await importModule(
-      "/test/e2e/local-database-test-support.ts"
-    );
+    const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const migrator = new LocalDBMigrator(
       {
         transaction: (
@@ -692,7 +690,7 @@ test("real editor retries a node-only durable queue and refreshes pending status
       get: () => false,
     });
     const { mountRoutineEditor } = await load(
-      "/test/e2e/routine-graph-test-support.tsx"
+      "/test/e2e/routineGraphTestSupport.tsx"
     );
     await mountRoutineEditor();
   });
@@ -812,7 +810,7 @@ test("offline routine activation and canonical local payloads survive storage an
       get: () => false,
     });
     const { mountRoutineEditor } = await load(
-      "/test/e2e/routine-graph-test-support.tsx"
+      "/test/e2e/routineGraphTestSupport.tsx"
     );
     await mountRoutineEditor();
     return { canonical, columns, rejected, durable, draft };
@@ -840,4 +838,127 @@ test("offline routine activation and canonical local payloads survive storage an
   });
   expect(paused.active).toEqual([[0]]);
   expect(paused.pending).toEqual([[1]]);
+});
+
+test("Realign confirms the entire overlapping graph and preserves its queued layout after reload", async ({
+  page,
+}) => {
+  await page.route("**/_serverFn/**", route => route.abort("failed"));
+  const editor = await mountLayoutEditor(page);
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      get: () => false,
+    })
+  );
+  const realign = editor.getByRole("button", { name: "Realign", exact: true });
+  await expect(realign).toBeDisabled();
+  const start = editor.locator(
+    '.react-flow__node[data-id="22345678-1234-4234-8234-123456789abc"]'
+  );
+  const action = editor.locator(
+    '.react-flow__node[data-id="42345678-1234-4234-8234-123456789abc"]'
+  );
+  const source = (await start
+    .locator(".react-flow__handle.source")
+    .boundingBox())!;
+  const target = (await action
+    .locator(".react-flow__handle.target")
+    .boundingBox())!;
+  await page.mouse.move(
+    source.x + source.width / 2,
+    source.y + source.height / 2
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    target.x + target.width / 2,
+    target.y + target.height / 2,
+    { steps: 12 }
+  );
+  await page.mouse.up();
+  await expect(editor.locator(".react-flow__edge")).toHaveCount(1);
+  const startBounds = (await start.boundingBox())!;
+  const actionBounds = (await action.boundingBox())!;
+  await dragNode(
+    page,
+    start,
+    actionBounds.x - startBounds.x + 30,
+    actionBounds.y - startBounds.y
+  );
+  await expect(realign).toBeEnabled();
+  const lock = editor.getByRole("button", { name: "Toggle Interactivity" });
+  await lock.click();
+  await expect(realign).toBeDisabled();
+  await lock.click();
+  await expect(realign).toBeEnabled();
+  const before = await editor
+    .locator(".react-flow__node")
+    .evaluateAll(nodes =>
+      nodes.map(node => (node as HTMLElement).style.transform)
+    );
+  await realign.click();
+  const dialog = page.getByRole("dialog", {
+    name: "Realign the graph ?",
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText(
+    "This operation will cause the entire graph with all the routine tasks and dependency links being realigned."
+  );
+  await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(
+    await editor
+      .locator(".react-flow__node")
+      .evaluateAll(nodes =>
+        nodes.map(node => (node as HTMLElement).style.transform)
+      )
+  ).toEqual(before);
+  await realign.click();
+  await dialog
+    .getByRole("button", { name: "Realign", exact: true })
+    .evaluate(button => {
+      (button as HTMLButtonElement).click();
+      (button as HTMLButtonElement).click();
+    });
+  await expect(dialog).toHaveCount(0);
+  await expect(realign).toBeDisabled();
+  await expect(editor.locator(".react-flow__edge")).toHaveCount(1);
+  const snapshot = await page.evaluate(async () => {
+    const path = "/src/api/local/db.ts";
+    const { localDB } = await import(/* @vite-ignore */ path);
+    const rows = await localDB.all(
+      "SELECT id,x,y FROM RoutineTaskTable ORDER BY id"
+    );
+    const draft = await localDB.all(
+      "SELECT nodes,edges FROM RoutineTaskDependencyGraphDraftTable"
+    );
+    return { rows, draft };
+  });
+  expect(snapshot.rows).toHaveLength(2);
+  expect(snapshot.rows[0][1]).toBeLessThan(snapshot.rows[1][1]);
+  expect(JSON.parse(snapshot.draft[0][0])).toHaveLength(2);
+  expect(JSON.parse(snapshot.draft[0][1])).toHaveLength(1);
+  await page.reload();
+  await page.evaluate(async () => {
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      get: () => false,
+    });
+    const path = "/test/e2e/routineGraphTestSupport.tsx";
+    const { mountRoutineEditor } = await import(/* @vite-ignore */ path);
+    await mountRoutineEditor();
+  });
+  await expect(editor.locator(".react-flow__node")).toHaveCount(2);
+  await expect(editor.locator(".react-flow__edge")).toHaveCount(1);
+  await expect(realign).toBeDisabled();
+  expect(
+    await page.evaluate(async () => {
+      const path = "/src/api/local/db.ts";
+      const { localDB } = await import(/* @vite-ignore */ path);
+      return await localDB.all(
+        "SELECT id,x,y FROM RoutineTaskTable ORDER BY id"
+      );
+    })
+  ).toEqual(snapshot.rows);
 });

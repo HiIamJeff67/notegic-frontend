@@ -1,5 +1,5 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
-import { makeQueryClient } from "@shared/api/queryClient";
+import { createQueryClient } from "@shared/api/queryClient";
 import { readAPIResponse } from "./apiResponse.adapter";
 
 const publicException = {
@@ -142,7 +142,7 @@ test.each([
   const error = await readAPIResponse(
     Response.json({ exception: { ...publicException, retryable } }, { status })
   ).catch(error => error);
-  const client = makeQueryClient();
+  const client = createQueryClient();
   for (const options of [
     client.getDefaultOptions().queries,
     client.getDefaultOptions().mutations,

@@ -159,6 +159,24 @@ export const EnglishWorkspaceTranslation = {
     clickToAdd: "Click to add",
   },
   records: {
+    sort: "Sort records",
+    summary: "Record summary",
+    loadedSummary: "Loaded {{count}} records",
+    filters: "Record filters",
+    search: "Search records",
+    startedFrom: "Started at or after",
+    startedBefore: "Started before",
+    sortBy: "Sort by",
+    sortOrder: "Sort direction",
+    ascending: "Ascending",
+    descending: "Descending",
+    createdAt: "Created at",
+    updatedAt: "Updated at",
+    resetFilters: "Reset filters",
+    invalidRange: "The end must be later than the start.",
+    executionInput: "Execution input",
+    executionResult: "Execution result",
+    noDetailedOutput: "No detailed output",
     title: "Routine task records",
     routineTitle: "Routine record table",
     noLinkedTasks: "This routine has no linked routine tasks.",
@@ -166,13 +184,6 @@ export const EnglishWorkspaceTranslation = {
     noMatches: "No routine task records match the current filters.",
     loadingRoutineRecords: "Loading routine execution records...",
     noRoutineRecords: "No routine execution records.",
-    creationBarrier: "Deterministic creation barrier",
-    creationBarrierDescription:
-      "Container and core objects are prepared before dependent tasks continue.",
-    creationBarrierProgress:
-      "{{completed}} / {{total}} deterministic tasks complete",
-    creationBarrierItems:
-      "{{updated}} updated · {{skipped}} skipped · {{failed}} failed",
   },
   timeRails: {
     title: "TimeRails",
@@ -444,6 +455,14 @@ export const EnglishWorkspaceTranslation = {
     noRoutineTasksMatch: "No routine tasks match the current filters.",
     routineTaskTable: "Routine task table",
     routineTaskRecordTable: "Routine task record table",
+  },
+  graph: {
+    realign: "Realign",
+    realignTitle: "Realign the graph ?",
+    realignDescription:
+      "This operation will cause the entire graph with all the routine tasks and dependency links being realigned.",
+    realignError:
+      "The graph could not be realigned. Check its dependencies and try again.",
   },
   fields: {
     startingNode: "Start",

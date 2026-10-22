@@ -15,8 +15,8 @@ import type {
   ChartValueMode,
 } from "../types";
 import {
-  buildIntegerTicks,
-  buildLinearTicks,
+  createIntegerTicks,
+  createLinearTicks,
   createBandScale,
   createIntegerDomain,
   createLinearDomain,
@@ -105,8 +105,8 @@ export function LineChart<TMeta = unknown>({
   const yScale = createLinearScale(domain, inner.y);
   const ticks =
     valueMode === "integer"
-      ? buildIntegerTicks(domain)
-      : buildLinearTicks(domain);
+      ? createIntegerTicks(domain)
+      : createLinearTicks(domain);
   const valueFormatter =
     formatY ?? (valueMode === "integer" ? formatInteger : formatNumber);
   const legendItems = data.series.map((series, index) => ({

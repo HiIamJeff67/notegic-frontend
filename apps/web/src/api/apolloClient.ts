@@ -1,4 +1,4 @@
-import { HttpLink } from "@apollo/client";
+import { ApolloLink, HttpLink } from "@apollo/client";
 import { SetContextLink } from "@apollo/client/link/context";
 import { ErrorLink } from "@apollo/client/link/error";
 import {
@@ -6,6 +6,9 @@ import {
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
 import { CurrentAPIBaseURL } from "@shared/api/url";
+import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
+import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import { tap } from "rxjs";
 import { getClientCSRFToken } from "@/api/clientHeaders";
 import { searchPaginationPolicy } from "./policies/searchPagination.policy";
 
@@ -27,6 +30,28 @@ export const createApolloClient = () => {
       },
     };
   });
+
+  const refreshLink = new ApolloLink((operation, forward) =>
+    forward(operation).pipe(
+      tap(result => {
+        const csrfToken = (
+          result as { refreshableTokens?: { newCSRFToken?: unknown } }
+        ).refreshableTokens?.newCSRFToken;
+
+        if (
+          typeof window !== "undefined" &&
+          operation.getContext().response?.ok &&
+          typeof csrfToken === "string" &&
+          csrfToken.trim() !== ""
+        ) {
+          SessionStorageManipulator.ensureItem(
+            SessionStorageKey.csrfToken,
+            csrfToken
+          );
+        }
+      })
+    )
+  );
 
   const errorLink = new ErrorLink(({ error, forward, operation }) => {
     if (error.name === "AbortError") {
@@ -92,7 +117,7 @@ export const createApolloClient = () => {
   });
 
   return new ApolloClient({
-    link: csrfLink.concat(errorLink).concat(httpLink),
+    link: csrfLink.concat(errorLink).concat(refreshLink).concat(httpLink),
     cache: cache,
   });
 };

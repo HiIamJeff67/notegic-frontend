@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { MaxShelfDepth } from "@shared/constants";
 import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";

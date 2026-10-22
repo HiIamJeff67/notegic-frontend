@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouterActions, useScreen, useSettingsDisplay } from "@/hooks";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import {
   AppearanceSettings,
   DashboardSettings,

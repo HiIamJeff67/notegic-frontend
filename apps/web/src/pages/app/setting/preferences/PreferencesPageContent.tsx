@@ -21,8 +21,11 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useMaterialAttachmentCache, useTheme } from "@/hooks";
-import type { Density, EditorWidth } from "@/hooks/localPreferences";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import type {
+  Density,
+  EditorWidth,
+} from "@/providers/LocalPreferencesProvider";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";

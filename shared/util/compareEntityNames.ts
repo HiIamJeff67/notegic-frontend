@@ -1,4 +1,4 @@
-import { compareText } from "@shared/lib/compare-text";
+import { compareText } from "@shared/lib/compareText";
 
 type NamedEntity = { id: string } & (
   | { name: string }

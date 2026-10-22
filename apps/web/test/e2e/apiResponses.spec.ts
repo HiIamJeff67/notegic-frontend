@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/document");
   await page.waitForLoadState("networkidle");
   await page.evaluate(async () => {
-    const path = "/test/e2e/api-response-test-support.tsx";
+    const path = "/test/e2e/apiResponseTestSupport.tsx";
     const { mountResponseExamples } = await import(/* @vite-ignore */ path);
     mountResponseExamples();
   });

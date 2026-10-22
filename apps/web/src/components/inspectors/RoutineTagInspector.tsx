@@ -101,7 +101,7 @@ const RoutineTagInspector = ({
     };
   }, [isOpen, routineTagId]);
 
-  const saveRoutineTag = async () => {
+  const updateRoutineTag = async () => {
     const name = values.name.trim();
     if (name.length === 0) return;
 
@@ -154,7 +154,7 @@ const RoutineTagInspector = ({
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {
               event.preventDefault();
-              await saveRoutineTag();
+              await updateRoutineTag();
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">

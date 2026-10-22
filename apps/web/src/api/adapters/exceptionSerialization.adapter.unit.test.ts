@@ -1,5 +1,5 @@
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
-import { makeQueryClient } from "@shared/api/queryClient";
+import { createQueryClient } from "@shared/api/queryClient";
 import { tError } from "@shared/i18n/error";
 import { resources } from "@shared/i18n";
 import { makeSerovalPlugin } from "@tanstack/router-core";
@@ -67,7 +67,7 @@ test("restores API errors across the server function transport without internal 
   expect(tError(restored, i18n.t)).toBe(
     i18n.t("server.error.DefinitionConflict")
   );
-  const client = makeQueryClient();
+  const client = createQueryClient();
   const retry = client.getDefaultOptions().mutations?.retry as (
     count: number,
     error: unknown

@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import { lazy, Suspense } from "react";
 import RoutineTaskMenuItemSkeleton from "./RoutineTaskMenuItemSkeleton";

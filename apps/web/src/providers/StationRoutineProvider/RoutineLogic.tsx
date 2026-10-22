@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";

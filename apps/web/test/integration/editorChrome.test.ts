@@ -54,7 +54,7 @@ const mocks: Record<string, string> = {
   "@/hooks/useModal": "export const useModal = () => ({});",
   "@/hooks/useUser": "export const useUser = () => ({});",
   "@/hooks/useBlockEditor": `export const useBlockEditor = () => ({editor:{}, state:'syncError'});`,
-  "@/hooks/localPreferences": `export const useLocalPreferences = () => ({preferences:{editorWidth:'standard',editorFontSize:16}});`,
+  "@/hooks/useLocalPreferences": `export const useLocalPreferences = () => ({preferences:{editorWidth:'standard',editorFontSize:16}});`,
   "@/api/hooks/material.hook":
     "export const useSaveMyMaterialById = () => ({});",
   "@/components/popovers/NotificationPopover":

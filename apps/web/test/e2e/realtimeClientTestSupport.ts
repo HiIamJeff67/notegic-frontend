@@ -86,6 +86,9 @@ export const createRealtimeExample = (
     ticketRequests: 0,
     binaryFrames: 0,
     subscriptions: 0,
+    channelStatuses: [] as string[],
+    channelErrors: [] as string[],
+    channelTicketRequests: 0,
   };
   const connectionTickets: (() => Promise<RealtimeConnectionTicket>)[] = [];
   const channelTickets: (() => Promise<RealtimeBlockPackChannelTicket>)[] = [];
@@ -101,6 +104,7 @@ export const createRealtimeExample = (
       return connectionTickets.shift()?.() ?? Promise.resolve(ticket());
     },
     getBlockPackChannelTicket: () => {
+      events.channelTicketRequests++;
       const next = channelTickets.shift();
       if (!next) return Promise.reject(new Error("Missing fixture ticket"));
       return next();
@@ -111,6 +115,8 @@ export const createRealtimeExample = (
     onReconnect: () => events.reconnects++,
     onChannelBinary: () => events.binaryFrames++,
     onChannelSubscribed: () => events.subscriptions++,
+    onChannelStatus: (_, status) => events.channelStatuses.push(status),
+    onChannelError: (_, frame) => events.channelErrors.push(frame.code),
   });
   return {
     client,
@@ -120,7 +126,43 @@ export const createRealtimeExample = (
     channelTickets,
     ticket,
     expiredRealtimeSession,
+    deniedChannelTicket: () =>
+      new NotegicAPIError(
+        new NotegicException(
+          {
+            reason: "PermissionDenied",
+            domain: "Realtime",
+            operation: "CreateChannelTicket",
+            message: "Fixture permission denied",
+            retryable: false,
+          },
+          403
+        )
+      ),
     permission: RealtimePermission.Write,
+    channelTicket: (): RealtimeBlockPackChannelTicket => ({
+      channelType: "BlockPack",
+      channelId: "00000000-0000-4000-8000-000000000001",
+      roomName: "fixture-room",
+      fragmentName: "fixture",
+      schemaId: "notegic.blocknote",
+      schemaVersion: 1,
+      realtimeProtocolVersion: 1,
+      permission: RealtimePermission.Write,
+      channelTicket: `fixture-channel-ticket-${events.channelTicketRequests}`,
+      expiresAt: new Date(Date.now() + 300_000),
+      documentQuotaPolicyVersion: 1,
+      maximumBlockCount: 100,
+      lastUpdateSequence: 0,
+      compactedUntilSequence: 0,
+    }),
+    channelFrames: () =>
+      RealtimeTestSocket.instances.flatMap(socket =>
+        socket.sent
+          .filter((data): data is string => typeof data === "string")
+          .map(data => JSON.parse(data))
+          .filter(frame => frame.type === "subscribe")
+      ),
   };
 };
 

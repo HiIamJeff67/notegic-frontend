@@ -1,6 +1,12 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
-import { RealtimeProvider } from "@/providers/RealtimeProvider";
+import {
+  RealtimeProvider,
+  type RealtimeBlockPackChannel,
+} from "@/providers/RealtimeProvider";
+import { useBlockPackRealtimeChannel } from "@/hooks/useRealtime";
+import { RealtimePermission } from "@shared/api/interfaces/enums";
+import type { UUID } from "crypto";
 import { UserContext } from "@/providers/UserProvider";
 import {
   defaultLocalPreferences,
@@ -9,7 +15,7 @@ import {
 import { type ContextType, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-export const mountRealtimeProviderExample = () => {
+export const mountRealtimeProviderExample = (blockPackId?: UUID) => {
   const host = document.createElement("div");
   document.body.appendChild(host);
   const root = createRoot(host);
@@ -18,6 +24,11 @@ export const mountRealtimeProviderExample = () => {
     link: ApolloLink.empty(),
   });
   let updateUser: (publicId: string | null) => void = () => {};
+  let channel: RealtimeBlockPackChannel | null = null;
+  const Channel = ({ id }: { id: UUID }) => {
+    channel = useBlockPackRealtimeChannel(id, RealtimePermission.Write);
+    return <span data-channel-status={channel.status} />;
+  };
   const Example = () => {
     const [publicId, setPublicId] = useState<string | null>("fixture-user");
     const [revision, setRevision] = useState(0);
@@ -43,6 +54,7 @@ export const mountRealtimeProviderExample = () => {
             }
           >
             <RealtimeProvider>
+              {blockPackId && <Channel id={blockPackId} />}
               <span data-realtime-revision={revision}>
                 Realtime provider fixture
               </span>
@@ -56,5 +68,6 @@ export const mountRealtimeProviderExample = () => {
   return {
     updateUser: (publicId: string | null) => updateUser(publicId),
     unmount: () => root.unmount(),
+    getChannel: () => channel,
   };
 };

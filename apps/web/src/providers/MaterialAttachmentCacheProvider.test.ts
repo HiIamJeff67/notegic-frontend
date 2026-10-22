@@ -15,7 +15,7 @@ import {
   cleanupMaterialAttachmentCache,
   clearMaterialAttachmentCache,
   loadMaterialAttachment,
-  saveMaterialAttachment,
+  setCachedMaterialAttachment,
 } from "@/providers/MaterialAttachmentCacheProvider";
 
 const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);
@@ -47,7 +47,11 @@ describe("material attachment cache", () => {
     const updatedAt = new Date("2026-08-20T00:00:00.000Z");
     const content = new Blob(["hello"], { type: "text/plain" });
 
-    await saveMaterialAttachment("material-1" as never, updatedAt, content);
+    await setCachedMaterialAttachment(
+      "material-1" as never,
+      updatedAt,
+      content
+    );
 
     await expect(
       loadMaterialAttachment("material-1" as never, updatedAt)
@@ -64,7 +68,7 @@ describe("material attachment cache", () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2026-08-01T00:00:00.000Z"));
     const updatedAt = new Date("2026-08-01T00:00:00.000Z");
-    await saveMaterialAttachment(
+    await setCachedMaterialAttachment(
       "material-1" as never,
       updatedAt,
       new Blob(["hello"], { type: "text/plain" })
@@ -76,7 +80,7 @@ describe("material attachment cache", () => {
     expect(removeItem).toHaveBeenCalled();
 
     isEnabled.mockReturnValue(false);
-    await saveMaterialAttachment(
+    await setCachedMaterialAttachment(
       "material-2" as never,
       updatedAt,
       new Blob(["world"], { type: "text/plain" })

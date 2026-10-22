@@ -160,6 +160,24 @@ export const KoreanWorkspaceTranslation = {
     clickToAdd: "클릭하여 추가",
   },
   records: {
+    sort: "기록 정렬",
+    summary: "기록 요약",
+    loadedSummary: "불러온 기록 총 {{count}}개",
+    filters: "기록 필터",
+    search: "기록 검색",
+    startedFrom: "시작 시간 이후(포함)",
+    startedBefore: "시작 시간 이전",
+    sortBy: "정렬 기준",
+    sortOrder: "정렬 방향",
+    ascending: "오름차순",
+    descending: "내림차순",
+    createdAt: "생성 시간",
+    updatedAt: "수정 시간",
+    resetFilters: "필터 초기화",
+    invalidRange: "종료 시간은 시작 시간보다 늦어야 합니다.",
+    executionInput: "실행 입력",
+    executionResult: "실행 결과",
+    noDetailedOutput: "상세 출력 없음",
     title: "루틴 작업 기록",
     routineTitle: "루틴 기록 표",
     noLinkedTasks: "이 루틴에 연결된 루틴 작업이 없습니다.",
@@ -167,12 +185,6 @@ export const KoreanWorkspaceTranslation = {
     noMatches: "현재 필터와 일치하는 루틴 작업 기록이 없습니다.",
     loadingRoutineRecords: "루틴 실행 기록을 불러오는 중…",
     noRoutineRecords: "루틴 실행 기록이 없습니다.",
-    creationBarrier: "결정적 생성 장벽",
-    creationBarrierDescription:
-      "의존 작업을 계속하기 전에 컨테이너 및 핵심 객체를 준비합니다.",
-    creationBarrierProgress: "{{completed}} / {{total}}개의 결정적 작업 완료",
-    creationBarrierItems:
-      "업데이트 {{updated}} · 건너뜀 {{skipped}} · 실패 {{failed}}",
   },
   timeRails: {
     title: "시간 레일",
@@ -443,6 +455,14 @@ export const KoreanWorkspaceTranslation = {
     noRoutineTasksMatch: "현재 필터와 일치하는 루틴 작업이 없습니다.",
     routineTaskTable: "루틴 작업 표",
     routineTaskRecordTable: "루틴 작업 기록 표",
+  },
+  graph: {
+    realign: "재배치",
+    realignTitle: "그래프 전체를 재배치할까요?",
+    realignDescription:
+      "이 작업은 그래프의 모든 Routine 작업과 의존성 연결을 재배치합니다.",
+    realignError:
+      "그래프를 재배치할 수 없습니다. 의존성을 확인한 후 다시 시도해 주세요.",
   },
   fields: {
     startingNode: "시작 노드",

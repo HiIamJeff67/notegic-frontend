@@ -271,7 +271,7 @@ const CreateBlockPackPayloadEditor = ({
     });
   }, [editor, isOpen, purpose, usesBlockLiteEditor]);
 
-  const normalizeBlock = (block: any): any => {
+  const createEditableBlock = (block: any): any => {
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const isTemplateBlock = patternBlocks.some(
@@ -285,30 +285,24 @@ const CreateBlockPackPayloadEditor = ({
         : (block.props ?? {}),
       content: block.content ?? [],
       children: Array.isArray(block.children)
-        ? block.children.map((child: any) => normalizeBlock(child))
+        ? block.children.map((child: any) => createEditableBlock(child))
         : [],
     };
   };
 
-  const buildBlockPayload = async () => {
+  const createBlockPayload = async () => {
     const jsonBlob = new Blob([JSON.stringify(editor.document)], {
       type: "application/json",
     });
     const blocks = JSON.parse(await jsonBlob.text());
-    const normalizedBlocks = blocks.map((block: any) => normalizeBlock(block));
-    const firstBlock = normalizedBlocks[0] ?? {
-      id: crypto.randomUUID(),
-      type: "paragraph",
-      props: {},
-      content: [],
-      children: [],
-    };
-
+    const editableBlocks = blocks.map((block: any) =>
+      createEditableBlock(block)
+    );
     if (purpose === RoutineTaskPurpose.CreateBlockPack) {
-      const templateBlocks = normalizedBlocks.map(
+      const templateBlocks = editableBlocks.map(
         (block: any, index: number) => ({
           clientId: block.id,
-          prevClientId: index === 0 ? null : normalizedBlocks[index - 1].id,
+          prevClientId: index === 0 ? null : editableBlocks[index - 1].id,
           arborizedEditableBlock: block,
         })
       );
@@ -338,7 +332,7 @@ const CreateBlockPackPayloadEditor = ({
     let isCanceled = false;
     void (async () => {
       if (usesBlockLiteEditor) {
-        const payload = JSON.stringify(await buildBlockPayload(), null, 2);
+        const payload = JSON.stringify(await createBlockPayload(), null, 2);
         if (!isCanceled) setPayloadPreview(payload);
         return;
       }

@@ -7,7 +7,7 @@ import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
+import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { SquarePen, Trash2 } from "lucide-react";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
@@ -20,32 +20,13 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useModal } from "@/hooks";
-
-export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
-  title: string;
-  kind: "Start" | "Action";
-  payload: Record<string, unknown>;
-  expectedDefinitionVersion?: number;
-  onUpdated?: (values: {
-    title?: string;
-    payload?: Record<string, unknown>;
-  }) => Promise<void>;
-  executionStatus?: RoutineTaskRecordStatus | null;
-  routinePhase?: RoutinePhase | null;
-  onEdit?: () => void;
-  onDeleted?: () => void | Promise<void>;
-}
-
-export type RoutineTaskGraphNode = Node<
-  RoutineTaskGraphNodeData,
-  "routineTask"
->;
+import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 
 const RoutineTaskGraphNode = ({
   id,
   data,
   selected,
-}: NodeProps<RoutineTaskGraphNode>) => {
+}: NodeProps<RoutineTaskGraphNodeType>) => {
   const { t } = useTranslation();
   const modalManager = useModal();
   const isStart = data.kind === "Start";

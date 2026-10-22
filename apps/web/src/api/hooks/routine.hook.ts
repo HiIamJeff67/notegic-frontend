@@ -81,7 +81,7 @@ import {
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
 import { routineSearchPage } from "@/api/routine.search";
-import { matchesSearch } from "@shared/lib/search-page";
+import { matchesSearch } from "@shared/lib/searchPage";
 import { useVisualizeQuery } from "./visualize.hook";
 
 const getRoutineSearchInput = (storeFieldName: string) =>

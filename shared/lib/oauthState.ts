@@ -40,7 +40,7 @@ export const createOAuthState = (): string => {
   return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
 };
 
-export const savePendingOAuthState = (pending: PendingOAuthState): boolean => {
+export const setPendingOAuthState = (pending: PendingOAuthState): boolean => {
   if (typeof window === "undefined" || !isPendingOAuthState(pending)) {
     return false;
   }
@@ -58,7 +58,7 @@ export const createPendingOAuthState = (action: OAuthAction): string | null => {
     createdAt: Date.now(),
   } satisfies PendingOAuthState;
 
-  return savePendingOAuthState(pending) ? pending.state : null;
+  return setPendingOAuthState(pending) ? pending.state : null;
 };
 
 export const getPendingOAuthState = (): PendingOAuthState | null => {

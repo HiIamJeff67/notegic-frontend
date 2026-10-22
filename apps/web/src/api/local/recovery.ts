@@ -56,15 +56,15 @@ export const classifyLocalDBError = (
   phase: string
 ): LocalDBRecoveryClassification => {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const normalizedMessage = errorMessage.toLowerCase();
+  const message = errorMessage.toLowerCase();
 
   if (
-    normalizedMessage.includes("timeout") ||
-    normalizedMessage.includes("timed out") ||
-    normalizedMessage.includes("network") ||
-    normalizedMessage.includes("fetch") ||
-    normalizedMessage.includes("websocket") ||
-    normalizedMessage.includes("not ready")
+    message.includes("timeout") ||
+    message.includes("timed out") ||
+    message.includes("network") ||
+    message.includes("fetch") ||
+    message.includes("websocket") ||
+    message.includes("not ready")
   ) {
     return {
       result: "retryable",
@@ -75,11 +75,11 @@ export const classifyLocalDBError = (
 
   if (
     phase.includes("worker") ||
-    normalizedMessage.includes("driver") ||
-    normalizedMessage.includes("opfs") ||
-    normalizedMessage.includes("storage") ||
-    normalizedMessage.includes("schema") ||
-    normalizedMessage.includes("pragma")
+    message.includes("driver") ||
+    message.includes("opfs") ||
+    message.includes("storage") ||
+    message.includes("schema") ||
+    message.includes("pragma")
   ) {
     return {
       result: "manual-recovery",

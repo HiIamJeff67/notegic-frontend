@@ -44,6 +44,7 @@ const DatePicker = ({
     null
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isHintOpen, setIsHintOpen] = useState(false);
   const [hourCycle, setHourCycle] = useState<"12" | "24">("24");
   const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
@@ -80,6 +81,7 @@ const DatePicker = ({
       open={isOpen}
       onOpenChange={open => {
         if (open) {
+          setIsHintOpen(false);
           setPortalContainer(
             triggerRef.current?.closest(
               '[data-slot="sheet-content"], [data-slot="dialog-content"]'
@@ -89,8 +91,14 @@ const DatePicker = ({
         setIsOpen(open);
       }}
     >
-      <HoverCard openDelay={250} closeDelay={150}>
-        <HoverCardTrigger asChild>
+      <HoverCard
+        open={isHintOpen && !isOpen}
+        onOpenChange={setIsHintOpen}
+        openDelay={250}
+        closeDelay={150}
+      >
+        {/* Restoring calendar focus must not reopen a hint over nearby fields. */}
+        <HoverCardTrigger asChild onFocus={event => event.preventDefault()}>
           <PopoverPrimitive.Trigger asChild>
             <Button
               ref={triggerRef}

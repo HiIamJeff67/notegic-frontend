@@ -1,4 +1,5 @@
 import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import {
   RealtimePermission,
   RealtimePermissionSchema,
@@ -92,6 +93,10 @@ export class RealtimeClient {
   private readonly channels = new Map<string, RealtimeRegisteredChannel>();
   private readonly channelByConnectorId = new Map<number, string>();
   private readonly channelByRequestId = new Map<string, string>();
+  private readonly channelRetries = new Map<
+    string,
+    { delay: number; timeout: ReturnType<typeof setTimeout> | null }
+  >();
   private readonly seenResourceEventIds = new Set<string>();
   private readonly seenResourceEventOrder: string[] = [];
   private readonly seenRoutineTaskLifecycleEventIds = new Set<string>();
@@ -113,6 +118,9 @@ export class RealtimeClient {
     this.shouldReconnect = false;
     this.connectionVersion += 1;
     this.clearHeartbeat();
+    for (const blockPackId of this.channelRetries.keys()) {
+      this.clearChannelRetry(blockPackId);
+    }
     this.hasEstablishedConnection = false;
     this.seenResourceEventIds.clear();
     this.seenResourceEventOrder.length = 0;
@@ -188,6 +196,7 @@ export class RealtimeClient {
   }
 
   unregisterBlockPackChannel(blockPackId: string) {
+    this.clearChannelRetry(blockPackId);
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
 
@@ -221,6 +230,7 @@ export class RealtimeClient {
   }
 
   resetBlockPackChannel(blockPackId: string) {
+    this.clearChannelRetry(blockPackId);
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
 
@@ -543,6 +553,7 @@ export class RealtimeClient {
   }
 
   private async subscribeBlockPackChannel(channel: RealtimeRegisteredChannel) {
+    if (this.channelRetries.get(channel.blockPackId)?.timeout != null) return;
     if (!this.isSocketOpen()) {
       logRealtimeClient("delay subscribe: socket not open", {
         blockPackId: channel.blockPackId,
@@ -628,6 +639,17 @@ export class RealtimeClient {
         this.options.onAuthFailure?.();
         return;
       }
+      if (
+        this.channelRetries.has(channel.blockPackId) &&
+        (!(error instanceof NotegicAPIError) ||
+          error.unWrap.status >= 500 ||
+          error.unWrap.status === 429)
+      ) {
+        this.options.onChannelStatus?.(channel.blockPackId, "idle");
+        this.scheduleChannelRetry(channel);
+        return;
+      }
+      this.clearChannelRetry(channel.blockPackId);
       this.options.onChannelStatus?.(channel.blockPackId, "error");
       this.options.onError?.(error);
     }
@@ -641,6 +663,7 @@ export class RealtimeClient {
     if (!blockPackId) return;
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
+    if (channel.resyncRequired) return;
     if (
       frame.requestId !== undefined &&
       channel.pendingRequestId !== frame.requestId
@@ -653,6 +676,7 @@ export class RealtimeClient {
       return;
     }
 
+    this.clearChannelRetry(blockPackId);
     if (channel.pendingRequestId) {
       this.channelByRequestId.delete(channel.pendingRequestId);
     }
@@ -709,6 +733,22 @@ export class RealtimeClient {
       return;
     }
 
+    const channel = this.channels.get(blockPackId);
+    if (!channel) return;
+    if (channel.resyncRequired && frame.code === "worker_unavailable") return;
+    if (
+      frame.requestId !== undefined &&
+      channel.pendingRequestId !== frame.requestId
+    )
+      return;
+    if (
+      frame.requestId === undefined &&
+      frame.connectorChannelId !== undefined &&
+      channel.pendingRequestId === null &&
+      channel.connectorChannelId !== frame.connectorChannelId
+    )
+      return;
+
     if (
       (frame.code === "ticket_already_used" ||
         frame.code === "invalid_channel_ticket") &&
@@ -764,15 +804,26 @@ export class RealtimeClient {
         channel.connectorChannelId = null;
         channel.pendingRequestId = null;
         channel.ticketRetryCount = 0;
-        channel.resyncRequired = true;
+        channel.resyncRequired = frame.code !== "worker_unavailable";
       }
     }
 
+    if (frame.code === "worker_unavailable" && !channel.resyncRequired) {
+      this.options.onChannelStatus?.(blockPackId, "idle");
+      this.options.onChannelError?.(blockPackId, frame);
+      this.scheduleChannelRetry(channel);
+      return;
+    }
+
+    this.clearChannelRetry(blockPackId);
     this.options.onChannelStatus?.(blockPackId, "error");
     this.options.onChannelError?.(blockPackId, frame);
   }
 
   private clearConnectorState() {
+    for (const blockPackId of this.channelRetries.keys()) {
+      this.clearChannelRetry(blockPackId);
+    }
     this.channelByConnectorId.clear();
     this.channelByRequestId.clear();
     for (const channel of this.channels.values()) {
@@ -781,6 +832,32 @@ export class RealtimeClient {
       channel.ticketRetryCount = 0;
       this.options.onChannelStatus?.(channel.blockPackId, "idle");
     }
+  }
+
+  private clearChannelRetry(blockPackId: string) {
+    const retry = this.channelRetries.get(blockPackId);
+    if (retry?.timeout != null) clearTimeout(retry.timeout);
+    this.channelRetries.delete(blockPackId);
+  }
+
+  private scheduleChannelRetry(channel: RealtimeRegisteredChannel) {
+    if (!this.shouldReconnect || channel.resyncRequired) return;
+    const retry = this.channelRetries.get(channel.blockPackId) ?? {
+      delay: REALTIME_RECONNECT_BASE_DELAY_MS,
+      timeout: null,
+    };
+    if (retry.timeout !== null) return;
+    retry.timeout = setTimeout(() => {
+      retry.timeout = null;
+      if (
+        !this.shouldReconnect ||
+        this.channels.get(channel.blockPackId) !== channel
+      )
+        return;
+      void this.subscribeBlockPackChannel(channel);
+    }, retry.delay);
+    retry.delay = Math.min(retry.delay * 2, REALTIME_RECONNECT_MAX_DELAY_MS);
+    this.channelRetries.set(channel.blockPackId, retry);
   }
 
   private scheduleReconnect() {

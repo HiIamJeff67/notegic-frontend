@@ -229,7 +229,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
     [t]
   );
 
-  const handleSaveUserInfoOnSubmit = useCallback(
+  const handleUserInfoSubmit = useCallback(
     async (userInfo: UserInfo): Promise<void> =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
@@ -269,7 +269,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
     <Form {...userInfoForm}>
       <form
         method="POST"
-        onSubmit={userInfoForm.handleSubmit(handleSaveUserInfoOnSubmit)}
+        onSubmit={userInfoForm.handleSubmit(handleUserInfoSubmit)}
         className={`w-full flex flex-col ${
           layout === "panel" ? "h-full overflow-hidden" : ""
         }`}

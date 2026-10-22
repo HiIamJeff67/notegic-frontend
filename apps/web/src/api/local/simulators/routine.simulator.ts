@@ -1,4 +1,4 @@
-import { matchesSearch } from "@shared/lib/search-page";
+import { matchesSearch } from "@shared/lib/searchPage";
 import { routineSearchPage } from "@/api/routine.search";
 import {
   toGraphQLRoutinePeriod,

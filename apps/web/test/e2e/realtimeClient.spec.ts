@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import type { RealtimeExample } from "./realtime-client-test-support";
-import type { mountRealtimeProviderExample } from "./realtime-provider-test-support";
+import type { RealtimeExample } from "./realtimeClientTestSupport";
+import type { mountRealtimeProviderExample } from "./realtimeProviderTestSupport";
 
 declare global {
   interface Window {
@@ -17,9 +17,10 @@ test.describe("realtime client lifecycle", () => {
     );
     await page.goto("/document");
     await page.waitForLoadState("networkidle");
-    await page.clock.install();
+    await page.clock.install({ time: new Date("2026-10-21T00:00:00Z") });
+    await page.clock.pauseAt(new Date("2026-10-21T00:00:01Z"));
     await page.evaluate(async () => {
-      const path = "/test/e2e/realtime-client-test-support.ts";
+      const path = "/test/e2e/realtimeClientTestSupport.ts";
       const { createRealtimeExample } = await import(/* @vite-ignore */ path);
       window.realtimeExample = createRealtimeExample();
       window.realtimeExample.client.start();
@@ -352,6 +353,434 @@ test.describe("realtime client lifecycle", () => {
     ).toEqual({ errors: [], failures: 0, state: "connected" });
   });
 
+  test("worker outages retry with capped backoff and recover without resetting the channel", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.channelTickets.push(
+        ...Array.from({ length: 10 }, () => async () => fixture.channelTicket())
+      );
+      fixture.sockets[0].open();
+      fixture.client.registerBlockPackChannel(
+        fixture.channelTicket().channelId,
+        fixture.permission
+      );
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(1);
+    for (const delay of [1000, 2000, 4000, 8000, 10000, 10000]) {
+      const before = await page.evaluate(() => {
+        const fixture = window.realtimeExample;
+        const frames = fixture.channelFrames();
+        fixture.sockets[0].message({
+          version: 1,
+          type: "error",
+          channelId: fixture.channelTicket().channelId,
+          requestId: frames.at(-1).requestId,
+          code: "worker_unavailable",
+          message: "Worker unavailable",
+        });
+        return frames.length;
+      });
+      await page.clock.runFor(delay - 1);
+      expect(
+        await page.evaluate(() => window.realtimeExample.channelFrames().length)
+      ).toBe(before);
+      await page.clock.runFor(1);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.realtimeExample.channelFrames().length)
+        )
+        .toBe(before + 1);
+    }
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[0].message({
+        version: 1,
+        type: "subscribed",
+        requestId: fixture.channelFrames().at(-1).requestId,
+        channelType: "BlockPack",
+        channelId: fixture.channelTicket().channelId,
+        connectorChannelId: 7,
+        existing: false,
+        documentQuotaPolicyVersion: 1,
+        maximumBlockCount: 100,
+        participants: [],
+      });
+      for (const code of ["worker_unavailable", "resync_required"]) {
+        fixture.sockets[0].message({
+          version: 1,
+          type: "error",
+          requestId: fixture.channelFrames()[0].requestId,
+          channelId: fixture.channelTicket().channelId,
+          code,
+          message: "Obsolete error",
+        });
+      }
+    });
+    await page.clock.runFor(20000);
+    expect(
+      await page.evaluate(() => {
+        const { events, channelFrames, sockets } = window.realtimeExample;
+        return {
+          frames: channelFrames().length,
+          subscriptions: events.subscriptions,
+          errors: events.errors,
+          channelErrors: events.channelErrors.length,
+          status: events.channelStatuses.at(-1),
+          sockets: sockets.length,
+        };
+      })
+    ).toEqual({
+      frames: 7,
+      subscriptions: 1,
+      errors: [],
+      channelErrors: 6,
+      status: "subscribed",
+      sockets: 1,
+    });
+  });
+
+  for (const cleanup of [
+    "stop",
+    "unregisterBlockPackChannel",
+    "resetBlockPackChannel",
+  ] as const) {
+    test(`worker retry is cancelled by ${cleanup}`, async ({ page }) => {
+      await page.evaluate(() => {
+        const fixture = window.realtimeExample;
+        fixture.channelTickets.push(
+          async () => fixture.channelTicket(),
+          async () => fixture.channelTicket()
+        );
+        fixture.sockets[0].open();
+        fixture.client.registerBlockPackChannel(
+          fixture.channelTicket().channelId,
+          fixture.permission
+        );
+      });
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.realtimeExample.channelFrames().length)
+        )
+        .toBe(1);
+      await page.evaluate(cleanup => {
+        const fixture = window.realtimeExample;
+        fixture.sockets[0].message({
+          version: 1,
+          type: "error",
+          channelId: fixture.channelTicket().channelId,
+          requestId: fixture.channelFrames()[0].requestId,
+          code: "worker_unavailable",
+          message: "Worker unavailable",
+        });
+        if (cleanup === "stop") fixture.client.stop();
+        else fixture.client[cleanup](fixture.channelTicket().channelId);
+      }, cleanup);
+      await page.clock.runFor(60000);
+      expect(
+        await page.evaluate(
+          () => window.realtimeExample.events.channelTicketRequests
+        )
+      ).toBe(1);
+    });
+  }
+
+  for (const failure of ["temporary", "permission", "session"] as const) {
+    test(`worker recovery handles ${failure} channel ticket failures safely`, async ({
+      page,
+    }) => {
+      await page.evaluate(failure => {
+        const fixture = window.realtimeExample;
+        fixture.channelTickets.push(
+          async () => fixture.channelTicket(),
+          async () => {
+            throw failure === "session"
+              ? fixture.expiredRealtimeSession()
+              : failure === "permission"
+                ? fixture.deniedChannelTicket()
+                : new TypeError("Temporary network failure");
+          },
+          async () => fixture.channelTicket()
+        );
+        fixture.sockets[0].open();
+        fixture.client.registerBlockPackChannel(
+          fixture.channelTicket().channelId,
+          fixture.permission
+        );
+      }, failure);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.realtimeExample.channelFrames().length)
+        )
+        .toBe(1);
+      await page.evaluate(() => {
+        const fixture = window.realtimeExample;
+        fixture.sockets[0].message({
+          version: 1,
+          type: "error",
+          channelId: fixture.channelTicket().channelId,
+          requestId: fixture.channelFrames()[0].requestId,
+          code: "worker_unavailable",
+          message: "Worker unavailable",
+        });
+      });
+      await page.clock.runFor(1000);
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => window.realtimeExample.events.channelTicketRequests
+          )
+        )
+        .toBe(2);
+      await page.clock.runFor(20000);
+      const result = await page.evaluate(() => ({
+        requests: window.realtimeExample.events.channelTicketRequests,
+        errors: window.realtimeExample.events.errors.length,
+        authFailures: window.realtimeExample.events.authFailures,
+      }));
+      expect(result).toEqual(
+        failure === "temporary"
+          ? { requests: 3, errors: 0, authFailures: 0 }
+          : failure === "permission"
+            ? { requests: 2, errors: 1, authFailures: 0 }
+            : { requests: 2, errors: 0, authFailures: 1 }
+      );
+    });
+  }
+
+  test("root reconnect replaces a pending worker retry with one fresh subscription", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.channelTickets.push(
+        ...Array.from({ length: 3 }, () => async () => fixture.channelTicket())
+      );
+      fixture.sockets[0].open();
+      fixture.client.registerBlockPackChannel(
+        fixture.channelTicket().channelId,
+        fixture.permission
+      );
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(1);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[0].message({
+        version: 1,
+        type: "error",
+        channelId: fixture.channelTicket().channelId,
+        requestId: fixture.channelFrames()[0].requestId,
+        code: "worker_unavailable",
+        message: "Worker unavailable",
+      });
+      fixture.sockets[0].onerror?.(new Event("error"));
+    });
+    await page.clock.runFor(1000);
+    await page.evaluate(() => window.realtimeExample.sockets[1].open());
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(2);
+    await page.clock.runFor(20000);
+    expect(
+      await page.evaluate(
+        () => window.realtimeExample.events.channelTicketRequests
+      )
+    ).toBe(2);
+  });
+
+  test("a genuine resync remains blocked across reconnect until explicitly reset", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.channelTickets.push(
+        ...Array.from({ length: 3 }, () => async () => fixture.channelTicket())
+      );
+      fixture.sockets[0].open();
+      fixture.client.registerBlockPackChannel(
+        fixture.channelTicket().channelId,
+        fixture.permission
+      );
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(1);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[0].message({
+        version: 1,
+        type: "error",
+        channelId: fixture.channelTicket().channelId,
+        requestId: fixture.channelFrames()[0].requestId,
+        code: "resync_required",
+        message: "Resync required",
+      });
+      fixture.sockets[0].onerror?.(new Event("error"));
+    });
+    await page.clock.runFor(1000);
+    await page.evaluate(() => window.realtimeExample.sockets[1].open());
+    await page.clock.runFor(60000);
+    expect(
+      await page.evaluate(
+        () => window.realtimeExample.events.channelTicketRequests
+      )
+    ).toBe(1);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.client.resetBlockPackChannel(fixture.channelTicket().channelId);
+      fixture.client.registerBlockPackChannel(
+        fixture.channelTicket().channelId,
+        fixture.permission
+      );
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(2);
+  });
+
+  test("provider keeps the document and pending edits during worker recovery", async ({
+    page,
+  }) => {
+    await page.route("**/src/api/invokers/realtime.invoker.ts*", route =>
+      route.fulfill({
+        contentType: "application/javascript",
+        body: `export const mutationFnCreateMyRealtimeConnectionTicket = async () => ({ data: window.realtimeExample.ticket() });
+        export const mutationFnCreateMyBlockPackChannelTicket = async () => ({ data: window.realtimeExample.channelTicket() });`,
+      })
+    );
+    await page.evaluate(async () => {
+      const fixture = window.realtimeExample;
+      fixture.client.stop();
+      const path = "/test/e2e/realtimeProviderTestSupport.tsx";
+      const { mountRealtimeProviderExample } = await import(
+        /* @vite-ignore */ path
+      );
+      window.realtimeProviderExample = mountRealtimeProviderExample(
+        fixture.channelTicket()
+          .channelId as `${string}-${string}-${string}-${string}-${string}`
+      );
+    });
+    await expect
+      .poll(() => page.evaluate(() => window.realtimeExample.sockets.length))
+      .toBe(2);
+    await page.evaluate(() => window.realtimeExample.sockets[1].open());
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(1);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      const channel = window.realtimeProviderExample.getChannel()!;
+      channel.doc.getMap("recovery").set("draft", "preserved");
+      (
+        window as Window & { originalRecoveryDoc?: unknown }
+      ).originalRecoveryDoc = channel.doc;
+      fixture.sockets[1].message({
+        version: 1,
+        type: "error",
+        channelId: fixture.channelTicket().channelId,
+        requestId: fixture.channelFrames()[0].requestId,
+        code: "worker_unavailable",
+        message: "Worker unavailable",
+      });
+    });
+    await expect(page.locator("[data-channel-status]")).toHaveAttribute(
+      "data-channel-status",
+      "idle"
+    );
+    expect(
+      await page.evaluate(() => {
+        const channel = window.realtimeProviderExample.getChannel()!;
+        return {
+          error: channel.lifecycleErrorCode,
+          draft: channel.doc.getMap("recovery").get("draft"),
+          pending: channel.provider.hasUnconfirmedLocalChanges(),
+        };
+      })
+    ).toEqual({ error: null, draft: "preserved", pending: true });
+    await page.clock.runFor(1000);
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(2);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[1].message({
+        version: 1,
+        type: "subscribed",
+        requestId: fixture.channelFrames().at(-1).requestId,
+        channelType: "BlockPack",
+        channelId: fixture.channelTicket().channelId,
+        connectorChannelId: 8,
+        existing: false,
+        documentQuotaPolicyVersion: 1,
+        maximumBlockCount: 100,
+        participants: [],
+      });
+    });
+    await expect(page.locator("[data-channel-status]")).toHaveAttribute(
+      "data-channel-status",
+      "subscribed"
+    );
+    expect(
+      await page.evaluate(() => {
+        const channel = window.realtimeProviderExample.getChannel()!;
+        return {
+          sameDocument:
+            channel.doc ===
+            (window as Window & { originalRecoveryDoc?: unknown })
+              .originalRecoveryDoc,
+          draft: channel.doc.getMap("recovery").get("draft"),
+          sentUpdates: window.realtimeExample.sockets[1].sent.some(
+            frame => frame instanceof ArrayBuffer
+          ),
+        };
+      })
+    ).toEqual({ sameDocument: true, draft: "preserved", sentUpdates: true });
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[1].message({
+        version: 1,
+        type: "error",
+        channelId: fixture.channelTicket().channelId,
+        connectorChannelId: 8,
+        code: "resync_required",
+        message: "Explicit resync required",
+      });
+    });
+    await expect(page.locator("[data-channel-status]")).toHaveAttribute(
+      "data-channel-status",
+      "error"
+    );
+    expect(
+      await page.evaluate(
+        () => window.realtimeProviderExample.getChannel()!.lifecycleErrorCode
+      )
+    ).toBe("resync_required");
+    await page.clock.runFor(20000);
+    expect(
+      await page.evaluate(() => window.realtimeExample.channelFrames().length)
+    ).toBe(2);
+    await page.evaluate(() => window.realtimeProviderExample.unmount());
+  });
+
   test("user data refresh does not recreate the provider socket but identity changes do", async ({
     page,
   }) => {
@@ -361,7 +790,7 @@ test.describe("realtime client lifecycle", () => {
     });
     await page.evaluate(async () => {
       window.realtimeExample.client.stop();
-      const path = "/test/e2e/realtime-provider-test-support.tsx";
+      const path = "/test/e2e/realtimeProviderTestSupport.tsx";
       const { mountRealtimeProviderExample } = await import(
         /* @vite-ignore */ path
       );
@@ -424,7 +853,7 @@ test("browser WebSocket transport stays live while idle and recovers from lost p
   await page.clock.install();
   await page.evaluate(async () => {
     const browserWebSocket = window.WebSocket;
-    const path = "/test/e2e/realtime-client-test-support.ts";
+    const path = "/test/e2e/realtimeClientTestSupport.ts";
     const { createRealtimeExample } = await import(/* @vite-ignore */ path);
     window.realtimeExample = createRealtimeExample(browserWebSocket);
     window.realtimeExample.client.start();

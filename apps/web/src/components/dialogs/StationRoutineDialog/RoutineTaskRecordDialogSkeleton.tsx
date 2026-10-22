@@ -29,7 +29,7 @@ const RoutineTaskRecordDialogSkeleton = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="flex max-h-[82vh] w-[min(94vw,48rem)] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-md bg-card p-0 sm:max-w-[min(88vw,48rem)]">
+      <DialogContent className="flex max-h-[90dvh] w-[92vw] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-md bg-card p-0 transition-[opacity,transform] sm:max-w-[92vw]">
         <DialogHeader className="shrink-0 border-b border-border bg-secondary px-6 py-5 pr-12">
           <DialogTitle>{t("workspace.records.title")}</DialogTitle>
           <DialogDescription asChild>
@@ -38,13 +38,15 @@ const RoutineTaskRecordDialogSkeleton = ({
             </div>
           </DialogDescription>
         </DialogHeader>
-        <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
-          <Skeleton className="h-8 w-32 rounded-sm" />
-          <Skeleton className="h-8 w-40 rounded-sm" />
-          <Skeleton className="h-8 w-40 rounded-sm" />
-          <Skeleton className="h-8 w-40 rounded-sm" />
-        </div>
-        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain [&>div]:overflow-visible">
+          <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
+            <Skeleton className="h-8 w-32 rounded-sm" />
+            <Skeleton className="size-8 rounded-sm" />
+            <Skeleton className="size-8 rounded-sm" />
+          </div>
+          <div className="border-b border-border px-4 py-2">
+            <Skeleton className="h-4 w-56 max-w-full" />
+          </div>
           <Table className="min-w-[64rem] table-fixed text-xs">
             <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:text-left">
               <TableRow>

@@ -15,8 +15,8 @@ import type {
   ChartValueMode,
 } from "../types";
 import {
-  buildIntegerTicks,
-  buildLinearTicks,
+  createIntegerTicks,
+  createLinearTicks,
   createBandScale,
   createIntegerDomain,
   createLinearDomain,
@@ -116,8 +116,8 @@ export function BarChart<TMeta = unknown>({
   const zeroX = xScale(0);
   const ticks =
     valueMode === "integer"
-      ? buildIntegerTicks(domain)
-      : buildLinearTicks(domain);
+      ? createIntegerTicks(domain)
+      : createLinearTicks(domain);
   const valueFormatter =
     formatY ?? (valueMode === "integer" ? formatInteger : formatNumber);
   const legendItems = data.series.map((series, index) => ({

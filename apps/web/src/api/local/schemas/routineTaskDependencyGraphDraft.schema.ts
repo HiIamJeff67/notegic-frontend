@@ -1,4 +1,3 @@
-import type { RoutineTaskDependencyGraphDraftEdge } from "@shared/graph";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { Routine } from "./routine.schema";
 
@@ -10,7 +9,19 @@ export interface RoutineTaskDependencyGraphDraftNode {
   };
 }
 
-export type { RoutineTaskDependencyGraphDraftEdge } from "@shared/graph";
+export interface RoutineTaskDependencyGraphDraftEdge {
+  id: string;
+  source: string;
+  target: string;
+  description?: string;
+  progress?: number;
+  syncStatus?: "synced" | "pending" | "invalid";
+  expectedDefinitionVersion?: number;
+  operation?: "create" | "update" | "delete";
+  errorKey?: string;
+  // Legacy localized text; new drafts persist errorKey instead.
+  errorMessage?: string;
+}
 
 export const RoutineTaskDependencyGraphDraft = sqliteTable(
   "RoutineTaskDependencyGraphDraftTable",

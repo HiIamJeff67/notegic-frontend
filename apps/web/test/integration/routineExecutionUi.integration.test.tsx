@@ -12,7 +12,7 @@ jest.mock("@shared/i18n/useTranslation", () => ({
 }));
 
 jest.mock("@/api/graphql/hooks/useSearchRoutineRecords", () => ({
-  useSearchRoutineRecordsLazyQuery: () => [jest.fn(), { fetchMore: jest.fn() }],
+  useSearchRoutineRecordsQuery: () => ({ fetchMore: jest.fn() }),
 }));
 
 jest.mock("@/api/hooks/routineTask.hook", () => ({

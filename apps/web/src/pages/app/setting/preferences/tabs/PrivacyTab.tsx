@@ -21,8 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { StartSurface } from "@/hooks/localPreferences";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import type { StartSurface } from "@/providers/LocalPreferencesProvider";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
 
 type RegexDragItem = {

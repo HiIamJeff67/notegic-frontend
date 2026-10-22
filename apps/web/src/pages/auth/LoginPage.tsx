@@ -17,10 +17,8 @@ import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/Cloudf
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
-import {
-  getPreferredStartPath,
-  useLocalPreferences,
-} from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 
 const LoginPage = () => {

@@ -1,25 +1,23 @@
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
 import {
   SearchRoutineRecordSortBy,
-  SearchSortOrder,
+  type FragmentedPrivateRoutineRecordFragment,
+  type RoutineRecordStatus as GraphQLRoutineRecordStatus,
 } from "@shared/api/graphql/generated/graphql";
-import {
-  AllRoutineRecordStatuses,
-  RoutineRecordStatus,
-} from "@shared/api/interfaces/enums";
+import { RoutineRecordStatus } from "@shared/api/interfaces/enums";
 import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import type { UUID } from "crypto";
 import { Activity, Eye } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchRoutineRecordsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineRecords";
+import { useEffect, useRef, useState } from "react";
+import { useSearchRoutineRecordsQuery } from "@/api/graphql/hooks/useSearchRoutineRecords";
+import RoutineRecordFilters, {
+  defaultRoutineRecordFilters,
+  type RoutineRecordFiltersValue,
+} from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
+import { useDebounceValue } from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -30,194 +28,114 @@ import {
 } from "@/components/ui/table";
 import { useModal, useStationRoutine } from "@/hooks";
 
-type RoutineRecordRow = {
-  id: UUID;
-  routineId: UUID;
-  status: RoutineRecordStatus;
-  scheduledAt: Date;
-  actualEndedAt: Date | null;
-  totalTaskCount: number;
-  successTaskCount: number;
-  failedTaskCount: number;
-  blockedTaskCount: number;
-};
-
 const RoutineRecordTable = () => {
   const { i18n, t } = useTranslation();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
-  const [executeSearch, recordSearch] = useSearchRoutineRecordsLazyQuery({
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-  const [records, setRecords] = useState<RoutineRecordRow[]>([]);
-  const [status, setStatus] = useState<RoutineRecordStatus | "All">("All");
-  const [totalCount, setTotalCount] = useState(0);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
-  const isSearchingRef = useRef(false);
+  const [filters, setFilters] = useState<RoutineRecordFiltersValue>(
+    defaultRoutineRecordFilters
+  );
+  const query = useDebounceValue(filters.query);
   const routineIds = stationRoutineManager.visibleRoutines.map(
     routine => routine.id
   );
-  const routineIdsSignature = routineIds.join("|");
-
-  const applyData = useCallback((data?: any) => {
-    const nextRecords = (data?.searchRoutineRecords?.searchEdges ?? []).map(
-      (edge: any) => {
-        const node = edge.node as any;
-        return {
-          id: node.id,
-          routineId: node.routineId,
-          status: node.status.replace(
-            "RoutineRecordStatus_",
-            ""
-          ) as RoutineRecordStatus,
-          scheduledAt: new Date(node.scheduledAt),
-          actualEndedAt:
-            node.actualEndedAt === null ? null : new Date(node.actualEndedAt),
-          totalTaskCount: node.totalTaskCount,
-          successTaskCount: node.successTaskCount,
-          failedTaskCount: node.failedTaskCount,
-          blockedTaskCount: node.blockedTaskCount,
-        } satisfies RoutineRecordRow;
-      }
-    );
-
-    setRecords(nextRecords);
-    setTotalCount(data?.searchRoutineRecords?.totalCount ?? 0);
-    setCursor(
-      data?.searchRoutineRecords?.searchPageInfo?.endEncodedSearchCursor ?? null
-    );
-    setHasMore(
-      data?.searchRoutineRecords?.searchPageInfo?.hasNextPage ?? false
-    );
-  }, []);
-
-  const searchRecords = useCallback(
-    async (reset: boolean) => {
-      if (isSearchingRef.current || routineIds.length === 0) return;
-      if (!reset && (!hasMore || !cursor)) return;
-
-      isSearchingRef.current = true;
-      setIsSearching(true);
-      try {
-        const variables = {
-          input: {
-            routineIds,
-            query: "",
-            after: reset ? undefined : (cursor ?? undefined),
-            first: reset ? 20 : 10,
-            sortBy: SearchRoutineRecordSortBy.ScheduledAt,
-            sortOrder: SearchSortOrder.Desc,
-          },
-        };
-
-        if (reset) {
-          const result = await executeSearch({ variables }).retain();
-          applyData(result.data);
-          return;
-        }
-
-        await recordSearch.fetchMore({
-          variables,
-          updateQuery: (previous, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return previous;
-            const existingIds = new Set(
-              previous.searchRoutineRecords.searchEdges.map(edge => {
-                const node = edge.node as any;
-                return node.id;
-              })
-            );
-            return {
-              ...fetchMoreResult,
-              searchRoutineRecords: {
-                ...fetchMoreResult.searchRoutineRecords,
-                searchEdges: [
-                  ...previous.searchRoutineRecords.searchEdges,
-                  ...fetchMoreResult.searchRoutineRecords.searchEdges.filter(
-                    edge => {
-                      const node = edge.node as any;
-                      return !existingIds.has(node.id);
-                    }
-                  ),
-                ],
-              },
-            };
-          },
-        });
-      } finally {
-        isSearchingRef.current = false;
-        setIsSearching(false);
-      }
-    },
-    [
-      applyData,
-      cursor,
-      executeSearch,
-      hasMore,
-      recordSearch.fetchMore,
-      routineIdsSignature,
-    ]
+  const invalidRange = Boolean(
+    filters.actualStartedAtFrom &&
+      filters.actualStartedAtBefore &&
+      filters.actualStartedAtFrom >= filters.actualStartedAtBefore
   );
-
-  useEffect(() => {
-    if (routineIds.length === 0) {
-      setRecords([]);
-      setTotalCount(0);
-      setCursor(null);
-      setHasMore(false);
-      return;
+  const input = {
+    ...filters,
+    query,
+    status: filters.status as GraphQLRoutineRecordStatus | undefined,
+    sortBy: filters.sortBy as SearchRoutineRecordSortBy,
+    routineIds,
+    first: 20,
+  };
+  const recordSearch = useSearchRoutineRecordsQuery(
+    { input },
+    {
+      skip: routineIds.length === 0 || invalidRange,
+      fetchPolicy: "cache-and-network",
     }
-    void searchRecords(true);
-  }, [routineIdsSignature]);
-
-  const filteredRecords = records.filter(
-    record => status === "All" || record.status === status
   );
+
+  const viewport = useRef<HTMLDivElement>(null);
+  const searchSignature = JSON.stringify(input);
+  useEffect(() => {
+    viewport.current?.scrollTo({ top: 0 });
+  }, [searchSignature]);
+
+  const pendingCursor = useRef<string | null>(null);
+  const connection = recordSearch.data?.searchRoutineRecords;
+  const isSearching = recordSearch.loading;
+  const hasMore = connection?.searchPageInfo.hasNextPage ?? false;
+  const cursor = connection?.searchPageInfo.endEncodedSearchCursor;
+  const loadMoreRecords = async () => {
+    if (
+      routineIds.length === 0 ||
+      invalidRange ||
+      isSearching ||
+      !hasMore ||
+      !cursor ||
+      pendingCursor.current === cursor
+    )
+      return;
+    pendingCursor.current = cursor;
+    try {
+      await recordSearch.fetchMore({
+        variables: { input: { ...input, after: cursor } },
+      });
+    } catch (error) {
+      toast.error(tError(error, t));
+    } finally {
+      if (pendingCursor.current === cursor) pendingCursor.current = null;
+    }
+  };
+
+  const records =
+    routineIds.length === 0 || invalidRange
+      ? []
+      : (connection?.searchEdges ?? []).map(edge => {
+          const node = edge.node as FragmentedPrivateRoutineRecordFragment;
+          return {
+            ...node,
+            status: node.status.replace(
+              "RoutineRecordStatus_",
+              ""
+            ) as RoutineRecordStatus,
+            scheduledAt: new Date(node.scheduledAt),
+            actualStartedAt: node.actualStartedAt
+              ? new Date(node.actualStartedAt)
+              : null,
+            actualEndedAt: node.actualEndedAt
+              ? new Date(node.actualEndedAt)
+              : null,
+          };
+        });
 
   return (
     <section className="@container flex max-h-[480px] w-full min-w-0 shrink-0 flex-col overflow-hidden rounded-md border border-border/60 bg-card">
-      <div className="flex min-h-11 shrink-0 items-center justify-between gap-3 border-b border-border/80 bg-secondary px-3 py-2">
+      <div className="flex min-h-11 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-secondary px-3 py-2">
         <div className="flex min-w-0 items-center gap-2">
           <Activity className="size-4 text-muted-foreground" />
           <span className="text-sm font-medium @max-[520px]:sr-only">
             {t("workspace.records.routineTitle")}
           </span>
           <span className="text-xs tabular-nums text-muted-foreground">
-            {filteredRecords.length}
-            <span className="px-0.5">|</span>
-            {totalCount}
+            {records.length}
           </span>
         </div>
-        <Select
-          value={status}
-          onValueChange={value =>
-            setStatus(value as RoutineRecordStatus | "All")
-          }
-        >
-          <SelectTrigger className="h-8 w-32 rounded-sm text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)]">
-            <SelectItem value="All">
-              {t("workspace.table.allStatus")}
-            </SelectItem>
-            {AllRoutineRecordStatuses.map(recordStatus => (
-              <SelectItem key={recordStatus} value={recordStatus}>
-                {t(routineRecordStatusTKeys[recordStatus])}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <RoutineRecordFilters value={filters} onChange={setFilters} />
       </div>
       <div
+        ref={viewport}
         className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
         onScroll={event => {
           if (isSearching || !hasMore) return;
           const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
           if (scrollTop + clientHeight < scrollHeight * 0.6) return;
-          void searchRecords(false);
+          void loadMoreRecords();
         }}
       >
         <Table className="table-fixed text-xs">
@@ -230,7 +148,7 @@ const RoutineRecordTable = () => {
                 {t("workspace.table.status")}
               </TableHead>
               <TableHead className="h-9 w-[18%] px-2">
-                {t("workspace.table.scheduled")}
+                {t("workspace.table.started")}
               </TableHead>
               <TableHead className="h-9 w-[28%] px-2">
                 {t("workspace.table.tasks")}
@@ -242,7 +160,7 @@ const RoutineRecordTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRecords.map(record => {
+            {records.map(record => {
               const routine = stationRoutineManager.getRoutineById(
                 record.routineId
               );
@@ -257,7 +175,9 @@ const RoutineRecordTable = () => {
                     {t(routineRecordStatusTKeys[record.status])}
                   </TableCell>
                   <TableCell className="px-2 py-2.5">
-                    {record.scheduledAt.toLocaleString(i18n.resolvedLanguage)}
+                    {record.actualStartedAt?.toLocaleString(
+                      i18n.resolvedLanguage
+                    ) ?? t("workspace.period.none")}
                   </TableCell>
                   <TableCell className="px-2 py-2.5 tabular-nums">
                     {record.successTaskCount}/{record.totalTaskCount}
@@ -284,6 +204,7 @@ const RoutineRecordTable = () => {
                           routineTitle: routine.title,
                           routineTaskIds: routine.routineTaskIds,
                           routineRecordId: record.id,
+                          routineId: routine.id,
                         });
                       }}
                     >
@@ -293,7 +214,7 @@ const RoutineRecordTable = () => {
                 </TableRow>
               );
             })}
-            {filteredRecords.length === 0 && (
+            {records.length === 0 && (
               <TableRow>
                 <TableCell
                   colSpan={6}

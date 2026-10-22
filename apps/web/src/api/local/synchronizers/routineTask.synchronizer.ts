@@ -10,7 +10,7 @@ import type {
   UpdateMyRoutineTaskByIdRequest,
   UpdateMyRoutineTaskByIdResponse,
 } from "@shared/api/interfaces/routineTask.interface";
-import { normalizeRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
+import { parseRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
 import { and, eq, gte, type InferSelectModel, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
@@ -119,7 +119,7 @@ export class RoutineTaskLocalSynchronizer {
       .from(RoutineTask)
       .where(eq(RoutineTask.id, request.body.routineTaskId));
     if (!existing) return;
-    const normalized = normalizeRoutineTaskDefinition({
+    const definition = parseRoutineTaskDefinition({
       ...existing,
       ...request.body.values,
       purpose:
@@ -134,7 +134,7 @@ export class RoutineTaskLocalSynchronizer {
       .update(RoutineTask)
       .set({
         ...request.body.values,
-        payload: normalized.payload,
+        payload: definition.payload,
         updatedAt: response.data.updatedAt,
       })
       .where(eq(RoutineTask.id, request.body.routineTaskId));
@@ -162,7 +162,7 @@ export class RoutineTaskLocalSynchronizer {
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
 
-    const normalized = normalizeRoutineTaskDefinition(request.body);
+    const definition = parseRoutineTaskDefinition(request.body);
     const pending = await RoutineTaskLocalSimulator.getPendingMutations();
     if (
       pending.some(transaction => {
@@ -185,7 +185,7 @@ export class RoutineTaskLocalSynchronizer {
           x: request.body.x ?? 0,
           y: request.body.y ?? 0,
           title: request.body.title,
-          payload: normalized.payload,
+          payload: definition.payload,
           priority: request.body.priority ?? 0,
           maxAttempts: request.body.maxAttempts ?? 1,
           previousRoutineTaskIds: [],
@@ -200,7 +200,7 @@ export class RoutineTaskLocalSynchronizer {
             x: request.body.x ?? 0,
             y: request.body.y ?? 0,
             title: request.body.title,
-            payload: normalized.payload,
+            payload: definition.payload,
             priority: request.body.priority ?? 0,
             maxAttempts: request.body.maxAttempts ?? 1,
             previousRoutineTaskIds: [],

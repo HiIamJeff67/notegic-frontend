@@ -24,9 +24,12 @@ export const useSearchRoutineRecordsLazyQuery = (
 
 export const useSearchRoutineRecordsQuery = (
   variables: SearchRoutineRecordsQueryVariables,
-  options?: useQuery.Options<
-    SearchRoutineRecordsQuery,
-    SearchRoutineRecordsQueryVariables
+  options?: Omit<
+    useQuery.Options<
+      SearchRoutineRecordsQuery,
+      SearchRoutineRecordsQueryVariables
+    >,
+    "variables"
   >
 ) =>
   useQuery<SearchRoutineRecordsQuery, SearchRoutineRecordsQueryVariables>(

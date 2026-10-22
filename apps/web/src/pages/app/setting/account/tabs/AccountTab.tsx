@@ -81,7 +81,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
     [t]
   );
 
-  const handleSaveUserOnSubmit = useCallback(
+  const handleUserSubmit = useCallback(
     async (user: User) =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
@@ -124,7 +124,7 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
           layout === "panel" ? "h-full overflow-hidden" : ""
         }`}
         method="POST"
-        onSubmit={userForm.handleSubmit(handleSaveUserOnSubmit)}
+        onSubmit={userForm.handleSubmit(handleUserSubmit)}
       >
         <div
           className={`flex flex-col ${

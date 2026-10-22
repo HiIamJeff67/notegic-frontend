@@ -24,7 +24,7 @@ import {
   SidebarMenuSubItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import "@/global/styles/article.css";
 import ArticleCommand from "./ArticleCommand";

@@ -12,7 +12,7 @@ import {
 import { useUpdateMySetting } from "@/api/hooks/userSetting.hook";
 import { queryFnGetMySetting } from "@/api/invokers/userSetting.invoker";
 import { UserSettingLocalSynchronizer } from "@/api/local/synchronizers/userSetting.synchronizer";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
 import i18n from "@/i18n";

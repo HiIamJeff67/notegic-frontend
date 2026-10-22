@@ -99,6 +99,7 @@ for (const operation of [
     const execute=()=>({retain:()=>Promise.resolve({data})});
     const result={data, fetchMore:async()=>({data})};
     export const use${operation}LazyQuery=()=>[execute,result];
+    export const use${operation}Query=()=>result;
   `;
 }
 

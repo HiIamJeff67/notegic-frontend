@@ -46,7 +46,7 @@ import { cn } from "@shared/util/utils";
 import { ChevronDownIcon, Download, Import } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import "@/global/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {

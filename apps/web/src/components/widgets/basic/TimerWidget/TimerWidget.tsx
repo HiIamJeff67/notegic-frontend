@@ -66,7 +66,7 @@ const TimerWidget = ({
   const [isEditingDuration, setIsEditingDuration] = useState(false);
   const [editDuration, setEditDuration] = useState(data.current.duration);
 
-  const saveDuration = () => {
+  const updateDuration = () => {
     setData(prev => ({
       ...prev,
       current: { ...prev.current, duration: editDuration },
@@ -230,7 +230,7 @@ const TimerWidget = ({
         (isEditingDuration ? (
           <div className="w-full flex justify-center items-center gap-2 mt-2">
             <button
-              onClick={saveDuration}
+              onClick={updateDuration}
               className="px-4 py-1 bg-primary text-primary-foreground rounded-md hover:opacity-90"
               style={{ fontSize: `${setting.buttonSize ?? 16}px` }}
             >

@@ -1,6 +1,6 @@
 import { createSingleSeriesCartesianData } from "@shared/charts/types";
 import {
-  buildIntegerTicks,
+  createIntegerTicks,
   createBandScale,
   createIntegerDomain,
   createLinearDomain,
@@ -44,7 +44,7 @@ describe("Charts Shared Unit Tests", () => {
     });
 
     test("should generate integer ticks for small count domains", () => {
-      expect(buildIntegerTicks([0, 3])).toEqual([0, 1, 2, 3]);
+      expect(createIntegerTicks([0, 3])).toEqual([0, 1, 2, 3]);
     });
   });
 

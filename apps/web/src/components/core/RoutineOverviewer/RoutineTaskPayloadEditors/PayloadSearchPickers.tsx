@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import {
   SearchRootShelfSortBy,

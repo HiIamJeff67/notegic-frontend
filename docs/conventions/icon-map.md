@@ -45,6 +45,9 @@ content, user uploads and prose emoji are not separate reusable application icon
 | Rename | `Pencil` | Existing object-name editing. PDF `PencilIcon` is a drawing tool, not the edit/Inspector action. |
 | Document navigation | `BookOpenIcon` | Home, app sidebar, viewer/editor guide links and document navigation/fallback entries. |
 | Refresh / retry | `RefreshCw` / `RefreshCwIcon` | Material reload, pending graph sync and browser permission checks. Reset remains `RotateCcwIcon`. |
+| Record filters | `ListFilter` | Status, purpose and date-range controls; [RecordFilters]. |
+| Record sort order | `ArrowDownUp` | Sorting field and direction; [RecordFilters]. |
+| Realign dependency graph | `Workflow` | Whole Routine task graph realignment; [GraphToolbar]. |
 | Copy to clipboard / duplicate | `CopyIcon` / `Copy` | Preferences, API keys, code and existing duplicate actions. A successful-copy `CheckIcon` is state feedback. |
 
 ## Canonical workspace entities
@@ -72,8 +75,8 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 
 ## Lucide inventory
 
-Audit: 2026-10-19, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **123 referenced export names / 98 distinct
+Audit: 2026-10-21, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
+imports and re-exports (excluding tests). There are **125 referenced export names / 100 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -84,6 +87,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Activity` | Execution activity / records | [RoutineRecordTable] |
 | `AlertCircleIcon`, `CircleAlertIcon` | Important notification / alert | [NotificationPopover], [NotificationDialog] |
 | `AlertTriangleIcon`, `TriangleAlert` | Warning notification / toast | [NotificationPopover], [Toaster] |
+| `ArrowDownUp` | Record sorting field / direction | [RecordFilters] |
 | `BellIcon` | Notifications | [NotificationPopover] |
 | `BlocksIcon` | Block content-unit identity in API reference | [APIReference]; not a Block pack identity substitute |
 | `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
@@ -136,6 +140,7 @@ The source column gives a representative existing consumer, not every call site.
 | `KeyRoundIcon` | API key documentation | [APIKey] |
 | `LayoutDashboardIcon` | Dashboard navigation | [AppSidebar] |
 | `LinkIcon` | Todo linked item | [TodoWidget] |
+| `ListFilter` | Record filter controls | [RecordFilters] |
 | `Loader2Icon`, `LoaderCircle`, `LoaderCircleIcon` | Loading / pending work | [Spinner], [RoutineMenu], [HomePage] |
 | `LogOut`, `LogOutIcon` | Sign out / leave shared resource | [AppSidebar], [StationMenu], [RootShelfMenu] |
 | `MailIcon` | Contact/email navigation | [ArticleNavigation] |
@@ -176,7 +181,7 @@ The source column gives a representative existing consumer, not every call site.
 | `UserRoundIcon` | Account navigation | [AppSidebar] |
 | `UsersIcon` | Participants / collaboration | [ParticipantsDropdown] |
 | `WifiOffIcon` | Offline settings | [OfflineTab] |
-| `Workflow` | Dependency graph editor action | [RoutineMenu]; not Routine identity |
+| `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar]; not Routine identity |
 | `WrenchIcon` | Dashboard configuration | [DashboardPage] |
 | `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog] |
 
@@ -363,3 +368,5 @@ assets or Docker services were removed. No commit or push was performed.
 [Ring]: ../../apps/web/src/components/ui/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx
 [ChartFrame]: ../../shared/charts/components/ChartFrame.tsx
+
+[RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx

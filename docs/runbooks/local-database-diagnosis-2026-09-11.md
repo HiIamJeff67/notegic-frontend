@@ -127,7 +127,7 @@ Even after fixing the parsing, a real `user_version = 0` only means that the ver
 - `87ca7be` added in-transaction/out-of-transaction version-consistency checks, but the post-transaction check still uses the broken getVersion, so a successful migration is still rejected.
 - `migrator.test.ts` tests an isolated migrator whose transaction mock returns object rows. This matches SQLocal `transaction.query()` but does not cross the integration boundary from the external Drizzle get to getVersion.
 - Running `migrator.test.ts`, `diagnostics.test.ts`, and `cleanup.test.ts` produced **3 suites and 10 passing tests**. This verifies only their covered scope and does not prove that real initialization succeeds.
-- `local-database-startup.spec.ts` waits for the page/networkidle and checks buttons and collected errors, but does not explicitly wait for database phase=ready or read the actual version. networkidle does not mean that database initialization in the Worker is complete.
+- `localDatabaseStartup.spec.ts` waits for the page/networkidle and checks buttons and collected errors, but does not explicitly wait for database phase=ready or read the actual version. networkidle does not mean that database initialization in the Worker is complete.
 - The existing Playwright configuration covers only Chromium with a development server. CI does not enable authenticated suites requiring `E2E_RUN_AUTHENTICATED=true` and an API URL, and it does not cover Firefox/Zen or a production build.
 
 ## Recommended Fix and Acceptance

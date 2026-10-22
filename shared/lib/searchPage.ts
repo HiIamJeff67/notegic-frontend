@@ -1,4 +1,4 @@
-import { compareText } from "./compare-text";
+import { compareText } from "./compareText";
 
 type Key = string | number | null;
 
@@ -19,15 +19,17 @@ type Position = {
   values: Key[];
 };
 
-const normalizeFilters = (input: Record<string, unknown>) => {
+const createCursorFilters = (input: Record<string, unknown>) => {
   const filters: Record<string, unknown> = {};
   for (const key of Object.keys(input).sort()) {
     const value = input[key];
     if (value == null) continue;
-    if (Array.isArray(value)) {
+    if (value instanceof Date) {
+      filters[key] = value.toISOString();
+    } else if (Array.isArray(value)) {
       if (value.length > 0) filters[key] = [...value].sort();
     } else if (typeof value === "object") {
-      const nested = normalizeFilters(value as Record<string, unknown>);
+      const nested = createCursorFilters(value as Record<string, unknown>);
       if (Object.keys(nested).length > 0) filters[key] = nested;
     } else {
       filters[key] = value;
@@ -81,7 +83,7 @@ export const searchPage = <T extends { id: string }, Input extends SearchInput>(
         previous.scope !== scope ||
         previous.sortBy !== sortBy ||
         previous.sortOrder !== sortOrder ||
-        JSON.stringify(normalizeFilters(previous.filters)) !==
+        JSON.stringify(createCursorFilters(previous.filters)) !==
           JSON.stringify(position.filters) ||
         !Array.isArray(previous.values) ||
         previous.values.length !== 2 ||
@@ -161,7 +163,7 @@ export const searchContext = (scope: string, input: SearchInput) => {
     scope,
     sortBy: sortBy ?? "RELEVANCE",
     sortOrder: sortOrder ?? "DESC",
-    filters: normalizeFilters(filters),
+    filters: createCursorFilters(filters),
   };
 };
 

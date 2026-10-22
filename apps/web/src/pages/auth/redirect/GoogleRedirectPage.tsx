@@ -17,10 +17,8 @@ import {
 } from "@/api/turnstile";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useAppRouter, useUser } from "@/hooks";
-import {
-  getPreferredStartPath,
-  useLocalPreferences,
-} from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
 
 function GoogleRedirectPage() {
   const location = useLocation();

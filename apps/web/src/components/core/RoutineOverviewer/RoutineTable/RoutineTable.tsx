@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,

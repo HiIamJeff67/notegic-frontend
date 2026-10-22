@@ -1,4 +1,4 @@
-export * from "./localPreferences";
+export * from "./useLocalPreferences";
 export * from "./useAnyTypeState";
 export * from "./useAppRouter";
 export * from "./useBackgroundImages";

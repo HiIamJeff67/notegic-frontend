@@ -4,8 +4,8 @@ enum SearchRoutineTaskRecordSortBy {
   RELEVANCE
   PURPOSE
   STATUS
-  COST_UNIT
   ATTEMPTS
+  SCHEDULED_AT
   ACTUAL_STARTED_AT
   ACTUAL_ENDED_AT
   LAST_UPDATE
@@ -15,6 +15,12 @@ enum SearchRoutineTaskRecordSortBy {
 input SearchRoutineTaskRecordInput {
   routineTaskIds: [UUID!]!
   query: String!
+  routineIds: [UUID!]
+  routineRecordId: UUID
+  status: RoutineTaskRecordStatus
+  purpose: RoutineTaskPurpose
+  actualStartedAtFrom: Time
+  actualStartedAtBefore: Time
   after: String
   first: Int = 10
   sortBy: SearchRoutineTaskRecordSortBy = RELEVANCE

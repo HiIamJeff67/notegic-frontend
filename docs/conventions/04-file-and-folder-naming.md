@@ -8,8 +8,10 @@ below reflect the current repository and are the default for new files.
 
 - Use `PascalCase` for React components, pages, providers, and component-owned
   companion files.
-- Use lowercase kebab-case for generic libraries, utilities, scripts, CSS
-  files, documentation files, and conventional infrastructure folders.
+- Use `smallCamelCase` for project-owned TypeScript/JavaScript modules,
+  libraries, utilities, scripts, and their test basenames.
+- Keep kebab-case where a separate convention owns it: Markdown documents,
+  stylesheets, shadcn UI primitives, and conventional infrastructure folders.
 - Use the existing dotted role suffix for API, type, enum, schema, reducer,
   hook, and test files.
 - Use the framework's required syntax for route files; route files are an
@@ -50,8 +52,10 @@ below reflect the current repository and are the default for new files.
 | Pages | `BigCamelCasePage.tsx` | `DashboardPage.tsx`, `PrivacyPolicyPage.tsx` |
 | Page folders | `some-thing/` | `material-viewer/`, `privacy-policy/` |
 | Providers | `BigCamelCaseProvider.tsx` or `BigCamelCaseProvider/` | `ThemeProvider.tsx`, `TransactionSynchronizerProvider/` |
-| Generic libraries/utilities | `some-thing.ts` | New files under `shared/lib/` and `shared/util/` |
+| Generic libraries/utilities | `someThing.ts` | `searchPage.ts`, `compareText.ts` |
 | API modules | `domain.role.ts` | `blockPack.hook.ts`, `userInfo.invoker.ts` |
+| GraphQL query hooks | `useSearchSomething.ts` | `useSearchRoutineRecords.ts` |
+| UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts`; shadcn's `use-toast.ts` retains its convention |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
 | Enums | `domain.enum.ts` | `routineStatus.enum.ts` |
 | Constants | `domain.constant.ts` | `url.constant.ts`, `defaultThemes.constant.ts` |
@@ -60,10 +64,24 @@ below reflect the current repository and are the default for new files.
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
 | Unit/performance tests | `name.unit.test.ts` or `name.performance.test.ts` | `i18n.unit.test.ts` |
 
-Generic library and utility files should use kebab-case going forward. Some
-older files under `shared/lib/` and `shared/util/` use PascalCase or camelCase;
-those are compatibility-preserving legacy names, not a reason for a broad
-rename.
+Keep established API role suffixes where they describe the module, such as
+`routine.hook.ts` and `searchLocal.adapter.ts`. Do not invent a suffix or rename
+`useSearchSomething.ts` merely to make every hook filename alike. Shared API
+infrastructure uses smallCamelCase, such as `apolloClient.ts`,
+`clientHeaders.ts`, `websocketClient.ts`, `queryClient.ts`, and `queryKeys.ts`.
+
+TanStack Start reserves `*.client.*` and `*.server.*` for import protection.
+Do not use `.client.ts` merely to label an API client: a factory imported by
+the SSR router must remain usable on the server. Keep framework-reserved
+suffixes only for actual environment restrictions, never disable protection
+to satisfy an ordinary filename convention.
+
+Do not infer a repository-wide rename from a style correction. Preserve
+established hook and class/component names, including `LRUCache.ts`, unless
+their rename is explicitly requested. A scoped filename change includes
+imports, tests, dynamic source paths and documentation references, without
+compatibility re-exports. Preserve separately governed documentation, folders,
+framework routes, language tags, generated output and migration filenames.
 
 ## Local types and constants
 
@@ -145,6 +163,13 @@ fragments, queries, and schema files retain snake_case because that is the
 existing GraphQL convention and is shared with the backend schema vocabulary.
 
 ## Naming boundaries
+
+For a scoped filename cleanup, run the local filename guard with
+`npm run test:unit -- apps/web/test/integration/fileNaming.test.ts`, then
+typecheck and exercise affected dynamic imports in browser E2E. API clients
+shared with the router also need SSR/build verification: a TypeScript-valid
+rename can still introduce a framework-reserved environment restriction.
+Keep these checks local; a cleanup does not require adding hosted CI jobs.
 
 - Do not use backend Go naming rules for TypeScript files.
 - Do not use PascalCase for generic utility or API files just because a domain

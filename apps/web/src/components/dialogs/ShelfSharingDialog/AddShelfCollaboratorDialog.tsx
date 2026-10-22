@@ -52,13 +52,6 @@ const AddShelfCollaboratorDialog = ({
   onSubmit,
 }: AddShelfCollaboratorDialogProps) => {
   const { t } = useTranslation();
-  const permissionLabel = (value: ShelfCollaboratorPermission) => {
-    if (value === AccessControlPermission.Admin)
-      return t("workspace.viewer.admin");
-    if (value === AccessControlPermission.Write)
-      return t("workspace.viewer.write");
-    return t("workspace.viewer.read");
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,7 +80,11 @@ const AddShelfCollaboratorDialog = ({
             <SelectContent className="z-[190]">
               {permissionOptions.map(value => (
                 <SelectItem key={value} value={value}>
-                  {permissionLabel(value)}
+                  {value === AccessControlPermission.Admin
+                    ? t("workspace.viewer.admin")
+                    : value === AccessControlPermission.Write
+                      ? t("workspace.viewer.write")
+                      : t("workspace.viewer.read")}
                 </SelectItem>
               ))}
             </SelectContent>

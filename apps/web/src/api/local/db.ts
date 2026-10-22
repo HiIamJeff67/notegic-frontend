@@ -11,7 +11,7 @@ import {
   isLocalDBWorkerDiagnosticMessage,
   type LocalDBDiagnostics,
 } from "./diagnostics";
-import { getOrderedMigrations } from "./migration-catalog";
+import { getOrderedMigrations } from "./migrationCatalog";
 import { LocalDBMigrator } from "./migrator";
 import {
   classifyLocalDBError,

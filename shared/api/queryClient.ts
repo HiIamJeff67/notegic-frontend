@@ -12,7 +12,7 @@ const MAX_QUERY_RETRY_COUNT = 1;
 const QUERY_RETRY_BASE_DELAY_MS = 1_000;
 const QUERY_RETRY_MAX_DELAY_MS = 10_000;
 
-export const makeQueryClient = (): QueryClient => {
+export const createQueryClient = (): QueryClient => {
   const retryPolicy = (failureCount: number, error: unknown): boolean => {
     if (
       typeof error === "object" &&
@@ -75,9 +75,9 @@ export const makeQueryClient = (): QueryClient => {
 
 export const getQueryClient = (): QueryClient => {
   if (typeof window === "undefined") {
-    return makeQueryClient();
+    return createQueryClient();
   }
 
-  if (!browserQueryClient) browserQueryClient = makeQueryClient();
+  if (!browserQueryClient) browserQueryClient = createQueryClient();
   return browserQueryClient;
 };

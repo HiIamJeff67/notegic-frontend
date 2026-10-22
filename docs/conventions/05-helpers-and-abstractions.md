@@ -45,9 +45,9 @@ When extraction is justified, name the helper after the domain or UI concept it
 owns:
 
 ```text
-resolve-visible-shelf-items.ts
-build-routine-task-payload.ts
-is-editable-material.ts
+resolveVisibleShelfItems.ts
+createRoutineTaskPayload.ts
+isEditableMaterial.ts
 ```
 
 Avoid vague names and catch-all modules such as:
@@ -56,8 +56,8 @@ Avoid vague names and catch-all modules such as:
 helpers.ts
 common.ts
 misc.ts
-process-data.ts
-handle-everything.ts
+processData.ts
+handleEverything.ts
 ```
 
 The helper name should make its input, output, and responsibility apparent
@@ -86,6 +86,47 @@ without opening the implementation.
 - If the helper name itself tells a reviewer that the code is obvious and
   should be expanded, do not extract it. A name is not a reason to hide a
   readable block.
+
+### Operation verbs
+
+Choose the verb from the actual operation and the established vocabulary of
+its owning module and callers. Inspect comparable operations first; do not
+introduce a new synonym to make a name appear more sophisticated. Match the
+existing API operation stem across functions, hooks, contracts and consumers.
+
+| Operation | Naming rule |
+| --- | --- |
+| Read an existing value or resource | Keep the established `get...`/`Get...`; retain `search...` for search and the existing transport-specific fetch vocabulary where it has a distinct role. |
+| Create a value, resource, payload, options or result | Prefer `create...` (`Create...` for an established API operation), not `build...`. Creation need not persist anything. |
+| Modify an existing resource | Use `update...`/`Update...`; do not call a plain update `save...`. |
+| Remove a resource | Use `delete...`/`Delete...`; preserve more specific existing operations such as `restore...` where their behavior differs. |
+| Insert or update depending on existence | Use `upsert...` when both paths are supported; use the storage boundary's established `set...` for key/value assignment. |
+| Save a document, draft or checkpoint as a distinct workflow | `save...` is appropriate when it describes that workflow rather than hiding a plain update. Additional synchronization, export, deployment or execution must remain explicit; use `deploy...` or `execute...` when that is the primary action. Extra incidental side effects alone do not justify a new CRUD synonym. |
+| Compile or build an actual artifact | Reserve `build...` for a genuine build operation or an externally required builder API, not an object literal, filter map, array, payload or client instance. |
+| Parse, validate, convert, render or calculate | Use the established verb that matches the real behavior; do not replace every transformation with `create...` or hide validation behind a creation name. |
+
+Keep conventional React event names such as `onSubmit` when they describe an
+event boundary, and keep user-facing "Save" labels independent of implementation
+method names. External library methods, generated identifiers and versioned wire
+names are not private naming errors. A public-operation rename must account for
+the backend contract and all consumers; this rule does not authorize broad
+filename changes or mechanical verb replacement.
+
+### Specific transformation names
+
+Avoid `normalize` as a catch-all name for project-owned functions, methods,
+variables, and files. First decide whether the helper is needed: keep a short,
+one-use trim, case conversion, default, or mapping inline. When recursion, real
+reuse, validation, or a protocol boundary justifies a helper, name its concrete
+result or responsibility, such as `createCursorFilters`,
+`parseRoutineTaskDefinition`, or `prepareMigrationStatement`. Do not replace
+`normalize` mechanically with equally vague `process`, `handle`, or `sanitize`.
+
+Preserve validation, defaults, legacy payload conversion, cursor bytes, and
+storage behavior during naming changes. Established mathematical/Unicode
+normalization and third-party API names are not prohibited; retain that
+vocabulary only when it describes the actual algorithm or external contract.
+Generated output and wire fields are not targets of a private naming cleanup.
 
 ## Placement and ownership
 

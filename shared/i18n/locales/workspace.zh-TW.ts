@@ -158,6 +158,24 @@ export const TraditionalChineseWorkspaceTranslation = {
     clickToAdd: "點擊以新增",
   },
   records: {
+    sort: "排序紀錄",
+    summary: "紀錄摘要",
+    loadedSummary: "已載入共 {{count}} 筆",
+    filters: "紀錄篩選",
+    search: "搜尋紀錄",
+    startedFrom: "開始時間自",
+    startedBefore: "開始時間早於",
+    sortBy: "排序依據",
+    sortOrder: "排序方向",
+    ascending: "升冪",
+    descending: "降冪",
+    createdAt: "建立時間",
+    updatedAt: "更新時間",
+    resetFilters: "重設篩選",
+    invalidRange: "結束時間必須晚於開始時間。",
+    executionInput: "執行輸入",
+    executionResult: "執行結果",
+    noDetailedOutput: "無詳細輸出",
     title: "流程任務紀錄",
     routineTitle: "流程紀錄表格",
     noLinkedTasks: "這個流程沒有連結的流程任務。",
@@ -165,12 +183,6 @@ export const TraditionalChineseWorkspaceTranslation = {
     noMatches: "沒有流程任務紀錄符合目前的篩選條件。",
     loadingRoutineRecords: "正在載入流程執行紀錄……",
     noRoutineRecords: "目前沒有流程執行紀錄。",
-    creationBarrier: "確定性建立屏障",
-    creationBarrierDescription:
-      "容器型與核心型物件會先準備完成，再繼續執行相依任務。",
-    creationBarrierProgress: "{{completed}} / {{total}} 個確定性任務已完成",
-    creationBarrierItems:
-      "{{updated}} 個已更新 · {{skipped}} 個已略過 · {{failed}} 個失敗",
   },
   timeRails: {
     title: "時間軌",
@@ -436,6 +448,13 @@ export const TraditionalChineseWorkspaceTranslation = {
     noRoutineTasksMatch: "沒有流程任務符合目前的篩選條件。",
     routineTaskTable: "流程任務表格",
     routineTaskRecordTable: "流程任務紀錄表格",
+  },
+  graph: {
+    realign: "重新排列",
+    realignTitle: "重新排列整張圖？",
+    realignDescription:
+      "此操作將重新排列整張圖中的所有 Routine tasks 與依賴連線。",
+    realignError: "無法重新排列此圖，請檢查依賴關係後再試一次。",
   },
   fields: {
     startingNode: "起點",

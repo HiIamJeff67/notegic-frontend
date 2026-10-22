@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";

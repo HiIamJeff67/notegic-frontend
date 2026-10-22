@@ -257,6 +257,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                 onClick={() =>
                   modalManager.open("RoutineTaskRecordDialog", {
                     routineTitle: routine.title,
+                    routineId: routine.id,
                     routineTaskIds: routine.routineTaskIds,
                   })
                 }

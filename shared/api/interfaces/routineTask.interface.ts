@@ -68,7 +68,7 @@ export const CreateRoutineTaskBodySchema = z
     }
   });
 
-export const normalizeRoutineTaskDefinition = (
+export const parseRoutineTaskDefinition = (
   input: z.input<typeof CreateRoutineTaskBodySchema>
 ) => {
   const body = CreateRoutineTaskBodySchema.parse(input);

@@ -216,10 +216,10 @@ storage reset or additional repair were needed for this check.
 Run with Node 22 from `.nvmrc`:
 
 ```sh
-npm run test:unit -- apps/web/test/integration/routine-migration.test.ts
-npm run test:unit -- RoutineTaskSyncLogic migrator dependency-draft-error
+npm run test:unit -- apps/web/test/integration/routineMigration.test.ts
+npm run test:unit -- RoutineTaskSyncLogic migrator RoutineTaskDependencyGraphDraftProvider
 npm run typecheck
-npm run test:e2e -- routine-graph.spec.ts local-database-startup.spec.ts --workers=1 --timeout=90000
+npm run test:e2e -- routineGraph.spec.ts localDatabaseStartup.spec.ts --workers=1 --timeout=90000
 ```
 
 The SQLite integration suite executes the real SQL splitter and migrations on
@@ -282,7 +282,7 @@ evidence remains separate from that browser run.
 
 ## Authenticated Routine runtime verification
 
-The opt-in `apps/web/test/e2e/routine-backend.spec.ts` targets a dedicated
+The opt-in `apps/web/test/e2e/routineBackend.spec.ts` targets a dedicated
 live backend, not intercepted RPC responses. Provision an isolated migrated
 PostgreSQL database, ClientGateway/Core/DurableJob processes, Kafka broker and
 cache namespace first. Never point it at the original development DB.
@@ -291,7 +291,7 @@ cache namespace first. Never point it at the original development DB.
 E2E_RUN_ROUTINE_BACKEND=true \
 E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
 E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
-npm run test:e2e -- routine-backend.spec.ts --workers=1
+npm run test:e2e -- routineBackend.spec.ts --workers=1
 ```
 
 The suite uses a separate Playwright profile, creates uniquely named fixture
@@ -350,7 +350,7 @@ cases each passed twice with:
 E2E_RUN_ROUTINE_BACKEND=true \
 E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
 E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
-npm run test:e2e -- routine-backend.spec.ts \
+npm run test:e2e -- routineBackend.spec.ts \
   --grep 'editing a new|Routine and node fields' --repeat-each=2 --workers=1
 ```
 

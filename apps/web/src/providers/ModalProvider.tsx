@@ -115,6 +115,7 @@ export type ModalPropsMap = {
   };
   RoutineTaskRecordDialog: {
     routineTitle: string;
+    routineId?: UUID;
     routineTaskIds: UUID[];
     routineRecordId?: UUID;
   };

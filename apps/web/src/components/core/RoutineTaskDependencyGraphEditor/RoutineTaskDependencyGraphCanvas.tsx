@@ -8,23 +8,25 @@ import {
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
+  type OnInit,
   Panel,
   ReactFlow,
   useStore,
 } from "@xyflow/react";
 import { Map as MapIcon, X } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useScreen } from "@/hooks";
-import RoutineTaskGraphNode, {
-  type RoutineTaskGraphNode as RoutineTaskGraphNodeType,
-} from "./RoutineTaskGraphNode";
+import RoutineTaskGraphNode from "./RoutineTaskGraphNode";
+import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 
 interface RoutineTaskDependencyGraphCanvasProps {
   colorMode: "dark" | "light";
   edges: Edge[];
   isMiniMapVisible: boolean;
   nodes: RoutineTaskGraphNodeType[];
+  isInteractive: boolean;
+  onInteractiveChange: (interactive: boolean) => void;
+  onInit?: OnInit<RoutineTaskGraphNodeType, Edge>;
   onConnect: OnConnect;
   onEdgeClick: EdgeMouseHandler;
   onEdgesChange: OnEdgesChange<Edge>;
@@ -70,7 +72,7 @@ const RoutineTaskDependencyMiniMap = ({
           bgColor="var(--inset)"
           maskColor="var(--inset)"
           offsetScale={0}
-          className="!static !m-0"
+          className="!static !m-0 overflow-hidden rounded-[var(--radius)] border border-foreground/30 !bg-inset"
           style={{
             width: miniMapWidth,
             height: miniMapHeight,
@@ -97,6 +99,9 @@ const RoutineTaskDependencyGraphCanvas = ({
   edges,
   isMiniMapVisible,
   nodes,
+  isInteractive,
+  onInteractiveChange,
+  onInit,
   onConnect,
   onEdgeClick,
   onEdgesChange,
@@ -106,7 +111,6 @@ const RoutineTaskDependencyGraphCanvas = ({
 }: RoutineTaskDependencyGraphCanvasProps) => {
   const { t } = useTranslation();
   const screenManager = useScreen();
-  const [isInteractive, setIsInteractive] = useState(true);
   const fallbackAspectRatio =
     screenManager.width > 0 && screenManager.height > 0
       ? screenManager.width / screenManager.height
@@ -117,6 +121,7 @@ const RoutineTaskDependencyGraphCanvas = ({
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
+      onInit={onInit}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
@@ -166,7 +171,8 @@ const RoutineTaskDependencyGraphCanvas = ({
     >
       <Background />
       <Controls
-        onInteractiveChange={setIsInteractive}
+        className="overflow-hidden rounded-[var(--radius)] border border-foreground/30 !bg-inset"
+        onInteractiveChange={onInteractiveChange}
         showZoom={isInteractive}
         showFitView={isInteractive}
       />

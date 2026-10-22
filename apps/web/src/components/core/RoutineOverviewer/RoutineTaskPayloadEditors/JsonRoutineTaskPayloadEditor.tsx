@@ -39,7 +39,7 @@ const JsonRoutineTaskPayloadEditor = ({
     setError("");
   }, [initialPayload, isOpen]);
 
-  const save = () => {
+  const handleConfirm = () => {
     try {
       onConfirm(JSON.stringify(JSON.parse(payload), null, 2));
       onClose();
@@ -75,7 +75,7 @@ const JsonRoutineTaskPayloadEditor = ({
           <Button type="button" variant="destructive" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button type="button" onClick={save}>
+          <Button type="button" onClick={handleConfirm}>
             {t("common.save")}
           </Button>
         </DialogFooter>

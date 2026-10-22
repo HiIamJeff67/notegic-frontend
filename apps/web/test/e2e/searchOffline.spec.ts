@@ -20,7 +20,7 @@ test("offline search traverses real SQLite rows with compatible cursors", async 
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
     const schema = await load("/src/api/local/schemas/index.ts");
-    const { eq } = await load("/test/e2e/local-database-test-support.ts");
+    const { eq } = await load("/test/e2e/localDatabaseTestSupport.ts");
     const { RootShelfLocalSimulator } = await load(
       "/src/api/local/simulators/rootShelf.simulator.ts"
     );

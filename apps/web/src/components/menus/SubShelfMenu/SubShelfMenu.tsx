@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { RootShelfNode } from "@shared/types/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";

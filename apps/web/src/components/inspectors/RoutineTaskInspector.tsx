@@ -163,7 +163,7 @@ const RoutineTaskInspector = ({
     };
   }, [isOpen, routineTaskId]);
 
-  const saveRoutineTask = async () => {
+  const updateRoutineTask = async () => {
     const title = values.title.trim();
     if (title.length === 0) return;
     if (startingPayload) {
@@ -250,7 +250,7 @@ const RoutineTaskInspector = ({
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {
               event.preventDefault();
-              await saveRoutineTask();
+              await updateRoutineTask();
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">

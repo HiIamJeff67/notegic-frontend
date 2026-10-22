@@ -1,7 +1,7 @@
 import { cn } from "@shared/util/utils";
 import type { HTMLAttributes, RefObject } from "react";
 import { useContext, useEffect, useRef } from "react";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useScreen } from "@/hooks/useScreen";
 import {
   ArticleDisplayContext,

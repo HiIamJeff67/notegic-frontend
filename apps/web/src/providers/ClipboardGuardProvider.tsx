@@ -2,7 +2,7 @@ import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 
 const builtInSensitivePatterns = [
   /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i,

@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
 import { lazy, Suspense } from "react";

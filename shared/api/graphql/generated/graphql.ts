@@ -809,12 +809,15 @@ export type SearchRoutineRecordEdge = SearchEdge & {
 };
 
 export type SearchRoutineRecordInput = {
+  actualStartedAtBefore?: InputMaybe<Scalars['Time']['input']>;
+  actualStartedAtFrom?: InputMaybe<Scalars['Time']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   query: Scalars['String']['input'];
   routineIds: Array<Scalars['UUID']['input']>;
   sortBy?: InputMaybe<SearchRoutineRecordSortBy>;
   sortOrder?: InputMaybe<SearchSortOrder>;
+  status?: InputMaybe<RoutineRecordStatus>;
 };
 
 export enum SearchRoutineRecordSortBy {
@@ -916,23 +919,29 @@ export type SearchRoutineTaskRecordEdge = SearchEdge & {
 };
 
 export type SearchRoutineTaskRecordInput = {
+  actualStartedAtBefore?: InputMaybe<Scalars['Time']['input']>;
+  actualStartedAtFrom?: InputMaybe<Scalars['Time']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  purpose?: InputMaybe<RoutineTaskPurpose>;
   query: Scalars['String']['input'];
+  routineIds?: InputMaybe<Array<Scalars['UUID']['input']>>;
+  routineRecordId?: InputMaybe<Scalars['UUID']['input']>;
   routineTaskIds: Array<Scalars['UUID']['input']>;
   sortBy?: InputMaybe<SearchRoutineTaskRecordSortBy>;
   sortOrder?: InputMaybe<SearchSortOrder>;
+  status?: InputMaybe<RoutineTaskRecordStatus>;
 };
 
 export enum SearchRoutineTaskRecordSortBy {
   ActualEndedAt = 'ACTUAL_ENDED_AT',
   ActualStartedAt = 'ACTUAL_STARTED_AT',
   Attempts = 'ATTEMPTS',
-  CostUnit = 'COST_UNIT',
   CreatedAt = 'CREATED_AT',
   LastUpdate = 'LAST_UPDATE',
   Purpose = 'PURPOSE',
   Relevance = 'RELEVANCE',
+  ScheduledAt = 'SCHEDULED_AT',
   Status = 'STATUS'
 }
 

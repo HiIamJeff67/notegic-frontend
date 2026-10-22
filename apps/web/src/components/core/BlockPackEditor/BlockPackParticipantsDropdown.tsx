@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compare-entity-names";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { UUID } from "node:crypto";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
@@ -351,16 +351,16 @@ const BlockPackParticipantsDropdown = ({
       });
     }
 
-    const normalizedQuery = overviewQuery.trim().toLowerCase();
+    const searchQuery = overviewQuery.trim().toLowerCase();
     return Array.from(rows.values())
       .filter(row => {
-        if (!normalizedQuery) return true;
+        if (!searchQuery) return true;
 
         return (
-          row.displayName.toLowerCase().includes(normalizedQuery) ||
-          row.userPublicId.toLowerCase().includes(normalizedQuery) ||
-          row.permission.toLowerCase().includes(normalizedQuery) ||
-          row.status.toLowerCase().includes(normalizedQuery)
+          row.displayName.toLowerCase().includes(searchQuery) ||
+          row.userPublicId.toLowerCase().includes(searchQuery) ||
+          row.permission.toLowerCase().includes(searchQuery) ||
+          row.status.toLowerCase().includes(searchQuery)
         );
       })
       .sort((left, right) =>

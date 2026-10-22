@@ -21,6 +21,7 @@ export class BlockPackYjsCoordinator {
     | ((type: RealtimeBinaryFrameType, payload: Uint8Array) => boolean)
     | null = null;
   private readOnly = false;
+  private hasLocalUpdates = false;
   private readonly pendingDocumentUpdates: Uint8Array[] = [];
   private readonly persistedDocumentStateVector = new Map<number, number>();
   private documentFlushTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -33,6 +34,7 @@ export class BlockPackYjsCoordinator {
   private readonly handleDocUpdate = (update: Uint8Array, origin: unknown) => {
     if (origin === NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN) return;
     if (this.readOnly) return;
+    this.hasLocalUpdates = true;
     this.sendOrQueue(RealtimeBinaryFrameType.YjsDocument, update);
   };
   private readonly handleAwarenessUpdate = (
@@ -73,6 +75,10 @@ export class BlockPackYjsCoordinator {
 
   disconnect() {
     this.clearDocumentFlushTimeout();
+    if (this.send !== null && !this.readOnly && this.hasLocalUpdates) {
+      // Replay local state idempotently, including deletes not represented by a state vector.
+      this.pendingDocumentUpdates.push(Y.encodeStateAsUpdate(this.doc));
+    }
     this.send = null;
     this.clearRemoteAwarenessStates();
   }
@@ -245,6 +251,7 @@ export class BlockPackYjsCoordinator {
         NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
       );
       if (cachedDocument.needsFlush && !this.readOnly) {
+        this.hasLocalUpdates = true;
         this.pendingDocumentUpdates.push(cachedDocument.update);
       }
       for (const [clientId, clock] of Y.decodeStateVector(

@@ -13,6 +13,9 @@ enum SearchRoutineRecordSortBy {
 input SearchRoutineRecordInput {
   routineIds: [UUID!]!
   query: String!
+  status: RoutineRecordStatus
+  actualStartedAtFrom: Time
+  actualStartedAtBefore: Time
   after: String
   first: Int = 10
   sortBy: SearchRoutineRecordSortBy = RELEVANCE

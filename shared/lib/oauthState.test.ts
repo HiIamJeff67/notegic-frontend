@@ -3,7 +3,7 @@ import {
   createOAuthState,
   createPendingOAuthState,
   getPendingOAuthState,
-  savePendingOAuthState,
+  setPendingOAuthState,
 } from "@shared/lib/oauthState";
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
 import type { PendingOAuthState } from "@shared/types/redirectState.type";
@@ -98,7 +98,7 @@ test("rejects an expired state and clears it", () => {
     action: "register",
     createdAt: 1_000,
   };
-  savePendingOAuthState(pending);
+  setPendingOAuthState(pending);
 
   expect(
     consumePendingOAuthState(

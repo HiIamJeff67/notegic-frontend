@@ -1,5 +1,5 @@
 import type { FieldPolicy, Reference, StoreObject } from "@apollo/client";
-import { searchContext } from "@shared/lib/search-page";
+import { searchContext } from "@shared/lib/searchPage";
 
 export const searchPaginationPolicy: FieldPolicy = {
   keyArgs(args, { fieldName }) {

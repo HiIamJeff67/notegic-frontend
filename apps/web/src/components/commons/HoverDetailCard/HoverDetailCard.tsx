@@ -1,7 +1,7 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import type { ReactNode } from "react";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 
 interface HoverDetailCardProps {
   title: ReactNode;

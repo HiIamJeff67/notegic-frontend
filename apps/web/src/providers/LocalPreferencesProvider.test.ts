@@ -1,7 +1,10 @@
+jest.mock("@/api/local/cleanup", () => ({}));
+jest.mock("@/providers/MaterialAttachmentCacheProvider", () => ({}));
+
 import {
   canSendDesktopNotification,
   isQuietHours,
-} from "@/providers/notificationPreferences";
+} from "@/providers/LocalPreferencesProvider";
 
 const preferences = {
   desktopNotifications: true,

@@ -26,11 +26,12 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import RoutineTaskDependencyGraphCanvas from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas";
 import RoutineTaskDependencyGraphToolbar from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphToolbar";
-import type { RoutineTaskGraphNode as GraphNode } from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode";
+import type { RoutineTaskGraphNode as GraphNode } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 import { ModalProvider } from "@/providers/ModalProvider";
 
 const RoutineGraphFixture = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(true);
   const [editingId, setEditingId] = useState("");
   const [nodes, setNodes] = useState<GraphNode[]>([
     {
@@ -76,6 +77,8 @@ const RoutineGraphFixture = () => {
       <div className="h-full flex flex-col bg-background text-foreground">
         <output aria-label="Editing node">{editingId}</output>
         <RoutineTaskDependencyGraphToolbar
+          canRealign={false}
+          onRealign={() => {}}
           isAddMenuOpen={menuOpen}
           onAddMenuOpenChange={setMenuOpen}
           isRetryingSync={false}
@@ -91,6 +94,8 @@ const RoutineGraphFixture = () => {
         />
         <div className="min-h-0 flex-1">
           <RoutineTaskDependencyGraphCanvas
+            isInteractive={isInteractive}
+            onInteractiveChange={setIsInteractive}
             colorMode="dark"
             nodes={nodes}
             edges={[]}
@@ -234,9 +239,7 @@ export const mountRoutineEditor = async () => {
                           routineId={editorRoutineId}
                         >
                           <ActiveProbe />
-                          <RoutineTaskDependencyGraphEditor
-                            routineId={editorRoutineId}
-                          />
+                          <RoutineTaskDependencyGraphEditor />
                         </RoutineTaskDependencyGraphDraftProvider>
                       </TransactionSynchronizerProvider>
                     </StationRoutineContext.Provider>

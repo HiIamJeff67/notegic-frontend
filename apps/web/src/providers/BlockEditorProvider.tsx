@@ -10,7 +10,6 @@ import {
 import { WebURLPathDictionary } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
-import { randomColor } from "@shared/util/random";
 import { createContext, useCallback, useEffect, useMemo } from "react";
 import type * as Y from "yjs";
 import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
@@ -82,7 +81,7 @@ export const BlockEditorProvider = ({
               userData?.name ??
               t("workspace.dialogs.user"),
             publicId: userData?.publicId,
-            color: randomColor(),
+            color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`,
           } as { name: string; color: string },
           showCursorLabels: "activity",
         },

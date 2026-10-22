@@ -1,9 +1,9 @@
 import { NotegicAPIError, NotegicException } from "./exceptions";
-import { makeQueryClient } from "./queryClient";
+import { createQueryClient } from "./queryClient";
 
 describe("query retry policy", () => {
   it.each([400, 401, 403, 404, 429])("does not retry HTTP %s", async status => {
-    const client = makeQueryClient();
+    const client = createQueryClient();
     const error = new NotegicAPIError(
       new NotegicException({
         code: status,
@@ -21,7 +21,7 @@ describe("query retry policy", () => {
     client.clear();
   });
   it("respects the backend public retryable flag even without HTTP status", async () => {
-    const client = makeQueryClient();
+    const client = createQueryClient();
     const error = new NotegicAPIError(
       new NotegicException({
         reason: "NotFound",
@@ -39,7 +39,7 @@ describe("query retry policy", () => {
     client.clear();
   });
   it("does not retry an aborted request", async () => {
-    const client = makeQueryClient();
+    const client = createQueryClient();
     const queryFn = jest
       .fn()
       .mockRejectedValue(new DOMException("Aborted", "AbortError"));

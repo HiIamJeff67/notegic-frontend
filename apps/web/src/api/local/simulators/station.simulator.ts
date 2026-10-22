@@ -1,4 +1,4 @@
-import { matchesSearch, searchPage } from "@shared/lib/search-page";
+import { matchesSearch, searchPage } from "@shared/lib/searchPage";
 import { toGraphQLSupportedIcon } from "@shared/api/graphql/conversions";
 import {
   type SearchStationInput,

@@ -111,7 +111,7 @@ const StationInspector = ({
     };
   }, [isOpen, stationId]);
 
-  const saveStation = async () => {
+  const updateStation = async () => {
     const name = values.name.trim();
     const description = values.description.trim();
     const headerBackgroundURL = values.headerBackgroundURL.trim();
@@ -168,7 +168,7 @@ const StationInspector = ({
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {
               event.preventDefault();
-              await saveStation();
+              await updateStation();
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">

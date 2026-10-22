@@ -158,6 +158,24 @@ export const SimpleChineseWorkspaceTranslation = {
     clickToAdd: "点击添加",
   },
   records: {
+    sort: "排序记录",
+    summary: "记录摘要",
+    loadedSummary: "已加载共 {{count}} 条",
+    filters: "记录筛选",
+    search: "搜索记录",
+    startedFrom: "开始时间自",
+    startedBefore: "开始时间早于",
+    sortBy: "排序依据",
+    sortOrder: "排序方向",
+    ascending: "升序",
+    descending: "降序",
+    createdAt: "创建时间",
+    updatedAt: "更新时间",
+    resetFilters: "重置筛选",
+    invalidRange: "结束时间必须晚于开始时间。",
+    executionInput: "执行输入",
+    executionResult: "执行结果",
+    noDetailedOutput: "无详细输出",
     title: "流程任务记录",
     routineTitle: "流程记录表格",
     noLinkedTasks: "这个流程没有关联的流程任务。",
@@ -165,12 +183,6 @@ export const SimpleChineseWorkspaceTranslation = {
     noMatches: "没有流程任务记录符合当前筛选条件。",
     loadingRoutineRecords: "正在加载流程执行记录……",
     noRoutineRecords: "目前没有流程执行记录。",
-    creationBarrier: "确定性创建屏障",
-    creationBarrierDescription:
-      "容器型与核心型对象会先准备完成，再继续执行依赖任务。",
-    creationBarrierProgress: "{{completed}} / {{total}} 个确定性任务已完成",
-    creationBarrierItems:
-      "{{updated}} 个已更新 · {{skipped}} 个已跳过 · {{failed}} 个失败",
   },
   timeRails: {
     title: "时间轨",
@@ -434,6 +446,13 @@ export const SimpleChineseWorkspaceTranslation = {
     noRoutineTasksMatch: "没有流程任务符合当前筛选条件。",
     routineTaskTable: "流程任务表格",
     routineTaskRecordTable: "流程任务记录表格",
+  },
+  graph: {
+    realign: "重新排列",
+    realignTitle: "重新排列整张图？",
+    realignDescription:
+      "此操作将重新排列整张图中的所有 Routine tasks 与依赖连线。",
+    realignError: "无法重新排列此图，请检查依赖关系后重试。",
   },
   fields: {
     startingNode: "起点",

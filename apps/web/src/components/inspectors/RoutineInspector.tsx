@@ -203,7 +203,7 @@ const RoutineInspector = ({
     };
   }, [isOpen, routineId]);
 
-  const saveRoutine = async () => {
+  const updateRoutine = async () => {
     const title = values.title.trim();
     if (title.length === 0) return;
     const weekStartAt = new Date(2026, 0, 4 + weekdayRange.start);
@@ -320,7 +320,7 @@ const RoutineInspector = ({
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {
               event.preventDefault();
-              await saveRoutine();
+              await updateRoutine();
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">

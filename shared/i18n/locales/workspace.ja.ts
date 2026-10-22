@@ -160,6 +160,24 @@ export const JapaneseWorkspaceTranslation = {
     clickToAdd: "クリックして追加",
   },
   records: {
+    sort: "記録の並べ替え",
+    summary: "記録の概要",
+    loadedSummary: "表示中の記録：全 {{count}} 件",
+    filters: "記録フィルター",
+    search: "記録を検索",
+    startedFrom: "開始日時（以降）",
+    startedBefore: "開始日時（未満）",
+    sortBy: "並べ替え項目",
+    sortOrder: "並べ替え方向",
+    ascending: "昇順",
+    descending: "降順",
+    createdAt: "作成日時",
+    updatedAt: "更新日時",
+    resetFilters: "フィルターをリセット",
+    invalidRange: "終了日時は開始日時より後にしてください。",
+    executionInput: "実行入力",
+    executionResult: "実行結果",
+    noDetailedOutput: "詳細な出力なし",
     title: "ルーティンタスク記録",
     routineTitle: "ルーチン記録表",
     noLinkedTasks: "このルーティンに連携されたルーティンタスクはありません。",
@@ -167,12 +185,6 @@ export const JapaneseWorkspaceTranslation = {
     noMatches: "現在のフィルターに一致するルーティンタスク記録はありません。",
     loadingRoutineRecords: "ルーティン実行記録を読み込み中…",
     noRoutineRecords: "ルーティン実行記録はありません。",
-    creationBarrier: "決定的作成バリア",
-    creationBarrierDescription:
-      "依存タスクを続行する前に、コンテナ型とコア型のオブジェクトを準備します。",
-    creationBarrierProgress: "{{completed}} / {{total}} 件の決定的タスクが完了",
-    creationBarrierItems:
-      "更新 {{updated}} · スキップ {{skipped}} · 失敗 {{failed}}",
   },
   timeRails: {
     title: "タイムレール",
@@ -446,6 +458,14 @@ export const JapaneseWorkspaceTranslation = {
       "現在のフィルターに一致するルーティンタスクはありません。",
     routineTaskTable: "ルーチンタスク表",
     routineTaskRecordTable: "ルーチンタスク記録表",
+  },
+  graph: {
+    realign: "再配置",
+    realignTitle: "グラフ全体を再配置しますか？",
+    realignDescription:
+      "この操作により、グラフ内のすべての Routine タスクと依存リンクが再配置されます。",
+    realignError:
+      "グラフを再配置できませんでした。依存関係を確認して再試行してください。",
   },
   fields: {
     startingNode: "開始ノード",

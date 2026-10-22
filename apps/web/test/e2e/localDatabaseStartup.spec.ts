@@ -139,7 +139,7 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { eq, LocalYjsDocumentStore } = await importModule(
-      "/test/e2e/local-database-test-support.ts"
+      "/test/e2e/localDatabaseTestSupport.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
       "/src/api/local/schemas/index.ts"
@@ -196,7 +196,7 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { eq, LocalYjsDocumentStore } = await importModule(
-      "/test/e2e/local-database-test-support.ts"
+      "/test/e2e/localDatabaseTestSupport.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
       "/src/api/local/schemas/index.ts"
@@ -246,11 +246,9 @@ test("upgrades a freshly created database after a local down migration", async (
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { getOrderedMigrations } = await importModule(
-      "/src/api/local/migration-catalog.ts"
+      "/src/api/local/migrationCatalog.ts"
     );
-    const { sql } = await importModule(
-      "/test/e2e/local-database-test-support.ts"
-    );
+    const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine, Station } = await importModule(
       "/src/api/local/schemas/index.ts"
     );
@@ -288,9 +286,7 @@ test("upgrades a freshly created database after a local down migration", async (
   const result = await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
-    const { eq } = await importModule(
-      "/test/e2e/local-database-test-support.ts"
-    );
+    const { eq } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine } = await importModule("/src/api/local/schemas/index.ts");
     await localDB.ensureReady();
     const routine = await localDB.query.Routine.findFirst({

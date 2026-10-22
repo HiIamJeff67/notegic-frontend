@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { fromJSON } from "seroval";
-import type { mountRoutineChartsExample } from "./routine-charts-test-support";
+import type { mountRoutineChartsExample } from "./routineChartsTestSupport";
 
 declare global {
   interface Window {
@@ -53,7 +53,7 @@ test("Overview charts and all eleven statistics queries use fresh session header
       "notegic:auth-required",
       () => window.chartAuthenticationFailures++
     );
-    const path = "/test/e2e/routine-charts-test-support.tsx";
+    const path = "/test/e2e/routineChartsTestSupport.tsx";
     const { mountRoutineChartsExample } = await import(/* @vite-ignore */ path);
     window.routineChartsExample = mountRoutineChartsExample();
   });
@@ -156,7 +156,7 @@ test("real backend keeps Overview authenticated and validates all statistics req
       "notegic:auth-required",
       () => window.chartAuthenticationFailures++
     );
-    const path = "/test/e2e/routine-charts-test-support.tsx";
+    const path = "/test/e2e/routineChartsTestSupport.tsx";
     const { mountRoutineChartsExample } = await import(/* @vite-ignore */ path);
     window.routineChartsExample = mountRoutineChartsExample();
   });

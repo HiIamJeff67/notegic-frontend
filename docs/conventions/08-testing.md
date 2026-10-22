@@ -49,6 +49,98 @@ requires the removed quality/build/E2E/audit job names, update the required
 check to `Frontend environment parity` when adopting this workflow. Local
 quality checks now rely on contributors running the local gate.
 
+## Realtime worker recovery
+
+`worker_unavailable` keeps the existing Y.Doc, cached document and pending edits.
+The client obtains fresh tickets with 1/2/4/8/10-second capped backoff; a root
+reconnect replaces pending retries, while unmount, reset and stop cancel them.
+Authentication and permission failures must not become endless retries. Genuine
+`resync_required` and `channel_backpressure` retain explicit recovery behavior.
+On disconnect, locally edited document state is queued for idempotent replay,
+including deletions that do not advance a state vector. No cache is cleared by
+temporary worker recovery.
+
+Run `npm run test:e2e -- realtimeClient.spec.ts --workers=1` and
+`npm run test:unit -- shared/blockpack/blockPackYjsCoordinator.test.ts shared/blockpack/localYjsDocumentStore.test.ts`
+locally. These cover the production client/provider with isolated browser
+storage and controlled worker failures, plus document retention, replay and
+read-only boundaries. They do not stop the normal development worker and are
+not hosted CI environment smoke tests.
+
+## Apollo GraphQL session renewal
+
+`apps/web/src/api/apolloClient.ts` reads the current session CSRF token for each
+request and stores a nonempty string from `refreshableTokens.newCSRFToken` on a
+successful HTTP response before Apollo applies GraphQL error policy. HTTP 200
+field errors and partial results must retain both renewal and their original
+data/errors. Missing or malformed metadata, authentication/HTTP failures and
+network failures must not clear the stored token or be retried silently.
+
+Read the body metadata rather than relying on `X-CSRF-Token`: cross-origin
+response headers are not currently CORS-exposed. Use the existing session
+storage boundary, keep access/refresh credentials in HttpOnly cookies, and do
+not add backend validation exceptions. SSR must not write browser storage.
+
+Run `npm run test:e2e -- apolloSession.spec.ts --workers=1` for the actual
+production Apollo factory with controlled HTTP responses. It covers consecutive
+renewals, GraphQL rejection followed by a successful query, partial data, bad
+metadata, HTTP 401/403/500, malformed JSON and network failure. It uses isolated
+browser storage and is local-only, without an `@environment` CI marker.
+
+## Routine record search verification
+
+The Routine and task-record tables and shared dialog use actual start time
+descending by default, with unstarted records last. Search, status, purpose and
+start-time interval filters are server-side, applied before cursor pagination.
+Intervals include the lower boundary and exclude the upper boundary. Changing
+conditions starts a new first page; cache keys must retain Date filter values.
+The input/result previews are distinct; an empty result displays no detailed
+output, independently of execution status.
+
+Run `npm run test:e2e -- routineRecords.spec.ts --workers=1` locally for the
+three real components' ordering, filter/reset and pagination interactions. To
+include real login, Core/Gateway GraphQL, retained history fixtures, invalid
+cursor/range rejection and access-token renewal, use the isolated acceptance
+backend. Set `E2E_ROUTINE_ACCESS_TOKEN_SECRET` to the matching isolated Core and
+Gateway access-signing key; it must start with `routine-refresh-fixture-` and
+must never be a normal development or production credential:
+
+```sh
+E2E_RUN_RECORD_BACKEND=true \
+E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
+E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
+E2E_ROUTINE_ACCESS_TOKEN_SECRET="$RECORDS_FIXTURE_ACCESS_SECRET" \
+npm run test:e2e -- apolloSession.spec.ts routineRecords.spec.ts --workers=1
+```
+
+The live test retains a unique fixture account, inactive Routine and execution
+records in that database. It expires only that fixture account's Redis DB 14
+cache entry to verify renewal on a cache miss, then expires only its fixture
+access cookie twice more to verify a cursor error and another successful
+renewal. These queries use the production Apollo factory without manually
+writing the returned CSRF token; each follow-up must send the token Apollo
+stored. Assertions cover the dedicated GraphQL envelope, error paths/locations,
+CSRF rotation and HttpOnly cookie replacement without exposing credentials.
+It does not migrate or clear
+existing data. All cases use isolated browser storage and have no CI
+environment-smoke marker.
+Deploy the compatible backend query fields before the frontend; no browser
+database migration is required.
+
+On 2026-10-21, the two Apollo session cases and four records cases passed against
+the isolated live backend (49.2s). The session regression first failed without
+the response link and passed with it. The live case verified three successive
+access-token expirations, including a cache miss and a business HTTP 400 cursor
+error transported as a GraphQL HTTP 200 response. Expiration is simulated using
+the isolated fixture signing key; this is not a multi-hour browser soak.
+
+The same local verification passed `npm run format:check`, `npm run lint`,
+`npm run typecheck` and the 22 tests selected by
+`npm run test:unit -- apps/web/src/api/clientHeaders.test.ts apps/web/src/api/policies/searchPagination.policy.unit.test.ts`.
+No schemas or generated sources changed for the Apollo fix; code generation
+and deployment builds were not rerun. Original development record counts and
+the retained manual development server were checked separately after E2E.
+
 ## Server-function CSRF verification
 
 `src/start.ts` explicitly installs the official `createCsrfMiddleware` for
@@ -94,7 +186,7 @@ refresh metadata remains stored through the existing session-storage boundary.
 Do not disable backend CSRF checks or suppress authentication failures to keep
 Overview open.
 
-Run `npm run test:e2e -- routine-charts.spec.ts --workers=1` for the real chart
+Run `npm run test:e2e -- routineCharts.spec.ts --workers=1` for the real chart
 components and all eleven query hooks with controlled RPC responses. To include
 real login, Overview navigation, token rotation and missing/incorrect-token
 rejection for every statistics route, use the retained isolated backend:
@@ -103,7 +195,7 @@ rejection for every statistics route, use the retained isolated backend:
 E2E_RUN_VISUALIZE_BACKEND=true \
 E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
 E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
-npm run test:e2e -- routine-charts.spec.ts --workers=1
+npm run test:e2e -- routineCharts.spec.ts --workers=1
 ```
 
 The live case retains unique fixture accounts and uses isolated browser
@@ -118,7 +210,7 @@ With the same isolated endpoints, run the opt-in authenticated page tour:
 E2E_RUN_PAGE_BACKEND=true \
 E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
 E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261020 \
-npm run test:e2e -- authenticated-pages.spec.ts --workers=1
+npm run test:e2e -- authenticatedPages.spec.ts --workers=1
 ```
 
 It retains a unique test account and an inactive Routine with a Start node.

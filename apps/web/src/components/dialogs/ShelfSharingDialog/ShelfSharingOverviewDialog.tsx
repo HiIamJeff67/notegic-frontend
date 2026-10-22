@@ -69,12 +69,6 @@ const ShelfSharingOverviewDialog = ({
   onDeleteClick,
 }: ShelfSharingOverviewDialogProps) => {
   const { t } = useTranslation();
-  const permissionLabel = (permission: string) => {
-    if (permission === "owner") return t("workspace.viewer.owner");
-    if (permission === "admin") return t("workspace.viewer.admin");
-    if (permission === "write") return t("workspace.viewer.write");
-    return t("workspace.viewer.read");
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -207,7 +201,13 @@ const ShelfSharingOverviewDialog = ({
                       {row.userPublicId}
                     </TableCell>
                     <TableCell className="text-center">
-                      {permissionLabel(row.permission)}
+                      {row.permission === "owner"
+                        ? t("workspace.viewer.owner")
+                        : row.permission === "admin"
+                          ? t("workspace.viewer.admin")
+                          : row.permission === "write"
+                            ? t("workspace.viewer.write")
+                            : t("workspace.viewer.read")}
                     </TableCell>
                     <TableCell className="text-center">
                       {row.isOnline

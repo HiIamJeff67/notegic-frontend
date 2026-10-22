@@ -27,9 +27,9 @@ const MaterialViewer = ({ materialMeta }: MaterialViewerProps) => {
   );
 
   const materialContentType = useMemo(() => {
-    const normalizedContentType = meta.contentType.trim().toLowerCase();
+    const mediaType = meta.contentType.trim().toLowerCase();
     return Object.values(MaterialContentType).find(
-      contentType => contentType === normalizedContentType
+      contentType => contentType === mediaType
     );
   }, [meta.contentType]);
 

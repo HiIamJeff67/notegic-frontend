@@ -68,7 +68,7 @@ import { TransactionActionType } from "@/api/local/schemas/enums/transaction_act
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
 import { RoutineTaskLocalSynchronizer } from "@/api/local/synchronizers/routineTask.synchronizer";
 import { useNetwork } from "@/hooks";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import {
   mergeBlockPackTransactions,
   prepareBlockPackSyncJobs,

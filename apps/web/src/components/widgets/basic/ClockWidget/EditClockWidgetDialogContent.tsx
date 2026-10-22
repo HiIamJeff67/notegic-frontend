@@ -29,12 +29,6 @@ const EditClockWidgetDialogContent = ({
   setSetting,
 }: EditClockWidgetDialogContentProps) => {
   const { i18n, t } = useTranslation();
-  const styleLabel = (name: "classic" | "minimal" | "modern") =>
-    name === "classic"
-      ? t("workspace.widgets.classic")
-      : name === "minimal"
-        ? t("workspace.widgets.minimal")
-        : t("workspace.widgets.modern");
   return (
     <EditWidgetDialogContent title={t("workspace.widgets.editClock")}>
       <EditWidgetDialogOption
@@ -89,7 +83,11 @@ const EditClockWidgetDialogContent = ({
                 key={clockStyle.index}
                 value={clockStyle.index.toString()}
               >
-                {styleLabel(clockStyle.name)}
+                {clockStyle.name === "classic"
+                  ? t("workspace.widgets.classic")
+                  : clockStyle.name === "minimal"
+                    ? t("workspace.widgets.minimal")
+                    : t("workspace.widgets.modern")}
               </SelectItem>
             ))}
           </SelectContent>

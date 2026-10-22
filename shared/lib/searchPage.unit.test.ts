@@ -1,4 +1,32 @@
-import { matchesSearch, searchPage } from "./search-page";
+import { matchesSearch, searchContext, searchPage } from "./searchPage";
+
+test("cursor filters discard empty values and order IDs without mutating the request", () => {
+  const ids = Object.freeze(["b", "a"]);
+  const nested = Object.freeze({ ids, empty: [], missing: null });
+  const input = { query: "", nested, empty: [], missing: null };
+  expect(searchContext("routines", input).filters).toEqual({
+    nested: { ids: ["a", "b"] },
+    query: "",
+  });
+  expect(ids).toEqual(["b", "a"]);
+  expect(input.nested).toBe(nested);
+  expect(input.empty).toEqual([]);
+});
+
+test("date filters stay in the search cache context", () => {
+  const from = new Date("2026-10-01T00:00:00Z");
+  const before = new Date("2026-10-02T00:00:00Z");
+  const input = {
+    query: "",
+    actualStartedAtFrom: from,
+    actualStartedAtBefore: before,
+  };
+  expect(searchContext("routineTaskRecords", input).filters).toEqual({
+    query: "",
+    actualStartedAtFrom: from.toISOString(),
+    actualStartedAtBefore: before.toISOString(),
+  });
+});
 
 const rows = [
   {

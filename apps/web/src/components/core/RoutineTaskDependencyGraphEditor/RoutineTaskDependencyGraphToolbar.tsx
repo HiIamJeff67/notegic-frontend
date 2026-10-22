@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Download, Plus, RefreshCw } from "lucide-react";
+import { Download, Plus, RefreshCw, Workflow } from "lucide-react";
 import {
   RoutineTaskActionIcon,
   RoutineTaskStartIcon,
@@ -22,6 +22,8 @@ interface RoutineTaskDependencyGraphToolbarProps {
   isAddMenuOpen: boolean;
   isRetryingSync: boolean;
   isSaving: boolean;
+  canRealign: boolean;
+  onRealign: () => void;
   pendingSyncCount: number;
   onAddMenuOpenChange: (open: boolean) => void;
   onOpenCreateRoutineTaskDialog: () => void;
@@ -35,6 +37,8 @@ const RoutineTaskDependencyGraphToolbar = ({
   isAddMenuOpen,
   isRetryingSync,
   isSaving,
+  canRealign,
+  onRealign,
   pendingSyncCount,
   onAddMenuOpenChange,
   onOpenCreateRoutineTaskDialog,
@@ -80,6 +84,25 @@ const RoutineTaskDependencyGraphToolbar = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 px-0 [&_svg]:size-3.5"
+            disabled={!canRealign}
+            onClick={onRealign}
+            aria-label={t("workspace.graph.realign")}
+          >
+            <Workflow />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          {t("workspace.graph.realign")}
+        </TooltipContent>
+      </Tooltip>
 
       {pendingSyncCount > 0 && (
         <Tooltip>

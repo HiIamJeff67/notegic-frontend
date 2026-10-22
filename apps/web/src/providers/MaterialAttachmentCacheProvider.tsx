@@ -39,7 +39,7 @@ export const loadMaterialAttachment = async (
   return cached.content;
 };
 
-export const saveMaterialAttachment = async (
+export const setCachedMaterialAttachment = async (
   materialId: UUID,
   sourceUpdatedAt: Date,
   content: Blob
@@ -125,7 +125,7 @@ export interface MaterialAttachmentCacheEstimate {
 
 export interface MaterialAttachmentCacheContextType {
   load: (materialId: UUID, sourceUpdatedAt: Date) => Promise<Blob | null>;
-  save: (
+  set: (
     materialId: UUID,
     sourceUpdatedAt: Date,
     content: Blob
@@ -148,7 +148,7 @@ export const MaterialAttachmentCacheProvider = ({
     <MaterialAttachmentCacheContext.Provider
       value={{
         load: loadMaterialAttachment,
-        save: saveMaterialAttachment,
+        set: setCachedMaterialAttachment,
         cleanup: cleanupMaterialAttachmentCache,
         estimate: estimateMaterialAttachmentCache,
         clear: clearMaterialAttachmentCache,

@@ -1,21 +1,25 @@
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
 import {
   SearchRoutineTaskRecordSortBy,
-  SearchSortOrder,
+  type FragmentedPrivateRoutineTaskRecordFragment,
+  type RoutineTaskRecordStatus as GraphQLRoutineTaskRecordStatus,
 } from "@shared/api/graphql/generated/graphql";
 import {
-  AllRoutineTaskPurposes,
-  AllRoutineTaskRecordStatuses,
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
-import type { ExecutionResult } from "@shared/api/interfaces/routineTaskRecord.interface";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import type { UUID } from "crypto";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchRoutineTaskRecordsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import { useEffect, useRef, useState } from "react";
+import { useSearchRoutineTaskRecordsQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
+import RoutineRecordFilters, {
+  defaultRoutineRecordFilters,
+  type RoutineRecordFiltersValue,
+} from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
+import { useDebounceValue } from "@/hooks/useDebounce";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   Dialog,
@@ -24,13 +28,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -46,6 +43,7 @@ interface RoutineTaskRecordDialogProps extends ModalProps {
   routineTitle: string;
   routineTaskIds: UUID[];
   routineRecordId?: UUID;
+  routineId?: UUID;
 }
 
 const RoutineTaskRecordDialog = ({
@@ -54,299 +52,143 @@ const RoutineTaskRecordDialog = ({
   routineTitle,
   routineTaskIds,
   routineRecordId,
+  routineId,
 }: RoutineTaskRecordDialogProps) => {
   const { i18n, t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
-  const [executeSearch, recordSearch] = useSearchRoutineTaskRecordsLazyQuery({
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-  const [status, setStatus] = useState<RoutineTaskRecordStatus | "All">("All");
-  const [purpose, setPurpose] = useState<RoutineTaskPurpose | "All">("All");
-  const [scheduledAfter, setScheduledAfter] = useState<Date | undefined>();
-  const [scheduledBefore, setScheduledBefore] = useState<Date | undefined>();
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
-  const isSearchingRef = useRef(false);
-  const signature = [routineRecordId ?? "", ...routineTaskIds].join("|");
-  const records =
-    routineTaskIds.length === 0
-      ? []
-      : ((recordSearch.data?.searchRoutineTaskRecords?.searchEdges ?? []).map(
-          edge => {
-            const node = edge.node as any;
-            return {
-              id: node.id as UUID,
-              routineTaskId: node.routineTaskId as UUID,
-              purpose: node.purpose.replace(
-                "RoutineTaskPurpose_",
-                ""
-              ) as RoutineTaskPurpose,
-              status: node.status.replace(
-                "RoutineTaskRecordStatus_",
-                ""
-              ) as RoutineTaskRecordStatus,
-              errorCode:
-                node.errorCode?.replace("RoutineTaskRecordErrorCode_", "") ??
-                null,
-              routineRecordId: node.routineRecordId as UUID,
-              attempts: node.attempts as number,
-              payloadSnapshot: node.payloadSnapshot,
-              resultSnapshot: node.resultSnapshot,
-              actualStartedAt:
-                node.actualStartedAt === null
-                  ? null
-                  : new Date(node.actualStartedAt),
-              actualEndedAt:
-                node.actualEndedAt === null
-                  ? null
-                  : new Date(node.actualEndedAt),
-            };
-          }
-        ) ?? []);
-
-  const searchRecords = useCallback(
-    async (reset: boolean) => {
-      if (!isOpen || routineTaskIds.length === 0 || isSearchingRef.current) {
-        return;
-      }
-      if (!reset && (!hasMore || !cursor)) return;
-
-      isSearchingRef.current = true;
-      setIsSearching(true);
-      try {
-        const variables = {
-          input: {
-            routineTaskIds,
-            query: "",
-            after: reset ? undefined : (cursor ?? undefined),
-            first: reset ? 20 : 10,
-            sortBy: SearchRoutineTaskRecordSortBy.Attempts,
-            sortOrder: SearchSortOrder.Desc,
-          },
-        };
-
-        if (reset) {
-          const result = await executeSearch({ variables }).retain();
-          setCursor(
-            result.data?.searchRoutineTaskRecords.searchPageInfo
-              .endEncodedSearchCursor ?? null
-          );
-          setHasMore(
-            result.data?.searchRoutineTaskRecords.searchPageInfo.hasNextPage ??
-              false
-          );
-          return;
-        }
-
-        const result = await recordSearch.fetchMore({
-          variables,
-          updateQuery: (previous, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return previous;
-            const ids = new Set(
-              previous.searchRoutineTaskRecords.searchEdges.map(edge => {
-                const node = edge.node as any;
-                return node.id;
-              })
-            );
-            return {
-              ...fetchMoreResult,
-              searchRoutineTaskRecords: {
-                ...fetchMoreResult.searchRoutineTaskRecords,
-                searchEdges: [
-                  ...previous.searchRoutineTaskRecords.searchEdges,
-                  ...fetchMoreResult.searchRoutineTaskRecords.searchEdges.filter(
-                    edge => {
-                      const node = edge.node as any;
-                      return !ids.has(node.id);
-                    }
-                  ),
-                ],
-              },
-            };
-          },
-        });
-        setCursor(
-          result.data?.searchRoutineTaskRecords?.searchPageInfo
-            .endEncodedSearchCursor ?? null
-        );
-        setHasMore(
-          result.data?.searchRoutineTaskRecords?.searchPageInfo.hasNextPage ??
-            false
-        );
-      } finally {
-        isSearchingRef.current = false;
-        setIsSearching(false);
-      }
-    },
-    [cursor, executeSearch, hasMore, isOpen, recordSearch.fetchMore, signature]
+  const [filters, setFilters] = useState<RoutineRecordFiltersValue>(
+    defaultRoutineRecordFilters
+  );
+  const query = useDebounceValue(filters.query);
+  const invalidRange = Boolean(
+    filters.actualStartedAtFrom &&
+      filters.actualStartedAtBefore &&
+      filters.actualStartedAtFrom >= filters.actualStartedAtBefore
+  );
+  const input = {
+    ...filters,
+    query,
+    status: filters.status as GraphQLRoutineTaskRecordStatus | undefined,
+    sortBy: filters.sortBy as SearchRoutineTaskRecordSortBy,
+    routineTaskIds: routineId || routineRecordId ? [] : routineTaskIds,
+    routineIds: routineId ? [routineId] : undefined,
+    routineRecordId,
+    first: 20,
+  };
+  const recordSearch = useSearchRoutineTaskRecordsQuery(
+    { input },
+    {
+      skip:
+        invalidRange ||
+        !isOpen ||
+        (!routineId && !routineRecordId && routineTaskIds.length === 0),
+      fetchPolicy: "cache-and-network",
+    }
   );
 
+  const viewport = useRef<HTMLDivElement>(null);
+  const searchSignature = JSON.stringify(input);
   useEffect(() => {
-    if (!isOpen) return;
-    void searchRecords(true);
-  }, [isOpen, signature]);
+    viewport.current?.scrollTo({ top: 0 });
+  }, [searchSignature]);
 
-  const visibleRecords = routineRecordId
-    ? records.filter(record => record.routineRecordId === routineRecordId)
-    : records;
-  const filteredRecords = visibleRecords.filter(record => {
-    if (status !== "All" && record.status !== status) return false;
-    if (purpose !== "All" && record.purpose !== purpose) return false;
+  const pendingCursor = useRef<string | null>(null);
+  const connection = recordSearch.data?.searchRoutineTaskRecords;
+  const isSearching = recordSearch.loading;
+  const hasMore = connection?.searchPageInfo.hasNextPage ?? false;
+  const cursor = connection?.searchPageInfo.endEncodedSearchCursor;
+  const loadMoreRecords = async () => {
     if (
-      scheduledAfter &&
-      (!record.actualStartedAt || record.actualStartedAt < scheduledAfter)
+      !isOpen ||
+      invalidRange ||
+      isSearching ||
+      !hasMore ||
+      !cursor ||
+      pendingCursor.current === cursor
     )
-      return false;
-    if (
-      scheduledBefore &&
-      (!record.actualStartedAt || record.actualStartedAt > scheduledBefore)
-    )
-      return false;
-    return true;
-  });
+      return;
+    pendingCursor.current = cursor;
+    try {
+      await recordSearch.fetchMore({
+        variables: { input: { ...input, after: cursor } },
+      });
+    } catch (error) {
+      toast.error(tError(error, t));
+    } finally {
+      if (pendingCursor.current === cursor) pendingCursor.current = null;
+    }
+  };
 
-  const deterministicRecords = visibleRecords.filter(record =>
-    [
-      RoutineTaskPurpose.CreateSubShelf,
-      RoutineTaskPurpose.CreateBlockPack,
-      RoutineTaskPurpose.CreateMaterial,
-    ].includes(record.purpose)
-  );
-  const deterministicCompletedCount = deterministicRecords.filter(
-    record => record.status === RoutineTaskRecordStatus.Success
-  ).length;
-  const deterministicHasFailure = deterministicRecords.some(
-    record =>
-      record.status === RoutineTaskRecordStatus.Failed ||
-      record.status === RoutineTaskRecordStatus.Blocked ||
-      record.status === RoutineTaskRecordStatus.Cancel
-  );
-  const deterministicHasRunningTask = deterministicRecords.some(
-    record => record.status === RoutineTaskRecordStatus.Running
-  );
-  const deterministicBarrierStatus = deterministicHasFailure
-    ? RoutineTaskRecordStatus.Blocked
-    : deterministicCompletedCount === deterministicRecords.length
-      ? RoutineTaskRecordStatus.Success
-      : deterministicHasRunningTask
-        ? RoutineTaskRecordStatus.Running
-        : RoutineTaskRecordStatus.Waiting;
-  const deterministicItemTotals = deterministicRecords.reduce(
-    (totals, record) => {
-      const result =
-        typeof record.resultSnapshot === "object" &&
-        record.resultSnapshot !== null
-          ? (record.resultSnapshot as ExecutionResult)
-          : {};
-      totals.updated += result.updated ?? 0;
-      totals.skipped += result.skipped ?? 0;
-      totals.failed += result.failed ?? 0;
-      return totals;
-    },
-    { failed: 0, skipped: 0, updated: 0 }
-  );
+  const records =
+    invalidRange || !isOpen
+      ? []
+      : (connection?.searchEdges ?? []).map(edge => {
+          const node = edge.node as FragmentedPrivateRoutineTaskRecordFragment;
+          return {
+            ...node,
+            purpose: node.purpose.replace(
+              "RoutineTaskPurpose_",
+              ""
+            ) as RoutineTaskPurpose,
+            status: node.status.replace(
+              "RoutineTaskRecordStatus_",
+              ""
+            ) as RoutineTaskRecordStatus,
+            errorCode:
+              node.errorCode?.replace("RoutineTaskRecordErrorCode_", "") ??
+              null,
+            actualStartedAt: node.actualStartedAt
+              ? new Date(node.actualStartedAt)
+              : null,
+            actualEndedAt: node.actualEndedAt
+              ? new Date(node.actualEndedAt)
+              : null,
+          };
+        });
+  const statusCounts = Object.values(RoutineTaskRecordStatus)
+    .map(status => ({
+      status,
+      count: records.filter(record => record.status === status).length,
+    }))
+    .filter(entry => entry.count > 0);
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="flex max-h-[82vh] w-[min(94vw,48rem)] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-md bg-card p-0 sm:max-w-[min(88vw,48rem)]">
+      <DialogContent className="flex max-h-[90dvh] w-[92vw] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-md bg-card p-0 transition-[opacity,transform] sm:max-w-[92vw]">
         <DialogHeader className="shrink-0 border-b border-border bg-secondary px-6 py-5 pr-12">
           <DialogTitle>{t("workspace.records.title")}</DialogTitle>
           <DialogDescription className="truncate">
             {routineTitle}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
-          <Select
-            value={status}
-            onValueChange={value =>
-              setStatus(value as RoutineTaskRecordStatus | "All")
-            }
-          >
-            <SelectTrigger className="h-8 w-32 rounded-sm text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="All">
-                {t("workspace.table.allStatus")}
-              </SelectItem>
-              {AllRoutineTaskRecordStatuses.map(recordStatus => (
-                <SelectItem key={recordStatus} value={recordStatus}>
-                  {t(routineTaskRecordStatusTKeys[recordStatus])}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={purpose}
-            onValueChange={value =>
-              setPurpose(value as RoutineTaskPurpose | "All")
-            }
-          >
-            <SelectTrigger className="h-8 w-40 rounded-sm text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="All">
-                {t("workspace.table.allPurpose")}
-              </SelectItem>
-              {AllRoutineTaskPurposes.map(taskPurpose => (
-                <SelectItem key={taskPurpose} value={taskPurpose}>
-                  {`${t(routineTaskPurposeTKeys[taskPurpose].action)} · ${t(routineTaskPurposeTKeys[taskPurpose].target)}`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <DatePicker
-            value={scheduledAfter}
-            onValueChange={setScheduledAfter}
-            placeholder={t("workspace.table.scheduledAfter")}
-            className="h-8 w-40 text-xs"
-          />
-          <DatePicker
-            value={scheduledBefore}
-            onValueChange={setScheduledBefore}
-            placeholder={t("workspace.table.scheduledBefore")}
-            className="h-8 w-40 text-xs"
-          />
-        </div>
-        {deterministicRecords.length > 0 && (
-          <div
-            aria-label={t("workspace.records.creationBarrier")}
-            className="shrink-0 border-b border-border bg-muted/20 px-4 py-3"
-            role="status"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-              <p className="font-medium text-sm">
-                {t("workspace.records.creationBarrier")}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t(routineTaskRecordStatusTKeys[deterministicBarrierStatus])}
-              </p>
-            </div>
-            <p className="mt-1 text-muted-foreground text-xs">
-              {t("workspace.records.creationBarrierDescription")}
-            </p>
-            <p className="mt-1 text-xs tabular-nums">
-              {t("workspace.records.creationBarrierProgress", {
-                completed: deterministicCompletedCount,
-                total: deterministicRecords.length,
-              })}
-              {` · ${t("workspace.records.creationBarrierItems", deterministicItemTotals)}`}
-            </p>
-          </div>
-        )}
         <div
-          className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
+          ref={viewport}
+          className="custom-scrollbar min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain [&>div]:overflow-visible"
           onScroll={event => {
             if (isSearching || !hasMore) return;
             const { clientHeight, scrollHeight, scrollTop } =
               event.currentTarget;
             if (scrollTop + clientHeight < scrollHeight * 0.65) return;
-            void searchRecords(false);
+            void loadMoreRecords();
           }}
         >
+          <div className="flex shrink-0 flex-wrap gap-2 border-b border-border px-4 py-3">
+            <RoutineRecordFilters task value={filters} onChange={setFilters} />
+          </div>
+          <p
+            role="status"
+            aria-label={t("workspace.records.summary")}
+            className="overflow-x-auto whitespace-nowrap border-b border-border px-4 py-2 text-xs tabular-nums text-muted-foreground"
+          >
+            {t("workspace.records.loadedSummary", {
+              count: records.length,
+            })}
+            {statusCounts.map(({ status, count }) => (
+              <span
+                key={status}
+              >{` · ${t(routineTaskRecordStatusTKeys[status])} ${count}`}</span>
+            ))}
+          </p>
           <Table className="min-w-[64rem] table-fixed text-xs">
             <TableHeader className="select-none [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:whitespace-normal [&_th]:border-b [&_th]:border-border/80 [&_th]:bg-secondary [&_th]:leading-tight [&_th]:text-left">
               <TableRow>
@@ -369,15 +211,15 @@ const RoutineTaskRecordDialog = ({
                   {t("workspace.table.attempts")}
                 </TableHead>
                 <TableHead className="h-9 w-[10%] px-2">
-                  {t("workspace.table.payload")}
+                  {t("workspace.records.executionInput")}
                 </TableHead>
                 <TableHead className="h-9 w-[10%] px-2">
-                  {t("workspace.table.result")}
+                  {t("workspace.records.executionResult")}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredRecords.map(record => {
+              {records.map(record => {
                 const task = stationRoutineManager.getRoutineTaskById(
                   record.routineTaskId
                 );
@@ -417,7 +259,7 @@ const RoutineTaskRecordDialog = ({
                     <TableCell className="px-2 py-2.5">
                       <details>
                         <summary className="cursor-pointer text-muted-foreground">
-                          {t("workspace.payloadEditor.payloadPreview")}
+                          {t("workspace.records.executionInput")}
                         </summary>
                         <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">
                           {JSON.stringify(record.payloadSnapshot, null, 2)}
@@ -425,25 +267,34 @@ const RoutineTaskRecordDialog = ({
                       </details>
                     </TableCell>
                     <TableCell className="px-2 py-2.5">
-                      <details>
-                        <summary className="cursor-pointer text-muted-foreground">
-                          {t("workspace.payloadEditor.payloadPreview")}
-                        </summary>
-                        <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">
-                          {JSON.stringify(record.resultSnapshot, null, 2)}
-                        </pre>
-                      </details>
+                      {record.resultSnapshot &&
+                      Object.keys(record.resultSnapshot).length > 0 ? (
+                        <details>
+                          <summary className="cursor-pointer text-muted-foreground">
+                            {t("workspace.records.executionResult")}
+                          </summary>
+                          <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">
+                            {JSON.stringify(record.resultSnapshot, null, 2)}
+                          </pre>
+                        </details>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {t("workspace.records.noDetailedOutput")}
+                        </span>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
               })}
-              {filteredRecords.length === 0 && (
+              {records.length === 0 && (
                 <TableRow>
                   <TableCell
                     colSpan={8}
                     className="h-28 text-center text-sm text-muted-foreground"
                   >
-                    {routineTaskIds.length === 0
+                    {!routineId &&
+                    !routineRecordId &&
+                    routineTaskIds.length === 0
                       ? t("workspace.records.noLinkedTasks")
                       : isSearching
                         ? t("workspace.records.loading")

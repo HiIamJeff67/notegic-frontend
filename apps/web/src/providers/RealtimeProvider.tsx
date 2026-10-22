@@ -40,13 +40,13 @@ import {
 } from "@/api/invokers/realtime.invoker";
 import { localDB } from "@/api/local/db";
 import { RealtimeClient } from "@/api/websocketClient";
-import { useLocalPreferences } from "@/hooks/localPreferences";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
 import {
   canSendDesktopNotification,
   isQuietHours,
-} from "./notificationPreferences";
+} from "./LocalPreferencesProvider";
 
 const RealtimeBlockPackChannelReleaseDelayMs =
   Number.parseInt(
@@ -544,6 +544,15 @@ export const RealtimeProvider = ({
           return;
         }
 
+        if (frame.code === "worker_unavailable") {
+          channel.error = null;
+          channel.connectorChannelId = null;
+          channel.status = "idle";
+          channel.provider.disconnect();
+          rerender();
+          return;
+        }
+
         channel.error = frame.message;
         channel.connectorChannelId = null;
         if (frame.code === "permission_revoked") {
@@ -558,8 +567,7 @@ export const RealtimeProvider = ({
           showSyncError(t("workspace.notifications.blockPackUnavailable"));
         } else if (
           frame.code === "resync_required" ||
-          frame.code === "channel_backpressure" ||
-          frame.code === "worker_unavailable"
+          frame.code === "channel_backpressure"
         ) {
           channel.lifecycleErrorCode = frame.code;
           channel.status = "error";

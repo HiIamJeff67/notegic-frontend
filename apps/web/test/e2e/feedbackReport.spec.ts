@@ -59,7 +59,7 @@ test.describe("@feedback browser submission", () => {
     await page.goto("/?private=must-not-be-reported");
     await page.evaluate(async () => {
       // Vite serves this test module only in development; it mounts the real form.
-      const path = "/test/e2e/feedback-test-support.tsx";
+      const path = "/test/e2e/feedbackTestSupport.tsx";
       const { mountFeedbackForm } = await import(/* @vite-ignore */ path);
       mountFeedbackForm();
     });
