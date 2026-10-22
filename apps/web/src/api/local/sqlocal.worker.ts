@@ -150,7 +150,15 @@ class DiagnosticSQLiteOpfsDriver extends SQLiteOpfsDriver {
         });
       }
 
-      await super.init(config);
+      if (navigator.locks) {
+        await navigator.locks.request(
+          "notegic-local-database-migration",
+          { mode: "exclusive" },
+          () => super.init(config)
+        );
+      } else {
+        await super.init(config);
+      }
       report("opfs-driver-init-complete", {
         storageType: this.storageType,
         opfsVfs: "opfs" in this.sqlite3,

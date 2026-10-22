@@ -28,6 +28,11 @@ Drizzle owns its serialization. Generated GraphQL output remains checked by
 Authenticated E2E remains explicit opt-in (`E2E_RUN_AUTHENTICATED=true`) and
 must target an isolated backend: it creates/deletes its fixed test account.
 Normal local tests use isolated Playwright browser storage, not your profile.
+Playwright defaults to two workers to leave CPU capacity for Vite and
+SQLite/WASM startup. Use `--workers` explicitly for concurrency experiments.
+The two-tab startup, reload and row-retention scenario has a 60-second total
+test budget; individual database worker connections retain their 15-second
+deadline and startup-error assertions.
 
 CI runs one job and one `npm ci`: `npm run test:environment` selects the four
 `@environment` public-navigation and worker startup/reload smoke tests against

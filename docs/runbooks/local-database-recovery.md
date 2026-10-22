@@ -5,8 +5,10 @@ SQLite WASM, OPFS, IndexedDB, transaction, and Yjs boundaries.
 
 ## Normal startup
 
-1. The SQLocal worker connects before any `PRAGMA user_version` query.
-2. The browser acquires the migration lock.
+1. The SQLocal worker opens OPFS under the shared migration lock, so opening
+   another tab cannot race schema creation or migration.
+2. The browser waits for the worker connection before acquiring that same lock
+   for migration, preventing a circular wait.
 3. `PRAGMA user_version` is the schema source of truth.
 4. Version `0` uses the current `bootstrap.sql` only when the database has no
    application tables.
@@ -75,6 +77,10 @@ The Playwright startup test delays worker configuration and exercises two tabs
 plus a reload. It must not report `Driver not initialized`, a duplicate
 migration, an unhandled rejection, or a permanent migration lock. No backend
 Docker services are required for this verification.
+Development coverage also checks both tabs' ready state and schema version,
+retains a marker row across reload, and holds the lock in another tab to verify
+that OPFS opens only after release. Production smoke coverage checks page
+availability and errors without importing development modules.
 
 ## Manual recovery
 

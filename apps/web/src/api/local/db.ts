@@ -579,6 +579,8 @@ const ensureMigrated = async (
   }
 
   try {
+    // Opening OPFS shares the migration lock; connect before acquiring it.
+    await sqlocalConnectionReady;
     const migrationResult = await runWithMigrationLock(async () => {
       const targetVersion =
         options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();

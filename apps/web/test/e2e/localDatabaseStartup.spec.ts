@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 test("@environment starts the local database without migration errors", async ({
   page,
 }) => {
+  // Two worker connections, a reload and persisted-row verification share this budget.
+  test.setTimeout(60_000);
   await page.addInitScript(() => {
     const originalPostMessage = Worker.prototype.postMessage;
     const sendPostMessage = originalPostMessage as (
@@ -66,12 +68,143 @@ test("@environment starts the local database without migration errors", async ({
     ).toBeVisible();
   }
 
+  if (process.env.E2E_PRODUCTION !== "true") {
+    for (const currentPage of pages) {
+      const state = await currentPage.evaluate(async () => {
+        const path = "/src/api/local/db.ts";
+        const { localDB } = await import(/* @vite-ignore */ path);
+        await localDB.ensureReady();
+        return {
+          ready: localDB.isReady,
+          version: await localDB.getVersion(),
+          targetVersion: localDB.getDiagnostics().targetVersion,
+        };
+      });
+      expect(state.ready).toBe(true);
+      expect(state.version).toBeGreaterThan(0);
+      expect(state.version).toBe(state.targetVersion);
+    }
+
+    await page.evaluate(async () => {
+      const load = (path: string) => import(/* @vite-ignore */ path);
+      const { localDB } = await load("/src/api/local/db.ts");
+      const { User } = await load("/src/api/local/schemas/index.ts");
+      await localDB.insert(User).values({
+        publicId: "e2e-multitab-startup",
+        name: "Startup marker",
+        displayName: "Startup marker",
+        email: "startup@example.invalid",
+        isLoggedIn: false,
+      });
+    });
+  }
+
   await page.reload();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("button", { name: "Get Started" })).toBeVisible();
+  if (process.env.E2E_PRODUCTION !== "true") {
+    for (const currentPage of pages) {
+      const marker = await currentPage.evaluate(async () => {
+        const load = (path: string) => import(/* @vite-ignore */ path);
+        const { localDB } = await load("/src/api/local/db.ts");
+        const { User } = await load("/src/api/local/schemas/index.ts");
+        const { eq } = await load("/test/e2e/localDatabaseTestSupport.ts");
+        await localDB.ensureReady();
+        return await localDB
+          .select({ name: User.name })
+          .from(User)
+          .where(eq(User.publicId, "e2e-multitab-startup"));
+      });
+      expect(marker).toEqual([{ name: "Startup marker" }]);
+    }
+  }
   expect(localDatabaseErrors).toEqual([]);
 
   await pages[1].close();
+});
+
+test("waits for another tab's migration before opening OPFS", async ({
+  page,
+}) => {
+  test.skip(
+    process.env.E2E_PRODUCTION === "true",
+    "Imports the development database module."
+  );
+  const lockPage = await page.context().newPage();
+  await lockPage.route("**/startup-lock-fixture", route =>
+    route.fulfill({ contentType: "text/html", body: "<!doctype html>" })
+  );
+  await lockPage.goto("/startup-lock-fixture");
+  await lockPage.evaluate(() => {
+    void navigator.locks.request(
+      "notegic-local-database-migration",
+      { mode: "exclusive" },
+      () => new Promise<void>(() => {})
+    );
+  });
+  await expect
+    .poll(() =>
+      lockPage.evaluate(async () =>
+        (await navigator.locks.query()).held?.some(
+          lock => lock.name === "notegic-local-database-migration"
+        )
+      )
+    )
+    .toBe(true);
+
+  try {
+    await page.goto("/");
+    await expect
+      .poll(async () =>
+        page.evaluate(async () => {
+          const path = "/src/api/local/db.ts";
+          const { localDB } = await import(/* @vite-ignore */ path);
+          return localDB
+            .getDiagnostics()
+            .workerEvents.some(
+              (event: { stage: string }) =>
+                event.stage === "sqlite-wasm-init-complete"
+            );
+        })
+      )
+      .toBe(true);
+    await expect
+      .poll(() =>
+        page.evaluate(async () =>
+          (await navigator.locks.query()).pending?.some(
+            lock => lock.name === "notegic-local-database-migration"
+          )
+        )
+      )
+      .toBe(true);
+    const opened = await page.evaluate(async () => {
+      const path = "/src/api/local/db.ts";
+      const { localDB } = await import(/* @vite-ignore */ path);
+      return localDB
+        .getDiagnostics()
+        .workerEvents.some(
+          (event: { stage: string }) =>
+            event.stage === "opfs-driver-init-complete"
+        );
+    });
+    expect(opened).toBe(false);
+  } finally {
+    await lockPage.close();
+  }
+
+  const state = await page.evaluate(async () => {
+    const path = "/src/api/local/db.ts";
+    const { localDB } = await import(/* @vite-ignore */ path);
+    await localDB.ensureReady();
+    return {
+      ready: localDB.isReady,
+      version: await localDB.getVersion(),
+      targetVersion: localDB.getDiagnostics().targetVersion,
+    };
+  });
+  expect(state.ready).toBe(true);
+  expect(state.version).toBeGreaterThan(0);
+  expect(state.version).toBe(state.targetVersion);
 });
 
 test("@environment survives a reload while the SQLocal worker is connecting", async ({
