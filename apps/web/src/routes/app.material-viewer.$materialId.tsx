@@ -66,7 +66,8 @@ function MaterialViewerRoute() {
   const { startAsyncTransactionLoading } = useLoading();
 
   const materialQuerier = useGetMyMaterialAndItsParentById();
-  const createObjectTicketMutator = useCreateMaterialObjectTicket();
+  const { mutateAsync: createMaterialObjectTicket } =
+    useCreateMaterialObjectTicket();
   const [materialMeta, setMaterialMeta] = useState<MaterialMeta | null>(null);
   const [objectTicket, setObjectTicket] = useState<string | null>(null);
   const objectURLQuery = useResolveMaterialObjectTicket(objectTicket);
@@ -114,7 +115,7 @@ function MaterialViewerRoute() {
 
         setObjectTicket(null);
         try {
-          const ticketResponse = await createObjectTicketMutator.mutateAsync({
+          const ticketResponse = await createMaterialObjectTicket({
             header: getClientRequestHeaders(navigator.userAgent),
             body: { objectKey: response.data.objectKey },
           });
@@ -140,7 +141,7 @@ function MaterialViewerRoute() {
       isActive = false;
     };
   }, [
-    createObjectTicketMutator,
+    createMaterialObjectTicket,
     loaderData.materialId,
     loaderData.parentSubShelfId,
     loaderData.rootShelfId,
