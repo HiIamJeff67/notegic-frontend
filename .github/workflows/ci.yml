@@ -20,6 +20,7 @@ jobs:
     timeout-minutes: 20
     env:
       VITE_APP_BASE_PATH: /
+      VITE_LOCAL_DATABASE_PATH: notegic-e2e.sqlite3
       E2E_RUN_AUTHENTICATED: "false"
     steps:
       - uses: actions/checkout@v4
