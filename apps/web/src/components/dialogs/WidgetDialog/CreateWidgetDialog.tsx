@@ -71,7 +71,7 @@ const CreateWidgetDialog = ({
           max-w-md 
           md:max-w-2xl 
           lg:max-w-3xl 
-          bg-card shadow-xl rounded-xl p-6 flex flex-col items-center gap-4
+          max-h-[90dvh] overflow-y-auto bg-card shadow-xl rounded-xl p-6 flex flex-col items-center gap-4
         "
       >
         <DialogHeader>
@@ -83,11 +83,11 @@ const CreateWidgetDialog = ({
         <div className="w-full font-bold mb-2">
           {t("workspace.widgets.basic")}
         </div>
-        <div className="w-full flex-1 flex flex-col gap-3 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
+        <div className="custom-scrollbar w-full min-h-0 max-h-64 shrink-0 flex flex-col gap-3 overflow-y-auto overscroll-contain">
           {Object.entries(BasicPreviewWidgets).map(([key, previewWidget]) => (
             <div
               key={key}
-              className="w-full flex items-center justify-between rounded-lg border border-border bg-muted hover:bg-accent transition p-4 cursor-pointer"
+              className="w-full shrink-0 flex items-center justify-between rounded-lg border border-border bg-muted hover:bg-accent transition p-4 cursor-pointer"
               onClick={() => onCreate(previewWidget)}
             >
               <div className="flex-1 text-left pr-4">
@@ -125,7 +125,7 @@ const CreateWidgetDialog = ({
         <div className="w-full font-bold mb-2">
           {t("workspace.widgets.guides")}
         </div>
-        <div className="w-full flex-1 flex flex-col gap-3 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
+        <div className="w-full shrink-0 flex flex-col gap-3">
           {Object.entries(GuidePreviewWidgets).map(([key, previewWidget]) => (
             <div
               key={key}
