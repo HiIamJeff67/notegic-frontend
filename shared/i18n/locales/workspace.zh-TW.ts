@@ -862,6 +862,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     openFileNewTab: "在新分頁開啟檔案",
     refresh: "重新整理",
     loadingFile: "正在載入檔案……",
+    failedFilePreview: "無法載入檔案，請嘗試重新整理。",
     noFile: "尚未上傳檔案。請上傳檔案以檢視。",
     failedTextPreview: "無法載入文字預覽。",
     failedAnnotatedPdf: "無法下載已標註的 PDF。",

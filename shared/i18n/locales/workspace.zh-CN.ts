@@ -858,6 +858,7 @@ export const SimpleChineseWorkspaceTranslation = {
     openFileNewTab: "在新标签页打开文件",
     refresh: "刷新",
     loadingFile: "正在加载文件……",
+    failedFilePreview: "无法加载文件，请尝试刷新。",
     noFile: "尚未上传文件。请上传文件以查看。",
     failedTextPreview: "无法加载文本预览。",
     failedAnnotatedPdf: "无法下载已标注的 PDF。",

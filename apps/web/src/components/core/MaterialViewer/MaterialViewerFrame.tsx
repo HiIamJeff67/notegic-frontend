@@ -12,7 +12,7 @@ import {
   RefreshCw,
   SlidersHorizontalIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
@@ -38,10 +38,17 @@ import {
 } from "@/components/ui/tooltip";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
-import { useAppRouter, useShelfItem } from "@/hooks";
+import { useShelfItem } from "@/hooks";
+
+export interface MaterialFileState {
+  isLoading: boolean;
+  isError: boolean;
+  onRefresh: () => void;
+}
 
 interface MaterialViewerFrameProps {
   meta: MaterialMeta;
+  file: MaterialFileState;
   materialContentType: MaterialContentType | undefined;
   contentClassName?: string;
   toolbarChildren?: React.ReactNode;
@@ -53,6 +60,7 @@ interface MaterialViewerFrameProps {
 
 const MaterialViewerFrame = ({
   meta,
+  file,
   materialContentType,
   contentClassName,
   toolbarChildren,
@@ -61,38 +69,28 @@ const MaterialViewerFrame = ({
   viewMenuChildren,
   children,
 }: MaterialViewerFrameProps) => {
-  const router = useAppRouter();
   const { i18n, t } = useTranslation();
   const sidebarManager = useSidebar();
   const shelfItemManager = useShelfItem();
   const saveMaterialMutator = useSaveMyMaterialById();
 
   const [isMetaDropdownOpen, setIsMetaDropdownOpen] = useState<boolean>(false);
-  const [isFileLoading, setIsFileLoading] = useState<boolean>(false);
-  const [isFileAvailable, setIsFileAvailable] = useState<boolean>(false);
   const [isImporting, startImportingTransition] = useTransition();
+  const contentURL = meta.localContentURL ?? meta.downloadURL;
+  const isFileAvailable =
+    materialContentType !== MaterialContentType.None && Boolean(contentURL);
 
-  const loadFile = useCallback(async () => {
-    setIsFileLoading(true);
-
-    if (materialContentType === MaterialContentType.None || !meta.downloadURL) {
-      setIsFileAvailable(false);
-      setIsFileLoading(false);
-      return;
-    }
-
-    setIsFileAvailable(true);
-    setIsFileLoading(false);
-  }, [materialContentType, meta.downloadURL]);
-
-  const copyToClipboard = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(t("workspace.notifications.copied"));
-    } catch (error) {
-      toast.error(tError(error, t));
-    }
-  }, []);
+  const copyToClipboard = useCallback(
+    async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.success(t("workspace.notifications.copied"));
+      } catch (error) {
+        toast.error(tError(error, t));
+      }
+    },
+    [t]
+  );
 
   const importFile = useCallback(
     async (contentFile: File) => {
@@ -106,15 +104,13 @@ const MaterialViewerFrame = ({
           parentSubShelfId: meta.parentId,
         },
       });
-      router.refresh();
-      await loadFile();
       toast.success(
         t("workspace.notifications.fileImported", {
           name: contentFile.name,
         })
       );
     },
-    [loadFile, meta.id, meta.parentId, router, saveMaterialMutator]
+    [meta.id, meta.parentId, saveMaterialMutator, t]
   );
 
   const handleImportFileOnClick = useCallback(
@@ -127,12 +123,8 @@ const MaterialViewerFrame = ({
         }
       });
     },
-    [importFile]
+    [importFile, t]
   );
-
-  useEffect(() => {
-    void loadFile();
-  }, [meta.id, meta.downloadURL, materialContentType, loadFile]);
 
   return (
     <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex flex-col items-stretch bg-cover bg-transparent bg-no-repeat">
@@ -233,9 +225,15 @@ const MaterialViewerFrame = ({
           </DropdownMenu>
         </div>
         <div className="-m-1 flex min-w-0 items-center gap-2 overflow-x-auto p-1">
-          {toolbarChildren}
+          {!file.isLoading &&
+            !file.isError &&
+            isFileAvailable &&
+            toolbarChildren}
           <ButtonGroup className="shrink-0">
-            {menuChildren}
+            {!file.isLoading &&
+              !file.isError &&
+              isFileAvailable &&
+              menuChildren}
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -332,7 +330,10 @@ const MaterialViewerFrame = ({
                     />
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
-                {fileMenuChildren}
+                {!file.isLoading &&
+                  !file.isError &&
+                  isFileAvailable &&
+                  fileMenuChildren}
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
@@ -355,7 +356,10 @@ const MaterialViewerFrame = ({
                 </TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" side="bottom">
-                <DropdownMenuItem onClick={async () => await loadFile()}>
+                <DropdownMenuItem
+                  disabled={file.isLoading}
+                  onClick={file.onRefresh}
+                >
                   <RefreshCw />
                   {t("workspace.viewer.refresh")}
                 </DropdownMenuItem>
@@ -378,19 +382,31 @@ const MaterialViewerFrame = ({
           contentClassName
         )}
       >
-        {isFileLoading && (
+        {file.isLoading && (
           <div className="text-muted-foreground text-sm">
             {t("workspace.viewer.loadingFile")}
           </div>
         )}
-        {!isFileLoading && !isFileAvailable && (
+        {!file.isLoading && file.isError && (
+          <div
+            role="alert"
+            className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center text-sm text-muted-foreground"
+          >
+            <p>{t("workspace.viewer.failedFilePreview")}</p>
+            <Button variant="outline" onClick={file.onRefresh}>
+              <RefreshCw />
+              {t("workspace.viewer.refresh")}
+            </Button>
+          </div>
+        )}
+        {!file.isLoading && !file.isError && !isFileAvailable && (
           <div className="w-full min-h-[60vh] flex justify-center items-center">
             <div className="font-bold text-foreground text-base text-center">
               {t("workspace.viewer.noFile")}
             </div>
           </div>
         )}
-        {!isFileLoading && isFileAvailable && meta.downloadURL && children}
+        {!file.isLoading && !file.isError && isFileAvailable && children}
       </div>
     </div>
   );

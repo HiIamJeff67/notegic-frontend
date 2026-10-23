@@ -2,15 +2,19 @@ import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { useEffect, useState } from "react";
-import MaterialViewerFrame from "./MaterialViewerFrame";
+import MaterialViewerFrame, {
+  type MaterialFileState,
+} from "./MaterialViewerFrame";
 
 interface MaterialVideoViewerContentProps {
   meta: MaterialMeta;
+  file: MaterialFileState;
   materialContentType: MaterialContentType;
 }
 
 const MaterialVideoViewerContent = ({
   meta,
+  file,
   materialContentType,
 }: MaterialVideoViewerContentProps) => {
   const { t } = useTranslation();
@@ -23,6 +27,7 @@ const MaterialVideoViewerContent = ({
 
   return (
     <MaterialViewerFrame
+      file={file}
       meta={meta}
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"
@@ -36,7 +41,7 @@ const MaterialVideoViewerContent = ({
         />
       ) : (
         <div className="text-muted-foreground text-sm">
-          {t("workspace.viewer.noFile")}
+          {t("workspace.viewer.failedFilePreview")}
         </div>
       )}
     </MaterialViewerFrame>

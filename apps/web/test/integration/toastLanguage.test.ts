@@ -35,7 +35,7 @@ function Probe() {
 createRoot(document.getElementById('root')).render(
   <WidgetProvider>
     <Probe />
-    <MaterialViewerFrame materialContentType={MaterialContentType.PlainText} meta={{
+    <MaterialViewerFrame file={{ isLoading: false, isError: false, onRefresh: () => {} }} materialContentType={MaterialContentType.PlainText} meta={{
       id: 'material-1', parentId: 'shelf-1', rootId: 'root-1', name: 'Note',
       contentType: 'text/plain', size: 0, downloadURL: '/note.txt',
       createdAt: new Date(), updatedAt: new Date(), path: [],

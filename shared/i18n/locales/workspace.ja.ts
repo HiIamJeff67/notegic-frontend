@@ -893,6 +893,7 @@ export const JapaneseWorkspaceTranslation = {
     openFileNewTab: "ファイルを新しいタブで開く",
     refresh: "更新",
     loadingFile: "ファイルを読み込み中…",
+    failedFilePreview: "ファイルを読み込めません。再読み込みしてください。",
     noFile:
       "ファイルがアップロードされていません。表示するにはアップロードしてください。",
     failedTextPreview: "テキストプレビューを読み込めませんでした。",

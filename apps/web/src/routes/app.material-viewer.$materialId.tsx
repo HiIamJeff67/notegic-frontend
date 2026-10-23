@@ -1,12 +1,12 @@
-import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
+import { queryKeys } from "@shared/api/queryKeys";
 import { isValidUUID } from "@shared/types/uuidv4.type";
+import { useQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
   notFound,
   useLoaderData,
 } from "@tanstack/react-router";
 import type { UUID } from "crypto";
-import { useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   useCreateMaterialObjectTicket,
@@ -14,7 +14,6 @@ import {
   useResolveMaterialObjectTicket,
 } from "@/api/hooks/material.hook";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { useLoading } from "@/hooks/useLoading";
 import MaterialViewerNotFoundPage from "@/pages/app/material-viewer/MaterialViewerNotFoundPage";
 import MaterialViewerPage from "@/pages/app/material-viewer/MaterialViewerPage";
 
@@ -63,102 +62,67 @@ function MaterialViewerRoute() {
   const loaderData = useLoaderData({
     from: "/app/material-viewer/$materialId",
   });
-  const { startAsyncTransactionLoading } = useLoading();
-
-  const materialQuerier = useGetMyMaterialAndItsParentById();
+  const materialQuerier = useGetMyMaterialAndItsParentById({
+    header: getClientRequestHeaders(navigator.userAgent),
+    param: { materialId: loaderData.materialId },
+  });
   const { mutateAsync: createMaterialObjectTicket } =
     useCreateMaterialObjectTicket();
-  const [materialMeta, setMaterialMeta] = useState<MaterialMeta | null>(null);
-  const [objectTicket, setObjectTicket] = useState<string | null>(null);
-  const objectURLQuery = useResolveMaterialObjectTicket(objectTicket);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isNotFound, setIsNotFound] = useState(false);
+  const objectURLResolver = useResolveMaterialObjectTicket();
+  const material = materialQuerier.data?.data;
+  const objectURLQuery = useQuery({
+    // A metadata refetch also renews the ticket after replacing the same object.
+    queryKey: queryKeys.material.objectURL(
+      loaderData.materialId,
+      material?.objectKey,
+      materialQuerier.dataUpdatedAt
+    ),
+    queryFn: async () => {
+      if (!material?.objectKey)
+        throw new Error("Material file is unavailable.");
+      const ticketResponse = await createMaterialObjectTicket({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: { objectKey: material.objectKey },
+      });
+      const response = await objectURLResolver.fetch({
+        body: { objectTicket: ticketResponse.data.objectTicket },
+      });
+      return response.data.objectURL;
+    },
+    enabled: Boolean(material?.objectKey),
+    retry: false,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
-  useEffect(() => {
-    let isActive = true;
-
-    const fetchMaterialMeta = async () => {
-      setIsLoading(true);
-      setIsNotFound(false);
-
-      try {
-        const response = await materialQuerier.fetch({
-          header: getClientRequestHeaders(navigator.userAgent),
-          param: {
-            materialId: loaderData.materialId,
-          },
-        });
-
-        if (!isActive) return;
-
-        if (!response?.data) {
-          setIsNotFound(true);
-          setMaterialMeta(null);
-          return;
-        }
-
-        setMaterialMeta({
-          id: response.data.id as UUID,
-          parentId: response.data.parentSubShelfId as UUID,
-          rootId: response.data.rootShelfId as UUID,
-          name: response.data.name,
-          size: response.data.size,
-          contentType: response.data.contentType,
-          parseMediaType: response.data.parseMediaType,
-          objectKey: response.data.objectKey,
-          downloadURL: null,
-          path: (response.data.parentSubShelfPath ?? []) as UUID[],
-          deletedAt: response.data.deletedAt,
-          updatedAt: response.data.updatedAt,
-          createdAt: response.data.createdAt,
-        });
-
-        setObjectTicket(null);
-        try {
-          const ticketResponse = await createMaterialObjectTicket({
-            header: getClientRequestHeaders(navigator.userAgent),
-            body: { objectKey: response.data.objectKey },
-          });
-          if (isActive) {
-            setObjectTicket(ticketResponse.data.objectTicket);
-          }
-        } catch {
-          // Metadata remains available while the file is unavailable offline.
-        }
-      } catch {
-        if (!isActive) return;
-        setIsNotFound(true);
-        setMaterialMeta(null);
-      } finally {
-        if (!isActive) return;
-        setIsLoading(false);
-      }
-    };
-
-    void startAsyncTransactionLoading(fetchMaterialMeta);
-
-    return () => {
-      isActive = false;
-    };
-  }, [
-    createMaterialObjectTicket,
-    loaderData.materialId,
-    loaderData.parentSubShelfId,
-    loaderData.rootShelfId,
-    startAsyncTransactionLoading,
-  ]);
-
-  useEffect(() => {
-    const objectURL = objectURLQuery.data?.data.objectURL;
-    if (!objectURL) return;
-    setMaterialMeta(current =>
-      current ? { ...current, downloadURL: objectURL } : current
-    );
-  }, [objectURLQuery.data?.data.objectURL]);
-
-  if (isLoading) return <LoadingCover />;
-  if (isNotFound || !materialMeta)
+  if (materialQuerier.isPending) return <LoadingCover />;
+  if (!material)
     return <MaterialViewerNotFoundPage id={loaderData.materialId} />;
 
-  return <MaterialViewerPage materialMeta={materialMeta} />;
+  return (
+    <MaterialViewerPage
+      materialMeta={{
+        id: material.id as UUID,
+        parentId: material.parentSubShelfId as UUID,
+        rootId: material.rootShelfId as UUID,
+        name: material.name,
+        size: material.size,
+        contentType: material.contentType,
+        parseMediaType: material.parseMediaType,
+        objectKey: material.objectKey,
+        downloadURL: objectURLQuery.data ?? null,
+        path: (material.parentSubShelfPath ?? []) as UUID[],
+        deletedAt: material.deletedAt,
+        updatedAt: material.updatedAt,
+        createdAt: material.createdAt,
+      }}
+      file={{
+        isLoading: materialQuerier.isFetching || objectURLQuery.isLoading,
+        isError: materialQuerier.isError || objectURLQuery.isError,
+        onRefresh: () => {
+          void materialQuerier.refetch();
+        },
+      }}
+    />
+  );
 }

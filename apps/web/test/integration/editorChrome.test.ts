@@ -25,6 +25,7 @@ import '@/i18n';
 const block = {...getDefaultBlockPackMeta('item','parent','root'), name:'Notes',
   pathItems:[{id:'root',name:'Workspace'},{id:'parent',name:'Folder'}]};
 const material = {...getDefaultMaterialMeta('item','parent','root'), name:'Reference', downloadURL:'https://example.invalid/file.txt'};
+const file = { isLoading: false, isError: false, onRefresh: () => {} };
 function Fixture() {
   const [mode, setMode] = useState('material');
   window.showEditor = setMode;
@@ -32,8 +33,8 @@ function Fixture() {
     <AppSidebar />
     <AppSidebarInset>
       {mode === 'block' ? <BlockPackEditorContent blockPackMeta={block} dispatchMeta={()=>{}} /> :
-        mode === 'pdf' ? <MaterialPDFViewerContent meta={{...material,downloadURL:null}} /> :
-        <MaterialViewerFrame meta={material} materialContentType="text/plain"><p>Preview</p></MaterialViewerFrame>}
+        mode === 'pdf' ? <MaterialPDFViewerContent meta={material} file={file} /> :
+        <MaterialViewerFrame meta={material} file={file} materialContentType="text/plain"><p>Preview</p></MaterialViewerFrame>}
     </AppSidebarInset>
   </SidebarProvider>;
 }
@@ -61,7 +62,13 @@ const mocks: Record<string, string> = {
     "export const NotificationPopover = () => null;",
   "pdfjs-dist": `
     export const GlobalWorkerOptions = {};
-    export const getDocument = () => { throw new Error('PDF loading is outside this toolbar fixture'); };
+    export const getDocument = () => ({
+      promise: Promise.resolve({ numPages: 1, getData: async () => new Uint8Array(),
+        getPage: async () => ({ getViewport: () => ({ width: 200, height: 200 }),
+          render: () => ({ promise: Promise.resolve(), cancel() {} }), cleanup() {} }),
+      }),
+      destroy: async () => {},
+    });
   `,
   "@blocknote/react": "export const SideMenuController = () => null;",
   "@blocknote/shadcn": "export const BlockNoteView = () => null;",

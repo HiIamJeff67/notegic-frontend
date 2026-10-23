@@ -51,6 +51,11 @@ export const queryKeys = {
     all: () => ["material"] as const,
     objectTicket: (objectTicket?: string | null) =>
       ["material", "objectTicket", objectTicket] as const,
+    objectURL: (
+      id: UUID,
+      objectKey: string | undefined,
+      metadataUpdatedAt: number
+    ) => ["material", "objectURL", id, objectKey, metadataUpdatedAt] as const,
     oneById: (
       id?: UUID,
       withParent: boolean = false,

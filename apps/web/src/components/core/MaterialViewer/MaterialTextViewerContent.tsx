@@ -2,15 +2,19 @@ import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { useEffect, useState } from "react";
-import MaterialViewerFrame from "./MaterialViewerFrame";
+import MaterialViewerFrame, {
+  type MaterialFileState,
+} from "./MaterialViewerFrame";
 
 interface MaterialTextViewerContentProps {
   meta: MaterialMeta;
+  file: MaterialFileState;
   materialContentType: MaterialContentType;
 }
 
 const MaterialTextViewerContent = ({
   meta,
+  file,
   materialContentType,
 }: MaterialTextViewerContentProps) => {
   const { t } = useTranslation();
@@ -32,7 +36,7 @@ const MaterialTextViewerContent = ({
       try {
         const response = await fetch(contentURL);
         if (!response.ok) {
-          setIsTextAvailable(false);
+          if (!isCancelled) setIsTextAvailable(false);
           return;
         }
 
@@ -66,6 +70,7 @@ const MaterialTextViewerContent = ({
 
   return (
     <MaterialViewerFrame
+      file={file}
       meta={meta}
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"

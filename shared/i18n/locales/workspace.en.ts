@@ -893,6 +893,7 @@ export const EnglishWorkspaceTranslation = {
     openFileNewTab: "Open file in a new tab",
     refresh: "Refresh",
     loadingFile: "Loading file...",
+    failedFilePreview: "Unable to load the file. Please try refreshing.",
     noFile: "No file uploaded. Upload a file to view it.",
     failedTextPreview: "Failed to load text preview.",
     failedAnnotatedPdf: "Failed to download annotated PDF.",

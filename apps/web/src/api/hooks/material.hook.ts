@@ -59,6 +59,7 @@ export const useCreateMaterialObjectTicket = () =>
     CreateMaterialObjectTicketRequest
   >({
     mutationFn: mutationFnCreateMaterialObjectTicket,
+    retry: false,
     onSuccess: response => {
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
@@ -426,9 +427,10 @@ export const useSaveMyMaterialById = () => {
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const targetKeys: QueryKey[] = [
         queryKeys.material.oneById(materialId),
+        queryKeys.material.oneById(materialId, true),
         queryKeys.material.manyByParentSubShelfId(parentSubShelfId),
       ];
-      Promise.all(
+      return Promise.all(
         targetKeys.map(targetKey =>
           queryClient.invalidateQueries({ queryKey: targetKey })
         )

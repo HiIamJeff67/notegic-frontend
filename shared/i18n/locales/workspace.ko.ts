@@ -886,6 +886,7 @@ export const KoreanWorkspaceTranslation = {
     openFileNewTab: "새 탭에서 파일 열기",
     refresh: "새로 고침",
     loadingFile: "파일을 불러오는 중…",
+    failedFilePreview: "파일을 불러올 수 없습니다. 새로고침해 주세요.",
     noFile: "업로드된 파일이 없습니다. 보려면 파일을 업로드하세요.",
     failedTextPreview: "텍스트 미리보기를 불러오지 못했습니다.",
     failedAnnotatedPdf: "주석이 포함된 PDF를 다운로드하지 못했습니다.",

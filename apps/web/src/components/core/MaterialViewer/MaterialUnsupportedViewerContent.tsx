@@ -1,20 +1,25 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
-import MaterialViewerFrame from "./MaterialViewerFrame";
+import MaterialViewerFrame, {
+  type MaterialFileState,
+} from "./MaterialViewerFrame";
 
 interface MaterialUnsupportedViewerContentProps {
   meta: MaterialMeta;
+  file: MaterialFileState;
   materialContentType: MaterialContentType | undefined;
 }
 
 const MaterialUnsupportedViewerContent = ({
   meta,
+  file,
   materialContentType,
 }: MaterialUnsupportedViewerContentProps) => {
   const { t } = useTranslation();
   return (
     <MaterialViewerFrame
+      file={file}
       meta={meta}
       materialContentType={materialContentType}
       contentClassName="p-8 overflow-auto"

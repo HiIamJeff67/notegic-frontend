@@ -49,8 +49,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useAppRouter } from "@/hooks";
-import MaterialViewerFrame from "./MaterialViewerFrame";
+import MaterialViewerFrame, {
+  type MaterialFileState,
+} from "./MaterialViewerFrame";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.mjs",
@@ -59,6 +60,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 interface MaterialPDFViewerContentProps {
   meta: MaterialMeta;
+  file: MaterialFileState;
 }
 
 interface Annotation {
@@ -75,14 +77,15 @@ interface Annotation {
 
 type AnnotationTool = Annotation["type"];
 
-const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
-  const router = useAppRouter();
+const MaterialPDFViewerContent = ({
+  meta,
+  file,
+}: MaterialPDFViewerContentProps) => {
   const { t } = useTranslation();
   const saveMaterialMutator = useSaveMyMaterialById();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const pdfDocumentRef = useRef<pdfjs.PDFDocumentProxy | null>(null);
   const renderTaskRef = useRef<ReturnType<pdfjs.PDFPageProxy["render"]> | null>(
     null
   );
@@ -176,6 +179,8 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
 
     try {
       const page = await pdfDocument.getPage(pageNumber);
+      if (renderVersion !== renderVersionRef.current || !canvasRef.current)
+        return;
       const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
@@ -215,38 +220,6 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
         renderTaskRef.current = null;
         setIsLoading(false);
       }
-    }
-  };
-
-  const loadPdf = async (source: string | Uint8Array) => {
-    setIsLoading(true);
-    setIsAvailable(true);
-    setPdfDocument(null);
-    setPdfBytes(null);
-    setTotalPages(0);
-
-    try {
-      if (pdfDocumentRef.current) {
-        void pdfDocumentRef.current.cleanup();
-        pdfDocumentRef.current = null;
-      }
-
-      const pdf = await pdfjs.getDocument(
-        typeof source === "string"
-          ? { url: source }
-          : { data: Array.from(source) }
-      ).promise;
-      const data = await pdf.getData();
-
-      pdfDocumentRef.current = pdf;
-      setPdfDocument(pdf);
-      setPdfBytes(new Uint8Array(data));
-      setTotalPages(pdf.numPages);
-      setCurrentPage(1);
-    } catch {
-      setIsAvailable(false);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -482,10 +455,8 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
           parentSubShelfId: meta.parentId,
         },
       });
-      router.refresh();
       toast.success(t("workspace.notifications.pdfAnnotationsSaved"));
       setAnnotations([]);
-      await loadPdf(nextPdfBytes);
     } catch (error) {
       toast.error(tError(error, t));
     } finally {
@@ -575,14 +546,35 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
   useEffect(() => {
     if (!contentURL) return;
 
-    void loadPdf(contentURL);
+    let isCancelled = false;
+    setIsLoading(true);
+    setIsAvailable(true);
+    setPdfDocument(null);
+    setPdfBytes(null);
+    setTotalPages(0);
+    const loadingTask = pdfjs.getDocument({ url: contentURL });
+
+    void (async () => {
+      try {
+        const pdf = await loadingTask.promise;
+        const data = await pdf.getData();
+        if (isCancelled) return;
+        setPdfDocument(pdf);
+        setPdfBytes(new Uint8Array(data));
+        setTotalPages(pdf.numPages);
+        setCurrentPage(page => Math.min(page, pdf.numPages));
+      } catch {
+        if (!isCancelled) setIsAvailable(false);
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
+    })();
 
     return () => {
+      isCancelled = true;
+      renderVersionRef.current += 1;
       renderTaskRef.current?.cancel();
-      if (pdfDocumentRef.current) {
-        void pdfDocumentRef.current.cleanup();
-        pdfDocumentRef.current = null;
-      }
+      void loadingTask.destroy();
     };
   }, [contentURL]);
 
@@ -592,6 +584,7 @@ const MaterialPDFViewerContent = ({ meta }: MaterialPDFViewerContentProps) => {
 
   return (
     <MaterialViewerFrame
+      file={file}
       meta={meta}
       materialContentType={MaterialContentType.PDF}
       contentClassName="p-0 overflow-hidden"
