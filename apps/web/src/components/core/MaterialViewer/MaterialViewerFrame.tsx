@@ -16,6 +16,7 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { MaterialIcon } from "@/components/icons/WorkspaceEntityIcons";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ import {
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { useShelfItem } from "@/hooks";
+import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 
 export interface MaterialFileState {
   isLoading: boolean;
@@ -50,6 +52,7 @@ interface MaterialViewerFrameProps {
   file: MaterialFileState;
   materialContentType: MaterialContentType | undefined;
   contentClassName?: string;
+  isContentLoading?: boolean;
   toolbarChildren?: React.ReactNode;
   fileMenuChildren?: React.ReactNode;
   children: React.ReactNode;
@@ -60,6 +63,7 @@ const MaterialViewerFrame = ({
   file,
   materialContentType,
   contentClassName,
+  isContentLoading = false,
   toolbarChildren,
   fileMenuChildren,
   children,
@@ -74,6 +78,11 @@ const MaterialViewerFrame = ({
   const contentURL = meta.localContentURL ?? meta.downloadURL;
   const isFileAvailable =
     materialContentType !== MaterialContentType.None && Boolean(contentURL);
+  const isLoading =
+    file.isLoading ||
+    (!file.isError && isFileAvailable && isContentLoading) ||
+    isImporting;
+  useRegisterLoadingDependencies(isLoading);
 
   const copyToClipboard = useCallback(
     async (text: string) => {
@@ -123,6 +132,7 @@ const MaterialViewerFrame = ({
 
   return (
     <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex flex-col items-stretch bg-background">
+      <LoadingCover condition={isLoading} />
       <header className="flex h-[var(--app-toolbar-height)] w-full min-w-0 shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex flex-1 min-w-0 justify-start items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
@@ -363,11 +373,6 @@ const MaterialViewerFrame = ({
           contentClassName
         )}
       >
-        {file.isLoading && (
-          <div className="text-muted-foreground text-sm">
-            {t("workspace.viewer.loadingFile")}
-          </div>
-        )}
         {!file.isLoading && file.isError && (
           <div
             role="alert"

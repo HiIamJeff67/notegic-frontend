@@ -19,16 +19,16 @@ const MaterialTextViewerContent = ({
 }: MaterialTextViewerContentProps) => {
   const { t } = useTranslation();
   const [text, setText] = useState<string>("");
-  const [isLoadingText, setIsLoadingText] = useState<boolean>(false);
+  const [loadedURL, setLoadedURL] = useState<string | null>(null);
   const [isTextAvailable, setIsTextAvailable] = useState<boolean>(true);
   const contentURL = meta.localContentURL ?? meta.downloadURL;
+  const isLoadingText = Boolean(contentURL) && loadedURL !== contentURL;
 
   useEffect(() => {
     if (!contentURL) return;
 
     let isCancelled = false;
 
-    setIsLoadingText(true);
     setIsTextAvailable(true);
     setText("");
 
@@ -58,7 +58,7 @@ const MaterialTextViewerContent = ({
         }
       } finally {
         if (!isCancelled) {
-          setIsLoadingText(false);
+          setLoadedURL(contentURL);
         }
       }
     })();
@@ -73,13 +73,9 @@ const MaterialTextViewerContent = ({
       file={file}
       meta={meta}
       materialContentType={materialContentType}
+      isContentLoading={isLoadingText}
       contentClassName="p-8 overflow-auto"
     >
-      {isLoadingText && (
-        <div className="text-muted-foreground text-sm">
-          {t("workspace.viewer.loadingFile")}
-        </div>
-      )}
       {!isLoadingText && !isTextAvailable && (
         <div className="text-muted-foreground text-sm">
           {t("workspace.viewer.failedTextPreview")}

@@ -18,7 +18,7 @@ recurring patterns into explicit rules for new work.
 
 | Document | Scope |
 | --- | --- |
-| [01-ui.md](01-ui.md) | UI primitives, composition, accessibility, and responsive layout |
+| [01-ui.md](01-ui.md) | UI reuse, shared loading covers, composition, accessibility, and responsive layout |
 | [02-styles.md](02-styles.md) | Tailwind tokens, global CSS, density, motion, and visual language |
 | [03-icons-and-images.md](03-icons-and-images.md) | Entity icons, action icons, images, and media ownership |
 | [Icon map](icon-map.md) | Searchable inventory of existing icon meanings, exports, aliases, sources and reuse boundaries |

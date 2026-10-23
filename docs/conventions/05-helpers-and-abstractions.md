@@ -147,6 +147,30 @@ boundary are preserved unless a scoped migration explicitly owns the change.
 
 ## Reuse before creating
 
+Reuse is the default for an existing responsibility, not a reason to introduce
+more abstractions. This applies equally to UI interactions, loading/error
+presentation, React hooks, formatters, conversions, validation, translation,
+query keys, API clients and persistence boundaries.
+
+Before creating an alternative, identify the established owner, its callers and
+tests. Prefer, in order: direct reuse, passing the existing supported context,
+then a minimal compatible extension for a demonstrated need. A new abstraction
+is justified only by a concrete ownership/behavior gap; document that gap and
+keep error handling and lifecycle guarantees intact. Do not fork a component or
+helper just to avoid reading its current contract.
+
+Repeated features must use the same implementation and acceptance tests for the
+same behavior. Entry-point-specific tests may verify context and callbacks, but
+must not silently encode different formatting, loading, keyboard or error
+semantics. Separate implementations increase bundle size and maintenance cost
+and may drift despite each passing its own tests. Reuse does not mean moving a
+one-use expression to a new helper file or forcing unrelated workflows through
+a configurable wrapper.
+
+For UI and heavy loading specifically, follow
+[Reuse the owning interaction](01-ui.md#reuse-the-owning-interaction) and
+[Loading feedback](01-ui.md#loading-feedback).
+
 Before writing a helper:
 
 - search the nearest feature and its adjacent modules for an existing concept;

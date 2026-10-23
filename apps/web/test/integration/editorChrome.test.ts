@@ -19,6 +19,7 @@ import AppSidebarInset from '@/components/sidebar/AppSidebar/AppSidebarInset';
 import BlockPackEditorContent from '@/components/core/BlockPackEditor/BlockPackEditorContent';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
 import MaterialViewer from '@/components/core/MaterialViewer/MaterialViewer';
+import { LoadingProvider } from '@/providers/LoadingProvider';
 import { getDefaultBlockPackMeta } from '@shared/reducers/blockPackMeta.reducer';
 import { getDefaultMaterialMeta } from '@shared/reducers/materialMeta.reducer';
 import '@/i18n';
@@ -29,20 +30,24 @@ window.refreshCount = 0;
 const file = { isLoading: false, isError: false, onRefresh: () => window.refreshCount++ };
 function Fixture() {
   const [mode, setMode] = useState('material');
+  const [isLoading, setIsLoading] = useState(false);
   window.showEditor = setMode;
+  window.setFileLoading = setIsLoading;
+  const fileState = {...file,isLoading};
   return <SidebarProvider>
     <AppSidebar />
     <AppSidebarInset>
       {mode === 'block' ? <BlockPackEditorContent blockPackMeta={block} dispatchMeta={()=>{}} /> :
-        mode === 'pdf' ? <MaterialViewer materialMeta={{...material,contentType:'application/pdf'}} file={file} /> :
-        <MaterialViewerFrame meta={material} file={file} materialContentType="text/plain"><p>Preview</p></MaterialViewerFrame>}
+        mode === 'pdf' ? <MaterialViewer materialMeta={{...material,contentType:'application/pdf'}} file={fileState} /> :
+        <MaterialViewerFrame meta={material} file={fileState} materialContentType="text/plain"><p>Preview</p></MaterialViewerFrame>}
     </AppSidebarInset>
   </SidebarProvider>;
 }
-createRoot(document.getElementById('root')).render(<Fixture />);
+createRoot(document.getElementById('root')).render(<LoadingProvider><Fixture /></LoadingProvider>);
 `;
 
 const mocks: Record<string, string> = {
+  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle'});`,
   "@/hooks": `
     const summary = {root:{id:'root',name:'Workspace',children:{parent:{id:'parent',name:'Folder',children:{},
       blockPackNodes:{item:{name:'Notes'}},materialNodes:{item:{name:'Reference'}}}}}};
@@ -280,6 +285,39 @@ describe("editor chrome in Chromium", () => {
     expect(surfaces[1]).toEqual(surfaces[0]);
     expect(surfaces[2]).toEqual(surfaces[0]);
     expect(surfaces[0].base).not.toBe("rgba(0, 0, 0, 0)");
+  });
+
+  test("material loading uses the shared full-screen blocking cover", async () => {
+    await page.evaluate("setFileLoading(true)");
+    const status = page.getByRole("status");
+    await browserExpect(status).toBeVisible();
+    expect(
+      await status.locator("..").evaluate(element => {
+        const box = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          x: box.x,
+          y: box.y,
+          width: box.width,
+          height: box.height,
+          position: style.position,
+          zIndex: style.zIndex,
+          blocksControls: element.contains(document.elementFromPoint(1200, 20)),
+        };
+      })
+    ).toEqual({
+      x: 0,
+      y: 0,
+      width: 1280,
+      height: 720,
+      position: "fixed",
+      zIndex: "9999",
+      blocksControls: true,
+    });
+    await page.evaluate("setFileLoading(false)");
+    await browserExpect(status).toHaveCount(0);
+    await page.getByRole("button", { name: "Refresh", exact: true }).click();
+    await page.waitForFunction("window.refreshCount === 1");
   });
 
   test("PDF tool groups and menus remain reachable on narrow screens", async () => {

@@ -15,6 +15,8 @@ import { SessionStorageKey } from '@shared/types/sessionStorage.type';
 import { useResolveMaterialObjectTicket } from '@/api/hooks/material.hook';
 import { PDFDocument } from 'pdf-lib';
 import { Route } from '@/routes/app.material-viewer.$materialId';
+import { LoadingProvider } from '@/providers/LoadingProvider';
+import { useLoading } from '@/hooks/useLoading';
 import '@/i18n';
 
 window.ids = {
@@ -30,6 +32,7 @@ window.expectedCSRFToken = 'initial-csrf';
 SessionStorageManipulator.setItem(SessionStorageKey.csrfToken, window.expectedCSRFToken);
 window.pending = [];
 window.release = () => window.pending.splice(0).forEach(release => release());
+window.deferFetch = false;
 window.failStage = null;
 window.deferStage = null;
 const pause = stage => window.deferStage === stage
@@ -81,12 +84,13 @@ window.api = {
   pdf: async url => {
     window.state.pdfLoads.push(url);
     await pause('pdf');
+    if (window.failStage === 'pdf') throw new Error('PDF download failed');
     return {
       numPages: window.pdfPageCount ?? 1,
       getData: async () => window.pdfBytes,
       getPage: async pageNumber => ({
         getViewport: ({ scale }) => ({ width: 200 * scale, height: 200 * scale }),
-        render: () => { window.state.renderedPages.push(pageNumber); return { promise: Promise.resolve(), cancel() {} }; },
+        render: () => { window.state.renderedPages.push(pageNumber); return { promise: pause('render').then(() => { if(window.failStage === 'render') throw new Error('PDF render failed'); }), cancel() {} }; },
         cleanup() {},
       }),
     };
@@ -117,6 +121,9 @@ window.mount = async overrides => {
   queryClient.setQueryData(queryKeys.material.oneById(window.ids.materialId), { data: window.material });
   const Component = Route.component;
   function Harness() {
+    const loading = useLoading();
+    window.loadingState = {strict:loading.isStrictLoading, lax:loading.isLaxLoading};
+    window.startStrictLoading = () => loading.startAsyncTransactionLoading(() => new Promise(resolve => { window.finishStrictLoading = resolve; }));
     const [, setRevision] = useState(0);
     window.navigate = () => {
       window.ids = { ...window.ids, materialId: '44444444-4444-4444-8444-444444444444' };
@@ -125,7 +132,9 @@ window.mount = async overrides => {
     };
     return <QueryClientProvider client={queryClient}><Component /></QueryClientProvider>;
   }
-  createRoot(document.getElementById('root')).render(<Harness />);
+  window.unmount = () => root.unmount();
+  const root = createRoot(document.getElementById('root'));
+  root.render(<LoadingProvider><Harness /></LoadingProvider>);
 };
 `;
 
@@ -133,11 +142,11 @@ const mocks: Record<string, string> = {
   "@tanstack/react-router": `
     export const createFileRoute = () => options => options;
     export const useLoaderData = () => window.ids;
+    export const useRouterState = ({select}) => select({status:'idle'});
     export const notFound = () => new Error('Not found');`,
   "@/hooks": `
     const shelves = { expandedShelves: new Map(), isItemNodeEditing: () => false };
     export const useShelfItem = () => shelves;`,
-  "@/components/covers/LoadingCover/LoadingCover": `export default () => <p>Loading metadata</p>;`,
   "@/pages/app/material-viewer/MaterialViewerNotFoundPage": `export default () => <p>Material not found</p>;`,
   "@/api/functions/material.clientFn": `export const SaveMyMaterialById = request => window.api.save(request);`,
   "@/api/invokers/material.invoker": `
@@ -227,10 +236,21 @@ describe("material file lifecycle in Chromium", () => {
             window as unknown as { state: { files: string[] } }
           ).state.files.push(value);
         }, url);
-        await route.fulfill({
-          contentType: "text/plain",
-          body: `Preview ${url.split("/").pop()}`,
-        });
+        await page.waitForFunction("!window.deferFetch");
+        if (route.request().resourceType() === "image") {
+          await route.fulfill({
+            contentType: "image/png",
+            body: Buffer.from(
+              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j4uoAAAAASUVORK5CYII=",
+              "base64"
+            ),
+          });
+        } else {
+          await route.fulfill({
+            contentType: "text/plain",
+            body: `Preview ${url.split("/").pop()}`,
+          });
+        }
       } else {
         await route.fulfill({
           contentType: "text/html",
@@ -481,14 +501,114 @@ describe("material file lifecycle in Chromium", () => {
     "resolve",
   ])("waits for delayed %s without showing an empty-file message", async stage => {
     await page.evaluate(`deferStage = '${stage}'; void mount({});`);
-    await page.getByText("Loading file...", { exact: true }).waitFor();
+    await page.getByRole("status").waitFor();
+    expect(await page.getByRole("status").count()).toBe(1);
     await page.waitForFunction("pending.length === 1");
     expect(
       await page.getByText("No file uploaded.", { exact: false }).count()
     ).toBe(0);
     await page.evaluate("deferStage = null; release();");
     await page.getByText("Preview original-1", { exact: true }).waitFor();
+    expect(await page.getByRole("status").count()).toBe(0);
     expect(await page.evaluate("state.files.length")).toBe(1);
+  });
+
+  it.each([
+    "pdf",
+    "render",
+  ])("uses one shared cover through delayed PDF %s", async stage => {
+    await page.evaluate(value => {
+      (window as unknown as { deferStage: string }).deferStage = value;
+    }, stage);
+    await page.evaluate("void mount({ contentType: 'application/pdf' });");
+    await page.waitForFunction("pending.length === 1");
+    expect(await page.getByRole("status").count()).toBe(1);
+    expect(
+      await page.getByText("Loading PDF...", { exact: true }).count()
+    ).toBe(0);
+    await page.evaluate("deferStage=null; release();");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    await page.getByRole("status").waitFor({ state: "detached" });
+  });
+
+  it("covers text fetching without duplicating the app strict cover", async () => {
+    await page.evaluate("deferFetch=true; void mount({});");
+    await page.waitForFunction("state.files.length === 1");
+    await page.waitForFunction("window.loadingState.lax === true");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("void startStrictLoading();");
+    await page.waitForFunction("document.body.style.pointerEvents === 'none'");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("finishStrictLoading();");
+    await page.waitForFunction("document.body.style.pointerEvents === 'auto'");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("deferFetch=false;");
+    await page.getByText("Preview original-1", { exact: true }).waitFor();
+    expect(await page.getByRole("status").count()).toBe(0);
+    await page.waitForFunction("window.loadingState.lax === false");
+  });
+
+  it.each([
+    "pdf",
+    "render",
+  ])("releases the shared cover after %s failure", async stage => {
+    await page.evaluate(value => {
+      (
+        window as unknown as { failStage: string; deferStage: string }
+      ).failStage = value;
+      (window as unknown as { deferStage: string }).deferStage = value;
+    }, stage);
+    await page.evaluate("void mount({contentType:'application/pdf'});");
+    await page.waitForFunction("pending.length === 1");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("deferStage=null; release();");
+    await page.getByRole("status").waitFor({ state: "detached" });
+    await page
+      .getByText("Failed to load PDF preview.", { exact: true })
+      .waitFor();
+  });
+
+  it("waits for image load using the shared cover", async () => {
+    await page.evaluate(
+      "deferFetch=true; void mount({contentType:'image/png'});"
+    );
+    await page.waitForFunction("state.files.length === 1");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("deferFetch=false;");
+    await page.getByRole("status").waitFor({ state: "detached" });
+    expect(
+      await page
+        .locator("img")
+        .evaluate(
+          (image: HTMLImageElement) =>
+            image.complete && image.naturalWidth === 1
+        )
+    ).toBe(true);
+  });
+
+  it("does not cover a page repaint once the PDF preview is ready", async () => {
+    await page.evaluate("void mount({contentType:'application/pdf'});");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    await page.getByRole("status").waitFor({ state: "detached" });
+    await page.evaluate("deferStage='render';");
+    await page.getByRole("button", { name: "Zoom in", exact: true }).click();
+    await page.waitForFunction("pending.length === 1");
+    expect(await page.getByRole("status").count()).toBe(0);
+    await page.evaluate("deferStage=null; release();");
+  });
+
+  it("removes the shared cover on unmount", async () => {
+    await page.evaluate(
+      "deferStage='pdf'; void mount({contentType:'application/pdf'});"
+    );
+    await page.waitForFunction("pending.length === 1");
+    expect(await page.getByRole("status").count()).toBe(1);
+    await page.evaluate("unmount(); deferStage=null; release();");
+    await page.getByRole("status").waitFor({ state: "detached" });
   });
 
   it.each([

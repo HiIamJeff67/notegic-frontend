@@ -19,6 +19,7 @@ const MaterialImageViewerContent = ({
 }: MaterialImageViewerContentProps) => {
   const { t } = useTranslation();
   const [isImageAvailable, setIsImageAvailable] = useState(true);
+  const [loadedURL, setLoadedURL] = useState<string | null>(null);
   const contentURL = meta.localContentURL ?? meta.downloadURL;
 
   useEffect(() => {
@@ -30,6 +31,9 @@ const MaterialImageViewerContent = ({
       file={file}
       meta={meta}
       materialContentType={materialContentType}
+      isContentLoading={
+        Boolean(contentURL) && loadedURL !== contentURL && isImageAvailable
+      }
       contentClassName="p-8 overflow-auto"
     >
       {contentURL && isImageAvailable ? (
@@ -37,6 +41,7 @@ const MaterialImageViewerContent = ({
           src={contentURL}
           alt={meta.name}
           className="max-h-[70vh] w-auto"
+          onLoad={() => setLoadedURL(contentURL)}
           onError={() => setIsImageAvailable(false)}
         />
       ) : (

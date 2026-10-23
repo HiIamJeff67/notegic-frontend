@@ -11,6 +11,7 @@ import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
 import { useToast } from '@/hooks/use-toast';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
+import { LoadingProvider } from '@/providers/LoadingProvider';
 import { MaterialContentType } from '@shared/api/interfaces/enums';
 import i18n from '@/i18n';
 window.state = { reads: 0, requests: 0, refreshes: 0, toasts: [] };
@@ -33,18 +34,19 @@ function Probe() {
   return <span id="language" data-revision={revision}>{saveLabel}</span>;
 }
 createRoot(document.getElementById('root')).render(
-  <WidgetProvider>
+  <LoadingProvider><WidgetProvider>
     <Probe />
     <MaterialViewerFrame file={{ isLoading: false, isError: false, onRefresh: () => {} }} materialContentType={MaterialContentType.PlainText} meta={{
       id: 'material-1', parentId: 'shelf-1', rootId: 'root-1', name: 'Note',
       contentType: 'text/plain', size: 0, downloadURL: '/note.txt',
       createdAt: new Date(), updatedAt: new Date(), path: [],
     }}>Note</MaterialViewerFrame>
-  </WidgetProvider>
+  </WidgetProvider></LoadingProvider>
 );
 `;
 
 const mocks: Record<string, string> = {
+  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle'});`,
   "@/hooks": `
     const userData = { publicId: 'user-1' };
     const router = { refresh: () => window.state.refreshes++ };

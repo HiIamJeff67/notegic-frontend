@@ -30,6 +30,13 @@ behavior it owns.
 
 ## Hook ownership and dependencies
 
+Search existing hooks/providers and their callers before adding a second
+lifecycle, subscription, loading counter, query wrapper or storage boundary.
+Use the established owner when its responsibility matches; keep a genuine
+feature-specific difference local rather than wrapping the same hook again.
+See [Reuse before creating](05-helpers-and-abstractions.md#reuse-before-creating)
+and [Loading feedback](01-ui.md#loading-feedback).
+
 - Feature hooks belong near the feature or API boundary that owns them.
 - Query hooks should reuse the existing query client, query keys, and invoker
   conventions instead of creating a second query wrapper.

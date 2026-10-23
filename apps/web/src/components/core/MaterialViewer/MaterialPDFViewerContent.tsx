@@ -103,6 +103,7 @@ const MaterialPDFViewerContent = ({
   const [scale, setScale] = useState<number>(1.5);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAvailable, setIsAvailable] = useState<boolean>(true);
+  const [renderedURL, setRenderedURL] = useState<string | null>(null);
   const [textAnnotationPopover, setTextAnnotationPopover] = useState<{
     page: number;
     x: number;
@@ -184,7 +185,10 @@ const MaterialPDFViewerContent = ({
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
 
-      if (!context) return;
+      if (!context) {
+        setIsAvailable(false);
+        return;
+      }
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
@@ -202,6 +206,7 @@ const MaterialPDFViewerContent = ({
       if (renderVersion !== renderVersionRef.current) return;
 
       renderAnnotations(context, pageNumber);
+      setRenderedURL(contentURL ?? null);
       page.cleanup();
     } catch (error) {
       if (
@@ -617,6 +622,10 @@ const MaterialPDFViewerContent = ({
       file={file}
       meta={meta}
       materialContentType={MaterialContentType.PDF}
+      isContentLoading={
+        (Boolean(contentURL) && renderedURL !== contentURL && isAvailable) ||
+        isApplyingAnnotations
+      }
       contentClassName="p-0 overflow-hidden"
       toolbarChildren={
         <>
@@ -806,11 +815,6 @@ const MaterialPDFViewerContent = ({
           style={{ overscrollBehavior: "contain" }}
           onWheel={event => event.stopPropagation()}
         >
-          {isLoading && (
-            <div className="sticky top-4 z-10 mx-auto w-fit rounded-md bg-neutral-800/95 px-4 py-2 text-sm text-neutral-100 shadow-lg">
-              {t("workspace.viewer.loadingPdf")}
-            </div>
-          )}
           {!isAvailable && (
             <div className="absolute inset-0 flex items-center justify-center text-sm text-neutral-100">
               {t("workspace.viewer.failedPdfPreview")}
