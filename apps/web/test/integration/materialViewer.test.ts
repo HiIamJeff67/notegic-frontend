@@ -22,7 +22,7 @@ window.ids = {
   parentSubShelfId: '22222222-2222-4222-8222-222222222222',
   rootShelfId: '33333333-3333-4333-8333-333333333333',
 };
-window.state = { metadata: 0, tickets: [], resolves: [], saves: 0, pdfLoads: [], files: [] };
+window.state = { metadata: 0, tickets: [], resolves: [], saves: 0, pdfLoads: [], files: [], renderedPages: [] };
 window.state.sessionHeaders = [];
 window.state.authRequired = 0;
 window.addEventListener('notegic:auth-required', () => window.state.authRequired++);
@@ -82,11 +82,11 @@ window.api = {
     window.state.pdfLoads.push(url);
     await pause('pdf');
     return {
-      numPages: 1,
+      numPages: window.pdfPageCount ?? 1,
       getData: async () => window.pdfBytes,
-      getPage: async () => ({
+      getPage: async pageNumber => ({
         getViewport: ({ scale }) => ({ width: 200 * scale, height: 200 * scale }),
-        render: () => ({ promise: Promise.resolve(), cancel() {} }),
+        render: () => { window.state.renderedPages.push(pageNumber); return { promise: Promise.resolve(), cancel() {} }; },
         cleanup() {},
       }),
     };
@@ -112,7 +112,7 @@ window.mount = async overrides => {
     ...overrides,
   };
   const pdf = await PDFDocument.create();
-  pdf.addPage([200, 200]);
+  for (let index=0;index<(window.pdfPageCount??1);index++) pdf.addPage([200, 200]);
   window.pdfBytes = await pdf.save();
   queryClient.setQueryData(queryKeys.material.oneById(window.ids.materialId), { data: window.material });
   const Component = Route.component;
@@ -248,6 +248,179 @@ describe("material file lifecycle in Chromium", () => {
   });
   afterAll(async () => {
     await browser?.close();
+  });
+
+  it("exposes page navigation and refresh without resetting the PDF view", async () => {
+    await page.evaluate(
+      "window.pdfPageCount=3; void mount({ contentType: 'application/pdf' });"
+    );
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    expect(
+      await page.getByRole("button", { name: "Edit", exact: true }).count()
+    ).toBe(0);
+    expect(
+      await page.getByRole("button", { name: "View", exact: true }).count()
+    ).toBe(0);
+    const previous = page.getByRole("button", {
+      name: "Previous page",
+      exact: true,
+    });
+    const next = page.getByRole("button", { name: /Next page/ });
+    expect(await previous.isDisabled()).toBe(true);
+    await next.click();
+    await page.waitForFunction("window.state.renderedPages.at(-1) === 2");
+    expect(await previous.isEnabled()).toBe(true);
+    await next.click();
+    await page.waitForFunction("window.state.renderedPages.at(-1) === 3");
+    expect(await next.isDisabled()).toBe(true);
+    await previous.click();
+    await page.waitForFunction("window.state.renderedPages.at(-1) === 2");
+    await page.getByRole("button", { name: /Reset zoom/ }).click();
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 200"
+    );
+    await page.getByRole("button", { name: "Refresh", exact: true }).click();
+    await page.waitForFunction(
+      "window.state.metadata === 2 && window.state.pdfLoads.length === 2 && window.state.renderedPages.at(-1) === 2 && document.querySelector('canvas')?.width === 200"
+    );
+  });
+
+  const dispatchKey = (
+    options: Pick<
+      KeyboardEventInit,
+      "key" | "code" | "metaKey" | "altKey" | "ctrlKey" | "isComposing"
+    >
+  ) =>
+    page.evaluate(async init => {
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        ...init,
+      });
+      (document.activeElement ?? document.body).dispatchEvent(event);
+      await new Promise(requestAnimationFrame);
+      return event.defaultPrevented;
+    }, options);
+
+  it.each([
+    "cmd",
+    "alt",
+  ])("zooms only the hovered PDF with %s and leaves bare keys alone", async modifier => {
+    await page.evaluate("void mount({ contentType: 'application/pdf' });");
+    const canvas = page.locator("canvas");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    await canvas.hover();
+    for (const key of ["+", "=", "-", "0"]) {
+      expect(await dispatchKey({ key })).toBe(false);
+      expect(await canvas.getAttribute("width")).toBe("300");
+    }
+
+    const modifiers = modifier === "cmd" ? { metaKey: true } : { altKey: true };
+    expect(await dispatchKey({ key: "+", code: "Equal", ...modifiers })).toBe(
+      true
+    );
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 350"
+    );
+    expect(await dispatchKey({ key: "-", code: "Minus", ...modifiers })).toBe(
+      true
+    );
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    expect(await dispatchKey({ key: "0", ...modifiers })).toBe(true);
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 200"
+    );
+    await canvas.hover();
+    await page.keyboard.press(modifier === "cmd" ? "Meta+Equal" : "Alt+Equal");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 250"
+    );
+    await canvas.hover();
+    await page.keyboard.press(modifier === "cmd" ? "Meta+Minus" : "Alt+Minus");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 200"
+    );
+  });
+
+  it("recognizes Option-transformed keys and keeps zoom within its existing limits", async () => {
+    await page.evaluate("void mount({ contentType: 'application/pdf' });");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    await page.locator("canvas").hover();
+    for (let index = 0; index < 10; index++) {
+      await page.locator("canvas").hover();
+      expect(await dispatchKey({ key: "≠", code: "Equal", altKey: true })).toBe(
+        true
+      );
+    }
+    expect(await page.locator("canvas").getAttribute("width")).toBe("600");
+    for (let index = 0; index < 12; index++) {
+      await page.locator("canvas").hover();
+      expect(await dispatchKey({ key: "–", code: "Minus", altKey: true })).toBe(
+        true
+      );
+    }
+    expect(await page.locator("canvas").getAttribute("width")).toBe("100");
+  });
+
+  it("does not intercept browser zoom over the sidebar, toolbar or editable fields", async () => {
+    await page.evaluate("void mount({ contentType: 'application/pdf' });");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    await page.evaluate(() => {
+      const sidebar = document.createElement("aside");
+      sidebar.id = "sidebar";
+      sidebar.style.cssText =
+        "position:fixed;right:0;top:0;width:120px;height:120px";
+      sidebar.textContent = "Sidebar";
+      document.body.append(sidebar);
+    });
+    for (const target of [
+      page.locator("#sidebar"),
+      page.getByRole("button", { name: "Zoom in", exact: true }),
+    ]) {
+      await page.locator("canvas").hover();
+      await target.hover();
+      for (const modifiers of [
+        { metaKey: true },
+        { altKey: true },
+        { ctrlKey: true },
+      ]) {
+        for (const key of ["+", "-", "0"]) {
+          expect(await dispatchKey({ key, ...modifiers })).toBe(false);
+        }
+      }
+      expect(await page.locator("canvas").getAttribute("width")).toBe("300");
+    }
+
+    await page.locator("canvas").hover();
+    expect(await dispatchKey({ key: "+", ctrlKey: true })).toBe(false);
+    expect(
+      await dispatchKey({ key: "+", metaKey: true, isComposing: true })
+    ).toBe(false);
+    expect(await page.locator("canvas").getAttribute("width")).toBe("300");
+
+    await page.evaluate(() => {
+      const input = document.createElement("input");
+      input.id = "draft";
+      input.value = "Unsaved annotation";
+      document.querySelector("canvas")!.parentElement!.append(input);
+    });
+    await page.locator("#draft").focus();
+    await page.locator("#draft").hover();
+    expect(await dispatchKey({ key: "+", metaKey: true })).toBe(false);
+    expect(await page.locator("#draft").inputValue()).toBe(
+      "Unsaved annotation"
+    );
+    expect(await page.locator("canvas").getAttribute("width")).toBe("300");
   });
 
   it("uses renewed CSRF headers to open a material without expiring the session", async () => {

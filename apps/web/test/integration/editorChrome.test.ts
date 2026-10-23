@@ -18,14 +18,15 @@ import { AppSidebar } from '@/components/sidebar/AppSidebar/AppSidebar';
 import AppSidebarInset from '@/components/sidebar/AppSidebar/AppSidebarInset';
 import BlockPackEditorContent from '@/components/core/BlockPackEditor/BlockPackEditorContent';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
-import MaterialPDFViewerContent from '@/components/core/MaterialViewer/MaterialPDFViewerContent';
+import MaterialViewer from '@/components/core/MaterialViewer/MaterialViewer';
 import { getDefaultBlockPackMeta } from '@shared/reducers/blockPackMeta.reducer';
 import { getDefaultMaterialMeta } from '@shared/reducers/materialMeta.reducer';
 import '@/i18n';
 const block = {...getDefaultBlockPackMeta('item','parent','root'), name:'Notes',
   pathItems:[{id:'root',name:'Workspace'},{id:'parent',name:'Folder'}]};
 const material = {...getDefaultMaterialMeta('item','parent','root'), name:'Reference', downloadURL:'https://example.invalid/file.txt'};
-const file = { isLoading: false, isError: false, onRefresh: () => {} };
+window.refreshCount = 0;
+const file = { isLoading: false, isError: false, onRefresh: () => window.refreshCount++ };
 function Fixture() {
   const [mode, setMode] = useState('material');
   window.showEditor = setMode;
@@ -33,7 +34,7 @@ function Fixture() {
     <AppSidebar />
     <AppSidebarInset>
       {mode === 'block' ? <BlockPackEditorContent blockPackMeta={block} dispatchMeta={()=>{}} /> :
-        mode === 'pdf' ? <MaterialPDFViewerContent meta={material} file={file} /> :
+        mode === 'pdf' ? <MaterialViewer materialMeta={{...material,contentType:'application/pdf'}} file={file} /> :
         <MaterialViewerFrame meta={material} file={file} materialContentType="text/plain"><p>Preview</p></MaterialViewerFrame>}
     </AppSidebarInset>
   </SidebarProvider>;
@@ -45,7 +46,7 @@ const mocks: Record<string, string> = {
   "@/hooks": `
     const summary = {root:{id:'root',name:'Workspace',children:{parent:{id:'parent',name:'Folder',children:{},
       blockPackNodes:{item:{name:'Notes'}},materialNodes:{item:{name:'Reference'}}}}}};
-    export const useShelfItem = () => ({expandedShelves:new Map([['root',summary]])});
+    export const useShelfItem = () => ({expandedShelves:new Map([['root',summary]]),isItemNodeEditing:()=>false});
     export const useResizeSidebar = () => ({width:256,sidebarStyle:{'--sidebar-width':'256px'},insetStyle:{paddingLeft:256}});
     export const useSettingsDisplay = () => ({});
     export const useStationRoutine = () => ({});
@@ -64,7 +65,7 @@ const mocks: Record<string, string> = {
     export const GlobalWorkerOptions = {};
     export const getDocument = () => ({
       promise: Promise.resolve({ numPages: 1, getData: async () => new Uint8Array(),
-        getPage: async () => ({ getViewport: () => ({ width: 200, height: 200 }),
+        getPage: async () => ({ getViewport: () => ({ width: 1400, height: 1800 }),
           render: () => ({ promise: Promise.resolve(), cancel() {} }), cleanup() {} }),
       }),
       destroy: async () => {},
@@ -232,10 +233,53 @@ describe("editor chrome in Chromium", () => {
             height: element.getBoundingClientRect().height,
           }))
         );
-      expect(controls).toHaveLength(mode === "pdf" ? 10 : 2);
+      expect(controls).toHaveLength(mode === "pdf" ? 12 : 2);
       for (const control of controls)
         expect(control).toEqual({ width: 28, height: 28 });
     }
+  });
+
+  test.each([
+    "dark",
+    "light",
+  ])("material and block navigation use the same %s surfaces", async theme => {
+    await page.evaluate(value => {
+      document.documentElement.className = value;
+    }, theme);
+    const surfaces = [];
+    for (const mode of ["block", "material", "pdf"]) {
+      await page.evaluate(value => {
+        (
+          window as unknown as { showEditor: (mode: string) => void }
+        ).showEditor(value);
+      }, mode);
+      await page
+        .getByRole("button", {
+          name: mode === "block" ? "Notes" : "Reference",
+          exact: true,
+        })
+        .waitFor();
+      surfaces.push(
+        await page.locator("header").evaluate(header => {
+          const path = header.parentElement!.querySelector(
+            'nav[aria-label="Breadcrumb"]'
+          )!;
+          const barStyle = getComputedStyle(header);
+          const pathStyle = getComputedStyle(path);
+          return {
+            base: getComputedStyle(header.parentElement!).backgroundColor,
+            bar: barStyle.backgroundColor,
+            barBorder: barStyle.borderBottomColor,
+            path: pathStyle.backgroundColor,
+            pathBorder: pathStyle.borderBottomColor,
+            text: getComputedStyle(path.querySelector("ol")!).color,
+          };
+        })
+      );
+    }
+    expect(surfaces[1]).toEqual(surfaces[0]);
+    expect(surfaces[2]).toEqual(surfaces[0]);
+    expect(surfaces[0].base).not.toBe("rgba(0, 0, 0, 0)");
   });
 
   test("PDF tool groups and menus remain reachable on narrow screens", async () => {
@@ -276,15 +320,99 @@ describe("editor chrome in Chromium", () => {
         .evaluate(node => node === document.activeElement)
     ).toBe(true);
     await page.keyboard.press("Tab");
-    await page.keyboard.press("Enter");
-    await page
-      .getByRole("menuitem", { name: "Refresh", exact: true })
-      .waitFor();
-    await page.keyboard.press("Escape");
     expect(
       await page
-        .getByRole("button", { name: "View", exact: true })
+        .getByRole("button", { name: "Refresh", exact: true })
         .evaluate(node => node === document.activeElement)
     ).toBe(true);
+    await page.keyboard.press("Enter");
+    await page.waitForFunction("window.refreshCount === 1");
+    expect(
+      await page.getByRole("button", { name: "View", exact: true }).count()
+    ).toBe(0);
+  });
+
+  test.each([
+    "compact",
+    "standard",
+    "comfortable",
+  ])("PDF scrolling stays inside the viewer at %s density", async density => {
+    await page.evaluate(value => {
+      document.documentElement.dataset.density = value;
+      (window as unknown as { showEditor: (mode: string) => void }).showEditor(
+        "pdf"
+      );
+    }, density);
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 1400"
+    );
+    for (const width of [1600, 1024, 800, 390, 320]) {
+      await page.setViewportSize({ width, height: 640 });
+      await browserExpect
+        .poll(() =>
+          page.evaluate(() => {
+            const root = document.scrollingElement!;
+            const canvas = document.querySelector("canvas")!;
+            const scroll = canvas.parentElement!.parentElement!.parentElement!;
+            const toolbar = document.querySelector("header > div:last-child")!;
+            return {
+              rootX: root.scrollWidth - root.clientWidth,
+              rootY: root.scrollHeight - root.clientHeight,
+              toolbarY: toolbar.scrollHeight - toolbar.clientHeight,
+              toolbarOverflowY: getComputedStyle(toolbar).overflowY,
+              pdfX: scroll.scrollWidth > scroll.clientWidth,
+              pdfY: scroll.scrollHeight > scroll.clientHeight,
+              pdfOverflow: getComputedStyle(scroll).overflow,
+            };
+          })
+        )
+        .toEqual({
+          rootX: 0,
+          rootY: 0,
+          toolbarY: 0,
+          toolbarOverflowY: "hidden",
+          pdfX: true,
+          pdfY: true,
+          pdfOverflow: "auto",
+        });
+      const refresh = page.getByRole("button", {
+        name: "Refresh",
+        exact: true,
+      });
+      await refresh.scrollIntoViewIfNeeded();
+      await browserExpect(refresh).toBeInViewport();
+      expect(
+        await page.getByRole("button", { name: "Edit", exact: true }).count()
+      ).toBe(0);
+    }
+  }, 15_000);
+
+  test("material viewer fits the available parent height", async () => {
+    await page.evaluate(() => {
+      const inset = document.querySelector<HTMLElement>(
+        '[data-slot="sidebar-inset"]'
+      )!;
+      inset.style.paddingTop = "12px";
+      inset.style.paddingBottom = "12px";
+      (window as unknown as { showEditor: (mode: string) => void }).showEditor(
+        "pdf"
+      );
+    });
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 1400"
+    );
+    const sizes = await page
+      .locator('[data-slot="sidebar-inset"]')
+      .evaluate(element => {
+        const style = getComputedStyle(element);
+        return {
+          available:
+            element.clientHeight -
+            parseFloat(style.paddingTop) -
+            parseFloat(style.paddingBottom),
+          viewer: element.firstElementChild!.getBoundingClientRect().height,
+        };
+      });
+    expect(sizes.viewer).toBe(sizes.available);
   });
 });

@@ -100,8 +100,8 @@ The source column gives a representative existing consumer, not every call site.
 | `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
 | `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field | [Select], [GuideWidget] |
-| `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month | [GuideWidget], [Calendar] |
-| `ChevronRight`, `ChevronRightIcon` | Next / submenu / breadcrumb | [ContextMenu], [ItemPath] |
+| `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month / PDF page | [GuideWidget], [Calendar], [MaterialPDFViewer] |
+| `ChevronRight`, `ChevronRightIcon` | Next / submenu / breadcrumb / PDF page | [ContextMenu], [ItemPath], [MaterialPDFViewer] |
 | `ChevronUpIcon` | Collapse / previous field | [VersionCard], [CreateRoutineTaskDialog] |
 | `ChevronsRightLeftIcon` | Reduce dashboard width | [DashboardPage] |
 | `ChevronsUpDownIcon` | Combobox / timezone selection | [TimezoneSelector] |
@@ -161,17 +161,17 @@ The source column gives a representative existing consumer, not every call site.
 | `Play` | Play video guide | [VideoGuideWidget] |
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
 | `RefreshCw`, `RefreshCwIcon` | Refresh / retry / browser permission check | [MaterialViewerFrame], [GraphToolbar], [BrowserPermissionsTab] |
-| `RotateCcwIcon` | Reset preferences | [AboutTab] |
+| `RotateCcwIcon` | Reset preferences / PDF zoom | [AboutTab], [MaterialPDFViewer] |
 | `SaveIcon` | Save PDF changes | [MaterialPDFViewer] |
 | `SearchIcon` | Search / command / filter | [SupportedIconTable], [Command] |
 | `SettingsIcon` | Settings navigation | [AppSidebar] |
 | `ShieldCheckIcon` | Security / authenticated API context | [UpgradeTab], [APIReference] |
 | `ShieldIcon` | Privacy documentation | [PrivacyPolicy] |
-| `SlidersHorizontalIcon` | Preferences navigation / viewer options | [AppSidebar], [MaterialViewerFrame] |
+| `SlidersHorizontalIcon` | Preferences navigation | [AppSidebar] |
 | `SmilePlusIcon` | Choose a user emoji | [SupportedIconTable] |
 | `SquareDotIcon` | Root shelf has changed indicator | [RootShelfMenu] |
 | `SquareFunction` | Routine task Action kind; consume as `RoutineTaskActionIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
-| `SquarePen` | Edit / open Inspector | [DashboardPage], [RoutineTaskGraphNode], [RoutineTable], [RoutineTaskMenu], [Editable], [TemplatePatternEditor], [MaterialPDFViewer] |
+| `SquarePen` | Edit / open Inspector | [DashboardPage], [RoutineTaskGraphNode], [RoutineTable], [RoutineTaskMenu], [Editable], [TemplatePatternEditor] |
 | `TagIcon` | Routine tag base glyph; consume as `RoutineTagIcon` | [WorkspaceEntityIcons] |
 | `Tags` | Multi-tag Routine filter | [RoutineScopeBar] |
 | `Terminal` | Shell code format | [PrismCode] |

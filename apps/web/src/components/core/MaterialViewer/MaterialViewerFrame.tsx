@@ -10,7 +10,6 @@ import {
   ExternalLink,
   FilePlus,
   RefreshCw,
-  SlidersHorizontalIcon,
 } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -52,9 +51,7 @@ interface MaterialViewerFrameProps {
   materialContentType: MaterialContentType | undefined;
   contentClassName?: string;
   toolbarChildren?: React.ReactNode;
-  menuChildren?: React.ReactNode;
   fileMenuChildren?: React.ReactNode;
-  viewMenuChildren?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -64,9 +61,7 @@ const MaterialViewerFrame = ({
   materialContentType,
   contentClassName,
   toolbarChildren,
-  menuChildren,
   fileMenuChildren,
-  viewMenuChildren,
   children,
 }: MaterialViewerFrameProps) => {
   const { i18n, t } = useTranslation();
@@ -127,7 +122,7 @@ const MaterialViewerFrame = ({
   );
 
   return (
-    <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex flex-col items-stretch bg-cover bg-transparent bg-no-repeat">
+    <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex flex-col items-stretch bg-background">
       <header className="flex h-[var(--app-toolbar-height)] w-full min-w-0 shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex flex-1 min-w-0 justify-start items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
@@ -224,16 +219,12 @@ const MaterialViewerFrame = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="-m-1 flex min-w-0 items-center gap-2 overflow-x-auto p-1">
+        <div className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain p-1">
           {!file.isLoading &&
             !file.isError &&
             isFileAvailable &&
             toolbarChildren}
           <ButtonGroup className="shrink-0">
-            {!file.isLoading &&
-              !file.isError &&
-              isFileAvailable &&
-              menuChildren}
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -336,36 +327,26 @@ const MaterialViewerFrame = ({
                   fileMenuChildren}
               </DropdownMenuContent>
             </DropdownMenu>
-            <DropdownMenu>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7 px-0 [&_svg]:size-3.5"
-                      aria-label={t("workspace.viewer.view")}
-                    >
-                      <SlidersHorizontalIcon />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {t("workspace.viewer.view")}
-                </TooltipContent>
-              </Tooltip>
-              <DropdownMenuContent align="end" side="bottom">
-                <DropdownMenuItem
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
                   disabled={file.isLoading}
                   onClick={file.onRefresh}
+                  aria-label={t("workspace.viewer.refresh")}
                 >
-                  <RefreshCw />
-                  {t("workspace.viewer.refresh")}
-                </DropdownMenuItem>
-                {viewMenuChildren}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <RefreshCw
+                    className={file.isLoading ? "animate-spin" : undefined}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t("workspace.viewer.refresh")}
+              </TooltipContent>
+            </Tooltip>
           </ButtonGroup>
         </div>
       </header>
@@ -393,10 +374,6 @@ const MaterialViewerFrame = ({
             className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center text-sm text-muted-foreground"
           >
             <p>{t("workspace.viewer.failedFilePreview")}</p>
-            <Button variant="outline" onClick={file.onRefresh}>
-              <RefreshCw />
-              {t("workspace.viewer.refresh")}
-            </Button>
           </div>
         )}
         {!file.isLoading && !file.isError && !isFileAvailable && (

@@ -4,6 +4,8 @@ import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   DownloadIcon,
   EraserIcon,
   HighlighterIcon,
@@ -12,7 +14,7 @@ import {
   PencilIcon,
   PlusIcon,
   SaveIcon,
-  SquarePen,
+  RotateCcwIcon,
   TypeIcon,
   XIcon,
 } from "lucide-react";
@@ -31,12 +33,8 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import {
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenu,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Popover,
@@ -86,6 +84,7 @@ const MaterialPDFViewerContent = ({
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const isContentHoveredRef = useRef(false);
   const renderTaskRef = useRef<ReturnType<pdfjs.PDFPageProxy["render"]> | null>(
     null
   );
@@ -489,12 +488,46 @@ const MaterialPDFViewerContent = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing) return;
       const target = event.target as HTMLElement | null;
       if (
         target?.tagName === "INPUT" ||
         target?.tagName === "TEXTAREA" ||
         target?.isContentEditable
       ) {
+        return;
+      }
+
+      // Option can change event.key on macOS; preserve the physical zoom keys.
+      const isZoomIn =
+        event.key === "+" ||
+        event.key === "=" ||
+        event.code === "Equal" ||
+        event.code === "NumpadAdd";
+      const isZoomOut =
+        event.key === "-" ||
+        event.code === "Minus" ||
+        event.code === "NumpadSubtract";
+      if (isZoomIn || isZoomOut || event.key === "0") {
+        if (
+          !(event.metaKey || event.altKey) ||
+          !isContentHoveredRef.current ||
+          !scrollContainerRef.current ||
+          !pdfDocument ||
+          !isAvailable
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        setScale(currentScale =>
+          event.key === "0"
+            ? 1
+            : Math.max(
+                0.5,
+                Math.min(3, currentScale + (isZoomIn ? 0.25 : -0.25))
+              )
+        );
         return;
       }
 
@@ -520,16 +553,6 @@ const MaterialPDFViewerContent = ({
         case "Escape":
           setCurrentTool("cursor");
           break;
-        case "-":
-          setScale(currentScale => Math.max(0.5, currentScale - 0.25));
-          break;
-        case "0":
-          setScale(1);
-          break;
-        case "+":
-        case "=":
-          setScale(currentScale => Math.min(3, currentScale + 0.25));
-          break;
         case "ArrowLeft":
           setCurrentPage(page => Math.max(1, page - 1));
           break;
@@ -541,7 +564,14 @@ const MaterialPDFViewerContent = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentTool, totalPages, annotations.length, pdfBytes]);
+  }, [
+    currentTool,
+    totalPages,
+    annotations.length,
+    pdfBytes,
+    pdfDocument,
+    isAvailable,
+  ]);
 
   useEffect(() => {
     if (!contentURL) return;
@@ -603,6 +633,27 @@ const MaterialPDFViewerContent = ({
             >
               <MinusIcon />
             </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label={t("workspace.viewer.resetZoom", {
+                    percent: Math.round(scale * 100),
+                  })}
+                  disabled={isLoading}
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                  onClick={() => setScale(1)}
+                >
+                  <RotateCcwIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t("workspace.viewer.resetZoom", {
+                  percent: Math.round(scale * 100),
+                })}
+              </TooltipContent>
+            </Tooltip>
             <Button
               aria-label={t("workspace.viewer.zoomIn")}
               disabled={scale >= 3 || isLoading}
@@ -626,6 +677,50 @@ const MaterialPDFViewerContent = ({
             >
               <EraserIcon />
             </Button>
+          </ButtonGroup>
+          <ButtonGroup className="shrink-0">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label={t("workspace.viewer.previousPage")}
+                  disabled={currentPage <= 1 || isLoading}
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                  onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+                >
+                  <ChevronLeftIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t("workspace.viewer.previousPage")}
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label={t("workspace.viewer.nextPage", {
+                    current: currentPage,
+                    total: totalPages || 1,
+                  })}
+                  disabled={currentPage >= totalPages || isLoading}
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
+                  onClick={() =>
+                    setCurrentPage(page => Math.min(totalPages, page + 1))
+                  }
+                >
+                  <ChevronRightIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t("workspace.viewer.nextPage", {
+                  current: currentPage,
+                  total: totalPages || 1,
+                })}
+              </TooltipContent>
+            </Tooltip>
           </ButtonGroup>
           <ToggleGroup
             asChild
@@ -674,76 +769,6 @@ const MaterialPDFViewerContent = ({
           </ToggleGroup>
         </>
       }
-      menuChildren={
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-7 w-7 px-0 [&_svg]:size-3.5"
-                  aria-label={t("workspace.viewer.edit")}
-                >
-                  <SquarePen />
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              {t("workspace.viewer.edit")}
-            </TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent align="end" side="bottom">
-            <DropdownMenuItem
-              disabled={scale <= 0.5 || isLoading}
-              onSelect={() =>
-                setScale(currentScale => Math.max(0.5, currentScale - 0.25))
-              }
-            >
-              <MinusIcon />
-              {t("workspace.viewer.zoomOut")}
-              <DropdownMenuShortcut>-</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem disabled={isLoading} onSelect={() => setScale(1)}>
-              {t("workspace.viewer.resetZoom", {
-                percent: Math.round(scale * 100),
-              })}
-              <DropdownMenuShortcut>0</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={scale >= 3 || isLoading}
-              onSelect={() =>
-                setScale(currentScale => Math.min(3, currentScale + 0.25))
-              }
-            >
-              <PlusIcon />
-              {t("workspace.viewer.zoomIn")}
-              <DropdownMenuShortcut>+</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              disabled={currentPage <= 1 || isLoading}
-              onSelect={() => setCurrentPage(page => Math.max(1, page - 1))}
-            >
-              {t("workspace.viewer.previousPage")}
-              <DropdownMenuShortcut>←</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={currentPage >= totalPages || isLoading}
-              onSelect={() =>
-                setCurrentPage(page => Math.min(totalPages, page + 1))
-              }
-            >
-              {t("workspace.viewer.nextPage", {
-                current: currentPage,
-                total: totalPages || 1,
-              })}
-              <DropdownMenuShortcut>→</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      }
       fileMenuChildren={
         <>
           <DropdownMenuItem disabled={!pdfBytes} onSelect={handleDownloadPdf}>
@@ -771,6 +796,12 @@ const MaterialPDFViewerContent = ({
       <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex flex-col bg-neutral-900">
         <div
           ref={scrollContainerRef}
+          onPointerEnter={() => {
+            isContentHoveredRef.current = true;
+          }}
+          onPointerLeave={() => {
+            isContentHoveredRef.current = false;
+          }}
           className="relative w-full min-w-0 flex-1 min-h-0 overflow-auto overscroll-contain bg-neutral-900 p-4"
           style={{ overscrollBehavior: "contain" }}
           onWheel={event => event.stopPropagation()}

@@ -34,7 +34,7 @@ const MaterialViewer = ({ materialMeta, file }: MaterialViewerProps) => {
 
   return (
     <Suspense fallback={<LoadingCover />}>
-      <div className="w-full h-dvh min-w-0 min-h-0 overflow-hidden">
+      <div className="w-full h-full min-w-0 min-h-0 overflow-hidden">
         {(() => {
           switch (materialContentType) {
             case MaterialContentType.PNG:
