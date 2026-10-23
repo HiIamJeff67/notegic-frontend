@@ -1,46 +1,28 @@
 import type { UUID } from "node:crypto";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type CreateMaterialObjectTicketRequest,
   type CreateMaterialObjectTicketResponse,
-  type ResolveMaterialObjectTicketRequest,
-  type ResolveMaterialObjectTicketResponse,
-  type GetMyMaterialsByRootShelfIdRequest,
-  type GetMyMaterialsByRootShelfIdResponse,
   type GetMyMaterialAndItsParentByIdRequest,
   type GetMyMaterialAndItsParentByIdResponse,
   type GetMyMaterialByIdRequest,
   type GetMyMaterialByIdResponse,
   type GetMyMaterialsByParentSubShelfIdRequest,
   type GetMyMaterialsByParentSubShelfIdResponse,
+  type GetMyMaterialsByRootShelfIdRequest,
+  type GetMyMaterialsByRootShelfIdResponse,
+  type ResolveMaterialObjectTicketRequest,
+  type ResolveMaterialObjectTicketResponse,
   type SaveMyMaterialByIdRequest,
   SaveMyMaterialByIdRequestSchema,
   SaveMyMaterialByIdResponseSchema,
 } from "@shared/api/interfaces/material.interface";
-import {
-  mutationFnCreateMyMaterial,
-  mutationFnDeleteMyMaterialById,
-  mutationFnDeleteMyMaterialsByIds,
-  mutationFnMoveMyMaterialById,
-  mutationFnRestoreMyMaterialById,
-  mutationFnRestoreMyMaterialsByIds,
-  mutationFnUpdateMyMaterialById,
-  mutationFnCreateMaterialObjectTicket,
-  queryFnResolveMaterialObjectTicket,
-  queryFnGetMyMaterialsByRootShelfId,
-  queryFnGetMyMaterialAndItsParentById,
-  queryFnGetMyMaterialById,
-  queryFnGetMyMaterialsByParentSubShelfId,
-} from "@/api/invokers/material.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-
 import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
 import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
@@ -49,6 +31,23 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
+import {
+  mutationFnCreateMaterialObjectTicket,
+  mutationFnCreateMyMaterial,
+  mutationFnDeleteMyMaterialById,
+  mutationFnDeleteMyMaterialsByIds,
+  mutationFnMoveMyMaterialById,
+  mutationFnRestoreMyMaterialById,
+  mutationFnRestoreMyMaterialsByIds,
+  mutationFnUpdateMyMaterialById,
+  queryFnGetMyMaterialAndItsParentById,
+  queryFnGetMyMaterialById,
+  queryFnGetMyMaterialsByParentSubShelfId,
+  queryFnGetMyMaterialsByRootShelfId,
+  queryFnResolveMaterialObjectTicket,
+} from "@/api/invokers/material.invoker";
 
 const materialObjectTicketStaleTime = 60 * 1000;
 
@@ -73,12 +72,13 @@ export const useResolveMaterialObjectTicket = (
   options?: Partial<UseQueryOptions<ResolveMaterialObjectTicketResponse, Error>>
 ) => {
   const queryClient = getQueryClient();
-  const request = objectTicket
-    ? ({ body: { objectTicket } } satisfies ResolveMaterialObjectTicketRequest)
-    : undefined;
   const perform = async (): Promise<ResolveMaterialObjectTicketResponse> => {
-    if (!request) throw new Error("Material object ticket is unavailable.");
-    const response = await queryFnResolveMaterialObjectTicket(request);
+    if (!objectTicket)
+      throw new Error("Material object ticket is unavailable.");
+    const response = await queryFnResolveMaterialObjectTicket({
+      header: getClientRequestHeaders(),
+      body: { objectTicket },
+    });
     SessionStorageManipulator.ensureItem(
       SessionStorageKey.csrfToken,
       response.refreshableTokens?.newCSRFToken

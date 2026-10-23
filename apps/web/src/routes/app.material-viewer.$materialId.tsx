@@ -85,6 +85,7 @@ function MaterialViewerRoute() {
         body: { objectKey: material.objectKey },
       });
       const response = await objectURLResolver.fetch({
+        header: getClientRequestHeaders(navigator.userAgent),
         body: { objectTicket: ticketResponse.data.objectTicket },
       });
       return response.data.objectURL;

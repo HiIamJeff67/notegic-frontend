@@ -9,6 +9,10 @@ import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { getQueryClient } from '@shared/api/queryClient';
 import { queryKeys } from '@shared/api/queryKeys';
+import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
+import { SessionStorageManipulator } from '@shared/lib/sessionStorageManipulator';
+import { SessionStorageKey } from '@shared/types/sessionStorage.type';
+import { useResolveMaterialObjectTicket } from '@/api/hooks/material.hook';
 import { PDFDocument } from 'pdf-lib';
 import { Route } from '@/routes/app.material-viewer.$materialId';
 import '@/i18n';
@@ -19,6 +23,11 @@ window.ids = {
   rootShelfId: '33333333-3333-4333-8333-333333333333',
 };
 window.state = { metadata: 0, tickets: [], resolves: [], saves: 0, pdfLoads: [], files: [] };
+window.state.sessionHeaders = [];
+window.state.authRequired = 0;
+window.addEventListener('notegic:auth-required', () => window.state.authRequired++);
+window.expectedCSRFToken = 'initial-csrf';
+SessionStorageManipulator.setItem(SessionStorageKey.csrfToken, window.expectedCSRFToken);
 window.pending = [];
 window.release = () => window.pending.splice(0).forEach(release => release());
 window.failStage = null;
@@ -35,15 +44,28 @@ window.api = {
     return { data: { ...window.material } };
   },
   ticket: async request => {
+    window.state.sessionHeaders.push({ stage: 'ticket', ...request.header });
+    if (request.header?.csrfToken !== window.expectedCSRFToken || request.header?.userAgent !== navigator.userAgent)
+      throw new Error('Ticket request omitted current session headers');
     const ticket = request.body.objectKey + '-' + (window.state.tickets.length + 1);
     window.state.tickets.push(ticket);
     await pause('ticket');
     if (window.failStage === 'ticket') throw new Error('Ticket denied');
-    return { data: { objectTicket: ticket } };
+    window.expectedCSRFToken = 'renewed-csrf-' + ticket;
+    return { data: { objectTicket: ticket }, refreshableTokens: { newCSRFToken: window.expectedCSRFToken } };
   },
   resolve: async request => {
     const ticket = request.body.objectTicket;
     window.state.resolves.push(ticket);
+    window.state.sessionHeaders.push({ stage: 'resolve', ...request.header });
+    if (!request.header?.csrfToken || request.header.csrfToken !== window.expectedCSRFToken) {
+      throw new NotegicAPIError(new NotegicException({
+        reason: 'InvalidCSRFToken', domain: 'Token', operation: 'ValidateCSRFToken',
+        message: 'The CSRF token is missing or invalid', retryable: false,
+      }, 401));
+    }
+    if (request.header.userAgent !== navigator.userAgent)
+      throw new Error('Resolution request omitted the browser User-Agent');
     await pause('resolve');
     if (window.failStage === 'resolve') throw new Error('Resolution denied');
     return { data: { objectURL: 'https://material.test/file/' + (window.sameURL ? 'stable-url' : ticket) } };
@@ -69,6 +91,17 @@ window.api = {
       }),
     };
   },
+};
+window.mountResolver = () => {
+  function Harness() {
+    const query = useResolveMaterialObjectTicket('standalone-ticket');
+    window.refetchResolver = () => query.refetch();
+    if (query.isError) return <p role="alert">Resolution failed</p>;
+    return <p>{query.data?.data.objectURL ?? 'Resolving ticket'}</p>;
+  }
+  createRoot(document.getElementById('root')).render(
+    <QueryClientProvider client={queryClient}><Harness /></QueryClientProvider>
+  );
 };
 window.mount = async overrides => {
   window.material = {
@@ -106,7 +139,6 @@ const mocks: Record<string, string> = {
     export const useShelfItem = () => shelves;`,
   "@/components/covers/LoadingCover/LoadingCover": `export default () => <p>Loading metadata</p>;`,
   "@/pages/app/material-viewer/MaterialViewerNotFoundPage": `export default () => <p>Material not found</p>;`,
-  "@/api/clientHeaders": `export const getClientRequestHeaders = () => ({});`,
   "@/api/functions/material.clientFn": `export const SaveMyMaterialById = request => window.api.save(request);`,
   "@/api/invokers/material.invoker": `
     export const queryFnGetMyMaterialAndItsParentById = request => window.api.metadata(request);
@@ -216,6 +248,59 @@ describe("material file lifecycle in Chromium", () => {
   });
   afterAll(async () => {
     await browser?.close();
+  });
+
+  it("uses renewed CSRF headers to open a material without expiring the session", async () => {
+    await page.evaluate("void mount({});");
+    await page.getByText("Preview original-1", { exact: true }).waitFor();
+    const userAgent = await page.evaluate(() => navigator.userAgent);
+    expect(await page.evaluate("state.sessionHeaders")).toEqual([
+      { stage: "ticket", userAgent, csrfToken: "initial-csrf" },
+      {
+        stage: "resolve",
+        userAgent,
+        csrfToken: "renewed-csrf-original-1",
+      },
+    ]);
+    expect(await page.evaluate("state.authRequired")).toBe(0);
+    expect(
+      await page.evaluate('sessionStorage.getItem("notegic_CSRFToken")')
+    ).toBe(JSON.stringify("renewed-csrf-original-1"));
+  });
+
+  it("reads current CSRF headers on automatic ticket resolution and refetch", async () => {
+    await page.evaluate("mountResolver();");
+    await page
+      .getByText("https://material.test/file/standalone-ticket", {
+        exact: true,
+      })
+      .waitFor();
+    await page.evaluate(`
+      expectedCSRFToken = 'rotated-csrf';
+      sessionStorage.setItem('notegic_CSRFToken', JSON.stringify(expectedCSRFToken));
+      void refetchResolver();
+    `);
+    await page.waitForFunction(
+      "state.resolves.length === 2 && state.sessionHeaders.length === 2"
+    );
+    expect(
+      await page.evaluate(
+        "state.sessionHeaders.map(header => header.csrfToken)"
+      )
+    ).toEqual(["initial-csrf", "rotated-csrf"]);
+    expect(await page.evaluate("state.authRequired")).toBe(0);
+    expect(await page.getByRole("alert").count()).toBe(0);
+  });
+
+  it("still reports authentication failure when CSRF is absent without retrying", async () => {
+    await page.evaluate(`
+      sessionStorage.removeItem('notegic_CSRFToken');
+      mountResolver();
+    `);
+    await page.getByRole("alert").waitFor();
+    expect(await page.evaluate("state.resolves.length")).toBe(1);
+    expect(await page.evaluate("state.authRequired")).toBe(1);
+    expect(await page.evaluate("state.files.length")).toBe(0);
   });
 
   it.each([
