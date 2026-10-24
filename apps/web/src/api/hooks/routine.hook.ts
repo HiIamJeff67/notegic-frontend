@@ -1880,6 +1880,7 @@ export const useRestoreMyRoutineById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyRoutineByIdRequest) => {
       if (response.success === false) return;
@@ -2120,6 +2121,7 @@ export const useHardDeleteMyRoutineById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutineByIdRequest) => {
       if (response.success === false) return;
@@ -2130,6 +2132,9 @@ export const useHardDeleteMyRoutineById = () => {
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
+        queryKeys.routineTask.all(),
+        queryKeys.routineTaskDependency.all(),
+        queryKeys.routineTaskRecord.all(),
         queryKeys.routine.oneById(request.body.routineId as UUID),
       ];
       await Promise.all(
@@ -2162,15 +2167,6 @@ export const useHardDeleteMyRoutineById = () => {
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateHardDeleteMyRoutineById(request);
-      }
     },
   });
 

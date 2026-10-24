@@ -481,8 +481,10 @@ export const useRestoreMyMaterialById = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: mutationFnRestoreMyMaterialById,
     onSuccess: (response, request) => {
+      if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken

@@ -838,6 +838,7 @@ export const useRestoreMySubShelfById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;

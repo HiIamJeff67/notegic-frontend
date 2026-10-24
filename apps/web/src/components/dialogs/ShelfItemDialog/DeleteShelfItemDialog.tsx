@@ -1,10 +1,13 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import React, { useState } from "react";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -17,7 +20,8 @@ interface DeleteShelfItemDialogProps extends ModalProps {
   dialogDescription: React.ReactNode;
   confirmKeyword?: string;
   inputPlaceholder?: string;
-  onDelete: () => void | Promise<void>;
+  confirmLabel?: string;
+  onDelete: () => void | boolean | Promise<void | boolean>;
   onCancel: () => void;
 }
 
@@ -28,29 +32,44 @@ const DeleteShelfItemDialog = ({
   dialogDescription,
   confirmKeyword,
   inputPlaceholder,
+  confirmLabel,
   onDelete,
   onCancel,
 }: DeleteShelfItemDialogProps) => {
   const { t } = useTranslation();
   const [value, setValue] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const deleting = useRef(false);
 
   const deleteShelfItem = async () => {
-    if (confirmKeyword !== undefined && value !== confirmKeyword) return;
+    if (
+      deleting.current ||
+      (confirmKeyword !== undefined && value !== confirmKeyword)
+    )
+      return;
 
     try {
+      deleting.current = true;
       setIsDeleting(true);
-      await onDelete();
+      if ((await onDelete()) === false) return;
       setValue("");
       onClose();
+    } catch (error) {
+      toast.error(tError(error, t));
     } finally {
+      deleting.current = false;
       setIsDeleting(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+    <Dialog
+      open={isOpen}
+      onOpenChange={open => {
+        if (!open && !deleting.current) onClose();
+      }}
+    >
+      <DialogContent showCloseButton={!isDeleting}>
         <DialogHeader>
           <DialogTitle>{dialogHeader}</DialogTitle>
         </DialogHeader>
@@ -60,24 +79,18 @@ const DeleteShelfItemDialog = ({
             placeholder={inputPlaceholder}
             value={value}
             autoComplete="off"
+            aria-label={inputPlaceholder ?? confirmKeyword}
+            disabled={isDeleting}
             onChange={e => setValue(e.target.value)}
             className={`w-full ${value === confirmKeyword ? "" : "border-2 border-destructive/50"}`}
           />
         )}
 
-        <div className="w-full flex flex-row justify-center gap-4">
+        <DialogFooter>
           <Button
             type="button"
+            variant="outline"
             disabled={isDeleting}
-            onClick={deleteShelfItem}
-            className="w-3/10"
-          >
-            {isDeleting && <Spinner />}
-            {t("common.delete")}
-          </Button>
-          <Button
-            disabled={isDeleting}
-            className="w-3/10 bg-destructive hover:bg-destructive/90"
             onClick={() => {
               onCancel();
               onClose();
@@ -85,7 +98,19 @@ const DeleteShelfItemDialog = ({
           >
             {t("common.cancel")}
           </Button>
-        </div>
+          <Button
+            type="button"
+            variant="destructive"
+            disabled={
+              isDeleting ||
+              (confirmKeyword !== undefined && value !== confirmKeyword)
+            }
+            onClick={deleteShelfItem}
+          >
+            {isDeleting && <Spinner />}
+            {confirmLabel ?? t("common.delete")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

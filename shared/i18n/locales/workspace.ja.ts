@@ -976,7 +976,19 @@ export const JapaneseWorkspaceTranslation = {
     eyebrow: "ワークスペース",
     title: "ごみ箱",
     description:
-      "論理削除されたデータを確認します。復元と完全削除の操作は、バックエンドの動作確認後に追加されます。",
+      "削除したデータを復元するか、対応する項目を確認後に完全削除できます。",
+    restore: "復元",
+    restored: "項目を復元しました。",
+    hardDelete: "完全削除",
+    hardDeleted: "項目を完全削除しました。",
+    hardDeleteTitle: "この項目を完全削除しますか？",
+    hardDeleteDescription:
+      "「{{name}}」とその関連データを完全削除します。この操作は取り消せません。確認のため DELETE と入力してください。",
+    hardDeleteUnavailable: "この種類の完全削除にはまだ対応していません。",
+    actionFailed:
+      "操作を完了できませんでした。再試行する前に、再読み込みして項目の現在の状態を確認してください。",
+    refreshFailed:
+      "操作は成功しましたが、一覧を更新できませんでした。再読み込みして最新のデータを確認してください。",
     searchPlaceholder: "ごみ箱を検索",
     all: "すべて",
     rootShelf: "ルートシェルフ",

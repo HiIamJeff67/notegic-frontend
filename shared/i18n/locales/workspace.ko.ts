@@ -968,7 +968,19 @@ export const KoreanWorkspaceTranslation = {
     eyebrow: "작업 공간",
     title: "휴지통",
     description:
-      "소프트 삭제된 데이터를 검토합니다. 복원 및 영구 삭제 작업은 백엔드 동작이 확인된 후 추가됩니다.",
+      "삭제된 데이터를 복원하거나 확인 후 지원되는 항목을 영구 삭제할 수 있습니다.",
+    restore: "복원",
+    restored: "항목을 복원했습니다.",
+    hardDelete: "영구 삭제",
+    hardDeleted: "항목을 영구 삭제했습니다.",
+    hardDeleteTitle: "이 항목을 영구 삭제할까요?",
+    hardDeleteDescription:
+      "‘{{name}}’ 및 관련 데이터를 영구 삭제합니다. 이 작업은 되돌릴 수 없습니다. 확인하려면 DELETE를 입력하세요.",
+    hardDeleteUnavailable: "이 유형은 아직 영구 삭제를 지원하지 않습니다.",
+    actionFailed:
+      "작업을 완료하지 못했습니다. 다시 시도하기 전에 새로고침하여 항목의 현재 상태를 확인하세요.",
+    refreshFailed:
+      "작업은 성공했지만 목록을 새로고침하지 못했습니다. 최신 데이터를 보려면 새로고침하세요.",
     searchPlaceholder: "휴지통 검색",
     all: "전체",
     rootShelf: "루트 선반",

@@ -935,8 +935,17 @@ export const SimpleChineseWorkspaceTranslation = {
   trash: {
     eyebrow: "工作区",
     title: "回收站",
-    description:
-      "查看已软删除的数据。还原与永久删除操作会在后端行为确认后加入。",
+    description: "还原已删除的数据，或在确认后彻底删除支持的项目。",
+    restore: "还原",
+    restored: "已还原项目。",
+    hardDelete: "彻底删除",
+    hardDeleted: "已彻底删除项目。",
+    hardDeleteTitle: "确定要彻底删除这个项目？",
+    hardDeleteDescription:
+      "将永久删除“{{name}}”及其依赖数据，且无法恢复。请输入 DELETE 确认。",
+    hardDeleteUnavailable: "此类型目前尚不支持彻底删除。",
+    actionFailed: "无法完成操作。请先刷新确认项目当前状态，再尝试操作。",
+    refreshFailed: "操作已成功，但无法更新列表。请刷新以查看最新数据。",
     searchPlaceholder: "搜索回收站",
     all: "全部",
     rootShelf: "根层架",

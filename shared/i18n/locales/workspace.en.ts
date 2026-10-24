@@ -978,7 +978,20 @@ export const EnglishWorkspaceTranslation = {
     eyebrow: "Workspace",
     title: "Trash",
     description:
-      "Review soft-deleted data. Restore and permanent-delete actions will be added after their backend behavior is confirmed.",
+      "Restore deleted data, or permanently delete supported items after confirmation.",
+    restore: "Restore",
+    restored: "Item restored.",
+    hardDelete: "Delete permanently",
+    hardDeleted: "Item permanently deleted.",
+    hardDeleteTitle: "Permanently delete this item?",
+    hardDeleteDescription:
+      "Permanently delete “{{name}}” and its dependent data. This cannot be undone. Type DELETE to confirm.",
+    hardDeleteUnavailable:
+      "Permanent deletion is not yet supported for this type.",
+    actionFailed:
+      "The action could not be completed. Refresh to check the item's current state before trying again.",
+    refreshFailed:
+      "The action succeeded, but the list could not refresh. Reload to see the latest data.",
     searchPlaceholder: "Search trash",
     all: "All",
     rootShelf: "Root shelf",

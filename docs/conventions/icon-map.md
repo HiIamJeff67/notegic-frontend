@@ -75,8 +75,8 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 
 ## Lucide inventory
 
-Audit: 2026-10-21, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **125 referenced export names / 100 distinct
+Audit: 2026-10-24, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
+imports and re-exports (excluding tests). There are **126 referenced export names / 101 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -88,6 +88,7 @@ The source column gives a representative existing consumer, not every call site.
 | `AlertCircleIcon`, `CircleAlertIcon` | Important notification / alert | [NotificationPopover], [NotificationDialog] |
 | `AlertTriangleIcon`, `TriangleAlert` | Warning notification / toast | [NotificationPopover], [Toaster] |
 | `ArrowDownUp` | Routine and record sorting field / direction | [RoutineSearchOrder] |
+| `ArchiveRestoreIcon` | Restore deleted workspace data | [TrashPage] |
 | `BellIcon` | Notifications | [NotificationPopover] |
 | `BlocksIcon` | Block content-unit identity in API reference | [APIReference]; not a Block pack identity substitute |
 | `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
@@ -185,10 +186,7 @@ The source column gives a representative existing consumer, not every call site.
 | `WrenchIcon` | Dashboard configuration | [DashboardPage] |
 | `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog] |
 
-`ArchiveRestoreIcon` is the documented restore-action choice in
-[Icons and Images](03-icons-and-images.md), but has no current source import.
-It is not counted as an active glyph above. Inventory is not automatic approval
-to repurpose an icon or add a control.
+Inventory is not automatic approval to repurpose an icon or add a control.
 
 ## Custom components and wrappers
 

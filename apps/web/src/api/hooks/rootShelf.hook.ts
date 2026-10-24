@@ -520,6 +520,7 @@ export const useRestoreMyRootShelfById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
@@ -539,44 +540,7 @@ export const useRestoreMyRootShelfById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
-      apolloClient.cache.modify({
-        fields: {
-          searchRootShelves(existingSearchRootShelves, { readField }) {
-            if (!existingSearchRootShelves) return existingSearchRootShelves;
-
-            const restoredEdge = {
-              __typename: "SearchRootShelfEdge",
-              node: {
-                __typename: "PrivateRootShelf",
-                id: response.data.id,
-                name: response.data.name,
-                subShelfCount: response.data.subShelfCount,
-                itemCount: response.data.itemCount,
-                lastAnalyzedAt: response.data.lastAnalyzedAt,
-                updatedAt: response.data.updatedAt,
-                createdAt: response.data.createdAt,
-              },
-            };
-
-            if (
-              existingSearchRootShelves.searchEdges.some(
-                (edge: any) => readField("id", edge.node) === response.data.id
-              )
-            )
-              return existingSearchRootShelves;
-
-            const updatedEdges = [
-              restoredEdge,
-              ...existingSearchRootShelves.searchEdges,
-            ];
-
-            return {
-              ...existingSearchRootShelves,
-              searchEdges: updatedEdges,
-            };
-          },
-        },
-      });
+      apolloClient.cache.evict({ fieldName: "searchRootShelves" });
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelfById(
         request,
         response

@@ -939,8 +939,17 @@ export const TraditionalChineseWorkspaceTranslation = {
   trash: {
     eyebrow: "工作區",
     title: "垃圾桶",
-    description:
-      "查看已軟刪除的資料。還原與永久清除操作會在後端行為確認後加入。",
+    description: "還原已刪除的資料，或在確認後徹底刪除支援的項目。",
+    restore: "還原",
+    restored: "已還原項目。",
+    hardDelete: "徹底刪除",
+    hardDeleted: "已徹底刪除項目。",
+    hardDeleteTitle: "確定要徹底刪除這個項目？",
+    hardDeleteDescription:
+      "將永久刪除「{{name}}」及其相依資料，且無法復原。請輸入 DELETE 確認。",
+    hardDeleteUnavailable: "此類型目前尚不支援徹底刪除。",
+    actionFailed: "無法完成操作。請先重新整理確認項目目前狀態，再嘗試操作。",
+    refreshFailed: "操作已成功，但無法更新清單。請重新整理以查看最新資料。",
     searchPlaceholder: "搜尋垃圾桶中的資料",
     all: "全部",
     rootShelf: "根層架",

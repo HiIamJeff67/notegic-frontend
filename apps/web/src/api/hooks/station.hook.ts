@@ -420,6 +420,7 @@ export const useRestoreMyStationById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyStationByIdRequest) => {
       if (response.success === false) return;
@@ -617,6 +618,7 @@ export const useHardDeleteMyStationById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyStationByIdRequest) => {
       if (response.success === false) return;
@@ -626,6 +628,11 @@ export const useHardDeleteMyStationById = () => {
       );
       const targetKeys = [
         queryKeys.station.all(),
+        queryKeys.routine.all(),
+        queryKeys.routineTask.all(),
+        queryKeys.routineTaskDependency.all(),
+        queryKeys.routineTag.all(),
+        queryKeys.routineTaskRecord.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
       ];
       await Promise.all(
@@ -639,15 +646,6 @@ export const useHardDeleteMyStationById = () => {
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateHardDeleteMyStationById(request);
-      }
     },
   });
 

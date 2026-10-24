@@ -766,8 +766,10 @@ export const useRestoreMyBlockPackById = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, variables) => {
+      if (response.success === false) return;
       SessionStorageManipulator.ensureItem(
         SessionStorageKey.csrfToken,
         response.refreshableTokens?.newCSRFToken

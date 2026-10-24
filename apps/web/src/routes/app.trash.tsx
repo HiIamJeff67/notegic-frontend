@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client/react";
 import {
   SearchBlockPackSortBy,
   SearchBlockPacksDocument,
@@ -7,13 +8,17 @@ import {
   SearchRootShelvesDocument,
   SearchRoutineSortBy,
   SearchRoutinesDocument,
+  SearchRoutineTagsDocument,
+  SearchRoutineTasksDocument,
+  SearchRoutineRecordsDocument,
+  SearchRoutineTaskRecordsDocument,
   SearchSortOrder,
   SearchStationSortBy,
   SearchStationsDocument,
   SearchSubShelfSortBy,
   SearchSubShelvesDocument,
 } from "@shared/api/graphql/generated/graphql";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useCallback } from "react";
 import i18n from "@/i18n";
 import TrashPage from "@/pages/app/trash/TrashPage";
@@ -136,6 +141,46 @@ function TrashRoute() {
   const { query } = Route.useSearch();
   const searchData = Route.useLoaderData();
   const navigate = Route.useNavigate();
+  const router = useRouter();
+  const apolloClient = useApolloClient();
+  const handleChanged = useCallback(async () => {
+    await Promise.all([
+      apolloClient.refetchQueries({
+        include: [
+          SearchRootShelvesDocument,
+          SearchSubShelvesDocument,
+          SearchMaterialsDocument,
+          SearchBlockPacksDocument,
+          SearchStationsDocument,
+          SearchRoutinesDocument,
+          SearchRoutineTagsDocument,
+          SearchRoutineTasksDocument,
+          SearchRoutineRecordsDocument,
+          SearchRoutineTaskRecordsDocument,
+        ],
+        updateCache(cache) {
+          for (const fieldName of [
+            "searchRootShelves",
+            "searchSubShelves",
+            "searchMaterials",
+            "searchBlockPacks",
+            "searchStations",
+            "searchRoutines",
+            "searchRoutineTasks",
+            "searchRoutineTags",
+            "searchRoutineRecords",
+            "searchRoutineTaskRecords",
+          ]) {
+            cache.evict({ fieldName });
+          }
+        },
+      }),
+      router.invalidate({
+        filter: match => match.routeId === Route.id,
+        sync: true,
+      }),
+    ]);
+  }, [apolloClient, router]);
   const handleQueryChange = useCallback(
     (nextQuery: string) => {
       void navigate({
@@ -151,6 +196,7 @@ function TrashRoute() {
       query={query}
       searchData={searchData}
       onQueryChange={handleQueryChange}
+      onChanged={handleChanged}
     />
   );
 }
