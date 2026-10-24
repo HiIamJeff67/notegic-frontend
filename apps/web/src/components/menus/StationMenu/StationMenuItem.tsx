@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   RoutineIcon,
   RoutineTaskIcon,
@@ -38,11 +39,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   SidebarMenuBadge,
   SidebarMenuButton,
@@ -128,11 +125,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard
-              open={isMobile ? false : undefined}
-              openDelay={250}
-              closeDelay={100}
-            >
+            <SidebarHoverCard open={isMobile ? false : undefined}>
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>
@@ -191,7 +184,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                   ]}
                 />
               </HoverCardContent>
-            </HoverCard>
+            </SidebarHoverCard>
           )}
           <ContextMenuContent className="min-w-40">
             <ContextMenuLabel>{t("workspace.menu.view")}</ContextMenuLabel>
@@ -330,11 +323,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
           (station.routineCount > 0 || routineTaskCount > 0) && (
             <SidebarMenuBadge className="gap-0.5">
               {station.routineCount > 0 && (
-                <HoverCard
-                  open={isMobile ? false : undefined}
-                  openDelay={250}
-                  closeDelay={100}
-                >
+                <SidebarHoverCard open={isMobile ? false : undefined}>
                   <HoverCardTrigger asChild>
                     <span className="pointer-events-auto flex min-w-4 items-center justify-center px-0.5">
                       {station.routineCount}
@@ -352,7 +341,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                       })}
                     </span>
                   </HoverCardContent>
-                </HoverCard>
+                </SidebarHoverCard>
               )}
               {station.routineCount > 0 && routineTaskCount > 0 && (
                 <span className="text-current/70" aria-hidden="true">
@@ -360,11 +349,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                 </span>
               )}
               {routineTaskCount > 0 && (
-                <HoverCard
-                  open={isMobile ? false : undefined}
-                  openDelay={250}
-                  closeDelay={100}
-                >
+                <SidebarHoverCard open={isMobile ? false : undefined}>
                   <HoverCardTrigger asChild>
                     <span className="pointer-events-auto flex min-w-4 items-center justify-center px-0.5">
                       {routineTaskCount}
@@ -382,7 +367,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                       })}
                     </span>
                   </HoverCardContent>
-                </HoverCard>
+                </SidebarHoverCard>
               )}
             </SidebarMenuBadge>
           )}

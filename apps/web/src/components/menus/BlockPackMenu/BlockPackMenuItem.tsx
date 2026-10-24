@@ -7,6 +7,7 @@ import { SubShelfNode } from "@shared/types/shelfNodes.type";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -16,11 +17,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useAppRouter, useMobile, useShelfItem } from "@/hooks";
 
@@ -46,11 +43,7 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
 
   return (
     <ContextMenu>
-      <HoverCard
-        open={isMobile ? false : undefined}
-        openDelay={250}
-        closeDelay={100}
-      >
+      <SidebarHoverCard open={isMobile ? false : undefined}>
         <HoverCardTrigger asChild>
           <ContextMenuTrigger asChild>
             <SidebarMenuButton
@@ -86,7 +79,7 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
             ]}
           />
         </HoverCardContent>
-      </HoverCard>
+      </SidebarHoverCard>
       <ContextMenuContent>
         <ContextMenuLabel>{t("workspace.menu.view")}</ContextMenuLabel>
         <ContextMenuGroup>

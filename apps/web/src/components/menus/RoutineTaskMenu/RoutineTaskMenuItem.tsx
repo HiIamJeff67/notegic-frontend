@@ -6,6 +6,7 @@ import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   ContextMenu,
@@ -16,11 +17,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
@@ -44,11 +41,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   return (
     <SidebarMenuSubItem>
       <ContextMenu>
-        <HoverCard
-          open={isMobile ? false : undefined}
-          openDelay={250}
-          closeDelay={100}
-        >
+        <SidebarHoverCard open={isMobile ? false : undefined}>
           <HoverCardTrigger asChild>
             <ContextMenuTrigger asChild>
               <SidebarMenuSubButton
@@ -97,7 +90,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
               ]}
             />
           </HoverCardContent>
-        </HoverCard>
+        </SidebarHoverCard>
         <ContextMenuContent className="min-w-36">
           <ContextMenuLabel>{t("workspace.menu.view")}</ContextMenuLabel>
           <ContextMenuGroup>

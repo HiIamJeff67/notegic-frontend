@@ -270,6 +270,11 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         reduceMotionDescription:
           "長時間の作業時や動きに敏感な場合に、遷移やアニメーションを減らします。",
         tactileFeedback: "操作フィードバック",
+        sidebarHoverDelay: "サイドバープレビューの待ち時間",
+        sidebarHoverDelayDescription:
+          "サイドバーの詳細カードを表示するまでの待ち時間を設定します。右端の3秒にすると、この端末では表示しません。",
+        sidebarHoverDisabled: "無効",
+        sidebarHoverSeconds: "{{seconds}} 秒",
         tactileFeedbackDescription:
           "コントロールの選択・切替時に、控えめな視覚・触覚フィードバックを維持します。",
         unsupported: "未対応",

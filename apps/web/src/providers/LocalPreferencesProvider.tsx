@@ -22,6 +22,8 @@ export type PreferencePage =
 export type Density = "comfortable" | "balanced" | "compact";
 export type StartSurface = "dashboard" | "routines";
 export type EditorWidth = "narrow" | "standard" | "wide";
+export const MaxSidebarHoverDelay = 3000;
+export const SidebarHoverDelayStep = 250;
 export type NotificationPermissionState =
   | "default"
   | "granted"
@@ -37,6 +39,7 @@ export type LocalPreferences = {
   density: Density;
   reduceMotion: boolean;
   tactileFeedback: boolean;
+  sidebarHoverDelay: number;
   startSurface: StartSurface;
   editorWidth: EditorWidth;
   manualDashboardWidth: boolean;
@@ -122,6 +125,7 @@ export const defaultLocalPreferences: LocalPreferences = {
   density: "balanced",
   reduceMotion: false,
   tactileFeedback: true,
+  sidebarHoverDelay: 250,
   startSurface: "dashboard",
   editorWidth: "standard",
   manualDashboardWidth: false,
@@ -155,6 +159,7 @@ export const getPreferredStartPath = (preferences: LocalPreferences) => {
 
 const localPreferenceStorageKeys = [
   "tactileFeedback",
+  "sidebarHoverDelay",
   "editorWidth",
   "manualDashboardWidth",
   "dashboardWidthFrameCount",
@@ -234,6 +239,14 @@ export const LocalPreferencesProvider = ({
       setPreferences({
         ...defaultLocalPreferences,
         ...storedLocalPreferences,
+        sidebarHoverDelay:
+          typeof storedLocalPreferences.sidebarHoverDelay === "number" &&
+          Number.isInteger(storedLocalPreferences.sidebarHoverDelay) &&
+          storedLocalPreferences.sidebarHoverDelay >= 0 &&
+          storedLocalPreferences.sidebarHoverDelay <= MaxSidebarHoverDelay &&
+          storedLocalPreferences.sidebarHoverDelay % SidebarHoverDelayStep === 0
+            ? storedLocalPreferences.sidebarHoverDelay
+            : defaultLocalPreferences.sidebarHoverDelay,
         manualDashboardWidth:
           storedLocalPreferences.manualDashboardWidth === true,
         dashboardWidthFrameCount:

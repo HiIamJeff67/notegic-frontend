@@ -19,6 +19,7 @@ import {
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -45,11 +46,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
@@ -204,11 +201,7 @@ const SubShelfMenuItem = ({
             }
           }}
         >
-          <HoverCard
-            open={isMobile ? false : undefined}
-            openDelay={250}
-            closeDelay={100}
-          >
+          <SidebarHoverCard open={isMobile ? false : undefined}>
             <HoverCardTrigger asChild>
               <ContextMenuTrigger asChild>
                 <CollapsibleTrigger asChild>
@@ -266,7 +259,7 @@ const SubShelfMenuItem = ({
                 ]}
               />
             </HoverCardContent>
-          </HoverCard>
+          </SidebarHoverCard>
           <ContextMenuContent>
             <ContextMenuLabel>{t("workspace.menu.add")}</ContextMenuLabel>
             <ContextMenuGroup>

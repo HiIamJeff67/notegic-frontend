@@ -18,6 +18,7 @@ import {
 import { useCallback } from "react";
 import { useDrop } from "react-dnd";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import EmptyShelfIcon from "@/components/icons/EmptyShelfIcon";
 import { RootShelfIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
@@ -37,11 +38,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   SidebarMenuAction,
   SidebarMenuButton,
@@ -141,11 +138,7 @@ const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard
-              open={isMobile ? false : undefined}
-              openDelay={250}
-              closeDelay={100}
-            >
+            <SidebarHoverCard open={isMobile ? false : undefined}>
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>
@@ -202,7 +195,7 @@ const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
                   ]}
                 />
               </HoverCardContent>
-            </HoverCard>
+            </SidebarHoverCard>
           )}
           {!shelfItemManager.isNewRootShelfName() && summary.hasChanged && (
             <SidebarMenuAction className="bg-transparent hover:bg-transparent p-0.5 flex justify-center items-center">

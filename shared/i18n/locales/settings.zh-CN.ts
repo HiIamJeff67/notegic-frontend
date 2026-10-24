@@ -252,6 +252,11 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         reduceMotionDescription:
           "减少过渡和动画，适合长时间工作或对动态效果敏感时使用。",
         tactileFeedback: "交互反馈",
+        sidebarHoverDelay: "侧边栏预览延迟",
+        sidebarHoverDelayDescription:
+          "设置鼠标停留多久后显示侧边栏详情卡；拖到最右端 3 秒即可在此设备停用。",
+        sidebarHoverDisabled: "已停用",
+        sidebarHoverSeconds: "{{seconds}} 秒",
         tactileFeedbackDescription:
           "在选择或切换控件时保留细微的视觉与触觉反馈。",
         unsupported: "暂不支持",

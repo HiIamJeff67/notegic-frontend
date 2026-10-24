@@ -262,6 +262,11 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         reduceMotionDescription:
           "장시간 작업하거나 동작에 민감할 때 전환 및 애니메이션을 줄입니다.",
         tactileFeedback: "상호작용 피드백",
+        sidebarHoverDelay: "사이드바 미리 보기 지연",
+        sidebarHoverDelayDescription:
+          "사이드바 상세 카드를 표시하기 전 대기 시간을 설정합니다. 오른쪽 끝 3초로 이동하면 이 기기에서 표시하지 않습니다.",
+        sidebarHoverDisabled: "사용 안 함",
+        sidebarHoverSeconds: "{{seconds}}초",
         tactileFeedbackDescription:
           "컨트롤을 선택하거나 전환할 때 미세한 시각 및 촉각 피드백을 유지합니다.",
         unsupported: "아직 지원하지 않음",

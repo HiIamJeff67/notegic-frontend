@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -49,11 +50,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   SidebarMenuSub,
   SidebarMenuSubButton,
@@ -164,11 +161,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
               )}
             </div>
           ) : (
-            <HoverCard
-              open={isMobile ? false : undefined}
-              openDelay={250}
-              closeDelay={100}
-            >
+            <SidebarHoverCard open={isMobile ? false : undefined}>
               <HoverCardTrigger asChild>
                 <ContextMenuTrigger asChild>
                   <CollapsibleTrigger asChild>
@@ -247,7 +240,7 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
                   ]}
                 />
               </HoverCardContent>
-            </HoverCard>
+            </SidebarHoverCard>
           )}
 
           <ContextMenuContent className="min-w-44">

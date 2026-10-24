@@ -250,6 +250,11 @@ export const TraditionalChineseSettingsTranslation = {
         reduceMotionDescription:
           "減少轉場和動態效果，適合長時間工作或對動畫敏感時使用。",
         tactileFeedback: "操作回饋",
+        sidebarHoverDelay: "側邊欄預覽延遲",
+        sidebarHoverDelayDescription:
+          "設定滑鼠停留多久後顯示側邊欄詳細資訊卡；拉到最右端 3 秒即可在此裝置停用。",
+        sidebarHoverDisabled: "已停用",
+        sidebarHoverSeconds: "{{seconds}} 秒",
         tactileFeedbackDescription:
           "保留按鈕、切換和選取時的細微觸覺感與視覺回饋。",
         unsupported: "尚未支援",

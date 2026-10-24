@@ -25,6 +25,10 @@ import type {
   Density,
   EditorWidth,
 } from "@/providers/LocalPreferencesProvider";
+import {
+  MaxSidebarHoverDelay,
+  SidebarHoverDelayStep,
+} from "@/providers/LocalPreferencesProvider";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRealtime } from "@/hooks/useRealtime";
@@ -143,8 +147,43 @@ const AppearanceSettings = ({
         onCheckedChange={checked =>
           updatePreference("tactileFeedback", checked)
         }
-        hideSeparator
       />
+      <SettingRow
+        title={t("settingsPage.preferences.appearance.sidebarHoverDelay")}
+        description={t(
+          "settingsPage.preferences.appearance.sidebarHoverDelayDescription"
+        )}
+        hideSeparator
+      >
+        <div className="flex w-52 shrink-0 items-center gap-3">
+          <Slider
+            aria-label={t(
+              "settingsPage.preferences.appearance.sidebarHoverDelay"
+            )}
+            aria-valuetext={
+              preferences.sidebarHoverDelay === MaxSidebarHoverDelay
+                ? t("settingsPage.preferences.appearance.sidebarHoverDisabled")
+                : t("settingsPage.preferences.appearance.sidebarHoverSeconds", {
+                    seconds: preferences.sidebarHoverDelay / 1000,
+                  })
+            }
+            value={[preferences.sidebarHoverDelay]}
+            min={0}
+            max={MaxSidebarHoverDelay}
+            step={SidebarHoverDelayStep}
+            onValueChange={value =>
+              updatePreference("sidebarHoverDelay", value[0] ?? 250)
+            }
+          />
+          <span className="w-16 shrink-0 text-right text-sm font-semibold tabular-nums">
+            {preferences.sidebarHoverDelay === MaxSidebarHoverDelay
+              ? t("settingsPage.preferences.appearance.sidebarHoverDisabled")
+              : t("settingsPage.preferences.appearance.sidebarHoverSeconds", {
+                  seconds: preferences.sidebarHoverDelay / 1000,
+                })}
+          </span>
+        </div>
+      </SettingRow>
     </Section>
   );
 };

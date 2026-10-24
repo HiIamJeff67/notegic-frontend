@@ -270,6 +270,11 @@ export const EnglishSettingsTranslation = {
         reduceMotionDescription:
           "Reduce transitions and animations for long work sessions or motion sensitivity.",
         tactileFeedback: "Interaction feedback",
+        sidebarHoverDelay: "Sidebar preview delay",
+        sidebarHoverDelayDescription:
+          "Choose how long to hover before showing sidebar detail cards. Move to the 3-second end to disable them on this device.",
+        sidebarHoverDisabled: "Disabled",
+        sidebarHoverSeconds: "{{seconds}} s",
         tactileFeedbackDescription:
           "Keep subtle visual and haptic feedback when you select or switch controls.",
         unsupported: "Not supported yet",
