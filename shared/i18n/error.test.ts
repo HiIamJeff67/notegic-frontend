@@ -3,8 +3,33 @@ import { NotegicError } from "@shared/api/exceptions/errors";
 import { resources } from "@shared/i18n";
 import { createInstance } from "i18next";
 import { tError } from "./error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { z } from "zod";
 
 describe("tError", () => {
+  test.each([
+    "en",
+    "zh-TW",
+    "zh-CN",
+    "ja",
+    "ko",
+  ])("presents validation safely in %s", async language => {
+    const i18n = createInstance();
+    await i18n.init({ resources, lng: language, fallbackLng: false });
+    const parsed = z
+      .object({ privateField: z.string() })
+      .safeParse({ privateField: 123 });
+    if (parsed.success) throw new Error("Expected invalid fixture");
+    const error = new NotegicValidationError(
+      ValidationClientException.ZodParsingFailed(parsed.error)
+    );
+    const message = tError(error, i18n.t);
+    expect(message).toBe(i18n.t("server.error.ZodParsingFailed"));
+    expect(message).not.toBe("server.error.ZodParsingFailed");
+    expect(message).not.toBe(i18n.t("error.encounterUnknownError"));
+    expect(message).not.toContain("privateField");
+  });
   test.each([
     ["en", "Some submitted information is invalid."],
     ["zh-TW", "提交的資料有部分格式不正確。"],
@@ -70,6 +95,68 @@ describe("tError", () => {
       )
     ).toBe(i18n.t("auth.turnstileRequired"));
   });
+});
+
+test.each([
+  ["en", "Your current plan's quota has been reached."],
+  ["zh-TW", "已達到目前方案的使用額度。"],
+  ["zh-CN", "已达到当前方案的使用额度。"],
+  ["ja", "現在のプランの利用上限に達しました。"],
+  ["ko", "현재 요금제의 사용 한도에 도달했습니다."],
+] as const)("translates quota failures in %s", async (language, message) => {
+  const i18n = createInstance();
+  await i18n.init({ resources, lng: language, fallbackLng: false });
+  const error = new NotegicAPIError(
+    new NotegicException({
+      reason: "QuotaExceeded",
+      domain: "UserQuota",
+      operation: "EnforceLimit",
+      message: "Do not display the backend message directly",
+      retryable: false,
+    })
+  );
+
+  expect(tError(error, i18n.t)).toBe(message);
+});
+
+test.each([
+  "en",
+  "zh-TW",
+  "zh-CN",
+  "ja",
+  "ko",
+])("translates quota exceptions thrown directly by providers in %s", async language => {
+  const i18n = createInstance();
+  await i18n.init({ resources, lng: language, fallbackLng: false });
+  const exception = {
+    reason: "QuotaExceeded",
+    domain: "UserQuota",
+    operation: "EnforceLimit",
+    message: "Private database diagnostics must not appear in the UI",
+    retryable: false,
+  };
+  const legacyException = new NotegicException(exception, 403);
+
+  for (const error of [exception, legacyException, legacyException.toJSON()]) {
+    expect(tError(error, i18n.t)).toBe(i18n.t("server.error.QuotaExceeded"));
+  }
+});
+
+test.each([
+  { reason: "QuotaExceeded", message: "Private diagnostics" },
+  {
+    reason: "UnmappedServerReason",
+    domain: "UserQuota",
+    operation: "EnforceLimit",
+    message: "Private diagnostics",
+    retryable: false,
+  },
+  null,
+])("keeps malformed or unmapped exceptions safe: %j", async error => {
+  const i18n = createInstance();
+  await i18n.init({ resources, lng: "en", fallbackLng: false });
+
+  expect(tError(error, i18n.t)).toBe(i18n.t("error.encounterUnknownError"));
 });
 
 test.each([

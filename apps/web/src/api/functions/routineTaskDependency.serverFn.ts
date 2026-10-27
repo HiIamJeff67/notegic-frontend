@@ -7,12 +7,53 @@ import type {
   GetRoutineTaskDependenciesByRoutineIdResponse,
   UpdateRoutineTaskDependencyByRoutineIdRequest,
   UpdateRoutineTaskDependencyByRoutineIdResponse,
+  UpdateRoutineTaskGraphByRoutineIdRequest,
+  UpdateRoutineTaskGraphByRoutineIdResponse,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+
+export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
+  method: "POST",
+})
+  .inputValidator((data: UpdateRoutineTaskGraphByRoutineIdRequest) => data)
+  .handler(
+    async ({
+      data: request,
+    }): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        APIURLPathDictionary.routineTaskDependency.updateGraphByRoutineId(
+          request.param.routineId
+        );
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await readAPIResponse(
+        response
+      )) as UpdateRoutineTaskGraphByRoutineIdResponse;
+    }
+  );
 
 export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
   method: "GET",
@@ -39,9 +80,8 @@ export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
             request.header?.userAgent ??
             getRequestHeader("User-Agent") ??
             "unknown",
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -81,9 +121,8 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
             request.header?.userAgent ??
             getRequestHeader("User-Agent") ??
             "unknown",
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -124,9 +163,8 @@ export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
             request.header?.userAgent ??
             getRequestHeader("User-Agent") ??
             "unknown",
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -167,9 +205,8 @@ export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
             request.header?.userAgent ??
             getRequestHeader("User-Agent") ??
             "unknown",
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),

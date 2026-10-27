@@ -1,6 +1,9 @@
 import {
+  CreateRoutineByStationIdRequestSchema,
   GetMyRoutineByIdResponseSchema,
   RoutineAdmissionStates,
+  UpdateMyRoutineByIdRequestSchema,
+  UpdateMyRoutineByIdResponseSchema,
 } from "./routine.interface";
 
 const routine = {
@@ -42,5 +45,54 @@ describe("Routine response admission reasons", () => {
       schema.parse({ ...routine, admissionState: "FutureReason" })
         .admissionState
     ).toBe("Unknown");
+  });
+});
+
+describe("Routine activation schedule contract", () => {
+  test("retains an explicit default mode and conservatively reads legacy rows", () => {
+    const schema = GetMyRoutineByIdResponseSchema.shape.data;
+    expect(schema.parse(routine).hasCustomSchedule).toBe(true);
+    expect(
+      schema.parse({ ...routine, hasCustomSchedule: false }).hasCustomSchedule
+    ).toBe(false);
+  });
+  test("keeps false in create and partial update requests without fixed dates", () => {
+    expect(
+      CreateRoutineByStationIdRequestSchema.parse({
+        body: {
+          stationId: routine.stationId,
+          title: routine.title,
+          description: "",
+          hasCustomSchedule: false,
+        },
+      }).body.hasCustomSchedule
+    ).toBe(false);
+    const parsed = UpdateMyRoutineByIdRequestSchema.parse({
+      body: {
+        routineId: routine.id,
+        values: { isActive: true, hasCustomSchedule: false },
+      },
+    });
+    expect(parsed.body.values).toEqual({
+      isActive: true,
+      hasCustomSchedule: false,
+    });
+  });
+  test("keeps the server-selected activation window for cache reconciliation", () => {
+    const response = UpdateMyRoutineByIdResponseSchema.parse({
+      success: true,
+      exception: null,
+      embedded: { publicId: "fixture" },
+      data: {
+        updatedAt: routine.updatedAt,
+        hasCustomSchedule: false,
+        scheduledStartAt: routine.scheduledStartAt,
+        scheduledEndAt: routine.scheduledEndAt,
+        definitionVersion: 2,
+      },
+    });
+    expect(response.data.hasCustomSchedule).toBe(false);
+    expect(response.data.scheduledStartAt).toBeInstanceOf(Date);
+    expect(response.data.definitionVersion).toBe(2);
   });
 });

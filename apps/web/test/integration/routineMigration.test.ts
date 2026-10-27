@@ -12,7 +12,7 @@ const { DatabaseSync } = process.getBuiltinModule("node:sqlite") as {
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { splitSqlStatements } from "@/api/local/migrator";
+import { LocalDBMigrator, splitSqlStatements } from "@/api/local/migrator";
 
 const migrationDirectory = resolve(
   process.cwd(),
@@ -195,6 +195,168 @@ describe("Routine graph SQLite transition", () => {
           )
           .get()
       ).toEqual({ purpose: "GetRoutine" });
+    } finally {
+      db.close();
+    }
+  });
+});
+
+describe("Routine activation schedule SQLite transition", () => {
+  it.each([
+    "up",
+    "down",
+  ] as const)("rolls back actual SQLite DDL, data and version after a failed %s", async direction => {
+    const db = openLegacy();
+    try {
+      apply(db, up, 4);
+      const activationUp = readMigration(
+        "0004_routine_activation_schedule.sql"
+      );
+      const activationDown = readMigration(
+        "0004_routine_activation_schedule.down.sql"
+      );
+      if (direction === "down") apply(db, activationUp, 5);
+      const before = {
+        routines: db.prepare("SELECT * FROM RoutineTable ORDER BY id").all(),
+        tasks: db.prepare("SELECT * FROM RoutineTaskTable ORDER BY id").all(),
+        drafts: db
+          .prepare("SELECT * FROM RoutineTaskDependencyGraphDraftTable")
+          .all(),
+        queue: db.prepare("SELECT * FROM TransactionTable").all(),
+        columns: db.prepare("PRAGMA table_info(RoutineTable)").all(),
+        version: db.prepare("PRAGMA user_version").get(),
+      };
+      const mutations = [
+        "UPDATE RoutineTable SET title='must roll back'",
+        "DELETE FROM RoutineTaskDependencyGraphDraftTable",
+        "DELETE FROM TransactionTable",
+      ];
+      let injectFailure = true;
+      const migrations = Array.from({ length: 5 }, (_, idx) => ({
+        idx,
+        tag: idx === 4 ? "0004_routine_activation_schedule" : `fixture-${idx}`,
+        versionNumber: idx,
+        sqlContent: idx === 4 ? activationUp : "",
+        statements:
+          idx === 4 ? [...splitSqlStatements(activationUp), ...mutations] : [],
+        downStatements:
+          idx === 4
+            ? [...splitSqlStatements(activationDown), ...mutations]
+            : [],
+      }));
+      const migrator = new LocalDBMigrator(
+        {
+          transaction: async operation => {
+            db.exec("BEGIN");
+            try {
+              const result = await operation({
+                run: async query => {
+                  const rows = db.prepare(query).all();
+                  if (
+                    injectFailure &&
+                    query ===
+                      `PRAGMA user_version = ${direction === "up" ? 5 : 4}`
+                  ) {
+                    throw new Error(
+                      "controlled failure after DDL, DML and version write"
+                    );
+                  }
+                  return rows;
+                },
+              });
+              db.exec("COMMIT");
+              return result;
+            } catch (error) {
+              db.exec("ROLLBACK");
+              throw error;
+            }
+          },
+        },
+        migrations
+      );
+      await expect(
+        direction === "up"
+          ? migrator.ensureMigrated({ currentVersion: 4, targetVersion: 5 })
+          : migrator.down(5)
+      ).rejects.toThrow("controlled failure");
+      expect({
+        routines: db.prepare("SELECT * FROM RoutineTable ORDER BY id").all(),
+        tasks: db.prepare("SELECT * FROM RoutineTaskTable ORDER BY id").all(),
+        drafts: db
+          .prepare("SELECT * FROM RoutineTaskDependencyGraphDraftTable")
+          .all(),
+        queue: db.prepare("SELECT * FROM TransactionTable").all(),
+        columns: db.prepare("PRAGMA table_info(RoutineTable)").all(),
+        version: db.prepare("PRAGMA user_version").get(),
+      }).toEqual(before);
+      injectFailure = false;
+      await expect(
+        direction === "up"
+          ? migrator.ensureMigrated({ currentVersion: 4, targetVersion: 5 })
+          : migrator.down(5)
+      ).resolves.toMatchObject({ finalVersion: direction === "up" ? 5 : 4 });
+    } finally {
+      db.close();
+    }
+  });
+
+  it("preserves windows, graph drafts and pending writes through up/down/up", () => {
+    const db = openLegacy();
+    try {
+      apply(db, up, 4);
+      const original = db
+        .prepare(
+          "SELECT scheduled_start_at, scheduled_end_at FROM RoutineTable"
+        )
+        .all();
+      const drafts = db
+        .prepare("SELECT * FROM RoutineTaskDependencyGraphDraftTable")
+        .all();
+      const pending = db.prepare("SELECT * FROM TransactionTable").all();
+      const activationUp = readMigration(
+        "0004_routine_activation_schedule.sql"
+      );
+      const activationDown = readMigration(
+        "0004_routine_activation_schedule.down.sql"
+      );
+      apply(db, activationUp, 5);
+      expect(
+        db.prepare("SELECT has_custom_schedule FROM RoutineTable").get()
+      ).toEqual({ has_custom_schedule: 1 });
+      db.exec(
+        "INSERT INTO RoutineTable (id,station_id,title) VALUES ('new-default','station','Default')"
+      );
+      expect(
+        db
+          .prepare(
+            "SELECT has_custom_schedule FROM RoutineTable WHERE id='new-default'"
+          )
+          .get()
+      ).toEqual({ has_custom_schedule: 0 });
+      apply(db, activationDown, 4);
+      expect(
+        db
+          .prepare("PRAGMA table_info(RoutineTable)")
+          .all()
+          .some(column => column.name === "has_custom_schedule")
+      ).toBe(false);
+      apply(db, activationUp, 5);
+      expect(
+        db
+          .prepare(
+            "SELECT scheduled_start_at, scheduled_end_at FROM RoutineTable WHERE id='12345678-1234-4234-8234-123456789abc'"
+          )
+          .all()
+      ).toEqual(original);
+      expect(
+        db.prepare("SELECT * FROM RoutineTaskDependencyGraphDraftTable").all()
+      ).toEqual(drafts);
+      expect(db.prepare("SELECT * FROM TransactionTable").all()).toEqual(
+        pending
+      );
+      expect(db.prepare("PRAGMA user_version").get()).toEqual({
+        user_version: 5,
+      });
     } finally {
       db.close();
     }

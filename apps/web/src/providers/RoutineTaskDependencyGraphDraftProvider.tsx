@@ -1,17 +1,28 @@
-import { NotegicAPIError } from "@shared/api/exceptions";
-import { NotegicError } from "@shared/api/exceptions/errors";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   RoutinePhase,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
-import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
+import {
+  type CreateRoutineTaskByRoutineIdRequest,
+  type GetMyRoutineTaskByIdResponse,
+  parseRoutineTaskDefinition,
+  RoutineTaskDefinitionSchema,
+} from "@shared/api/interfaces/routineTask.interface";
+import type {
+  RoutineTaskDependency,
+  UpdateRoutineTaskGraphByRoutineIdRequest,
+  UpdateRoutineTaskGraphByRoutineIdResponse,
+} from "@shared/api/interfaces/routineTaskDependency.interface";
+import { UpdateRoutineTaskGraphByRoutineIdResponseSchema } from "@shared/api/interfaces/routineTaskDependency.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
+import { getDefaultStationNode } from "@shared/types/stationNode.type";
+import { replaceEqualDeep } from "@tanstack/react-query";
 import {
-  addEdge,
-  applyEdgeChanges,
   type Connection,
   type Edge,
   type EdgeChange,
@@ -19,15 +30,14 @@ import {
   type Node,
   type NodeChange,
   Position,
-  useEdgesState,
   useNodesState,
 } from "@xyflow/react";
 import type { UUID } from "crypto";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import {
   createContext,
-  type ReactNode,
   type Dispatch,
+  type ReactNode,
   type SetStateAction,
   useCallback,
   useEffect,
@@ -37,28 +47,22 @@ import {
 } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
+import { useGetMyRoutineTasksByRoutineId } from "@/api/hooks/routineTask.hook";
 import {
-  useCreateRoutineTaskByRoutineId,
-  useGetMyRoutineTasksByRoutineId,
-  useUpdateMyRoutineTaskById,
-} from "@/api/hooks/routineTask.hook";
-import {
-  useCreateRoutineTaskDependencyByRoutineId,
-  useDeleteRoutineTaskDependencyByRoutineId,
   useGetRoutineTaskDependenciesByRoutineId,
-  useUpdateRoutineTaskDependencyByRoutineId,
+  useUpdateRoutineTaskGraphByRoutineId,
 } from "@/api/hooks/routineTaskDependency.hook";
+import { useGetMyStationById } from "@/api/hooks/station.hook";
 import { localDB } from "@/api/local/db";
 import {
-  Routine,
   RoutineTaskDependencyGraphDraft,
   type RoutineTaskDependencyGraphDraftEdge,
   type RoutineTaskDependencyGraphDraftNode,
+  Transaction,
 } from "@/api/local/schemas";
-import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
+import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
 import { useLoading } from "@/hooks/useLoading";
 import { useStationRoutine } from "@/hooks/useStationRoutine";
-import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
 
 export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
   title: string;
@@ -73,6 +77,8 @@ export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
   routinePhase?: RoutinePhase | null;
   onEdit?: () => void;
   onDeleted?: () => void | Promise<void>;
+  onDelete?: () => Promise<void>;
+  isSaving?: boolean;
 }
 
 export type RoutineTaskGraphNode = Node<
@@ -256,7 +262,7 @@ export const getRoutineTaskDependencyEdges = (
       progress: dependency.progress,
     },
     type: "smoothstep",
-    markerEnd: { type: MarkerType.ArrowClosed },
+    markerEnd: { type: MarkerType.ArrowClosed, width: 24, height: 24 },
   }));
 
 export const hasRoutineTaskDependencyEdge = (
@@ -331,7 +337,7 @@ export const mergePendingRoutineTaskDependencyEdges = (
         progress: unsyncedEdge.progress ?? 0,
       },
       type: "smoothstep",
-      markerEnd: { type: MarkerType.ArrowClosed },
+      markerEnd: { type: MarkerType.ArrowClosed, width: 24, height: 24 },
     });
   }
 
@@ -341,8 +347,277 @@ export const mergePendingRoutineTaskDependencyEdges = (
 export interface RoutineTaskDependencyGraphDraftData {
   nodes: RoutineTaskDependencyGraphDraftNode[];
   edges: RoutineTaskDependencyGraphDraftEdge[];
+  snapshot?: {
+    version: 2;
+    definitionVersion: number;
+    tasks: GetMyRoutineTaskByIdResponse["data"][];
+    baselineTasks: GetMyRoutineTaskByIdResponse["data"][];
+    baselineEdges: RoutineTaskDependencyGraphDraftEdge[];
+    confirmed?: UpdateRoutineTaskGraphByRoutineIdResponse["data"];
+  };
   updatedAt: Date;
 }
+
+export interface RoutineTaskGraphConflict {
+  id: string;
+  label: string;
+  local: unknown;
+  remote: unknown;
+}
+
+// Reconcile definitions, never execution status or timestamps, against the saved baseline.
+export const reconcileRoutineTaskGraphDraft = (
+  draft: RoutineTaskDependencyGraphDraftData,
+  remote: UpdateRoutineTaskGraphByRoutineIdResponse["data"],
+  choices: Record<string, "local" | "remote"> = {}
+) => {
+  const snapshot = draft.snapshot;
+  if (!snapshot || snapshot.confirmed)
+    throw new Error(
+      "Cannot reconcile an unverified or already committed draft"
+    );
+  const conflicts: RoutineTaskGraphConflict[] = [];
+  const resolve = <T,>(
+    id: string,
+    label: string,
+    baseline: T,
+    local: T,
+    latest: T,
+    relatedChange = false
+  ): T => {
+    if (!relatedChange) {
+      if (
+        replaceEqualDeep(local, latest) === local ||
+        replaceEqualDeep(baseline, latest) === baseline
+      )
+        return local;
+      if (replaceEqualDeep(baseline, local) === baseline) return latest;
+    }
+    conflicts.push({ id, label, local, remote: latest });
+    return choices[id] === "remote" ? latest : local;
+  };
+  const remoteEdges = remote.dependencies.map(edge => ({
+    id: getRoutineTaskDependencyEdgeId(
+      edge.previousRoutineTaskId,
+      edge.routineTaskId
+    ),
+    source: edge.previousRoutineTaskId,
+    target: edge.routineTaskId,
+    description: edge.description ?? "",
+    progress: edge.progress ?? 0,
+  }));
+  const localEdges = draft.edges.filter(edge => edge.operation !== "delete");
+  const baselineTasks = new Map(
+    snapshot.baselineTasks.map(task => [task.id, task])
+  );
+  const localTasks = new Map(snapshot.tasks.map(task => [task.id, task]));
+  const remoteTasks = new Map(remote.tasks.map(task => [task.id, task]));
+  const tasks: typeof remote.tasks = [];
+  const fields = [
+    "title",
+    "payload",
+    "priority",
+    "maxAttempts",
+    "x",
+    "y",
+  ] as const;
+  const definition = (task: (typeof remote.tasks)[number] | undefined) =>
+    task &&
+    Object.fromEntries(
+      ["kind", ...fields].map(key => [key, task[key as keyof typeof task]])
+    );
+  const relatedEdges = (
+    edges: RoutineTaskDependencyGraphDraftEdge[],
+    id: string
+  ) =>
+    edges
+      .filter(edge => edge.source === id || edge.target === id)
+      .map(edge => [edge.id, edge.description ?? "", edge.progress ?? 0])
+      .sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+  for (const id of new Set([
+    ...baselineTasks.keys(),
+    ...localTasks.keys(),
+    ...remoteTasks.keys(),
+  ])) {
+    const baseline = baselineTasks.get(id);
+    const local = localTasks.get(id);
+    const latest = remoteTasks.get(id);
+    if (!baseline || !local || !latest) {
+      const value = resolve(
+        `task:${id}`,
+        local?.title ?? latest?.title ?? baseline?.title ?? id,
+        definition(baseline),
+        definition(local),
+        definition(latest),
+        !!baseline &&
+          ((!local &&
+            !!latest &&
+            JSON.stringify(relatedEdges(snapshot.baselineEdges, id)) !==
+              JSON.stringify(relatedEdges(remoteEdges, id))) ||
+            (!latest &&
+              !!local &&
+              JSON.stringify(relatedEdges(snapshot.baselineEdges, id)) !==
+                JSON.stringify(relatedEdges(localEdges, id))))
+      );
+      if (value) tasks.push({ ...(latest ?? local ?? baseline)!, ...value });
+      continue;
+    }
+    const task = { ...latest };
+    for (const field of fields)
+      Object.assign(task, {
+        [field]: resolve(
+          `task:${id}:${field}`,
+          `${local.title} · ${field}`,
+          baseline[field],
+          local[field],
+          latest[field]
+        ),
+      });
+    tasks.push(task);
+  }
+  const baselineEdges = new Map(
+    snapshot.baselineEdges.map(edge => [edge.id, edge])
+  );
+  const localById = new Map(localEdges.map(edge => [edge.id, edge]));
+  const remoteById = new Map(remoteEdges.map(edge => [edge.id, edge]));
+  const taskIds = new Set(tasks.map(task => task.id));
+  const edges: RoutineTaskDependencyGraphDraftEdge[] = [];
+  const edgeDefinition = (
+    edge: RoutineTaskDependencyGraphDraftEdge | undefined
+  ) =>
+    edge && {
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      description: edge.description ?? "",
+      progress: edge.progress ?? 0,
+    };
+  for (const id of new Set([
+    ...baselineEdges.keys(),
+    ...localById.keys(),
+    ...remoteById.keys(),
+  ])) {
+    const baseline = edgeDefinition(baselineEdges.get(id));
+    const local = edgeDefinition(localById.get(id));
+    const latest = edgeDefinition(remoteById.get(id));
+    const value = resolve(`edge:${id}`, id, baseline, local, latest);
+    if (value && taskIds.has(value.source) && taskIds.has(value.target))
+      edges.push(value);
+  }
+  return {
+    conflicts,
+    draft: {
+      nodes: tasks.map(task => ({
+        id: task.id,
+        position: { x: task.x, y: task.y },
+      })),
+      edges,
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: remote.definitionVersion,
+        tasks,
+        baselineTasks: remote.tasks,
+        baselineEdges: remoteEdges,
+      },
+      updatedAt: new Date(),
+    },
+  };
+};
+
+// A baseline diff folds every edit into one final operation per identity.
+export const getRoutineTaskGraphChanges = (
+  draft: RoutineTaskDependencyGraphDraftData
+): UpdateRoutineTaskGraphByRoutineIdRequest["body"] => {
+  const snapshot = draft.snapshot;
+  if (!snapshot) throw new Error("Graph draft has no definition baseline");
+  const tasks: UpdateRoutineTaskGraphByRoutineIdRequest["body"]["tasks"] = {
+    creates: [],
+    updates: [],
+    deletes: [],
+  };
+  const dependencies: UpdateRoutineTaskGraphByRoutineIdRequest["body"]["dependencies"] =
+    { creates: [], updates: [], deletes: [] };
+  const baselineTasks = new Map(
+    snapshot.baselineTasks.map(task => [task.id, task])
+  );
+  const currentTasks = new Map(snapshot.tasks.map(task => [task.id, task]));
+  for (const task of snapshot.tasks) {
+    const baseline = baselineTasks.get(task.id);
+    const values = {
+      title: task.title,
+      payload: task.payload,
+      priority: task.priority,
+      maxAttempts: task.maxAttempts,
+      x: task.x,
+      y: task.y,
+    };
+    if (!baseline) {
+      tasks.creates.push({
+        id: task.id,
+        routineId: task.routineId,
+        kind: task.kind,
+        ...values,
+      });
+      continue;
+    }
+    const changes: UpdateRoutineTaskGraphByRoutineIdRequest["body"]["tasks"]["updates"][number]["values"] =
+      {};
+    for (const key of [
+      "title",
+      "payload",
+      "priority",
+      "maxAttempts",
+      "x",
+      "y",
+    ] as const) {
+      if (replaceEqualDeep(baseline[key], values[key]) !== baseline[key])
+        Object.assign(changes, { [key]: values[key] });
+    }
+    if (Object.keys(changes).length)
+      tasks.updates.push({ routineTaskId: task.id, values: changes });
+  }
+  for (const task of snapshot.baselineTasks)
+    if (!currentTasks.has(task.id)) tasks.deletes.push(task.id);
+  const baselineEdges = new Map(
+    snapshot.baselineEdges.map(edge => [edge.id, edge])
+  );
+  const currentEdges = new Map(
+    draft.edges
+      .filter(edge => edge.operation !== "delete")
+      .map(edge => [edge.id, edge])
+  );
+  for (const edge of currentEdges.values()) {
+    const baseline = baselineEdges.get(edge.id);
+    const value = {
+      routineTaskId: edge.target,
+      previousRoutineTaskId: edge.source,
+      description: edge.description ?? "",
+      progress: edge.progress ?? 0,
+    };
+    if (!baseline) dependencies.creates.push(value);
+    else if (
+      (baseline.description ?? "") !== value.description ||
+      (baseline.progress ?? 0) !== value.progress
+    )
+      dependencies.updates.push(value);
+  }
+  for (const edge of baselineEdges.values()) {
+    if (
+      !currentEdges.has(edge.id) &&
+      currentTasks.has(edge.source) &&
+      currentTasks.has(edge.target)
+    )
+      dependencies.deletes.push({
+        routineTaskId: edge.target,
+        previousRoutineTaskId: edge.source,
+      });
+  }
+  return {
+    expectedDefinitionVersion: snapshot.definitionVersion,
+    tasks,
+    dependencies,
+  };
+};
 
 interface RoutineTaskDependencyGraphDraftProviderProps {
   children: ReactNode;
@@ -359,6 +634,8 @@ export interface RoutineTaskDependencyGraphDraftContextType {
   isRetryingSync: boolean;
   isRealigning: boolean;
   isSaving: boolean;
+  canEdit: boolean;
+  isSavingLayout: boolean;
   isUpdatingDependency: boolean;
   canRealign: boolean;
   canAddStartingNode: boolean;
@@ -373,12 +650,35 @@ export interface RoutineTaskDependencyGraphDraftContextType {
   setDependencyProgress: Dispatch<SetStateAction<number>>;
   reload: () => void;
   createStartingNode: () => Promise<void>;
+  createTask: (
+    body: CreateRoutineTaskByRoutineIdRequest["body"]
+  ) => Promise<UUID>;
+  editingTask: GetMyRoutineTaskByIdResponse["data"] | null;
+  setEditingTaskId: Dispatch<SetStateAction<string | null>>;
+  updateTask: (
+    id: string,
+    values: Partial<
+      Pick<
+        GetMyRoutineTaskByIdResponse["data"],
+        "title" | "payload" | "priority" | "maxAttempts"
+      >
+    >
+  ) => Promise<void>;
   connectDependency: (connection: Connection) => Promise<void>;
   changeEdges: (changes: EdgeChange[]) => Promise<void>;
   changeNodes: (changes: NodeChange<RoutineTaskGraphNode>[]) => Promise<void>;
   updateDependency: () => Promise<void>;
   retryPendingSync: () => Promise<void>;
+  saveGraph: () => Promise<boolean>;
   realign: () => Promise<boolean>;
+  hasConflict: boolean;
+  isReviewing: boolean;
+  recovery: { conflicts: RoutineTaskGraphConflict[] } | null;
+  reviewGraph: () => Promise<void>;
+  resolveConflicts: (
+    choices: Record<string, "local" | "remote">
+  ) => Promise<boolean>;
+  closeRecovery: () => void;
   draft: RoutineTaskDependencyGraphDraftData | null | undefined;
   loadDraft: () => Promise<RoutineTaskDependencyGraphDraftData | null>;
   saveDraft: (
@@ -394,1150 +694,830 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
   children,
   routineId,
 }: RoutineTaskDependencyGraphDraftProviderProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
-  const transactionSynchronizer = useTransactionSynchronizer();
   const { startAsyncTransactionLoading } = useLoading();
-  const [draft, setDraft] = useState<
-    RoutineTaskDependencyGraphDraftData | null | undefined
-  >(undefined);
+  const routineQuery = useGetMyRoutineById(undefined, {
+    staleTime: 0,
+    retry: false,
+  });
+  const stationQuery = useGetMyStationById();
+  const routineTasksQuery = useGetMyRoutineTasksByRoutineId(undefined, {
+    staleTime: 0,
+    retry: false,
+  });
+  const dependenciesQuery = useGetRoutineTaskDependenciesByRoutineId({
+    staleTime: 0,
+    retry: false,
+  });
+  const updateGraph = useUpdateRoutineTaskGraphByRoutineId();
+  const routine = stationRoutineManager.getRoutineById(routineId);
+  const [draft, setDraft] =
+    useState<RoutineTaskDependencyGraphDraftData | null>();
+  const draftRef = useRef<RoutineTaskDependencyGraphDraftData | null>(null);
+  const activeRoutine = useRef(routineId);
+  activeRoutine.current = routineId;
+  const writes = useRef(Promise.resolve());
+  const saving = useRef(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState<RoutineTaskGraphNode>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isRealigning, setIsRealigning] = useState(false);
+  const [reloadVersion, setReloadVersion] = useState(0);
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [dependencyDescription, setDependencyDescription] = useState("");
+  const [dependencyProgress, setDependencyProgress] = useState(0);
+  const [hasConflict, setHasConflict] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [recovery, setRecovery] = useState<{
+    draft: RoutineTaskDependencyGraphDraftData;
+    remote: UpdateRoutineTaskGraphByRoutineIdResponse["data"];
+    conflicts: RoutineTaskGraphConflict[];
+  } | null>(null);
 
-  useEffect(() => {
-    setDraft(undefined);
-  }, [routineId]);
-
-  const loadDraft = useCallback(async () => {
-    if (!localDB.isEnabled) {
-      setDraft(null);
-      return null;
-    }
-    if (!localDB.isReady) await localDB.ensureReady();
-
-    const [storedDraft] = await localDB
-      .select()
-      .from(RoutineTaskDependencyGraphDraft)
-      .where(eq(RoutineTaskDependencyGraphDraft.routineId, routineId))
+  const readLatestGraph = useCallback(async () => {
+    const pending = await localDB
+      .select({ sequence: Transaction.sequence })
+      .from(Transaction)
+      .where(
+        sql`json_extract(${Transaction.body}, '$.routineId') = ${routineId} OR json_extract(${Transaction.affected}, '$.routineId') = ${routineId}`
+      )
       .limit(1);
-    if (!storedDraft) {
-      setDraft(null);
-      return null;
-    }
-
-    let nodes: RoutineTaskDependencyGraphDraftNode[];
-    let edges: RoutineTaskDependencyGraphDraftEdge[];
-    try {
-      const parsedNodes: unknown = JSON.parse(storedDraft.nodes);
-      const parsedEdges: unknown = JSON.parse(storedDraft.edges);
-      if (!Array.isArray(parsedNodes) || !Array.isArray(parsedEdges)) {
-        setDraft(null);
-        return null;
-      }
-      nodes = parsedNodes as RoutineTaskDependencyGraphDraftNode[];
-      edges = parsedEdges as RoutineTaskDependencyGraphDraftEdge[];
-    } catch (error) {
-      console.warn(
-        "Ignoring invalid local routine task dependency graph draft.",
-        error
+    if (pending.length)
+      throw new Error(
+        t("workspace.notifications.routineDependencyGraphSaveFailed")
       );
-      setDraft(null);
-      return null;
-    }
-
-    const nextDraft = {
-      nodes,
-      edges,
-      updatedAt: storedDraft.updatedAt,
+    const parent = await routineQuery.fetch({
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { routineId },
+    });
+    if (!parent.success)
+      throw new NotegicAPIError(new NotegicException(parent.exception));
+    const tasks = await routineTasksQuery.fetch({
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { routineId },
+    });
+    if (!tasks.success)
+      throw new NotegicAPIError(new NotegicException(tasks.exception));
+    const dependencies = await dependenciesQuery.fetch({
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { routineId },
+    });
+    if (!dependencies.success)
+      throw new NotegicAPIError(new NotegicException(dependencies.exception));
+    const verified = await routineQuery.fetch({
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { routineId },
+    });
+    if (!verified.success)
+      throw new NotegicAPIError(new NotegicException(verified.exception));
+    // A mixed read is not a graph baseline; the next Save still performs backend CAS.
+    if (parent.data.definitionVersion !== verified.data.definitionVersion)
+      throw new NotegicAPIError(
+        new NotegicException(
+          {
+            reason: "DefinitionConflict",
+            domain: "Routine",
+            operation: "ReadGraph",
+            message: "The routine changed while reading its graph",
+            retryable: false,
+          },
+          409
+        )
+      );
+    return {
+      definitionVersion: verified.data.definitionVersion,
+      tasks: tasks.data,
+      dependencies: dependencies.data,
+      updatedAt: verified.data.updatedAt,
     };
-    setDraft(nextDraft);
-    return nextDraft;
   }, [routineId]);
 
   const saveDraft = useCallback(
-    async (
-      nextDraft: Omit<RoutineTaskDependencyGraphDraftData, "updatedAt">
-    ) => {
-      setDraft({ ...nextDraft, updatedAt: new Date() });
-      if (!localDB.isEnabled) {
-        throw new Error("local graph draft persistence is disabled");
+    (next: Omit<RoutineTaskDependencyGraphDraftData, "updatedAt">) => {
+      const value = { ...next, updatedAt: new Date() };
+      if (activeRoutine.current === routineId) {
+        draftRef.current = value;
+        setDraft(value);
       }
-      if (!localDB.isReady) await localDB.ensureReady();
-
-      await localDB
-        .insert(RoutineTaskDependencyGraphDraft)
-        .values({
-          routineId,
-          nodes: JSON.stringify(nextDraft.nodes),
-          edges: JSON.stringify(nextDraft.edges),
-          updatedAt: new Date(),
-        })
-        .onConflictDoUpdate({
-          target: RoutineTaskDependencyGraphDraft.routineId,
-          set: {
-            nodes: JSON.stringify(nextDraft.nodes),
-            edges: JSON.stringify(nextDraft.edges),
-            updatedAt: new Date(),
-          },
+      const write = writes.current
+        .catch(() => {})
+        .then(async () => {
+          if (!localDB.isEnabled)
+            throw new Error("local graph draft persistence is disabled");
+          if (!localDB.isReady) await localDB.ensureReady();
+          const row = {
+            routineId,
+            nodes: JSON.stringify({
+              version: 2,
+              nodes: value.nodes,
+              snapshot: value.snapshot,
+            }),
+            edges: JSON.stringify(value.edges),
+            updatedAt: value.updatedAt,
+          };
+          await localDB
+            .insert(RoutineTaskDependencyGraphDraft)
+            .values(row)
+            .onConflictDoUpdate({
+              target: RoutineTaskDependencyGraphDraft.routineId,
+              set: row,
+            });
         });
+      writes.current = write;
+      return write;
     },
     [routineId]
   );
 
-  const localDraft = draft;
-  const routineQuery = useGetMyRoutineById({
-    header: getClientRequestHeaders(),
-    param: { routineId },
-  });
-  const createNode = useCreateRoutineTaskByRoutineId();
-  const updateNode = useUpdateMyRoutineTaskById();
-  const [pendingNodeCount, setPendingNodeCount] = useState(0);
-  const [definitionVersion, setDefinitionVersion] = useState(1);
-  const routineTasksQuery = useGetMyRoutineTasksByRoutineId();
-  const routineTaskDependenciesQuery =
-    useGetRoutineTaskDependenciesByRoutineId();
-  const createDependency = useCreateRoutineTaskDependencyByRoutineId();
-  const deleteDependency = useDeleteRoutineTaskDependencyByRoutineId();
-  const updateDependency = useUpdateRoutineTaskDependencyByRoutineId();
-  const routine = stationRoutineManager.getRoutineById(routineId);
-  const [routineTasks, setRoutineTasks] = useState<
-    Awaited<ReturnType<typeof routineTasksQuery.fetch>>["data"]
-  >([]);
-  const [nodes, setNodes, onNodesChange] = useNodesState<RoutineTaskGraphNode>(
-    []
-  );
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [isDirty, setIsDirty] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [routineTaskDependencies, setRoutineTaskDependencies] = useState<
-    RoutineTaskDependency[] | undefined
-  >(undefined);
-  const [isRetryingSync, setIsRetryingSync] = useState(false);
-  const [reloadVersion, setReloadVersion] = useState(0);
-  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
-  const [dependencyDescription, setDependencyDescription] = useState("");
-  const [dependencyProgress, setDependencyProgress] = useState(0);
-  const [isRealigning, setIsRealigning] = useState(false);
-  const realigning = useRef(false);
-  const hasLoaded = useRef(false);
-  const pendingPositions = useRef(
-    new Map<
-      string,
-      {
-        x: number;
-        y: number;
-        expectedDefinitionVersion: number;
-      }
-    >()
-  );
-  const positionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
-  const savingPositions = useRef(false);
-  const [isSavingPositions, setIsSavingPositions] = useState(false);
+  const loadDraft = useCallback(async () => {
+    if (!localDB.isEnabled) return null;
+    if (!localDB.isReady) await localDB.ensureReady();
+    const [stored] = await localDB
+      .select()
+      .from(RoutineTaskDependencyGraphDraft)
+      .where(eq(RoutineTaskDependencyGraphDraft.routineId, routineId))
+      .limit(1);
+    if (!stored) return null;
+    const content = JSON.parse(stored.nodes);
+    const edges: RoutineTaskDependencyGraphDraftEdge[] = JSON.parse(
+      stored.edges
+    );
+    if (
+      !Array.isArray(edges) ||
+      (!Array.isArray(content) &&
+        (content?.version !== 2 || !Array.isArray(content.nodes)))
+    )
+      throw new Error("Invalid local graph draft");
+    const value: RoutineTaskDependencyGraphDraftData = {
+      nodes: Array.isArray(content) ? content : content.nodes,
+      snapshot: Array.isArray(content) ? undefined : content.snapshot,
+      edges,
+      updatedAt: stored.updatedAt,
+    };
+    if (value.snapshot) {
+      if (
+        value.snapshot.version !== 2 ||
+        !Number.isSafeInteger(value.snapshot.definitionVersion) ||
+        value.snapshot.definitionVersion < 1 ||
+        !Array.isArray(value.snapshot.baselineEdges)
+      )
+        throw new Error("Invalid graph draft baseline");
+      value.snapshot.tasks = RoutineTaskDefinitionSchema.array().parse(
+        value.snapshot.tasks
+      );
+      value.snapshot.baselineTasks = RoutineTaskDefinitionSchema.array().parse(
+        value.snapshot.baselineTasks
+      );
+      if (value.snapshot.confirmed)
+        value.snapshot.confirmed =
+          UpdateRoutineTaskGraphByRoutineIdResponseSchema.shape.data.parse(
+            value.snapshot.confirmed
+          );
+    }
+    if (activeRoutine.current === routineId) {
+      draftRef.current = value;
+      setDraft(value);
+    }
+    return value;
+  }, [routineId]);
 
-  const updateNodePositions = useCallback(async () => {
-    if (savingPositions.current || pendingPositions.current.size === 0) return;
-    savingPositions.current = true;
-    setIsSavingPositions(true);
+  const reviewGraph = async () => {
+    const current = draftRef.current;
+    if (!current?.snapshot || current.snapshot.confirmed || saving.current)
+      return;
+    saving.current = true;
+    setIsReviewing(true);
     try {
-      while (pendingPositions.current.size > 0) {
-        const [id, position] = pendingPositions.current.entries().next().value!;
-        const response = await updateNode.mutateAsync({
-          header: getClientRequestHeaders(navigator.userAgent),
-          body: {
-            routineTaskId: id as UUID,
-            values: { x: position.x, y: position.y },
-            expectedDefinitionVersion: position.expectedDefinitionVersion,
-          },
-        });
-        setRoutineTasks(current =>
-          current.map(task =>
-            task.id === id ? { ...task, x: position.x, y: position.y } : task
-          )
-        );
-        if (pendingPositions.current.get(id) === position)
-          pendingPositions.current.delete(id);
-        if (!response.success) {
-          setPendingNodeCount(count => count + 1);
-          toast.info(t("workspace.fields.pendingSync"));
-        }
+      const remote = await readLatestGraph();
+      if (activeRoutine.current !== routineId) return;
+      const result = reconcileRoutineTaskGraphDraft(current, remote);
+      if (result.conflicts.length)
+        setRecovery({ draft: current, remote, conflicts: result.conflicts });
+      else {
+        await saveDraft(result.draft);
+        setHasConflict(false);
+        setRecovery(null);
+        toast.info(t("workspace.graph.reviewReady"));
       }
-      setIsDirty(false);
     } catch (error) {
       toast.error(tError(error, t));
     } finally {
-      savingPositions.current = false;
-      setIsSavingPositions(false);
+      saving.current = false;
+      setIsReviewing(false);
     }
-  }, [updateNode.mutateAsync, t]);
-
-  useEffect(
-    () => () => {
-      clearTimeout(positionTimer.current);
-      void updateNodePositions();
-    },
-    [updateNodePositions]
-  );
-  useEffect(() => {
-    setReloadVersion(version => version + 1);
-  }, [transactionSynchronizer.synchronizationRevision]);
+  };
+  const resolveConflicts = async (
+    choices: Record<string, "local" | "remote">
+  ) => {
+    if (
+      !recovery ||
+      saving.current ||
+      recovery.conflicts.some(conflict => !choices[conflict.id])
+    )
+      return false;
+    saving.current = true;
+    setIsReviewing(true);
+    try {
+      const result = reconcileRoutineTaskGraphDraft(
+        recovery.draft,
+        recovery.remote,
+        choices
+      );
+      await saveDraft(result.draft);
+      if (activeRoutine.current !== routineId) return false;
+      setRecovery(null);
+      setHasConflict(false);
+      toast.info(t("workspace.graph.reviewReady"));
+      return true;
+    } catch (error) {
+      toast.error(tError(error, t));
+      return false;
+    } finally {
+      saving.current = false;
+      setIsReviewing(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
-
-    const loadRoutineTasks = async () => {
-      if (!hasLoaded.current) setIsLoading(true);
+    draftRef.current = null;
+    setDraft(undefined);
+    setIsLoading(true);
+    setNodes([]);
+    setEditingTaskId(null);
+    setSelectedEdgeId(null);
+    setHasConflict(false);
+    setRecovery(null);
+    const load = async () => {
       try {
-        await stationRoutineManager.initializeStationRoutineData();
-        const routineResponse = await routineQuery.fetch({
-          header: getClientRequestHeaders(navigator.userAgent),
-          param: { routineId },
-        });
-        if (!routineResponse.data) {
-          throw new Error("routine does not exist");
-        }
-        await stationRoutineManager.searchRoutines("", [
-          routineResponse.data.stationId as UUID,
-        ]);
-        if (!stationRoutineManager.getRoutineById(routineId)) {
-          throw new Error("routine does not exist");
-        }
-        const routineTasksResponse = await routineTasksQuery.fetch({
-          header: getClientRequestHeaders(navigator.userAgent),
-          param: { routineId },
-        });
-        const response = await routineTaskDependenciesQuery.fetch({
-          header: getClientRequestHeaders(navigator.userAgent),
-          param: { routineId },
-        });
-        const fetchedDependencies: RoutineTaskDependency[] = response.data;
-        const draft = await loadDraft();
-        const pending = await RoutineTaskLocalSimulator.getPendingMutations();
-        const pendingCount = pending.filter(transaction => {
-          const body = transaction.body as { routineId?: string };
-          const affected = transaction.affected as {
-            routineId?: string;
-          } | null;
-          return (body.routineId ?? affected?.routineId) === routineId;
-        }).length;
-        if (!cancelled) {
-          setPendingNodeCount(pendingCount);
-          setRoutineTasks(routineTasksResponse.data);
-          setDefinitionVersion(routineResponse.data.definitionVersion);
-          setRoutineTaskDependencies(fetchedDependencies);
-          hasLoaded.current = true;
-          const invalidDraftEdge = draft?.edges.find(
-            edge => edge.syncStatus === "invalid"
-          );
-          if (invalidDraftEdge?.errorKey || invalidDraftEdge?.errorMessage) {
-            // Legacy drafts contain translated text; use a localized fallback.
-            toast.error(
-              t(
-                (invalidDraftEdge.errorKey ??
-                  "error.encounterUnknownError") as never,
-                { defaultValue: t("error.encounterUnknownError") }
-              )
-            );
+        await writes.current;
+        const stored = await loadDraft();
+        if (cancelled) return;
+        const cached = stationRoutineManager.getRoutineById(routineId);
+        if (
+          stored?.snapshot &&
+          !stored.snapshot.confirmed &&
+          cached?.definitionVersion !== undefined &&
+          cached.definitionVersion > stored.snapshot.definitionVersion
+        ) {
+          try {
+            const remote = await readLatestGraph();
+            if (cancelled) return;
+            if (
+              remote.definitionVersion !== stored.snapshot.definitionVersion
+            ) {
+              const result = reconcileRoutineTaskGraphDraft(stored, remote);
+              if (result.conflicts.length) setHasConflict(true);
+              else await saveDraft(result.draft);
+            }
+          } catch (error) {
+            // Opening an offline draft must never discard or replace it.
+            if (!cancelled)
+              console.warn("Could not verify graph draft baseline", error);
           }
         }
+        if (
+          stored?.snapshot &&
+          cached &&
+          stationRoutineManager.getStationById(cached.stationId)
+        )
+          return;
+        const request = {
+          header: getClientRequestHeaders(navigator.userAgent),
+          param: { routineId },
+        };
+        const parent = await routineQuery.fetch(request);
+        if (cancelled) return;
+        const stationId = parent.data.stationId as UUID;
+        if (!stationRoutineManager.getStationById(stationId)) {
+          const station = await stationQuery.fetch({
+            header: getClientRequestHeaders(navigator.userAgent),
+            param: { stationId },
+          });
+          if (cancelled) return;
+          stationRoutineManager.upsertStationNode({
+            ...getDefaultStationNode(stationId),
+            ...station.data,
+            id: stationId,
+          });
+        }
+        const cachedRoutine = stationRoutineManager.getRoutineById(routineId);
+        stationRoutineManager.upsertRoutineNode({
+          id: parent.data.id as UUID,
+          stationId,
+          title: parent.data.title,
+          description: parent.data.description,
+          phase: parent.data.phase,
+          isActive: parent.data.isActive,
+          definitionVersion: parent.data.definitionVersion,
+          isPinned: parent.data.isPinned,
+          scheduledStartAt: parent.data.scheduledStartAt,
+          scheduledEndAt: parent.data.scheduledEndAt,
+          period: parent.data.period,
+          timezone: parent.data.timezone,
+          deletedAt: parent.data.deletedAt,
+          updatedAt: parent.data.updatedAt,
+          createdAt: parent.data.createdAt,
+          isOpen: cachedRoutine?.isOpen ?? false,
+          isExpanded: cachedRoutine?.isExpanded ?? false,
+          routineTagIds: parent.data.tagIds as UUID[],
+          routineTaskIds: parent.data.taskIds as UUID[],
+          itemIds: parent.data.itemIds as UUID[],
+          routineTasks: cachedRoutine?.routineTasks ?? [],
+          admissionState: parent.data.admissionState,
+        });
+        if (stored?.snapshot) {
+          if (
+            !stored.snapshot.confirmed &&
+            parent.data.definitionVersion !== stored.snapshot.definitionVersion
+          )
+            setHasConflict(true);
+          return;
+        }
+        const tasks = await routineTasksQuery.fetch(request);
+        const dependencies = await dependenciesQuery.fetch(request);
+        if (cancelled) return;
+        const baselineEdges = dependencies.data.map(edge => ({
+          id: getRoutineTaskDependencyEdgeId(
+            edge.previousRoutineTaskId,
+            edge.routineTaskId
+          ),
+          source: edge.previousRoutineTaskId,
+          target: edge.routineTaskId,
+          description: edge.description,
+          progress: edge.progress,
+        }));
+        const currentTasks = tasks.data.map(task => {
+          const position = stored?.nodes.find(
+            node => node.id === task.id && node.isDirty
+          )?.position;
+          return position ? { ...task, ...position } : task;
+        });
+        const legacyEdges = mergePendingRoutineTaskDependencyEdges(
+          getRoutineTaskDependencyEdges(dependencies.data),
+          stored?.edges
+        ).map(edge => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          description: (edge.data?.description as string) ?? "",
+          progress: (edge.data?.progress as number) ?? 0,
+        }));
+        await saveDraft({
+          nodes: currentTasks.map(task => ({
+            id: task.id,
+            position: { x: task.x, y: task.y },
+          })),
+          edges: legacyEdges,
+          snapshot: {
+            version: 2,
+            definitionVersion: parent.data.definitionVersion,
+            tasks: currentTasks,
+            baselineTasks: tasks.data,
+            baselineEdges,
+          },
+        });
       } catch (error) {
         if (!cancelled) {
-          const translatedMessage = tError(error, t);
-          const unknownErrorMessage = t("error.encounterUnknownError");
-          const errorDetails =
-            error instanceof Error ? error.message : String(error);
-          const message =
-            translatedMessage === unknownErrorMessage && errorDetails
-              ? `${unknownErrorMessage}: ${errorDetails}`
-              : translatedMessage || errorDetails || unknownErrorMessage;
           console.error("failed to load routine task dependency graph", error);
-          toast.error(message);
+          toast.error(tError(error, t));
         }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     };
-
-    if (hasLoaded.current) void loadRoutineTasks();
-    else void startAsyncTransactionLoading(loadRoutineTasks);
+    void startAsyncTransactionLoading(load);
     return () => {
       cancelled = true;
     };
   }, [
-    loadDraft,
-    reloadVersion,
     routineId,
-    routineQuery.data?.data?.definitionVersion,
+    reloadVersion,
+    loadDraft,
+    saveDraft,
+    readLatestGraph,
     startAsyncTransactionLoading,
   ]);
 
+  const updateTask = async (
+    id: string,
+    values: Partial<
+      Pick<
+        GetMyRoutineTaskByIdResponse["data"],
+        "title" | "payload" | "priority" | "maxAttempts"
+      >
+    >
+  ) => {
+    const current = draftRef.current;
+    if (!current?.snapshot || saving.current || current.snapshot.confirmed)
+      return;
+    const tasks = current.snapshot.tasks.map(task =>
+      task.id === id ? { ...task, ...values } : task
+    );
+    await saveDraft({ ...current, snapshot: { ...current.snapshot, tasks } });
+  };
+  const deleteTask = async (id: string) => {
+    const current = draftRef.current;
+    if (!current?.snapshot || saving.current || current.snapshot.confirmed)
+      return;
+    await saveDraft({
+      ...current,
+      nodes: current.nodes.filter(node => node.id !== id),
+      edges: current.edges.filter(
+        edge => edge.source !== id && edge.target !== id
+      ),
+      snapshot: {
+        ...current.snapshot,
+        tasks: current.snapshot.tasks.filter(task => task.id !== id),
+      },
+    });
+  };
+  const createTask = async (
+    body: CreateRoutineTaskByRoutineIdRequest["body"]
+  ): Promise<UUID> => {
+    const current = draftRef.current;
+    if (!current?.snapshot || saving.current || current.snapshot.confirmed)
+      throw new Error("Graph is not editable");
+    const definition = parseRoutineTaskDefinition({ ...body, routineId });
+    const id = definition.id ?? crypto.randomUUID();
+    if (current.snapshot.baselineTasks.some(task => task.id === id))
+      throw new Error("Task already exists in the graph baseline");
+    const existing = current.snapshot.tasks.find(task => task.id === id);
+    const task: GetMyRoutineTaskByIdResponse["data"] = {
+      ...definition,
+      id,
+      x: body.x ?? existing?.x ?? definition.x,
+      y: body.y ?? existing?.y ?? definition.y,
+      kind: definition.kind,
+      priority: definition.priority ?? 0,
+      maxAttempts: definition.maxAttempts ?? 1,
+      previousRoutineTaskIds: [],
+      updatedAt: new Date(),
+      createdAt: existing?.createdAt ?? new Date(),
+    };
+    await saveDraft({
+      ...current,
+      nodes: [
+        ...current.nodes.filter(node => node.id !== id),
+        { id: task.id, position: { x: task.x, y: task.y } },
+      ],
+      snapshot: {
+        ...current.snapshot,
+        tasks: [...current.snapshot.tasks.filter(node => node.id !== id), task],
+      },
+    });
+    return task.id as UUID;
+  };
+
   const graphNodes = useMemo<RoutineTaskGraphNode[]>(
     () =>
-      routineTasks.map((task, index) => ({
+      (draft?.snapshot?.tasks ?? []).map(task => ({
         id: task.id,
-        type: "routineTask" as const,
-        position: {
-          x: task.x ?? (index % 3) * 320,
-          y: task.y ?? Math.floor(index / 3) * 180,
-        },
+        type: "routineTask",
+        position: { x: task.x, y: task.y },
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
         data: {
           kind: task.kind,
-          payload: task.payload ?? {},
-          expectedDefinitionVersion: definitionVersion,
-          onEdit: () =>
-            stationRoutineManager.openInspector({
-              type: "routineTask",
-              id: task.id as UUID,
-              onUpdated: () => setReloadVersion(version => version + 1),
-            }),
-          onUpdated: async values => {
-            try {
-              const response = await updateNode.mutateAsync({
-                header: getClientRequestHeaders(navigator.userAgent),
-                body: {
-                  routineTaskId: task.id,
-                  values,
-                  expectedDefinitionVersion: definitionVersion,
-                },
-              });
-              if (!response.success) {
-                setPendingNodeCount(count => count + 1);
-                toast.info(t("workspace.fields.pendingSync"));
-              }
-              setRoutineTasks(current =>
-                current.map(node =>
-                  node.id === task.id ? { ...node, ...values } : node
-                )
-              );
-            } catch (error) {
-              toast.error(tError(error, t));
-            }
-          },
           title: task.title,
+          payload: task.payload,
+          expectedDefinitionVersion: draft?.snapshot?.definitionVersion,
+          isSaving: isSaving || !!draft?.snapshot?.confirmed,
           executionStatus: routine?.routineTasks.find(
-            routineTask => routineTask.id === task.id
+            node => node.id === task.id
           )?.executionStatus,
           routinePhase: routine?.phase,
-          onDeleted: async () => {
-            await stationRoutineManager.refresh();
-            setReloadVersion(version => version + 1);
+          onEdit: () => {
+            if (!saving.current && !draftRef.current?.snapshot?.confirmed)
+              setEditingTaskId(task.id);
           },
+          onUpdated: values => updateTask(task.id, values),
+          onDelete: () => deleteTask(task.id),
         },
-      })) ?? [],
-    [
-      definitionVersion,
-      routine?.phase,
-      routineTasks,
-      stationRoutineManager.refresh,
-      updateNode.mutateAsync,
-      t,
-    ]
+      })),
+    [draft, routine, isSaving]
   );
-  const graphEdges = useMemo(
-    () =>
-      routineTaskDependencies
-        ? getRoutineTaskDependencyEdges(routineTaskDependencies)
-        : [],
-    [routineTaskDependencies]
-  );
-  const graphEdgesWithPending = useMemo(() => {
-    return mergePendingRoutineTaskDependencyEdges(
-      graphEdges,
-      localDraft?.edges
-    );
-  }, [graphEdges, localDraft?.edges]);
-  const selectedDependency = useMemo(
-    () =>
-      routineTaskDependencies?.find(
-        dependency =>
-          `${dependency.previousRoutineTaskId}->${dependency.routineTaskId}` ===
-          selectedEdgeId
-      ) ?? null,
-    [routineTaskDependencies, selectedEdgeId]
-  );
-
   useEffect(() => {
-    setDependencyDescription(selectedDependency?.description ?? "");
-    setDependencyProgress(selectedDependency?.progress ?? 0);
-  }, [selectedDependency]);
-
-  useEffect(() => {
-    if (!routine || localDraft === undefined) return;
-
-    const routineTaskIds = new Set<string>(routineTasks.map(task => task.id));
-    const draftEdges = localDraft
-      ? localDraft.edges
-          .filter(
-            edge =>
-              edge.operation !== "delete" &&
-              routineTaskIds.has(edge.source) &&
-              routineTaskIds.has(edge.target)
-          )
-          .map(edge => ({
-            ...edge,
-            type: "smoothstep" as const,
-            markerEnd: { type: MarkerType.ArrowClosed },
-          }))
-      : [];
-
     setNodes(current =>
-      graphNodes.map(node => {
-        const existing = current.find(value => value.id === node.id);
-        const pending = pendingPositions.current.get(node.id);
-        return {
-          ...existing,
-          ...node,
-          ...(existing?.dragging || pending
-            ? { position: existing?.position ?? pending! }
-            : {}),
-        };
-      })
+      graphNodes.map(node => ({
+        ...current.find(value => value.id === node.id),
+        ...node,
+      }))
     );
-    setEdges(
-      routineTaskDependencies !== undefined ? graphEdgesWithPending : draftEdges
-    );
-    if (pendingPositions.current.size === 0) setIsDirty(false);
-  }, [
-    graphEdges,
-    graphEdgesWithPending,
-    graphNodes,
-    localDraft,
-    routine,
-    routineTaskDependencies,
-    setEdges,
-    setNodes,
-  ]);
-
-  const handleConnect = async (connection: Connection) => {
-    if (!connection.source || !connection.target) return;
-    if (connection.source === connection.target) {
-      const message = t("workspace.validation.dependencyCycle");
-      toast.error(message);
-      return;
-    }
-    if (
-      nodes.find(node => node.id === connection.target)?.data.kind === "Start"
-    ) {
-      toast.error(t("workspace.validation.startingNodeIncoming"));
-      return;
-    }
-    const routineTaskIds = new Set(nodes.map(node => node.id));
-    if (
-      !isRoutineTaskDependencyInRoutine(
-        routineTaskIds,
-        connection.source,
-        connection.target
-      )
-    ) {
-      const message = t("workspace.validation.dependencyOutsideRoutine");
-      toast.error(message);
-      return;
-    }
-    if (
-      hasRoutineTaskDependencyEdge(edges, connection.source, connection.target)
-    ) {
-      const message = t("workspace.validation.dependencyDuplicate");
-      toast.error(message);
-      return;
-    }
-
-    if (
-      hasRoutineTaskDependencyCycle(edges, connection.source, connection.target)
-    ) {
-      const message = t("workspace.validation.dependencyCycle");
-      toast.error(message);
-      return;
-    }
-
-    const nextEdge: Edge = {
-      ...connection,
-      id: getRoutineTaskDependencyEdgeId(connection.source, connection.target),
-      type: "smoothstep" as const,
-      markerEnd: { type: MarkerType.ArrowClosed },
-    };
-    const nextEdges = addEdge(nextEdge, edges);
-    setEdges(nextEdges);
-
-    try {
-      const response = await createDependency.mutateAsync({
-        param: { routineId },
-        body: {
-          expectedDefinitionVersion: definitionVersion,
-          routineTaskId: connection.target as UUID,
-          previousRoutineTaskId: connection.source as UUID,
-        },
-      });
-      if (response.success) setDefinitionVersion(version => version + 1);
-      setRoutineTaskDependencies(currentDependencies => {
-        if (currentDependencies === undefined) return undefined;
-        return [
-          ...currentDependencies.filter(
-            dependency =>
-              !(
-                dependency.routineTaskId === response.data.routineTaskId &&
-                dependency.previousRoutineTaskId ===
-                  response.data.previousRoutineTaskId
-              )
-          ),
-          response.data,
-        ];
-      });
-      const syncedEdges: RoutineTaskDependencyGraphDraftEdge[] = nextEdges.map(
-        edge => {
-          const edgeData = edge.data as
-            | { description?: string; progress?: number }
-            | undefined;
-          return {
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            description: edgeData?.description ?? "",
-            progress: edgeData?.progress ?? 0,
-            ...(edge.id === nextEdge.id && !response.success
-              ? {
-                  syncStatus: "pending" as const,
-                  operation: "create" as const,
-                  expectedDefinitionVersion: definitionVersion,
-                }
-              : { syncStatus: "synced" as const }),
-          };
-        }
-      );
-      await saveDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: syncedEdges,
-      });
-    } catch (error) {
-      const errorKey =
-        error instanceof NotegicError &&
-        error.getPresentation &&
-        i18n.exists(error.getPresentation)
-          ? error.getPresentation
-          : error instanceof NotegicAPIError ||
-              error instanceof NotegicValidationError
-            ? i18n.exists(`server.error.${error.unWrap.reason}`)
-              ? `server.error.${error.unWrap.reason}`
-              : "error.encounterUnknownError"
-            : error instanceof Error && i18n.exists(error.message)
-              ? error.message
-              : "error.encounterUnknownError";
-      const syncStatus =
-        error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
-      const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] =
-        nextEdges.map(edge => {
-          const existingDraftEdge = localDraft?.edges.find(
-            draftEdge => draftEdge.id === edge.id
-          );
-          const edgeData = edge.data as
-            | { description?: string; progress?: number }
-            | undefined;
-          return {
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            description: edgeData?.description ?? "",
-            progress: edgeData?.progress ?? 0,
-            syncStatus:
-              edge.id === nextEdge.id
-                ? syncStatus
-                : (existingDraftEdge?.syncStatus ?? "synced"),
-            ...(edge.id === nextEdge.id
-              ? { operation: "create" as const, errorKey }
-              : existingDraftEdge?.operation
-                ? { operation: existingDraftEdge.operation }
-                : {}),
-          };
-        });
-      const nextDraft = {
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: failedDraftEdges,
-      };
-      setEdges(nextEdges);
-      try {
-        await saveDraft(nextDraft);
-      } catch {
-        // Keep the attempted edge visible so the user can correct it in place.
+  }, [graphNodes, setNodes]);
+  const edges: Edge[] = (draft?.edges ?? [])
+    .filter(edge => edge.operation !== "delete")
+    .map(edge => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      data: {
+        description: edge.description ?? "",
+        progress: edge.progress ?? 0,
+      },
+      type: "smoothstep",
+      markerEnd: { type: MarkerType.ArrowClosed, width: 24, height: 24 },
+    }));
+  const selectedEdge = draft?.edges.find(edge => edge.id === selectedEdgeId);
+  const selectedDependency: RoutineTaskDependency | null = selectedEdge
+    ? {
+        routineTaskId: selectedEdge.target,
+        previousRoutineTaskId: selectedEdge.source,
+        description: selectedEdge.description ?? "",
+        progress: selectedEdge.progress ?? 0,
+        updatedAt: draft!.updatedAt,
+        createdAt: draft!.updatedAt,
       }
-      toast.error(tError(error, t));
-    }
-  };
-
-  const handleEdgesChange = async (changes: EdgeChange[]) => {
-    const removedEdges = changes
-      .filter(change => change.type === "remove")
-      .map(change => edges.find(edge => edge.id === change.id))
-      .filter((edge): edge is Edge => edge !== undefined);
-    const nextEdges = applyEdgeChanges(changes, edges);
-    onEdgesChange(changes);
-    if (removedEdges.length === 0) return;
-
-    let nextDefinitionVersion = definitionVersion;
-    for (const edge of removedEdges) {
-      try {
-        const response = await deleteDependency.mutateAsync({
-          param: { routineId },
-          body: {
-            expectedDefinitionVersion: nextDefinitionVersion,
-            routineTaskId: edge.target as UUID,
-            previousRoutineTaskId: edge.source as UUID,
-          },
-        });
-        if (response.success) {
-          setDefinitionVersion(++nextDefinitionVersion);
-        }
-        setRoutineTaskDependencies(currentDependencies =>
-          currentDependencies?.filter(
-            dependency =>
-              !(
-                dependency.routineTaskId === edge.target &&
-                dependency.previousRoutineTaskId === edge.source
-              )
-          )
-        );
-        const syncedEdges: RoutineTaskDependencyGraphDraftEdge[] =
-          nextEdges.map(nextEdge => {
-            const edgeData = nextEdge.data as
-              | { description?: string; progress?: number }
-              | undefined;
-            return {
-              id: nextEdge.id,
-              source: nextEdge.source,
-              target: nextEdge.target,
-              description: edgeData?.description ?? "",
-              progress: edgeData?.progress ?? 0,
-              syncStatus: "synced" as const,
-            };
-          });
-        if (!response.success) {
-          syncedEdges.push({
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            syncStatus: "pending",
-            expectedDefinitionVersion: definitionVersion,
-            operation: "delete",
-          });
-        }
-        await saveDraft({
-          nodes: nodes.map(node => ({
-            id: node.id,
-            position: node.position,
-          })),
-          edges: syncedEdges,
-        });
-      } catch (error) {
-        const errorKey =
-          error instanceof NotegicError &&
-          error.getPresentation &&
-          i18n.exists(error.getPresentation)
-            ? error.getPresentation
-            : error instanceof NotegicAPIError ||
-                error instanceof NotegicValidationError
-              ? i18n.exists(`server.error.${error.unWrap.reason}`)
-                ? `server.error.${error.unWrap.reason}`
-                : "error.encounterUnknownError"
-              : error instanceof Error && i18n.exists(error.message)
-                ? error.message
-                : "error.encounterUnknownError";
-        const syncStatus =
-          error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
-        const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] =
-          nextEdges.map(nextEdge => {
-            const edgeData = nextEdge.data as
-              | { description?: string; progress?: number }
-              | undefined;
-            return {
-              id: nextEdge.id,
-              source: nextEdge.source,
-              target: nextEdge.target,
-              description: edgeData?.description ?? "",
-              progress: edgeData?.progress ?? 0,
-              syncStatus: "synced" as const,
-            };
-          });
-        failedDraftEdges.push({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          syncStatus,
-          operation: "delete",
-          errorKey,
-        });
-        const nextDraft = {
-          nodes: nodes.map(node => ({
-            id: node.id,
-            position: node.position,
-          })),
-          edges: failedDraftEdges,
-        };
-        setEdges(nextEdges);
-        try {
-          await saveDraft(nextDraft);
-        } catch {
-          // Keep the edge removed so the user can continue correcting the graph.
-        }
-        toast.error(tError(error, t));
-      }
-    }
-  };
-
-  const handleNodesChange = async (
-    changes: NodeChange<RoutineTaskGraphNode>[]
-  ) => {
-    onNodesChange(changes);
-    if (
-      changes.some(
-        change => change.type === "position" && change.dragging === true
-      )
-    )
-      setIsDirty(true);
-    const stopped = changes.filter(
-      change => change.type === "position" && change.dragging === false
-    );
-    if (stopped.length > 0) {
-      const positions = new Map(nodes.map(node => [node.id, node.position]));
-      for (const change of stopped) {
-        if (change.type !== "position" || !change.position) continue;
-        positions.set(change.id, change.position);
-        pendingPositions.current.set(change.id, {
-          ...change.position,
-          expectedDefinitionVersion: definitionVersion,
-        });
-      }
-      setIsDirty(true);
-      clearTimeout(positionTimer.current);
-      positionTimer.current = setTimeout(() => void updateNodePositions(), 750);
-      try {
-        await saveDraft({
-          nodes: [...positions].map(([id, position]) => ({ id, position })),
-          edges: localDraft?.edges ?? [],
-        });
-      } catch (error) {
-        toast.error(tError(error, t));
-      }
-    }
-  };
-
-  const handleRetryPendingSync = async () => {
-    if (!routine || isRetryingSync) return;
-
-    setIsRetryingSync(true);
-    let failedCount = 0;
-    let nextDraftEdges = [...(localDraft?.edges ?? [])];
-    let nextDefinitionVersion = definitionVersion;
-    try {
-      await updateNodePositions();
-      await RoutineTaskLocalSimulator.resetPendingRetries(routineId);
-      await transactionSynchronizer.synchronizeTransactions();
-      const pending = await RoutineTaskLocalSimulator.getPendingMutations();
-      const remaining = pending.filter(transaction => {
-        const body = transaction.body as { routineId?: string };
-        const affected = transaction.affected as { routineId?: string } | null;
-        return (body.routineId ?? affected?.routineId) === routineId;
-      }).length;
-      setPendingNodeCount(remaining);
-      if (remaining > 0) {
-        toast.info(t("workspace.fields.pendingSync"));
-        setIsRetryingSync(false);
-        return;
-      }
-      // Only locally acknowledged writes may advance the draft conflict boundary.
-      const acknowledgedDraft = await loadDraft();
-      nextDraftEdges = [...(acknowledgedDraft?.edges ?? [])];
-      const [cached] = await localDB
-        .select()
-        .from(Routine)
-        .where(eq(Routine.id, routineId));
-      nextDefinitionVersion = cached?.definitionVersion ?? definitionVersion;
-      setDefinitionVersion(nextDefinitionVersion);
-    } catch (error) {
-      toast.error(tError(error, t));
-      setIsRetryingSync(false);
-      return;
-    }
-
-    for (const pendingEdge of [...nextDraftEdges].filter(
-      edge => edge.syncStatus === "pending"
-    )) {
-      try {
-        if (pendingEdge.expectedDefinitionVersion === undefined) {
-          nextDraftEdges = nextDraftEdges.map(edge =>
-            edge.id === pendingEdge.id
-              ? {
-                  ...edge,
-                  syncStatus: "invalid",
-                  errorKey: "server.error.DefinitionConflict",
-                }
-              : edge
-          );
-          failedCount++;
-          continue;
-        }
-        nextDefinitionVersion =
-          nextDraftEdges.find(edge => edge.id === pendingEdge.id)
-            ?.expectedDefinitionVersion ??
-          pendingEdge.expectedDefinitionVersion;
-        if (pendingEdge.operation === "update") {
-          const response = await updateDependency.mutateAsync({
-            param: { routineId },
-            body: {
-              expectedDefinitionVersion: nextDefinitionVersion,
-              routineTaskId: pendingEdge.target as UUID,
-              previousRoutineTaskId: pendingEdge.source as UUID,
-              description: pendingEdge.description ?? "",
-              progress: pendingEdge.progress ?? 0,
-            },
-          });
-          if (response.success) {
-            setDefinitionVersion(++nextDefinitionVersion);
-            nextDraftEdges = nextDraftEdges.map(edge =>
-              edge.expectedDefinitionVersion === nextDefinitionVersion - 1
-                ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
-                : edge
-            );
-          }
-          if (!response.success) {
-            failedCount += 1;
-            continue;
-          }
-          nextDraftEdges = nextDraftEdges.map(edge =>
-            edge.id === pendingEdge.id
-              ? {
-                  ...edge,
-                  description: response.data.description,
-                  progress: response.data.progress,
-                  syncStatus: "synced",
-                  operation: undefined,
-                }
-              : edge
-          );
-          setRoutineTaskDependencies(currentDependencies =>
-            currentDependencies?.map(dependency =>
-              dependency.routineTaskId === response.data.routineTaskId &&
-              dependency.previousRoutineTaskId ===
-                response.data.previousRoutineTaskId
-                ? response.data
-                : dependency
-            )
-          );
-          continue;
-        }
-
-        if (pendingEdge.operation === "delete") {
-          const response = await deleteDependency.mutateAsync({
-            param: { routineId },
-            body: {
-              expectedDefinitionVersion: nextDefinitionVersion,
-              routineTaskId: pendingEdge.target as UUID,
-              previousRoutineTaskId: pendingEdge.source as UUID,
-            },
-          });
-          if (response.success) {
-            setDefinitionVersion(++nextDefinitionVersion);
-            nextDraftEdges = nextDraftEdges.map(edge =>
-              edge.expectedDefinitionVersion === nextDefinitionVersion - 1
-                ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
-                : edge
-            );
-          }
-          if (!response.success) {
-            failedCount += 1;
-            continue;
-          }
-          nextDraftEdges = nextDraftEdges.filter(
-            edge => edge.id !== pendingEdge.id
-          );
-          setRoutineTaskDependencies(currentDependencies =>
-            currentDependencies?.filter(
-              dependency =>
-                !(
-                  dependency.routineTaskId === pendingEdge.target &&
-                  dependency.previousRoutineTaskId === pendingEdge.source
-                )
-            )
-          );
-          continue;
-        }
-
-        const response = await createDependency.mutateAsync({
-          param: { routineId },
-          body: {
-            expectedDefinitionVersion: nextDefinitionVersion,
-            routineTaskId: pendingEdge.target as UUID,
-            previousRoutineTaskId: pendingEdge.source as UUID,
-          },
-        });
-        if (response.success) {
-          setDefinitionVersion(++nextDefinitionVersion);
-          nextDraftEdges = nextDraftEdges.map(edge =>
-            edge.expectedDefinitionVersion === nextDefinitionVersion - 1
-              ? { ...edge, expectedDefinitionVersion: nextDefinitionVersion }
-              : edge
-          );
-        }
-        if (!response.success) {
-          failedCount += 1;
-          continue;
-        }
-        nextDraftEdges = nextDraftEdges.map(edge =>
-          edge.id === pendingEdge.id
-            ? {
-                id: edge.id,
-                source: edge.source,
-                target: edge.target,
-                syncStatus: "synced",
-              }
-            : edge
-        );
-        setRoutineTaskDependencies(currentDependencies => {
-          if (currentDependencies === undefined) return undefined;
-          return [
-            ...currentDependencies.filter(
-              dependency =>
-                !(
-                  dependency.routineTaskId === response.data.routineTaskId &&
-                  dependency.previousRoutineTaskId ===
-                    response.data.previousRoutineTaskId
-                )
-            ),
-            response.data,
-          ];
-        });
-      } catch (error) {
-        failedCount += 1;
-        if (error instanceof NotegicAPIError) {
-          const errorKey =
-            error.getPresentation && i18n.exists(error.getPresentation)
-              ? error.getPresentation
-              : i18n.exists(`server.error.${error.unWrap.reason}`)
-                ? `server.error.${error.unWrap.reason}`
-                : "error.encounterUnknownError";
-          nextDraftEdges = nextDraftEdges.map(edge =>
-            edge.id === pendingEdge.id
-              ? {
-                  ...edge,
-                  syncStatus: "invalid" as const,
-                  errorKey,
-                }
-              : edge
-          );
-        }
-      }
-    }
-
-    try {
-      await saveDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: nextDraftEdges,
-      });
-      setReloadVersion(version => version + 1);
-      if (failedCount === 0) toast.success(t("workspace.fields.saved"));
-      else
-        toast.error(
-          t("workspace.notifications.routineDependencyGraphSaveFailed")
-        );
-    } catch {
-      toast.error(
-        t("workspace.notifications.routineDependencyGraphSaveFailed")
-      );
-    } finally {
-      setIsRetryingSync(false);
-    }
-  };
-
-  const handleUpdateDependency = async () => {
-    if (!selectedDependency || !selectedEdgeId) return;
-    try {
-      const response = await updateDependency.mutateAsync({
-        param: { routineId },
-        body: {
-          expectedDefinitionVersion: definitionVersion,
-          routineTaskId: selectedDependency.routineTaskId as UUID,
-          previousRoutineTaskId:
-            selectedDependency.previousRoutineTaskId as UUID,
-          description: dependencyDescription,
-          progress: dependencyProgress,
-        },
-      });
-      if (response.success) setDefinitionVersion(version => version + 1);
-      setRoutineTaskDependencies(currentDependencies =>
-        currentDependencies?.map(dependency =>
-          dependency.routineTaskId === selectedDependency.routineTaskId &&
-          dependency.previousRoutineTaskId ===
-            selectedDependency.previousRoutineTaskId
-            ? response.data
-            : dependency
-        )
-      );
-      setEdges(currentEdges =>
-        currentEdges.map(edge =>
-          edge.id === selectedEdgeId
-            ? {
-                ...edge,
-                data: {
-                  description: response.data.description,
-                  progress: response.data.progress,
-                },
-              }
-            : edge
-        )
-      );
-
-      const draftEdges: RoutineTaskDependencyGraphDraftEdge[] = edges.map(
-        edge => {
-          const existingDraftEdge = localDraft?.edges.find(
-            draftEdge => draftEdge.id === edge.id
-          );
-          const edgeData =
-            edge.id === selectedEdgeId
-              ? {
-                  description: response.data.description,
-                  progress: response.data.progress,
-                }
-              : {
-                  description: existingDraftEdge?.description ?? "",
-                  progress: existingDraftEdge?.progress ?? 0,
-                };
-
-          return {
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            ...edgeData,
-            syncStatus:
-              edge.id === selectedEdgeId && !response.success
-                ? "pending"
-                : (existingDraftEdge?.syncStatus ?? "synced"),
-            ...(edge.id === selectedEdgeId && !response.success
-              ? { operation: "update" as const }
-              : existingDraftEdge?.operation
-                ? { operation: existingDraftEdge.operation }
-                : {}),
-          };
-        }
-      );
-      await saveDraft({
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: draftEdges,
-      });
-    } catch (error) {
-      const errorKey =
-        error instanceof NotegicError &&
-        error.getPresentation &&
-        i18n.exists(error.getPresentation)
-          ? error.getPresentation
-          : error instanceof NotegicAPIError ||
-              error instanceof NotegicValidationError
-            ? i18n.exists(`server.error.${error.unWrap.reason}`)
-              ? `server.error.${error.unWrap.reason}`
-              : "error.encounterUnknownError"
-            : error instanceof Error && i18n.exists(error.message)
-              ? error.message
-              : "error.encounterUnknownError";
-      const syncStatus =
-        error instanceof NotegicAPIError ? ("invalid" as const) : "pending";
-      const failedDraftEdges: RoutineTaskDependencyGraphDraftEdge[] = edges.map(
-        edge => {
-          const existingDraftEdge = localDraft?.edges.find(
-            draftEdge => draftEdge.id === edge.id
-          );
-          const edgeData =
-            edge.id === selectedEdgeId
-              ? {
-                  description: dependencyDescription,
-                  progress: dependencyProgress,
-                }
-              : {
-                  description: existingDraftEdge?.description ?? "",
-                  progress: existingDraftEdge?.progress ?? 0,
-                };
-          return {
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            ...edgeData,
-            syncStatus:
-              edge.id === selectedEdgeId
-                ? syncStatus
-                : (existingDraftEdge?.syncStatus ?? "synced"),
-            ...(edge.id === selectedEdgeId
-              ? { operation: "update" as const, errorKey }
-              : existingDraftEdge?.operation
-                ? { operation: existingDraftEdge.operation }
-                : {}),
-          };
-        }
-      );
-      const nextDraft = {
-        nodes: nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-        })),
-        edges: failedDraftEdges,
-      };
-      setEdges(currentEdges =>
-        currentEdges.map(edge =>
-          edge.id === selectedEdgeId
-            ? {
-                ...edge,
-                data: {
-                  description: dependencyDescription,
-                  progress: dependencyProgress,
-                },
-              }
-            : edge
-        )
-      );
-      try {
-        await saveDraft(nextDraft);
-      } catch {
-        // Keep the edited values visible so the user can correct them in place.
-      }
-      toast.error(tError(error, t));
-    }
-  };
-
-  const pendingSyncCount =
-    pendingNodeCount +
-    (localDraft?.edges.filter(edge => edge.syncStatus === "pending").length ??
-      0);
-  const invalidMutationCount =
-    localDraft?.edges.filter(edge => edge.syncStatus === "invalid").length ?? 0;
-  const isSaving =
-    isSavingPositions ||
-    isRetryingSync ||
-    createDependency.isPending ||
-    deleteDependency.isPending ||
-    updateDependency.isPending;
+    : null;
+  useEffect(() => {
+    setDependencyDescription(selectedEdge?.description ?? "");
+    setDependencyProgress(selectedEdge?.progress ?? 0);
+  }, [selectedEdgeId, selectedEdge?.description, selectedEdge?.progress]);
+  const changes = draft?.snapshot ? getRoutineTaskGraphChanges(draft) : null;
+  const isDirty =
+    !!draft?.snapshot?.confirmed ||
+    (!!changes &&
+      [changes.tasks, changes.dependencies].some(
+        group =>
+          group.creates.length + group.updates.length + group.deletes.length > 0
+      ));
   const canRealign =
     !isSaving &&
+    !draft?.snapshot?.confirmed &&
     !isRealigning &&
-    !createNode.isPending &&
-    !updateNode.isPending &&
-    pendingPositions.current.size === 0 &&
-    routineTaskDependencies !== undefined &&
-    nodes.length === routineTasks.length &&
+    nodes.length > 0 &&
     nodes.every(
       node => !node.dragging && node.measured?.width && node.measured?.height
     ) &&
     hasGraphOverlap(nodes);
 
+  const saveGraph = async (): Promise<boolean> => {
+    const current = draftRef.current;
+    if (!current?.snapshot || saving.current || hasConflict || recovery)
+      return false;
+    saving.current = true;
+    setIsSaving(true);
+    try {
+      await saveDraft(current);
+      const request = {
+        header: getClientRequestHeaders(navigator.userAgent),
+        param: { routineId },
+        body: getRoutineTaskGraphChanges(current),
+      };
+      let confirmed = current.snapshot.confirmed;
+      if (!confirmed) {
+        if (
+          routine?.definitionVersion !== undefined &&
+          routine.definitionVersion > current.snapshot.definitionVersion
+        ) {
+          const remote = await readLatestGraph();
+          if (activeRoutine.current !== routineId) return false;
+          if (remote.definitionVersion !== current.snapshot.definitionVersion) {
+            const result = reconcileRoutineTaskGraphDraft(current, remote);
+            if (result.conflicts.length) {
+              setHasConflict(true);
+              setRecovery({
+                draft: current,
+                remote,
+                conflicts: result.conflicts,
+              });
+            } else {
+              await saveDraft(result.draft);
+              toast.info(t("workspace.graph.reviewReady"));
+            }
+            return false;
+          }
+        }
+        const pending = await localDB
+          .select({ sequence: Transaction.sequence })
+          .from(Transaction)
+          .where(
+            sql`json_extract(${Transaction.body}, '$.routineId') = ${routineId} OR json_extract(${Transaction.affected}, '$.routineId') = ${routineId}`
+          )
+          .limit(1);
+        if (pending.length) {
+          toast.info(
+            t("workspace.notifications.routineDependencyGraphSaveFailed")
+          );
+          return false;
+        }
+        const response = await updateGraph.mutateAsync(request);
+        if (!response.success)
+          throw new NotegicAPIError(new NotegicException(response.exception));
+        confirmed = response.data;
+        // A confirmed remote commit is never replayed if local reconciliation fails.
+        await saveDraft({
+          ...current,
+          snapshot: { ...current.snapshot, confirmed },
+        });
+      }
+      await RoutineTaskDependencyLocalSynchronizer.syncUpdateRoutineTaskGraphByRoutineId(
+        request,
+        confirmed
+      );
+      stationRoutineManager.updateRoutineTaskGraph(routineId, confirmed);
+      const baselineEdges = confirmed.dependencies.map(edge => ({
+        id: getRoutineTaskDependencyEdgeId(
+          edge.previousRoutineTaskId,
+          edge.routineTaskId
+        ),
+        source: edge.previousRoutineTaskId,
+        target: edge.routineTaskId,
+        description: edge.description,
+        progress: edge.progress,
+      }));
+      const clean: RoutineTaskDependencyGraphDraftData = {
+        nodes: confirmed.tasks.map(task => ({
+          id: task.id,
+          position: { x: task.x, y: task.y },
+        })),
+        edges: baselineEdges,
+        snapshot: {
+          version: 2,
+          definitionVersion: confirmed.definitionVersion,
+          tasks: confirmed.tasks,
+          baselineTasks: confirmed.tasks,
+          baselineEdges,
+        },
+        updatedAt: confirmed.updatedAt,
+      };
+      if (activeRoutine.current === routineId) {
+        draftRef.current = clean;
+        setDraft(clean);
+      }
+      const queryClient = getQueryClient();
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.routine.oneById(routineId),
+          exact: true,
+          refetchType: "none",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.routineTask.manyByRoutineId(routineId),
+          exact: true,
+          refetchType: "none",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.routineTaskDependency.byRoutineId(routineId),
+          exact: true,
+          refetchType: "none",
+        }),
+        ...Array.from(
+          new Set([
+            ...current.snapshot.baselineTasks.map(task => task.id),
+            ...confirmed.tasks.map(task => task.id),
+          ])
+        ).map(taskId =>
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.routineTask.oneById(taskId as UUID),
+            exact: true,
+            refetchType: "none",
+          })
+        ),
+      ]);
+      toast.success(t("workspace.notifications.routineDependencyGraphSaved"));
+      return true;
+    } catch (error) {
+      if (
+        error instanceof NotegicAPIError &&
+        error.unWrap.reason === "DefinitionConflict"
+      )
+        setHasConflict(true);
+      toast.error(tError(error, t));
+      return false;
+    } finally {
+      saving.current = false;
+      setIsSaving(false);
+    }
+  };
+
+  const handleConnect = async (connection: Connection) => {
+    const current = draftRef.current;
+    if (
+      !current?.snapshot ||
+      saving.current ||
+      current.snapshot.confirmed ||
+      !connection.source ||
+      !connection.target
+    )
+      return;
+    const taskIds = new Set(current.snapshot.tasks.map(task => task.id));
+    if (
+      !isRoutineTaskDependencyInRoutine(
+        taskIds,
+        connection.source,
+        connection.target
+      )
+    ) {
+      toast.error(t("workspace.validation.dependencyOutsideRoutine"));
+      return;
+    }
+    if (
+      current.snapshot.tasks.find(task => task.id === connection.target)
+        ?.kind === "Start"
+    ) {
+      toast.error(t("workspace.validation.startingNodeIncoming"));
+      return;
+    }
+    if (
+      hasRoutineTaskDependencyEdge(
+        current.edges,
+        connection.source,
+        connection.target
+      )
+    ) {
+      toast.error(t("workspace.validation.dependencyDuplicate"));
+      return;
+    }
+    if (
+      connection.source === connection.target ||
+      hasRoutineTaskDependencyCycle(
+        current.edges,
+        connection.source,
+        connection.target
+      )
+    ) {
+      toast.error(t("workspace.validation.dependencyCycle"));
+      return;
+    }
+    await saveDraft({
+      ...current,
+      edges: [
+        ...current.edges,
+        {
+          id: getRoutineTaskDependencyEdgeId(
+            connection.source,
+            connection.target
+          ),
+          source: connection.source,
+          target: connection.target,
+          description: "",
+          progress: 0,
+        },
+      ],
+    });
+  };
+  const handleEdgesChange = async (changes: EdgeChange[]) => {
+    const current = draftRef.current;
+    if (!current?.snapshot || saving.current || current.snapshot.confirmed)
+      return;
+    const removed = new Set(
+      changes
+        .filter(change => change.type === "remove")
+        .map(change => change.id)
+    );
+    if (removed.size)
+      await saveDraft({
+        ...current,
+        edges: current.edges.filter(edge => !removed.has(edge.id)),
+      });
+  };
+  const handleNodesChange = async (
+    changes: NodeChange<RoutineTaskGraphNode>[]
+  ) => {
+    if (saving.current || draftRef.current?.snapshot?.confirmed) return;
+    onNodesChange(changes);
+    const current = draftRef.current;
+    if (!current?.snapshot) return;
+    const positions = new Map<string, { x: number; y: number }>();
+    for (const change of changes)
+      if (
+        change.type === "position" &&
+        change.dragging === false &&
+        change.position
+      )
+        positions.set(change.id, change.position);
+    const removed = new Set(
+      changes
+        .filter(change => change.type === "remove")
+        .map(change => change.id)
+    );
+    if (!positions.size && !removed.size) return;
+    const tasks = current.snapshot.tasks
+      .filter(task => !removed.has(task.id))
+      .map(task =>
+        positions.has(task.id) ? { ...task, ...positions.get(task.id)! } : task
+      );
+    await saveDraft({
+      ...current,
+      nodes: tasks.map(task => ({
+        id: task.id,
+        position: { x: task.x, y: task.y },
+      })),
+      edges: current.edges.filter(
+        edge => !removed.has(edge.source) && !removed.has(edge.target)
+      ),
+      snapshot: { ...current.snapshot, tasks },
+    });
+  };
   const realign = async () => {
-    if (!canRealign || realigning.current) return false;
-    realigning.current = true;
+    const current = draftRef.current;
+    if (!current?.snapshot || current.snapshot.confirmed || !canRealign)
+      return false;
     setIsRealigning(true);
     try {
       const positions = realignGraph(nodes, edges);
@@ -1545,63 +1525,24 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
         toast.error(t("workspace.graph.realignError"));
         return false;
       }
-      const nextPositions = new Map(
-        positions.map(node => [node.id, node.position])
-      );
-      const nextNodes = nodes.map(node => ({
-        ...node,
-        position: nextPositions.get(node.id)!,
-      }));
+      const byId = new Map(positions.map(node => [node.id, node.position]));
       await saveDraft({
+        ...current,
         nodes: positions,
-        edges: localDraft?.edges ?? [],
+        snapshot: {
+          ...current.snapshot,
+          tasks: current.snapshot.tasks.map(task => ({
+            ...task,
+            ...byId.get(task.id),
+          })),
+        },
       });
-      for (const node of nextNodes) {
-        const previous = nodes.find(previous => previous.id === node.id)!;
-        if (
-          node.position.x === previous.position.x &&
-          node.position.y === previous.position.y
-        )
-          continue;
-        pendingPositions.current.set(node.id, {
-          ...node.position,
-          expectedDefinitionVersion: definitionVersion,
-        });
-      }
-      setNodes(nextNodes);
-      setIsDirty(true);
-      await updateNodePositions();
       return true;
     } catch (error) {
       toast.error(tError(error, t));
       return false;
     } finally {
-      realigning.current = false;
       setIsRealigning(false);
-    }
-  };
-  const createStartingNode = async () => {
-    try {
-      const response = await createNode.mutateAsync({
-        header: getClientRequestHeaders(navigator.userAgent),
-        body: {
-          routineId,
-          kind: "Start",
-          title: t("workspace.fields.startingNode"),
-          payload: {
-            schemaVersion: 1,
-            isActive: true,
-            description: "",
-          },
-          x: 0,
-          y: 0,
-          expectedDefinitionVersion: definitionVersion,
-        },
-      });
-      if (!response.success) toast.info(t("workspace.fields.pendingSync"));
-      setReloadVersion(version => version + 1);
-    } catch (error) {
-      toast.error(tError(error, t));
     }
   };
 
@@ -1614,19 +1555,35 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
         routine,
         nodes,
         edges,
-        definitionVersion,
+        definitionVersion: draft?.snapshot?.definitionVersion ?? 1,
+        hasConflict,
+        isReviewing,
+        recovery,
+        reviewGraph,
+        resolveConflicts,
+        closeRecovery: () => setRecovery(null),
         isDirty,
         isLoading,
-        isRetryingSync,
+        isRetryingSync: false,
         isRealigning,
         isSaving,
-        isUpdatingDependency: updateDependency.isPending,
+        canEdit:
+          !!draft?.snapshot &&
+          !isSaving &&
+          !isReviewing &&
+          !recovery &&
+          !draft.snapshot.confirmed,
+        isSavingLayout: isSaving,
+        isUpdatingDependency: false,
         canRealign,
         canAddStartingNode:
-          routineTasks.filter(task => task.kind === "Start").length < 16 &&
-          !createNode.isPending,
-        pendingSyncCount,
-        invalidMutationCount,
+          !!draft?.snapshot &&
+          !isSaving &&
+          !draft.snapshot.confirmed &&
+          (draft?.snapshot?.tasks.filter(task => task.kind === "Start")
+            .length ?? 0) < 16,
+        pendingSyncCount: 0,
+        invalidMutationCount: 0,
         selectedEdgeId,
         selectedDependency,
         setSelectedEdgeId,
@@ -1635,12 +1592,50 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
         dependencyProgress,
         setDependencyProgress,
         reload: () => setReloadVersion(version => version + 1),
-        createStartingNode,
+        createStartingNode: async () => {
+          await createTask({
+            routineId,
+            kind: "Start",
+            title: t("workspace.fields.startingNode"),
+            payload: { schemaVersion: 1, isActive: true, description: "" },
+            x: 0,
+            y: 0,
+          });
+        },
+        createTask,
+        editingTask:
+          draft?.snapshot?.tasks.find(task => task.id === editingTaskId) ??
+          null,
+        setEditingTaskId,
+        updateTask,
         connectDependency: handleConnect,
         changeEdges: handleEdgesChange,
         changeNodes: handleNodesChange,
-        updateDependency: handleUpdateDependency,
-        retryPendingSync: handleRetryPendingSync,
+        updateDependency: async () => {
+          const current = draftRef.current;
+          if (
+            !current?.snapshot ||
+            saving.current ||
+            current.snapshot.confirmed
+          )
+            return;
+          await saveDraft({
+            ...current,
+            edges: current.edges.map(edge =>
+              edge.id === selectedEdgeId
+                ? {
+                    ...edge,
+                    description: dependencyDescription,
+                    progress: dependencyProgress,
+                  }
+                : edge
+            ),
+          });
+        },
+        retryPendingSync: async () => {
+          await saveGraph();
+        },
+        saveGraph,
         realign,
       }}
     >

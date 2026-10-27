@@ -48,6 +48,7 @@ content, user uploads and prose emoji are not separate reusable application icon
 | Routine and record filters | `ListFilter` | Status, purpose and date-range controls; [RecordFilters], [RoutineTable], [RoutineTaskTable]. |
 | Routine and record sort order | `ArrowDownUp` | Sorting field and direction; [RoutineSearchOrder]. |
 | Realign dependency graph | `Workflow` | Whole Routine task graph realignment; [GraphToolbar]. |
+| Routine activation state | `Power` / `PowerOff` | Active / inactive Routine toggle in [GraphToolbar]; not execution or task status. |
 | Copy to clipboard / duplicate | `CopyIcon` / `Copy` | Preferences, API keys, code and existing duplicate actions. A successful-copy `CheckIcon` is state feedback. |
 
 ## Canonical workspace entities
@@ -76,7 +77,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-10-24, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **126 referenced export names / 101 distinct
+imports and re-exports (excluding tests). There are **128 referenced export names / 103 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -161,9 +162,11 @@ The source column gives a representative existing consumer, not every call site.
 | `Pencil`, `PencilIcon` | Rename / PDF drawing tool | [RootShelfMenu], [RoutineMenu], [MaterialPDFViewer] |
 | `Play` | Play video guide | [VideoGuideWidget] |
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
-| `RefreshCw`, `RefreshCwIcon` | Refresh / retry / browser permission check | [MaterialViewerFrame], [GraphToolbar], [BrowserPermissionsTab] |
+| `Power` | Active Routine toggle state | [GraphToolbar] |
+| `PowerOff` | Inactive Routine toggle state | [GraphToolbar] |
+| `RefreshCw`, `RefreshCwIcon` | Refresh / retry / browser permission check | [MaterialViewerFrame], [BrowserPermissionsTab] |
 | `RotateCcwIcon` | Reset preferences / PDF zoom | [AboutTab], [MaterialPDFViewer] |
-| `SaveIcon` | Save PDF changes | [MaterialPDFViewer] |
+| `SaveIcon` | Save changes / submit graph layout | [MaterialPDFViewer], [GraphToolbar] |
 | `SearchIcon` | Search / command / filter | [SupportedIconTable], [Command] |
 | `SettingsIcon` | Settings navigation | [AppSidebar] |
 | `ShieldCheckIcon` | Security / authenticated API context | [UpgradeTab], [APIReference] |

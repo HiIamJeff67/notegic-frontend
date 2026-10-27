@@ -454,6 +454,16 @@ export const SimpleChineseWorkspaceTranslation = {
     routineTaskRecordTable: "流程任务记录表格",
   },
   graph: {
+    conflictDescription:
+      "Routine 已更改。未保存的草稿仍然保留，请先比较最新版本再保存。",
+    reviewLatest: "比较最新更改",
+    conflictChoices:
+      "选择要保留的冲突值。删除任务也会移除其连线。这只会更新草稿；之后仍需按保存才会提交。",
+    keepMine: "保留我的内容",
+    useLatest: "使用最新内容",
+    deletedValue: "已删除",
+    applyToDraft: "应用到草稿",
+    reviewReady: "最新更改已合并到草稿。请检查后再按保存，目前尚未提交。",
     realign: "重新排列",
     realignTitle: "重新排列整张图？",
     realignDescription:
@@ -494,6 +504,7 @@ export const SimpleChineseWorkspaceTranslation = {
     oneShot: "单次",
     repeat: "重复",
     noRepeat: "不重复",
+    startOnActivation: "启用时开始，而非使用固定日期。",
     customSchedule: "自定义排程",
     customScheduleDescription: "设置明确的开始和结束时间。",
     executionTimeoutMinutes: "执行超时（分钟）",
@@ -919,8 +930,8 @@ export const SimpleChineseWorkspaceTranslation = {
     invalidSubShelfName: "子层架名称无效。",
     sensitiveClipboard: "已复制看似敏感的内容，粘贴前请确认目标位置。",
     routineTasksOnlineOnly: "只有连接时才能查看流程任务。",
-    routineDependencyGraphSaved: "流程任务图已保存到本地，等待同步到后端。",
-    routineDependencyGraphSaveFailed: "无法将流程任务图保存到本地。",
+    routineDependencyGraphSaved: "流程已保存。",
+    routineDependencyGraphSaveFailed: "无法保存，请重试。",
     dependencyCreationHint: "请先选择来源任务，再选择目标任务以建立依赖关系。",
     sessionExpired: "会话已结束，请重新登录。",
     realtimeError: "实时连接发生错误。",
@@ -933,6 +944,13 @@ export const SimpleChineseWorkspaceTranslation = {
     twoFactorDescription: "添加第二道验证步骤。",
   },
   trash: {
+    selectVisible: "选择当前显示的项目",
+    selectItem: "选择“{{name}}”",
+    deleteSelected: "删除所选项目",
+    restoreSelected: "还原所选项目",
+    hardDeleteItemsTitle: "永久删除 {{count}} 个项目？",
+    hardDeleteItemsDescription:
+      "永久删除所选的 {{count}} 个项目及其相关数据。此操作无法撤销，请输入 DELETE 确认。",
     eyebrow: "工作区",
     title: "回收站",
     description: "还原已删除的数据，或在确认后彻底删除支持的项目。",

@@ -86,6 +86,7 @@ export class RoutineLocalSynchronizer {
           phase: response.data.phase,
           timeoutSeconds: response.data.timeoutSeconds,
           isActive: response.data.isActive,
+          hasCustomSchedule: response.data.hasCustomSchedule,
           definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
@@ -105,6 +106,7 @@ export class RoutineLocalSynchronizer {
             phase: response.data.phase,
             timeoutSeconds: response.data.timeoutSeconds,
             isActive: response.data.isActive,
+            hasCustomSchedule: response.data.hasCustomSchedule,
             definitionVersion: response.data.definitionVersion,
             isPinned: response.data.isPinned,
             scheduledStartAt: response.data.scheduledStartAt,
@@ -196,6 +198,7 @@ export class RoutineLocalSynchronizer {
             phase: routine.phase,
             timeoutSeconds: routine.timeoutSeconds,
             isActive: routine.isActive,
+            hasCustomSchedule: routine.hasCustomSchedule ?? true,
             definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
@@ -215,6 +218,7 @@ export class RoutineLocalSynchronizer {
             phase: sql`excluded.phase`,
             timeoutSeconds: sql`excluded.timeout_seconds`,
             isActive: sql`excluded.is_active`,
+            hasCustomSchedule: sql`excluded.has_custom_schedule`,
             definitionVersion: sql`excluded.definition_version`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
@@ -327,6 +331,7 @@ export class RoutineLocalSynchronizer {
       phase: RoutinePhase | null;
       timeoutSeconds: number;
       isActive: boolean;
+      hasCustomSchedule?: boolean;
       definitionVersion: number;
       isPinned: boolean;
       scheduledStartAt: Date;
@@ -360,6 +365,7 @@ export class RoutineLocalSynchronizer {
             phase: routine.phase,
             timeoutSeconds: routine.timeoutSeconds,
             isActive: routine.isActive,
+            hasCustomSchedule: routine.hasCustomSchedule ?? true,
             definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
             scheduledStartAt: routine.scheduledStartAt,
@@ -379,6 +385,7 @@ export class RoutineLocalSynchronizer {
             phase: sql`excluded.phase`,
             timeoutSeconds: sql`excluded.timeout_seconds`,
             isActive: sql`excluded.is_active`,
+            hasCustomSchedule: sql`excluded.has_custom_schedule`,
             definitionVersion: sql`excluded.definition_version`,
             isPinned: sql`excluded.is_pinned`,
             scheduledStartAt: sql`excluded.scheduled_start_at`,
@@ -493,6 +500,9 @@ export class RoutineLocalSynchronizer {
         description: request.body.description,
         timeoutSeconds: request.body.timeoutSeconds ?? 300,
         isActive: request.body.isActive ?? false,
+        hasCustomSchedule:
+          request.body.hasCustomSchedule ??
+          Boolean(request.body.scheduledStartAt || request.body.scheduledEndAt),
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt:
           request.body.scheduledStartAt ?? response.data.createdAt,
@@ -528,6 +538,9 @@ export class RoutineLocalSynchronizer {
           description: routine.description,
           timeoutSeconds: routine.timeoutSeconds ?? 300,
           isActive: routine.isActive ?? false,
+          hasCustomSchedule:
+            routine.hasCustomSchedule ??
+            Boolean(routine.scheduledStartAt || routine.scheduledEndAt),
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? response.data.createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? response.data.createdAt,
@@ -583,6 +596,9 @@ export class RoutineLocalSynchronizer {
           ...(request.body.values.timeoutSeconds !== undefined && {
             timeoutSeconds: request.body.values.timeoutSeconds,
           }),
+          ...(request.body.values.hasCustomSchedule !== undefined && {
+            hasCustomSchedule: request.body.values.hasCustomSchedule,
+          }),
           ...(request.body.values.isActive !== undefined && {
             isActive: request.body.values.isActive,
           }),
@@ -603,6 +619,18 @@ export class RoutineLocalSynchronizer {
             timezone: request.body.values.timezone,
           }),
           ...(request.body.setNull?.period && { period: null }),
+          ...(response.data.hasCustomSchedule !== undefined && {
+            hasCustomSchedule: response.data.hasCustomSchedule,
+          }),
+          ...(response.data.scheduledStartAt && {
+            scheduledStartAt: response.data.scheduledStartAt,
+          }),
+          ...(response.data.scheduledEndAt && {
+            scheduledEndAt: response.data.scheduledEndAt,
+          }),
+          ...(response.data.definitionVersion !== undefined && {
+            definitionVersion: response.data.definitionVersion,
+          }),
           updatedAt: response.data.updatedAt,
         })
         .where(
@@ -666,6 +694,9 @@ export class RoutineLocalSynchronizer {
             }),
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
+            }),
+            ...(routine.values.hasCustomSchedule !== undefined && {
+              hasCustomSchedule: routine.values.hasCustomSchedule,
             }),
             ...(routine.values.isActive !== undefined && {
               isActive: routine.values.isActive,
@@ -850,6 +881,7 @@ export class RoutineLocalSynchronizer {
           phase: response.data.phase,
           timeoutSeconds: response.data.timeoutSeconds,
           isActive: response.data.isActive,
+          hasCustomSchedule: response.data.hasCustomSchedule,
           definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
@@ -882,6 +914,7 @@ export class RoutineLocalSynchronizer {
           phase: sql`excluded.phase`,
           timeoutSeconds: sql`excluded.timeout_seconds`,
           isActive: sql`excluded.is_active`,
+          hasCustomSchedule: sql`excluded.has_custom_schedule`,
           definitionVersion: sql`excluded.definition_version`,
           isPinned: sql`excluded.is_pinned`,
           scheduledStartAt: sql`excluded.scheduled_start_at`,

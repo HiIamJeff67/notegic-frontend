@@ -14,22 +14,36 @@ import type {
   GetRoutineTaskDependenciesByRoutineIdResponse,
   UpdateRoutineTaskDependencyByRoutineIdRequest,
   UpdateRoutineTaskDependencyByRoutineIdResponse,
+  UpdateRoutineTaskGraphByRoutineIdRequest,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { type UseQueryOptions, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import {
   mutationFnCreateRoutineTaskDependencyByRoutineId,
   mutationFnDeleteRoutineTaskDependencyByRoutineId,
   mutationFnUpdateRoutineTaskDependencyByRoutineId,
+  mutationFnUpdateRoutineTaskGraphByRoutineId,
   queryFnGetRoutineTaskDependenciesByRoutineId,
 } from "@/api/invokers/routineTaskDependency.invoker";
 import { RoutineTaskDependencyLocalSimulator } from "@/api/local/simulators/routineTaskDependency.simulator";
 import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
+
+export const useUpdateRoutineTaskGraphByRoutineId = () =>
+  useMutation({
+    retry: false,
+    networkMode: "always",
+    mutationFn: async (request: UpdateRoutineTaskGraphByRoutineIdRequest) => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response =
+        await mutationFnUpdateRoutineTaskGraphByRoutineId(request);
+      return response;
+    },
+  });
 
 const getMissingNetworkError = (error: unknown) =>
   error instanceof NotegicFetchError &&
@@ -65,10 +79,6 @@ export const useGetRoutineTaskDependenciesByRoutineId = (
 
         const response =
           await queryFnGetRoutineTaskDependenciesByRoutineId(request);
-        SessionStorageManipulator.ensureItem(
-          SessionStorageKey.csrfToken,
-          response.refreshableTokens?.newCSRFToken
-        );
         await RoutineTaskDependencyLocalSynchronizer.syncGetRoutineTaskDependenciesByRoutineId(
           request,
           response
@@ -139,10 +149,6 @@ export const useCreateRoutineTaskDependencyByRoutineId = () => {
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTaskDependencyLocalSynchronizer.syncCreateRoutineTaskDependencyByRoutineId(
         request,
         response
@@ -192,10 +198,6 @@ export const useUpdateRoutineTaskDependencyByRoutineId = () => {
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTaskDependencyLocalSynchronizer.syncUpdateRoutineTaskDependencyByRoutineId(
         request,
         response
@@ -243,10 +245,6 @@ export const useDeleteRoutineTaskDependencyByRoutineId = () => {
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTaskDependencyLocalSynchronizer.syncDeleteRoutineTaskDependencyByRoutineId(
         request,
         response

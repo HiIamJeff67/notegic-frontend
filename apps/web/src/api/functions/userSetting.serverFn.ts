@@ -1,3 +1,4 @@
+import { NotegicAPIError } from "@shared/api/exceptions";
 import {
   GetMySettingRequest,
   GetMySettingResponse,
@@ -6,9 +7,9 @@ import {
 } from "@shared/api/interfaces/userSetting.interface";
 import { getRetryAt } from "@shared/api/retry";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const requestUpstream = async (
@@ -25,9 +26,8 @@ const requestUpstream = async (
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       ...(method === "PUT" ? { body: JSON.stringify(request.body) } : {}),
@@ -36,16 +36,16 @@ const requestUpstream = async (
     }
   );
 
-  if (response.status === 429) {
-    return {
-      rateLimitedUntil: getRetryAt(response.headers.get("Retry-After")),
-    };
-  }
-
   forwardUpstreamSetCookies(response);
-  const formattedResponse = await readAPIResponse(response);
-
-  return formattedResponse;
+  try {
+    return await readAPIResponse(response);
+  } catch (error) {
+    if (response.status === 429 && error instanceof NotegicAPIError)
+      return {
+        rateLimitedUntil: getRetryAt(response.headers.get("Retry-After")),
+      };
+    throw error;
+  }
 };
 
 export const GetMySetting = createServerFn({ method: "GET" })

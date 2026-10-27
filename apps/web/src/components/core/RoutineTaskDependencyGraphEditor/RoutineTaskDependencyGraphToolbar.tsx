@@ -1,5 +1,12 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Download, Plus, RefreshCw, Workflow } from "lucide-react";
+import {
+  Download,
+  Plus,
+  Power,
+  PowerOff,
+  SaveIcon,
+  Workflow,
+} from "lucide-react";
 import {
   RoutineTaskActionIcon,
   RoutineTaskStartIcon,
@@ -12,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -20,37 +28,96 @@ import {
 
 interface RoutineTaskDependencyGraphToolbarProps {
   isAddMenuOpen: boolean;
-  isRetryingSync: boolean;
+  isActive: boolean;
+  isUpdatingRoutine: boolean;
+  onActiveChange: (active: boolean) => void;
   isSaving: boolean;
+  canEdit?: boolean;
+  isSavingLayout: boolean;
+  canSave: boolean;
+  onSave: () => void;
   canRealign: boolean;
   onRealign: () => void;
-  pendingSyncCount: number;
   onAddMenuOpenChange: (open: boolean) => void;
   onOpenCreateRoutineTaskDialog: () => void;
   onAddStartingNode: () => void;
   canAddStartingNode: boolean;
-  onRetryPendingSync: () => void;
   onExport: () => void;
 }
 
 const RoutineTaskDependencyGraphToolbar = ({
   isAddMenuOpen,
-  isRetryingSync,
+  isActive,
+  isUpdatingRoutine,
+  onActiveChange,
   isSaving,
+  canEdit = true,
+  isSavingLayout,
+  canSave,
+  onSave,
   canRealign,
   onRealign,
-  pendingSyncCount,
   onAddMenuOpenChange,
   onOpenCreateRoutineTaskDialog,
   onAddStartingNode,
   canAddStartingNode,
-  onRetryPendingSync,
   onExport,
 }: RoutineTaskDependencyGraphToolbarProps) => {
   const { t } = useTranslation();
 
   return (
-    <ButtonGroup className="shrink-0">
+    <ButtonGroup className="shrink-0 divide-x divide-input rounded-md border border-input bg-background [&>[data-slot=button]]:border-0">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 px-0 [&_svg]:size-3.5"
+            disabled={isSaving || isUpdatingRoutine || !canEdit}
+            aria-label={t("workspace.fields.active")}
+            aria-pressed={isActive}
+            aria-busy={isUpdatingRoutine}
+            onClick={() => onActiveChange(!isActive)}
+          >
+            {isUpdatingRoutine ? (
+              <Spinner />
+            ) : isActive ? (
+              <Power />
+            ) : (
+              <PowerOff />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          {isActive ? t("workspace.menu.pause") : t("workspace.menu.resume")}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 px-0 [&_svg]:size-3.5"
+            disabled={!canSave || isSaving}
+            onClick={onSave}
+            aria-label={
+              isSavingLayout ? t("workspace.fields.saving") : t("common.save")
+            }
+            aria-busy={isSavingLayout}
+          >
+            {isSavingLayout ? (
+              <Spinner aria-label={t("workspace.fields.saving")} />
+            ) : (
+              <SaveIcon />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          {isSavingLayout ? t("workspace.fields.saving") : t("common.save")}
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenu open={isAddMenuOpen} onOpenChange={onAddMenuOpenChange}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -61,6 +128,7 @@ const RoutineTaskDependencyGraphToolbar = ({
                 size="icon"
                 className="h-7 w-7 px-0 [&_svg]:size-3.5"
                 aria-label={t("workspace.fields.create")}
+                disabled={isSaving || !canEdit}
               >
                 <Plus />
               </Button>
@@ -103,27 +171,6 @@ const RoutineTaskDependencyGraphToolbar = ({
           {t("workspace.graph.realign")}
         </TooltipContent>
       </Tooltip>
-
-      {pendingSyncCount > 0 && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-7 w-7 px-0 [&_svg]:size-3.5"
-              disabled={isSaving}
-              onClick={onRetryPendingSync}
-              aria-label={t("workspace.fields.retrySync")}
-            >
-              <RefreshCw className={isRetryingSync ? "animate-spin" : ""} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            {t("workspace.fields.retrySync")}
-          </TooltipContent>
-        </Tooltip>
-      )}
 
       <Tooltip>
         <TooltipTrigger asChild>

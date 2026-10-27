@@ -9,6 +9,7 @@ import {
   CreateSubShelvesByRootShelfIds,
   DeleteMySubShelfById,
   DeleteMySubShelvesByIds,
+  HardDeleteMySubShelvesByIds,
   GetMySubShelvesByRootShelfId,
   GetMySubShelfById,
   GetMySubShelvesAndItemsByPrevSubShelfId,
@@ -21,6 +22,10 @@ import {
   UpdateMySubShelvesByIds,
 } from "@/api/functions/subShelf.serverFn";
 import {
+  type HardDeleteMySubShelvesByIdsRequest,
+  HardDeleteMySubShelvesByIdsRequestSchema,
+  type HardDeleteMySubShelvesByIdsResponse,
+  HardDeleteMySubShelvesByIdsResponseSchema,
   type MoveMySubShelvesByRootShelfIdsRequest,
   MoveMySubShelvesByRootShelfIdsRequestSchema,
   type MoveMySubShelvesByRootShelfIdsResponse,
@@ -523,6 +528,29 @@ export const mutationFnDeleteMySubShelvesByIds = async (
           throw error;
       }
     } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnHardDeleteMySubShelvesByIds = async (
+  request: HardDeleteMySubShelvesByIdsRequest
+): Promise<HardDeleteMySubShelvesByIdsResponse> => {
+  try {
+    const validatedRequest =
+      HardDeleteMySubShelvesByIdsRequestSchema.parse(request);
+    const response = await HardDeleteMySubShelvesByIds({
+      data: validatedRequest,
+    });
+    return HardDeleteMySubShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;

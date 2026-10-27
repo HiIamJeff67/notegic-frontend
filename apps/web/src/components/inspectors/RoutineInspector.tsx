@@ -57,6 +57,7 @@ const RoutineInspector = ({
     timeoutMinutes: number;
     phase: RoutinePhase | null;
     isActive: boolean;
+    hasCustomSchedule: boolean;
     isPinned: boolean;
     scheduledStartAt: Date;
     scheduledEndAt: Date;
@@ -68,6 +69,7 @@ const RoutineInspector = ({
     timeoutMinutes: 5,
     phase: null,
     isActive: false,
+    hasCustomSchedule: false,
     isPinned: false,
     scheduledStartAt: new Date(),
     scheduledEndAt: new Date(),
@@ -83,6 +85,7 @@ const RoutineInspector = ({
     end: number;
   }>({ start: 1, end: 1 });
   const hasInvalidSchedule =
+    (values.hasCustomSchedule || values.period !== null) &&
     values.period !== RoutinePeriod.Weekly &&
     values.period !== RoutinePeriod.Monthly &&
     (values.period === RoutinePeriod.Daily
@@ -105,6 +108,7 @@ const RoutineInspector = ({
       timeoutMinutes: 5,
       phase: null,
       isActive: false,
+      hasCustomSchedule: false,
       isPinned: false,
       scheduledStartAt,
       scheduledEndAt,
@@ -139,6 +143,7 @@ const RoutineInspector = ({
           description: response.data.description,
           phase: response.data.phase,
           isActive: response.data.isActive,
+          hasCustomSchedule: response.data.hasCustomSchedule,
           definitionVersion: response.data.definitionVersion,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
@@ -184,6 +189,7 @@ const RoutineInspector = ({
           timeoutMinutes: (response.data.timeoutSeconds ?? 300) / 60,
           phase: response.data.phase,
           isActive: response.data.isActive,
+          hasCustomSchedule: response.data.hasCustomSchedule,
           isPinned: response.data.isPinned,
           scheduledStartAt: response.data.scheduledStartAt,
           scheduledEndAt: response.data.scheduledEndAt,
@@ -273,9 +279,11 @@ const RoutineInspector = ({
           description: values.description.trim(),
           timeoutSeconds: values.timeoutMinutes * 60,
           isActive: values.isActive,
+          hasCustomSchedule: values.hasCustomSchedule,
           isPinned: values.isPinned,
-          scheduledStartAt,
-          scheduledEndAt,
+          ...(values.hasCustomSchedule || values.period !== null
+            ? { scheduledStartAt, scheduledEndAt }
+            : {}),
           ...(values.period === null ? {} : { period: values.period }),
           timezone: values.timezone.trim(),
         },
@@ -424,87 +432,112 @@ const RoutineInspector = ({
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                {values.period === RoutinePeriod.Weekly ? (
-                  <>
-                    <Label>{t("workspace.fields.weekdays")}</Label>
-                    <WeekdayPicker
-                      value={weekdayRange}
-                      onValueChange={setWeekdayRange}
-                    />
-                  </>
-                ) : values.period === RoutinePeriod.Monthly ? (
-                  <>
-                    <Label>{t("workspace.fields.monthDays")}</Label>
-                    <MonthlyDayPicker
-                      value={monthlyDayRange}
-                      onValueChange={setMonthlyDayRange}
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      {t("workspace.fields.monthDaysDescription")}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Label>{t("workspace.inspector.start")}</Label>
-                    {values.period === RoutinePeriod.Daily ? (
-                      <TimePicker
-                        value={values.scheduledStartAt}
-                        onValueChange={scheduledStartAt => {
-                          if (!scheduledStartAt) return;
-                          setValues(current => ({
-                            ...current,
-                            scheduledStartAt,
-                          }));
-                        }}
-                        placeholder={t("workspace.fields.selectStartTime")}
-                      />
-                    ) : (
-                      <DatePicker
-                        value={values.scheduledStartAt}
-                        onValueChange={scheduledStartAt => {
-                          if (!scheduledStartAt) return;
-                          setValues(current => ({
-                            ...current,
-                            scheduledStartAt,
-                          }));
-                        }}
-                        placeholder={t("workspace.fields.selectStartDateTime")}
-                      />
-                    )}
-
-                    <Label>{t("workspace.inspector.end")}</Label>
-                    {values.period === RoutinePeriod.Daily ? (
-                      <TimePicker
-                        value={values.scheduledEndAt}
-                        onValueChange={scheduledEndAt => {
-                          if (!scheduledEndAt) return;
-                          setValues(current => ({
-                            ...current,
-                            scheduledEndAt,
-                          }));
-                        }}
-                        isInvalid={hasInvalidSchedule}
-                        placeholder={t("workspace.fields.selectEndTime")}
-                      />
-                    ) : (
-                      <DatePicker
-                        value={values.scheduledEndAt}
-                        onValueChange={scheduledEndAt => {
-                          if (!scheduledEndAt) return;
-                          setValues(current => ({
-                            ...current,
-                            scheduledEndAt,
-                          }));
-                        }}
-                        disabled={{ before: values.scheduledStartAt }}
-                        isInvalid={hasInvalidSchedule}
-                        placeholder={t("workspace.fields.selectEndDateTime")}
-                      />
-                    )}
-                  </>
-                )}
+              <div className="flex items-center justify-between gap-4 rounded-sm border border-border px-3 py-3">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <Label htmlFor="routine-inspector-custom-schedule">
+                    {t("workspace.fields.customSchedule")}
+                  </Label>
+                  <span className="text-xs text-muted-foreground">
+                    {values.hasCustomSchedule || values.period !== null
+                      ? t("workspace.fields.customScheduleDescription")
+                      : t("workspace.fields.startOnActivation")}
+                  </span>
+                </div>
+                <Switch
+                  id="routine-inspector-custom-schedule"
+                  checked={values.hasCustomSchedule || values.period !== null}
+                  disabled={values.period !== null}
+                  onCheckedChange={hasCustomSchedule =>
+                    setValues(current => ({ ...current, hasCustomSchedule }))
+                  }
+                />
               </div>
+
+              {(values.hasCustomSchedule || values.period !== null) && (
+                <div className="flex flex-col gap-2">
+                  {values.period === RoutinePeriod.Weekly ? (
+                    <>
+                      <Label>{t("workspace.fields.weekdays")}</Label>
+                      <WeekdayPicker
+                        value={weekdayRange}
+                        onValueChange={setWeekdayRange}
+                      />
+                    </>
+                  ) : values.period === RoutinePeriod.Monthly ? (
+                    <>
+                      <Label>{t("workspace.fields.monthDays")}</Label>
+                      <MonthlyDayPicker
+                        value={monthlyDayRange}
+                        onValueChange={setMonthlyDayRange}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {t("workspace.fields.monthDaysDescription")}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Label>{t("workspace.inspector.start")}</Label>
+                      {values.period === RoutinePeriod.Daily ? (
+                        <TimePicker
+                          value={values.scheduledStartAt}
+                          onValueChange={scheduledStartAt => {
+                            if (!scheduledStartAt) return;
+                            setValues(current => ({
+                              ...current,
+                              scheduledStartAt,
+                            }));
+                          }}
+                          placeholder={t("workspace.fields.selectStartTime")}
+                        />
+                      ) : (
+                        <DatePicker
+                          value={values.scheduledStartAt}
+                          onValueChange={scheduledStartAt => {
+                            if (!scheduledStartAt) return;
+                            setValues(current => ({
+                              ...current,
+                              scheduledStartAt,
+                            }));
+                          }}
+                          placeholder={t(
+                            "workspace.fields.selectStartDateTime"
+                          )}
+                        />
+                      )}
+
+                      <Label>{t("workspace.inspector.end")}</Label>
+                      {values.period === RoutinePeriod.Daily ? (
+                        <TimePicker
+                          value={values.scheduledEndAt}
+                          onValueChange={scheduledEndAt => {
+                            if (!scheduledEndAt) return;
+                            setValues(current => ({
+                              ...current,
+                              scheduledEndAt,
+                            }));
+                          }}
+                          isInvalid={hasInvalidSchedule}
+                          placeholder={t("workspace.fields.selectEndTime")}
+                        />
+                      ) : (
+                        <DatePicker
+                          value={values.scheduledEndAt}
+                          onValueChange={scheduledEndAt => {
+                            if (!scheduledEndAt) return;
+                            setValues(current => ({
+                              ...current,
+                              scheduledEndAt,
+                            }));
+                          }}
+                          disabled={{ before: values.scheduledStartAt }}
+                          isInvalid={hasInvalidSchedule}
+                          placeholder={t("workspace.fields.selectEndDateTime")}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
 
               <div className="flex flex-col gap-2">
                 <Label>{t("workspace.fields.repeat")}</Label>

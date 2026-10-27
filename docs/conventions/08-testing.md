@@ -28,6 +28,21 @@ Drizzle owns its serialization. Generated GraphQL output remains checked by
 Authenticated E2E remains explicit opt-in (`E2E_RUN_AUTHENTICATED=true`) and
 must target an isolated backend: it creates/deletes its fixed test account.
 Normal local tests use isolated Playwright browser storage, not your profile.
+
+For CSRF changes, run the API unit tests and
+`apps/web/test/integration/csrfTransport.test.ts`, then
+`npm run test:e2e -- apolloSession.spec.ts csrf.spec.ts --grep 'Apollo|same-origin metadata' --workers=1`.
+The source guard covers every protected upstream and prevents feature-owned
+CSRF storage writers. A mocked hook response is not a transport renewal test;
+publish fixture renewal at the replaced RPC/invoker boundary.
+`sessionTabs.spec.ts` additionally exercises real isolated Core/Gateway login,
+an empty new tab, access renewal, rejected missing/invalid tokens, and two-page
+graph conflicts without losing drafts. Use the isolated acceptance variables
+documented in [Local database up/down](../runbooks/local-database-updown.md)
+and a fixture-only `E2E_ROUTINE_ACCESS_TOKEN_SECRET`. It never uses a real
+account's credentials or signing keys. Preserve explicit review and Save
+steps; do not make a conflict test pass by replacing the expected version and
+automatically retrying the mutation.
 Playwright defaults to two workers to leave CPU capacity for Vite and
 SQLite/WASM startup. Use `--workers` explicitly for concurrency experiments.
 The two-tab startup, reload and row-retention scenario has a 60-second total
@@ -53,6 +68,97 @@ duplicate PR runs. Concurrency cancels superseded runs. If branch protection
 requires the removed quality/build/E2E/audit job names, update the required
 check to `Frontend environment parity` when adopting this workflow. Local
 quality checks now rely on contributors running the local gate.
+
+## Nitro development worker readiness
+
+Use the default `node-worker` when verifying Nitro upgrades. The pinned
+`3.0.260903-beta` release includes the upstream serialized reload/readiness
+fix and the HTTP error boundary. Do not replace it with a process runner,
+increase Playwright's 120-second webServer deadline, add retries or clear user
+storage to make startup checks pass.
+
+Run `npm run test:unit -- apps/web/test/integration/nitroWorker.test.ts`.
+The integration fixture uses the installed Nitro runtime, Vite ModuleRunner
+and Nitro's own env-runner dependency in a real Node worker. Only Vite's module
+responses are controlled; the fixture does not copy the readiness algorithm
+or replace the worker's fetch/error handlers. It covers the first request
+during a 4.5-second entry import, overlapping reloads, rejected imports,
+throwing handlers, missing fetch handlers and an entry that never resolves.
+The stuck-entry case waits for Nitro's unchanged native 30-second deadline
+and requires an actual HTTP 503 response. Its test-only outer deadline allows
+that behavior to be observed; it does not modify runtime or browser budgets.
+Every case closes its own worker and uses no normal database or credentials.
+
+Then run `npm run test:environment`, affected server-function/browser suites,
+`npm run build:web`, the environment smoke tests with `E2E_PRODUCTION=true`,
+and `npm run build:web:cloudflare`. A later successful request does not prove
+that an earlier readiness request completed: retain the original response and
+assert that it resolves. A dev build or retry passing is not proof that the
+Cloudflare deployment is healthy.
+
+Upstream context: [Nitro #4541](https://github.com/nitrojs/nitro/pull/4541).
+
+## Vite dependency cache isolation
+
+The development Playwright server must not share its dependency optimizer cache
+with a running developer server. Vite replaces the cache when its optimization
+inputs change; another server can retain URLs to chunks removed by that
+replacement. A successful retry can hide this missing-file failure.
+
+`playwright.config.ts` sets the Node-only `NOTEGIC_VITE_CACHE_DIR` override to
+`node_modules/.vite-playwright`, resolved against `apps/web/`. Normal development
+leaves the override unset and retains Vite's default
+`apps/web/node_modules/.vite` cache. Both caches remain reusable across sequential
+runs. This is not a public `VITE_*` value or a Cloudflare runtime binding. Other
+concurrently running Vite profiles must also use distinct cache directories.
+
+Run `npm run test:unit -- apps/web/test/integration/viteCache.test.ts`.
+The fixture loads the owning Vite and Playwright configurations, starts two real
+optimizers with different dependency sets in a temporary workspace, then checks
+the first server's on-disk chunk bytes, metadata and JavaScript response after the
+second server starts and forcibly re-optimizes. A shared-cache negative control
+must reproduce the missing file and HTTP 404; the configured isolated caches must
+preserve the file and HTTP 200. It closes only its own servers and removes only
+its temporary workspace. Then run the affected development browser
+suites while the normal developer server remains running. Do not clear its cache
+or user database, switch Nitro runners, add retries or extend startup deadlines
+to make these checks pass. Node SSR and Cloudflare builds still require their
+normal validation; cache isolation does not establish deployed runtime health.
+
+## Vite cold startup and HMR recovery
+
+Keep the explicit `optimizeDeps.include` entries in `apps/web/vite.config.ts`
+aligned with dependencies actually missed by the initial TanStack client scan.
+Apollo streaming/invariant, TanStack router internals, ProseMirror input rules,
+KaTeX and Seroval were repeatedly discovered after the initial optimization.
+Pre-bundling these entry points prevents the observed cold-start chunk version
+replacement without disabling discovery or changing `holdUntilCrawlEnd: false`.
+Preserve the framework plugins' include/exclude configuration; do not pre-bundle
+SQLocal/WASM or every installed package indiscriminately.
+
+Run `npm run test:e2e -- viteStartup.spec.ts --workers=1 --retries=0`.
+The development-only suite creates a separate real Vite server from the owning
+application config with a new temporary cache. Its first browser visit must
+hydrate, initialize SQLite and reach Login without optimized-dependency HTTP
+errors, uncaught browser errors or an automatic full reload. A warm retry cannot
+make the cold-start assertion pass. Existing browser and server deadlines remain
+unchanged; the suite has no CI environment-smoke marker.
+
+The second case edits a temporary self-accepting module through Vite's real file
+watcher and verifies HMR acceptance without reloading or losing the form value.
+It then deliberately sends one full-reload event to exercise the application's
+`vite:beforeFullReload` SQLocal teardown. SQLite must reconnect and retain the
+fixture row. This explicit adverse event is not a retry or startup workaround.
+Only the suite's own server, temporary workspace and isolated browser storage
+are used; it never edits application source to trigger HMR or clears a normal
+developer cache/database.
+
+When dependencies or plugin versions change, inspect newly discovered entry
+points before extending the list and rerun the cold fixture. Vite can still
+legitimately re-optimize previously unseen routes or dependencies. Do not hide
+504 responses with `ignoreOutdatedRequests`, disable HMR, add reload loops or
+increase timeouts to satisfy the checks. Run the cache-isolation regression,
+affected browser/auth/graph suites, Node SSR and Cloudflare build checks too.
 
 ## Realtime worker recovery
 
@@ -145,6 +251,56 @@ The same local verification passed `npm run format:check`, `npm run lint`,
 No schemas or generated sources changed for the Apollo fix; code generation
 and deployment builds were not rerun. Original development record counts and
 the retained manual development server were checked separately after E2E.
+
+## Routine graph layout and API error transport
+
+Routine activation persists `hasCustomSchedule`. Run
+`npm run test:e2e -- routineActivation.spec.ts --workers=1` for the actual
+Routine settings UI with controlled reads: default activation omits fixed
+dates, legacy custom schedules can opt out, and recurrence keeps calendar
+scheduling. Run the adjacent Routine contract tests and
+`apps/web/test/integration/routineMigration.test.ts` for explicit false values,
+server-selected activation windows and SQLite 4→5→4→5 row/queue/draft retention.
+`localDatabaseStartup.spec.ts` verifies SQLocal's actual version-5 down/up path;
+the graph's populated round trip walks every down to its legacy version rather
+than assuming that graph version 4 remains the latest schema.
+
+Dragging and Realign update only the local graph draft. The toolbar Save
+button submits the layout captured at that click; later drags remain unsaved.
+It shows Saving with a spinner and stays disabled until all responses and local
+synchronization finish. Success and failure both release the busy state.
+Reload and unmount never submit a layout. Dirty positions survive reload in
+the existing draft JSON; they are not offline transactions until Save is used.
+Creating nodes, editing node content and changing dependencies keep their
+existing explicit operations and conflict boundaries. A rejected layout stays
+editable and requires another Save rather than an automatic retry.
+
+The graph toolbar's Active icon button reuses the workspace Routine update flow,
+including its busy state and rollback after rejection. It switches Power icons,
+exposes `aria-pressed`, and keeps the existing Pause/Resume tooltip. Disable
+activation while the graph is saving. Its container owns the outline so disabled controls cannot
+fade one side. Verify larger handles/arrowheads, a concise save confirmation,
+and Routine details without storage or backend-synchronization messages.
+
+Run `npm run test:e2e -- routineGraph.spec.ts --workers=1` for the real editor
+with isolated browser storage and controlled RPC responses. For actual Start
+request/response serialization, run:
+
+```sh
+E2E_ROUTINE_API_URL=http://127.0.0.1:38919 \
+npm run test:e2e -- serverFunctionErrors.spec.ts --workers=1
+```
+
+The latter suite owns a synthetic upstream on that loopback port; never point
+it at a real backend. It verifies restored API errors, translated conflict,
+quota and `RescheduleRequired` activation errors, and the no-retry policy,
+independently of the graph response mocks. Unit coverage also reloads the
+exception module and creates an error in another JavaScript realm to verify
+that neither HMR nor runtime isolation can make a branded API error fall through
+to Start's shallow Error serializer. An expired schedule must remain inactive
+and prompt the user to choose a future schedule, not silently reschedule it.
+No schema up/down or data reset is required by the optional dirty marker in the
+existing draft JSON.
 
 ## Server-function CSRF verification
 

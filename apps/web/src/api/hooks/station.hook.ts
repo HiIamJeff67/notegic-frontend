@@ -1,13 +1,13 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
   NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   CreateStationRequest,
   CreateStationsRequest,
@@ -19,17 +19,25 @@ import type {
   GetMyStationByIdResponse,
   HardDeleteMyStationByIdRequest,
   HardDeleteMyStationsByIdsRequest,
+  LeaveMyStationRequest,
+  LeaveMyStationResponse,
   RestoreMyStationByIdRequest,
   RestoreMyStationsByIdsRequest,
+  TransferMyStationOwnershipRequest,
+  TransferMyStationOwnershipResponse,
   UpdateMyStationByIdRequest,
   UpdateMyStationsByIdsRequest,
   VisualizeMyTotalCountRequest,
   VisualizeMyTotalCountResponse,
-  LeaveMyStationRequest,
-  LeaveMyStationResponse,
-  TransferMyStationOwnershipRequest,
-  TransferMyStationOwnershipResponse,
 } from "@shared/api/interfaces/station.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   mutationFnCreateStation,
   mutationFnCreateStations,
@@ -37,30 +45,18 @@ import {
   mutationFnDeleteMyStationsByIds,
   mutationFnHardDeleteMyStationById,
   mutationFnHardDeleteMyStationsByIds,
+  mutationFnLeaveMyStation,
   mutationFnRestoreMyStationById,
   mutationFnRestoreMyStationsByIds,
+  mutationFnTransferMyStationOwnership,
   mutationFnUpdateMyStationById,
   mutationFnUpdateMyStationsByIds,
-  mutationFnLeaveMyStation,
-  mutationFnTransferMyStationOwnership,
   queryFnGetAllMyStations,
   queryFnGetMyStationById,
   queryFnVisualizeMyTotalCount,
 } from "@/api/invokers/station.invoker";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyTotalCount = (
@@ -96,10 +92,6 @@ export const useGetMyStationById = (
       }
 
       const response = await queryFnGetMyStationById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await StationLocalSynchronizer.syncGetMyStationById(response);
       return response;
     } catch (error) {
@@ -172,10 +164,6 @@ export const useGetAllMyStations = (
       }
 
       const response = await queryFnGetAllMyStations(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await StationLocalSynchronizer.syncGetAllMyStations(response);
       return response;
     } catch (error) {
@@ -238,10 +226,6 @@ export const useCreateStation = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateStationRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(response.data.id as UUID),
@@ -282,10 +266,6 @@ export const useCreateStations = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateStationsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         ...response.data.ids.map(id => queryKeys.station.oneById(id as UUID)),
@@ -326,10 +306,6 @@ export const useUpdateMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyStationByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
@@ -372,10 +348,6 @@ export const useUpdateMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         ...request.body.updatedStations.map(station =>
@@ -424,10 +396,6 @@ export const useRestoreMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyStationByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
@@ -458,7 +426,9 @@ export const useRestoreMyStationById = () => {
   return mutation;
 };
 
-export const useRestoreMyStationsByIds = () => {
+export const useRestoreMyStationsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -470,13 +440,10 @@ export const useRestoreMyStationsByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         ...request.body.stationIds.map(stationId =>
@@ -493,10 +460,13 @@ export const useRestoreMyStationsByIds = () => {
       await StationLocalSynchronizer.syncRestoreMyStationsByIds(
         request,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, request) => {
       if (
+        options.offlineFallback !== false &&
         error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
@@ -524,10 +494,6 @@ export const useDeleteMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyStationByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.station.oneById(request.body.stationId as UUID),
@@ -570,10 +536,6 @@ export const useDeleteMyStationsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         ...request.body.stationIds.map(stationId =>
@@ -622,10 +584,6 @@ export const useHardDeleteMyStationById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyStationByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         queryKeys.routine.all(),
@@ -652,7 +610,9 @@ export const useHardDeleteMyStationById = () => {
   return mutation;
 };
 
-export const useHardDeleteMyStationsByIds = () => {
+export const useHardDeleteMyStationsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -664,13 +624,10 @@ export const useHardDeleteMyStationsByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyStationsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.station.all(),
         ...request.body.stationIds.map(stationId =>
@@ -687,10 +644,13 @@ export const useHardDeleteMyStationsByIds = () => {
       await StationLocalSynchronizer.syncHardDeleteMyStationsByIds(
         request,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, request) => {
       if (
+        options.offlineFallback !== false &&
         error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork

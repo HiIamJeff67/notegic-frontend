@@ -1,15 +1,19 @@
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
+import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import { type Edge, type ReactFlowInstance } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import type { UUID } from "crypto";
 import { ChevronDownIcon, SquarePen, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import RoutineTaskInspector from "@/components/inspectors/RoutineTaskInspector";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +23,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import {
   useModal,
   useRoutineTaskDependencyGraphDraft,
@@ -53,14 +57,13 @@ const RoutineTaskDependencyGraphEditor = () => {
     definitionVersion,
     isDirty,
     isLoading,
-    isRetryingSync,
     isRealigning,
     isSaving,
+    canEdit,
+    isSavingLayout,
     isUpdatingDependency,
     canRealign: hasRealignableGraph,
     canAddStartingNode,
-    pendingSyncCount,
-    invalidMutationCount,
     selectedEdgeId,
     selectedDependency,
     setSelectedEdgeId,
@@ -70,13 +73,26 @@ const RoutineTaskDependencyGraphEditor = () => {
     setDependencyProgress,
     reload,
     createStartingNode,
+    createTask,
+    editingTask,
+    setEditingTaskId,
+    updateTask,
     connectDependency,
     changeEdges,
     changeNodes,
     updateDependency,
-    retryPendingSync,
+    saveGraph,
     realign,
+    hasConflict,
+    isReviewing,
+    recovery,
+    reviewGraph,
+    resolveConflicts,
+    closeRecovery,
   } = useRoutineTaskDependencyGraphDraft();
+  const [conflictChoices, setConflictChoices] = useState<
+    Record<string, "local" | "remote">
+  >({});
   const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isMiniMapVisible, setIsMiniMapVisible] = useState(true);
@@ -155,22 +171,13 @@ const RoutineTaskDependencyGraphEditor = () => {
       expectedDefinitionVersion: definitionVersion,
       routineTitle: routine.title,
       stationName: station.name,
-      onCreated: async () => reload(),
+      onCreate: createTask,
     });
   };
 
   const station = routine
     ? stationRoutineManager.getStationById(routine.stationId)
     : undefined;
-  const storageStatus = isSaving
-    ? t("workspace.fields.saving")
-    : isDirty
-      ? t("workspace.fields.localDraft")
-      : invalidMutationCount > 0
-        ? `${t("workspace.fields.validationError")} (${invalidMutationCount})`
-        : pendingSyncCount > 0
-          ? `${t("workspace.fields.pendingSync")} (${pendingSyncCount})`
-          : t("workspace.fields.saved");
   const routineTaskStatusCounts = Object.values(RoutineTaskRecordStatus)
     .map(status => ({
       status,
@@ -204,6 +211,15 @@ const RoutineTaskDependencyGraphEditor = () => {
 
   return (
     <main className="flex h-full min-h-0 flex-1 flex-col bg-background">
+      {editingTask && (
+        <RoutineTaskInspector
+          routineTaskId={editingTask.id as UUID}
+          draft={editingTask}
+          isOpen
+          onClose={() => setEditingTaskId(null)}
+          onUpdate={values => updateTask(editingTask.id, values)}
+        />
+      )}
       <header className="flex h-[var(--app-toolbar-height)] w-full shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-inset/75 px-3 py-1.5 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {sidebarManager.isMobile && <SidebarTrigger />}
@@ -214,7 +230,7 @@ const RoutineTaskDependencyGraphEditor = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-9 max-w-full gap-2 border-none px-2 text-xl font-semibold select-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-9 min-w-0 max-w-full gap-2 border-none px-2 text-xl font-semibold select-none focus-visible:ring-0 focus-visible:ring-offset-0"
               >
                 <TruncatedText width="240px">{routine.title}</TruncatedText>
                 <ChevronDownIcon
@@ -233,28 +249,160 @@ const RoutineTaskDependencyGraphEditor = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="flex items-center justify-between gap-6 font-normal text-muted-foreground">
-                <span>{t("workspace.fields.storage")}</span>
-                <span className="text-foreground">{storageStatus}</span>
+                <span>{t("workspace.payloadEditor.period")}</span>
+                <span className="text-foreground">
+                  {t(routinePeriodTKeys[routine.period ?? "none"])}
+                </span>
               </DropdownMenuLabel>
+              <DropdownMenuLabel className="flex items-center justify-between gap-6 font-normal text-muted-foreground">
+                <span>{t("workspace.inspector.timezone")}</span>
+                <span className="text-foreground">
+                  {routine.timezone || "—"}
+                </span>
+              </DropdownMenuLabel>
+              {routine.description && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="max-w-80 whitespace-pre-wrap break-words font-normal text-muted-foreground">
+                    {routine.description}
+                  </DropdownMenuLabel>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         <RoutineTaskDependencyGraphToolbar
+          canSave={
+            isDirty && !hasConflict && !nodes.some(node => node.dragging)
+          }
+          onSave={() => void saveGraph()}
           canRealign={canRealign}
           onRealign={() => setIsRealignOpen(true)}
           isAddMenuOpen={isAddMenuOpen}
-          isRetryingSync={isRetryingSync}
+          isActive={routine.isActive ?? false}
+          isUpdatingRoutine={stationRoutineManager.isUpdatingRoutine}
+          onActiveChange={isActive =>
+            void stationRoutineManager
+              .updateRoutine(routine.id, { isActive })
+              .catch(error => toast.error(tError(error, t)))
+          }
           isSaving={isSaving}
-          pendingSyncCount={pendingSyncCount}
+          canEdit={canEdit}
+          isSavingLayout={isSavingLayout}
           onAddMenuOpenChange={setIsAddMenuOpen}
           onOpenCreateRoutineTaskDialog={openCreateRoutineTaskDialog}
           canAddStartingNode={canAddStartingNode}
-          onAddStartingNode={() => void createStartingNode()}
-          onRetryPendingSync={() => void retryPendingSync()}
+          onAddStartingNode={() =>
+            void createStartingNode().catch(error =>
+              toast.error(tError(error, t))
+            )
+          }
           onExport={handleExport}
         />
       </header>
+      {hasConflict && (
+        <div
+          role="alert"
+          className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border bg-muted p-3 text-sm"
+        >
+          <span>{t("workspace.graph.conflictDescription")}</span>
+          <Button
+            variant="outline"
+            disabled={isSaving || isReviewing}
+            onClick={() => void reviewGraph()}
+          >
+            {isReviewing && <Spinner />}
+            {t("workspace.graph.reviewLatest")}
+          </Button>
+        </div>
+      )}
+      <Dialog
+        open={!!recovery}
+        onOpenChange={open => {
+          if (!open && !isReviewing) {
+            closeRecovery();
+            setConflictChoices({});
+          }
+        }}
+      >
+        <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{t("workspace.graph.reviewLatest")}</DialogTitle>
+            <DialogDescription>
+              {t("workspace.graph.conflictChoices")}
+            </DialogDescription>
+          </DialogHeader>
+          {recovery?.conflicts.map(conflict => (
+            <fieldset
+              key={conflict.id}
+              className="min-w-0 rounded-md border border-border p-3"
+            >
+              <legend className="max-w-full break-all px-1 text-sm font-medium">
+                {conflict.label}
+              </legend>
+              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                {(["local", "remote"] as const).map(side => (
+                  <div key={side} className="min-w-0">
+                    <Button
+                      size="sm"
+                      variant={
+                        conflictChoices[conflict.id] === side
+                          ? "default"
+                          : "outline"
+                      }
+                      aria-pressed={conflictChoices[conflict.id] === side}
+                      disabled={isReviewing}
+                      onClick={() =>
+                        setConflictChoices(current => ({
+                          ...current,
+                          [conflict.id]: side,
+                        }))
+                      }
+                    >
+                      {side === "local"
+                        ? t("workspace.graph.keepMine")
+                        : t("workspace.graph.useLatest")}
+                    </Button>
+                    <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2 text-xs">
+                      {conflict[side] === undefined
+                        ? t("workspace.graph.deletedValue")
+                        : JSON.stringify(conflict[side], null, 2)}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              disabled={isReviewing}
+              onClick={() => {
+                closeRecovery();
+                setConflictChoices({});
+              }}
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button
+              disabled={
+                isReviewing ||
+                recovery?.conflicts.some(
+                  conflict => !conflictChoices[conflict.id]
+                )
+              }
+              onClick={async () => {
+                if (await resolveConflicts(conflictChoices))
+                  setConflictChoices({});
+              }}
+            >
+              {isReviewing && <Spinner />}
+              {t("workspace.graph.applyToDraft")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog
         open={isRealignOpen}
         onOpenChange={open => {
@@ -324,15 +472,19 @@ const RoutineTaskDependencyGraphEditor = () => {
           <RoutineTaskDependencyInspector
             dependency={selectedDependency}
             description={dependencyDescription}
-            isSaving={isUpdatingDependency}
+            isSaving={isUpdatingDependency || !canEdit}
             progress={dependencyProgress}
             onDescriptionChange={setDependencyDescription}
             onProgressChange={setDependencyProgress}
-            onSave={() => void updateDependency()}
+            onSave={() =>
+              void updateDependency().catch(error =>
+                toast.error(tError(error, t))
+              )
+            }
           />
         )}
         <RoutineTaskDependencyGraphCanvas
-          isInteractive={isInteractive}
+          isInteractive={isInteractive && canEdit}
           onInteractiveChange={setIsInteractive}
           onInit={instance => {
             flow.current = instance;
@@ -341,7 +493,11 @@ const RoutineTaskDependencyGraphEditor = () => {
           edges={edges}
           isMiniMapVisible={isMiniMapVisible}
           nodes={nodes}
-          onConnect={connectDependency}
+          onConnect={connection =>
+            void connectDependency(connection).catch(error =>
+              toast.error(tError(error, t))
+            )
+          }
           onEdgeClick={(event, edge) => {
             const bounds = event.currentTarget
               .closest("section")
@@ -353,9 +509,17 @@ const RoutineTaskDependencyGraphEditor = () => {
               y: event.clientY - bounds.top,
             });
           }}
-          onEdgesChange={changeEdges}
+          onEdgesChange={changes =>
+            void changeEdges(changes).catch(error =>
+              toast.error(tError(error, t))
+            )
+          }
           onMiniMapVisibilityChange={setIsMiniMapVisible}
-          onNodesChange={changeNodes}
+          onNodesChange={changes =>
+            void changeNodes(changes).catch(error =>
+              toast.error(tError(error, t))
+            )
+          }
           onPaneClick={() => {
             setSelectedEdgeId(null);
             setEdgeMenu(null);

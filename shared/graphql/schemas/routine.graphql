@@ -6,6 +6,7 @@ type PrivateRoutine {
   phase: RoutinePhase
   timeoutSeconds: Int32!
   isActive: Boolean!
+  hasCustomSchedule: Boolean!
   admissionState: String!
   definitionVersion: Int64!
   isPinned: Boolean!
@@ -30,6 +31,7 @@ type PrivateSearchableRoutine {
   phase: RoutinePhase
   timeoutSeconds: Int32!
   isActive: Boolean!
+  hasCustomSchedule: Boolean!
   admissionState: String!
   definitionVersion: Int64!
   isPinned: Boolean!

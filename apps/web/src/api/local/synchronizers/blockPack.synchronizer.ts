@@ -1,4 +1,6 @@
 import {
+  type HardDeleteMyBlockPacksByIdsRequest,
+  type HardDeleteMyBlockPacksByIdsResponse,
   CreateBlockPackRequest,
   CreateBlockPackResponse,
   CreateBlockPacksRequest,
@@ -28,6 +30,8 @@ import {
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { localDB } from "@/api/local/db";
 import {
+  Item,
+  RoutinesToItems,
   BlockPack,
   RootShelf,
   SubShelf,
@@ -538,7 +542,7 @@ export class BlockPackLocalSynchronizer {
   };
 
   static syncRestoreMyBlockPacksByIds = async (
-    request: RestoreMyBlockPacksByIdsRequest,
+    _request: RestoreMyBlockPacksByIdsRequest,
     response: RestoreMyBlockPacksByIdsResponse
   ): Promise<void> => {
     if (!localDB.isReady) await localDB.ensureReady();
@@ -574,7 +578,24 @@ export class BlockPackLocalSynchronizer {
       }
 
       const rootShelfIdToCountMap = new Map<string, number>();
-      for (const rootShelfId of request.affected.rootShelfIds) {
+      const parents =
+        restoredBlockPacks.length > 0
+          ? await tx
+              .select({ id: SubShelf.id, rootShelfId: SubShelf.rootShelfId })
+              .from(SubShelf)
+              .where(
+                inArray(
+                  SubShelf.id,
+                  restoredBlockPacks.map(pack => pack.parentSubShelfId)
+                )
+              )
+          : [];
+      const roots = new Map(
+        parents.map(parent => [parent.id, parent.rootShelfId])
+      );
+      for (const blockPack of restoredBlockPacks) {
+        const rootShelfId = roots.get(blockPack.parentSubShelfId);
+        if (!rootShelfId) continue;
         rootShelfIdToCountMap.set(
           rootShelfId,
           (rootShelfIdToCountMap.get(rootShelfId) ?? 0) + 1
@@ -666,6 +687,22 @@ export class BlockPackLocalSynchronizer {
           })
           .where(eq(RootShelf.id, rootShelfId));
       }
+    });
+  };
+  static syncHardDeleteMyBlockPacksByIds = async (
+    request: HardDeleteMyBlockPacksByIdsRequest,
+    _response: HardDeleteMyBlockPacksByIdsResponse
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (request.body.blockPackIds.length === 0) return;
+    await localDB.transaction(async tx => {
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, request.body.blockPackIds));
+      await tx.delete(Item).where(inArray(Item.id, request.body.blockPackIds));
+      await tx
+        .delete(BlockPack)
+        .where(inArray(BlockPack.id, request.body.blockPackIds));
     });
   };
 }

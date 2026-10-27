@@ -1,27 +1,23 @@
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMyAccountRequest,
   GetMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   mutationFnBindGoogleAccount,
   mutationFnUnbindGoogleAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
 
 export const useGetMyAccount = (
   hookRequest?: GetMyAccountRequest,
@@ -40,10 +36,6 @@ export const useGetMyAccount = (
       }
 
       const response = await queryFnGetMyAccount(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       return response;
     } catch (error) {
       throw error;
@@ -80,10 +72,6 @@ export const useUpdateMyAccount = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyAccount,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
     onError: error => {},
@@ -98,10 +86,6 @@ export const useBindGoogleAccount = () => {
   const mutation = useMutation({
     mutationFn: mutationFnBindGoogleAccount,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
     onError: error => {},
@@ -116,10 +100,6 @@ export const useUnbindGoogleAccount = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUnbindGoogleAccount,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },
     onError: error => {},

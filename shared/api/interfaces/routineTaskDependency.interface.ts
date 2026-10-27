@@ -3,6 +3,10 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { z } from "zod";
+import {
+  CreateRoutineTaskBodySchema,
+  RoutineTaskDefinitionSchema,
+} from "./routineTask.interface";
 
 const RoutineTaskDependencyIdentitySchema = z.object({
   expectedDefinitionVersion: z.number().int().positive().optional(),
@@ -128,4 +132,56 @@ export const DeleteRoutineTaskDependencyByRoutineIdResponseSchema =
 
 export type DeleteRoutineTaskDependencyByRoutineIdResponse = z.infer<
   typeof DeleteRoutineTaskDependencyByRoutineIdResponseSchema
+>;
+
+export const UpdateRoutineTaskGraphByRoutineIdRequestSchema =
+  NotegicRequestSchema.extend({
+    header: RoutineTaskDependencyRequestHeaderSchema,
+    param: z.object({ routineId: z.uuidv4() }),
+    body: z.object({
+      expectedDefinitionVersion: z.number().int().positive(),
+      tasks: z.object({
+        creates: z
+          .array(CreateRoutineTaskBodySchema.safeExtend({ id: z.uuidv4() }))
+          .max(1024),
+        updates: z
+          .array(
+            z.object({
+              routineTaskId: z.uuidv4(),
+              values: z.object({
+                title: z.string().min(1).max(128).optional(),
+                payload: z.record(z.string(), z.unknown()).optional(),
+                x: z.number().finite().min(-1000000).max(1000000).optional(),
+                y: z.number().finite().min(-1000000).max(1000000).optional(),
+                priority: z.int32().min(0).max(100).optional(),
+                maxAttempts: z.int32().min(1).max(20).optional(),
+              }),
+            })
+          )
+          .max(1024),
+        deletes: z.array(z.uuidv4()).max(1024),
+      }),
+      dependencies: z.object({
+        creates: z.array(CreatableRoutineTaskDependencySchema).max(1024),
+        updates: z.array(UpdatableRoutineTaskDependencySchema).max(1024),
+        deletes: z.array(DeletableRoutineTaskDependencySchema).max(1024),
+      }),
+    }),
+  });
+
+export type UpdateRoutineTaskGraphByRoutineIdRequest = z.input<
+  typeof UpdateRoutineTaskGraphByRoutineIdRequestSchema
+>;
+
+export const UpdateRoutineTaskGraphByRoutineIdResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      definitionVersion: z.number().int().positive(),
+      tasks: z.array(RoutineTaskDefinitionSchema),
+      dependencies: z.array(RoutineTaskDependencySchema),
+      updatedAt: z.coerce.date(),
+    }),
+  });
+export type UpdateRoutineTaskGraphByRoutineIdResponse = z.infer<
+  typeof UpdateRoutineTaskGraphByRoutineIdResponseSchema
 >;

@@ -9,6 +9,7 @@ import {
   DeleteRootShelfPermissions,
   DeleteMyRootShelfById,
   DeleteMyRootShelvesByIds,
+  HardDeleteMyRootShelvesByIds,
   GetMyRootShelfById,
   RestoreMyRootShelfById,
   RestoreMyRootShelvesByIds,
@@ -19,6 +20,10 @@ import {
   TransferMyRootShelfOwnership,
 } from "@/api/functions/rootShelf.serverFn";
 import {
+  type HardDeleteMyRootShelvesByIdsRequest,
+  HardDeleteMyRootShelvesByIdsRequestSchema,
+  type HardDeleteMyRootShelvesByIdsResponse,
+  HardDeleteMyRootShelvesByIdsResponseSchema,
   type CreateRootShelfRequest,
   CreateRootShelfRequestSchema,
   type CreateRootShelfResponse,
@@ -421,6 +426,29 @@ export const mutationFnDeleteMyRootShelvesByIds = async (
           throw error;
       }
     } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnHardDeleteMyRootShelvesByIds = async (
+  request: HardDeleteMyRootShelvesByIdsRequest
+): Promise<HardDeleteMyRootShelvesByIdsResponse> => {
+  try {
+    const validatedRequest =
+      HardDeleteMyRootShelvesByIdsRequestSchema.parse(request);
+    const response = await HardDeleteMyRootShelvesByIds({
+      data: validatedRequest,
+    });
+    return HardDeleteMyRootShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;

@@ -1,6 +1,70 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { createQueryClient } from "@shared/api/queryClient";
+
+const setResponseHeader = jest.fn();
+jest.mock("@tanstack/react-start/server", () => ({ setResponseHeader }), {
+  virtual: true,
+});
+jest.mock(
+  "@tanstack/react-start",
+  () => ({
+    createIsomorphicFn: () => ({
+      server: (server: (value: unknown) => void) => ({
+        client: () => server,
+      }),
+    }),
+  }),
+  { virtual: true }
+);
+
 import { readAPIResponse } from "./apiResponse.adapter";
+
+beforeEach(() => setResponseHeader.mockReset());
+
+test("retains renewal headers on an empty successful response", async () => {
+  await expect(
+    readAPIResponse(
+      new Response(null, {
+        status: 204,
+        headers: { "X-CSRF-Token": "fixture-renewed" },
+      })
+    )
+  ).resolves.toEqual({ success: true, data: null, exception: null });
+  expect(setResponseHeader).toHaveBeenCalledWith(
+    "X-CSRF-Token",
+    "fixture-renewed"
+  );
+  expect(setResponseHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
+});
+
+test("retains a non-JSON rate-limit renewal without swallowing the error", async () => {
+  await expect(
+    readAPIResponse(
+      new Response("Limited", {
+        status: 429,
+        headers: { "X-CSRF-Token": "fixture-renewed" },
+      })
+    )
+  ).rejects.toMatchObject({ unWrap: { status: 429 } });
+  expect(setResponseHeader).toHaveBeenCalledWith(
+    "X-CSRF-Token",
+    "fixture-renewed"
+  );
+});
+
+test.each([
+  401, 403, 500,
+])("does not accept renewal headers on HTTP %s", async status => {
+  await expect(
+    readAPIResponse(
+      new Response("Rejected", {
+        status,
+        headers: { "X-CSRF-Token": "fixture-rejected" },
+      })
+    )
+  ).rejects.toBeInstanceOf(NotegicAPIError);
+  expect(setResponseHeader).not.toHaveBeenCalled();
+});
 
 const publicException = {
   reason: "RequestRejected",
@@ -155,4 +219,56 @@ test.each([
     expect(retryPolicy(1, error)).toBe(false);
   }
   client.clear();
+});
+
+test.each([
+  200, 201, 400, 404, 409, 422, 429,
+])("forwards renewal from HTTP %s before returning or throwing the original error", async status => {
+  const response = Response.json(
+    {
+      success: status < 400,
+      exception: status < 400 ? null : publicException,
+      refreshableTokens: { newCSRFToken: "fixture-renewal" },
+    },
+    { status }
+  );
+  await readAPIResponse(response).catch(() => undefined);
+  expect(setResponseHeader).toHaveBeenCalledWith(
+    "X-CSRF-Token",
+    "fixture-renewal"
+  );
+});
+
+test.each([
+  401, 403, 500, 502, 503,
+])("never forwards refresh metadata on HTTP %s", async status => {
+  await readAPIResponse(
+    Response.json(
+      {
+        exception: publicException,
+        refreshableTokens: { newCSRFToken: "rejected-renewal" },
+      },
+      { status }
+    )
+  ).catch(() => undefined);
+  expect(setResponseHeader).not.toHaveBeenCalled();
+});
+
+test.each([
+  undefined,
+  null,
+  {},
+  { newCSRFToken: "" },
+  { newCSRFToken: " " },
+  { newCSRFToken: 7 },
+])("ignores malformed refresh metadata: %j", async refreshableTokens => {
+  await readAPIResponse(
+    Response.json({
+      success: true,
+      data: {},
+      exception: null,
+      refreshableTokens,
+    })
+  );
+  expect(setResponseHeader).not.toHaveBeenCalled();
 });

@@ -486,3 +486,42 @@ export const DeleteMyRootShelvesByIdsResponseSchema =
 export type DeleteMyRootShelvesByIdsResponse = z.infer<
   typeof DeleteMyRootShelvesByIdsResponseSchema
 >;
+
+/* ============================== HardDeleteMyRootShelvesByIds ============================== */
+
+export const HardDeleteMyRootShelvesByIdsRequestSchema =
+  NotegicRequestSchema.extend({
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      rootShelfIds: z
+        .array(z.uuidv4())
+        .min(1)
+        .max(1024)
+        .refine(ids => new Set(ids).size === ids.length, {
+          message: "Material IDs must be unique",
+        }),
+    }),
+  });
+
+export type HardDeleteMyRootShelvesByIdsRequest = z.infer<
+  typeof HardDeleteMyRootShelvesByIdsRequestSchema
+>;
+
+export const HardDeleteMyRootShelvesByIdsResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  });
+
+export type HardDeleteMyRootShelvesByIdsResponse = z.infer<
+  typeof HardDeleteMyRootShelvesByIdsResponseSchema
+>;

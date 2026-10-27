@@ -12,8 +12,6 @@ import {
   UseQueryDefaultOptions,
 } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
   useMutation,
@@ -43,10 +41,6 @@ export const useGetUserData = (
       }
 
       const response = await queryFnGetUserData(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await UserLocalSynchronizer.syncGetUserData(response);
       return response;
     } catch (error) {
@@ -93,10 +87,6 @@ export const useGetMe = (
       }
 
       const response = await queryFnGetMe(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await UserLocalSynchronizer.syncGetMe(response);
       return response;
     } catch (error) {
@@ -134,10 +124,6 @@ export const useUpdateMe = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMe,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
     onError: error => {},

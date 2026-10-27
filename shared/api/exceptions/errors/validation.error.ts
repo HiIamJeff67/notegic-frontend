@@ -6,7 +6,7 @@ export class NotegicValidationError extends NotegicError {
 
   constructor(exception: NotegicException) {
     super(exception.reason, true, exception.message);
-    this.name = "FetchError";
+    this.name = "ValidationError";
     this.exception = exception;
   }
 

@@ -25,7 +25,6 @@ jest.mock("@shared/lib/sessionStorageManipulator", () => ({
 }));
 
 import { useVisualizeQuery } from "./visualize.hook";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 
 const request = {
   header: { userAgent: "explicit-agent", csrfToken: "obsolete-token" },
@@ -67,7 +66,7 @@ test("adds current session headers when the query executes without changing its 
   ]);
 });
 
-test("uses a response's renewed token on refetch and imperative fetch", async () => {
+test("does not replay cached renewal metadata and reads current transport state on every fetch", async () => {
   const queryFunction = jest
     .fn()
     .mockResolvedValueOnce({
@@ -77,10 +76,8 @@ test("uses a response's renewed token on refetch and imperative fetch", async ()
     .mockResolvedValue(response);
   const query = useVisualizeQuery(request, () => ["visualize"], queryFunction);
   await query.refetch();
-  expect(mockEnsureItem).toHaveBeenCalledWith(
-    SessionStorageKey.csrfToken,
-    "renewed-token"
-  );
+  expect(mockEnsureItem).not.toHaveBeenCalled();
+  mockToken = "renewed-token";
   await query.refetch();
   await query.fetch(request);
   expect(

@@ -47,6 +47,46 @@ under `apps/web/src/api/` and `apps/web/src/`:
 These are not a prescription for the future Desktop or Mobile runtime. They
 are the explicit current Web ownership boundary.
 
+## Web CSRF transport
+
+`apps/web/src/api/clientHeaders.ts` owns the browser's shared CSRF state.
+Authentication cookies remain HttpOnly. The CSRF value is separate, readable
+request metadata stored in a host-only `SameSite=Strict; Path=/` cookie:
+`__Host-notegic-csrf` with `Secure` over HTTPS, and `notegic_csrf` for HTTP local
+development. It expires after seven days, matching the current session window.
+Never put access or refresh credentials in this cookie or browser storage.
+
+The cookie, not a tab's sessionStorage, is authoritative. A legacy current-tab
+token is migrated only when no shared cookie exists. Logout writes an empty
+shared marker, so an older tab cannot restore its previous token. Existing
+sessions need an original tab containing its legacy token to perform that
+migration, or a fresh login; a new tab cannot recover a token that no open tab
+has published. Cookie access restrictions fail closed, not by bypassing CSRF.
+
+The global TanStack Start function middleware supplies the current token in
+the RPC's `X-CSRF-Token` header at send time. Protected upstream requests use
+that header before the explicit SSR payload fallback. Custom RPC fetchers,
+including settings cooldown handling, must delegate to the same session
+bridge. Direct multipart uploads and Apollo read the same current state.
+External signed object URLs never receive this header.
+
+`readAPIResponse` retains validated renewal metadata before returning or
+throwing a business error, including HTTP 204 and settings 429 paths. Server
+functions forward renewal in a response header with `Cache-Control: no-store`;
+the browser bridge applies it before deserialization. A late response cannot
+replace a token changed since its request began. HTTP 401/403 and server
+failures cannot rotate this state. Hooks must not replay cached renewal
+metadata; only login/register seed a newly authenticated session, and logout
+or account deletion clears it. Preserve same-origin RPC checks and backend
+token validation; never manufacture a request header from an auth cookie.
+
+Regression coverage includes `clientHeaders.test.ts`, `session.bridge.unit.test.ts`,
+`apiResponse.adapter.unit.test.ts`, and the `csrfTransport.test.ts` source guard.
+`sessionTabs.spec.ts` additionally requires explicitly isolated local Core and
+Gateway processes and an acceptance database. It exercises empty-tab storage,
+real access refresh, and two-page graph conflict/draft recovery without using
+production credentials or changing a user's development account.
+
 ## Web user-settings synchronization
 
 `UserSettingsProvider` loads cached settings before one remote read per mounted

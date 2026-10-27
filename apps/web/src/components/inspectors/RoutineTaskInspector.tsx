@@ -8,6 +8,7 @@ import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
+import type { GetMyRoutineTaskByIdResponse } from "@shared/api/interfaces/routineTask.interface";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
@@ -50,6 +51,15 @@ interface RoutineTaskInspectorProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void;
+  draft?: GetMyRoutineTaskByIdResponse["data"];
+  onUpdate?: (
+    values: Partial<
+      Pick<
+        GetMyRoutineTaskByIdResponse["data"],
+        "title" | "payload" | "priority" | "maxAttempts"
+      >
+    >
+  ) => Promise<void>;
 }
 
 const RoutineTaskInspector = ({
@@ -57,6 +67,8 @@ const RoutineTaskInspector = ({
   isOpen,
   onClose,
   onUpdated,
+  draft,
+  onUpdate,
 }: RoutineTaskInspectorProps) => {
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
@@ -64,6 +76,7 @@ const RoutineTaskInspector = ({
   const getRoutineTaskQuerier = useGetMyRoutineTaskById();
   const getRoutineQuerier = useGetMyRoutineById();
   const updateNode = useUpdateMyRoutineTaskById();
+  const [isUpdatingDraft, setIsUpdatingDraft] = useState(false);
   const [startingPayload, setStartingPayload] = useState<Record<
     string,
     unknown
@@ -72,7 +85,9 @@ const RoutineTaskInspector = ({
     number | undefined
   >();
   const isSaving =
-    updateNode.isPending || stationRoutineManager.isUpdatingRoutineTask;
+    isUpdatingDraft ||
+    updateNode.isPending ||
+    stationRoutineManager.isUpdatingRoutineTask;
 
   const [isLoadingRoutineTaskDetail, setIsLoadingRoutineTaskDetail] =
     useState(false);
@@ -105,6 +120,19 @@ const RoutineTaskInspector = ({
     setIsPayloadEditorOpen(false);
     setStartingPayload(null);
     setDefinitionVersion(undefined);
+
+    if (draft) {
+      setValues({
+        title: draft.title,
+        purpose: draft.payload.purpose ?? RoutineTaskPurpose.CreateBlockPack,
+        payload: JSON.stringify(draft.payload ?? {}, null, 2),
+        priority: draft.priority,
+        maxAttempts: draft.maxAttempts,
+      });
+      if (draft.kind === "Start") setStartingPayload(draft.payload ?? {});
+      setIsLoadingRoutineTaskDetail(false);
+      return;
+    }
 
     setIsLoadingRoutineTaskDetail(true);
     getRoutineTaskQuerier
@@ -161,13 +189,20 @@ const RoutineTaskInspector = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, routineTaskId]);
+  }, [isOpen, routineTaskId, draft]);
 
   const updateRoutineTask = async () => {
     const title = values.title.trim();
     if (title.length === 0) return;
     if (startingPayload) {
       try {
+        if (onUpdate) {
+          setIsUpdatingDraft(true);
+          await onUpdate({ title, payload: startingPayload });
+          onUpdated?.();
+          onClose();
+          return;
+        }
         const response = await updateNode.mutateAsync({
           header: getClientRequestHeaders(navigator.userAgent),
           body: {
@@ -182,6 +217,8 @@ const RoutineTaskInspector = ({
         onClose();
       } catch (error) {
         toast.error(tError(error, t));
+      } finally {
+        setIsUpdatingDraft(false);
       }
       return;
     }
@@ -201,7 +238,7 @@ const RoutineTaskInspector = ({
       return;
     }
     try {
-      await stationRoutineManager.updateRoutineTask(routineTaskId, {
+      const updates = {
         title,
         payload: {
           ...(payload as Record<string, unknown>),
@@ -210,13 +247,21 @@ const RoutineTaskInspector = ({
         },
         priority: values.priority,
         maxAttempts: values.maxAttempts,
-      });
-      void userManager.fetchUserQuota();
+      };
+      if (onUpdate) {
+        setIsUpdatingDraft(true);
+        await onUpdate(updates);
+      } else {
+        await stationRoutineManager.updateRoutineTask(routineTaskId, updates);
+        void userManager.fetchUserQuota();
+      }
       toast.success(t("workspace.routineTask.updated"));
       onUpdated?.();
       onClose();
     } catch (error) {
       toast.error(tError(error, t));
+    } finally {
+      setIsUpdatingDraft(false);
     }
   };
 

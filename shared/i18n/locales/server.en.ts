@@ -2,10 +2,13 @@ import type { ServerTranslation } from "./server.type";
 
 export const EnglishServerTranslation = {
   error: {
+    ZodParsingFailed:
+      "Some data has an invalid format. Please check and try again.",
     DefinitionConflict:
-      "This routine changed. Refresh before applying your edit.",
+      "This routine changed. Review the latest version before saving.",
     RescheduleRequired:
       "Choose a future schedule before activating this routine.",
+    QuotaExceeded: "Your current plan's quota has been reached.",
     InternalServerError: "Something went wrong on our side. Please try again.",
     InvalidDto: "Some submitted information is invalid.",
     InvalidInput: "The submitted input is invalid.",

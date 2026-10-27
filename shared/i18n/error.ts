@@ -1,4 +1,7 @@
-import { NotegicAPIError } from "@shared/api/exceptions";
+import {
+  NotegicAPIError,
+  NotegicExceptionSchema,
+} from "@shared/api/exceptions";
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type { TFunction } from "i18next";
@@ -30,11 +33,14 @@ export const tError = (error: unknown, t: TFunction): string => {
     }
   }
 
-  if (
-    error instanceof NotegicAPIError ||
-    error instanceof NotegicValidationError
-  ) {
-    const key = `server.error.${error.unWrap.reason}`;
+  const exception = NotegicExceptionSchema.safeParse(
+    error instanceof NotegicAPIError || error instanceof NotegicValidationError
+      ? error.unWrap
+      : error
+  );
+
+  if (exception.success) {
+    const key = `server.error.${exception.data.reason}`;
     const translatedReason = t(key as never, {
       defaultValue: missingTranslation,
     });

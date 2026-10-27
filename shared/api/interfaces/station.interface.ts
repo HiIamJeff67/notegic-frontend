@@ -510,7 +510,13 @@ export const HardDeleteMyStationsByIdsRequestSchema =
       })
       .optional(),
     body: z.object({
-      stationIds: z.array(z.uuidv4()),
+      stationIds: z
+        .array(z.uuidv4())
+        .min(1)
+        .max(1024)
+        .refine(ids => new Set(ids).size === ids.length, {
+          message: "IDs must be unique",
+        }),
     }),
   });
 

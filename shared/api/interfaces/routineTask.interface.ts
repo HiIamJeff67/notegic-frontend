@@ -88,7 +88,7 @@ export const parseRoutineTaskDefinition = (
   return { ...definition, payload };
 };
 
-const RoutineTaskDefinitionSchema = z.object({
+export const RoutineTaskDefinitionSchema = z.object({
   id: z.uuidv4(),
   routineId: z.uuidv4(),
   kind: z.enum(RoutineTaskKinds).default("Action"),

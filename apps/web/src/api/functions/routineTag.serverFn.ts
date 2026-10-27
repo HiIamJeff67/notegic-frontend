@@ -21,9 +21,9 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyRoutineTagById = createServerFn({ method: "GET" })
@@ -61,9 +61,8 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       credentials: "include",
@@ -99,9 +98,8 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       credentials: "include",
@@ -132,9 +130,8 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       body: JSON.stringify(request.body),
@@ -166,9 +163,8 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       body: JSON.stringify(request.body),
@@ -205,9 +201,8 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "routineTagId")),
@@ -243,9 +238,8 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -283,9 +277,8 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "routineTagId")),
@@ -323,9 +316,8 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),

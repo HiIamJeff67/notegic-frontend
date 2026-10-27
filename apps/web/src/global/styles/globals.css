@@ -212,7 +212,7 @@ since both of them offer some default colors in ShadCN component
   --muted-foreground: oklch(0.7 0 0);
   --accent: oklch(0.31 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.63 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 16%);
@@ -256,7 +256,7 @@ since both of them offer some default colors in ShadCN component
   --muted-foreground: oklch(0.43 0 0);
   --accent: oklch(0.895 0 0);
   --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.54 0.22 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.76 0 0);
   --input: oklch(0.8 0 0);

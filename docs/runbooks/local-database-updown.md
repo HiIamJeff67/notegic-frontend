@@ -64,7 +64,7 @@ tag is included in this delivery.
 Deploy compatible backend contracts and PostgreSQL migration before the web
 bundle. `LocalDBMigrator.ensureMigrated` runs each migration and its version
 flag in one transaction. Fresh databases use generated `bootstrap.sql` at
-version 4. Edit schema source and run `npm run generate-local-migrations`
+version 5. Edit schema source and run `npm run generate-local-migrations`
 to generate snapshots and bootstrap; never hand-edit those artifacts.
 
 The version-4 up SQL is a curated transition: it does not rebuild
@@ -131,9 +131,18 @@ reads show Unknown rather than estimating another Station owner's balance.
 ## Rollback
 
 Stop writes and export origin storage first through
-`localDB.downloadLocalData()`; verify and retain the download. While a
-compatible version-4 bundle remains loaded, call `LocalDBMigrator.down(4)`
-against that database. It checks the actual version inside the transaction,
+`localDB.downloadLocalData()`; verify and retain the download. Close other tabs
+using the origin and stop background synchronization before changing its schema.
+While a compatible version-5 bundle remains loaded, call the configured
+`LocalDBMigrator` instance's `down(5)` against that database. This performs only
+5→4, removes `has_custom_schedule`, and preserves concrete windows, rows,
+drafts and pending operations. Re-up marks all retained Routines custom; the
+removed choice cannot be reconstructed. Export it separately if that choice
+must be restored exactly. A previous bundle does not automatically downgrade
+an already upgraded browser database.
+
+For a separate 4→3 rollback, keep a compatible bundle loaded and call `down(4)`.
+It checks the actual version inside the transaction,
 archives activation/layout/control nodes and Start edges, removes only the
 new control-node representation, recreates legacy Purpose from payload,
 restores flat legacy Action payloads, and
@@ -156,7 +165,7 @@ Do not skip migration versions.
 The user explicitly requested one frontend upgrade version for this release.
 Purpose removal is consolidated into `0003_hesitant_forgotten_one.sql` and its
 matching down, with generated schema metadata/bootstrap updated from source;
-there is no version-5 migration. Released versions 0–2 remain unchanged.
+there was no separate Purpose-removal version-5 migration. Released versions 0–2 remain unchanged.
 Already-upgraded development profiles need a one-time manual repair, not a
 version reset or permanent startup repair hook. Export and verify local data,
 reload to release stale HMR worker connections, acquire the existing
@@ -361,3 +370,54 @@ record is 62 suites / 636 tests; it was not rerun for this documentation update.
 Extra isolated processes were stopped and all retained containers/data kept.
 No CI job, commit, push, tag or production operation was added. These local
 results do not satisfy the still-pending candidate-bound compatibility gate.
+
+## Activation scheduling — version 5
+
+`0004_routine_activation_schedule.sql` adds `has_custom_schedule` without
+rebuilding unrelated tables. Existing rows retain their explicit windows and
+are marked custom; new unscheduled rows store false. Its paired down removes
+only the mode and retains start/end values and pending writes. Metadata and
+bootstrap are regenerated from Drizzle; the up SQL is curated to avoid
+generation-time timestamp-default churn. Publish the backend schema/contract
+first. Routine settings can turn Custom schedule off for legacy one-shot rows;
+periodic schedules always retain calendar scheduling. Activation uses the
+server-returned concrete window for workspace and SQLite reconciliation.
+
+The version-5 failure tests run the real up/down SQL through `LocalDBMigrator`
+on SQLite. Injected failure after `PRAGMA user_version` changes must restore
+the previous schema, version, Routine/task rows, drafts and pending queue in
+the same transaction; retry then applies the transition successfully. The
+browser suite separately covers SQLocal down/up/reload and transaction
+isolation. Run both rather than treating an in-memory engine check as proof
+of browser worker behavior:
+
+```sh
+npm run test:unit -- apps/web/test/integration/routineMigration.test.ts apps/web/src/api/local/migrator.test.ts
+npm run test:e2e -- localDatabaseStartup.spec.ts localDatabaseIsolation.spec.ts routineGraph.spec.ts --workers=1 --timeout=90000
+```
+
+### Local pre-release verification — 2026-10-26
+
+All 72 Jest suites / 870 tests passed, including version-5 failure rollback
+after updating `user_version`. Format/lint/typecheck, reproducible GraphQL
+generation and the Cloudflare build also passed without deployment.
+
+The enabled SQLocal startup/isolation, activation, graph, CSRF-boundary and
+Apollo scenarios have 37 distinct passing cases across targeted runs, not
+one complete all-green run. Four graph cases initially exceeded five-second
+assertions while RPC/SQLite reconciliation was still progressing. Their
+assertion budget now follows the existing database-backed E2E convention;
+production timeouts, retries and preservation assertions are unchanged.
+One diagnostic repeat also hit worker/Vite interruptions and was not counted
+as a pass. The final frozen-file run passed all four boundary cases twice
+consecutively, without retries: cache/expansion preservation, cold draft
+loading, explicit conflict recovery and confirmed-commit recovery after local
+failure. Earlier traces are retained rather than discarded.
+
+The live Core/Gateway CSRF case remained skipped because its isolated HTTP
+acceptance stack was not provisioned. Server-backed two-tab acceptance,
+published-image provenance, the final committed-candidate compatibility gate
+and production rollout remain separate. The sibling backend's reviewed
+`test/compatibility/releases/v0.2.8-to-next/README.md` records PostgreSQL,
+owner-container and release-boundary evidence. No normal browser storage was
+reset, and no commit, push, tag or production change was made.

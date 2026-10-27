@@ -13,6 +13,8 @@ import {
   GetMyBlockPacksByParentSubShelfIdResponse,
   GetMyBlockPacksByRootShelfIdRequest,
   GetMyBlockPacksByRootShelfIdResponse,
+  HardDeleteMyBlockPacksByIdsRequest,
+  HardDeleteMyBlockPacksByIdsResponse,
   MoveMyBlockPackByIdRequest,
   MoveMyBlockPackByIdResponse,
   MoveMyBlockPacksByParentSubShelfIdRequest,
@@ -33,9 +35,9 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyBlockPackById = createServerFn({ method: "GET" })
@@ -52,9 +54,8 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       credentials: "include",
@@ -89,9 +90,8 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -127,9 +127,8 @@ export const GetMyBlockPacksByRootShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -157,9 +156,8 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(
@@ -190,9 +188,8 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -224,9 +221,10 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "blockPackId")),
@@ -261,9 +259,10 @@ export const UpdateMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -293,9 +292,8 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "blockPackId")),
@@ -331,9 +329,10 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -370,9 +369,10 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -405,9 +405,10 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "blockPackId")),
@@ -442,9 +443,10 @@ export const RestoreMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -477,9 +479,10 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "blockPackId")),
@@ -514,9 +517,10 @@ export const DeleteMyBlockPacksByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -528,6 +532,42 @@ export const DeleteMyBlockPacksByIds = createServerFn({
       const formattedResponse = (await readAPIResponse(
         response
       )) as DeleteMyBlockPacksByIdsResponse;
+
+      return formattedResponse;
+    }
+  );
+
+export const HardDeleteMyBlockPacksByIds = createServerFn({ method: "POST" })
+  .inputValidator((data: HardDeleteMyBlockPacksByIdsRequest) => data)
+  .handler(
+    async ({ data: request }): Promise<HardDeleteMyBlockPacksByIdsResponse> => {
+      const inboundCookie = getRequestHeader("cookie");
+      const userAgent =
+        request.header?.userAgent ??
+        getRequestHeader("User-Agent") ??
+        "unknown";
+      const response = await fetch(
+        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.blockPack.hardDeleteMyBlockPacksByIds}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent": userAgent,
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
+            ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+          },
+          body: JSON.stringify(request.body),
+          credentials: "include",
+        }
+      );
+
+      forwardUpstreamSetCookies(response);
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyBlockPacksByIdsResponse;
 
       return formattedResponse;
     }

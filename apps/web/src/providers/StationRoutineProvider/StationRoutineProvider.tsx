@@ -1,5 +1,6 @@
 import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
+import type { UpdateRoutineTaskGraphByRoutineIdResponse } from "@shared/api/interfaces/routineTaskDependency.interface";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { LRUCache } from "@shared/lib/LRUCache";
@@ -76,6 +77,10 @@ interface StationRoutineBaseContext {
   closeInspector: () => void;
   initializeStationRoutineData: () => Promise<void>;
   refresh: () => Promise<void>;
+  updateRoutineTaskGraph: (
+    routineId: UUID,
+    graph: UpdateRoutineTaskGraphByRoutineIdResponse["data"]
+  ) => void;
   setViewMode: (viewMode: "overview" | "station") => void;
   setActiveStationId: (stationId: UUID | null) => void;
   setPresenceQuery: (query: string) => void;
@@ -332,6 +337,74 @@ export const StationRoutineProvider = ({
     userManager.userData?.publicId,
   ]);
 
+  const updateRoutineTaskGraph = useCallback(
+    (
+      routineId: UUID,
+      graph: UpdateRoutineTaskGraphByRoutineIdResponse["data"]
+    ) => {
+      const routines = new Set<RoutineNode>();
+      const cachedTasks = new Map<UUID, RoutineTaskNode>();
+      for (const station of stationsRef.current.values()) {
+        for (const routine of station.routines) {
+          if (routine.id === routineId) routines.add(routine);
+        }
+        for (const task of station.routineTasks) {
+          if (task.routineId === routineId) cachedTasks.set(task.id, task);
+        }
+      }
+      for (const tag of routineTagsRef.current.values()) {
+        for (const routine of tag.routines) {
+          if (routine.id === routineId) routines.add(routine);
+        }
+      }
+      if (routines.size === 0) return;
+      const stationId = routines.values().next().value!.stationId;
+      for (const routine of routines) {
+        for (const task of routine.routineTasks) {
+          if (!cachedTasks.has(task.id)) cachedTasks.set(task.id, task);
+        }
+      }
+      const tasks = graph.tasks
+        .flatMap(task => {
+          if (task.kind === "Start") return [];
+          const definition: RoutineTaskNode = {
+            id: task.id as UUID,
+            routineId,
+            stationId,
+            title: task.title,
+            payload: task.payload,
+            priority: task.priority,
+            maxAttempts: task.maxAttempts,
+            previousRoutineTaskIds: task.previousRoutineTaskIds as UUID[],
+            updatedAt: task.updatedAt,
+            createdAt: task.createdAt,
+          };
+          const existing = cachedTasks.get(definition.id);
+          if (existing) Object.assign(existing, definition);
+          return [existing ?? definition];
+        })
+        .sort(compareEntityNames);
+      const stationIds = new Set(
+        [...routines].map(routine => routine.stationId)
+      );
+      for (const station of stationsRef.current.values()) {
+        if (!stationIds.has(station.id)) continue;
+        station.routineTasks = [
+          ...station.routineTasks.filter(task => task.routineId !== routineId),
+          ...tasks,
+        ].sort(compareEntityNames);
+      }
+      for (const routine of routines) {
+        routine.definitionVersion = graph.definitionVersion;
+        routine.updatedAt = graph.updatedAt;
+        routine.routineTaskIds = tasks.map(task => task.id);
+        routine.routineTasks = tasks;
+      }
+      forceUpdate();
+    },
+    [forceUpdate]
+  );
+
   const setPresenceQuery = useCallback(
     (query: string) => {
       presenceRef.current = { ...presenceRef.current, query };
@@ -575,6 +648,7 @@ export const StationRoutineProvider = ({
     closeInspector,
     initializeStationRoutineData,
     refresh,
+    updateRoutineTaskGraph,
     setViewMode,
     setActiveStationId,
     setPresenceQuery,

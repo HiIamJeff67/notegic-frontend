@@ -463,6 +463,17 @@ export const EnglishWorkspaceTranslation = {
     routineTaskRecordTable: "Routine task record table",
   },
   graph: {
+    conflictDescription:
+      "The routine changed. Your unsaved draft is safe; review the latest version before saving.",
+    reviewLatest: "Review latest changes",
+    conflictChoices:
+      "Choose which conflicting values to keep. Deleting a task also removes its links. This updates only your draft; press Save afterward to submit.",
+    keepMine: "Keep mine",
+    useLatest: "Use latest",
+    deletedValue: "Deleted",
+    applyToDraft: "Apply to draft",
+    reviewReady:
+      "Latest changes are in your draft. Review them, then press Save; nothing has been submitted.",
     realign: "Realign",
     realignTitle: "Realign the graph ?",
     realignDescription:
@@ -504,6 +515,7 @@ export const EnglishWorkspaceTranslation = {
     oneShot: "One-shot",
     repeat: "Repeat",
     noRepeat: "Does not repeat",
+    startOnActivation: "Starts when activated rather than at a fixed date.",
     customSchedule: "Custom schedule",
     customScheduleDescription: "Set an explicit start and end time.",
     executionTimeoutMinutes: "Execution timeout (minutes)",
@@ -957,10 +969,8 @@ export const EnglishWorkspaceTranslation = {
       "Sensitive-looking content was copied. Check the target before pasting.",
     routineTasksOnlineOnly:
       "Routine tasks are available only while you are online.",
-    routineDependencyGraphSaved:
-      "Routine task graph saved locally. Backend sync is pending.",
-    routineDependencyGraphSaveFailed:
-      "Could not save the routine task graph locally.",
+    routineDependencyGraphSaved: "Routine saved.",
+    routineDependencyGraphSaveFailed: "Could not save. Please try again.",
     dependencyCreationHint:
       "Select a source task, then a target task to create a dependency.",
     sessionExpired: "Your session ended. Log in again.",
@@ -975,6 +985,13 @@ export const EnglishWorkspaceTranslation = {
     twoFactorDescription: "Add a second verification step.",
   },
   trash: {
+    selectVisible: "Select visible items",
+    selectItem: "Select “{{name}}”",
+    deleteSelected: "Delete selected",
+    restoreSelected: "Restore selected",
+    hardDeleteItemsTitle: "Permanently delete {{count}} items?",
+    hardDeleteItemsDescription:
+      "Permanently delete the {{count}} selected items and their dependent data. This cannot be undone. Type DELETE to confirm.",
     eyebrow: "Workspace",
     title: "Trash",
     description:

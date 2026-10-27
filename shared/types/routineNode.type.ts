@@ -10,6 +10,7 @@ export interface RoutineNode {
   description: string;
   phase: RoutinePhase | null;
   isActive?: boolean;
+  hasCustomSchedule?: boolean;
   definitionVersion?: number;
   isPinned: boolean;
   scheduledStartAt: Date;

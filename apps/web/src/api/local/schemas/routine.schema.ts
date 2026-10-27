@@ -23,6 +23,9 @@ export const Routine = sqliteTable(
     isPinned: integer("is_pinned", { mode: "boolean" })
       .notNull()
       .default(false),
+    hasCustomSchedule: integer("has_custom_schedule", { mode: "boolean" })
+      .notNull()
+      .default(false),
     scheduledStartAt: integer("scheduled_start_at", { mode: "timestamp" })
       .notNull()
       .default(new Date()),

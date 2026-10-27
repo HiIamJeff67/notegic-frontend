@@ -8,6 +8,7 @@ import {
   CreateMyMaterial,
   DeleteMyMaterialById,
   DeleteMyMaterialsByIds,
+  HardDeleteMyMaterialsByIds,
   GetMyMaterialsByRootShelfId,
   GetMyMaterialAndItsParentById,
   GetMyMaterialById,
@@ -31,6 +32,10 @@ import {
   DeleteMyMaterialByIdRequestSchema,
   type DeleteMyMaterialByIdResponse,
   DeleteMyMaterialByIdResponseSchema,
+  type HardDeleteMyMaterialsByIdsRequest,
+  HardDeleteMyMaterialsByIdsRequestSchema,
+  type HardDeleteMyMaterialsByIdsResponse,
+  HardDeleteMyMaterialsByIdsResponseSchema,
   type DeleteMyMaterialsByIdsRequest,
   DeleteMyMaterialsByIdsRequestSchema,
   type DeleteMyMaterialsByIdsResponse,
@@ -423,5 +428,28 @@ export const queryFnResolveMaterialObjectTicket = async (
     return ResolveMaterialObjectTicketResponseSchema.parse(response);
   } catch (error) {
     return parseMaterialObjectTicketError(error);
+  }
+};
+
+export const mutationFnHardDeleteMyMaterialsByIds = async (
+  request: HardDeleteMyMaterialsByIdsRequest
+): Promise<HardDeleteMyMaterialsByIdsResponse> => {
+  try {
+    const validatedRequest =
+      HardDeleteMyMaterialsByIdsRequestSchema.parse(request);
+    const response = await HardDeleteMyMaterialsByIds({
+      data: validatedRequest,
+    });
+    return HardDeleteMyMaterialsByIdsResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
   }
 };

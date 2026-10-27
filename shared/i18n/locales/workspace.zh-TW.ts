@@ -456,6 +456,16 @@ export const TraditionalChineseWorkspaceTranslation = {
     routineTaskRecordTable: "流程任務紀錄表格",
   },
   graph: {
+    conflictDescription:
+      "Routine 已變更。未儲存的草稿仍保留，請先比對最新版本再儲存。",
+    reviewLatest: "比對最新變更",
+    conflictChoices:
+      "選擇要保留的衝突值。刪除任務也會移除其連線。這只會更新草稿；之後仍需按儲存才會送出。",
+    keepMine: "保留我的內容",
+    useLatest: "使用最新內容",
+    deletedValue: "已刪除",
+    applyToDraft: "套用至草稿",
+    reviewReady: "最新變更已合併至草稿。請檢查後再按儲存，目前尚未送出。",
     realign: "重新排列",
     realignTitle: "重新排列整張圖？",
     realignDescription:
@@ -496,6 +506,7 @@ export const TraditionalChineseWorkspaceTranslation = {
     oneShot: "單次",
     repeat: "重複",
     noRepeat: "不重複",
+    startOnActivation: "啟用時開始，而非使用固定日期。",
     customSchedule: "自訂排程",
     customScheduleDescription: "設定明確的開始與結束時間。",
     executionTimeoutMinutes: "執行逾時（分鐘）",
@@ -923,8 +934,8 @@ export const TraditionalChineseWorkspaceTranslation = {
     invalidSubShelfName: "子層架名稱無效。",
     sensitiveClipboard: "已複製看似敏感的內容，貼上前請確認目標位置。",
     routineTasksOnlineOnly: "只有連線時才能查看流程任務。",
-    routineDependencyGraphSaved: "流程任務圖已儲存至本機，等待同步至後端。",
-    routineDependencyGraphSaveFailed: "無法將流程任務圖儲存至本機。",
+    routineDependencyGraphSaved: "已儲存流程。",
+    routineDependencyGraphSaveFailed: "無法儲存，請再試一次。",
     dependencyCreationHint: "請先選擇來源任務，再選擇目標任務以建立依賴關係。",
     sessionExpired: "工作階段已結束，請重新登入。",
     realtimeError: "即時連線發生錯誤。",
@@ -937,6 +948,13 @@ export const TraditionalChineseWorkspaceTranslation = {
     twoFactorDescription: "新增第二道驗證步驟。",
   },
   trash: {
+    selectVisible: "選取目前顯示的項目",
+    selectItem: "選取「{{name}}」",
+    deleteSelected: "刪除已選項目",
+    restoreSelected: "還原已選項目",
+    hardDeleteItemsTitle: "永久刪除 {{count}} 個項目？",
+    hardDeleteItemsDescription:
+      "永久刪除已選取的 {{count}} 個項目及其相依資料。此操作無法復原，請輸入 DELETE 確認。",
     eyebrow: "工作區",
     title: "垃圾桶",
     description: "還原已刪除的資料，或在確認後徹底刪除支援的項目。",

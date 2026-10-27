@@ -1,12 +1,12 @@
 import {
   SubmitFeedbackReportRequestSchema,
-  SubmitFeedbackReportResponseSchema,
   type SubmitFeedbackReportResponse,
+  SubmitFeedbackReportResponseSchema,
 } from "@shared/api/interfaces/feedback.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const SubmitFeedbackReport = createServerFn({ method: "POST" })
@@ -25,9 +25,8 @@ export const SubmitFeedbackReport = createServerFn({ method: "POST" })
             request.header.userAgent ??
             getRequestHeader("User-Agent") ??
             "unknown",
-          ...(request.header.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(getRequestHeader("cookie")
             ? { Cookie: getRequestHeader("cookie") }
             : {}),

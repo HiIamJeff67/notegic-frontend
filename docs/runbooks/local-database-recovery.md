@@ -19,6 +19,24 @@ SQLite WASM, OPFS, IndexedDB, transaction, and Yjs boundaries.
 Migration failure never deletes the OPFS database. The previous committed
 version remains the retry point.
 
+## Transaction isolation
+
+The shared Drizzle driver serializes raw SQL, query builders, prepared and
+relational queries, and batches on the same connection queue. A transaction
+holds that queue through COMMIT or ROLLBACK and uses its own Drizzle session;
+unrelated operations wait and cannot read or roll back with its pending writes.
+Transactions are not automatically replayed after an error.
+
+Inside `localDB.transaction(async tx => ...)`, use `tx` for every executed
+query and pass it to any helper that performs database work. Do not await an
+operation on the exported `localDB` from that callback: it waits behind the
+transaction itself. Nested transactions use `tx.transaction(...)` savepoints.
+Do not retain transaction handles or prepared queries after the transaction
+finishes; their driver rejects further execution. This queue is per connection,
+not a replacement for the existing cross-tab SQLite and migration locks.
+
+No schema up/down or local data reset is required for this adapter change.
+
 ## Diagnostic state
 
 The persisted local diagnostic record contains the current and previous phase,
@@ -71,6 +89,7 @@ npm run test:unit -- apps/web/src/api/local/recovery.test.ts apps/web/src/api/lo
 npm run typecheck
 npx playwright install chromium
 npm run test:e2e -- apps/web/test/e2e/localDatabaseStartup.spec.ts
+npm run test:e2e -- localDatabaseIsolation.spec.ts routineGraph.spec.ts --workers=1
 ```
 
 The Playwright startup test delays worker configuration and exercises two tabs

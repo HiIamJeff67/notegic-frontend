@@ -1,27 +1,32 @@
-import type { UUID } from "crypto";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
+import type { Edge } from "@xyflow/react";
+import type { UUID } from "crypto";
 import { createElement, useContext } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n from "@/i18n";
-import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
-import type { Edge } from "@xyflow/react";
 import {
-  type RoutineTaskGraphNode,
-  type RoutineTaskDependencyGraphDraftContextType,
-  RoutineTaskDependencyGraphDraftContext,
-  RoutineTaskDependencyGraphDraftProvider,
-  hasGraphOverlap,
-  realignGraph,
   getRoutineTaskDependencyEdgeId,
   getRoutineTaskDependencyEdges,
+  getRoutineTaskGraphChanges,
+  hasGraphOverlap,
   hasRoutineTaskDependencyCycle,
   hasRoutineTaskDependencyEdge,
   isRoutineTaskDependencyInRoutine,
   mergePendingRoutineTaskDependencyEdges,
+  RoutineTaskDependencyGraphDraftContext,
+  type RoutineTaskDependencyGraphDraftContextType,
+  RoutineTaskDependencyGraphDraftProvider,
+  type RoutineTaskGraphNode,
+  realignGraph,
+  reconcileRoutineTaskGraphDraft,
 } from "./RoutineTaskDependencyGraphDraftProvider";
 
 const mockCreateDependency = jest.fn();
+beforeAll(async () => {
+  await i18n.changeLanguage("en");
+});
 const mockLoadRows = jest.fn();
 const mockInsert = jest.fn();
 const mockOnConflictDoUpdate = jest.fn();
@@ -55,12 +60,16 @@ jest.mock("@/api/local/db", () => ({
 jest.mock("@/api/hooks/routine.hook", () => ({
   useGetMyRoutineById: () => ({}),
 }));
+jest.mock("@/api/hooks/station.hook", () => ({
+  useGetMyStationById: () => ({}),
+}));
 jest.mock("@/api/hooks/routineTask.hook", () => ({
   useCreateRoutineTaskByRoutineId: () => ({}),
   useGetMyRoutineTasksByRoutineId: () => ({}),
   useUpdateMyRoutineTaskById: () => ({}),
 }));
 jest.mock("@/api/hooks/routineTaskDependency.hook", () => ({
+  useUpdateRoutineTaskGraphByRoutineId: () => ({}),
   useCreateRoutineTaskDependencyByRoutineId: () => ({
     mutateAsync: mockCreateDependency,
   }),
@@ -282,6 +291,7 @@ describe("RoutineTask dependency graph adapters", () => {
         id: "task-a->task-b",
         source: "task-a",
         target: "task-b",
+        markerEnd: { type: "arrowclosed", width: 24, height: 24 },
         data: {
           description: "Run after source task",
           progress: 75,
@@ -402,93 +412,334 @@ describe("RoutineTask dependency graph adapters", () => {
   });
 });
 
-describe("dependency creation failure drafts", () => {
-  afterEach(async () => {
-    mockCreateDependency.mockReset();
-    mockDraftValues.mockClear();
-    await i18n.changeLanguage("en");
+describe("graph operation coalescing", () => {
+  const task = (id: string, title = id) => ({
+    id,
+    routineId: "routine",
+    kind: "Action" as const,
+    x: 0,
+    y: 0,
+    title,
+    payload: { schemaVersion: 1, purpose: "GetRoutine", routineId: "routine" },
+    priority: 0,
+    maxAttempts: 1,
+    previousRoutineTaskIds: [],
+    updatedAt: new Date(),
+    createdAt: new Date(),
   });
-
-  test.each([
-    [
-      "server rejection",
-      new NotegicAPIError(
-        new NotegicException({
-          reason: "InvalidDto",
-          domain: "core",
-          operation: "create",
-          message: "invalid input",
-          retryable: false,
-        })
-      ),
-      "server.error.InvalidDto",
-      "invalid",
-    ],
-    [
-      "UI presentation",
-      new NotegicAPIError(
-        new NotegicException({
-          reason: "InvalidDto",
-          domain: "core",
-          operation: "create",
-          message: "invalid input",
-          retryable: false,
-        })
-      ).setPresentation("auth.turnstileRequired"),
-      "auth.turnstileRequired",
-      "invalid",
-    ],
-    [
-      "validation",
-      new NotegicValidationError(
-        new NotegicException({
-          reason: "InvalidDto",
-          domain: "core",
-          operation: "create",
-          message: "invalid input",
-          retryable: false,
-        })
-      ),
-      "server.error.InvalidDto",
-      "pending",
-    ],
-    [
-      "unknown failure",
-      new Error("raw server text"),
-      "error.encounterUnknownError",
-      "pending",
-    ],
-  ])("persists locale-neutral keys for %s", async (_name, error, key, status) => {
-    mockCreateDependency.mockRejectedValue(error);
-    let context: RoutineTaskDependencyGraphDraftContextType | undefined;
-    const Probe = () => {
-      context = useContext(RoutineTaskDependencyGraphDraftContext);
-      return null;
+  test("reconciles schedule-only versions and disjoint edits without changing the original draft", () => {
+    const original = task("a");
+    const draft = {
+      nodes: [],
+      edges: [],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 7,
+        baselineTasks: [original],
+        baselineEdges: [],
+        tasks: [{ ...original, x: 50 }],
+      },
     };
-    renderToStaticMarkup(
-      createElement(RoutineTaskDependencyGraphDraftProvider, {
-        routineId: "12345678-1234-4234-8234-123456789abc",
-        children: createElement(Probe),
-      })
-    );
-    await context!.connectDependency({
-      source: "source",
-      target: "target",
-      sourceHandle: null,
-      targetHandle: null,
+    const remote = {
+      definitionVersion: 21,
+      tasks: [{ ...original, title: "Collaborator title" }],
+      dependencies: [],
+      updatedAt: new Date(),
+    };
+    const result = reconcileRoutineTaskGraphDraft(draft, remote);
+    expect(result.conflicts).toEqual([]);
+    expect(result.draft.snapshot.tasks[0]).toMatchObject({
+      title: "Collaborator title",
+      x: 50,
     });
-    const stored = JSON.parse(mockDraftValues.mock.calls.at(-1)![0].edges)[0];
-    expect(stored).toMatchObject({
-      id: "source->target",
-      operation: "create",
-      syncStatus: status,
-      errorKey: key,
+    expect(getRoutineTaskGraphChanges(result.draft)).toMatchObject({
+      expectedDefinitionVersion: 21,
+      tasks: { updates: [{ routineTaskId: "a", values: { x: 50 } }] },
     });
-    expect(stored.errorMessage).toBeUndefined();
-    await i18n.changeLanguage("zh-TW");
-    expect(i18n.exists(stored.errorKey)).toBe(true);
-    if (key === "server.error.InvalidDto")
-      expect(i18n.t(stored.errorKey)).toBe("提交的資料有部分格式不正確。");
+    expect(draft.snapshot.definitionVersion).toBe(7);
+    expect(draft.snapshot.tasks[0].title).toBe("a");
+  });
+  test("retains both sides of a conflicting field and applies only explicit choices", () => {
+    const original = task("a");
+    const draft = {
+      nodes: [],
+      edges: [],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 7,
+        baselineTasks: [original],
+        baselineEdges: [],
+        tasks: [{ ...original, title: "Mine", x: 42 }],
+      },
+    };
+    const remote = {
+      definitionVersion: 8,
+      tasks: [{ ...original, title: "Theirs", y: 20 }],
+      dependencies: [],
+      updatedAt: new Date(),
+    };
+    const result = reconcileRoutineTaskGraphDraft(draft, remote);
+    expect(result.conflicts).toEqual([
+      {
+        id: "task:a:title",
+        label: "Mine · title",
+        local: "Mine",
+        remote: "Theirs",
+      },
+    ]);
+    const resolved = reconcileRoutineTaskGraphDraft(draft, remote, {
+      "task:a:title": "remote",
+    });
+    expect(resolved.draft.snapshot.tasks[0]).toMatchObject({
+      title: "Theirs",
+      x: 42,
+      y: 20,
+    });
+    expect(draft.snapshot.tasks[0].title).toBe("Mine");
+  });
+  test("deletion conflicts include dependencies added by a collaborator", () => {
+    const first = task("a"),
+      second = task("b");
+    const draft = {
+      nodes: [],
+      edges: [],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 1,
+        baselineTasks: [first, second],
+        baselineEdges: [],
+        tasks: [first],
+      },
+    };
+    const remote = {
+      definitionVersion: 2,
+      tasks: [first, second],
+      dependencies: [
+        {
+          routineTaskId: "b",
+          previousRoutineTaskId: "a",
+          description: "New remote link",
+          progress: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      updatedAt: new Date(),
+    };
+    const result = reconcileRoutineTaskGraphDraft(draft, remote);
+    expect(result.conflicts.map(conflict => conflict.id)).toEqual(["task:b"]);
+    const restored = reconcileRoutineTaskGraphDraft(draft, remote, {
+      "task:b": "remote",
+    });
+    expect(restored.draft.snapshot.tasks).toHaveLength(2);
+    expect(restored.draft.edges).toHaveLength(1);
+    const removed = reconcileRoutineTaskGraphDraft(draft, remote, {
+      "task:b": "local",
+    });
+    expect(removed.draft.snapshot.tasks).toHaveLength(1);
+    expect(removed.draft.edges).toHaveLength(0);
+  });
+  test("remote deletion, concurrent creation and edge edits retain independent changes", () => {
+    const first = task("a"),
+      second = task("b"),
+      third = task("c");
+    const edge = {
+      id: "a->b",
+      source: "a",
+      target: "b",
+      description: "Original",
+      progress: 0,
+    };
+    const draft = {
+      nodes: [],
+      edges: [{ ...edge, description: "Mine" }],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 1,
+        baselineTasks: [first, second, third],
+        baselineEdges: [edge],
+        tasks: [first, second, third, task("new", "Mine")],
+      },
+    };
+    const remote = {
+      definitionVersion: 2,
+      tasks: [first, second, task("new", "Theirs")],
+      dependencies: [
+        {
+          routineTaskId: "b",
+          previousRoutineTaskId: "a",
+          description: "Theirs",
+          progress: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      updatedAt: new Date(),
+    };
+    const result = reconcileRoutineTaskGraphDraft(draft, remote, {
+      "task:new": "remote",
+      "edge:a->b": "local",
+    });
+    expect(result.conflicts.map(conflict => conflict.id)).toEqual([
+      "task:new",
+      "edge:a->b",
+    ]);
+    expect(result.draft.snapshot.tasks.map(task => task.id)).toEqual([
+      "a",
+      "b",
+      "new",
+    ]);
+    expect(result.draft.edges[0].description).toBe("Mine");
+    expect(getRoutineTaskGraphChanges(result.draft).tasks).toEqual({
+      creates: [],
+      updates: [],
+      deletes: [],
+    });
+  });
+  test("folds create/update/delete and cascades dependencies without duplicate writes", () => {
+    const first = task("existing", "Original");
+    const deleted = task("deleted");
+    const created = task("new", "Latest create title");
+    const draft = {
+      nodes: [],
+      edges: [
+        {
+          id: "existing->new",
+          source: "existing",
+          target: "new",
+          description: "final",
+          progress: 70,
+        },
+      ],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 7,
+        baselineTasks: [first, deleted],
+        tasks: [{ ...first, title: "Latest update", x: 50 }, created],
+        baselineEdges: [
+          { id: "existing->deleted", source: "existing", target: "deleted" },
+        ],
+      },
+    };
+    expect(getRoutineTaskGraphChanges(draft)).toEqual({
+      expectedDefinitionVersion: 7,
+      tasks: {
+        creates: [
+          {
+            id: "new",
+            routineId: "routine",
+            kind: "Action",
+            title: "Latest create title",
+            payload: created.payload,
+            priority: 0,
+            maxAttempts: 1,
+            x: 0,
+            y: 0,
+          },
+        ],
+        updates: [
+          {
+            routineTaskId: "existing",
+            values: { title: "Latest update", x: 50 },
+          },
+        ],
+        deletes: ["deleted"],
+      },
+      dependencies: {
+        creates: [
+          {
+            routineTaskId: "new",
+            previousRoutineTaskId: "existing",
+            description: "final",
+            progress: 70,
+          },
+        ],
+        updates: [],
+        deletes: [],
+      },
+    });
+  });
+  test("payload property order is not a definition change", () => {
+    const baseline = task("a");
+    const { schemaVersion, purpose, routineId } = baseline.payload;
+    const draft = {
+      nodes: [],
+      edges: [],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2 as const,
+        definitionVersion: 7,
+        baselineTasks: [baseline],
+        baselineEdges: [],
+        tasks: [
+          { ...baseline, payload: { routineId, purpose, schemaVersion } },
+        ],
+      },
+    };
+    expect(getRoutineTaskGraphChanges(draft).tasks.updates).toEqual([]);
+    expect(
+      reconcileRoutineTaskGraphDraft(draft, {
+        definitionVersion: 8,
+        tasks: [baseline],
+        dependencies: [],
+        updatedAt: new Date(),
+      }).conflicts
+    ).toEqual([]);
+  });
+  test("existing update then delete remains a delete; canceled creates vanish", () => {
+    const baseline = task("existing");
+    expect(
+      getRoutineTaskGraphChanges({
+        nodes: [],
+        edges: [],
+        updatedAt: new Date(),
+        snapshot: {
+          version: 2,
+          definitionVersion: 9,
+          baselineTasks: [baseline],
+          baselineEdges: [],
+          tasks: [],
+        },
+      }).tasks
+    ).toEqual({ creates: [], updates: [], deletes: [baseline.id] });
+  });
+  test("keeps edge updates and deletes distinct and preserves the original version", () => {
+    const tasks = [task("a"), task("b"), task("c")];
+    const baselineEdges = [
+      { id: "a->b", source: "a", target: "b", description: "old", progress: 0 },
+      { id: "a->c", source: "a", target: "c" },
+    ];
+    const result = getRoutineTaskGraphChanges({
+      nodes: [],
+      edges: [{ ...baselineEdges[0], description: "latest", progress: 100 }],
+      updatedAt: new Date(),
+      snapshot: {
+        version: 2,
+        definitionVersion: 7,
+        tasks,
+        baselineTasks: tasks,
+        baselineEdges,
+      },
+    });
+    expect(result.expectedDefinitionVersion).toBe(7);
+    expect(result.tasks).toEqual({ creates: [], updates: [], deletes: [] });
+    expect(result.dependencies).toEqual({
+      creates: [],
+      updates: [
+        {
+          routineTaskId: "b",
+          previousRoutineTaskId: "a",
+          description: "latest",
+          progress: 100,
+        },
+      ],
+      deletes: [{ routineTaskId: "c", previousRoutineTaskId: "a" }],
+    });
   });
 });
 
@@ -511,6 +762,50 @@ const getDraftContext = (routineId: string) => {
 };
 
 describe("RoutineTask dependency graph local draft boundary", () => {
+  test("restores a confirmed snapshot without changing its original version", async () => {
+    const routineId = "11111111-1111-4111-8111-111111111111";
+    const task = {
+      id: "22222222-2222-4222-8222-222222222222",
+      routineId,
+      kind: "Start",
+      title: "Start",
+      x: 0,
+      y: 0,
+      payload: { schemaVersion: 1, isActive: true },
+      priority: 0,
+      maxAttempts: 1,
+      previousRoutineTaskIds: [],
+      createdAt: "2026-10-25T00:00:00.000Z",
+      updatedAt: "2026-10-25T00:00:00.000Z",
+    };
+    const snapshot = {
+      version: 2,
+      definitionVersion: 7,
+      tasks: [task],
+      baselineTasks: [task],
+      baselineEdges: [],
+      confirmed: {
+        definitionVersion: 8,
+        tasks: [task],
+        dependencies: [],
+        updatedAt: task.updatedAt,
+      },
+    };
+    mockLoadRows.mockResolvedValue([
+      {
+        nodes: JSON.stringify({ version: 2, nodes: [], snapshot }),
+        edges: "[]",
+        updatedAt: new Date(),
+      },
+    ]);
+    const loaded = await getDraftContext(routineId).loadDraft();
+    expect(loaded?.snapshot?.definitionVersion).toBe(7);
+    expect(loaded?.snapshot?.confirmed?.definitionVersion).toBe(8);
+    expect(loaded?.snapshot?.confirmed?.tasks[0].createdAt).toBeInstanceOf(
+      Date
+    );
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
   test("returns no draft when the select has no rows", async () => {
     mockLoadRows.mockResolvedValue([]);
     const draftContext = getDraftContext(
@@ -561,7 +856,7 @@ describe("RoutineTask dependency graph local draft boundary", () => {
     expect(mockDraftValues).toHaveBeenCalledWith(
       expect.objectContaining({
         routineId,
-        nodes: JSON.stringify(draft.nodes),
+        nodes: JSON.stringify({ version: 2, nodes: draft.nodes }),
         edges: JSON.stringify(draft.edges),
       })
     );
@@ -569,7 +864,7 @@ describe("RoutineTask dependency graph local draft boundary", () => {
       expect.objectContaining({
         target: expect.anything(),
         set: expect.objectContaining({
-          nodes: JSON.stringify(draft.nodes),
+          nodes: JSON.stringify({ version: 2, nodes: draft.nodes }),
           edges: JSON.stringify(draft.edges),
           updatedAt: expect.any(Date),
         }),
@@ -591,7 +886,7 @@ describe("RoutineTask dependency graph local draft boundary", () => {
     expect(mockLoadRows).toHaveBeenCalledTimes(1);
   });
 
-  test("ignores an invalid graph draft instead of throwing during local mapping", async () => {
+  test("preserves invalid persisted data and reports it instead of silently discarding it", async () => {
     const draftContext = getDraftContext(
       "11111111-1111-4111-8111-111111111111"
     );
@@ -603,6 +898,7 @@ describe("RoutineTask dependency graph local draft boundary", () => {
       },
     ]);
 
-    await expect(draftContext.loadDraft()).resolves.toBeNull();
+    await expect(draftContext.loadDraft()).rejects.toThrow();
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 });

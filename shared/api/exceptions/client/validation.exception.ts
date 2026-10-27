@@ -24,6 +24,7 @@ export class ValidationClientException {
       reason: ExceptionReasonDictionary.client.validation.zodParsingFailed,
       message: `Failed to parsing types by zod, failed fields: ${JSON.stringify(zodError.flatten().fieldErrors)}`,
       status: StatusCodes.SERVICE_UNAVAILABLE,
+      retryable: false,
     });
   };
 

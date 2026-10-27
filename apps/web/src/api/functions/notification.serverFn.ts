@@ -9,9 +9,9 @@ import type {
   MarkNotificationsReadResponse,
 } from "@shared/api/interfaces/notification.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const fetchNotificationResponse = async <T>(
@@ -41,9 +41,8 @@ const fetchNotificationResponse = async <T>(
         request.header?.userAgent ??
         getRequestHeader("User-Agent") ??
         "unknown",
-      ...(request.header?.csrfToken
-        ? { "X-CSRF-Token": request.header.csrfToken }
-        : {}),
+      "X-CSRF-Token":
+        getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
       ...(inboundCookie ? { Cookie: inboundCookie } : {}),
     },
     ...(method === "GET" ? {} : { body: JSON.stringify(request.body ?? {}) }),

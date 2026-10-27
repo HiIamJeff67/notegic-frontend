@@ -6,10 +6,8 @@ import {
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
 import { CurrentAPIBaseURL } from "@shared/api/url";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { tap } from "rxjs";
-import { getClientCSRFToken } from "@/api/clientHeaders";
+import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
 import { searchPaginationPolicy } from "./policies/searchPagination.policy";
 
 export const createApolloClient = () => {
@@ -22,12 +20,12 @@ export const createApolloClient = () => {
 
   const csrfLink = new SetContextLink(previousContext => {
     const csrfToken = getClientCSRFToken();
+    const headers = new Headers(previousContext.headers);
+    if (csrfToken) headers.set("X-CSRF-Token", csrfToken);
+    else headers.delete("X-CSRF-Token");
 
     return {
-      headers: {
-        ...previousContext.headers,
-        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
-      },
+      headers: Object.fromEntries(headers),
     };
   });
 
@@ -42,12 +40,11 @@ export const createApolloClient = () => {
           typeof window !== "undefined" &&
           operation.getContext().response?.ok &&
           typeof csrfToken === "string" &&
-          csrfToken.trim() !== ""
+          csrfToken.trim() !== "" &&
+          getClientCSRFToken() ===
+            (operation.getContext().headers?.["x-csrf-token"] ?? null)
         ) {
-          SessionStorageManipulator.ensureItem(
-            SessionStorageKey.csrfToken,
-            csrfToken
-          );
+          setClientCSRFToken(csrfToken);
         }
       })
     )

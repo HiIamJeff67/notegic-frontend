@@ -1,19 +1,15 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
   type UseQueryOptions,
   useQuery,
 } from "@tanstack/react-query";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
 
 interface VisualizeResponseEnvelope {
   refreshableTokens?: {
@@ -52,10 +48,6 @@ export function useVisualizeQuery<
       ...request,
       header: getClientRequestHeaders(request.header?.userAgent),
     });
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 

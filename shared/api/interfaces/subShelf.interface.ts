@@ -665,3 +665,42 @@ export const DeleteMySubShelvesByIdsResponseSchema =
 export type DeleteMySubShelvesByIdsResponse = z.infer<
   typeof DeleteMySubShelvesByIdsResponseSchema
 >;
+
+/* ============================== HardDeleteMySubShelvesByIds ============================== */
+
+export const HardDeleteMySubShelvesByIdsRequestSchema =
+  NotegicRequestSchema.extend({
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      subShelfIds: z
+        .array(z.uuidv4())
+        .min(1)
+        .max(1024)
+        .refine(ids => new Set(ids).size === ids.length, {
+          message: "Material IDs must be unique",
+        }),
+    }),
+  });
+
+export type HardDeleteMySubShelvesByIdsRequest = z.infer<
+  typeof HardDeleteMySubShelvesByIdsRequestSchema
+>;
+
+export const HardDeleteMySubShelvesByIdsResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  });
+
+export type HardDeleteMySubShelvesByIdsResponse = z.infer<
+  typeof HardDeleteMySubShelvesByIdsResponseSchema
+>;

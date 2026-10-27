@@ -1,9 +1,9 @@
 import type { UUID } from "node:crypto";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
   GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
@@ -18,6 +18,10 @@ import type {
   VisualizeMyRoutineTaskRecordStatusCountRequest,
   VisualizeMyRoutineTaskRecordStatusCountResponse,
 } from "@shared/api/interfaces/routineTaskRecord.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import {
   queryFnGetMyRoutineTaskRecordsByRoutineTaskId,
   queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
@@ -26,14 +30,6 @@ import {
   queryFnVisualizeMyRoutineTaskRecordScheduledAtCount,
   queryFnVisualizeMyRoutineTaskRecordStatusCount,
 } from "@/api/invokers/routineTaskRecord.invoker";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineTaskRecordStatusCount = (
@@ -160,10 +156,6 @@ export const useGetMyRoutineTaskRecordsByRoutineTaskId = (
 
       const response =
         await queryFnGetMyRoutineTaskRecordsByRoutineTaskId(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       return response;
     } catch (error) {
       if (

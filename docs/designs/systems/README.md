@@ -8,6 +8,7 @@ boundaries or runtime concerns.
 - [Block editor event handling flow](block-editor-event-handling-flow-chart.drawio)
 - [API architecture design](../routes/api-architecture-design.drawio)
 - [API, query, storage, and platform boundaries](api-query-storage-platform-boundaries.md)
+- [Routine graph drafts and atomic saves](routine-graph-drafts.md)
 
 ## Topics for this repository
 

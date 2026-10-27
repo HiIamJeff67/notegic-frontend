@@ -27,12 +27,17 @@ import {
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDebounceValue } from "@/hooks/useDebounce";
-import { type TrashEntry, useTrashActions } from "./useTrashActions";
+import {
+  getTrashEntryKey,
+  type TrashEntry,
+  useTrashActions,
+} from "./useTrashActions";
 
 type TrashItemType = TrashEntry["type"];
 
@@ -74,7 +79,10 @@ const TrashPage = ({
   const debouncedQuery = useDebounceValue(query);
   const submittedQuery = useRef(initialQuery);
   const actions = useTrashActions(onChanged);
-  const [deleteTarget, setDeleteTarget] = useState<TrashEntry | null>(null);
+  const [deleteTargets, setDeleteTargets] = useState<TrashEntry[]>([]);
+  const [selectedEntryKeys, setSelectedEntryKeys] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (initialQuery !== submittedQuery.current) {
@@ -129,8 +137,7 @@ const TrashPage = ({
     .filter(
       entry =>
         entry.deletedAt &&
-        actions.completedEntries.get(`${entry.type}-${entry.id}`) !==
-          new Date(entry.deletedAt).getTime()
+        !actions.completedEntries.has(getTrashEntryKey(entry))
     )
     .filter(entry => selectedType === "all" || entry.type === selectedType)
     .sort(
@@ -138,6 +145,13 @@ const TrashPage = ({
         new Date(right.deletedAt ?? 0).getTime() -
         new Date(left.deletedAt ?? 0).getTime()
     );
+  const selectedEntries = visibleEntries.filter(entry =>
+    selectedEntryKeys.has(getTrashEntryKey(entry))
+  );
+  const pendingDeleteTargets = deleteTargets.filter(
+    entry => !actions.completedEntries.has(getTrashEntryKey(entry))
+  );
+
   return (
     <main
       className={
@@ -206,6 +220,59 @@ const TrashPage = ({
           </ToggleGroup>
         </div>
 
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+          <label className="flex min-w-0 items-center gap-2 text-sm">
+            <Checkbox
+              checked={
+                selectedEntries.length > 0 &&
+                selectedEntries.length === visibleEntries.length
+                  ? true
+                  : selectedEntries.length > 0
+                    ? "indeterminate"
+                    : false
+              }
+              disabled={
+                visibleEntries.length === 0 || actions.pendingEntry !== null
+              }
+              onCheckedChange={checked =>
+                setSelectedEntryKeys(
+                  new Set(
+                    checked === true ? visibleEntries.map(getTrashEntryKey) : []
+                  )
+                )
+              }
+            />
+            {t("workspace.trash.selectVisible")}
+          </label>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              disabled={
+                selectedEntries.length === 0 || actions.pendingEntry !== null
+              }
+              onClick={() => {
+                void actions
+                  .perform(selectedEntries, "restore")
+                  .then(completed => {
+                    if (completed) setSelectedEntryKeys(new Set());
+                  })
+                  .catch(error => toast.error(tError(error, t)));
+              }}
+            >
+              {t("workspace.trash.restoreSelected")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={
+                selectedEntries.length === 0 || actions.pendingEntry !== null
+              }
+              onClick={() => setDeleteTargets(selectedEntries)}
+            >
+              {t("workspace.trash.deleteSelected")}
+            </Button>
+          </div>
+        </div>
+
         <section className="border-y border-border">
           {visibleEntries.length === 0 ? (
             <div className="flex min-h-48 flex-col items-center justify-center gap-2 text-center">
@@ -225,8 +292,24 @@ const TrashPage = ({
               return (
                 <div
                   key={`${entry.type}-${entry.id}`}
-                  className="flex min-w-0 flex-wrap items-center gap-4 border-b border-border px-1 py-4 last:border-b-0"
+                  className="flex min-w-0 items-center gap-3 border-b border-border px-1 py-4 last:border-b-0"
                 >
+                  <Checkbox
+                    aria-label={t("workspace.trash.selectItem", {
+                      name: entry.name ?? t("workspace.trash.untitled"),
+                    })}
+                    checked={selectedEntryKeys.has(getTrashEntryKey(entry))}
+                    disabled={actions.pendingEntry !== null}
+                    onCheckedChange={checked =>
+                      setSelectedEntryKeys(previous => {
+                        const selected = new Set(previous);
+                        if (checked === true)
+                          selected.add(getTrashEntryKey(entry));
+                        else selected.delete(getTrashEntryKey(entry));
+                        return selected;
+                      })
+                    }
+                  />
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
                     <Icon className="size-4" />
                   </div>
@@ -245,39 +328,38 @@ const TrashPage = ({
                         : t("workspace.trash.unknownTime")}
                     </p>
                   </div>
-                  <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
+                  <div className="flex shrink-0 items-center gap-2">
                     <Button
-                      size="sm"
+                      size="icon"
                       variant="outline"
+                      aria-label={t("workspace.trash.restore")}
+                      title={t("workspace.trash.restore")}
                       disabled={actions.pendingEntry !== null}
                       onClick={() => {
                         void actions
-                          .perform(entry, "restore")
+                          .perform([entry], "restore")
                           .catch(error => toast.error(tError(error, t)));
                       }}
                     >
-                      {actions.pendingEntry === `${entry.type}-${entry.id}` ? (
+                      {actions.pendingEntry === getTrashEntryKey(entry) ? (
                         <Spinner />
                       ) : (
-                        <ArchiveRestoreIcon className="size-4" />
+                        <ArchiveRestoreIcon
+                          aria-hidden="true"
+                          className="size-4"
+                        />
                       )}
-                      {t("workspace.trash.restore")}
                     </Button>
-                    {entry.type === "station" || entry.type === "routine" ? (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        disabled={actions.pendingEntry !== null}
-                        onClick={() => setDeleteTarget(entry)}
-                      >
-                        <Trash2Icon className="size-4" />
-                        {t("workspace.trash.hardDelete")}
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        {t("workspace.trash.hardDeleteUnavailable")}
-                      </span>
-                    )}
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      aria-label={t("workspace.trash.hardDelete")}
+                      title={t("workspace.trash.hardDelete")}
+                      disabled={actions.pendingEntry !== null}
+                      onClick={() => setDeleteTargets([entry])}
+                    >
+                      <Trash2Icon aria-hidden="true" className="size-4" />
+                    </Button>
                   </div>
                 </div>
               );
@@ -285,19 +367,44 @@ const TrashPage = ({
           )}
         </section>
       </div>
-      {deleteTarget && (
+      {pendingDeleteTargets.length > 0 && (
         <DeleteShelfItemDialog
           isOpen
-          onClose={() => setDeleteTarget(null)}
-          onCancel={() => setDeleteTarget(null)}
-          dialogHeader={t("workspace.trash.hardDeleteTitle")}
-          dialogDescription={t("workspace.trash.hardDeleteDescription", {
-            name: deleteTarget.name,
-          })}
+          onClose={() => setDeleteTargets([])}
+          onCancel={() => setDeleteTargets([])}
+          dialogHeader={
+            pendingDeleteTargets.length === 1
+              ? t("workspace.trash.hardDeleteTitle")
+              : t("workspace.trash.hardDeleteItemsTitle", {
+                  count: pendingDeleteTargets.length,
+                })
+          }
+          dialogDescription={
+            pendingDeleteTargets.length === 1
+              ? t("workspace.trash.hardDeleteDescription", {
+                  name: pendingDeleteTargets[0].name,
+                })
+              : t("workspace.trash.hardDeleteItemsDescription", {
+                  count: pendingDeleteTargets.length,
+                })
+          }
           confirmKeyword="DELETE"
           inputPlaceholder={t("workspace.menu.typeDelete")}
           confirmLabel={t("workspace.trash.hardDelete")}
-          onDelete={() => actions.perform(deleteTarget, "hardDelete")}
+          onDelete={async () => {
+            const completed = await actions.perform(
+              pendingDeleteTargets,
+              "hardDelete"
+            );
+            if (completed)
+              setSelectedEntryKeys(previous => {
+                const selected = new Set(previous);
+                for (const entry of deleteTargets)
+                  selected.delete(getTrashEntryKey(entry));
+                return selected;
+              });
+            return completed;
+          }}
         />
       )}
     </main>

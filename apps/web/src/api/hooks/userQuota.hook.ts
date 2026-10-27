@@ -1,5 +1,5 @@
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMyQuotaRequest,
   GetMyQuotaResponse,
@@ -7,8 +7,6 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { queryFnGetMyQuota } from "@/api/invokers/userQuota.invoker";
 
@@ -27,10 +25,6 @@ export const useGetMyQuota = (
       );
     }
     const response = await queryFnGetMyQuota(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 

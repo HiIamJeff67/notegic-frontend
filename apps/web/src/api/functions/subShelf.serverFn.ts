@@ -15,6 +15,8 @@ import {
   GetMySubShelvesByPrevSubShelfIdResponse,
   GetMySubShelvesByRootShelfIdRequest,
   GetMySubShelvesByRootShelfIdResponse,
+  HardDeleteMySubShelvesByIdsRequest,
+  HardDeleteMySubShelvesByIdsResponse,
   MoveMySubShelfRequest,
   MoveMySubShelfResponse,
   MoveMySubShelvesByRootShelfIdRequest,
@@ -35,9 +37,9 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMySubShelfById = createServerFn({ method: "GET" })
@@ -54,9 +56,8 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       credentials: "include",
@@ -91,9 +92,8 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -129,9 +129,8 @@ export const GetMySubShelvesByRootShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -169,9 +168,8 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -204,9 +202,10 @@ export const CreateSubShelfByRootShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "rootShelfId")),
@@ -243,9 +242,10 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -275,9 +275,8 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "subShelfId")),
@@ -311,9 +310,10 @@ export const UpdateMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -343,9 +343,8 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(
@@ -381,9 +380,10 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -418,9 +418,10 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -453,9 +454,10 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "subShelfId")),
@@ -490,9 +492,10 @@ export const RestoreMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -522,9 +525,8 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "subShelfId")),
@@ -558,9 +560,10 @@ export const DeleteMySubShelvesByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -572,6 +575,42 @@ export const DeleteMySubShelvesByIds = createServerFn({
       const formattedResponse = (await readAPIResponse(
         response
       )) as DeleteMySubShelvesByIdsResponse;
+
+      return formattedResponse;
+    }
+  );
+
+export const HardDeleteMySubShelvesByIds = createServerFn({ method: "POST" })
+  .inputValidator((data: HardDeleteMySubShelvesByIdsRequest) => data)
+  .handler(
+    async ({ data: request }): Promise<HardDeleteMySubShelvesByIdsResponse> => {
+      const inboundCookie = getRequestHeader("cookie");
+      const userAgent =
+        request.header?.userAgent ??
+        getRequestHeader("User-Agent") ??
+        "unknown";
+      const response = await fetch(
+        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.subShelf.hardDeleteMySubShelvesByIds}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent": userAgent,
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
+            ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+          },
+          body: JSON.stringify(request.body),
+          credentials: "include",
+        }
+      );
+
+      forwardUpstreamSetCookies(response);
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMySubShelvesByIdsResponse;
 
       return formattedResponse;
     }

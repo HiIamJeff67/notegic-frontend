@@ -4,9 +4,26 @@ import {
   NotegicExceptionSchema,
 } from "@shared/api/exceptions";
 import { isJsonResponse } from "@shared/util/isJsonContext";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { setResponseHeader } from "@tanstack/react-start/server";
+import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
+
+const retainCSRFToken = createIsomorphicFn()
+  .server((refresh: { token: string; previousToken?: string | null }) => {
+    setResponseHeader("X-CSRF-Token", refresh.token);
+    setResponseHeader("Cache-Control", "no-store");
+  })
+  .client((refresh: { token: string; previousToken?: string | null }) => {
+    if (
+      refresh.previousToken === undefined ||
+      getClientCSRFToken() === refresh.previousToken
+    )
+      setClientCSRFToken(refresh.token);
+  });
 
 export async function readAPIResponse<T = unknown>(
-  response: Response
+  response: Response,
+  previousToken?: string | null
 ): Promise<T> {
   let body: unknown;
   if (isJsonResponse(response)) {
@@ -23,6 +40,30 @@ export async function readAPIResponse<T = unknown>(
       // Malformed upstream bodies must not replace the HTTP error with a parser error.
     }
   }
+
+  const refreshableTokens =
+    typeof body === "object" && body !== null && "refreshableTokens" in body
+      ? body.refreshableTokens
+      : undefined;
+  const csrfToken =
+    response.headers.get("X-CSRF-Token") ??
+    (typeof refreshableTokens === "object" &&
+    refreshableTokens !== null &&
+    "newCSRFToken" in refreshableTokens
+      ? refreshableTokens.newCSRFToken
+      : undefined);
+  if (
+    response.status >= 200 &&
+    response.status < 500 &&
+    response.status !== 401 &&
+    response.status !== 403 &&
+    typeof csrfToken === "string" &&
+    csrfToken.trim() !== ""
+  )
+    retainCSRFToken({ token: csrfToken, previousToken });
+
+  if (response.status === 204)
+    return { success: true, data: null, exception: null } as T;
 
   const exception =
     typeof body === "object" && body !== null && "exception" in body

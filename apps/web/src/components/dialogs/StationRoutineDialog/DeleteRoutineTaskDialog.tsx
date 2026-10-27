@@ -2,6 +2,7 @@ import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
+import { useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ interface DeleteRoutineTaskDialogProps extends ModalProps {
   expectedDefinitionVersion?: number;
   routineTaskTitle: string;
   onDeleted?: () => void | Promise<void>;
+  onDelete?: () => Promise<void>;
 }
 
 const DeleteRoutineTaskDialog = ({
@@ -30,12 +32,22 @@ const DeleteRoutineTaskDialog = ({
   routineTaskTitle,
   expectedDefinitionVersion,
   onDeleted,
+  onDelete,
 }: DeleteRoutineTaskDialogProps) => {
   const { t } = useTranslation();
   const deleteRoutineTaskMutator = useHardDeleteMyRoutineTaskById();
+  const [isDeletingDraft, setIsDeletingDraft] = useState(false);
+  const isDeleting = isDeletingDraft || deleteRoutineTaskMutator.isPending;
 
   const deleteRoutineTask = async () => {
+    setIsDeletingDraft(true);
     try {
+      if (onDelete) {
+        await onDelete();
+        await onDeleted?.();
+        onClose();
+        return;
+      }
       const response = await deleteRoutineTaskMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body: {
@@ -55,6 +67,8 @@ const DeleteRoutineTaskDialog = ({
       onClose();
     } catch (error) {
       toast.error(tError(error, t));
+    } finally {
+      setIsDeletingDraft(false);
     }
   };
 
@@ -62,7 +76,7 @@ const DeleteRoutineTaskDialog = ({
     <Dialog
       open={isOpen}
       onOpenChange={open => {
-        if (!open && !deleteRoutineTaskMutator.isPending) onClose();
+        if (!open && !isDeleting) onClose();
       }}
     >
       <DialogContent className="rounded-sm sm:max-w-md">
@@ -79,7 +93,7 @@ const DeleteRoutineTaskDialog = ({
           <Button
             type="button"
             variant="outline"
-            disabled={deleteRoutineTaskMutator.isPending}
+            disabled={isDeleting}
             onClick={onClose}
           >
             {t("common.cancel")}
@@ -87,10 +101,10 @@ const DeleteRoutineTaskDialog = ({
           <Button
             type="button"
             variant="destructive"
-            disabled={deleteRoutineTaskMutator.isPending}
+            disabled={isDeleting}
             onClick={deleteRoutineTask}
           >
-            {deleteRoutineTaskMutator.isPending && <Spinner />}
+            {isDeleting && <Spinner />}
             {t("common.delete")}
           </Button>
         </DialogFooter>

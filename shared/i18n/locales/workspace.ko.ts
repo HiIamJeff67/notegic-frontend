@@ -463,6 +463,17 @@ export const KoreanWorkspaceTranslation = {
     routineTaskRecordTable: "루틴 작업 기록 표",
   },
   graph: {
+    conflictDescription:
+      "Routine이 변경되었습니다. 저장하지 않은 초안은 유지됩니다. 저장하기 전에 최신 변경 사항을 확인하세요.",
+    reviewLatest: "최신 변경 사항 검토",
+    conflictChoices:
+      "충돌하는 값을 선택하세요. 작업을 삭제하면 연결도 제거됩니다. 초안만 변경되며 전송하려면 저장을 눌러야 합니다.",
+    keepMine: "내 내용 유지",
+    useLatest: "최신 내용 사용",
+    deletedValue: "삭제됨",
+    applyToDraft: "초안에 적용",
+    reviewReady:
+      "최신 변경 사항을 초안에 병합했습니다. 확인 후 저장하세요. 아직 전송되지 않았습니다.",
     realign: "재배치",
     realignTitle: "그래프 전체를 재배치할까요?",
     realignDescription:
@@ -504,6 +515,7 @@ export const KoreanWorkspaceTranslation = {
     oneShot: "한 번",
     repeat: "반복",
     noRepeat: "반복 안 함",
+    startOnActivation: "고정 날짜 대신 활성화할 때 시작합니다.",
     customSchedule: "사용자 지정 일정",
     customScheduleDescription: "명확한 시작 및 종료 시간을 설정합니다.",
     executionTimeoutMinutes: "실행 시간 초과(분)",
@@ -948,10 +960,9 @@ export const KoreanWorkspaceTranslation = {
     sensitiveClipboard:
       "민감할 수 있는 콘텐츠를 복사했습니다. 붙여넣기 전에 대상을 확인하세요.",
     routineTasksOnlineOnly: "루틴 작업은 온라인 상태에서만 볼 수 있습니다.",
-    routineDependencyGraphSaved:
-      "루틴 작업 그래프를 로컬에 저장했습니다. 백엔드 동기화를 기다리는 중입니다.",
+    routineDependencyGraphSaved: "루틴을 저장했습니다.",
     routineDependencyGraphSaveFailed:
-      "루틴 작업 그래프를 로컬에 저장하지 못했습니다.",
+      "저장하지 못했습니다. 다시 시도해 주세요.",
     dependencyCreationHint:
       "의존성을 만들려면 먼저 소스 작업을 선택한 다음 대상 작업을 선택하세요.",
     sessionExpired: "세션이 종료되었습니다. 다시 로그인하세요.",
@@ -965,6 +976,13 @@ export const KoreanWorkspaceTranslation = {
     twoFactorDescription: "두 번째 인증 단계를 추가합니다.",
   },
   trash: {
+    selectVisible: "표시된 항목 선택",
+    selectItem: "“{{name}}” 선택",
+    deleteSelected: "선택 항목 삭제",
+    restoreSelected: "선택 항목 복원",
+    hardDeleteItemsTitle: "항목 {{count}}개를 영구 삭제할까요?",
+    hardDeleteItemsDescription:
+      "선택한 항목 {{count}}개와 관련 데이터를 영구 삭제합니다. 이 작업은 되돌릴 수 없습니다. 확인하려면 DELETE를 입력하세요.",
     eyebrow: "작업 공간",
     title: "휴지통",
     description:

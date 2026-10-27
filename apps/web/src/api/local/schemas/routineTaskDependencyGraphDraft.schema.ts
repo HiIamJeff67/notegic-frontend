@@ -7,6 +7,7 @@ export interface RoutineTaskDependencyGraphDraftNode {
     x: number;
     y: number;
   };
+  isDirty?: boolean;
 }
 
 export interface RoutineTaskDependencyGraphDraftEdge {

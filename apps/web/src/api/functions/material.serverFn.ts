@@ -15,6 +15,8 @@ import {
   GetMyMaterialsByParentSubShelfIdResponse,
   GetMyMaterialsByRootShelfIdRequest,
   GetMyMaterialsByRootShelfIdResponse,
+  HardDeleteMyMaterialsByIdsRequest,
+  HardDeleteMyMaterialsByIdsResponse,
   MoveMyMaterialByIdRequest,
   MoveMyMaterialByIdResponse,
   MoveMyMaterialsByIdsRequest,
@@ -33,9 +35,9 @@ import {
   CurrentAPIBaseURL,
   withoutPathParams,
 } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const forwardMaterialObjectTicketRequest = async <TResponse>(
@@ -55,9 +57,8 @@ const forwardMaterialObjectTicketRequest = async <TResponse>(
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       body: JSON.stringify(request.body),
@@ -87,9 +88,8 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
       headers: {
         "Content-Type": "application/json",
         "User-Agent": userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        "X-CSRF-Token":
+          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
         ...(inboundCookie ? { Cookie: inboundCookie } : {}),
       },
       credentials: "include",
@@ -124,9 +124,8 @@ export const GetMyMaterialAndItsParentById = createServerFn({
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -165,9 +164,10 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           credentials: "include",
@@ -205,9 +205,10 @@ export const GetMyMaterialsByRootShelfId = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           credentials: "include",
@@ -236,9 +237,8 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(
@@ -269,9 +269,8 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "materialId")),
@@ -300,9 +299,8 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "materialId")),
@@ -331,9 +329,8 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(request.body),
@@ -365,9 +362,10 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(withoutPathParams(request.body, "materialId")),
@@ -402,9 +400,10 @@ export const RestoreMyMaterialsByIds = createServerFn({
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -434,9 +433,8 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
-          ...(request.header?.csrfToken
-            ? { "X-CSRF-Token": request.header.csrfToken }
-            : {}),
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         body: JSON.stringify(withoutPathParams(request.body, "materialId")),
@@ -468,9 +466,10 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
           headers: {
             "Content-Type": "application/json",
             "User-Agent": userAgent,
-            ...(request.header?.csrfToken
-              ? { "X-CSRF-Token": request.header.csrfToken }
-              : {}),
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
             ...(inboundCookie ? { Cookie: inboundCookie } : {}),
           },
           body: JSON.stringify(request.body),
@@ -505,4 +504,40 @@ export const ResolveMaterialObjectTicket = createServerFn({ method: "POST" })
         request,
         APIURLPathDictionary.material.resolveObjectTicket
       )
+  );
+
+export const HardDeleteMyMaterialsByIds = createServerFn({ method: "POST" })
+  .inputValidator((data: HardDeleteMyMaterialsByIdsRequest) => data)
+  .handler(
+    async ({ data: request }): Promise<HardDeleteMyMaterialsByIdsResponse> => {
+      const inboundCookie = getRequestHeader("cookie");
+      const userAgent =
+        request.header?.userAgent ??
+        getRequestHeader("User-Agent") ??
+        "unknown";
+      const response = await fetch(
+        `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.hardDeleteMyMaterialsByIds}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent": userAgent,
+            "X-CSRF-Token":
+              getRequestHeader("X-CSRF-Token") ??
+              request.header?.csrfToken ??
+              "",
+            ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+          },
+          body: JSON.stringify(request.body),
+          credentials: "include",
+        }
+      );
+
+      forwardUpstreamSetCookies(response);
+      const formattedResponse = (await readAPIResponse(
+        response
+      )) as HardDeleteMyMaterialsByIdsResponse;
+
+      return formattedResponse;
+    }
   );

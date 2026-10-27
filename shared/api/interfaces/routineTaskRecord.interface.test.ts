@@ -1,41 +1,51 @@
-import {
-  ExecutionItemResultSchema,
-  ExecutionResultSchema,
-} from "@shared/api/interfaces/routineTaskRecord.interface";
+import { GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema } from "./routineTaskRecord.interface";
 
-describe("RoutineTaskRecord execution result contract", () => {
-  test("accepts empty and partial execution snapshots", () => {
-    expect(ExecutionResultSchema.safeParse({}).success).toBe(true);
-    expect(
-      ExecutionResultSchema.safeParse({
-        updated: 1,
-        skipped: 2,
-        failed: 1,
-        items: [
-          {
-            itemId: "block-1",
-            status: "skipped",
-            reason: "Block does not exist",
-          },
-        ],
-        at: "2026-09-02T00:00:00.000Z",
-        futureField: { preserved: true },
-      }).success
-    ).toBe(true);
+const response = {
+  success: true,
+  exception: null,
+  embedded: { publicId: "fixture" },
+  data: [
+    {
+      id: "12345678-1234-4234-8234-123456789abc",
+      routineRecordId: "22345678-1234-4234-8234-123456789abc",
+      routineTaskId: "32345678-1234-4234-8234-123456789abc",
+      purpose: "CreateBlockPack",
+      status: "Failed",
+      errorCode: "NoQuota",
+      errorReason: "The current plan's quota has been reached",
+      attempts: 1,
+      payloadSnapshot: {},
+      resultSnapshot: {},
+      actualStartedAt: "2026-10-25T00:00:00.000Z",
+      actualEndedAt: "2026-10-25T00:00:01.000Z",
+      createdAt: "2026-10-25T00:00:00.000Z",
+      updatedAt: "2026-10-25T00:00:01.000Z",
+    },
+  ],
+};
+
+test.each([
+  "NoQuota",
+  "OutOfUsage",
+  "DependencyUnavailable",
+  "PlanLimitExceeded",
+  "HandlerFailed",
+  null,
+])("accepts the backend task-record error code %s", errorCode => {
+  const parsed = GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema.parse({
+    ...response,
+    data: [{ ...response.data[0], errorCode }],
   });
 
-  test("rejects invalid execution item statuses and identifiers", () => {
-    expect(
-      ExecutionItemResultSchema.safeParse({
-        itemId: "block-1",
-        status: "pending",
-      }).success
-    ).toBe(false);
-    expect(
-      ExecutionItemResultSchema.safeParse({
-        itemId: "",
-        status: "updated",
-      }).success
-    ).toBe(false);
-  });
+  expect(parsed.data[0].errorCode).toBe(errorCode);
+  expect(parsed.data[0].actualEndedAt).toBeInstanceOf(Date);
+});
+
+test("rejects an unsupported task-record error code", () => {
+  expect(
+    GetMyRoutineTaskRecordsByRoutineTaskIdResponseSchema.safeParse({
+      ...response,
+      data: [{ ...response.data[0], errorCode: "UnsupportedError" }],
+    }).success
+  ).toBe(false);
 });

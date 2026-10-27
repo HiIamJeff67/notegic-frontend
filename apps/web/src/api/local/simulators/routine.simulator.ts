@@ -1,5 +1,3 @@
-import { matchesSearch } from "@shared/lib/searchPage";
-import { routineSearchPage } from "@/api/routine.search";
 import {
   toGraphQLRoutinePeriod,
   toGraphQLRoutinePhase,
@@ -31,6 +29,7 @@ import type {
   UpdateMyRoutineByIdRequest,
   UpdateMyRoutinesByIdsRequest,
 } from "@shared/api/interfaces/routine.interface";
+import { matchesSearch } from "@shared/lib/searchPage";
 import { generateUUID } from "@shared/types/uuidv4.type";
 import {
   and,
@@ -59,6 +58,7 @@ import {
 } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { routineSearchPage } from "@/api/routine.search";
 
 export class RoutineLocalSimulator {
   private static getPassPermissionCheckSQL = (
@@ -112,6 +112,7 @@ export class RoutineLocalSimulator {
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isActive: Routine.isActive,
+        hasCustomSchedule: Routine.hasCustomSchedule,
         definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -214,6 +215,7 @@ export class RoutineLocalSimulator {
             phase: toGraphQLRoutinePhase(routine.phase),
             timeoutSeconds: routine.timeoutSeconds,
             isActive: routine.isActive,
+            hasCustomSchedule: routine.hasCustomSchedule,
             admissionState: routine.isActive ? "Unknown" : "Paused",
             definitionVersion: routine.definitionVersion,
             isPinned: routine.isPinned,
@@ -260,6 +262,7 @@ export class RoutineLocalSimulator {
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isActive: Routine.isActive,
+        hasCustomSchedule: Routine.hasCustomSchedule,
         definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -328,6 +331,7 @@ export class RoutineLocalSimulator {
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isActive: Routine.isActive,
+        hasCustomSchedule: Routine.hasCustomSchedule,
         definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -436,6 +440,7 @@ export class RoutineLocalSimulator {
         timeoutSeconds: Routine.timeoutSeconds,
         phase: Routine.phase,
         isActive: Routine.isActive,
+        hasCustomSchedule: Routine.hasCustomSchedule,
         definitionVersion: Routine.definitionVersion,
         isPinned: Routine.isPinned,
         scheduledStartAt: Routine.scheduledStartAt,
@@ -570,6 +575,9 @@ export class RoutineLocalSimulator {
         title: request.body.title,
         description: request.body.description,
         isActive: request.body.isActive ?? false,
+        hasCustomSchedule:
+          request.body.hasCustomSchedule ??
+          Boolean(request.body.scheduledStartAt || request.body.scheduledEndAt),
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt: request.body.scheduledStartAt ?? createdAt,
         scheduledEndAt: request.body.scheduledEndAt ?? createdAt,
@@ -652,6 +660,9 @@ export class RoutineLocalSimulator {
           description: routine.description,
           phase: null,
           isActive: routine.isActive ?? false,
+          hasCustomSchedule:
+            routine.hasCustomSchedule ??
+            Boolean(routine.scheduledStartAt || routine.scheduledEndAt),
           isPinned: routine.isPinned ?? false,
           scheduledStartAt: routine.scheduledStartAt ?? createdAt,
           scheduledEndAt: routine.scheduledEndAt ?? createdAt,
@@ -759,6 +770,9 @@ export class RoutineLocalSimulator {
           }),
           ...(request.body.values.description !== undefined && {
             description: request.body.values.description,
+          }),
+          ...(request.body.values.hasCustomSchedule !== undefined && {
+            hasCustomSchedule: request.body.values.hasCustomSchedule,
           }),
           ...(request.body.values.isActive !== undefined && {
             isActive: request.body.values.isActive,
@@ -876,6 +890,9 @@ export class RoutineLocalSimulator {
             }),
             ...(routine.values.description !== undefined && {
               description: routine.values.description,
+            }),
+            ...(routine.values.hasCustomSchedule !== undefined && {
+              hasCustomSchedule: routine.values.hasCustomSchedule,
             }),
             ...(routine.values.isActive !== undefined && {
               isActive: routine.values.isActive,

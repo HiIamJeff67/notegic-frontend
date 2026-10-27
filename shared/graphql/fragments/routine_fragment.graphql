@@ -6,6 +6,7 @@ fragment FragmentedBasicPrivateRoutine on PrivateRoutine {
   phase
   timeoutSeconds
   isActive
+  hasCustomSchedule
   admissionState
   definitionVersion
   isPinned
@@ -32,6 +33,7 @@ fragment FragmentedBasicPrivateSearchableRoutine on PrivateSearchableRoutine {
   phase
   timeoutSeconds
   isActive
+  hasCustomSchedule
   admissionState
   definitionVersion
   isPinned

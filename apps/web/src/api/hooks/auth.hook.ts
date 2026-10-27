@@ -1,9 +1,8 @@
 import { useApolloClient } from "@apollo/client/react";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { type QueryKey, useMutation } from "@tanstack/react-query";
+import { clearClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
 import {
   mutationFnDeleteMe,
   mutationFnForgetPassword,
@@ -25,8 +24,7 @@ export const useRegister = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRegister,
     onSuccess: async (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
+      setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
       await AuthLocalSynchronizer.syncRegister(request, response);
@@ -45,8 +43,7 @@ export const useRegisterViaGoogle = () => {
   const mutation = useMutation({
     mutationFn: mutationFnRegisterViaGoogle,
     onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
+      setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
       await AuthLocalSynchronizer.syncRegisterViaGoogle(response);
@@ -64,9 +61,10 @@ export const useLogin = () => {
 
   const mutation = useMutation({
     mutationFn: mutationFnLogin,
+    // Credentials and single-use verification tokens require an explicit retry.
+    retry: false,
     onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
+      setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
       await AuthLocalSynchronizer.syncLogin(response);
@@ -84,9 +82,9 @@ export const useLoginViaGoogle = () => {
 
   const mutation = useMutation({
     mutationFn: mutationFnLoginViaGoogle,
+    retry: false,
     onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
+      setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
       await AuthLocalSynchronizer.syncLoginViaGoogle(response);
@@ -106,13 +104,13 @@ export const useLogout = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLogout,
     onSuccess: async (response, request) => {
-      SessionStorageManipulator.removeItem(SessionStorageKey.csrfToken);
+      clearClientCSRFToken();
       await AuthLocalSynchronizer.syncLogout(response);
       queryClient.removeQueries();
       apolloClient.clearStore();
     },
     onSettled: async () => {
-      SessionStorageManipulator.removeItem(SessionStorageKey.csrfToken);
+      clearClientCSRFToken();
       queryClient.removeQueries();
       await apolloClient.clearStore();
     },
@@ -124,13 +122,6 @@ export const useLogout = () => {
 export const useSendAuthCode = () => {
   const mutation = useMutation({
     mutationFn: mutationFnSendAuthCode,
-    onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken ??
-          response.refreshableTokens?.newCSRFToken
-      );
-    },
     onError: error => {},
   });
 
@@ -140,13 +131,6 @@ export const useSendAuthCode = () => {
 export const useValidateEmail = () => {
   const mutation = useMutation({
     mutationFn: mutationFnValidateEmail,
-    onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken ??
-          response.refreshableTokens?.newCSRFToken
-      );
-    },
     onError: error => {},
   });
 
@@ -159,11 +143,6 @@ export const useResetEmail = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetEmail,
     onSuccess: async (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken ??
-          response.refreshableTokens?.newCSRFToken
-      );
       await AuthLocalSynchronizer.syncResetEmail(request, response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
@@ -180,11 +159,6 @@ export const useForgetPassword = () => {
   const mutation = useMutation({
     mutationFn: mutationFnForgetPassword,
     onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken ??
-          response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
@@ -201,11 +175,6 @@ export const useResetMe = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetMe,
     onSuccess: async response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken ??
-          response.refreshableTokens?.newCSRFToken
-      );
       await AuthLocalSynchronizer.syncResetMe(response);
       apolloClient.cache.evict({ fieldName: "searchRootShelves" });
       const targetKeys: QueryKey[] = [
@@ -236,7 +205,7 @@ export const useDeleteMe = () => {
     mutationFn: mutationFnDeleteMe,
     onSuccess: async response => {
       await AuthLocalSynchronizer.syncDeleteMe(response);
-      SessionStorageManipulator.removeItem(SessionStorageKey.csrfToken);
+      clearClientCSRFToken();
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all() });
     },
     onError: error => {},

@@ -6,7 +6,9 @@ import {
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import toast from "@shared/lib/toast";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { SquarePen, Trash2 } from "lucide-react";
@@ -53,7 +55,13 @@ const RoutineTaskGraphNode = ({
               : "min-w-56 max-w-64 rounded-md bg-card px-3 py-2"
           } ${selected ? "ring-2 ring-primary/30" : ""}`}
         >
-          {!isStart && <Handle type="target" position={Position.Left} />}
+          {!isStart && (
+            <Handle
+              type="target"
+              position={Position.Left}
+              className="!size-3 !border-2 !border-background !bg-muted-foreground"
+            />
+          )}
           <div
             className={
               isStart
@@ -84,7 +92,11 @@ const RoutineTaskGraphNode = ({
               </div>
             </>
           )}
-          <Handle type="source" position={Position.Right} />
+          <Handle
+            type="source"
+            position={Position.Right}
+            className="!size-3 !border-2 !border-background !bg-muted-foreground"
+          />
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent
@@ -96,15 +108,21 @@ const RoutineTaskGraphNode = ({
           event.stopPropagation();
         }}
       >
-        <ContextMenuItem onSelect={() => data.onEdit?.()}>
+        <ContextMenuItem
+          disabled={data.isSaving}
+          onSelect={() => data.onEdit?.()}
+        >
           <SquarePen className="mr-2 size-4" />
           {t("common.edit")}
         </ContextMenuItem>
         {isStart && (
           <ContextMenuCheckboxItem
+            disabled={data.isSaving}
             checked={isActive}
             onCheckedChange={isActive =>
-              void data.onUpdated?.({ payload: { ...data.payload, isActive } })
+              void data
+                .onUpdated?.({ payload: { ...data.payload, isActive } })
+                .catch(error => toast.error(tError(error, t)))
             }
           >
             {t("workspace.fields.active")}
@@ -112,12 +130,14 @@ const RoutineTaskGraphNode = ({
         )}
         <ContextMenuSeparator />
         <ContextMenuItem
+          disabled={data.isSaving}
           className="text-destructive focus:text-destructive"
           onSelect={() =>
             modalManager.open("DeleteRoutineTaskDialog", {
               routineTaskId: id as UUID,
               routineTaskTitle: data.title,
               onDeleted: data.onDeleted,
+              onDelete: data.onDelete,
               expectedDefinitionVersion: data.expectedDefinitionVersion,
             })
           }

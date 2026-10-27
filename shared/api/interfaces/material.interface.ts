@@ -591,3 +591,42 @@ export const DeleteMyMaterialsByIdsResponseSchema =
 export type DeleteMyMaterialsByIdsResponse = z.infer<
   typeof DeleteMyMaterialsByIdsResponseSchema
 >;
+
+/* ============================== HardDeleteMyMaterialsByIds ============================== */
+
+export const HardDeleteMyMaterialsByIdsRequestSchema =
+  NotegicRequestSchema.extend({
+    header: z
+      .object({
+        userAgent: z.string().min(1).optional(),
+        csrfToken: z.string().optional(),
+      })
+      .optional(),
+    body: z.object({
+      materialIds: z
+        .array(z.uuidv4())
+        .min(1)
+        .max(1024)
+        .refine(ids => new Set(ids).size === ids.length, {
+          message: "Material IDs must be unique",
+        }),
+    }),
+  });
+
+export type HardDeleteMyMaterialsByIdsRequest = z.infer<
+  typeof HardDeleteMyMaterialsByIdsRequestSchema
+>;
+
+export const HardDeleteMyMaterialsByIdsResponseSchema =
+  NotegicResponseSchema.extend({
+    data: z.object({
+      deletedAt: z.coerce.date(),
+    }),
+    embedded: z.object({
+      publicId: z.string(),
+    }),
+  });
+
+export type HardDeleteMyMaterialsByIdsResponse = z.infer<
+  typeof HardDeleteMyMaterialsByIdsResponseSchema
+>;

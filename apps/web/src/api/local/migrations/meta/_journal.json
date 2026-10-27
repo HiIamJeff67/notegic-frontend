@@ -29,6 +29,13 @@
       "when": 1792238274478,
       "tag": "0003_hesitant_forgotten_one",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792958070741,
+      "tag": "0004_routine_activation_schedule",
+      "breakpoints": true
     }
   ]
 }

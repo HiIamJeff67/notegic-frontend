@@ -25,8 +25,6 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import { generateUUID } from "@shared/types/uuidv4.type";
 import {
   type UseQueryOptions,
@@ -85,10 +83,6 @@ export const useGetMyRoutineTaskById = (
       }
 
       const response = await queryFnGetMyRoutineTaskById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTaskLocalSynchronizer.syncGetMyRoutineTaskById(response);
       return response;
     } catch (error) {
@@ -164,10 +158,6 @@ export const useGetMyRoutineTasksByRoutineId = (
         }
 
         const response = await queryFnGetMyRoutineTasksByRoutineId(request);
-        SessionStorageManipulator.ensureItem(
-          SessionStorageKey.csrfToken,
-          response.refreshableTokens?.newCSRFToken
-        );
         await RoutineTaskLocalSynchronizer.syncGetMyRoutineTasksByRoutineId(
           response
         );
@@ -268,10 +258,6 @@ export const useGetAllMyRoutineTasks = (
       }
 
       const response = await queryFnGetAllMyRoutineTasks(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTaskLocalSynchronizer.syncGetAllMyRoutineTasks(response);
       return response;
     } catch (error) {
@@ -350,10 +336,6 @@ export const useCreateRoutineTaskByRoutineId = (allowOffline = true) => {
       response,
       request: CreateRoutineTaskByRoutineIdRequest
     ) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       if (response.success)
         await RoutineTaskLocalSynchronizer.syncCreateRoutineTaskByRoutineId(
           request,
@@ -409,10 +391,6 @@ export const useUpdateMyRoutineTaskById = (allowOffline = true) => {
           request,
           response
         );
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routineTask.all(),
@@ -466,10 +444,6 @@ export const useHardDeleteMyRoutineTaskById = (allowOffline = true) => {
         await RoutineTaskLocalSynchronizer.syncHardDeleteMyRoutineTaskById(
           request
         );
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routineTask.all(),
@@ -517,10 +491,6 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
       response,
       request: HardDeleteMyRoutineTasksByIdsRequest
     ) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routineTask.all(),

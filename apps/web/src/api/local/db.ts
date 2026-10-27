@@ -404,7 +404,13 @@ const runOperations = async <T>(
 };
 
 // create drizzle database instance with the driver and batch driver from sqlocal drizzle instance
-const drizzleDB = drizzle(rawDriver, rawBatchDriver, { schema });
+// Queue at the driver boundary so builders, prepared and relational queries,
+// raw SQL and batches all share the same connection isolation boundary.
+const drizzleDB = drizzle(
+  (...args) => runOperations(() => rawDriver(...args)),
+  (...args) => runOperations(() => rawBatchDriver(...args)),
+  { schema }
+);
 export const localDB = drizzleDB as LocalDB; // export the database instance as `localDB`
 
 const rawTransaction = drizzleDB.transaction.bind(drizzleDB);
@@ -412,16 +418,10 @@ const rawRun = drizzleDB.run.bind(drizzleDB);
 const rawAll = drizzleDB.all.bind(drizzleDB);
 const rawGet = drizzleDB.get.bind(drizzleDB);
 const rawValues = drizzleDB.values.bind(drizzleDB);
-const wrappedRun = (async (...args: Parameters<typeof rawRun>) =>
-  await runOperations(async () => await rawRun(...args))) as typeof rawRun;
-const wrappedAll = (async (...args: Parameters<typeof rawAll>) =>
-  await runOperations(async () => await rawAll(...args))) as typeof rawAll;
-const wrappedGet = (async (...args: Parameters<typeof rawGet>) =>
-  await runOperations(async () => await rawGet(...args))) as typeof rawGet;
-const wrappedValues = (async (...args: Parameters<typeof rawValues>) =>
-  await runOperations(
-    async () => await rawValues(...args)
-  )) as typeof rawValues;
+const wrappedRun = rawRun;
+const wrappedAll = rawAll;
+const wrappedGet = rawGet;
+const wrappedValues = rawValues;
 const wrappedTransaction = (async (
   ...args: Parameters<typeof rawTransaction>
 ) =>
@@ -433,9 +433,28 @@ const wrappedTransaction = (async (
         typeof navigator !== "undefined" &&
         navigator.onLine === false
       ? (undefined as never)
-      : await runOperations(
-          async () => await rawTransaction(...args)
-        )) as typeof rawTransaction;
+      : await runOperations(async () => {
+          // Only this session's queries bypass the outer queue. Using the
+          // exported DB inside the callback is not part of this transaction:
+          // use the supplied tx (including for nested savepoints).
+          let active = true;
+          const transactionDB = drizzle(
+            (...query) => {
+              if (!active) throw new Error("local transaction has ended");
+              return rawDriver(...query);
+            },
+            (...queries) => {
+              if (!active) throw new Error("local transaction has ended");
+              return rawBatchDriver(...queries);
+            },
+            { schema }
+          );
+          try {
+            return await transactionDB.transaction(...args);
+          } finally {
+            active = false;
+          }
+        }, "nonRecoverable")) as typeof rawTransaction;
 
 const localDBMigrator = new LocalDBMigrator(
   {

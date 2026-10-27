@@ -1,10 +1,12 @@
 export interface ServerTranslation {
   error: {
+    ZodParsingFailed: string;
     InternalServerError: string;
     InvalidDto: string;
     InvalidInput: string;
     DefinitionConflict: string;
     RescheduleRequired: string;
+    QuotaExceeded: string;
     InvalidRequest: string;
     InvalidAuthenticationCode: string;
     TokenExchangeFailed: string;

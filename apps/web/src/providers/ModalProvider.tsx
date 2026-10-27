@@ -1,4 +1,5 @@
 import type { UUID } from "crypto";
+import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import React, {
   createContext,
   lazy,
@@ -101,6 +102,9 @@ export type ModalPropsMap = {
     onDeleted?: () => void | Promise<void>;
   };
   CreateRoutineTaskDialog: {
+    onCreate?: (
+      body: CreateRoutineTaskByRoutineIdRequest["body"]
+    ) => Promise<UUID>;
     routineId: UUID;
     expectedDefinitionVersion?: number;
     stationName?: string;
@@ -108,6 +112,7 @@ export type ModalPropsMap = {
     onCreated?: (routineTaskId: UUID) => void | Promise<void>;
   };
   DeleteRoutineTaskDialog: {
+    onDelete?: () => Promise<void>;
     routineTaskId: UUID;
     routineTaskTitle: string;
     expectedDefinitionVersion?: number;

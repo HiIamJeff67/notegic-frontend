@@ -16,8 +16,12 @@ test("Overview charts and all eleven statistics queries use fresh session header
   test.skip(process.env.E2E_PRODUCTION === "true", "Uses Vite source imports");
   await page.goto("/document");
   await page.waitForLoadState("networkidle");
-  const requests: Array<{ token?: string; userAgent?: string; path: string }> =
-    [];
+  const requests: Array<{
+    token?: string;
+    transportToken?: string;
+    userAgent?: string;
+    path: string;
+  }> = [];
   await page.route("**/_serverFn/**", async route => {
     const url = new URL(route.request().url());
     const payload = fromJSON(JSON.parse(url.searchParams.get("payload")!)) as {
@@ -25,29 +29,29 @@ test("Overview charts and all eleven statistics queries use fresh session header
     };
     requests.push({
       token: payload.data.header?.csrfToken,
+      transportToken: route.request().headers()["x-csrf-token"],
       userAgent: payload.data.header?.userAgent,
       path: url.pathname,
     });
     await route.fulfill({
       contentType: "application/json",
+      headers:
+        requests.length === 1
+          ? { "X-CSRF-Token": "renewed-fixture-token" }
+          : {},
       body: JSON.stringify({
         result: {
           success: true,
           data: { data: [] },
           exception: null,
-          refreshableTokens: {
-            newCSRFToken:
-              requests.length === 1 ? "renewed-fixture-token" : undefined,
-          },
         },
       }),
     });
   });
   await page.evaluate(async () => {
-    sessionStorage.setItem(
-      "notegic_CSRFToken",
-      JSON.stringify("initial-fixture-token")
-    );
+    const headersPath = "/src/api/clientHeaders.ts";
+    const { setClientCSRFToken } = await import(/* @vite-ignore */ headersPath);
+    setClientCSRFToken("initial-fixture-token");
     window.chartAuthenticationFailures = 0;
     window.addEventListener(
       "notegic:auth-required",
@@ -63,14 +67,18 @@ test("Overview charts and all eleven statistics queries use fresh session header
   );
   await expect.poll(() => requests.length).toBe(11);
   expect(new Set(requests.map(request => request.path)).size).toBe(11);
-  expect(requests.every(request => request.token && request.userAgent)).toBe(
-    true
-  );
+  expect(
+    requests.every(
+      request => request.token && request.transportToken && request.userAgent
+    )
+  ).toBe(true);
   await expect
     .poll(() =>
-      page.evaluate(() =>
-        JSON.parse(sessionStorage.getItem("notegic_CSRFToken")!)
-      )
+      page.evaluate(async () => {
+        const path = "/src/api/clientHeaders.ts";
+        const { getClientCSRFToken } = await import(/* @vite-ignore */ path);
+        return getClientCSRFToken();
+      })
     )
     .toBe("renewed-fixture-token");
   await page.evaluate(() => window.routineChartsExample.refetch());
@@ -78,17 +86,21 @@ test("Overview charts and all eleven statistics queries use fresh session header
   expect(
     requests
       .slice(11)
-      .every(request => request.token === "renewed-fixture-token")
+      .every(
+        request =>
+          request.token === "renewed-fixture-token" &&
+          request.transportToken === "renewed-fixture-token"
+      )
   ).toBe(true);
-  await page.evaluate(() => {
-    sessionStorage.setItem(
-      "notegic_CSRFToken",
-      JSON.stringify("latest-fixture-token")
-    );
+  await page.evaluate(async () => {
+    const path = "/src/api/clientHeaders.ts";
+    const { setClientCSRFToken } = await import(/* @vite-ignore */ path);
+    setClientCSRFToken("latest-fixture-token");
     return window.routineChartsExample.fetchTotal();
   });
   expect(requests).toHaveLength(23);
   expect(requests.at(-1)?.token).toBe("latest-fixture-token");
+  expect(requests.at(-1)?.transportToken).toBe("latest-fixture-token");
   expect(await page.evaluate(() => window.chartAuthenticationFailures)).toBe(0);
   await page.evaluate(() => window.routineChartsExample.unmount());
 });
@@ -183,11 +195,15 @@ test("real backend keeps Overview authenticated and validates all statistics req
   expect(login.status()).toBe(200);
   const refreshed = await login.json();
   expect(typeof refreshed.data.csrfToken).toBe("string");
-  await page.evaluate(token => {
-    const previous = JSON.parse(sessionStorage.getItem("notegic_CSRFToken")!);
+  await page.evaluate(async token => {
+    const path = "/src/api/clientHeaders.ts";
+    const { getClientCSRFToken, setClientCSRFToken } = await import(
+      /* @vite-ignore */ path
+    );
+    const previous = getClientCSRFToken();
     if (previous === token)
       throw new Error("Login did not rotate the fixture session token");
-    sessionStorage.setItem("notegic_CSRFToken", JSON.stringify(token));
+    setClientCSRFToken(token);
     return window.routineChartsExample.refetch();
   }, refreshed.data.csrfToken);
   expect(

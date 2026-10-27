@@ -1,7 +1,7 @@
 import type { NotegicException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 interface VisualizeServerRequest {
@@ -50,9 +50,8 @@ export async function fetchVisualizeResponse<TResponse>(
     headers: {
       "Content-Type": "application/json",
       "User-Agent": userAgent,
-      ...(request.header?.csrfToken
-        ? { "X-CSRF-Token": request.header.csrfToken }
-        : {}),
+      "X-CSRF-Token":
+        getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
       ...(inboundCookie ? { Cookie: inboundCookie } : {}),
     },
     credentials: "include",

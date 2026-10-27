@@ -40,8 +40,6 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -53,6 +51,7 @@ import {
   mutationFnCreateBlockPacks,
   mutationFnDeleteMyBlockPackById,
   mutationFnDeleteMyBlockPacksByIds,
+  mutationFnHardDeleteMyBlockPacksByIds,
   mutationFnMoveMyBlockPackById,
   mutationFnMoveMyBlockPacksByParentSubShelfId,
   mutationFnMoveMyBlockPacksByParentSubShelfIds,
@@ -88,10 +87,6 @@ export const useGetMyBlockPackById = (
       }
 
       const response = await queryFnGetMyBlockPackById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await BlockPackLocalSynchronizer.syncGetMyBlockPackById(response);
       return response;
     } catch (error) {
@@ -174,10 +169,6 @@ export const useGetMyBlockPacksByParentSubShelfId = (
       }
 
       const response = await queryFnGetMyBlockPacksByParentSubShelfId(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await BlockPackLocalSynchronizer.syncGetMyBlockPacksByParentSubShelfId(
         response
       );
@@ -256,10 +247,6 @@ export const useGetMyBlockPacksByRootShelfId = (
       }
 
       const response = await queryFnGetMyBlockPacksByRootShelfId(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await BlockPackLocalSynchronizer.syncGetMyBlockPacksByRootShelfId(
         response
       );
@@ -331,10 +318,6 @@ export const useCreateBlockPack = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -380,10 +363,6 @@ export const useCreateBlockPacks = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const parentSubShelfIds = (
         variables.affected.parentSubShelfIds || []
       ).filter(Boolean) as UUID[];
@@ -440,10 +419,6 @@ export const useUpdateMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
@@ -494,10 +469,6 @@ export const useUpdateMyBlockPacksByIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackIds = variables.body.updatedBlockPacks
         .map(updatedBlockPack => updatedBlockPack.blockPackId)
         .filter(Boolean) as UUID[];
@@ -560,10 +531,6 @@ export const useMoveMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackId = variables.body.blockPackId as UUID;
       const destinationParentSubShelfId = variables.body
         .destinationParentSubShelfId as UUID;
@@ -621,10 +588,6 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
         Boolean
       ) as UUID[];
@@ -689,10 +652,6 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackIds = [] as UUID[];
       const destinationParentSubShelfIds = [] as UUID[];
       for (const movedBlockPack of variables.body.movedBlockPacks) {
@@ -770,10 +729,6 @@ export const useRestoreMyBlockPackById = () => {
     mutationFn: perform,
     onSuccess: async (response, variables) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
@@ -810,7 +765,9 @@ export const useRestoreMyBlockPackById = () => {
   return mutation;
 };
 
-export const useRestoreMyBlockPacksByIds = () => {
+export const useRestoreMyBlockPacksByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -824,12 +781,9 @@ export const useRestoreMyBlockPacksByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
         Boolean
       ) as UUID[];
@@ -860,10 +814,15 @@ export const useRestoreMyBlockPacksByIds = () => {
       await BlockPackLocalSynchronizer.syncRestoreMyBlockPacksByIds(
         variables,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
+      if (
+        options.offlineFallback !== false &&
+        error instanceof NotegicFetchError
+      ) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(
@@ -894,10 +853,6 @@ export const useDeleteMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
@@ -950,10 +905,6 @@ export const useDeleteMyBlockPacksByIds = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const blockPackIds = (variables.body.blockPackIds || []).filter(
         Boolean
       ) as UUID[];
@@ -1000,4 +951,32 @@ export const useDeleteMyBlockPacksByIds = () => {
   });
 
   return mutation;
+};
+
+export const useHardDeleteMyBlockPacksByIds = () => {
+  const queryClient = getQueryClient();
+  return useMutation({
+    mutationFn: mutationFnHardDeleteMyBlockPacksByIds,
+    retry: false,
+    onSuccess: async (response, request) => {
+      if (!response.success) return;
+      const updates = await Promise.allSettled([
+        BlockPackLocalSynchronizer.syncHardDeleteMyBlockPacksByIds(
+          request,
+          response
+        ),
+        queryClient.invalidateQueries({ queryKey: queryKeys.rootShelf.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.subShelf.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.blockPack.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.material.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.userQuota.all() }),
+      ]);
+      for (const update of updates)
+        if (update.status === "rejected")
+          console.error(
+            "Failed to refresh permanently deleted objects",
+            update.reason
+          );
+    },
+  });
 };

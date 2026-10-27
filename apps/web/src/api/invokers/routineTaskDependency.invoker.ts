@@ -8,6 +8,7 @@ import {
   DeleteRoutineTaskDependencyByRoutineId,
   GetRoutineTaskDependenciesByRoutineId,
   UpdateRoutineTaskDependencyByRoutineId,
+  UpdateRoutineTaskGraphByRoutineId,
 } from "@/api/functions/routineTaskDependency.serverFn";
 import {
   CreateRoutineTaskDependencyByRoutineIdRequest,
@@ -26,8 +27,35 @@ import {
   UpdateRoutineTaskDependencyByRoutineIdRequestSchema,
   UpdateRoutineTaskDependencyByRoutineIdResponse,
   UpdateRoutineTaskDependencyByRoutineIdResponseSchema,
+  type UpdateRoutineTaskGraphByRoutineIdRequest,
+  type UpdateRoutineTaskGraphByRoutineIdResponse,
+  UpdateRoutineTaskGraphByRoutineIdRequestSchema,
+  UpdateRoutineTaskGraphByRoutineIdResponseSchema,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { ZodError } from "zod";
+
+export const mutationFnUpdateRoutineTaskGraphByRoutineId = async (
+  request: UpdateRoutineTaskGraphByRoutineIdRequest
+): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
+  try {
+    const validatedRequest =
+      UpdateRoutineTaskGraphByRoutineIdRequestSchema.parse(request);
+    const response = await UpdateRoutineTaskGraphByRoutineId({
+      data: validatedRequest,
+    });
+    return UpdateRoutineTaskGraphByRoutineIdResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
 
 export const queryFnGetRoutineTaskDependenciesByRoutineId = async (
   request: GetRoutineTaskDependenciesByRoutineIdRequest

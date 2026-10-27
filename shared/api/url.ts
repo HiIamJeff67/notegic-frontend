@@ -85,6 +85,7 @@ export const APIURLPathDictionary = {
     deleteMyRootShelfById: (rootShelfId: string) =>
       `root-shelves/${rootShelfId}`,
     deleteMyRootShelvesByIds: "root-shelves/batch",
+    hardDeleteMyRootShelvesByIds: "root-shelves/batch/permanently",
   },
   subShelf: {
     getMySubShelfById: (subShelfId: string) => `sub-shelves/${subShelfId}`,
@@ -108,6 +109,7 @@ export const APIURLPathDictionary = {
     restoreMySubShelvesByIds: "sub-shelves/batch/restore",
     deleteMySubShelfById: (subShelfId: string) => `sub-shelves/${subShelfId}`,
     deleteMySubShelvesByIds: "sub-shelves/batch",
+    hardDeleteMySubShelvesByIds: "sub-shelves/batch/permanently",
   },
   material: {
     createObjectTicket: "materials/object-ticket",
@@ -132,6 +134,7 @@ export const APIURLPathDictionary = {
     restoreMyMaterialsByIds: "materials/batch/restore",
     deleteMyMaterialById: (materialId: string) => `materials/${materialId}`,
     deleteMyMaterialsByIds: "materials/batch",
+    hardDeleteMyMaterialsByIds: "materials/batch/permanently",
   },
   blockPack: {
     getMyBlockPackById: (blockPackId: string) => `block-packs/${blockPackId}`,
@@ -155,6 +158,7 @@ export const APIURLPathDictionary = {
     deleteMyBlockPackById: (blockPackId: string) =>
       `block-packs/${blockPackId}`,
     deleteMyBlockPacksByIds: "block-packs/batch",
+    hardDeleteMyBlockPacksByIds: "block-packs/batch/permanently",
   },
   block: {
     getMyBlockById: (blockId: string) => `blocks/${blockId}`,
@@ -260,6 +264,8 @@ export const APIURLPathDictionary = {
     hardDeleteMyRoutineTasksByIds: "routine-tasks/batch/permanently",
   },
   routineTaskDependency: {
+    updateGraphByRoutineId: (routineId: string) =>
+      `routine-task-dependencies/routine/${routineId}/graph`,
     getByRoutineId: (routineId: string) =>
       `routine-task-dependencies/routine/${routineId}`,
     createByRoutineId: (routineId: string) =>

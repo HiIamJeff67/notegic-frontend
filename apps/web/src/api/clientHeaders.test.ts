@@ -1,10 +1,12 @@
+import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
+import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
+  clearClientCSRFToken,
   getClientCSRFToken,
   getClientMutationHeaders,
   getClientRequestHeaders,
+  setClientCSRFToken,
 } from "@/api/clientHeaders";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 
 class MemoryStorage {
   private readonly values = new Map<string, string>();
@@ -35,9 +37,11 @@ class MemoryStorage {
 }
 
 const storage = new MemoryStorage();
+const cookies = new Map<string, string>();
 
 beforeEach(() => {
   storage.clear();
+  cookies.clear();
   Object.defineProperty(globalThis, "sessionStorage", {
     configurable: true,
     value: storage,
@@ -49,6 +53,23 @@ beforeEach(() => {
   Object.defineProperty(globalThis, "navigator", {
     configurable: true,
     value: { userAgent: "test-agent" },
+  });
+  Object.defineProperty(globalThis, "location", {
+    configurable: true,
+    value: { protocol: "http:" },
+  });
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      get cookie() {
+        return [...cookies].map(([key, value]) => `${key}=${value}`).join("; ");
+      },
+      set cookie(value: string) {
+        const pair = value.split(";")[0];
+        const separator = pair.indexOf("=");
+        cookies.set(pair.slice(0, separator), pair.slice(separator + 1));
+      },
+    },
   });
 });
 
@@ -110,4 +131,117 @@ test("includes the Turnstile token only when provided", () => {
     userAgent: "explicit-agent",
     turnstileToken: "turnstile-token",
   });
+});
+
+test("a new tab reads the shared token without sessionStorage", () => {
+  setClientCSRFToken("shared-token");
+  storage.clear();
+  expect(getClientCSRFToken()).toBe("shared-token");
+});
+
+test("shared renewal wins over another tab's stale sessionStorage", () => {
+  setClientCSRFToken("new-token");
+  SessionStorageManipulator.ensureItem(
+    SessionStorageKey.csrfToken,
+    "old-token"
+  );
+  expect(getClientRequestHeaders().csrfToken).toBe("new-token");
+});
+
+test("logout prevents another tab from restoring its legacy session token", () => {
+  setClientCSRFToken("previous-session-token");
+  clearClientCSRFToken();
+  SessionStorageManipulator.ensureItem(
+    SessionStorageKey.csrfToken,
+    "stale-token"
+  );
+  expect(getClientCSRFToken()).toBeNull();
+  expect(getClientRequestHeaders()).not.toHaveProperty("csrfToken");
+  setClientCSRFToken("new-login-token");
+  expect(getClientCSRFToken()).toBe("new-login-token");
+});
+
+test.each([
+  undefined,
+  null,
+  "",
+  "   ",
+  7,
+  false,
+])("malformed refresh metadata cannot clear the shared token: %s", token => {
+  setClientCSRFToken("retained-token");
+  expect(setClientCSRFToken(token)).toBe(false);
+  expect(getClientCSRFToken()).toBe("retained-token");
+});
+
+test("malformed shared cookie never falls back to an older tab token", () => {
+  SessionStorageManipulator.ensureItem(
+    SessionStorageKey.csrfToken,
+    "old-token"
+  );
+  cookies.set("notegic_csrf", "%not-valid");
+  expect(getClientCSRFToken()).toBeNull();
+});
+
+test("HTTPS uses a Secure host-only cookie and never writes authentication credentials", () => {
+  Object.defineProperty(globalThis, "location", {
+    configurable: true,
+    value: { protocol: "https:" },
+  });
+  const writes: string[] = [];
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      get cookie() {
+        return "";
+      },
+      set cookie(value: string) {
+        writes.push(value);
+      },
+    },
+  });
+  setClientCSRFToken("fixture-token");
+  clearClientCSRFToken();
+  for (const value of writes) {
+    expect(value).toContain("__Host-notegic-csrf=");
+    expect(value).toContain("; Secure");
+    expect(value).toContain("; SameSite=Strict");
+    expect(value).toContain("; Path=/");
+    expect(value).not.toMatch(/Domain=|accessToken|refreshToken/i);
+  }
+});
+
+test("SSR never reads or writes a browser session", () => {
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: undefined,
+  });
+  expect(getClientCSRFToken()).toBeNull();
+  expect(setClientCSRFToken("fixture-token")).toBe(false);
+  expect(() => clearClientCSRFToken()).not.toThrow();
+  expect(cookies.size).toBe(0);
+});
+
+test("blocked cookies fail closed and cannot interrupt logout cleanup", () => {
+  SessionStorageManipulator.ensureItem(
+    SessionStorageKey.csrfToken,
+    "legacy-token"
+  );
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      get cookie() {
+        throw new DOMException("Storage blocked", "SecurityError");
+      },
+      set cookie(_value: string) {
+        throw new DOMException("Storage blocked", "SecurityError");
+      },
+    },
+  });
+  expect(getClientCSRFToken()).toBeNull();
+  expect(setClientCSRFToken("fixture-token")).toBe(false);
+  expect(() => clearClientCSRFToken()).not.toThrow();
+  expect(
+    SessionStorageManipulator.getItemByKey(SessionStorageKey.csrfToken)
+  ).toBeNull();
 });

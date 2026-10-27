@@ -20,6 +20,14 @@ import type {
   UpdateMyRoutineTagByIdRequest,
   UpdateMyRoutineTagsByIdsRequest,
 } from "@shared/api/interfaces/routineTag.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   mutationFnCreateRoutineTag,
   mutationFnCreateRoutineTags,
@@ -32,18 +40,6 @@ import {
 } from "@/api/invokers/routineTag.invoker";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
 
 export const useGetMyRoutineTagById = (
   hookRequest?: GetMyRoutineTagByIdRequest,
@@ -66,10 +62,6 @@ export const useGetMyRoutineTagById = (
       }
 
       const response = await queryFnGetMyRoutineTagById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTagLocalSynchronizer.syncGetMyRoutineTagById(response);
       return response;
     } catch (error) {
@@ -142,10 +134,6 @@ export const useGetAllMyRoutineTags = (
       }
 
       const response = await queryFnGetAllMyRoutineTags(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineTagLocalSynchronizer.syncGetAllMyRoutineTags(response);
       return response;
     } catch (error) {
@@ -210,10 +198,6 @@ export const useCreateRoutineTag = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutineTagRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(response.data.id as UUID),
@@ -255,10 +239,6 @@ export const useCreateRoutineTags = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutineTagsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         ...response.data.ids.map(id =>
@@ -305,10 +285,6 @@ export const useUpdateMyRoutineTagById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutineTagByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(request.body.routineTagId as UUID),
@@ -353,10 +329,6 @@ export const useUpdateMyRoutineTagsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutineTagsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         ...request.body.updatedRoutineTags.map(tag =>
@@ -405,10 +377,6 @@ export const useHardDeleteMyRoutineTagById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutineTagByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         queryKeys.routineTag.oneById(request.body.routineTagId as UUID),
@@ -458,10 +426,6 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
       request: HardDeleteMyRoutineTagsByIdsRequest
     ) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routineTag.all(),
         ...request.body.routineTagIds.map(routineTagId =>

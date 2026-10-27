@@ -46,8 +46,7 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import { matchesSearch } from "@shared/lib/searchPage";
 import {
   type UseQueryOptions,
   useMutation,
@@ -81,7 +80,6 @@ import {
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
 import { routineSearchPage } from "@/api/routine.search";
-import { matchesSearch } from "@shared/lib/searchPage";
 import { useVisualizeQuery } from "./visualize.hook";
 
 const getRoutineSearchInput = (storeFieldName: string) =>
@@ -178,10 +176,6 @@ export const useGetMyRoutineById = (
       }
 
       const response = await queryFnGetMyRoutineById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineLocalSynchronizer.syncGetMyRoutineById(response);
       return response;
     } catch (error) {
@@ -254,10 +248,6 @@ export const useGetMyRoutinesByStationId = (
       }
 
       const response = await queryFnGetMyRoutinesByStationId(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineLocalSynchronizer.syncGetMyRoutinesByStationId(response);
       return response;
     } catch (error) {
@@ -330,10 +320,6 @@ export const useGetMyRoutinesByTimeRange = (
       }
 
       const response = await queryFnGetMyRoutinesByTimeRange(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RoutineLocalSynchronizer.syncGetMyRoutinesByTimeRange(response);
       return response;
     } catch (error) {
@@ -452,10 +438,6 @@ export const useCreateRoutineByStationId = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutineByStationIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -475,6 +457,10 @@ export const useCreateRoutineByStationId = () => {
         title: request.body.title,
         phase: null,
         timeoutSeconds: request.body.timeoutSeconds ?? 300,
+        isActive: request.body.isActive ?? false,
+        hasCustomSchedule:
+          request.body.hasCustomSchedule ??
+          Boolean(request.body.scheduledStartAt || request.body.scheduledEndAt),
         isPinned: request.body.isPinned ?? false,
         scheduledStartAt,
         scheduledEndAt: request.body.scheduledEndAt ?? scheduledStartAt,
@@ -571,10 +557,6 @@ export const useCreateRoutinesByStationIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: CreateRoutinesByStationIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -605,6 +587,10 @@ export const useCreateRoutinesByStationIds = () => {
           title: routine.title,
           phase: null,
           timeoutSeconds: routine.timeoutSeconds ?? 300,
+          isActive: routine.isActive ?? false,
+          hasCustomSchedule:
+            routine.hasCustomSchedule ??
+            Boolean(routine.scheduledStartAt || routine.scheduledEndAt),
           isPinned: routine.isPinned ?? false,
           scheduledStartAt,
           scheduledEndAt: routine.scheduledEndAt ?? scheduledStartAt,
@@ -714,10 +700,6 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutineByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -728,11 +710,17 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
       );
       const patch = {
         updatedAt: response.data.updatedAt,
+        ...(response.data.definitionVersion !== undefined && {
+          definitionVersion: response.data.definitionVersion,
+        }),
         ...(request.body.values.stationId !== undefined && {
           stationId: request.body.values.stationId,
         }),
         ...(request.body.values.title !== undefined && {
           title: request.body.values.title,
+        }),
+        ...(request.body.values.hasCustomSchedule !== undefined && {
+          hasCustomSchedule: request.body.values.hasCustomSchedule,
         }),
         ...(request.body.values.isActive !== undefined && {
           isActive: request.body.values.isActive,
@@ -745,6 +733,15 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
         }),
         ...(request.body.values.scheduledEndAt !== undefined && {
           scheduledEndAt: request.body.values.scheduledEndAt,
+        }),
+        ...(response.data.hasCustomSchedule !== undefined && {
+          hasCustomSchedule: response.data.hasCustomSchedule,
+        }),
+        ...(response.data.scheduledStartAt && {
+          scheduledStartAt: response.data.scheduledStartAt,
+        }),
+        ...(response.data.scheduledEndAt && {
+          scheduledEndAt: response.data.scheduledEndAt,
         }),
         ...(request.body.values.timezone !== undefined && {
           timezone: request.body.values.timezone,
@@ -820,10 +817,6 @@ export const useUpdateMyRoutinesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: UpdateMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         ...request.body.updatedRoutines.map(routine =>
@@ -841,6 +834,12 @@ export const useUpdateMyRoutinesByIds = () => {
           }),
           ...(routine.values.title !== undefined && {
             title: routine.values.title,
+          }),
+          ...(routine.values.hasCustomSchedule !== undefined && {
+            hasCustomSchedule: routine.values.hasCustomSchedule,
+          }),
+          ...(routine.values.isActive !== undefined && {
+            isActive: routine.values.isActive,
           }),
           ...(routine.values.isPinned !== undefined && {
             isPinned: routine.values.isPinned,
@@ -938,10 +937,6 @@ export const useLinkRoutineTagById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineTagByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routine.oneById(request.body.routineId as UUID),
@@ -1091,10 +1086,6 @@ export const useLinkRoutineTagsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineTagsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         ...request.body.linkedRoutinesAndTags.map(item =>
@@ -1245,10 +1236,6 @@ export const useLinkRoutineTaskById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLinkRoutineTaskById,
     onSuccess: async (response, request: LinkRoutineTaskByIdRequest) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routine.oneById(request.body.routineId as UUID),
@@ -1401,10 +1388,6 @@ export const useLinkRoutineTasksByIds = () => {
   const mutation = useMutation({
     mutationFn: mutationFnLinkRoutineTasksByIds,
     onSuccess: async (response, request: LinkRoutineTasksByIdsRequest) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         ...request.body.linkedRoutinesAndTasks.map(item =>
@@ -1571,10 +1554,6 @@ export const useLinkRoutineItemById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineItemByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routine.oneById(request.body.routineId as UUID),
@@ -1724,10 +1703,6 @@ export const useLinkRoutineItemsByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineItemsByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         ...request.body.linkedRoutinesAndItems.map(item =>
@@ -1884,10 +1859,6 @@ export const useRestoreMyRoutineById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyRoutineByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routine.oneById(request.body.routineId as UUID),
@@ -1918,7 +1889,9 @@ export const useRestoreMyRoutineById = () => {
   return mutation;
 };
 
-export const useRestoreMyRoutinesByIds = () => {
+export const useRestoreMyRoutinesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1930,13 +1903,10 @@ export const useRestoreMyRoutinesByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: RestoreMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -1954,10 +1924,13 @@ export const useRestoreMyRoutinesByIds = () => {
       await RoutineLocalSynchronizer.syncRestoreMyRoutinesByIds(
         request,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, request) => {
       if (
+        options.offlineFallback !== false &&
         error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork
@@ -1985,10 +1958,6 @@ export const useDeleteMyRoutineById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyRoutineByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2051,10 +2020,6 @@ export const useDeleteMyRoutinesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2125,10 +2090,6 @@ export const useHardDeleteMyRoutineById = () => {
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutineByIdRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2173,7 +2134,9 @@ export const useHardDeleteMyRoutineById = () => {
   return mutation;
 };
 
-export const useHardDeleteMyRoutinesByIds = () => {
+export const useHardDeleteMyRoutinesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -2185,13 +2148,10 @@ export const useHardDeleteMyRoutinesByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2230,10 +2190,13 @@ export const useHardDeleteMyRoutinesByIds = () => {
       await RoutineLocalSynchronizer.syncHardDeleteMyRoutinesByIds(
         request,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, request) => {
       if (
+        options.offlineFallback !== false &&
         error instanceof NotegicFetchError &&
         error.unWrap.reason ===
           ExceptionReasonDictionary.client.fetch.missingNetwork

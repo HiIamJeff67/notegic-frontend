@@ -1,7 +1,3 @@
-import {
-  getClientMutationHeaders,
-  getClientRequestHeaders,
-} from "@/api/clientHeaders";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import type {
   DeleteNotificationsRequest,
@@ -12,18 +8,20 @@ import type {
   MarkNotificationsReadRequest,
   MarkNotificationsReadResponse,
 } from "@shared/api/interfaces/notification.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import type { InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  getClientMutationHeaders,
+  getClientRequestHeaders,
+} from "@/api/clientHeaders";
 import {
   mutationFnDeleteNotifications,
   mutationFnMarkNotificationsRead,
   queryFnGetUnreadNotificationCount,
   queryFnListNotifications,
 } from "@/api/invokers/notification.invoker";
-import { getQueryClient } from "@shared/api/queryClient";
-import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import type { InfiniteData } from "@tanstack/react-query";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 export const useNotifications = (enabled = true) =>
   useInfiniteQuery<
@@ -88,10 +86,6 @@ export const useMarkNotificationsRead = () => {
         header: getClientMutationHeaders(),
       }),
     onSuccess: response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),
       });
@@ -119,10 +113,6 @@ export const useDeleteNotifications = () => {
         header: getClientMutationHeaders(),
       }),
     onSuccess: response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),
       });

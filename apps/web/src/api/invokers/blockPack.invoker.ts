@@ -9,6 +9,7 @@ import {
   CreateBlockPacks,
   DeleteMyBlockPackById,
   DeleteMyBlockPacksByIds,
+  HardDeleteMyBlockPacksByIds,
   GetMyBlockPacksByRootShelfId,
   GetMyBlockPackById,
   GetMyBlockPacksByParentSubShelfId,
@@ -20,6 +21,10 @@ import {
   UpdateMyBlockPacksByIds,
 } from "@/api/functions/blockPack.serverFn";
 import {
+  type HardDeleteMyBlockPacksByIdsRequest,
+  HardDeleteMyBlockPacksByIdsRequestSchema,
+  type HardDeleteMyBlockPacksByIdsResponse,
+  HardDeleteMyBlockPacksByIdsResponseSchema,
   type MoveMyBlockPacksByParentSubShelfIdsRequest,
   MoveMyBlockPacksByParentSubShelfIdsRequestSchema,
   type MoveMyBlockPacksByParentSubShelfIdsResponse,
@@ -491,6 +496,29 @@ export const mutationFnDeleteMyBlockPacksByIds = async (
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
+    throw error;
+  }
+};
+
+export const mutationFnHardDeleteMyBlockPacksByIds = async (
+  request: HardDeleteMyBlockPacksByIdsRequest
+): Promise<HardDeleteMyBlockPacksByIdsResponse> => {
+  try {
+    const validatedRequest =
+      HardDeleteMyBlockPacksByIdsRequestSchema.parse(request);
+    const response = await HardDeleteMyBlockPacksByIds({
+      data: validatedRequest,
+    });
+    return HardDeleteMyBlockPacksByIdsResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
     throw error;
   }
 };

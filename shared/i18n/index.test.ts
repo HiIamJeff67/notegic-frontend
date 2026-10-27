@@ -15,6 +15,21 @@ const getLeafKeys = (value: object, prefix = ""): string[] =>
   });
 
 describe("i18n resources", () => {
+  test.each([
+    ["en", "Routine saved.", "Widgets saved."],
+    ["zh-TW", "已儲存流程。", "已儲存小工具。"],
+    ["zh-CN", "流程已保存。", "小组件已保存。"],
+    ["ja", "ルーティンを保存しました。", "ウィジェットを保存しました。"],
+    ["ko", "루틴을 저장했습니다.", "위젯을 저장했습니다."],
+  ] as const)("names the saved entity in %s notifications", async (language, routine, widgets) => {
+    const i18n = createInstance();
+    await i18n.init({ resources, lng: language, fallbackLng: false });
+
+    expect(i18n.t("workspace.notifications.routineDependencyGraphSaved")).toBe(
+      routine
+    );
+    expect(i18n.t("workspace.notifications.widgetsSaved")).toBe(widgets);
+  });
   test.each(
     supportedLanguages
   )("provides the complete translation tree for %s", language => {

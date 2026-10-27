@@ -1,4 +1,3 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
@@ -19,6 +18,7 @@ import type { RoutineNode } from "@shared/types/routineNode.type";
 import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -111,6 +111,7 @@ export const useRoutineLogic = ({
           title: string;
           phase?: GraphQLRoutinePhase | null;
           isActive: boolean;
+          hasCustomSchedule: boolean;
           definitionVersion: number;
           isPinned: boolean;
           scheduledStartAt: Date | string | number;
@@ -152,6 +153,7 @@ export const useRoutineLogic = ({
           description: existingRoutine?.description ?? "",
           phase: fromGraphQLRoutinePhase(node.phase),
           isActive: node.isActive,
+          hasCustomSchedule: node.hasCustomSchedule,
           definitionVersion: node.definitionVersion,
           isPinned: node.isPinned,
           scheduledStartAt: new Date(node.scheduledStartAt),
@@ -414,6 +416,7 @@ export const useRoutineLogic = ({
           title: values.title.trim(),
           description: values.description.trim(),
           timeoutSeconds: values.timeoutSeconds,
+          hasCustomSchedule: values.hasCustomSchedule,
           isPinned: values.isPinned,
           scheduledStartAt: values.scheduledStartAt,
           scheduledEndAt: values.scheduledEndAt,
@@ -443,6 +446,9 @@ export const useRoutineLogic = ({
         description: body.description,
         phase: null,
         isActive: body.isActive ?? false,
+        hasCustomSchedule:
+          body.hasCustomSchedule ??
+          Boolean(values.scheduledStartAt || values.scheduledEndAt),
         definitionVersion: 1,
         isPinned: body.isPinned ?? false,
         scheduledStartAt,
@@ -612,6 +618,14 @@ export const useRoutineLogic = ({
 
         for (const routineNode of routineNodes) {
           routineNode.updatedAt = response.data.updatedAt;
+          if (response.data.hasCustomSchedule !== undefined)
+            routineNode.hasCustomSchedule = response.data.hasCustomSchedule;
+          if (response.data.scheduledStartAt)
+            routineNode.scheduledStartAt = response.data.scheduledStartAt;
+          if (response.data.scheduledEndAt)
+            routineNode.scheduledEndAt = response.data.scheduledEndAt;
+          if (response.data.definitionVersion !== undefined)
+            routineNode.definitionVersion = response.data.definitionVersion;
         }
         forceUpdate();
         return routineNodes.values().next().value as RoutineNode;
@@ -840,6 +854,7 @@ export const useRoutineLogic = ({
         title: `${sourceRoutine.title} Copy`,
         description: sourceRoutine.description,
         isPinned: sourceRoutine.isPinned,
+        hasCustomSchedule: sourceRoutine.hasCustomSchedule ?? true,
         scheduledStartAt: sourceRoutine.scheduledStartAt,
         scheduledEndAt: sourceRoutine.scheduledEndAt,
         period: sourceRoutine.period,

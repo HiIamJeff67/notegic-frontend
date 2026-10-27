@@ -11,7 +11,7 @@ import type {
   UpdateMyRoutineTaskByIdResponse,
 } from "@shared/api/interfaces/routineTask.interface";
 import { parseRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
-import { and, eq, gte, type InferSelectModel, sql } from "drizzle-orm";
+import { and, eq, gte, lt, type InferSelectModel, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Routine,
@@ -138,6 +138,16 @@ export class RoutineTaskLocalSynchronizer {
         updatedAt: response.data.updatedAt,
       })
       .where(eq(RoutineTask.id, request.body.routineTaskId));
+    if (response.data.definitionVersion !== undefined)
+      await localDB
+        .update(Routine)
+        .set({ definitionVersion: response.data.definitionVersion })
+        .where(
+          and(
+            eq(Routine.id, existing.routineId),
+            lt(Routine.definitionVersion, response.data.definitionVersion)
+          )
+        );
   };
 
   static syncHardDeleteMyRoutineTaskById = async (
@@ -176,6 +186,16 @@ export class RoutineTaskLocalSynchronizer {
       return;
 
     await localDB.transaction(async tx => {
+      if (response.data.definitionVersion !== undefined)
+        await tx
+          .update(Routine)
+          .set({ definitionVersion: response.data.definitionVersion })
+          .where(
+            and(
+              eq(Routine.id, request.body.routineId),
+              lt(Routine.definitionVersion, response.data.definitionVersion)
+            )
+          );
       await tx
         .insert(RoutineTask)
         .values({

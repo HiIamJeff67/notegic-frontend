@@ -7,6 +7,7 @@ import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
+import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,9 @@ interface CreateRoutineTaskDialogProps extends ModalProps {
   stationName?: string;
   routineTitle?: string;
   onCreated?: (routineTaskId: UUID) => void | Promise<void>;
+  onCreate?: (
+    body: CreateRoutineTaskByRoutineIdRequest["body"]
+  ) => Promise<UUID>;
 }
 
 const CreateRoutineTaskDialog = ({
@@ -58,11 +62,16 @@ const CreateRoutineTaskDialog = ({
   stationName,
   routineTitle,
   onCreated,
+  onCreate,
 }: CreateRoutineTaskDialogProps) => {
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const payloadPreviewRef = useRef<HTMLPreElement>(null);
+  const draftTaskId = useRef<UUID | null>(null);
+  const [isCreatingDraft, setIsCreatingDraft] = useState(false);
+  const isCreating =
+    isCreatingDraft || stationRoutineManager.isCreatingRoutineTask;
 
   const [title, setTitle] = useState<string>("");
   const [purpose, setPurpose] = useState<RoutineTaskPurpose>(
@@ -83,6 +92,7 @@ const CreateRoutineTaskDialog = ({
 
   useEffect(() => {
     if (isOpen) return;
+    draftTaskId.current = null;
     setTitle("");
     setPurpose(RoutineTaskPurpose.CreateBlockPack);
     setPayload("{}");
@@ -131,20 +141,36 @@ const CreateRoutineTaskDialog = ({
     setPayloadError("");
 
     let routineTaskId: UUID;
+    setIsCreatingDraft(true);
     try {
-      const routineTaskNode = await stationRoutineManager.createRoutineTask(
-        routineId,
-        title,
-        purpose,
-        parsedPayload,
-        Number(priority),
-        Number(maxAttempts),
-        expectedDefinitionVersion
-      );
-      routineTaskId = routineTaskNode.id;
+      if (onCreate) {
+        routineTaskId = await onCreate({
+          id: (draftTaskId.current ??= crypto.randomUUID()),
+          routineId,
+          kind: "Action",
+          title,
+          purpose,
+          payload: parsedPayload as Record<string, unknown>,
+          priority: Number(priority),
+          maxAttempts: Number(maxAttempts),
+        });
+      } else {
+        const routineTaskNode = await stationRoutineManager.createRoutineTask(
+          routineId,
+          title,
+          purpose,
+          parsedPayload,
+          Number(priority),
+          Number(maxAttempts),
+          expectedDefinitionVersion
+        );
+        routineTaskId = routineTaskNode.id;
+      }
     } catch (error) {
       toast.error(tError(error, t));
       return;
+    } finally {
+      setIsCreatingDraft(false);
     }
 
     toast.success(t("workspace.routineTask.created"));
@@ -155,7 +181,7 @@ const CreateRoutineTaskDialog = ({
       console.error("Failed to refresh after creating routine task", error);
     }
     try {
-      await userManager.fetchUserQuota();
+      if (!onCreate) await userManager.fetchUserQuota();
     } catch (error) {
       console.error(
         "Failed to refresh user quota after creating routine task",
@@ -168,7 +194,7 @@ const CreateRoutineTaskDialog = ({
     <Dialog
       open={isOpen}
       onOpenChange={open => {
-        if (!open && !stationRoutineManager.isCreatingRoutineTask) onClose();
+        if (!open && !isCreating) onClose();
       }}
     >
       <DialogContent className="max-h-[90vh] overflow-visible rounded-sm sm:max-w-2xl">
@@ -453,17 +479,13 @@ const CreateRoutineTaskDialog = ({
             <Button
               type="button"
               variant="destructive"
-              disabled={stationRoutineManager.isCreatingRoutineTask}
+              disabled={isCreating}
               onClick={onClose}
             >
               {t("common.cancel")}
             </Button>
-            <Button
-              type="submit"
-              variant="default"
-              disabled={stationRoutineManager.isCreatingRoutineTask}
-            >
-              {stationRoutineManager.isCreatingRoutineTask && <Spinner />}
+            <Button type="submit" variant="default" disabled={isCreating}>
+              {isCreating && <Spinner />}
               {t("common.create")}
             </Button>
           </DialogFooter>

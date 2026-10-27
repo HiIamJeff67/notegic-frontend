@@ -954,6 +954,7 @@ for (const mode of ["routines", "tasks"] as const) {
           phase: "RoutinePhase_Plan",
           timeoutSeconds: 600,
           isActive: false,
+          hasCustomSchedule: false,
           admissionState: "Paused",
           definitionVersion: 1,
           isPinned: false,

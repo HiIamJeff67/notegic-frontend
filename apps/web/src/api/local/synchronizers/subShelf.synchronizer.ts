@@ -1,5 +1,7 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
+  type HardDeleteMySubShelvesByIdsRequest,
+  type HardDeleteMySubShelvesByIdsResponse,
   MoveMySubShelvesByRootShelfIdsRequest,
   MoveMySubShelvesByRootShelfIdsResponse,
   CreateSubShelfByRootShelfIdRequest,
@@ -29,6 +31,8 @@ import {
 } from "@shared/api/interfaces/subShelf.interface";
 import { localDB } from "@/api/local/db";
 import {
+  Item,
+  RoutinesToItems,
   BlockPack,
   RootShelf,
   SubShelf,
@@ -818,6 +822,40 @@ export class SubShelfLocalSynchronizer {
           })
           .where(eq(RootShelf.id, rootShelfId));
       }
+    });
+  };
+  static syncHardDeleteMySubShelvesByIds = async (
+    request: HardDeleteMySubShelvesByIdsRequest,
+    _response: HardDeleteMySubShelvesByIdsResponse
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (request.body.subShelfIds.length === 0) return;
+    await localDB.transaction(async tx => {
+      const shelves = await tx
+        .select({ id: SubShelf.id })
+        .from(SubShelf)
+        .where(sql`
+        ${SubShelf.id} IN (${sql.join(
+          request.body.subShelfIds.map(id => sql`${id}`),
+          sql`, `
+        )})
+        OR EXISTS (SELECT 1 FROM json_each(${SubShelf.path}) AS ancestor
+          WHERE ancestor.value IN (${sql.join(
+            request.body.subShelfIds.map(id => sql`${id}`),
+            sql`, `
+          )}))
+      `);
+      const ids = shelves.map(shelf => shelf.id);
+      if (ids.length === 0) return;
+      const items = tx
+        .select({ id: Item.id })
+        .from(Item)
+        .where(inArray(Item.parentSubShelfId, ids));
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, items));
+      await tx.delete(Item).where(inArray(Item.parentSubShelfId, ids));
+      await tx.delete(SubShelf).where(inArray(SubShelf.id, ids));
     });
   };
 }

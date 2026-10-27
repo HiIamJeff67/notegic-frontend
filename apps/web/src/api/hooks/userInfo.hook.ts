@@ -10,8 +10,6 @@ import {
   UseQueryDefaultOptions,
 } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type UseQueryOptions,
   useMutation,
@@ -39,10 +37,6 @@ export const useGetMyInfo = (
       }
 
       const response = await queryFnGetMyInfo(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       return response;
     } catch (error) {
       throw error;
@@ -79,10 +73,6 @@ export const useUpdateMyInfo = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyInfo,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       queryClient.invalidateQueries({ queryKey: queryKeys.userInfo.my() });
     },
     onError: error => {},

@@ -4,6 +4,7 @@ import type {
 } from "@shared/api/interfaces/userInfo.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { getClientCSRFToken } from "@/api/clientHeaders";
 
 export async function UpdateMyInfo(
   request: UpdateMyInfoRequest
@@ -20,15 +21,14 @@ export async function UpdateMyInfo(
     formData.append("coverBackgroundFile", request.body.coverBackgroundFile);
   }
 
+  const csrfToken = getClientCSRFToken();
   const response = await fetch(
     `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userInfo.updateMyInfo}`,
     {
       method: "PUT",
       headers: {
         "User-Agent": request.header?.userAgent ?? navigator.userAgent,
-        ...(request.header?.csrfToken
-          ? { "X-CSRF-Token": request.header.csrfToken }
-          : {}),
+        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
       },
       body: formData,
       credentials: "include",
@@ -36,7 +36,8 @@ export async function UpdateMyInfo(
   );
 
   const formattedResponse = (await readAPIResponse(
-    response
+    response,
+    csrfToken
   )) as UpdateMyInfoResponse;
 
   return formattedResponse;

@@ -22,8 +22,6 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -38,6 +36,7 @@ import {
   mutationFnCreateMyMaterial,
   mutationFnDeleteMyMaterialById,
   mutationFnDeleteMyMaterialsByIds,
+  mutationFnHardDeleteMyMaterialsByIds,
   mutationFnMoveMyMaterialById,
   mutationFnRestoreMyMaterialById,
   mutationFnRestoreMyMaterialsByIds,
@@ -48,6 +47,7 @@ import {
   queryFnGetMyMaterialsByRootShelfId,
   queryFnResolveMaterialObjectTicket,
 } from "@/api/invokers/material.invoker";
+import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
 
 const materialObjectTicketStaleTime = 60 * 1000;
 
@@ -59,12 +59,6 @@ export const useCreateMaterialObjectTicket = () =>
   >({
     mutationFn: mutationFnCreateMaterialObjectTicket,
     retry: false,
-    onSuccess: response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
-    },
   });
 
 export const useResolveMaterialObjectTicket = (
@@ -79,10 +73,6 @@ export const useResolveMaterialObjectTicket = (
       header: getClientRequestHeaders(),
       body: { objectTicket },
     });
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
   const query = useQuery({
@@ -105,10 +95,6 @@ export const useResolveMaterialObjectTicket = (
       retry: false,
       ...options,
     });
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
   return { ...query, fetch };
@@ -130,10 +116,6 @@ export const useGetMyMaterialById = (
     }
 
     const response = await queryFnGetMyMaterialById(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 
@@ -187,10 +169,6 @@ export const useGetMyMaterialAndItsParentById = (
     }
 
     const response = await queryFnGetMyMaterialAndItsParentById(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 
@@ -244,10 +222,6 @@ export const useGetMyMaterialsByParentSubShelfId = (
     }
 
     const response = await queryFnGetMyMaterialsByParentSubShelfId(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 
@@ -297,10 +271,6 @@ export const useGetMyMaterialsByRootShelfId = (
     }
 
     const response = await queryFnGetMyMaterialsByRootShelfId(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 
@@ -340,10 +310,6 @@ export const useCreateMyMaterial = () => {
   const mutation = useMutation({
     mutationFn: mutationFnCreateMyMaterial,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -369,10 +335,6 @@ export const useUpdateMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyMaterialById,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -419,10 +381,6 @@ export const useSaveMyMaterialById = () => {
       }
     },
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -448,10 +406,6 @@ export const useMoveMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnMoveMyMaterialById,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialId = request.body.materialId as UUID;
       const destinationParentSubShelfId = request.body
         .destinationParentSubShelfId as UUID;
@@ -485,10 +439,6 @@ export const useRestoreMyMaterialById = () => {
     mutationFn: mutationFnRestoreMyMaterialById,
     onSuccess: (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -514,12 +464,10 @@ export const useRestoreMyMaterialsByIds = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: mutationFnRestoreMyMaterialsByIds,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
+      if (!response.success) return;
       const materialIds = (request.body.materialIds || []).filter(
         Boolean
       ) as UUID[];
@@ -559,10 +507,6 @@ export const useDeleteMyMaterialById = () => {
   const mutation = useMutation({
     mutationFn: mutationFnDeleteMyMaterialById,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
@@ -590,10 +534,6 @@ export const useDeleteMyMaterialsByIds = () => {
   const mutation = useMutation({
     mutationFn: mutationFnDeleteMyMaterialsByIds,
     onSuccess: (response, request) => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const materialIds = (request.body.materialIds || []).filter(
         Boolean
       ) as UUID[];
@@ -625,4 +565,31 @@ export const useDeleteMyMaterialsByIds = () => {
   });
 
   return mutation;
+};
+
+export const useHardDeleteMyMaterialsByIds = () => {
+  const queryClient = getQueryClient();
+
+  return useMutation({
+    mutationFn: mutationFnHardDeleteMyMaterialsByIds,
+    retry: false,
+    onSuccess: async (response, request) => {
+      if (!response.success) return;
+      const updates = await Promise.allSettled([
+        MaterialLocalSynchronizer.syncHardDeleteMyMaterialsByIds(
+          request,
+          response
+        ),
+        queryClient.invalidateQueries({ queryKey: queryKeys.material.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.rootShelf.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.userQuota.all() }),
+      ]);
+      for (const update of updates)
+        if (update.status === "rejected")
+          console.error(
+            "Failed to refresh permanently deleted materials",
+            update.reason
+          );
+    },
+  });
 };

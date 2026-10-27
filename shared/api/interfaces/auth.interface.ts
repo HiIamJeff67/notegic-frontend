@@ -88,14 +88,9 @@ export const LoginRequestSchema = NotegicRequestSchema.extend({
     })
     .optional(),
   body: z.object({
-    account: z.string(),
-    password: z
-      .string()
-      .min(8)
-      .max(1024)
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/
-      ),
+    account: z.string().min(1),
+    // Password strength belongs to registration/reset, not authentication.
+    password: z.string().min(1).max(1024),
   }),
 });
 

@@ -1,5 +1,7 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
+  type HardDeleteMyRootShelvesByIdsRequest,
+  type HardDeleteMyRootShelvesByIdsResponse,
   CreateRootShelfRequest,
   CreateRootShelfResponse,
   CreateRootShelvesRequest,
@@ -19,7 +21,13 @@ import {
   UpdateMyRootShelvesByIdsResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
 import { localDB } from "@/api/local/db";
-import { RootShelf, User, UsersToShelves } from "@/api/local/schemas";
+import {
+  Item,
+  RoutinesToItems,
+  RootShelf,
+  User,
+  UsersToShelves,
+} from "@/api/local/schemas";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class RootShelfLocalSynchronizer {
@@ -346,7 +354,10 @@ export class RootShelfLocalSynchronizer {
       })
       .where(
         and(
-          inArray(RootShelf.id, request.body.rootShelfIds),
+          inArray(
+            RootShelf.id,
+            response.data.map(shelf => shelf.id)
+          ),
           RootShelfLocalSynchronizer.getPassPermissionCheckSQL(
             localDB,
             response.embedded.publicId,
@@ -402,5 +413,30 @@ export class RootShelfLocalSynchronizer {
           )
         )
       );
+  };
+  static syncHardDeleteMyRootShelvesByIds = async (
+    request: HardDeleteMyRootShelvesByIdsRequest,
+    _response: HardDeleteMyRootShelvesByIdsResponse
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (request.body.rootShelfIds.length === 0) return;
+    await localDB.transaction(async tx => {
+      const items = tx
+        .select({ id: Item.id })
+        .from(Item)
+        .where(inArray(Item.rootShelfId, request.body.rootShelfIds));
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, items));
+      await tx
+        .delete(Item)
+        .where(inArray(Item.rootShelfId, request.body.rootShelfIds));
+      await tx
+        .delete(UsersToShelves)
+        .where(inArray(UsersToShelves.rootShelfId, request.body.rootShelfIds));
+      await tx
+        .delete(RootShelf)
+        .where(inArray(RootShelf.id, request.body.rootShelfIds));
+    });
   };
 }

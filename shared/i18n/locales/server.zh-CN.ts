@@ -2,8 +2,10 @@ import type { ServerTranslation } from "./server.type";
 
 export const SimpleChineseServerTranslation = {
   error: {
-    DefinitionConflict: "流程已被更改，请刷新后再应用编辑。",
+    ZodParsingFailed: "部分数据格式不正确，请检查后重试。",
+    DefinitionConflict: "流程已被更改，请先比较最新版本再保存。",
     RescheduleRequired: "请先设置未来的排程时间，再启用此流程。",
+    QuotaExceeded: "已达到当前方案的使用额度。",
     InternalServerError: "服务器发生问题，请稍后再试。",
     InvalidDto: "提交的数据有部分格式不正确。",
     InvalidInput: "输入的数据格式不正确。",

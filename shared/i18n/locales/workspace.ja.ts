@@ -466,6 +466,17 @@ export const JapaneseWorkspaceTranslation = {
     routineTaskRecordTable: "ルーチンタスク記録表",
   },
   graph: {
+    conflictDescription:
+      "Routine が変更されました。未保存の下書きは保持されています。保存する前に最新の変更を確認してください。",
+    reviewLatest: "最新の変更を確認",
+    conflictChoices:
+      "競合する値を選択してください。タスクを削除すると接続も削除されます。下書きのみ更新され、送信には保存が必要です。",
+    keepMine: "自分の内容を保持",
+    useLatest: "最新の内容を使用",
+    deletedValue: "削除済み",
+    applyToDraft: "下書きに適用",
+    reviewReady:
+      "最新の変更を下書きに統合しました。確認してから保存してください。まだ送信していません。",
     realign: "再配置",
     realignTitle: "グラフ全体を再配置しますか？",
     realignDescription:
@@ -507,6 +518,7 @@ export const JapaneseWorkspaceTranslation = {
     oneShot: "1 回のみ",
     repeat: "繰り返し",
     noRepeat: "繰り返さない",
+    startOnActivation: "固定日時ではなく、有効にした時点から開始します。",
     customSchedule: "カスタムスケジュール",
     customScheduleDescription: "開始時刻と終了時刻を明示的に設定します。",
     executionTimeoutMinutes: "実行タイムアウト（分）",
@@ -956,10 +968,9 @@ export const JapaneseWorkspaceTranslation = {
     sensitiveClipboard:
       "機密情報の可能性がある内容をコピーしました。貼り付け先を確認してください。",
     routineTasksOnlineOnly: "ルーチンタスクはオンライン時のみ表示できます。",
-    routineDependencyGraphSaved:
-      "ルーチンタスクグラフをローカルに保存しました。バックエンド同期待ちです。",
+    routineDependencyGraphSaved: "ルーティンを保存しました。",
     routineDependencyGraphSaveFailed:
-      "ルーチンタスクグラフをローカルに保存できませんでした。",
+      "保存できませんでした。もう一度お試しください。",
     dependencyCreationHint:
       "依存関係を作成するには、まずソースタスク、次にターゲットタスクを選択してください。",
     sessionExpired: "セッションが終了しました。もう一度ログインしてください。",
@@ -973,6 +984,13 @@ export const JapaneseWorkspaceTranslation = {
     twoFactorDescription: "2 段階目の確認手順を追加します。",
   },
   trash: {
+    selectVisible: "表示中の項目を選択",
+    selectItem: "「{{name}}」を選択",
+    deleteSelected: "選択項目を削除",
+    restoreSelected: "選択項目を復元",
+    hardDeleteItemsTitle: "{{count}} 件の項目を完全に削除しますか？",
+    hardDeleteItemsDescription:
+      "選択した {{count}} 件の項目と関連データを完全に削除します。この操作は取り消せません。確認のため DELETE と入力してください。",
     eyebrow: "ワークスペース",
     title: "ごみ箱",
     description:

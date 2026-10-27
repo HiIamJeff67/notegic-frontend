@@ -1,6 +1,6 @@
 import type { UUID } from "node:crypto";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   GetMyBlockByIdRequest,
   GetMyBlockByIdResponse,
@@ -10,19 +10,15 @@ import type {
   GetMyBlocksByIdsResponse,
 } from "@shared/api/interfaces/block.interface";
 import { duplicateResponse } from "@shared/api/interfaces/context.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 import {
   queryFnGetMyBlockById,
   queryFnGetMyBlocksByBlockPackId,
   queryFnGetMyBlocksByIds,
 } from "@/api/invokers/block.invoker";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export const useGetMyBlockById = (
   hookRequest?: GetMyBlockByIdRequest,
@@ -39,10 +35,6 @@ export const useGetMyBlockById = (
     }
 
     const response = await queryFnGetMyBlockById(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 
@@ -88,10 +80,6 @@ export const useGetMyBlocksByIds = (
     }
 
     const response = await queryFnGetMyBlocksByIds(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     if (response.success && response.data) {
       response.data.forEach(block => {
         queryClient.setQueriesData(
@@ -145,10 +133,6 @@ export const useGetMyBlocksByBlockPackId = (
     }
 
     const response = await queryFnGetMyBlocksByBlockPackId(request);
-    SessionStorageManipulator.ensureItem(
-      SessionStorageKey.csrfToken,
-      response.refreshableTokens?.newCSRFToken
-    );
     return response;
   };
 

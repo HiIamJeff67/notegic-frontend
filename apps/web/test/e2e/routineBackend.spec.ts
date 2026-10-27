@@ -441,9 +441,12 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
     .getByRole("button", { name: "Create", exact: true })
     .click();
   await expect(
-    page.getByText("This routine changed. Refresh before applying your edit.", {
-      exact: true,
-    })
+    page.getByText(
+      "This routine changed. Review the latest version before saving.",
+      {
+        exact: true,
+      }
+    )
   ).toBeVisible();
   expect(conflictingWrites).toBe(1);
   await expect(staleAction.getByLabel("Title", { exact: true })).toHaveValue(

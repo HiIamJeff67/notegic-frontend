@@ -4,6 +4,7 @@ import {
 } from "@shared/api/exceptions";
 import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { QueryClient } from "@tanstack/react-query";
 
 let browserQueryClient: QueryClient | undefined;
@@ -14,6 +15,7 @@ const QUERY_RETRY_MAX_DELAY_MS = 10_000;
 
 export const createQueryClient = (): QueryClient => {
   const retryPolicy = (failureCount: number, error: unknown): boolean => {
+    if (error instanceof NotegicValidationError) return false;
     if (
       typeof error === "object" &&
       error !== null &&

@@ -144,8 +144,23 @@ export class NotegicException {
 
 /* ============================== Error Instance with Exception ============================== */
 
+const apiErrorBrand = Symbol.for("notegic/APIError");
+
 export class NotegicAPIError extends NotegicError {
+  private readonly [apiErrorBrand] = true;
   private readonly exception: NotegicException;
+
+  // HMR and SSR can leave adapters and callers in different class/VM realms.
+  static [Symbol.hasInstance](value: unknown): boolean {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      apiErrorBrand in value &&
+      value[apiErrorBrand] === true &&
+      "unWrap" in value &&
+      NotegicExceptionSchema.safeParse(value.unWrap).success
+    );
+  }
 
   constructor(exception: NotegicException) {
     super(exception.reason, true, exception.message);
@@ -197,7 +212,9 @@ export const GraphQLExceptionReasons = {};
 export const TypeExceptionReasons = {
   invalidDto: "InvalidDto",
 };
-export const CommonExceptionReasons = {};
+export const CommonExceptionReasons = {
+  quotaExceeded: "QuotaExceeded",
+};
 
 export const ExceptionReasonDictionary = {
   client: {

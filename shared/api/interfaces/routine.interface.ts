@@ -100,6 +100,7 @@ export const GetMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     timeoutSeconds: z.number().int().min(60).max(3600),
     phase: z.enum(AllRoutinePhases).nullable(),
     isActive: z.boolean().default(true),
+    hasCustomSchedule: z.boolean().default(true),
     definitionVersion: z.number().int().positive().default(1),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
@@ -154,6 +155,7 @@ export const GetMyRoutinesByStationIdResponseSchema =
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
         isActive: z.boolean().default(true),
+        hasCustomSchedule: z.boolean().default(true),
         definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
@@ -211,6 +213,7 @@ export const GetMyRoutinesByTimeRangeResponseSchema =
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
         isActive: z.boolean().default(true),
+        hasCustomSchedule: z.boolean().default(true),
         definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
@@ -254,6 +257,7 @@ export const CreateRoutineByStationIdRequestSchema =
         description: z.string().max(1024),
         timeoutSeconds: z.number().int().min(60).max(3600).optional(),
         isActive: z.boolean().optional(),
+        hasCustomSchedule: z.boolean().optional(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -308,6 +312,7 @@ export const CreateRoutinesByStationIdsRequestSchema =
             description: z.string().max(1024),
             timeoutSeconds: z.number().int().min(60).max(3600).optional(),
             isActive: z.boolean().optional(),
+            hasCustomSchedule: z.boolean().optional(),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -362,6 +367,7 @@ export const UpdateMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
         description: z.string().max(1024),
         timeoutSeconds: z.number().int().min(60).max(3600),
         isActive: z.boolean().optional(),
+        hasCustomSchedule: z.boolean().optional(),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
         scheduledEndAt: z.coerce.date(),
@@ -379,6 +385,10 @@ export type UpdateMyRoutineByIdRequest = z.infer<
 
 export const UpdateMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
+    hasCustomSchedule: z.boolean().optional(),
+    scheduledStartAt: z.coerce.date().optional(),
+    scheduledEndAt: z.coerce.date().optional(),
+    definitionVersion: z.number().int().positive().optional(),
     updatedAt: z.coerce.date(),
   }),
   embedded: z.object({
@@ -409,6 +419,7 @@ export const UpdateMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
             title: z.string().min(1).max(128),
             description: z.string().max(1024),
             isActive: z.boolean().optional(),
+            hasCustomSchedule: z.boolean().optional(),
             isPinned: z.boolean(),
             scheduledStartAt: z.coerce.date(),
             scheduledEndAt: z.coerce.date(),
@@ -679,6 +690,7 @@ export const RestoreMyRoutineByIdResponseSchema = NotegicResponseSchema.extend({
     timeoutSeconds: z.number().int().min(60).max(3600),
     phase: z.enum(AllRoutinePhases).nullable(),
     isActive: z.boolean().default(true),
+    hasCustomSchedule: z.boolean().default(true),
     definitionVersion: z.number().int().positive().default(1),
     isPinned: z.boolean(),
     scheduledStartAt: z.coerce.date(),
@@ -729,6 +741,7 @@ export const RestoreMyRoutinesByIdsResponseSchema =
         timeoutSeconds: z.number().int().min(60).max(3600),
         phase: z.enum(AllRoutinePhases).nullable(),
         isActive: z.boolean().default(true),
+        hasCustomSchedule: z.boolean().default(true),
         definitionVersion: z.number().int().positive().default(1),
         isPinned: z.boolean(),
         scheduledStartAt: z.coerce.date(),
@@ -859,7 +872,13 @@ export const HardDeleteMyRoutinesByIdsRequestSchema =
       })
       .optional(),
     body: z.object({
-      routineIds: z.array(z.uuidv4()),
+      routineIds: z
+        .array(z.uuidv4())
+        .min(1)
+        .max(1024)
+        .refine(ids => new Set(ids).size === ids.length, {
+          message: "IDs must be unique",
+        }),
     }),
   });
 

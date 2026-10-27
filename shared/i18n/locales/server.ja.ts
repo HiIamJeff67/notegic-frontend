@@ -2,10 +2,13 @@ import type { ServerTranslation } from "./server.type";
 
 export const JapaneseServerTranslation = {
   error: {
+    ZodParsingFailed:
+      "一部のデータ形式が正しくありません。確認して再度お試しください。",
     DefinitionConflict:
-      "このルーティンは変更されました。更新してから編集を適用してください。",
+      "このルーティンは変更されました。保存する前に最新のバージョンを確認してください。",
     RescheduleRequired:
       "このルーティンを有効にする前に、未来の実行時刻を設定してください。",
+    QuotaExceeded: "現在のプランの利用上限に達しました。",
     InternalServerError:
       "サーバーで問題が発生しました。しばらくしてからもう一度お試しください。",
     InvalidDto: "送信した情報の一部が正しくありません。",

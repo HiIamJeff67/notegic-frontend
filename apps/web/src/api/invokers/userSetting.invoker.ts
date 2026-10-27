@@ -15,6 +15,7 @@ import {
 } from "@shared/api/interfaces/userSetting.interface";
 import { getRetryAt } from "@shared/api/retry";
 import { ZodError } from "zod";
+import { fetchServerFunction } from "@/api/bridges/session.bridge";
 import {
   GetMySetting,
   UpdateMySetting,
@@ -32,7 +33,7 @@ export class UserSettingsRateLimitError extends Error {
 const fetchUserSettings: typeof fetch = async (input, init) => {
   if (Date.now() < rateLimitedUntil)
     throw new UserSettingsRateLimitError(rateLimitedUntil);
-  const response = await fetch(input, init);
+  const response = await fetchServerFunction(input, init);
   if (response.status === 429) {
     const retryAt = getRetryAt(response.headers.get("Retry-After"));
     if (typeof window !== "undefined")

@@ -10,8 +10,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { getQueryClient } from '@shared/api/queryClient';
 import { queryKeys } from '@shared/api/queryKeys';
 import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
-import { SessionStorageManipulator } from '@shared/lib/sessionStorageManipulator';
-import { SessionStorageKey } from '@shared/types/sessionStorage.type';
+import { clearClientCSRFToken, setClientCSRFToken } from '@/api/clientHeaders';
 import { useResolveMaterialObjectTicket } from '@/api/hooks/material.hook';
 import { PDFDocument } from 'pdf-lib';
 import { Route } from '@/routes/app.material-viewer.$materialId';
@@ -29,7 +28,9 @@ window.state.sessionHeaders = [];
 window.state.authRequired = 0;
 window.addEventListener('notegic:auth-required', () => window.state.authRequired++);
 window.expectedCSRFToken = 'initial-csrf';
-SessionStorageManipulator.setItem(SessionStorageKey.csrfToken, window.expectedCSRFToken);
+setClientCSRFToken(window.expectedCSRFToken);
+window.setCSRFToken = setClientCSRFToken;
+window.clearCSRFToken = clearClientCSRFToken;
 window.pending = [];
 window.release = () => window.pending.splice(0).forEach(release => release());
 window.deferFetch = false;
@@ -55,6 +56,8 @@ window.api = {
     await pause('ticket');
     if (window.failStage === 'ticket') throw new Error('Ticket denied');
     window.expectedCSRFToken = 'renewed-csrf-' + ticket;
+    // The mocked invoker replaces the network boundary that publishes renewal.
+    setClientCSRFToken(window.expectedCSRFToken);
     return { data: { objectTicket: ticket }, refreshableTokens: { newCSRFToken: window.expectedCSRFToken } };
   },
   resolve: async request => {
@@ -139,6 +142,9 @@ window.mount = async overrides => {
 `;
 
 const mocks: Record<string, string> = {
+  "@/api/local/synchronizers/material.synchronizer": `export class MaterialLocalSynchronizer {
+    static syncHardDeleteMyMaterialsByIds() { throw new Error('Unexpected local deletion'); }
+  }`,
   "@tanstack/react-router": `
     export const createFileRoute = () => options => options;
     export const useLoaderData = () => window.ids;
@@ -157,6 +163,7 @@ const mocks: Record<string, string> = {
       "mutationFnCreateMyMaterial",
       "mutationFnDeleteMyMaterialById",
       "mutationFnDeleteMyMaterialsByIds",
+      "mutationFnHardDeleteMyMaterialsByIds",
       "mutationFnMoveMyMaterialById",
       "mutationFnRestoreMyMaterialById",
       "mutationFnRestoreMyMaterialsByIds",
@@ -470,7 +477,7 @@ describe("material file lifecycle in Chromium", () => {
       .waitFor();
     await page.evaluate(`
       expectedCSRFToken = 'rotated-csrf';
-      sessionStorage.setItem('notegic_CSRFToken', JSON.stringify(expectedCSRFToken));
+      window.setCSRFToken(expectedCSRFToken);
       void refetchResolver();
     `);
     await page.waitForFunction(
@@ -487,7 +494,7 @@ describe("material file lifecycle in Chromium", () => {
 
   it("still reports authentication failure when CSRF is absent without retrying", async () => {
     await page.evaluate(`
-      sessionStorage.removeItem('notegic_CSRFToken');
+      window.clearCSRFToken();
       mountResolver();
     `);
     await page.getByRole("alert").waitFor();

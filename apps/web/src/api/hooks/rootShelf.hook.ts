@@ -1,71 +1,68 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   ExceptionReasonDictionary,
   NotegicAPIError,
 } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type {
   CreateRootShelfRequest,
   CreateRootShelfResponse,
   CreateRootShelvesRequest,
   CreateRootShelvesResponse,
-  DeleteRootShelfPermissionsRequest,
-  DeleteRootShelfPermissionsResponse,
   DeleteMyRootShelfByIdRequest,
   DeleteMyRootShelfByIdResponse,
   DeleteMyRootShelvesByIdsRequest,
   DeleteMyRootShelvesByIdsResponse,
+  DeleteRootShelfPermissionsRequest,
+  DeleteRootShelfPermissionsResponse,
   GetMyRootShelfByIdRequest,
   GetMyRootShelfByIdResponse,
+  LeaveMyRootShelfRequest,
+  LeaveMyRootShelfResponse,
   RestoreMyRootShelfByIdRequest,
   RestoreMyRootShelfByIdResponse,
   RestoreMyRootShelvesByIdsRequest,
   RestoreMyRootShelvesByIdsResponse,
+  TransferMyRootShelfOwnershipRequest,
+  TransferMyRootShelfOwnershipResponse,
   UpdateMyRootShelfByIdRequest,
   UpdateMyRootShelfByIdResponse,
   UpdateMyRootShelvesByIdsRequest,
   UpdateMyRootShelvesByIdsResponse,
   UpsertRootShelfPermissionRequest,
   UpsertRootShelfPermissionResponse,
-  LeaveMyRootShelfRequest,
-  LeaveMyRootShelfResponse,
-  TransferMyRootShelfOwnershipRequest,
-  TransferMyRootShelfOwnershipResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
-import {
-  mutationFnCreateRootShelf,
-  mutationFnCreateRootShelves,
-  mutationFnDeleteRootShelfPermissions,
-  mutationFnDeleteMyRootShelfById,
-  mutationFnDeleteMyRootShelvesByIds,
-  mutationFnRestoreMyRootShelfById,
-  mutationFnRestoreMyRootShelvesByIds,
-  mutationFnUpdateMyRootShelfById,
-  mutationFnUpdateMyRootShelvesByIds,
-  mutationFnUpsertRootShelfPermission,
-  mutationFnLeaveMyRootShelf,
-  mutationFnTransferMyRootShelfOwnership,
-  queryFnGetMyRootShelfById,
-} from "@/api/invokers/rootShelf.invoker";
-import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
-import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
 import {
   type QueryKey,
   type UseQueryOptions,
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import {
+  mutationFnCreateRootShelf,
+  mutationFnCreateRootShelves,
+  mutationFnDeleteMyRootShelfById,
+  mutationFnDeleteMyRootShelvesByIds,
+  mutationFnDeleteRootShelfPermissions,
+  mutationFnHardDeleteMyRootShelvesByIds,
+  mutationFnLeaveMyRootShelf,
+  mutationFnRestoreMyRootShelfById,
+  mutationFnRestoreMyRootShelvesByIds,
+  mutationFnTransferMyRootShelfOwnership,
+  mutationFnUpdateMyRootShelfById,
+  mutationFnUpdateMyRootShelvesByIds,
+  mutationFnUpsertRootShelfPermission,
+  queryFnGetMyRootShelfById,
+} from "@/api/invokers/rootShelf.invoker";
+import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
+import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
 
 export const useGetMyRootShelfById = (
   hookRequest?: GetMyRootShelfByIdRequest,
@@ -88,10 +85,6 @@ export const useGetMyRootShelfById = (
       }
 
       const response = await queryFnGetMyRootShelfById(request);
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       await RootShelfLocalSynchronizer.syncGetMyRootShelfById(response);
       return response;
     } catch (error) {
@@ -160,10 +153,6 @@ export const useCreateRootShelf = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       apolloClient.cache.modify({
         fields: {
           searchRootShelves(existingSearchRootShelves, { readField }) {
@@ -228,10 +217,6 @@ export const useCreateRootShelves = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       apolloClient.cache.modify({
         fields: {
           searchRootShelves(existingSearchRootShelves, { readField }) {
@@ -308,10 +293,6 @@ export const useUpdateMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const rootShelfId = request.body.rootShelfId as UUID;
       queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.oneById(rootShelfId),
@@ -462,10 +443,6 @@ export const useUpdateMyRootShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       for (const updatedRootShelf of request.body.updatedRootShelves) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.rootShelf.oneById(
@@ -524,10 +501,6 @@ export const useRestoreMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const rootShelfId = request.body.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
         queryKeys.rootShelf.oneById(rootShelfId),
@@ -562,7 +535,9 @@ export const useRestoreMyRootShelfById = () => {
   return mutation;
 };
 
-export const useRestoreMyRootShelvesByIds = () => {
+export const useRestoreMyRootShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -577,13 +552,10 @@ export const useRestoreMyRootShelvesByIds = () => {
   };
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const rootShelfIds = (request.body.rootShelfIds || []).filter(
         Boolean
       ) as UUID[];
@@ -642,10 +614,15 @@ export const useRestoreMyRootShelvesByIds = () => {
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelvesByIds(
         request,
         response
+      ).catch(error =>
+        console.error("Failed to refresh confirmed Trash action", error)
       );
     },
     onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
+      if (
+        options.offlineFallback !== false &&
+        error instanceof NotegicFetchError
+      ) {
         switch (error.unWrap.reason) {
           case ExceptionReasonDictionary.client.fetch.missingNetwork:
             await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(
@@ -678,10 +655,6 @@ export const useDeleteMyRootShelfById = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const rootShelfId = request.body.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
         queryKeys.rootShelf.oneById(rootShelfId),
@@ -748,10 +721,6 @@ export const useDeleteMyRootShelvesByIds = () => {
     mutationFn: perform,
     onSuccess: async (response, request) => {
       if (response.success === false) return;
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       const rootShelfIds = (request.body.rootShelfIds || []).filter(
         Boolean
       ) as UUID[];
@@ -828,6 +797,34 @@ export const useLeaveMyRootShelf = () => {
           request.param.rootShelfId as UUID
         ),
       });
+    },
+  });
+};
+
+export const useHardDeleteMyRootShelvesByIds = () => {
+  const queryClient = getQueryClient();
+  return useMutation({
+    mutationFn: mutationFnHardDeleteMyRootShelvesByIds,
+    retry: false,
+    onSuccess: async (response, request) => {
+      if (!response.success) return;
+      const updates = await Promise.allSettled([
+        RootShelfLocalSynchronizer.syncHardDeleteMyRootShelvesByIds(
+          request,
+          response
+        ),
+        queryClient.invalidateQueries({ queryKey: queryKeys.rootShelf.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.subShelf.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.blockPack.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.material.all() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.userQuota.all() }),
+      ]);
+      for (const update of updates)
+        if (update.status === "rejected")
+          console.error(
+            "Failed to refresh permanently deleted objects",
+            update.reason
+          );
     },
   });
 };

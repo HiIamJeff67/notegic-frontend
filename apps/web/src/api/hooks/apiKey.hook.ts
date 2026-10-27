@@ -1,4 +1,3 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import type {
   CreateMyAPIKeyRequest,
@@ -8,16 +7,15 @@ import type {
   RevokeMyAPIKeyRequest,
   RevokeMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   mutationFnCreateMyAPIKey,
   mutationFnRevokeMyAPIKey,
   queryFnListMyAPIKeys,
 } from "@/api/invokers/apiKey.invoker";
-import { getQueryClient } from "@shared/api/queryClient";
-import { queryKeys } from "@shared/api/queryKeys";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
-import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useMyAPIKeys = (enabled = true) =>
   useQuery<ListMyAPIKeysResponse, Error>({
@@ -52,10 +50,6 @@ export const useCreateMyAPIKey = () => {
       });
     },
     onSuccess: response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
     },
     retry: (failureCount, error) =>
@@ -80,10 +74,6 @@ export const useRevokeMyAPIKey = () => {
       });
     },
     onSuccess: response => {
-      SessionStorageManipulator.ensureItem(
-        SessionStorageKey.csrfToken,
-        response.refreshableTokens?.newCSRFToken
-      );
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
     },
     retry: (failureCount, error) =>
