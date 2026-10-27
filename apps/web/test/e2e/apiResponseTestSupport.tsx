@@ -5,6 +5,7 @@ import type { DocumentEndpoint } from "@/pages/document/api-reference/generated/
 export const mountResponseExamples = () => {
   const container = document.createElement("div");
   container.id = "api-response-test-root";
+  container.className = "@container/endpoint bg-canvas text-foreground";
   Object.assign(container.style, {
     position: "fixed",
     inset: "0",

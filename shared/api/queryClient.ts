@@ -7,7 +7,7 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { QueryClient } from "@tanstack/react-query";
 
-let browserQueryClient: QueryClient | undefined;
+let queryClient: QueryClient | undefined;
 
 const MAX_QUERY_RETRY_COUNT = 1;
 const QUERY_RETRY_BASE_DELAY_MS = 1_000;
@@ -80,6 +80,6 @@ export const getQueryClient = (): QueryClient => {
     return createQueryClient();
   }
 
-  if (!browserQueryClient) browserQueryClient = createQueryClient();
-  return browserQueryClient;
+  if (!queryClient) queryClient = createQueryClient();
+  return queryClient;
 };

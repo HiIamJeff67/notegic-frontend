@@ -55,7 +55,7 @@ below reflect the current repository and are the default for new files.
 | Generic libraries/utilities | `someThing.ts` | `searchPage.ts`, `compareText.ts` |
 | API modules | `domain.role.ts` | `blockPack.hook.ts`, `userInfo.invoker.ts` |
 | GraphQL query hooks | `useSearchSomething.ts` | `useSearchRoutineRecords.ts` |
-| UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts`; shadcn's `use-toast.ts` retains its convention |
+| UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
 | Enums | `domain.enum.ts` | `routineStatus.enum.ts` |
 | Constants | `domain.constant.ts` | `url.constant.ts`, `defaultThemes.constant.ts` |

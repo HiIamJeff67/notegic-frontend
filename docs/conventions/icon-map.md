@@ -94,12 +94,12 @@ The source column gives a representative existing consumer, not every call site.
 | `BlocksIcon` | Block content-unit identity in API reference | [APIReference]; not a Block pack identity substitute |
 | `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
 | `Bookmark` | Pin/unpin Routine presentation | [RoutineTable], [RoutineMenu] |
-| `Braces` | JSON code format | [PrismCode] |
+| `Braces` | JSON code format | [CodeExamplePanel] |
 | `CalendarClock` | Routine time-rail schedule | [TimeRails] |
 | `CalendarDays`, `CalendarDaysIcon` | Calendar view / date field | [TimeRails], [BlockPackEditorSchema] |
 | `CalendarIcon` | Date picker / profile date | [DatePicker], [ProfileTab] |
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
-| `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable] |
+| `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable], [CodeBlock] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
 | `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field | [Select], [GuideWidget] |
 | `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month / PDF page | [GuideWidget], [Calendar], [MaterialPDFViewer] |
@@ -114,7 +114,7 @@ The source column gives a representative existing consumer, not every call site.
 | `ClipboardListIcon` | Routine task base glyph; consume as `RoutineTaskIcon` | [WorkspaceEntityIcons], [RoutineMenu] |
 | `ClockIcon` | Time picker | [TimePicker] |
 | `Code2Icon` | Developer/document command | [ArticleCommand] |
-| `Copy`, `CopyIcon` | Copy / duplicate | [AboutTab], [PrismCode], [RoutineTaskMenu] |
+| `Copy`, `CopyIcon` | Copy / duplicate | [AboutTab], [CodeBlock], [RoutineTaskMenu] |
 | `Crown` | Ownership | [RootShelfMenu], [StationMenu] |
 | `DatabaseIcon` | Plan storage/resources | [UpgradeTab] |
 | `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer] |
@@ -122,7 +122,7 @@ The source column gives a representative existing consumer, not every call site.
 | `EraserIcon` | Erase PDF annotation | [MaterialPDFViewer] |
 | `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item | [MaterialMenu], [PrivacyPolicyPage] |
 | `Eye` | View execution details | [RoutineRecordTable] |
-| `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [PrismCode], [APIReference] |
+| `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [APIReference] |
 | `FilePlus` | Import material content | [MaterialViewerFrame] |
 | `FileTextIcon` | Material base glyph; consume as `MaterialIcon` | [WorkspaceEntityIcons] |
 | `FolderIcon` | Sub shelf base glyph; use `SubShelfIcon` | [WorkspaceEntityIcons] |
@@ -130,7 +130,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Form` | Block pack template/form editing | [TemplateEditor] |
 | `GaugeIcon` | Plan usage/limits | [UpgradeTab] |
 | `GitBranchIcon` | Versions / API-reference section | [Versions], [APIReference] |
-| `Globe2`, `Globe2Icon` | Web / HTTP / API context | [PrismCode], [APIReference] |
+| `Globe2`, `Globe2Icon` | Web / HTTP / API context | [CodeExamplePanel], [APIReference] |
 | `GripVertical`, `GripVerticalIcon` | Drag / reorder / resize handle | [Resizable], [TodoWidget], [PrivacyTab] |
 | `HardDriveIcon` | Local storage preferences | [PreferencesContent] |
 | `HeartIcon` | Support / upgrade page | [UpgradeTab] |
@@ -178,7 +178,7 @@ The source column gives a representative existing consumer, not every call site.
 | `SquarePen` | Edit / open Inspector | [DashboardPage], [RoutineTaskGraphNode], [RoutineTable], [RoutineTaskMenu], [Editable], [TemplatePatternEditor] |
 | `TagIcon` | Routine tag base glyph; consume as `RoutineTagIcon` | [WorkspaceEntityIcons] |
 | `Tags` | Multi-tag Routine filter | [RoutineScopeBar] |
-| `Terminal` | Shell code format | [PrismCode] |
+| `Terminal` | Shell code format | [CodeExamplePanel] |
 | `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation | [RoutineTaskGraphNode], [TrashPage] |
 | `TypeIcon` | PDF text annotation | [MaterialPDFViewer] |
 | `UserPlusIcon` | Add/invite participant | [ParticipantsDropdown], [ShelfSharingDialog] |
@@ -187,7 +187,7 @@ The source column gives a representative existing consumer, not every call site.
 | `WifiOffIcon` | Offline settings | [OfflineTab] |
 | `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar]; not Routine identity |
 | `WrenchIcon` | Dashboard configuration | [DashboardPage] |
-| `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog] |
+| `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog], [Toast] |
 
 Inventory is not automatic approval to repurpose an icon or add a control.
 
@@ -288,12 +288,14 @@ assets or Docker services were removed. No commit or push was performed.
 [NotificationPopover]: ../../apps/web/src/components/popovers/NotificationPopover.tsx
 [NotificationDialog]: ../../apps/web/src/components/dialogs/NotificationDialog.tsx
 [Toaster]: ../../apps/web/src/components/ui/toaster.tsx
+[Toast]: ../../apps/web/src/components/ui/toast.tsx
 [APIReference]: ../../apps/web/src/pages/document/APIReference.tsx
 [ArticleNavigation]: ../../apps/web/src/components/commons/Article/ArticleNavigation.tsx
 [HomePage]: ../../apps/web/src/pages/home/HomePage.tsx
 [RoutineTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTable/RoutineTable.tsx
 [RoutineMenu]: ../../apps/web/src/components/menus/RoutineMenu/RoutineMenuItem.tsx
-[PrismCode]: ../../apps/web/src/components/commons/PrismCode/PrismCode.tsx
+[CodeExamplePanel]: ../../apps/web/src/components/panels/CodeExamplePanel/CodeExamplePanel.tsx
+[CodeBlock]: ../../apps/web/src/components/ui/code-block.tsx
 [TimeRails]: ../../apps/web/src/components/core/RoutineOverviewer/TimeRails/TimeRails.tsx
 [BlockPackEditorSchema]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackEditorSchema.tsx
 [DatePicker]: ../../apps/web/src/components/commons/DatePicker/DatePicker.tsx

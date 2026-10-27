@@ -1,3 +1,4 @@
+import { cn } from "@shared/util/utils";
 import { CSSProperties, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -11,27 +12,33 @@ const CalendarWidget = ({ className, style }: CalendarWidgetProps) => {
 
   return (
     <div
-      className={`w-full h-full flex justify-center items-center overflow-hidden p-1 pt-4 sm:p-2 sm:pt-8 ${className}`}
+      className={cn(
+        "h-full min-h-0 w-full min-w-0 overflow-hidden p-2",
+        className
+      )}
       style={style}
     >
       <Calendar
         mode="single"
         selected={date}
         onSelect={setDate}
-        className="w-full h-full bg-card m-0 p-0 [--cell-size:1.5rem] lg:[--cell-size:2.25rem] xs:[--cell-size:1.5rem]"
+        className="m-0 h-full w-full bg-transparent p-0 [--cell-size:1.5rem]"
         classNames={{
-          root: "w-full h-full flex flex-col",
-          dropdowns: "flex justify-center gap-1",
+          root: "flex h-full min-h-0 w-full min-w-0 flex-col",
+          dropdowns: "flex h-full min-w-0 items-center justify-center gap-1",
           caption_label:
-            "flex items-center gap-1 text-sm sm:text-base h-full px-1 [&>svg]:size-4 sm:[&>svg]:size-5",
-          months: "flex-1 w-full flex flex-col relative",
-          table: "w-full flex-1 flex flex-col table-fixed",
-          head_row: "flex w-full justify-between pb-1",
-          row: "flex w-full justify-between mt-1 flex-1",
+            "flex h-full items-center gap-1 px-1 text-xs [&>svg]:size-3",
+          months: "relative flex min-h-0 w-full flex-1 flex-col",
+          month: "flex min-h-0 w-full flex-1 flex-col gap-2",
+          month_grid:
+            "grid min-h-0 w-full flex-1 grid-rows-[auto_minmax(0,1fr)]",
+          weekdays: "grid grid-cols-7 pb-1",
+          weeks: "grid min-h-0 grid-rows-6 [container-type:size]",
+          week: "grid min-h-0 grid-cols-7",
           weekday:
-            "flex-1 !size-auto text-muted-foreground rounded-md font-normal text-[0.65rem] sm:text-[0.8rem] text-center",
-          day: "flex-1 !size-auto p-0 flex items-center justify-center text-center [&_button]:text-xs sm:[&_button]:text-sm [&_button]:w-full [&_button]:h-full [&_button]:p-0",
-          nav: "flex justify-between items-center w-full absolute top-0 inset-x-0",
+            "min-w-0 text-center text-xs font-normal text-muted-foreground",
+          day: "relative aspect-square w-full max-w-[calc(100cqh/6)] min-w-0 place-self-center rounded-md p-0 text-center [&_button]:size-full [&_button]:min-w-0 [&_button]:aspect-square [&_button]:p-0 [&_button]:text-sm",
+          today: "rounded-md bg-accent text-accent-foreground",
         }}
         captionLayout="dropdown"
         fixedWeeks

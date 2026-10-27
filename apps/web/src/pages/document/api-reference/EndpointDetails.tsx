@@ -4,7 +4,7 @@ import {
   ArticleFieldList,
   ArticleInlineText,
 } from "@/components/commons/Article/Article";
-import PrismCode from "@/components/commons/PrismCode/PrismCode";
+import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -49,7 +49,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
               Examples are illustrative. Replace the API key and resource IDs,
               and follow the field constraints before sending a request.
             </p>
-            <PrismCode
+            <CodeExamplePanel
               title="Headers"
               code={{
                 json: requestHeadersJson,
@@ -58,7 +58,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
           </div>
           {userAgentParameter && (
             <div className="space-y-2">
-              <PrismCode
+              <CodeExamplePanel
                 title="User agent"
                 code={{
                   json: userAgentJson,
@@ -69,7 +69,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
           {endpoint.requestExample !== null &&
             endpoint.requestExample !== undefined && (
               <div className="space-y-2">
-                <PrismCode
+                <CodeExamplePanel
                   title="Body"
                   code={{
                     json: requestBodyJson,
@@ -78,7 +78,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
               </div>
             )}
           <div className="space-y-2">
-            <PrismCode
+            <CodeExamplePanel
               title="Example"
               code={{
                 curl: endpoint.examples.curl,
@@ -155,7 +155,7 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
               <CollapsibleContent className="space-y-4 border-t border-border/60 p-3">
                 {response.hasBody ? (
                   <>
-                    <PrismCode
+                    <CodeExamplePanel
                       title="Response body"
                       code={{ json: JSON.stringify(response.example, null, 2) }}
                     />

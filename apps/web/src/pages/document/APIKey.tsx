@@ -6,7 +6,7 @@ import {
   ArticleSubParagraphContent,
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
-import PrismCode from "@/components/commons/PrismCode/PrismCode";
+import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";
 import { gatewayEndpointGroups } from "./api-reference/generated/publicAPIData";
 
 export const apiKeyNavigation = {
@@ -60,7 +60,7 @@ const APIKey = () => {
           </li>
         </ol>
         {example && (
-          <PrismCode
+          <CodeExamplePanel
             title="Read your routine tags"
             code={{ curl: example.examples.curl, http: example.examples.http }}
           />

@@ -1,62 +1,107 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
+import type { ToastPosition } from "@shared/lib/toast";
+import { cn } from "@shared/util/utils";
 import { CircleCheck, Info, OctagonX, TriangleAlert } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   Toast,
   ToastClose,
+  ToastContent,
   ToastDescription,
+  ToastPortal,
   ToastProvider,
   ToastTitle,
   ToastViewport,
+  toastManager,
+  useToastManager,
 } from "@/components/ui/toast";
-import { useToast } from "@/hooks/use-toast";
 
-const iconByVariant = {
-  default: Info,
+const iconByType = {
   success: CircleCheck,
   info: Info,
   warning: TriangleAlert,
-  destructive: OctagonX,
-} as const;
+  error: OctagonX,
+};
+const positionClasses = {
+  "top-left":
+    "sm:top-4 sm:right-auto sm:bottom-auto sm:left-4 sm:origin-top-left sm:[--toast-stack-direction:1]",
+  "top-center":
+    "sm:top-4 sm:right-auto sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:origin-top sm:[--toast-stack-direction:1]",
+  "top-right":
+    "sm:top-4 sm:right-4 sm:bottom-auto sm:origin-top-right sm:[--toast-stack-direction:1]",
+  "bottom-left": "sm:right-auto sm:bottom-4 sm:left-4 sm:origin-bottom-left",
+  "bottom-center":
+    "sm:right-auto sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:origin-bottom",
+  "bottom-right": "",
+} satisfies Record<ToastPosition, string>;
 
-const Toaster = () => {
+function ToastList() {
   const { t } = useTranslation();
-  const { toasts, dismiss } = useToast();
-
-  return (
-    <ToastProvider swipeDirection="right">
-      {toasts.map(
-        ({ id, title, description, variant = "default", duration }, index) => {
-          const Icon = iconByVariant[variant];
-          return (
-            <Toast
-              className="absolute right-4 bottom-4 w-[calc(100%-2rem)] origin-bottom-right transition-[transform,opacity] duration-300 sm:right-4 sm:w-[calc(100%-2rem)]"
-              duration={duration ?? 5000}
-              key={id}
-              style={{
-                zIndex: toasts.length - index,
-                opacity: Math.max(0.55, 1 - index * 0.1),
-                transform: `translateY(-${index * 10}px) scale(${Math.max(0.84, 1 - index * 0.04)})`,
-              }}
-              variant={variant}
-              onOpenChange={open => {
-                if (!open) dismiss(id);
-              }}
-            >
-              <Icon className="mt-0.5 size-4 shrink-0" data-toast-icon="" />
-              <div className="grid flex-1 gap-1">
-                {title && <ToastTitle>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription>{description}</ToastDescription>
-                )}
-              </div>
-              <ToastClose aria-label={t("common.close")} />
-            </Toast>
-          );
+  const { toasts } = useToastManager<{ position?: ToastPosition }>();
+  return toasts.map((item, index) => {
+    const position = item.data?.position ?? "bottom-right";
+    const previous = toasts
+      .slice(0, index)
+      .filter(
+        other =>
+          !other.limited &&
+          other.transitionStatus !== "ending" &&
+          (other.data?.position ?? "bottom-right") === position
+      );
+    const Icon = iconByType[item.type as keyof typeof iconByType] ?? Info;
+    return (
+      <Toast
+        key={item.id}
+        toast={item}
+        data-position={position}
+        swipeDirection="right"
+        className={cn(
+          position !== "bottom-right" &&
+            "sm:fixed sm:w-[calc(100%-2rem)] sm:max-w-sm",
+          positionClasses[position]
+        )}
+        style={
+          {
+            "--toast-position-index": previous.length,
+            "--toast-position-offset": `${previous.reduce((height, other) => height + (other.height ?? 0), 0)}px`,
+          } as CSSProperties
         }
-      )}
-      <ToastViewport />
+      >
+        <ToastContent>
+          <Icon
+            aria-hidden="true"
+            data-toast-icon=""
+            className={cn(
+              "mt-0.5 size-4 shrink-0",
+              item.type === "success" && "text-emerald-500",
+              item.type === "info" && "text-sky-500",
+              item.type === "warning" && "text-amber-500",
+              item.type === "error" && "text-destructive"
+            )}
+          />
+          <div className="grid min-w-0 flex-1 gap-1 break-words">
+            {item.title && <ToastTitle />}
+            {item.description && <ToastDescription />}
+          </div>
+          <ToastClose aria-label={t("common.close")} />
+        </ToastContent>
+      </Toast>
+    );
+  });
+}
+
+function Toaster({ children }: { children?: ReactNode }) {
+  const { t } = useTranslation();
+  return (
+    <ToastProvider toastManager={toastManager} limit={4}>
+      {children}
+      <ToastPortal>
+        <ToastViewport aria-label={t("workspace.navigation.notifications")}>
+          <ToastList />
+        </ToastViewport>
+      </ToastPortal>
     </ToastProvider>
   );
-};
+}
 
 export { Toaster };

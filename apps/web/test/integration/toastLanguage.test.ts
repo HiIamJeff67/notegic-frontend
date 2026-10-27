@@ -1,15 +1,21 @@
 import path from "node:path";
-import { type Browser, chromium, type Page } from "@playwright/test";
+import {
+  type Browser,
+  expect as browserExpect,
+  chromium,
+  type Page,
+} from "@playwright/test";
 import { build } from "esbuild";
 
-// Real providers, editor handlers, i18n and toast store; isolated storage/API edges.
+// Real providers, editor handlers, i18n and Base UI manager; isolated storage/API edges.
 const fixture = `
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useTranslation } from '@shared/i18n/useTranslation';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
+import { useToastManager } from '@/components/ui/toast';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
 import { LoadingProvider } from '@/providers/LoadingProvider';
 import { MaterialContentType } from '@shared/api/interfaces/enums';
@@ -18,7 +24,7 @@ window.state = { reads: 0, requests: 0, refreshes: 0, toasts: [] };
 window.changeLanguage = language => i18n.changeLanguage(language);
 function Probe() {
   const widgets = useWidget();
-  const { toasts } = useToast();
+  const { toasts } = useToastManager();
   const { t } = useTranslation();
   const [revision, setRevision] = useState(0);
   const saveLabel = useMemo(() => {
@@ -34,14 +40,14 @@ function Probe() {
   return <span id="language" data-revision={revision}>{saveLabel}</span>;
 }
 createRoot(document.getElementById('root')).render(
-  <LoadingProvider><WidgetProvider>
+  <Toaster><LoadingProvider><WidgetProvider>
     <Probe />
     <MaterialViewerFrame file={{ isLoading: false, isError: false, onRefresh: () => {} }} materialContentType={MaterialContentType.PlainText} meta={{
       id: 'material-1', parentId: 'shelf-1', rootId: 'root-1', name: 'Note',
       contentType: 'text/plain', size: 0, downloadURL: '/note.txt',
       createdAt: new Date(), updatedAt: new Date(), path: [],
     }}>Note</MaterialViewerFrame>
-  </WidgetProvider></LoadingProvider>
+  </WidgetProvider></LoadingProvider></Toaster>
 );
 `;
 
@@ -112,7 +118,9 @@ describe("toast language in Chromium", () => {
       ],
     });
     script = result.outputFiles[0].text;
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
 
   beforeEach(async () => {
@@ -182,6 +190,12 @@ describe("toast language in Chromium", () => {
       "widgets.append({ id: 'widget-2', name: 'unsaved', position: { leftFrameCount: 0, topFrameCount: 1 } }); changeLanguage('zh-TW');"
     );
     await page.waitForFunction("document.documentElement.lang === 'zh-TW'");
+    await browserExpect(
+      page.locator('[data-slot="toast-viewport"]')
+    ).toHaveAttribute("aria-label", "通知");
+    await browserExpect(
+      page.locator('[data-slot="toast-close"]').first()
+    ).toHaveAttribute("aria-label", "關閉");
     expect(await page.evaluate("state.reads")).toBe(1);
     expect(await page.evaluate("widgets.getWidgetsLength()")).toBe(2);
     await page.evaluate("retainedSync();");

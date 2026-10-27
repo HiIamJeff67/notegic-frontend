@@ -95,7 +95,11 @@ test("the copy button stays fixed over the code viewport and copies the active l
     .filter({ has: page.getByText("Example", { exact: true }) });
   const copy = example.getByRole("button", { name: "Copy code", exact: true });
   const code = example.locator("pre:visible");
-  const expected = await code.locator("code").textContent();
+  const expected = (
+    await code
+      .locator('[data-slot="code-block-line-content"]')
+      .allTextContents()
+  ).join("\n");
   await copy.scrollIntoViewIfNeeded();
   const before = await copy.boundingBox();
   await code.evaluate(element => {
@@ -113,10 +117,144 @@ test("the copy button stays fixed over the code viewport and copies the active l
     expected!
   );
 
-  await example.getByLabel("Use HTTP").click();
+  await example.getByRole("tab", { name: "HTTP", exact: true }).click();
   await example.getByRole("button", { name: "Copy code", exact: true }).click();
   await expect(page.locator("body")).toHaveAttribute(
     "data-copied-code",
     "POST https://example.test/example\nContent-Type: application/json"
   );
+});
+
+test("code examples use keyboard-accessible tabs and load real Shiki tokens", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const example = page
+    .locator("#api-response-test-root [data-slot=tabs]")
+    .filter({ has: page.getByText("Example", { exact: true }) });
+  const curl = example.getByRole("tab", { name: "cURL", exact: true });
+  const http = example.getByRole("tab", { name: "HTTP", exact: true });
+  await expect(curl).toHaveAttribute("aria-selected", "true");
+  await expect(example.locator('[style*="--shiki-light"]')).not.toHaveCount(0);
+  await curl.focus();
+  await curl.press("ArrowRight");
+  await expect(http).toBeFocused();
+  await expect(http).toHaveAttribute("aria-selected", "true");
+  await expect(
+    example.getByRole("tabpanel").filter({ visible: true })
+  ).toContainText("Content-Type");
+  await expect(example.locator('[style*="--shiki-light"]')).not.toHaveCount(0);
+  const token = example.locator('[style*="--shiki-light"]').first();
+  await page.evaluate(() => {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+  });
+  const lightColor = await token.evaluate(
+    element => getComputedStyle(element).color
+  );
+  await page.evaluate(() => {
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+  });
+  expect(
+    await token.evaluate(element => getComputedStyle(element).color)
+  ).not.toBe(lightColor);
+  await http.press("ArrowLeft");
+  await expect(curl).toBeFocused();
+  await expect(curl).toHaveAttribute("aria-selected", "true");
+  expect(errors).toEqual([]);
+});
+
+test("clipboard rejection leaves the code usable and does not announce success", async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async () => {
+          throw new Error("Clipboard denied");
+        },
+      },
+    });
+  });
+  const example = page
+    .locator("#api-response-test-root [data-slot=tabs]")
+    .filter({ has: page.getByText("Example", { exact: true }) });
+  await example.getByRole("button", { name: "Copy code", exact: true }).click();
+  await expect(
+    example.getByRole("button", { name: "Copy code", exact: true })
+  ).toBeEnabled();
+  await expect(example.locator('[aria-live="polite"]')).toHaveText("");
+  await expect(example.locator("pre:visible")).toContainText(
+    "curl https://example.test"
+  );
+});
+
+test("the JavaScript highlighter preserves all supported languages and rejects unknown grammars", async ({
+  page,
+}) => {
+  const results = await page.evaluate(async () => {
+    const path = "/src/hooks/useHighlightedCode.ts";
+    const { loadHighlighter } = await import(/* @vite-ignore */ path);
+    const examples = [
+      ["curl", "curl https://example.test\n# Example"],
+      ["http", "GET /example HTTP/1.1\nHost: example.test"],
+      ["json", '{"example":"<script>alert(1)</script>"}'],
+      ["go", 'package main\nfunc main() { println("example") }'],
+      ["python", 'def example():\n    return "text"'],
+      ["typescript", 'const example: string = "text";'],
+    ];
+    const checked = [];
+    for (const [language, code] of examples) {
+      const highlighter = await loadHighlighter(language);
+      const lines = highlighter?.highlight(code).lines as Array<
+        Array<{ content: string }>
+      >;
+      checked.push({
+        language,
+        matches:
+          lines
+            .map(line => line.map(token => token.content).join(""))
+            .join("\n") === code,
+      });
+    }
+    return {
+      checked,
+      unknown: await loadHighlighter("unknown-language"),
+      inherited: await loadHighlighter("constructor"),
+    };
+  });
+  expect(results.checked).toHaveLength(6);
+  expect(results.checked.every(result => result.matches)).toBe(true);
+  expect(results.unknown).toBeNull();
+  expect(results.inherited).toBeNull();
+});
+
+test("code blocks and copy controls stay inside a narrow documentation viewport", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  const example = page
+    .locator("#api-response-test-root [data-slot=tabs]")
+    .filter({ has: page.getByText("Example", { exact: true }) });
+  await example.scrollIntoViewIfNeeded();
+  const bounds = await example.boundingBox();
+  expect(bounds!.x).toBeGreaterThanOrEqual(0);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
+  expect(
+    await example.evaluate(element => element.scrollWidth - element.clientWidth)
+  ).toBeLessThanOrEqual(1);
+  for (const tab of await example.getByRole("tab").all()) {
+    await tab.click();
+    await expect(
+      example.getByRole("button", { name: "Copy code", exact: true })
+    ).toBeInViewport();
+  }
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await example.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: testInfo.outputPath("document-code-block.png"),
+  });
 });

@@ -28,9 +28,10 @@ export function RootDocument() {
       </head>
       <body>
         <Providers>
-          <Toaster />
-          {/* the component as the start point of the entire application */}
-          <Outlet />
+          <Toaster>
+            {/* the component as the start point of the entire application */}
+            <Outlet />
+          </Toaster>
           <Scripts />
         </Providers>
       </body>
