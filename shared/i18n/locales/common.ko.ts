@@ -39,7 +39,72 @@ export const KoreanCommonTranslation: CommonTranslation = {
     viewDocs: "문서 보기",
     switchTheme: "테마 전환",
   },
+  validation: {
+    userPublicId: "올바른 사용자 Public ID(UUID)를 입력하세요.",
+    invalidInput: "입력한 내용을 확인한 후 다시 시도하세요.",
+    invalidResponse: "작업을 완료할 수 없습니다. 잠시 후 다시 시도하세요.",
+    nameRequired: "이름 또는 제목을 입력하세요.",
+    nameTooLong: "이름 또는 제목은 128자 이하여야 합니다.",
+    description: "설명은 1024자 이하여야 합니다.",
+    backgroundUrl:
+      "올바른 배경 이미지 URL을 입력하세요. 예: https://example.com/image.jpg",
+    authCode: "6자리 숫자 인증 코드를 입력하세요.",
+    displayNameLength: "표시 이름은 6–32자여야 합니다.",
+    displayNameFormat:
+      "표시 이름에는 문자와 숫자가 모두 포함되어야 하며 공백이나 기호는 사용할 수 없습니다.",
+    phone: "전화번호는 1–15자리 숫자여야 합니다.",
+    headline: "프로필 제목은 64자 이하여야 합니다.",
+    introduction: "자기소개는 256자 이하여야 합니다.",
+    birthDate: "미래가 아닌 올바른 생년월일을 선택하세요.",
+    timeout: "실행 제한 시간은 1–60분 사이의 정수여야 합니다.",
+    priority: "우선순위는 0–100 사이의 정수여야 합니다.",
+    maxAttempts: "최대 시도 횟수는 1–20 사이의 정수여야 합니다.",
+    startDescription: "시작 노드 설명은 1024자 이하여야 합니다.",
+    apiKeyName: "API 키 이름은 1–64자여야 합니다.",
+    feedbackTitle: "피드백 제목은 앞뒤 공백을 제외하고 1–200자여야 합니다.",
+    feedbackDescription:
+      "피드백 설명은 앞뒤 공백을 제외하고 1–10,000자여야 합니다.",
+    payloadObject: "작업 내용은 JSON 객체여야 합니다.",
+    payloadVersion:
+      "지원하지 않는 내용 버전입니다. 내용 편집기를 다시 열어 업데이트하세요.",
+    payloadPurpose: "작업과 해당 내용에서 같은 동작을 선택하세요.",
+    patternBinding: "패턴 설정과 대상을 확인하세요.",
+    patternSource: "지원하는 패턴 소스를 선택하세요.",
+    blockId: "올바른 Block ID를 입력하세요.",
+    blockPackId: "올바른 BlockPack ID를 입력하세요.",
+    subShelfRequired: "대상 하위 선반을 선택하세요.",
+    rootShelfName: "루트 선반을 선택하고 하위 선반 이름을 입력하세요.",
+    templateRequired:
+      "대상 하위 선반과 이름을 지정하고 템플릿 블록을 하나 이상 추가하세요.",
+    templateContent: "내용 편집기에서 블록 내용을 확인하세요.",
+    blockCount: "블록은 1–1000개여야 합니다.",
+    routineRequired: "대상 루틴을 선택하세요.",
+    stationTitle: "스테이션을 선택하고 루틴 제목을 입력하세요.",
+    materialRequired: "대상 자료를 선택하세요.",
+    materialContent:
+      "상위 하위 선반을 선택하고 자료 이름과 콘텐츠 키를 입력하세요.",
+  },
   auth: {
+    validation: {
+      invalidInput: "입력한 정보를 확인하고 다시 시도해 주세요.",
+      nameLength: "이름은 6~32자로 입력해 주세요.",
+      nameFormat:
+        "이름에는 문자와 숫자를 모두 포함하고 공백이나 기호는 사용하지 마세요.",
+      emailFormat:
+        "name@example.com과 같은 올바른 이메일 주소를 입력해 주세요.",
+      accountRequired: "계정 이름이나 이메일 주소를 입력해 주세요.",
+      accountFormat:
+        "올바른 이메일 주소나 영문자와 숫자를 모두 포함한 계정 이름을 입력해 주세요.",
+      passwordRequired: "비밀번호를 입력해 주세요.",
+      passwordTooShort: "비밀번호는 8자 이상이어야 합니다.",
+      passwordTooLong: "비밀번호는 1024자 이하여야 합니다.",
+      passwordStrength:
+        "비밀번호에 영문 대문자, 소문자, 숫자와 기호를 포함해 주세요.",
+      passwordMismatch: "두 비밀번호가 일치하지 않습니다.",
+      oauthCodeInvalid: "로그인을 완료하지 못했습니다. 다시 시도해 주세요.",
+      invalidResponse:
+        "작업을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    },
     login: "로그인",
     register: "회원가입",
     resetPassword: "비밀번호 재설정",

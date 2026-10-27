@@ -23,7 +23,11 @@ export type APIKeySummary = z.infer<typeof APIKeySummarySchema>;
 export const CreateMyAPIKeyRequestSchema = NotegicRequestSchema.extend({
   header: APIKeyRequestHeaderSchema,
   body: z.object({
-    name: z.string().trim().min(1).max(64),
+    name: z
+      .string({ error: "validation.apiKeyName" })
+      .trim()
+      .min(1, { error: "validation.apiKeyName" })
+      .max(64, { error: "validation.apiKeyName" }),
     expiresAt: z.coerce.date().nullable().optional(),
   }),
 });

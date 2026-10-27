@@ -296,7 +296,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
               {t("settingsPage.account.apiKeys.createDescription")}
             </DialogDescription>
           </DialogHeader>
-          <form className="space-y-4" onSubmit={handleCreate}>
+          <form noValidate className="space-y-4" onSubmit={handleCreate}>
             <div className="space-y-2">
               <Label htmlFor="api-key-name">
                 {t("settingsPage.account.apiKeys.nameLabel")}

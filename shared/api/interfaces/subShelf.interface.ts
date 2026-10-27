@@ -7,6 +7,7 @@ import {
   AllSupportedIcons,
 } from "@shared/api/interfaces/enums";
 import { z } from "zod";
+import { ItemNameSchema } from "./workspaceInput.schema";
 
 /* ============================== GetMySubShelfById ============================== */
 
@@ -222,7 +223,7 @@ export const CreateSubShelfByRootShelfIdRequestSchema =
       id: z.uuidv4().optional(),
       rootShelfId: z.uuidv4(),
       prevSubShelfId: z.uuidv4().nullable(),
-      name: z.string().min(1).max(128),
+      name: ItemNameSchema,
     }),
     affected: z.object({
       rootShelfId: z.uuidv4(),
@@ -265,7 +266,7 @@ export const CreateSubShelvesByRootShelfIdsRequestSchema =
           id: z.uuidv4().optional(),
           rootShelfId: z.uuidv4(),
           prevSubShelfId: z.uuidv4().nullable(),
-          name: z.string().min(1).max(128),
+          name: ItemNameSchema,
         })
       ),
     }),
@@ -307,7 +308,7 @@ export const UpdateMySubShelfByIdRequestSchema = NotegicRequestSchema.extend({
     subShelfId: z.uuidv4(),
     values: z
       .object({
-        name: z.string().min(1).max(128),
+        name: ItemNameSchema,
       })
       .partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),
@@ -351,7 +352,7 @@ export const UpdateMySubShelvesByIdsRequestSchema = NotegicRequestSchema.extend(
           subShelfId: z.uuidv4(),
           values: z
             .object({
-              name: z.string().min(1).max(128),
+              name: ItemNameSchema,
             })
             .partial(),
           setNull: z.record(z.string(), z.boolean()).optional(),

@@ -1,5 +1,6 @@
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import { cn } from "@shared/util/utils";
 import * as React from "react";
 import {
@@ -135,7 +136,12 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? "") : props.children;
+  const { t } = useTranslation();
+  const body = error
+    ? t(String(error.message ?? "validation.invalidInput") as never, {
+        defaultValue: t("validation.invalidInput"),
+      })
+    : props.children;
 
   if (!body) {
     return null;

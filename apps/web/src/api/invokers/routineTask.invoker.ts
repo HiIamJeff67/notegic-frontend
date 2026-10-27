@@ -37,6 +37,7 @@ import {
   type VisualizeMyRoutineTaskPurposeCountResponse,
   VisualizeMyRoutineTaskPurposeCountResponseSchema,
 } from "@shared/api/interfaces/routineTask.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateRoutineTaskByRoutineId,
@@ -149,9 +150,11 @@ export const queryFnGetAllMyRoutineTasks = async (
 export const mutationFnCreateRoutineTaskByRoutineId = async (
   request: CreateRoutineTaskByRoutineIdRequest
 ): Promise<CreateRoutineTaskByRoutineIdResponse> => {
+  const validatedRequest = parseRequest(
+    CreateRoutineTaskByRoutineIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      CreateRoutineTaskByRoutineIdRequestSchema.parse(request);
     const response = await CreateRoutineTaskByRoutineId({
       data: validatedRequest,
     });
@@ -164,7 +167,7 @@ export const mutationFnCreateRoutineTaskByRoutineId = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -180,9 +183,11 @@ export const mutationFnCreateRoutineTaskByRoutineId = async (
 export const mutationFnUpdateMyRoutineTaskById = async (
   request: UpdateMyRoutineTaskByIdRequest
 ): Promise<UpdateMyRoutineTaskByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyRoutineTaskByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpdateMyRoutineTaskByIdRequestSchema.parse(request);
     const response = await UpdateMyRoutineTaskById({
       data: validatedRequest,
     });
@@ -195,7 +200,7 @@ export const mutationFnUpdateMyRoutineTaskById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

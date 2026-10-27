@@ -1,29 +1,9 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  CreateRootShelf,
-  CreateRootShelves,
-  DeleteRootShelfPermissions,
-  DeleteMyRootShelfById,
-  DeleteMyRootShelvesByIds,
-  HardDeleteMyRootShelvesByIds,
-  GetMyRootShelfById,
-  RestoreMyRootShelfById,
-  RestoreMyRootShelvesByIds,
-  UpdateMyRootShelfById,
-  UpdateMyRootShelvesByIds,
-  UpsertRootShelfPermission,
-  LeaveMyRootShelf,
-  TransferMyRootShelfOwnership,
-} from "@/api/functions/rootShelf.serverFn";
-import {
-  type HardDeleteMyRootShelvesByIdsRequest,
-  HardDeleteMyRootShelvesByIdsRequestSchema,
-  type HardDeleteMyRootShelvesByIdsResponse,
-  HardDeleteMyRootShelvesByIdsResponseSchema,
   type CreateRootShelfRequest,
   CreateRootShelfRequestSchema,
   type CreateRootShelfResponse,
@@ -32,10 +12,6 @@ import {
   CreateRootShelvesRequestSchema,
   type CreateRootShelvesResponse,
   CreateRootShelvesResponseSchema,
-  type DeleteRootShelfPermissionsRequest,
-  DeleteRootShelfPermissionsRequestSchema,
-  type DeleteRootShelfPermissionsResponse,
-  DeleteRootShelfPermissionsResponseSchema,
   type DeleteMyRootShelfByIdRequest,
   DeleteMyRootShelfByIdRequestSchema,
   type DeleteMyRootShelfByIdResponse,
@@ -44,10 +20,22 @@ import {
   DeleteMyRootShelvesByIdsRequestSchema,
   type DeleteMyRootShelvesByIdsResponse,
   DeleteMyRootShelvesByIdsResponseSchema,
+  type DeleteRootShelfPermissionsRequest,
+  DeleteRootShelfPermissionsRequestSchema,
+  type DeleteRootShelfPermissionsResponse,
+  DeleteRootShelfPermissionsResponseSchema,
   type GetMyRootShelfByIdRequest,
   GetMyRootShelfByIdRequestSchema,
   type GetMyRootShelfByIdResponse,
   GetMyRootShelfByIdResponseSchema,
+  type HardDeleteMyRootShelvesByIdsRequest,
+  HardDeleteMyRootShelvesByIdsRequestSchema,
+  type HardDeleteMyRootShelvesByIdsResponse,
+  HardDeleteMyRootShelvesByIdsResponseSchema,
+  type LeaveMyRootShelfRequest,
+  LeaveMyRootShelfRequestSchema,
+  type LeaveMyRootShelfResponse,
+  LeaveMyRootShelfResponseSchema,
   type RestoreMyRootShelfByIdRequest,
   RestoreMyRootShelfByIdRequestSchema,
   type RestoreMyRootShelfByIdResponse,
@@ -56,6 +44,10 @@ import {
   RestoreMyRootShelvesByIdsRequestSchema,
   type RestoreMyRootShelvesByIdsResponse,
   RestoreMyRootShelvesByIdsResponseSchema,
+  type TransferMyRootShelfOwnershipRequest,
+  TransferMyRootShelfOwnershipRequestSchema,
+  type TransferMyRootShelfOwnershipResponse,
+  TransferMyRootShelfOwnershipResponseSchema,
   type UpdateMyRootShelfByIdRequest,
   UpdateMyRootShelfByIdRequestSchema,
   type UpdateMyRootShelfByIdResponse,
@@ -68,16 +60,25 @@ import {
   UpsertRootShelfPermissionRequestSchema,
   type UpsertRootShelfPermissionResponse,
   UpsertRootShelfPermissionResponseSchema,
-  type LeaveMyRootShelfRequest,
-  LeaveMyRootShelfRequestSchema,
-  type LeaveMyRootShelfResponse,
-  LeaveMyRootShelfResponseSchema,
-  type TransferMyRootShelfOwnershipRequest,
-  TransferMyRootShelfOwnershipRequestSchema,
-  type TransferMyRootShelfOwnershipResponse,
-  TransferMyRootShelfOwnershipResponseSchema,
 } from "@shared/api/interfaces/rootShelf.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateRootShelf,
+  CreateRootShelves,
+  DeleteMyRootShelfById,
+  DeleteMyRootShelvesByIds,
+  DeleteRootShelfPermissions,
+  GetMyRootShelfById,
+  HardDeleteMyRootShelvesByIds,
+  LeaveMyRootShelf,
+  RestoreMyRootShelfById,
+  RestoreMyRootShelvesByIds,
+  TransferMyRootShelfOwnership,
+  UpdateMyRootShelfById,
+  UpdateMyRootShelvesByIds,
+  UpsertRootShelfPermission,
+} from "@/api/functions/rootShelf.serverFn";
 
 export const queryFnGetMyRootShelfById = async (
   request: GetMyRootShelfByIdRequest
@@ -111,8 +112,8 @@ export const queryFnGetMyRootShelfById = async (
 export const mutationFnCreateRootShelf = async (
   request: CreateRootShelfRequest
 ): Promise<CreateRootShelfResponse> => {
+  const validatedRequest = parseRequest(CreateRootShelfRequestSchema, request);
   try {
-    const validatedRequest = CreateRootShelfRequestSchema.parse(request);
     const response = await CreateRootShelf({ data: validatedRequest });
     return CreateRootShelfResponseSchema.parse(response);
   } catch (error) {
@@ -120,7 +121,7 @@ export const mutationFnCreateRootShelf = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -136,8 +137,11 @@ export const mutationFnCreateRootShelf = async (
 export const mutationFnCreateRootShelves = async (
   request: CreateRootShelvesRequest
 ): Promise<CreateRootShelvesResponse> => {
+  const validatedRequest = parseRequest(
+    CreateRootShelvesRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = CreateRootShelvesRequestSchema.parse(request);
     const response = await CreateRootShelves({
       data: validatedRequest,
     });
@@ -147,7 +151,7 @@ export const mutationFnCreateRootShelves = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
       }
@@ -161,8 +165,11 @@ export const mutationFnCreateRootShelves = async (
 export const mutationFnUpdateMyRootShelfById = async (
   request: UpdateMyRootShelfByIdRequest
 ): Promise<UpdateMyRootShelfByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyRootShelfByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyRootShelfByIdRequestSchema.parse(request);
     const response = await UpdateMyRootShelfById({
       data: validatedRequest,
     });
@@ -172,7 +179,7 @@ export const mutationFnUpdateMyRootShelfById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -188,9 +195,11 @@ export const mutationFnUpdateMyRootShelfById = async (
 export const mutationFnUpsertRootShelfPermission = async (
   request: UpsertRootShelfPermissionRequest
 ): Promise<UpsertRootShelfPermissionResponse> => {
+  const validatedRequest = parseRequest(
+    UpsertRootShelfPermissionRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpsertRootShelfPermissionRequestSchema.parse(request);
     const response = await UpsertRootShelfPermission({
       data: validatedRequest,
     });
@@ -203,7 +212,7 @@ export const mutationFnUpsertRootShelfPermission = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -288,9 +297,11 @@ export const mutationFnLeaveMyRootShelf = async (
 export const mutationFnUpdateMyRootShelvesByIds = async (
   request: UpdateMyRootShelvesByIdsRequest
 ): Promise<UpdateMyRootShelvesByIdsResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyRootShelvesByIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpdateMyRootShelvesByIdsRequestSchema.parse(request);
     const response = await UpdateMyRootShelvesByIds({
       data: validatedRequest,
     });
@@ -303,7 +314,7 @@ export const mutationFnUpdateMyRootShelvesByIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

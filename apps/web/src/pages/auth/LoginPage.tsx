@@ -17,9 +17,9 @@ import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/Cloudf
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
+import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
-import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 
 const LoginPage = () => {
   const router = useAppRouter();
@@ -120,6 +120,7 @@ const LoginPage = () => {
       <Suspense fallback={<LoadingCover />}>
         <LoadingCover condition={isLoginPending} />
         <AuthPanel
+          noValidate
           title={t("auth.login")}
           subtitle={`${t(
             "auth.authenticationPanelSubtitle"

@@ -71,7 +71,7 @@ const FeedbackTab = ({ layout = "panel" }: FeedbackTabProps) => {
 
   return (
     <Section article={layout === "article"}>
-      <form className="space-y-5" onSubmit={submitReport}>
+      <form noValidate className="space-y-5" onSubmit={submitReport}>
         <div className="space-y-2">
           <Label htmlFor="feedback-type">
             {t("settingsPage.preferences.feedback.type")}

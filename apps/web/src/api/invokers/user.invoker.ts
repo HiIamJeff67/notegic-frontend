@@ -6,7 +6,6 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { GetMe, GetUserData, UpdateMe } from "@/api/functions/user.serverFn";
 import {
   type GetMeRequest,
   GetMeRequestSchema,
@@ -21,7 +20,9 @@ import {
   type UpdateMeResponse,
   UpdateMeResponseSchema,
 } from "@shared/api/interfaces/user.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import { GetMe, GetUserData, UpdateMe } from "@/api/functions/user.serverFn";
 
 export const queryFnGetUserData = async (
   request: GetUserDataRequest
@@ -82,8 +83,8 @@ export const queryFnGetMe = async (
 export const mutationFnUpdateMe = async (
   request: UpdateMeRequest
 ): Promise<UpdateMeResponse> => {
+  const validatedRequest = parseRequest(UpdateMeRequestSchema, request);
   try {
-    const validatedRequest = UpdateMeRequestSchema.parse(request);
     const response = await UpdateMe({ data: validatedRequest });
     return UpdateMeResponseSchema.parse(response);
   } catch (error) {
@@ -91,7 +92,7 @@ export const mutationFnUpdateMe = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:

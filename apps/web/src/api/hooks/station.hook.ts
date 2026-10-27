@@ -30,9 +30,16 @@ import type {
   VisualizeMyTotalCountRequest,
   VisualizeMyTotalCountResponse,
 } from "@shared/api/interfaces/station.interface";
+import {
+  CreateStationRequestSchema,
+  CreateStationsRequestSchema,
+  UpdateMyStationByIdRequestSchema,
+  UpdateMyStationsByIdsRequestSchema,
+} from "@shared/api/interfaces/station.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import {
   type UseQueryOptions,
   useMutation,
@@ -216,6 +223,7 @@ export const useCreateStation = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateStationRequest) => {
+    parseRequest(CreateStationRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -256,6 +264,7 @@ export const useCreateStations = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateStationsRequest) => {
+    parseRequest(CreateStationsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -296,6 +305,7 @@ export const useUpdateMyStationById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyStationByIdRequest) => {
+    parseRequest(UpdateMyStationByIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -338,6 +348,7 @@ export const useUpdateMyStationsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyStationsByIdsRequest) => {
+    parseRequest(UpdateMyStationsByIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }

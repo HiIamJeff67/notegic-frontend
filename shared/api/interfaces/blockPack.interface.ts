@@ -7,6 +7,7 @@ import {
   AllSupportedIcons,
 } from "@shared/api/interfaces/enums";
 import { z } from "zod";
+import { ItemNameSchema } from "./workspaceInput.schema";
 
 /* ============================== GetMyBlockPackById ============================== */
 
@@ -168,7 +169,7 @@ export const CreateBlockPackRequestSchema = NotegicRequestSchema.extend({
   body: z.object({
     id: z.uuidv4().optional(),
     parentSubShelfId: z.uuidv4(),
-    name: z.string().min(1).max(128),
+    name: ItemNameSchema,
     icon: z.enum(AllSupportedIcons).nullable(),
     headerBackgroundURL: z.url().nullable(),
   }),
@@ -210,7 +211,7 @@ export const CreateBlockPacksRequestSchema = NotegicRequestSchema.extend({
       z.object({
         id: z.uuidv4().optional(),
         parentSubShelfId: z.uuidv4(),
-        name: z.string().min(1).max(128),
+        name: ItemNameSchema,
         icon: z.enum(AllSupportedIcons).nullable(),
         headerBackgroundURL: z.url().nullable(),
       })
@@ -253,7 +254,7 @@ export const UpdateMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
     blockPackId: z.uuidv4(),
     values: z
       .object({
-        name: z.string().min(1).max(128),
+        name: ItemNameSchema,
         icon: z.enum(AllSupportedIcons),
         headerBackgroundURL: z.url(),
       })
@@ -301,7 +302,7 @@ export const UpdateMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
           blockPackId: z.uuidv4(),
           values: z
             .object({
-              name: z.string().min(1).max(128),
+              name: ItemNameSchema,
               icon: z.enum(AllSupportedIcons),
               headerBackgroundURL: z.url(),
             })

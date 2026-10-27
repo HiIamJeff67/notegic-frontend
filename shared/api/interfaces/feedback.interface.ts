@@ -27,8 +27,16 @@ export const SubmitFeedbackReportRequestSchema = NotegicRequestSchema.extend({
   }),
   body: z.object({
     type: FeedbackReportTypeSchema,
-    title: z.string().trim().min(1).max(200),
-    description: z.string().trim().min(1).max(10000),
+    title: z
+      .string({ error: "validation.feedbackTitle" })
+      .trim()
+      .min(1, { error: "validation.feedbackTitle" })
+      .max(200, { error: "validation.feedbackTitle" }),
+    description: z
+      .string({ error: "validation.feedbackDescription" })
+      .trim()
+      .min(1, { error: "validation.feedbackDescription" })
+      .max(10000, { error: "validation.feedbackDescription" }),
     route: z
       .string()
       .regex(/^\/[^?#\r\n]*$/)

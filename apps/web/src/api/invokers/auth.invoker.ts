@@ -2,19 +2,10 @@ import {
   ExceptionReasonDictionary,
   NotegicAPIError,
 } from "@shared/api/exceptions";
-import {
-  DeleteMe,
-  ForgetPassword,
-  Login,
-  LoginViaGoogle,
-  Logout,
-  Register,
-  RegisterViaGoogle,
-  ResetEmail,
-  ResetMe,
-  SendAuthCode,
-  ValidateEmail,
-} from "@/api/functions/auth.serverFn";
+import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type DeleteMeRequest,
   DeleteMeRequestSchema,
@@ -61,17 +52,27 @@ import {
   type ValidateEmailResponse,
   ValidateEmailResponseSchema,
 } from "@shared/api/interfaces/auth.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
-import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import {
+  DeleteMe,
+  ForgetPassword,
+  Login,
+  LoginViaGoogle,
+  Logout,
+  Register,
+  RegisterViaGoogle,
+  ResetEmail,
+  ResetMe,
+  SendAuthCode,
+  ValidateEmail,
+} from "@/api/functions/auth.serverFn";
 
 export const mutationFnRegister = async (
   request: RegisterRequest
 ): Promise<RegisterResponse> => {
+  const validatedRequest = parseRequest(RegisterRequestSchema, request);
   try {
-    const validatedRequest = RegisterRequestSchema.parse(request);
     const response = await Register({ data: validatedRequest });
     return RegisterResponseSchema.parse(response);
   } catch (error) {
@@ -80,7 +81,7 @@ export const mutationFnRegister = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("auth.validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
@@ -108,8 +109,11 @@ export const mutationFnRegister = async (
 export const mutationFnRegisterViaGoogle = async (
   request: RegisterViaGoogleRequest
 ): Promise<RegisterViaGoogleResponse> => {
+  const validatedRequest = parseRequest(
+    RegisterViaGoogleRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = RegisterViaGoogleRequestSchema.parse(request);
     const response = await RegisterViaGoogle({
       data: validatedRequest,
     });
@@ -120,7 +124,7 @@ export const mutationFnRegisterViaGoogle = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("auth.validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
@@ -143,8 +147,8 @@ export const mutationFnRegisterViaGoogle = async (
 export const mutationFnLogin = async (
   request: LoginRequest
 ): Promise<LoginResponse> => {
+  const validatedRequest = parseRequest(LoginRequestSchema, request);
   try {
-    const validatedRequest = LoginRequestSchema.parse(request);
     const response = await Login({ data: validatedRequest });
     return LoginResponseSchema.parse(response);
   } catch (error) {
@@ -153,7 +157,7 @@ export const mutationFnLogin = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("auth.validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
@@ -176,16 +180,17 @@ export const mutationFnLogin = async (
 export const mutationFnLoginViaGoogle = async (
   request: LoginViaGoogleRequest
 ): Promise<LoginViaGoogleResponse> => {
+  const validatedRequest = parseRequest(LoginViaGoogleRequestSchema, request);
   try {
-    const validatedRequest = LoginViaGoogleRequestSchema.parse(request);
     const response = await LoginViaGoogle({ data: validatedRequest });
     return LoginViaGoogleResponseSchema.parse(response);
   } catch (error) {
     console.error("error happening in mutationFnLoginViaGoogle", error);
     console.error(error);
     if (error instanceof ZodError) {
-      const errorMessage = error.issues.map(issue => issue.message).join(", ");
-      throw new Error(`validation failed: ${errorMessage}`);
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
@@ -238,8 +243,8 @@ export const mutationFnLogout = async (
 export const mutationFnSendAuthCode = async (
   request: SendAuthCodeRequest
 ): Promise<SendAuthCodeResponse> => {
+  const validatedRequest = parseRequest(SendAuthCodeRequestSchema, request);
   try {
-    const validatedRequest = SendAuthCodeRequestSchema.parse(request);
     const response = await SendAuthCode({ data: validatedRequest });
     return SendAuthCodeResponseSchema.parse(response);
   } catch (error) {
@@ -248,7 +253,7 @@ export const mutationFnSendAuthCode = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
@@ -274,8 +279,8 @@ export const mutationFnSendAuthCode = async (
 export const mutationFnValidateEmail = async (
   request: ValidateEmailRequest
 ): Promise<ValidateEmailResponse> => {
+  const validatedRequest = parseRequest(ValidateEmailRequestSchema, request);
   try {
-    const validatedRequest = ValidateEmailRequestSchema.parse(request);
     const response = await ValidateEmail({ data: validatedRequest });
     return ValidateEmailResponseSchema.parse(response);
   } catch (error) {
@@ -284,7 +289,7 @@ export const mutationFnValidateEmail = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
@@ -304,8 +309,8 @@ export const mutationFnValidateEmail = async (
 export const mutationFnResetEmail = async (
   request: ResetEmailRequest
 ): Promise<ResetEmailResponse> => {
+  const validatedRequest = parseRequest(ResetEmailRequestSchema, request);
   try {
-    const validatedRequest = ResetEmailRequestSchema.parse(request);
     const response = await ResetEmail({ data: validatedRequest });
     return ResetEmailResponseSchema.parse(response);
   } catch (error) {
@@ -314,7 +319,7 @@ export const mutationFnResetEmail = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
@@ -334,8 +339,8 @@ export const mutationFnResetEmail = async (
 export const mutationFnForgetPassword = async (
   request: ForgetPasswordRequest
 ): Promise<ForgetPasswordResponse> => {
+  const validatedRequest = parseRequest(ForgetPasswordRequestSchema, request);
   try {
-    const validatedRequest = ForgetPasswordRequestSchema.parse(request);
     const response = await ForgetPassword({ data: validatedRequest });
     return ForgetPasswordResponseSchema.parse(response);
   } catch (error) {
@@ -344,7 +349,7 @@ export const mutationFnForgetPassword = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:
@@ -364,8 +369,8 @@ export const mutationFnForgetPassword = async (
 export const mutationFnResetMe = async (
   request: ResetMeRequest
 ): Promise<ResetMeResponse> => {
+  const validatedRequest = parseRequest(ResetMeRequestSchema, request);
   try {
-    const validatedRequest = ResetMeRequestSchema.parse(request);
     const response = await ResetMe({ data: validatedRequest });
     return ResetMeResponseSchema.parse(response);
   } catch (error) {
@@ -374,7 +379,7 @@ export const mutationFnResetMe = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       throw error;
     } else if (error instanceof TypeError) {
@@ -388,8 +393,8 @@ export const mutationFnResetMe = async (
 export const mutationFnDeleteMe = async (
   request: DeleteMeRequest
 ): Promise<DeleteMeResponse> => {
+  const validatedRequest = parseRequest(DeleteMeRequestSchema, request);
   try {
-    const validatedRequest = DeleteMeRequestSchema.parse(request);
     const response = await DeleteMe({ data: validatedRequest });
     return DeleteMeResponseSchema.parse(response);
   } catch (error) {
@@ -398,7 +403,7 @@ export const mutationFnDeleteMe = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         case ExceptionReasonDictionary.user.notFound:

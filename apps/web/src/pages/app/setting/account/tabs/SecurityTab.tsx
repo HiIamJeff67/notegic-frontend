@@ -99,6 +99,7 @@ const SecurityTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {

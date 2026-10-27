@@ -264,8 +264,10 @@ const RoutineInspector = ({
       !Number.isInteger(values.timeoutMinutes) ||
       values.timeoutMinutes < 1 ||
       values.timeoutMinutes > 60
-    )
+    ) {
+      toast.error(t("validation.timeout"));
       return;
+    }
     if (!SupportedTimezones.includes(values.timezone)) {
       toast.error(t("workspace.validation.unsupportedTimezone"));
       return;
@@ -324,6 +326,7 @@ const RoutineInspector = ({
             </SheetDescription>
           </SheetHeader>
           <form
+            noValidate
             autoComplete="off"
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {

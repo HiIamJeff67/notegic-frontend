@@ -1,5 +1,6 @@
 import { createServer, type Server } from "node:http";
 import { expect, test } from "@playwright/test";
+import { resources, supportedLanguages } from "@shared/i18n";
 
 let upstream: Server;
 let writes = 0;
@@ -94,8 +95,8 @@ test.afterAll(async () => {
     );
 });
 
-for (const password of ["bad", "NotCorrect123!"]) {
-  test(`login reports a wrong ${password === "bad" ? "short" : "strong"} password without retrying`, async ({
+for (const password of ["Badpass1!", "NotCorrect123!"]) {
+  test(`login reports a wrong correctly formatted password (${password.length} characters) without retrying`, async ({
     page,
   }) => {
     loginReason = "WrongPassword";
@@ -149,8 +150,7 @@ test("login validation and malformed responses have safe messages and no retry",
   await page.locator("#input-0").fill("fixture@example.invalid");
   await page.locator("#input-1").fill("x".repeat(1025));
   await page.locator('button[type="submit"]').click();
-  const message =
-    "Some data has an invalid format. Please check and try again.";
+  const message = "Password must be no more than 1024 characters.";
   await expect(page.getByText(message, { exact: true })).toBeVisible();
   await expect(page.locator("#input-1")).toHaveValue("");
   expect(writes).toBe(0);
@@ -159,10 +159,170 @@ test("login validation and malformed responses have safe messages and no retry",
   await page.locator('button[type="submit"]').click();
   await expect.poll(() => writes).toBe(1);
   await expect(page.locator("#input-1")).toHaveValue("");
-  await expect(page.getByText(message, { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText("Unable to complete this action. Please try again later.", {
+      exact: true,
+    })
+  ).toBeVisible();
   expect(writes).toBe(1);
   loginReason = "WrongPassword";
 });
+
+for (const language of supportedLanguages) {
+  test(`password recovery validation is presented in ${language} without an API call`, async ({
+    page,
+  }) => {
+    await page.goto("/forgetPassword");
+    await page.locator("html[data-density]").waitFor();
+    await page.evaluate(async language => {
+      const path = "/src/i18n/index.ts";
+      const { default: i18n } = await import(/* @vite-ignore */ path);
+      await i18n.changeLanguage(language);
+    }, language);
+    writes = 0;
+    const locale = resources[language].translation;
+    const toastTitle = page
+      .locator(
+        '[data-slot="toast"]:not([data-ending-style]):not([data-limited]) [data-slot="toast-title"]'
+      )
+      .first();
+    await page.locator("#input-0").fill("broken@");
+    await page
+      .getByRole("button", {
+        name: `${locale.common.send}${locale.syntax.separator}${locale.auth.authCode}`,
+        exact: true,
+      })
+      .click();
+    await expect(toastTitle).toHaveText(locale.auth.validation.emailFormat);
+    expect(writes).toBe(0);
+    for (const [code, password, confirmation, message] of [
+      ["123456", "asd", "asd", locale.auth.validation.passwordTooShort],
+      ["12", "Fixture123!", "Fixture123!", locale.validation.authCode],
+      [
+        "123456",
+        "Fixture123!",
+        "Different123!",
+        locale.auth.validation.passwordMismatch,
+      ],
+    ]) {
+      for (const [index, value] of [
+        "fixture@example.invalid",
+        code,
+        password,
+        confirmation,
+      ].entries()) {
+        await page.locator(`#input-${index}`).fill(value);
+      }
+      await page.locator('button[type="submit"]').click();
+      await expect(toastTitle).toHaveText(message);
+      expect(writes).toBe(0);
+    }
+  });
+
+  test(`login request validation is presented in ${language} without an API call`, async ({
+    page,
+  }) => {
+    await page.goto("/login");
+    await page.locator("html[data-density]").waitFor();
+    await page.evaluate(async language => {
+      const path = "/src/i18n/index.ts";
+      const { default: i18n } = await import(/* @vite-ignore */ path);
+      await i18n.changeLanguage(language);
+    }, language);
+    writes = 0;
+    const messages = resources[language].translation.auth.validation;
+    for (const [account, password, message] of [
+      ["", "Fixture123!", messages.accountRequired],
+      ["asd", "asd", messages.accountFormat],
+      ["fixture@example.invalid", "", messages.passwordRequired],
+      ["fixture@example.invalid", "asd", messages.passwordTooShort],
+      ["fixture@example.invalid", "abcdefgh", messages.passwordStrength],
+      ["broken@", "Fixture123!", messages.accountFormat],
+      ["fixture@example.invalid", "x".repeat(1025), messages.passwordTooLong],
+    ]) {
+      await page.locator("#input-0").fill(account);
+      await page.locator("#input-1").fill(password);
+      await page.locator('button[type="submit"]').click();
+      await expect(
+        page
+          .locator(
+            '[data-slot="toast"]:not([data-ending-style]):not([data-limited]) [data-slot="toast-title"]'
+          )
+          .first()
+      ).toHaveText(message);
+      expect(writes).toBe(0);
+    }
+  });
+
+  test(`registration request validation is presented in ${language} without an API call`, async ({
+    page,
+  }) => {
+    await page.goto("/register");
+    await page.locator("html[data-density]").waitFor();
+    await page.evaluate(async language => {
+      const path = "/src/i18n/index.ts";
+      const { default: i18n } = await import(/* @vite-ignore */ path);
+      await i18n.changeLanguage(language);
+    }, language);
+    writes = 0;
+    const messages = resources[language].translation.auth.validation;
+    for (const [name, email, password, confirmation, message] of [
+      [
+        "fixture123",
+        "broken@",
+        "Fixture123!",
+        "Fixture123!",
+        messages.emailFormat,
+      ],
+      [
+        "fixture123!",
+        "fixture@example.invalid",
+        "Fixture123!",
+        "Fixture123!",
+        messages.nameFormat,
+      ],
+      [
+        "fixture123",
+        "fixture@example.invalid",
+        "Ab1!",
+        "Ab1!",
+        messages.passwordTooShort,
+      ],
+      [
+        "fixture123",
+        "fixture@example.invalid",
+        "abcdefgh",
+        "abcdefgh",
+        messages.passwordStrength,
+      ],
+      [
+        "fixture123",
+        "fixture@example.invalid",
+        "Fixture123!",
+        "Different123!",
+        messages.passwordMismatch,
+      ],
+    ]) {
+      for (const [index, value] of [
+        name,
+        email,
+        password,
+        confirmation,
+      ].entries()) {
+        await page.locator(`#input-${index}`).fill(value);
+      }
+      await page.locator('button[type="submit"]').click();
+      await expect(
+        page
+          .locator(
+            '[data-slot="toast"]:not([data-ending-style]):not([data-limited]) [data-slot="toast-title"]'
+          )
+          .first()
+      ).toHaveText(message);
+      expect(writes).toBe(0);
+    }
+  });
+}
 
 test("real server-function conflicts retain their API type, translation and no-retry policy", async ({
   page,

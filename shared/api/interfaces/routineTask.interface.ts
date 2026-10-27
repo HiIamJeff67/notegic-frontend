@@ -3,6 +3,7 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
+import { parseRequest } from "@shared/api/validation";
 import { z } from "zod";
 import {
   RoutineTaskPayloadSchema,
@@ -12,9 +13,52 @@ import {
   VisualizePermissionRequestSchema,
   VisualizeResponseSchema,
 } from "./visualize.interface";
+import { ItemNameSchema } from "./workspaceInput.schema";
+
+export const RoutineTaskPrioritySchema = z
+  .int32({ error: "validation.priority" })
+  .min(0, { error: "validation.priority" })
+  .max(100, { error: "validation.priority" });
+export const RoutineTaskMaxAttemptsSchema = z
+  .int32({ error: "validation.maxAttempts" })
+  .min(1, { error: "validation.maxAttempts" })
+  .max(20, { error: "validation.maxAttempts" });
 
 export const RoutineTaskKinds = ["Start", "Action"] as const;
 export type RoutineTaskKind = (typeof RoutineTaskKinds)[number];
+
+const StartingNodePayloadSchema = z
+  .object({
+    schemaVersion: z.literal(1).optional(),
+    description: z
+      .string({ error: "validation.startDescription" })
+      .max(1024, { error: "validation.startDescription" })
+      .optional(),
+    isActive: z.boolean().optional(),
+  })
+  .strict();
+
+export const RoutineTaskEditablePayloadSchema =
+  RoutineTaskPayloadSizeSchema.pipe(
+    z.record(z.string(), z.unknown(), { error: "validation.payloadObject" })
+  ).superRefine((payload, ctx) => {
+    const result =
+      payload?.purpose === undefined
+        ? StartingNodePayloadSchema.safeParse(payload)
+        : RoutineTaskPayloadSchema.safeParse({
+            purpose: payload.purpose,
+            payload,
+          });
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        ctx.addIssue({
+          code: "custom",
+          path: issue.path[0] === "payload" ? issue.path.slice(1) : issue.path,
+          message: issue.message,
+        });
+      }
+    }
+  });
 
 export const CreateRoutineTaskBodySchema = z
   .object({
@@ -24,11 +68,13 @@ export const CreateRoutineTaskBodySchema = z
     x: z.number().finite().min(-1000000).max(1000000).optional().default(0),
     y: z.number().finite().min(-1000000).max(1000000).optional().default(0),
     expectedDefinitionVersion: z.number().int().positive().optional(),
-    title: z.string().min(1).max(128),
-    purpose: z.enum(AllRoutineTaskPurposes).optional(),
+    title: ItemNameSchema,
+    purpose: z
+      .enum(AllRoutineTaskPurposes, { error: "validation.payloadPurpose" })
+      .optional(),
     payload: RoutineTaskPayloadSizeSchema,
-    priority: z.int32().min(0).max(100),
-    maxAttempts: z.int32().min(1).max(20),
+    priority: RoutineTaskPrioritySchema,
+    maxAttempts: RoutineTaskMaxAttemptsSchema,
   })
   .partial({
     priority: true,
@@ -36,18 +82,13 @@ export const CreateRoutineTaskBodySchema = z
   })
   .superRefine((body, ctx) => {
     if (body.kind === "Start") {
-      const result = z
-        .object({
-          schemaVersion: z.literal(1).optional(),
-          description: z.string().max(1024).optional(),
-          isActive: z.boolean().optional(),
-        })
-        .strict()
-        .safeParse(body.payload);
+      const result = StartingNodePayloadSchema.safeParse(body.payload);
       if (!result.success || body.purpose !== undefined)
         ctx.addIssue({
           code: "custom",
-          message: "Invalid starting node payload",
+          message: result.success
+            ? "validation.invalidInput"
+            : (result.error.issues[0]?.message ?? "validation.invalidInput"),
           path: ["payload"],
         });
       return;
@@ -71,7 +112,7 @@ export const CreateRoutineTaskBodySchema = z
 export const parseRoutineTaskDefinition = (
   input: z.input<typeof CreateRoutineTaskBodySchema>
 ) => {
-  const body = CreateRoutineTaskBodySchema.parse(input);
+  const body = parseRequest(CreateRoutineTaskBodySchema, input);
   const { purpose: compatibilityPurpose, ...definition } = body;
   const purpose =
     body.kind === "Start"
@@ -293,22 +334,37 @@ export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend(
           x: z.number().finite().min(-1000000).max(1000000),
           y: z.number().finite().min(-1000000).max(1000000),
           routineId: z.uuidv4(),
-          title: z.string().min(1).max(128),
-          purpose: z.enum(AllRoutineTaskPurposes),
-          payload: z.any().refine(value => {
-            try {
-              return (
-                new TextEncoder().encode(JSON.stringify(value ?? {})).length <=
-                16_777_216
-              );
-            } catch {
-              return false;
-            }
-          }, "Payload must be smaller than 16 MiB."),
-          priority: z.int32().min(0),
-          maxAttempts: z.int32().min(1).max(20),
+          title: ItemNameSchema,
+          purpose: z.enum(AllRoutineTaskPurposes, {
+            error: "validation.payloadPurpose",
+          }),
+          payload: RoutineTaskPayloadSizeSchema,
+          priority: RoutineTaskPrioritySchema,
+          maxAttempts: RoutineTaskMaxAttemptsSchema,
         })
-        .partial(),
+        .partial()
+        .superRefine((values, ctx) => {
+          if (values.payload === undefined) return;
+          const result =
+            values.purpose === undefined
+              ? RoutineTaskEditablePayloadSchema.safeParse(values.payload)
+              : RoutineTaskPayloadSchema.safeParse({
+                  purpose: values.purpose,
+                  payload: values.payload,
+                });
+          if (!result.success) {
+            for (const issue of result.error.issues) {
+              ctx.addIssue({
+                code: "custom",
+                path:
+                  values.purpose === undefined
+                    ? ["payload", ...issue.path]
+                    : issue.path,
+                message: issue.message,
+              });
+            }
+          }
+        }),
       setNull: z.record(z.string(), z.boolean()).optional(),
     }),
   }

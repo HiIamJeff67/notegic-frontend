@@ -1,3 +1,4 @@
+import { NotegicError } from "@shared/api/exceptions/errors";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
@@ -63,8 +64,8 @@ const RegisterPage = () => {
 
     const register = async () => {
       if (password !== confirmPassword) {
-        throw new Error(
-          t("auth.pleaseMakeSurePasswordAndConfirmPasswordAreMatch")
+        throw new NotegicError("PasswordConfirmationMismatch").setPresentation(
+          "auth.validation.passwordMismatch"
         );
       }
 
@@ -131,6 +132,7 @@ const RegisterPage = () => {
       <Suspense fallback={<LoadingCover />}>
         <LoadingCover condition={isRegisterPending} />
         <AuthPanel
+          noValidate
           title={t("auth.register")}
           subtitle={`${t(
             "auth.authenticationPanelSubtitle"

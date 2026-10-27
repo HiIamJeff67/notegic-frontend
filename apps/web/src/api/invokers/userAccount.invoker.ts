@@ -1,14 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  BindGoogleAccount,
-  GetMyAccount,
-  UnbindGoogleAccount,
-  UpdateMyAccount,
-} from "@/api/functions/userAccount.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type BindGoogleAccountRequest,
   BindGoogleAccountRequestSchema,
@@ -27,7 +21,14 @@ import {
   type UpdateMyAccountResponse,
   UpdateMyAccountResponseSchema,
 } from "@shared/api/interfaces/userAccount.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  BindGoogleAccount,
+  GetMyAccount,
+  UnbindGoogleAccount,
+  UpdateMyAccount,
+} from "@/api/functions/userAccount.serverFn";
 
 export const queryFnGetMyAccount = async (
   request: GetMyAccountRequest
@@ -57,8 +58,8 @@ export const queryFnGetMyAccount = async (
 export const mutationFnUpdateMyAccount = async (
   request: UpdateMyAccountRequest
 ): Promise<UpdateMyAccountResponse> => {
+  const validatedRequest = parseRequest(UpdateMyAccountRequestSchema, request);
   try {
-    const validatedRequest = UpdateMyAccountRequestSchema.parse(request);
     const response = await UpdateMyAccount({ data: validatedRequest });
     return UpdateMyAccountResponseSchema.parse(response);
   } catch (error) {
@@ -66,7 +67,7 @@ export const mutationFnUpdateMyAccount = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

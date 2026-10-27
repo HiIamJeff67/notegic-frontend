@@ -1,5 +1,3 @@
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { fromGraphQLRoutinePhase } from "@shared/api/graphql/conversions";
 import {
   RoutinePeriod as GraphQLRoutinePeriod,
@@ -10,6 +8,7 @@ import {
 import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/routine.interface";
+import { parseRequest } from "@shared/api/validation";
 import { MaxSearchLimit } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/LRUCache";
@@ -410,7 +409,7 @@ export const useRoutineLogic = ({
         }
       }
 
-      const validation = CreateRoutineByStationIdRequestSchema.safeParse({
+      const { body } = parseRequest(CreateRoutineByStationIdRequestSchema, {
         body: {
           stationId,
           title: values.title.trim(),
@@ -424,13 +423,6 @@ export const useRoutineLogic = ({
           timezone: values.timezone,
         },
       });
-      if (!validation.success) {
-        throw new NotegicValidationError(
-          ValidationClientException.ZodParsingFailed(validation.error)
-        );
-      }
-
-      const body = validation.data.body;
       const response = await createRoutineMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body,

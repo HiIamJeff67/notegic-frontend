@@ -7,6 +7,7 @@ import {
   AllAccessControlPermissions,
 } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import z from "zod";
+import { ItemNameSchema } from "./workspaceInput.schema";
 
 /* ============================== GetMyRootShelfById ============================== */
 
@@ -59,7 +60,7 @@ export const CreateRootShelfRequestSchema = NotegicRequestSchema.extend({
     .optional(),
   body: z.object({
     id: z.uuidv4().optional(),
-    name: z.string().min(1).max(128),
+    name: ItemNameSchema,
   }),
 });
 
@@ -96,7 +97,7 @@ export const CreateRootShelvesRequestSchema = NotegicRequestSchema.extend({
       .array(
         z.object({
           id: z.uuidv4().optional(),
-          name: z.string().min(1).max(128),
+          name: ItemNameSchema,
         })
       )
       .min(1),
@@ -134,7 +135,7 @@ export const UpsertRootShelfPermissionRequestSchema =
       .optional(),
     param: z.object({
       rootShelfId: z.uuidv4(),
-      userPublicId: z.uuidv4(),
+      userPublicId: z.uuidv4({ error: "validation.userPublicId" }),
     }),
     body: z.object({
       permission: z.enum([
@@ -263,7 +264,7 @@ export const UpdateMyRootShelfByIdRequestSchema = NotegicRequestSchema.extend({
     rootShelfId: z.uuidv4(),
     values: z
       .object({
-        name: z.string().min(1).max(128),
+        name: ItemNameSchema,
       })
       .partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),
@@ -305,7 +306,7 @@ export const UpdateMyRootShelvesByIdsRequestSchema =
           rootShelfId: z.uuidv4(),
           values: z
             .object({
-              name: z.string().min(1).max(128),
+              name: ItemNameSchema,
             })
             .partial(),
           setNull: z.record(z.string(), z.boolean()).optional(),

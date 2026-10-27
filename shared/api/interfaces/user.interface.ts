@@ -50,6 +50,14 @@ export const GetMeResponseSchema = NotegicResponseSchema.extend({
 
 export type GetMeResponse = z.infer<typeof GetMeResponseSchema>;
 
+export const DisplayNameSchema = z
+  .string({ error: "validation.displayNameLength" })
+  .min(6, { error: "validation.displayNameLength" })
+  .max(32, { error: "validation.displayNameLength" })
+  .regex(/^(?=.*\p{L})(?=.*\p{Nd})[\p{L}\p{Nd}]+$/u, {
+    error: "validation.displayNameFormat",
+  });
+
 /* ============================== UpdateMe ============================== */
 
 export const UpdateMeRequestSchema = NotegicRequestSchema.extend({
@@ -62,11 +70,7 @@ export const UpdateMeRequestSchema = NotegicRequestSchema.extend({
   body: z.object({
     values: z
       .object({
-        displayName: z
-          .string()
-          .min(6)
-          .max(32)
-          .regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/),
+        displayName: DisplayNameSchema,
         status: z.enum(UserStatus),
       })
       .partial(),

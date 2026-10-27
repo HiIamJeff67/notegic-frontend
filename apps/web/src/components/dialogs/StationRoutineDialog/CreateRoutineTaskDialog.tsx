@@ -2,12 +2,12 @@ import {
   RoutineTaskPurpose,
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
+import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { UUID } from "crypto";
-import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -210,6 +210,7 @@ const CreateRoutineTaskDialog = ({
         </DialogHeader>
 
         <form
+          noValidate
           autoComplete="off"
           className="flex max-h-[calc(90vh-112px)] flex-col gap-4 overflow-y-auto px-1 pb-4"
           onSubmit={async event => {

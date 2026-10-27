@@ -1,25 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateStation,
-  CreateStations,
-  DeleteMyStationById,
-  DeleteMyStationsByIds,
-  GetAllMyStations,
-  GetMyStationById,
-  HardDeleteMyStationById,
-  HardDeleteMyStationsByIds,
-  RestoreMyStationById,
-  RestoreMyStationsByIds,
-  UpdateMyStationById,
-  UpdateMyStationsByIds,
-  VisualizeMyTotalCount,
-  LeaveMyStation,
-  TransferMyStationOwnership,
-} from "@/api/functions/station.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   CreateStationRequest,
   CreateStationRequestSchema,
@@ -53,6 +36,10 @@ import {
   HardDeleteMyStationsByIdsRequestSchema,
   HardDeleteMyStationsByIdsResponse,
   HardDeleteMyStationsByIdsResponseSchema,
+  type LeaveMyStationRequest,
+  LeaveMyStationRequestSchema,
+  type LeaveMyStationResponse,
+  LeaveMyStationResponseSchema,
   RestoreMyStationByIdRequest,
   RestoreMyStationByIdRequestSchema,
   RestoreMyStationByIdResponse,
@@ -61,6 +48,10 @@ import {
   RestoreMyStationsByIdsRequestSchema,
   RestoreMyStationsByIdsResponse,
   RestoreMyStationsByIdsResponseSchema,
+  type TransferMyStationOwnershipRequest,
+  TransferMyStationOwnershipRequestSchema,
+  type TransferMyStationOwnershipResponse,
+  TransferMyStationOwnershipResponseSchema,
   UpdateMyStationByIdRequest,
   UpdateMyStationByIdRequestSchema,
   UpdateMyStationByIdResponse,
@@ -73,16 +64,26 @@ import {
   VisualizeMyTotalCountRequestSchema,
   type VisualizeMyTotalCountResponse,
   VisualizeMyTotalCountResponseSchema,
-  type LeaveMyStationRequest,
-  LeaveMyStationRequestSchema,
-  type LeaveMyStationResponse,
-  LeaveMyStationResponseSchema,
-  type TransferMyStationOwnershipRequest,
-  TransferMyStationOwnershipRequestSchema,
-  type TransferMyStationOwnershipResponse,
-  TransferMyStationOwnershipResponseSchema,
 } from "@shared/api/interfaces/station.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateStation,
+  CreateStations,
+  DeleteMyStationById,
+  DeleteMyStationsByIds,
+  GetAllMyStations,
+  GetMyStationById,
+  HardDeleteMyStationById,
+  HardDeleteMyStationsByIds,
+  LeaveMyStation,
+  RestoreMyStationById,
+  RestoreMyStationsByIds,
+  TransferMyStationOwnership,
+  UpdateMyStationById,
+  UpdateMyStationsByIds,
+  VisualizeMyTotalCount,
+} from "@/api/functions/station.serverFn";
 import { invokeVisualizeQuery } from "./visualize.invoker";
 
 export const queryFnVisualizeMyTotalCount = (
@@ -191,8 +192,8 @@ export const mutationFnLeaveMyStation = async (
 export const mutationFnCreateStation = async (
   request: CreateStationRequest
 ): Promise<CreateStationResponse> => {
+  const validatedRequest = parseRequest(CreateStationRequestSchema, request);
   try {
-    const validatedRequest = CreateStationRequestSchema.parse(request);
     const response = await CreateStation({
       data: validatedRequest,
     });
@@ -202,7 +203,7 @@ export const mutationFnCreateStation = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -218,8 +219,8 @@ export const mutationFnCreateStation = async (
 export const mutationFnCreateStations = async (
   request: CreateStationsRequest
 ): Promise<CreateStationsResponse> => {
+  const validatedRequest = parseRequest(CreateStationsRequestSchema, request);
   try {
-    const validatedRequest = CreateStationsRequestSchema.parse(request);
     const response = await CreateStations({
       data: validatedRequest,
     });
@@ -229,7 +230,7 @@ export const mutationFnCreateStations = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -245,8 +246,11 @@ export const mutationFnCreateStations = async (
 export const mutationFnUpdateMyStationById = async (
   request: UpdateMyStationByIdRequest
 ): Promise<UpdateMyStationByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyStationByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyStationByIdRequestSchema.parse(request);
     const response = await UpdateMyStationById({
       data: validatedRequest,
     });
@@ -256,7 +260,7 @@ export const mutationFnUpdateMyStationById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -272,8 +276,11 @@ export const mutationFnUpdateMyStationById = async (
 export const mutationFnUpdateMyStationsByIds = async (
   request: UpdateMyStationsByIdsRequest
 ): Promise<UpdateMyStationsByIdsResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyStationsByIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyStationsByIdsRequestSchema.parse(request);
     const response = await UpdateMyStationsByIds({
       data: validatedRequest,
     });
@@ -283,7 +290,7 @@ export const mutationFnUpdateMyStationsByIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

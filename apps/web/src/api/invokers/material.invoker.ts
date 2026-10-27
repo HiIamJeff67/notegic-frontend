@@ -1,24 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateMaterialObjectTicket,
-  CreateMyMaterial,
-  DeleteMyMaterialById,
-  DeleteMyMaterialsByIds,
-  HardDeleteMyMaterialsByIds,
-  GetMyMaterialsByRootShelfId,
-  GetMyMaterialAndItsParentById,
-  GetMyMaterialById,
-  GetMyMaterialsByParentSubShelfId,
-  MoveMyMaterialById,
-  RestoreMyMaterialById,
-  RestoreMyMaterialsByIds,
-  UpdateMyMaterialById,
-  ResolveMaterialObjectTicket,
-} from "@/api/functions/material.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type CreateMaterialObjectTicketRequest,
   CreateMaterialObjectTicketRequestSchema,
@@ -32,18 +16,10 @@ import {
   DeleteMyMaterialByIdRequestSchema,
   type DeleteMyMaterialByIdResponse,
   DeleteMyMaterialByIdResponseSchema,
-  type HardDeleteMyMaterialsByIdsRequest,
-  HardDeleteMyMaterialsByIdsRequestSchema,
-  type HardDeleteMyMaterialsByIdsResponse,
-  HardDeleteMyMaterialsByIdsResponseSchema,
   type DeleteMyMaterialsByIdsRequest,
   DeleteMyMaterialsByIdsRequestSchema,
   type DeleteMyMaterialsByIdsResponse,
   DeleteMyMaterialsByIdsResponseSchema,
-  type GetMyMaterialsByRootShelfIdRequest,
-  GetMyMaterialsByRootShelfIdRequestSchema,
-  type GetMyMaterialsByRootShelfIdResponse,
-  GetMyMaterialsByRootShelfIdResponseSchema,
   type GetMyMaterialAndItsParentByIdRequest,
   GetMyMaterialAndItsParentByIdRequestSchema,
   type GetMyMaterialAndItsParentByIdResponse,
@@ -56,10 +32,22 @@ import {
   GetMyMaterialsByParentSubShelfIdRequestSchema,
   type GetMyMaterialsByParentSubShelfIdResponse,
   GetMyMaterialsByParentSubShelfIdResponseSchema,
+  type GetMyMaterialsByRootShelfIdRequest,
+  GetMyMaterialsByRootShelfIdRequestSchema,
+  type GetMyMaterialsByRootShelfIdResponse,
+  GetMyMaterialsByRootShelfIdResponseSchema,
+  type HardDeleteMyMaterialsByIdsRequest,
+  HardDeleteMyMaterialsByIdsRequestSchema,
+  type HardDeleteMyMaterialsByIdsResponse,
+  HardDeleteMyMaterialsByIdsResponseSchema,
   type MoveMyMaterialByIdRequest,
   MoveMyMaterialByIdRequestSchema,
   type MoveMyMaterialByIdResponse,
   MoveMyMaterialByIdResponseSchema,
+  type ResolveMaterialObjectTicketRequest,
+  ResolveMaterialObjectTicketRequestSchema,
+  type ResolveMaterialObjectTicketResponse,
+  ResolveMaterialObjectTicketResponseSchema,
   type RestoreMyMaterialByIdRequest,
   RestoreMyMaterialByIdRequestSchema,
   type RestoreMyMaterialByIdResponse,
@@ -72,12 +60,25 @@ import {
   UpdateMyMaterialByIdRequestSchema,
   type UpdateMyMaterialByIdResponse,
   UpdateMyMaterialByIdResponseSchema,
-  type ResolveMaterialObjectTicketRequest,
-  ResolveMaterialObjectTicketRequestSchema,
-  type ResolveMaterialObjectTicketResponse,
-  ResolveMaterialObjectTicketResponseSchema,
 } from "@shared/api/interfaces/material.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateMaterialObjectTicket,
+  CreateMyMaterial,
+  DeleteMyMaterialById,
+  DeleteMyMaterialsByIds,
+  GetMyMaterialAndItsParentById,
+  GetMyMaterialById,
+  GetMyMaterialsByParentSubShelfId,
+  GetMyMaterialsByRootShelfId,
+  HardDeleteMyMaterialsByIds,
+  MoveMyMaterialById,
+  ResolveMaterialObjectTicket,
+  RestoreMyMaterialById,
+  RestoreMyMaterialsByIds,
+  UpdateMyMaterialById,
+} from "@/api/functions/material.serverFn";
 
 const parseMaterialObjectTicketError = (error: unknown): never => {
   if (error instanceof ZodError) {
@@ -215,8 +216,8 @@ export const queryFnGetMyMaterialsByRootShelfId = async (
 export const mutationFnCreateMyMaterial = async (
   request: CreateMyMaterialRequest
 ): Promise<CreateMyMaterialResponse> => {
+  const validatedRequest = parseRequest(CreateMyMaterialRequestSchema, request);
   try {
-    const validatedRequest = CreateMyMaterialRequestSchema.parse(request);
     const response = await CreateMyMaterial({
       data: validatedRequest,
     });
@@ -226,7 +227,7 @@ export const mutationFnCreateMyMaterial = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -242,8 +243,11 @@ export const mutationFnCreateMyMaterial = async (
 export const mutationFnUpdateMyMaterialById = async (
   request: UpdateMyMaterialByIdRequest
 ): Promise<UpdateMyMaterialByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyMaterialByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyMaterialByIdRequestSchema.parse(request);
     const response = await UpdateMyMaterialById({
       data: validatedRequest,
     });
@@ -253,7 +257,7 @@ export const mutationFnUpdateMyMaterialById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

@@ -39,7 +39,73 @@ export const EnglishCommonTranslation: CommonTranslation = {
     viewDocs: "View Docs",
     switchTheme: "Switch Theme",
   },
+  validation: {
+    userPublicId: "Enter a valid user Public ID (UUID).",
+    invalidInput: "Check the information you entered and try again.",
+    invalidResponse: "Unable to complete this action. Please try again later.",
+    nameRequired: "Enter a name or title.",
+    nameTooLong: "Name or title must be no more than 128 characters.",
+    description: "Description must be no more than 1024 characters.",
+    backgroundUrl:
+      "Enter a valid background image URL, such as https://example.com/image.jpg.",
+    authCode: "Enter a 6-digit verification code.",
+    displayNameLength: "Display name must be 6–32 characters.",
+    displayNameFormat:
+      "Display name must contain letters and numbers, without spaces or symbols.",
+    phone: "Phone number must contain 1–15 digits.",
+    headline: "Headline must be no more than 64 characters.",
+    introduction: "Introduction must be no more than 256 characters.",
+    birthDate: "Choose a valid birth date that is not in the future.",
+    timeout: "Timeout must be a whole number of minutes from 1 to 60.",
+    priority: "Priority must be a whole number from 0 to 100.",
+    maxAttempts: "Maximum attempts must be a whole number from 1 to 20.",
+    startDescription:
+      "Starting node description must be no more than 1024 characters.",
+    apiKeyName: "API key name must contain 1–64 characters.",
+    feedbackTitle:
+      "Feedback title must contain 1–200 characters, excluding surrounding spaces.",
+    feedbackDescription:
+      "Feedback description must contain 1–10,000 characters, excluding surrounding spaces.",
+    payloadObject: "Enter a JSON object for the task payload.",
+    payloadVersion:
+      "This payload version is not supported. Reopen the payload editor to update it.",
+    payloadPurpose: "Choose the same action in the task and its payload.",
+    patternBinding: "Check the pattern binding and its target.",
+    patternSource: "Choose a supported pattern source.",
+    blockId: "Enter a valid Block ID.",
+    blockPackId: "Enter a valid BlockPack ID.",
+    subShelfRequired: "Choose a target sub shelf.",
+    rootShelfName: "Choose a root shelf and enter a sub shelf name.",
+    templateRequired:
+      "Choose a target sub shelf, enter a name and add at least one template block.",
+    templateContent: "Check the block content in the payload editor.",
+    blockCount: "Include between 1 and 1000 blocks.",
+    routineRequired: "Choose a target routine.",
+    stationTitle: "Choose a station and enter a routine title.",
+    materialRequired: "Choose a target material.",
+    materialContent:
+      "Choose a parent sub shelf and provide a material name and content key.",
+  },
   auth: {
+    validation: {
+      invalidInput: "Check the information you entered and try again.",
+      nameLength: "Name must be 6–32 characters.",
+      nameFormat:
+        "Name must contain letters and numbers, without spaces or symbols.",
+      emailFormat: "Enter a valid email address, such as name@example.com.",
+      accountRequired: "Enter your account name or email address.",
+      accountFormat:
+        "Enter a valid email address or an account name containing both letters and numbers.",
+      passwordRequired: "Enter your password.",
+      passwordTooShort: "Password must be at least 8 characters.",
+      passwordTooLong: "Password must be no more than 1024 characters.",
+      passwordStrength:
+        "Password must include uppercase and lowercase letters, a number and a symbol.",
+      passwordMismatch: "The passwords do not match.",
+      oauthCodeInvalid: "Sign-in could not be completed. Please try again.",
+      invalidResponse:
+        "Unable to complete this action. Please try again later.",
+    },
     login: "Login",
     register: "Register",
     resetPassword: "Reset Password",

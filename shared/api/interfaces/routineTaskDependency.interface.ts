@@ -6,7 +6,11 @@ import { z } from "zod";
 import {
   CreateRoutineTaskBodySchema,
   RoutineTaskDefinitionSchema,
+  RoutineTaskEditablePayloadSchema,
+  RoutineTaskMaxAttemptsSchema,
+  RoutineTaskPrioritySchema,
 } from "./routineTask.interface";
+import { ItemNameSchema } from "./workspaceInput.schema";
 
 const RoutineTaskDependencyIdentitySchema = z.object({
   expectedDefinitionVersion: z.number().int().positive().optional(),
@@ -149,12 +153,12 @@ export const UpdateRoutineTaskGraphByRoutineIdRequestSchema =
             z.object({
               routineTaskId: z.uuidv4(),
               values: z.object({
-                title: z.string().min(1).max(128).optional(),
-                payload: z.record(z.string(), z.unknown()).optional(),
+                title: ItemNameSchema.optional(),
+                payload: RoutineTaskEditablePayloadSchema.optional(),
                 x: z.number().finite().min(-1000000).max(1000000).optional(),
                 y: z.number().finite().min(-1000000).max(1000000).optional(),
-                priority: z.int32().min(0).max(100).optional(),
-                maxAttempts: z.int32().min(1).max(20).optional(),
+                priority: RoutineTaskPrioritySchema.optional(),
+                maxAttempts: RoutineTaskMaxAttemptsSchema.optional(),
               }),
             })
           )

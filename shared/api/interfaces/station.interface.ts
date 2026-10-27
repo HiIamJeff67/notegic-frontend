@@ -11,6 +11,11 @@ import {
   VisualizePermissionRequestSchema,
   VisualizeResponseSchema,
 } from "./visualize.interface";
+import {
+  BackgroundURLSchema,
+  DescriptionSchema,
+  ItemNameSchema,
+} from "./workspaceInput.schema";
 
 /* ============================== VisualizeMyTotalCount ============================== */
 
@@ -123,10 +128,10 @@ export const CreateStationRequestSchema = NotegicRequestSchema.extend({
     .optional(),
   body: z.object({
     id: z.uuidv4().optional(),
-    name: z.string().min(1).max(128),
-    description: z.string().max(1024),
+    name: ItemNameSchema,
+    description: DescriptionSchema,
     icon: z.enum(AllSupportedIcons).nullable(),
-    headerBackgroundURL: z.url().nullable(),
+    headerBackgroundURL: BackgroundURLSchema.nullable(),
   }),
 });
 
@@ -157,10 +162,10 @@ export const CreateStationsRequestSchema = NotegicRequestSchema.extend({
     createdStations: z.array(
       z.object({
         id: z.uuidv4().optional(),
-        name: z.string().min(1).max(128),
-        description: z.string().max(1024),
+        name: ItemNameSchema,
+        description: DescriptionSchema,
         icon: z.enum(AllSupportedIcons).nullable(),
-        headerBackgroundURL: z.url().nullable(),
+        headerBackgroundURL: BackgroundURLSchema.nullable(),
       })
     ),
   }),
@@ -245,10 +250,10 @@ export const UpdateMyStationByIdRequestSchema = NotegicRequestSchema.extend({
     stationId: z.uuidv4(),
     values: z
       .object({
-        name: z.string().min(1).max(128),
-        description: z.string().max(1024),
+        name: ItemNameSchema,
+        description: DescriptionSchema,
         icon: z.enum(AllSupportedIcons).nullable(),
-        headerBackgroundURL: z.url().nullable(),
+        headerBackgroundURL: BackgroundURLSchema.nullable(),
       })
       .partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),
@@ -287,10 +292,10 @@ export const UpdateMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
         stationId: z.uuidv4(),
         values: z
           .object({
-            name: z.string().min(1).max(128),
-            description: z.string().max(1024),
+            name: ItemNameSchema,
+            description: DescriptionSchema,
             icon: z.enum(AllSupportedIcons).nullable(),
-            headerBackgroundURL: z.url().nullable(),
+            headerBackgroundURL: BackgroundURLSchema.nullable(),
           })
           .partial(),
         setNull: z.record(z.string(), z.boolean()).optional(),

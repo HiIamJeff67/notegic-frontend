@@ -121,6 +121,82 @@ invoker. It first honors an existing UI presentation key, then translates known
 policy. It does not show a toast itself. Do not restore `translateError` or
 introduce per-feature error translators.
 
+## User input validation
+
+The API contract is owned by backend request DTOs (`json` field mapping,
+`validate` tags and service checks). Database/GORM constraints protect stored
+invariants; they are not a substitute for the API contract. Keep frontend Zod
+requests aligned with the relevant DTO and business checks. Frontend validation
+improves feedback and never replaces backend validation or authorization.
+
+Keep one frontend owner for each editable rule: the request field schema.
+Reuse request fields in form resolvers through `.shape`, `.pick()` or `.extend()`;
+do not reuse a response schema's field constraints as an independent form policy.
+Read-only response/storage fields remain locale-neutral. Shared workspace input
+rules live in `shared/api/interfaces/workspaceInput.schema.ts`; auth, user and
+RoutineTask-specific rules stay with their owning interface.
+
+Schemas emit translation keys in Zod's `error` option. Keys live under
+`validation`, `auth.validation` and existing `workspace.validation` entries in
+all five locales. Do not import i18n into a schema, persist localized errors,
+or duplicate field rules in a translation-key mapper.
+
+Use `parseRequest(schema, input)` from `@shared/api/validation` at an interactive
+request boundary, before transport or offline writes. It retains
+`NotegicValidationError`, assigns the first issue's presentation key and preserves
+the existing no-retry policy. Draft-only task edits use the same definition
+schema before writing the draft, so sidebar creation and graph creation cannot
+silently diverge. UI prevalidation must keep the first issue's presentation too.
+
+```ts
+const validatedRequest = parseRequest(UpdateMeRequestSchema, request);
+try {
+  const response = await UpdateMe({ data: validatedRequest });
+  return UpdateMeResponseSchema.parse(response);
+} catch (error) {
+  if (error instanceof ZodError) {
+    throw new NotegicValidationError(
+      ValidationClientException.ZodParsingFailed(error)
+    ).setPresentation("validation.invalidResponse");
+  }
+  throw error;
+}
+```
+
+Response errors use a generic `validation.invalidResponse` (the existing auth
+pilot key remains supported). Never attach an email/name/password input hint
+from a malformed response. Unknown request issues retain the safe server-error
+fallback through `tError(error, t)`; do not display raw diagnostic messages.
+
+UI constraints (`maxLength`, picker restrictions and disabled submit controls)
+are immediate affordances. Keep them aligned with request schemas, but do not
+reimplement their regular expressions or numeric policies in UI helpers. A
+UI-only conversion, such as whole minutes to API seconds, may require a local
+check before conversion. Input and cross-field business rules still belong in
+the schema or the existing owning workflow.
+
+Forms whose submission relies on translated Zod feedback use `noValidate`, so
+native browser popups do not intercept the app's error path. Keep useful input
+types and accessibility attributes. `FormMessage` translates field keys at
+render time. Existing callbacks use `toast.error(tError(error, t))` after failure.
+Confirmation mismatches use `NotegicError.setPresentation(key)`, never
+`new Error(t(key))`. JSON syntax errors keep their existing translated feedback;
+structural payload issues flow through Zod.
+
+Current rollout: auth account/code/password flows, editable account/profile and
+binding fields, shelf/item names, Station and Routine edits, RoutineTask/payload/
+Pattern edits, API key names, feedback and manually entered sharing Public IDs.
+An entered Public ID is request `param` data but is still user input; generated
+resource IDs, CSRF/OAuth tokens, versions and coordinates do not need individual
+field hints. RoutineTag and dependency descriptions/progress remain deferred.
+Do not migrate every query, persisted object or response validator just to
+increase translation coverage. Do not invent new MIME/size/Pattern format rules
+as a translation-only change.
+
+Registration names use the backend's 6–32-character policy. Login and registration
+reuse the password schema (8–1024 characters with uppercase/lowercase letters,
+a digit and a symbol); the server still verifies credentials and codes.
+
 ## Enums and stored messages
 
 Enum mappings contain keys, not translated strings, and do not receive `t`.

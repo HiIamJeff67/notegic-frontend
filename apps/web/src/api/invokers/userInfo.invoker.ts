@@ -1,10 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { UpdateMyInfo } from "@/api/functions/userInfo.clientFn";
-import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type GetMyInfoRequest,
   GetMyInfoRequestSchema,
@@ -15,7 +13,10 @@ import {
   type UpdateMyInfoResponse,
   UpdateMyInfoResponseSchema,
 } from "@shared/api/interfaces/userInfo.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import { UpdateMyInfo } from "@/api/functions/userInfo.clientFn";
+import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
 
 export const queryFnGetMyInfo = async (
   request: GetMyInfoRequest
@@ -45,8 +46,8 @@ export const queryFnGetMyInfo = async (
 export const mutationFnUpdateMyInfo = async (
   request: UpdateMyInfoRequest
 ): Promise<UpdateMyInfoResponse> => {
+  const validatedRequest = parseRequest(UpdateMyInfoRequestSchema, request);
   try {
-    const validatedRequest = UpdateMyInfoRequestSchema.parse(request);
     const response = await UpdateMyInfo(validatedRequest);
     return UpdateMyInfoResponseSchema.parse(response);
   } catch (error) {
@@ -54,7 +55,7 @@ export const mutationFnUpdateMyInfo = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

@@ -1,15 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateRoutineTaskDependencyByRoutineId,
-  DeleteRoutineTaskDependencyByRoutineId,
-  GetRoutineTaskDependenciesByRoutineId,
-  UpdateRoutineTaskDependencyByRoutineId,
-  UpdateRoutineTaskGraphByRoutineId,
-} from "@/api/functions/routineTaskDependency.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   CreateRoutineTaskDependencyByRoutineIdRequest,
   CreateRoutineTaskDependencyByRoutineIdRequestSchema,
@@ -28,18 +21,28 @@ import {
   UpdateRoutineTaskDependencyByRoutineIdResponse,
   UpdateRoutineTaskDependencyByRoutineIdResponseSchema,
   type UpdateRoutineTaskGraphByRoutineIdRequest,
-  type UpdateRoutineTaskGraphByRoutineIdResponse,
   UpdateRoutineTaskGraphByRoutineIdRequestSchema,
+  type UpdateRoutineTaskGraphByRoutineIdResponse,
   UpdateRoutineTaskGraphByRoutineIdResponseSchema,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateRoutineTaskDependencyByRoutineId,
+  DeleteRoutineTaskDependencyByRoutineId,
+  GetRoutineTaskDependenciesByRoutineId,
+  UpdateRoutineTaskDependencyByRoutineId,
+  UpdateRoutineTaskGraphByRoutineId,
+} from "@/api/functions/routineTaskDependency.serverFn";
 
 export const mutationFnUpdateRoutineTaskGraphByRoutineId = async (
   request: UpdateRoutineTaskGraphByRoutineIdRequest
 ): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateRoutineTaskGraphByRoutineIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpdateRoutineTaskGraphByRoutineIdRequestSchema.parse(request);
     const response = await UpdateRoutineTaskGraphByRoutineId({
       data: validatedRequest,
     });
@@ -48,7 +51,7 @@ export const mutationFnUpdateRoutineTaskGraphByRoutineId = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     }
     if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());

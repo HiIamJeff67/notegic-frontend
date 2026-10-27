@@ -1115,8 +1115,15 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
     const current = draftRef.current;
     if (!current?.snapshot || saving.current || current.snapshot.confirmed)
       return;
+    const existing = current.snapshot.tasks.find(task => task.id === id);
+    if (!existing) return;
+    const definition = parseRoutineTaskDefinition({
+      ...existing,
+      ...values,
+      routineId,
+    });
     const tasks = current.snapshot.tasks.map(task =>
-      task.id === id ? { ...task, ...values } : task
+      task.id === id ? { ...task, ...definition } : task
     );
     await saveDraft({ ...current, snapshot: { ...current.snapshot, tasks } });
   };

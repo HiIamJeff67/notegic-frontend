@@ -2,13 +2,13 @@ import {
   RoutineTaskPurpose,
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
+import type { GetMyRoutineTaskByIdResponse } from "@shared/api/interfaces/routineTask.interface";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { UUID } from "crypto";
-import type { GetMyRoutineTaskByIdResponse } from "@shared/api/interfaces/routineTask.interface";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
@@ -291,6 +291,7 @@ const RoutineTaskInspector = ({
             </SheetDescription>
           </SheetHeader>
           <form
+            noValidate
             autoComplete="off"
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {

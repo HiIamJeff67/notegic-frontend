@@ -164,6 +164,7 @@ const StationInspector = ({
             </SheetDescription>
           </SheetHeader>
           <form
+            noValidate
             autoComplete="off"
             className="flex min-h-0 flex-1 flex-col"
             onSubmit={async event => {

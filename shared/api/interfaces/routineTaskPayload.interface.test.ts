@@ -1,6 +1,9 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { RoutineTaskPayloadSchema } from "@shared/api/interfaces/routineTaskPayload.interface";
-import { parseRoutineTaskDefinition } from "./routineTask.interface";
+import {
+  parseRoutineTaskDefinition,
+  UpdateMyRoutineTaskByIdRequestSchema,
+} from "./routineTask.interface";
 
 const block = {
   id: "73b3a848-bca0-44e4-8fb4-cf6cc6ca6aee",
@@ -9,6 +12,33 @@ const block = {
   content: [],
   children: [],
 };
+
+test("legacy task updates retain the outer purpose without rewriting their payload", () => {
+  const body = {
+    routineTaskId: block.id,
+    values: {
+      purpose: RoutineTaskPurpose.GetSubShelf,
+      payload: { subShelfId: block.id },
+    },
+  };
+  expect(UpdateMyRoutineTaskByIdRequestSchema.parse({ body }).body).toEqual(
+    body
+  );
+  const conflict = UpdateMyRoutineTaskByIdRequestSchema.safeParse({
+    body: {
+      ...body,
+      values: {
+        ...body.values,
+        payload: {
+          subShelfId: block.id,
+          purpose: RoutineTaskPurpose.DeleteSubShelf,
+        },
+      },
+    },
+  });
+  if (conflict.success) throw new Error("Expected conflicting purposes");
+  expect(conflict.error.issues[0].message).toBe("validation.payloadPurpose");
+});
 
 describe("RoutineTaskPayloadSchema", () => {
   test("matches the four operations across the four supported objects", () => {

@@ -12,7 +12,7 @@ export const RoutineTaskPayloadSizeSchema = z.any().refine(value => {
   } catch {
     return false;
   }
-}, "Payload must be smaller than 16 MiB.");
+}, "workspace.validation.payloadTooLarge");
 
 const routineTaskObjectReferenceSchema = z.union([
   z.uuidv4(),
@@ -22,7 +22,9 @@ const routineTaskFakeIdSchema = z.string().regex(/^f_[0-9a-f]{32}$/i);
 
 export const RoutineTaskPayloadSchema = z
   .object({
-    purpose: z.enum(AllRoutineTaskPurposes),
+    purpose: z.enum(AllRoutineTaskPurposes, {
+      error: "validation.payloadPurpose",
+    }),
     payload: RoutineTaskPayloadSizeSchema,
   })
   .superRefine(({ purpose, payload: rawPayload }, ctx) => {
@@ -39,26 +41,23 @@ export const RoutineTaskPayloadSchema = z
       typeof rawPayload !== "object" ||
       Array.isArray(rawPayload)
     ) {
-      addPayloadIssue([], "Payload must be an object.");
+      addPayloadIssue([], "validation.payloadObject");
       return;
     }
     if (payload.schemaVersion !== undefined && payload.schemaVersion !== 1) {
-      addPayloadIssue(["schemaVersion"], "Unsupported payload version.");
+      addPayloadIssue(["schemaVersion"], "validation.payloadVersion");
     }
     if (payload.purpose !== undefined && payload.purpose !== purpose) {
-      addPayloadIssue(
-        ["purpose"],
-        "Payload purpose conflicts with the compatibility field."
-      );
+      addPayloadIssue(["purpose"], "validation.payloadPurpose");
     }
 
     if (payload.pattern !== undefined) {
       if (typeof payload.pattern !== "object" || payload.pattern === null) {
-        addPayloadIssue(["pattern"], "Pattern must be an object.");
+        addPayloadIssue(["pattern"], "validation.patternBinding");
       } else {
         for (const [key, binding] of Object.entries(payload.pattern)) {
           if (typeof binding !== "object" || binding === null) {
-            addPayloadIssue(["pattern", key], "Pattern binding is invalid.");
+            addPayloadIssue(["pattern", key], "validation.patternBinding");
             continue;
           }
           const source = (binding as Record<string, unknown>).source;
@@ -70,17 +69,17 @@ export const RoutineTaskPayloadSchema = z
             source !== "blockText" &&
             source !== "blockCheckboxCount"
           ) {
-            addPayloadIssue(["pattern", key, "source"], "Source is invalid.");
+            addPayloadIssue(
+              ["pattern", key, "source"],
+              "validation.patternSource"
+            );
           }
           if (
             source === "blockText" &&
             !uuidSchema.safeParse((binding as Record<string, unknown>).blockId)
               .success
           ) {
-            addPayloadIssue(
-              ["pattern", key, "blockId"],
-              "Block ID is invalid."
-            );
+            addPayloadIssue(["pattern", key, "blockId"], "validation.blockId");
           }
           if (
             source === "blockCheckboxCount" &&
@@ -90,7 +89,7 @@ export const RoutineTaskPayloadSchema = z
           ) {
             addPayloadIssue(
               ["pattern", key, "blockPackId"],
-              "BlockPack ID is invalid."
+              "validation.blockPackId"
             );
           }
         }
@@ -103,7 +102,7 @@ export const RoutineTaskPayloadSchema = z
         purpose === RoutineTaskPurpose.UpdateSubShelf) &&
       !uuidSchema.safeParse(payload.subShelfId).success
     ) {
-      addPayloadIssue(["subShelfId"], "Payload needs a valid sub shelf.");
+      addPayloadIssue(["subShelfId"], "validation.subShelfRequired");
     }
     if (
       purpose === RoutineTaskPurpose.CreateSubShelf &&
@@ -116,7 +115,7 @@ export const RoutineTaskPayloadSchema = z
         typeof payload.name !== "string" ||
         payload.name.trim().length === 0)
     ) {
-      addPayloadIssue([], "Payload needs a root shelf and sub shelf name.");
+      addPayloadIssue([], "validation.rootShelfName");
     }
     if (
       purpose === RoutineTaskPurpose.CreateBlockPack &&
@@ -127,10 +126,7 @@ export const RoutineTaskPayloadSchema = z
         !Array.isArray(payload.template?.blocks) ||
         payload.template.blocks.length === 0)
     ) {
-      addPayloadIssue(
-        [],
-        "Payload needs a target SubShelf and at least one template block."
-      );
+      addPayloadIssue([], "validation.templateRequired");
     }
     if (
       purpose === RoutineTaskPurpose.CreateBlockPack &&
@@ -147,7 +143,7 @@ export const RoutineTaskPayloadSchema = z
         ) {
           addPayloadIssue(
             ["template", "blocks", index, "clientId"],
-            "Template block needs a client ID."
+            "validation.templateContent"
           );
         }
         if (
@@ -156,7 +152,7 @@ export const RoutineTaskPayloadSchema = z
         ) {
           addPayloadIssue(
             ["template", "blocks", index, "arborizedEditableBlock"],
-            "Template block needs editable block content."
+            "validation.templateContent"
           );
         }
       });
@@ -167,7 +163,7 @@ export const RoutineTaskPayloadSchema = z
         purpose === RoutineTaskPurpose.UpdateBlockPack) &&
       !uuidSchema.safeParse(payload.blockPackId).success
     ) {
-      addPayloadIssue(["blockPackId"], "Payload needs a valid block pack.");
+      addPayloadIssue(["blockPackId"], "validation.blockPackId");
     }
     if (
       purpose === RoutineTaskPurpose.UpdateBlockPack &&
@@ -175,7 +171,7 @@ export const RoutineTaskPayloadSchema = z
         payload.blocks.length === 0 ||
         payload.blocks.length > 1000)
     ) {
-      addPayloadIssue(["blocks"], "Payload needs between one and 1000 blocks.");
+      addPayloadIssue(["blocks"], "validation.blockCount");
     }
     if (
       purpose === RoutineTaskPurpose.UpdateBlockPack &&
@@ -187,10 +183,7 @@ export const RoutineTaskPayloadSchema = z
             ? (block as Record<string, unknown>)
             : {};
         if (!uuidSchema.safeParse(updatedBlock.blockId).success) {
-          addPayloadIssue(
-            ["blocks", index, "blockId"],
-            "Block needs a valid block ID."
-          );
+          addPayloadIssue(["blocks", index, "blockId"], "validation.blockId");
         }
         if (
           typeof updatedBlock.arborizedEditableBlock !== "object" ||
@@ -198,7 +191,7 @@ export const RoutineTaskPayloadSchema = z
         ) {
           addPayloadIssue(
             ["blocks", index, "arborizedEditableBlock"],
-            "Block needs editable block content."
+            "validation.templateContent"
           );
         }
       });
@@ -209,7 +202,7 @@ export const RoutineTaskPayloadSchema = z
         purpose === RoutineTaskPurpose.UpdateRoutine) &&
       !uuidSchema.safeParse(payload.routineId).success
     ) {
-      addPayloadIssue(["routineId"], "Payload needs a valid routine.");
+      addPayloadIssue(["routineId"], "validation.routineRequired");
     }
     if (
       purpose === RoutineTaskPurpose.CreateRoutine &&
@@ -217,7 +210,7 @@ export const RoutineTaskPayloadSchema = z
         typeof payload.title !== "string" ||
         payload.title.trim().length === 0)
     ) {
-      addPayloadIssue([], "Payload needs a station and routine title.");
+      addPayloadIssue([], "validation.stationTitle");
     }
     if (
       (purpose === RoutineTaskPurpose.GetMaterial ||
@@ -225,7 +218,7 @@ export const RoutineTaskPayloadSchema = z
         purpose === RoutineTaskPurpose.UpdateMaterial) &&
       !uuidSchema.safeParse(payload.materialId).success
     ) {
-      addPayloadIssue(["materialId"], "Payload needs a valid material.");
+      addPayloadIssue(["materialId"], "validation.materialRequired");
     }
     if (
       purpose === RoutineTaskPurpose.CreateMaterial &&
@@ -236,9 +229,6 @@ export const RoutineTaskPayloadSchema = z
         typeof payload.contentKey !== "string" ||
         payload.contentKey.trim().length === 0)
     ) {
-      addPayloadIssue(
-        [],
-        "Payload needs a parent sub shelf, material name, and content key."
-      );
+      addPayloadIssue([], "validation.materialContent");
     }
   });

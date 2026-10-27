@@ -39,9 +39,16 @@ import type {
   UpdateMySubShelvesByIdsRequest,
   UpdateMySubShelvesByIdsResponse,
 } from "@shared/api/interfaces/subShelf.interface";
+import {
+  CreateSubShelfByRootShelfIdRequestSchema,
+  CreateSubShelvesByRootShelfIdsRequestSchema,
+  UpdateMySubShelfByIdRequestSchema,
+  UpdateMySubShelvesByIdsRequestSchema,
+} from "@shared/api/interfaces/subShelf.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -385,6 +392,7 @@ export const useCreateSubShelfByRootShelfId = () => {
   const perform = async (
     request: CreateSubShelfByRootShelfIdRequest
   ): Promise<CreateSubShelfByRootShelfIdResponse> => {
+    parseRequest(CreateSubShelfByRootShelfIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -435,6 +443,7 @@ export const useCreateSubShelvesByRootShelfIds = () => {
   const perform = async (
     request: CreateSubShelvesByRootShelfIdsRequest
   ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
+    parseRequest(CreateSubShelvesByRootShelfIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -490,6 +499,7 @@ export const useUpdateMySubShelfById = () => {
   const perform = async (
     request: UpdateMySubShelfByIdRequest
   ): Promise<UpdateMySubShelfByIdResponse> => {
+    parseRequest(UpdateMySubShelfByIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -537,6 +547,7 @@ export const useUpdateMySubShelvesByIds = () => {
   const perform = async (
     request: UpdateMySubShelvesByIdsRequest
   ): Promise<UpdateMySubShelvesByIdsResponse> => {
+    parseRequest(UpdateMySubShelvesByIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }

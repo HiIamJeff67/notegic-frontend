@@ -1,3 +1,4 @@
+import { NotegicError } from "@shared/api/exceptions/errors";
 import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
 import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { tError } from "@shared/i18n/error";
@@ -114,6 +115,7 @@ const CreateRoutineDialog = ({
         </DialogHeader>
 
         <form
+          noValidate
           autoComplete="off"
           className="flex flex-col gap-4"
           onSubmit={async event => {
@@ -180,6 +182,10 @@ const CreateRoutineDialog = ({
                 );
               }
 
+              if (!Number.isInteger(timeoutMinutes))
+                throw new NotegicError("InvalidTimeout").setPresentation(
+                  "validation.timeout"
+                );
               const routineNode = await stationRoutineManager.createRoutine(
                 stationId,
                 {

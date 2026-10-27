@@ -94,6 +94,7 @@ const CreateStationDialog = ({
         </DialogHeader>
 
         <form
+          noValidate
           autoComplete="off"
           className="flex flex-col gap-4"
           onSubmit={async event => {

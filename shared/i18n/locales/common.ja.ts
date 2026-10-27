@@ -39,7 +39,76 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     viewDocs: "ドキュメントを見る",
     switchTheme: "テーマ切替",
   },
+  validation: {
+    userPublicId: "有効なユーザーPublic ID（UUID）を入力してください。",
+    invalidInput: "入力内容を確認して、もう一度お試しください。",
+    invalidResponse:
+      "操作を完了できません。しばらくしてから再度お試しください。",
+    nameRequired: "名前またはタイトルを入力してください。",
+    nameTooLong: "名前またはタイトルは128文字以内にしてください。",
+    description: "説明は1024文字以内にしてください。",
+    backgroundUrl:
+      "有効な背景画像URLを入力してください。例：https://example.com/image.jpg",
+    authCode: "6桁の数字の認証コードを入力してください。",
+    displayNameLength: "表示名は6～32文字にしてください。",
+    displayNameFormat:
+      "表示名には文字と数字の両方を含め、空白や記号は使わないでください。",
+    phone: "電話番号は1～15桁の数字で入力してください。",
+    headline: "見出しは64文字以内にしてください。",
+    introduction: "自己紹介は256文字以内にしてください。",
+    birthDate: "未来の日付ではない有効な誕生日を選択してください。",
+    timeout: "タイムアウトは1～60分の整数にしてください。",
+    priority: "優先度は0～100の整数にしてください。",
+    maxAttempts: "最大試行回数は1～20の整数にしてください。",
+    startDescription: "開始ノードの説明は1024文字以内にしてください。",
+    apiKeyName: "APIキー名は1～64文字にしてください。",
+    feedbackTitle:
+      "フィードバックのタイトルは前後の空白を除いて1～200文字にしてください。",
+    feedbackDescription:
+      "フィードバックの説明は前後の空白を除いて1～10,000文字にしてください。",
+    payloadObject: "タスクの内容はJSONオブジェクトで入力してください。",
+    payloadVersion:
+      "このバージョンには対応していません。内容エディターを開き直して更新してください。",
+    payloadPurpose: "タスクとその内容で同じ操作を選択してください。",
+    patternBinding: "パターンの設定と対象を確認してください。",
+    patternSource: "対応するパターンのソースを選択してください。",
+    blockId: "有効なBlock IDを入力してください。",
+    blockPackId: "有効なBlockPack IDを入力してください。",
+    subShelfRequired: "対象のサブシェルフを選択してください。",
+    rootShelfName: "ルートシェルフを選択し、サブシェルフ名を入力してください。",
+    templateRequired:
+      "対象のサブシェルフと名前を指定し、テンプレートブロックを1つ以上追加してください。",
+    templateContent: "内容エディターでブロックの内容を確認してください。",
+    blockCount: "ブロックは1～1000個にしてください。",
+    routineRequired: "対象のルーティンを選択してください。",
+    stationTitle:
+      "ステーションを選択し、ルーティンのタイトルを入力してください。",
+    materialRequired: "対象の素材を選択してください。",
+    materialContent:
+      "親サブシェルフを選択し、素材名とコンテンツキーを指定してください。",
+  },
   auth: {
+    validation: {
+      invalidInput: "入力内容を確認して、もう一度お試しください。",
+      nameLength: "名前は6～32文字で入力してください。",
+      nameFormat:
+        "名前には文字と数字の両方を使用し、空白や記号を含めないでください。",
+      emailFormat:
+        "name@example.com のような有効なメールアドレスを入力してください。",
+      accountRequired: "アカウント名またはメールアドレスを入力してください。",
+      accountFormat:
+        "有効なメールアドレス、または英字と数字の両方を含むアカウント名を入力してください。",
+      passwordRequired: "パスワードを入力してください。",
+      passwordTooShort: "パスワードは8文字以上で入力してください。",
+      passwordTooLong: "パスワードは1024文字以内で入力してください。",
+      passwordStrength:
+        "パスワードには英大文字・英小文字・数字・記号を含めてください。",
+      passwordMismatch: "パスワードが一致しません。",
+      oauthCodeInvalid:
+        "ログインを完了できませんでした。もう一度お試しください。",
+      invalidResponse:
+        "操作を完了できませんでした。しばらくしてからお試しください。",
+    },
     login: "ログイン",
     register: "登録",
     resetPassword: "パスワード再設定",

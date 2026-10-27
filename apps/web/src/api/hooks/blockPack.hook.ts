@@ -37,9 +37,16 @@ import type {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
+import {
+  CreateBlockPackRequestSchema,
+  CreateBlockPacksRequestSchema,
+  UpdateMyBlockPackByIdRequestSchema,
+  UpdateMyBlockPacksByIdsRequestSchema,
+} from "@shared/api/interfaces/blockPack.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -308,6 +315,7 @@ export const useCreateBlockPack = () => {
   const perform = async (
     request: CreateBlockPackRequest
   ): Promise<CreateBlockPackResponse> => {
+    parseRequest(CreateBlockPackRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -353,6 +361,7 @@ export const useCreateBlockPacks = () => {
   const perform = async (
     request: CreateBlockPacksRequest
   ): Promise<CreateBlockPacksResponse> => {
+    parseRequest(CreateBlockPacksRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -409,6 +418,7 @@ export const useUpdateMyBlockPackById = () => {
   const perform = async (
     request: UpdateMyBlockPackByIdRequest
   ): Promise<UpdateMyBlockPackByIdResponse> => {
+    parseRequest(UpdateMyBlockPackByIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -459,6 +469,7 @@ export const useUpdateMyBlockPacksByIds = () => {
   const perform = async (
     request: UpdateMyBlockPacksByIdsRequest
   ): Promise<UpdateMyBlockPacksByIdsResponse> => {
+    parseRequest(UpdateMyBlockPacksByIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }

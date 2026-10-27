@@ -43,9 +43,16 @@ import type {
   VisualizeMyRoutineStatusCountRequest,
   VisualizeMyRoutineStatusCountResponse,
 } from "@shared/api/interfaces/routine.interface";
+import {
+  CreateRoutineByStationIdRequestSchema,
+  CreateRoutinesByStationIdsRequestSchema,
+  UpdateMyRoutineByIdRequestSchema,
+  UpdateMyRoutinesByIdsRequestSchema,
+} from "@shared/api/interfaces/routine.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import { matchesSearch } from "@shared/lib/searchPage";
 import {
   type UseQueryOptions,
@@ -428,6 +435,7 @@ export const useCreateRoutineByStationId = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutineByStationIdRequest) => {
+    parseRequest(CreateRoutineByStationIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -547,6 +555,7 @@ export const useCreateRoutinesByStationIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutinesByStationIdsRequest) => {
+    parseRequest(CreateRoutinesByStationIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -681,6 +690,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
     request: UpdateMyRoutineByIdRequest
   ): Promise<UpdateMyRoutineByIdResponse> => {
     try {
+      parseRequest(UpdateMyRoutineByIdRequestSchema, request);
       if (typeof navigator !== "undefined" && navigator.onLine === false)
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       return await mutationFnUpdateMyRoutineById(request);
@@ -807,6 +817,7 @@ export const useUpdateMyRoutinesByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyRoutinesByIdsRequest) => {
+    parseRequest(UpdateMyRoutinesByIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }

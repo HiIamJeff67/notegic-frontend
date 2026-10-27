@@ -13,12 +13,12 @@ export const UserSchema = z.object({
     .string()
     .min(6)
     .max(32)
-    .regex(/^[a-zA-Z0-9]+/),
+    .regex(/^[\p{L}\p{Nd}]+/u),
   displayName: z
     .string()
     .min(6)
     .max(32)
-    .regex(/^[a-zA-Z0-9]+/),
+    .regex(/^[\p{L}\p{Nd}]+/u),
   email: z.email(),
   role: z.enum(UserRole),
   plan: z.enum(UserPlan),
@@ -62,12 +62,12 @@ export const UserDataSchema = z.object({
     .string()
     .min(6)
     .max(32)
-    .regex(/^[a-zA-Z0-9]+/),
+    .regex(/^[\p{L}\p{Nd}]+/u),
   displayName: z
     .string()
     .min(6)
     .max(32)
-    .regex(/^[a-zA-Z0-9]+/),
+    .regex(/^[\p{L}\p{Nd}]+/u),
   email: z.email(),
   role: z.enum(UserRole),
   plan: z.enum(UserPlan),

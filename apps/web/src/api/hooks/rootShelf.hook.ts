@@ -36,9 +36,16 @@ import type {
   UpsertRootShelfPermissionRequest,
   UpsertRootShelfPermissionResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
+import {
+  CreateRootShelfRequestSchema,
+  CreateRootShelvesRequestSchema,
+  UpdateMyRootShelfByIdRequestSchema,
+  UpdateMyRootShelvesByIdsRequestSchema,
+} from "@shared/api/interfaces/rootShelf.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -142,6 +149,7 @@ export const useCreateRootShelf = () => {
   const perform = async (
     request: CreateRootShelfRequest
   ): Promise<CreateRootShelfResponse> => {
+    parseRequest(CreateRootShelfRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -206,6 +214,7 @@ export const useCreateRootShelves = () => {
   const perform = async (
     request: CreateRootShelvesRequest
   ): Promise<CreateRootShelvesResponse> => {
+    parseRequest(CreateRootShelvesRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -282,6 +291,7 @@ export const useUpdateMyRootShelfById = () => {
   const perform = async (
     request: UpdateMyRootShelfByIdRequest
   ): Promise<UpdateMyRootShelfByIdResponse> => {
+    parseRequest(UpdateMyRootShelfByIdRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
@@ -432,6 +442,7 @@ export const useUpdateMyRootShelvesByIds = () => {
   const perform = async (
     request: UpdateMyRootShelvesByIdsRequest
   ): Promise<UpdateMyRootShelvesByIdsResponse> => {
+    parseRequest(UpdateMyRootShelvesByIdsRequestSchema, request);
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }

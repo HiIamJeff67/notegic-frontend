@@ -1,4 +1,3 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { UUID } from "node:crypto";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
@@ -16,6 +15,7 @@ import type {
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { cn } from "@shared/util/utils";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -464,6 +464,8 @@ const BlockPackParticipantsDropdown = ({
         tError(
           new NotegicValidationError(
             ValidationClientException.ZodParsingFailed(validation.error)
+          ).setPresentation(
+            validation.error.issues[0]?.message ?? "validation.invalidInput"
           ),
           t
         )

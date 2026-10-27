@@ -1631,6 +1631,44 @@ test("creating then deleting a node cancels the draft operation without any requ
   expect(writes).toBe(0);
 });
 
+test("invalid task edits show a translated hint without closing the Inspector or writing the graph", async ({
+  page,
+}) => {
+  let writes = 0;
+  await page.route("**/_serverFn/**", async route => {
+    if (route.request().method() === "POST") writes++;
+    await route.abort("failed");
+  });
+  const editor = await mountLayoutEditor(page);
+  await createGraphAction(page, editor, "Unsaved Action");
+  const created = editor.getByRole("group", {
+    name: "Unsaved Action",
+    exact: true,
+    includeHidden: true,
+  });
+  await created.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Edit", exact: true }).click();
+  await page.locator("#routine-task-inspector-priority").fill("101");
+  const dialog = page.getByRole("dialog", { name: /Edit routine task of/ });
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(
+    page.getByText("Priority must be a whole number from 0 to 100.", {
+      exact: true,
+    })
+  ).toBeVisible();
+  await expect(dialog).toBeVisible();
+  await expect(page.locator("#routine-task-inspector-priority")).toHaveValue(
+    "101"
+  );
+  await expect(created).toBeVisible();
+  expect(writes).toBe(0);
+  await page.locator("#routine-task-inspector-priority").fill("5");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(created).toBeVisible();
+  expect(writes).toBe(0);
+});
+
 test("the shared Action dialog and Inspector only edit the local graph until toolbar Save", async ({
   page,
 }) => {

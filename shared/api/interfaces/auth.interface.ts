@@ -4,30 +4,63 @@ import {
 } from "@shared/api/interfaces/context.interface";
 import z from "zod";
 
+export const PasswordSchema = z
+  .string({ error: "auth.validation.passwordRequired" })
+  .min(1, { error: "auth.validation.passwordRequired" })
+  .min(8, { error: "auth.validation.passwordTooShort" })
+  .refine(password => password.trim().length >= 8, {
+    error: "auth.validation.passwordTooShort",
+  })
+  .max(1024, { error: "auth.validation.passwordTooLong" })
+  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])/, {
+    error: "auth.validation.passwordStrength",
+  });
+
+export const AccountSchema = z
+  .string({ error: "auth.validation.accountRequired" })
+  .min(1, { error: "auth.validation.accountRequired" })
+  .refine(
+    account =>
+      z.email().safeParse(account).success ||
+      (/^[\p{L}\p{N}]+$/u.test(account) &&
+        /[a-zA-Z]/.test(account) &&
+        /\d/.test(account)),
+    { error: "auth.validation.accountFormat" }
+  );
+
+export const AuthCodeSchema = z
+  .string({ error: "validation.authCode" })
+  .regex(/^\d{6}$/, { error: "validation.authCode" });
+
 /* ============================== Register Context ============================== */
 
 export const RegisterRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
-      userAgent: z.string().min(1).optional(),
-      turnstileToken: z.string().min(1).optional(),
+      userAgent: z
+        .string({ error: "auth.validation.invalidInput" })
+        .min(1, { error: "auth.validation.invalidInput" })
+        .optional(),
+      turnstileToken: z
+        .string({ error: "auth.turnstileRequired" })
+        .min(1, { error: "auth.turnstileRequired" })
+        .optional(),
     })
     .optional(),
-  body: z.object({
-    name: z
-      .string()
-      .min(6)
-      .max(16)
-      .regex(/^[a-zA-Z0-9]+/),
-    email: z.email(),
-    password: z
-      .string()
-      .min(8)
-      .max(1024)
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/
-      ),
-  }),
+  body: z.object(
+    {
+      name: z
+        .string({ error: "auth.validation.nameLength" })
+        .min(6, { error: "auth.validation.nameLength" })
+        .max(32, { error: "auth.validation.nameLength" })
+        .regex(/^(?=.*\p{L})(?=.*\p{Nd})[\p{L}\p{Nd}]+$/u, {
+          error: "auth.validation.nameFormat",
+        }),
+      email: z.email({ error: "auth.validation.emailFormat" }),
+      password: PasswordSchema,
+    },
+    { error: "auth.validation.invalidInput" }
+  ),
 });
 
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
@@ -50,13 +83,24 @@ export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 export const RegisterViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
-      userAgent: z.string().min(1).optional(),
-      turnstileToken: z.string().min(1).optional(),
+      userAgent: z
+        .string({ error: "auth.validation.invalidInput" })
+        .min(1, { error: "auth.validation.invalidInput" })
+        .optional(),
+      turnstileToken: z
+        .string({ error: "auth.turnstileRequired" })
+        .min(1, { error: "auth.turnstileRequired" })
+        .optional(),
     })
     .optional(),
-  body: z.object({
-    authorizationCode: z.string(),
-  }),
+  body: z.object(
+    {
+      authorizationCode: z
+        .string({ error: "auth.validation.oauthCodeInvalid" })
+        .min(1, { error: "auth.validation.oauthCodeInvalid" }),
+    },
+    { error: "auth.validation.invalidInput" }
+  ),
 });
 
 export type RegisterViaGoogleRequest = z.infer<
@@ -83,15 +127,23 @@ export type RegisterViaGoogleResponse = z.infer<
 export const LoginRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
-      userAgent: z.string().min(1).optional(),
-      turnstileToken: z.string().min(1).optional(),
+      userAgent: z
+        .string({ error: "auth.validation.invalidInput" })
+        .min(1, { error: "auth.validation.invalidInput" })
+        .optional(),
+      turnstileToken: z
+        .string({ error: "auth.turnstileRequired" })
+        .min(1, { error: "auth.turnstileRequired" })
+        .optional(),
     })
     .optional(),
-  body: z.object({
-    account: z.string().min(1),
-    // Password strength belongs to registration/reset, not authentication.
-    password: z.string().min(1).max(1024),
-  }),
+  body: z.object(
+    {
+      account: AccountSchema,
+      password: PasswordSchema,
+    },
+    { error: "auth.validation.invalidInput" }
+  ),
 });
 
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
@@ -115,13 +167,24 @@ export type LoginResponse = z.infer<typeof LoginResponseSchema>;
 export const LoginViaGoogleRequestSchema = NotegicRequestSchema.extend({
   header: z
     .object({
-      userAgent: z.string().min(1).optional(),
-      turnstileToken: z.string().min(1).optional(),
+      userAgent: z
+        .string({ error: "auth.validation.invalidInput" })
+        .min(1, { error: "auth.validation.invalidInput" })
+        .optional(),
+      turnstileToken: z
+        .string({ error: "auth.turnstileRequired" })
+        .min(1, { error: "auth.turnstileRequired" })
+        .optional(),
     })
     .optional(),
-  body: z.object({
-    authorizationCode: z.string(),
-  }),
+  body: z.object(
+    {
+      authorizationCode: z
+        .string({ error: "auth.validation.oauthCodeInvalid" })
+        .min(1, { error: "auth.validation.oauthCodeInvalid" }),
+    },
+    { error: "auth.validation.invalidInput" }
+  ),
 });
 
 export type LoginViaGoogleRequest = z.infer<typeof LoginViaGoogleRequestSchema>;
@@ -177,7 +240,7 @@ export const SendAuthCodeRequestSchema = NotegicRequestSchema.extend({
     })
     .optional(),
   body: z.object({
-    email: z.email(),
+    email: z.email({ error: "auth.validation.emailFormat" }),
   }),
 });
 
@@ -202,7 +265,7 @@ export const ValidateEmailRequestSchema = NotegicRequestSchema.extend({
     csrfToken: z.string(),
   }),
   body: z.object({
-    authCode: z.string().length(6),
+    authCode: AuthCodeSchema,
   }),
 });
 
@@ -228,8 +291,8 @@ export const ResetEmailRequestSchema = NotegicRequestSchema.extend({
     csrfToken: z.string(),
   }),
   body: z.object({
-    newEmail: z.email(),
-    authCode: z.string().length(6),
+    newEmail: z.email({ error: "auth.validation.emailFormat" }),
+    authCode: AuthCodeSchema,
   }),
 });
 
@@ -256,18 +319,9 @@ export const ForgetPasswordRequestSchema = NotegicRequestSchema.extend({
     })
     .optional(),
   body: z.object({
-    account: z.string(),
-    newPassword: z
-      .string()
-      .min(8)
-      .max(1024)
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/
-      ),
-    authCode: z
-      .string()
-      .length(6)
-      .regex(/^[0-9]+/),
+    account: AccountSchema,
+    newPassword: PasswordSchema,
+    authCode: AuthCodeSchema,
   }),
 });
 
@@ -292,7 +346,7 @@ export const ResetMeRequestSchema = NotegicRequestSchema.extend({
     csrfToken: z.string(),
   }),
   body: z.object({
-    authCode: z.string().length(6),
+    authCode: AuthCodeSchema,
   }),
 });
 
@@ -318,7 +372,9 @@ export const DeleteMeRequestSchema = NotegicRequestSchema.extend({
     csrfToken: z.string(),
   }),
   body: z.object({
-    authCode: z.string().refine(val => val.length === 0 || val.length === 6),
+    authCode: z.union([z.literal(""), AuthCodeSchema], {
+      error: "validation.authCode",
+    }),
   }),
 });
 

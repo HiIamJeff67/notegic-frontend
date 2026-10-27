@@ -1,3 +1,4 @@
+import { NotegicError } from "@shared/api/exceptions/errors";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
@@ -107,9 +108,9 @@ const ForgetPasswordPage = () => {
       startResetPasswordTransition(async () => {
         try {
           if (newPassword !== confirmNewPassword) {
-            throw new Error(
-              t("auth.pleaseMakeSurePasswordAndConfirmPasswordAreMatch")
-            );
+            throw new NotegicError(
+              "PasswordConfirmationMismatch"
+            ).setPresentation("auth.validation.passwordMismatch");
           }
 
           const userAgent = navigator.userAgent;
@@ -155,6 +156,7 @@ const ForgetPasswordPage = () => {
           }
         />
         <AuthPanel
+          noValidate
           title={t("auth.resetPassword")}
           subtitle={`${t(
             "auth.authenticationPanelSubtitle"

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
+import { UpdateMeRequestSchema } from "@shared/api/interfaces/user.interface";
 import { FakeUser } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
@@ -58,7 +59,11 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
   }, [userManager.userData]);
 
   const userForm: UseFormReturn<User> = useForm({
-    resolver: zodResolver(UserSchema),
+    resolver: zodResolver(
+      UserSchema.extend(
+        UpdateMeRequestSchema.shape.body.shape.values.required().shape
+      )
+    ),
     defaultValues: user,
   }) as UseFormReturn<User>;
 

@@ -1,46 +1,9 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  LinkRoutineItemsByIds,
-  LinkRoutineTagsByIds,
-  LinkRoutineTasksByIds,
-  CreateRoutineByStationId,
-  CreateRoutinesByStationIds,
-  DeleteMyRoutineById,
-  DeleteMyRoutinesByIds,
-  GetMyRoutinesByTimeRange,
-  GetMyRoutineById,
-  GetMyRoutinesByStationId,
-  HardDeleteMyRoutineById,
-  HardDeleteMyRoutinesByIds,
-  LinkRoutineItemById,
-  LinkRoutineTagById,
-  LinkRoutineTaskById,
-  RestoreMyRoutineById,
-  RestoreMyRoutinesByIds,
-  UpdateMyRoutineById,
-  UpdateMyRoutinesByIds,
-  VisualizeMyRoutinePeriodCount,
-  VisualizeMyRoutineScheduledEndAtCount,
-  VisualizeMyRoutineScheduledStartAtCount,
-  VisualizeMyRoutineStatusCount,
-} from "@/api/functions/routine.serverFn";
-import {
-  LinkRoutineItemsByIdsRequest,
-  LinkRoutineItemsByIdsRequestSchema,
-  LinkRoutineItemsByIdsResponse,
-  LinkRoutineItemsByIdsResponseSchema,
-  LinkRoutineTagsByIdsRequest,
-  LinkRoutineTagsByIdsRequestSchema,
-  LinkRoutineTagsByIdsResponse,
-  LinkRoutineTagsByIdsResponseSchema,
-  LinkRoutineTasksByIdsRequest,
-  LinkRoutineTasksByIdsRequestSchema,
-  LinkRoutineTasksByIdsResponse,
-  LinkRoutineTasksByIdsResponseSchema,
   CreateRoutineByStationIdRequest,
   CreateRoutineByStationIdRequestSchema,
   CreateRoutineByStationIdResponse,
@@ -57,10 +20,6 @@ import {
   DeleteMyRoutinesByIdsRequestSchema,
   DeleteMyRoutinesByIdsResponse,
   DeleteMyRoutinesByIdsResponseSchema,
-  GetMyRoutinesByTimeRangeRequest,
-  GetMyRoutinesByTimeRangeRequestSchema,
-  GetMyRoutinesByTimeRangeResponse,
-  GetMyRoutinesByTimeRangeResponseSchema,
   GetMyRoutineByIdRequest,
   GetMyRoutineByIdRequestSchema,
   GetMyRoutineByIdResponse,
@@ -69,6 +28,10 @@ import {
   GetMyRoutinesByStationIdRequestSchema,
   GetMyRoutinesByStationIdResponse,
   GetMyRoutinesByStationIdResponseSchema,
+  GetMyRoutinesByTimeRangeRequest,
+  GetMyRoutinesByTimeRangeRequestSchema,
+  GetMyRoutinesByTimeRangeResponse,
+  GetMyRoutinesByTimeRangeResponseSchema,
   HardDeleteMyRoutineByIdRequest,
   HardDeleteMyRoutineByIdRequestSchema,
   HardDeleteMyRoutineByIdResponse,
@@ -81,14 +44,26 @@ import {
   LinkRoutineItemByIdRequestSchema,
   LinkRoutineItemByIdResponse,
   LinkRoutineItemByIdResponseSchema,
+  LinkRoutineItemsByIdsRequest,
+  LinkRoutineItemsByIdsRequestSchema,
+  LinkRoutineItemsByIdsResponse,
+  LinkRoutineItemsByIdsResponseSchema,
   LinkRoutineTagByIdRequest,
   LinkRoutineTagByIdRequestSchema,
   LinkRoutineTagByIdResponse,
   LinkRoutineTagByIdResponseSchema,
+  LinkRoutineTagsByIdsRequest,
+  LinkRoutineTagsByIdsRequestSchema,
+  LinkRoutineTagsByIdsResponse,
+  LinkRoutineTagsByIdsResponseSchema,
   LinkRoutineTaskByIdRequest,
   LinkRoutineTaskByIdRequestSchema,
   LinkRoutineTaskByIdResponse,
   LinkRoutineTaskByIdResponseSchema,
+  LinkRoutineTasksByIdsRequest,
+  LinkRoutineTasksByIdsRequestSchema,
+  LinkRoutineTasksByIdsResponse,
+  LinkRoutineTasksByIdsResponseSchema,
   RestoreMyRoutineByIdRequest,
   RestoreMyRoutineByIdRequestSchema,
   RestoreMyRoutineByIdResponse,
@@ -122,7 +97,33 @@ import {
   type VisualizeMyRoutineStatusCountResponse,
   VisualizeMyRoutineStatusCountResponseSchema,
 } from "@shared/api/interfaces/routine.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateRoutineByStationId,
+  CreateRoutinesByStationIds,
+  DeleteMyRoutineById,
+  DeleteMyRoutinesByIds,
+  GetMyRoutineById,
+  GetMyRoutinesByStationId,
+  GetMyRoutinesByTimeRange,
+  HardDeleteMyRoutineById,
+  HardDeleteMyRoutinesByIds,
+  LinkRoutineItemById,
+  LinkRoutineItemsByIds,
+  LinkRoutineTagById,
+  LinkRoutineTagsByIds,
+  LinkRoutineTaskById,
+  LinkRoutineTasksByIds,
+  RestoreMyRoutineById,
+  RestoreMyRoutinesByIds,
+  UpdateMyRoutineById,
+  UpdateMyRoutinesByIds,
+  VisualizeMyRoutinePeriodCount,
+  VisualizeMyRoutineScheduledEndAtCount,
+  VisualizeMyRoutineScheduledStartAtCount,
+  VisualizeMyRoutineStatusCount,
+} from "@/api/functions/routine.serverFn";
 import { invokeVisualizeQuery } from "./visualize.invoker";
 
 export const queryFnVisualizeMyRoutineStatusCount = (
@@ -255,9 +256,11 @@ export const queryFnGetMyRoutinesByTimeRange = async (
 export const mutationFnCreateRoutineByStationId = async (
   request: CreateRoutineByStationIdRequest
 ): Promise<CreateRoutineByStationIdResponse> => {
+  const validatedRequest = parseRequest(
+    CreateRoutineByStationIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      CreateRoutineByStationIdRequestSchema.parse(request);
     const response = await CreateRoutineByStationId({
       data: validatedRequest,
     });
@@ -270,7 +273,7 @@ export const mutationFnCreateRoutineByStationId = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -286,9 +289,11 @@ export const mutationFnCreateRoutineByStationId = async (
 export const mutationFnCreateRoutinesByStationIds = async (
   request: CreateRoutinesByStationIdsRequest
 ): Promise<CreateRoutinesByStationIdsResponse> => {
+  const validatedRequest = parseRequest(
+    CreateRoutinesByStationIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      CreateRoutinesByStationIdsRequestSchema.parse(request);
     const response = await CreateRoutinesByStationIds({
       data: validatedRequest,
     });
@@ -301,7 +306,7 @@ export const mutationFnCreateRoutinesByStationIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -317,8 +322,11 @@ export const mutationFnCreateRoutinesByStationIds = async (
 export const mutationFnUpdateMyRoutineById = async (
   request: UpdateMyRoutineByIdRequest
 ): Promise<UpdateMyRoutineByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyRoutineByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyRoutineByIdRequestSchema.parse(request);
     const response = await UpdateMyRoutineById({
       data: validatedRequest,
     });
@@ -328,7 +336,7 @@ export const mutationFnUpdateMyRoutineById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -344,8 +352,11 @@ export const mutationFnUpdateMyRoutineById = async (
 export const mutationFnUpdateMyRoutinesByIds = async (
   request: UpdateMyRoutinesByIdsRequest
 ): Promise<UpdateMyRoutinesByIdsResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyRoutinesByIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyRoutinesByIdsRequestSchema.parse(request);
     const response = await UpdateMyRoutinesByIds({
       data: validatedRequest,
     });
@@ -355,7 +366,7 @@ export const mutationFnUpdateMyRoutinesByIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

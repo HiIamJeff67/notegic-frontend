@@ -63,6 +63,7 @@ interface AuthPanelProps {
   submitButtonDisabled?: boolean;
   statusDetail?: string;
   isLoading?: boolean;
+  noValidate?: boolean;
 }
 
 const AuthPanel = ({
@@ -77,6 +78,7 @@ const AuthPanel = ({
   submitButtonDisabled = false,
   statusDetail,
   isLoading = false,
+  noValidate = false,
 }: AuthPanelProps) => {
   const { t } = useTranslation();
   const themeManager = useTheme();
@@ -141,6 +143,7 @@ const AuthPanel = ({
           </div>
 
           <form
+            noValidate={noValidate}
             onSubmit={async e => {
               e.preventDefault();
               await onSubmit();

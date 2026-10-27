@@ -4,6 +4,7 @@ import {
 } from "@shared/api/interfaces/context.interface";
 import { CountryCode } from "@shared/api/interfaces/enums";
 import z from "zod";
+import { AuthCodeSchema } from "./auth.interface";
 
 /* ============================== GetMyAccount Context ============================== */
 
@@ -48,12 +49,19 @@ export const UpdateMyAccountRequestSchema = NotegicRequestSchema.extend({
     csrfToken: z.string(),
   }),
   body: z.object({
-    authCode: z.string().length(6),
+    authCode: AuthCodeSchema,
     values: z
       .object({
         countryCode: z.enum(CountryCode).nullable(),
-        backupEmail: z.email().nullable(),
-        phoneNumber: z.string().min(1).max(15).regex(/^\d+$/).nullable(),
+        backupEmail: z
+          .email({ error: "auth.validation.emailFormat" })
+          .nullable(),
+        phoneNumber: z
+          .string({ error: "validation.phone" })
+          .min(1, { error: "validation.phone" })
+          .max(15, { error: "validation.phone" })
+          .regex(/^\d+$/, { error: "validation.phone" })
+          .nullable(),
       })
       .partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),

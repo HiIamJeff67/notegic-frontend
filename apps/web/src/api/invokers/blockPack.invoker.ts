@@ -1,34 +1,9 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  MoveMyBlockPacksByParentSubShelfIds,
-  CreateBlockPack,
-  CreateBlockPacks,
-  DeleteMyBlockPackById,
-  DeleteMyBlockPacksByIds,
-  HardDeleteMyBlockPacksByIds,
-  GetMyBlockPacksByRootShelfId,
-  GetMyBlockPackById,
-  GetMyBlockPacksByParentSubShelfId,
-  MoveMyBlockPackById,
-  MoveMyBlockPacksByParentSubShelfId,
-  RestoreMyBlockPackById,
-  RestoreMyBlockPacksByIds,
-  UpdateMyBlockPackById,
-  UpdateMyBlockPacksByIds,
-} from "@/api/functions/blockPack.serverFn";
-import {
-  type HardDeleteMyBlockPacksByIdsRequest,
-  HardDeleteMyBlockPacksByIdsRequestSchema,
-  type HardDeleteMyBlockPacksByIdsResponse,
-  HardDeleteMyBlockPacksByIdsResponseSchema,
-  type MoveMyBlockPacksByParentSubShelfIdsRequest,
-  MoveMyBlockPacksByParentSubShelfIdsRequestSchema,
-  type MoveMyBlockPacksByParentSubShelfIdsResponse,
-  MoveMyBlockPacksByParentSubShelfIdsResponseSchema,
   type CreateBlockPackRequest,
   CreateBlockPackRequestSchema,
   type CreateBlockPackResponse,
@@ -45,10 +20,6 @@ import {
   DeleteMyBlockPacksByIdsRequestSchema,
   type DeleteMyBlockPacksByIdsResponse,
   DeleteMyBlockPacksByIdsResponseSchema,
-  type GetMyBlockPacksByRootShelfIdRequest,
-  GetMyBlockPacksByRootShelfIdRequestSchema,
-  GetMyBlockPacksByRootShelfIdResponse,
-  GetMyBlockPacksByRootShelfIdResponseSchema,
   type GetMyBlockPackByIdRequest,
   GetMyBlockPackByIdRequestSchema,
   GetMyBlockPackByIdResponse,
@@ -57,6 +28,14 @@ import {
   GetMyBlockPacksByParentSubShelfIdRequestSchema,
   GetMyBlockPacksByParentSubShelfIdResponse,
   GetMyBlockPacksByParentSubShelfIdResponseSchema,
+  type GetMyBlockPacksByRootShelfIdRequest,
+  GetMyBlockPacksByRootShelfIdRequestSchema,
+  GetMyBlockPacksByRootShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdResponseSchema,
+  type HardDeleteMyBlockPacksByIdsRequest,
+  HardDeleteMyBlockPacksByIdsRequestSchema,
+  type HardDeleteMyBlockPacksByIdsResponse,
+  HardDeleteMyBlockPacksByIdsResponseSchema,
   type MoveMyBlockPackByIdRequest,
   MoveMyBlockPackByIdRequestSchema,
   type MoveMyBlockPackByIdResponse,
@@ -65,6 +44,10 @@ import {
   MoveMyBlockPacksByParentSubShelfIdRequestSchema,
   type MoveMyBlockPacksByParentSubShelfIdResponse,
   MoveMyBlockPacksByParentSubShelfIdResponseSchema,
+  type MoveMyBlockPacksByParentSubShelfIdsRequest,
+  MoveMyBlockPacksByParentSubShelfIdsRequestSchema,
+  type MoveMyBlockPacksByParentSubShelfIdsResponse,
+  MoveMyBlockPacksByParentSubShelfIdsResponseSchema,
   type RestoreMyBlockPackByIdRequest,
   RestoreMyBlockPackByIdRequestSchema,
   type RestoreMyBlockPackByIdResponse,
@@ -82,7 +65,25 @@ import {
   type UpdateMyBlockPacksByIdsResponse,
   UpdateMyBlockPacksByIdsResponseSchema,
 } from "@shared/api/interfaces/blockPack.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateBlockPack,
+  CreateBlockPacks,
+  DeleteMyBlockPackById,
+  DeleteMyBlockPacksByIds,
+  GetMyBlockPackById,
+  GetMyBlockPacksByParentSubShelfId,
+  GetMyBlockPacksByRootShelfId,
+  HardDeleteMyBlockPacksByIds,
+  MoveMyBlockPackById,
+  MoveMyBlockPacksByParentSubShelfId,
+  MoveMyBlockPacksByParentSubShelfIds,
+  RestoreMyBlockPackById,
+  RestoreMyBlockPacksByIds,
+  UpdateMyBlockPackById,
+  UpdateMyBlockPacksByIds,
+} from "@/api/functions/blockPack.serverFn";
 
 export const queryFnGetMyBlockPackById = async (
   request: GetMyBlockPackByIdRequest
@@ -179,8 +180,8 @@ export const queryFnGetMyBlockPacksByRootShelfId = async (
 export const mutationFnCreateBlockPack = async (
   request: CreateBlockPackRequest
 ): Promise<CreateBlockPackResponse> => {
+  const validatedRequest = parseRequest(CreateBlockPackRequestSchema, request);
   try {
-    const validatedRequest = CreateBlockPackRequestSchema.parse(request);
     const response = await CreateBlockPack({ data: validatedRequest });
     return CreateBlockPackResponseSchema.parse(response);
   } catch (error) {
@@ -188,7 +189,7 @@ export const mutationFnCreateBlockPack = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -205,8 +206,8 @@ export const mutationFnCreateBlockPack = async (
 export const mutationFnCreateBlockPacks = async (
   request: CreateBlockPacksRequest
 ): Promise<CreateBlockPacksResponse> => {
+  const validatedRequest = parseRequest(CreateBlockPacksRequestSchema, request);
   try {
-    const validatedRequest = CreateBlockPacksRequestSchema.parse(request);
     const response = await CreateBlockPacks({ data: validatedRequest });
     return CreateBlockPacksResponseSchema.parse(response);
   } catch (error) {
@@ -214,7 +215,7 @@ export const mutationFnCreateBlockPacks = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -231,8 +232,11 @@ export const mutationFnCreateBlockPacks = async (
 export const mutationFnUpdateMyBlockPackById = async (
   request: UpdateMyBlockPackByIdRequest
 ): Promise<UpdateMyBlockPackByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyBlockPackByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMyBlockPackByIdRequestSchema.parse(request);
     const response = await UpdateMyBlockPackById({
       data: validatedRequest,
     });
@@ -242,7 +246,7 @@ export const mutationFnUpdateMyBlockPackById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -259,9 +263,11 @@ export const mutationFnUpdateMyBlockPackById = async (
 export const mutationFnUpdateMyBlockPacksByIds = async (
   request: UpdateMyBlockPacksByIdsRequest
 ): Promise<UpdateMyBlockPacksByIdsResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMyBlockPacksByIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpdateMyBlockPacksByIdsRequestSchema.parse(request);
     const response = await UpdateMyBlockPacksByIds({
       data: validatedRequest,
     });
@@ -274,7 +280,7 @@ export const mutationFnUpdateMyBlockPacksByIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

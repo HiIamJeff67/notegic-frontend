@@ -1,3 +1,4 @@
+import { NotegicError } from "@shared/api/exceptions/errors";
 import { UserRole } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
@@ -128,9 +129,9 @@ const AccountModificationTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (newPassword !== confirmPassword) {
-            throw new Error(
-              t("settingsPage.account.modification.passwordMismatch")
-            );
+            throw new NotegicError(
+              "PasswordConfirmationMismatch"
+            ).setPresentation("auth.validation.passwordMismatch");
           }
 
           if (userManager.userData?.email === undefined) {
@@ -170,8 +171,10 @@ const AccountModificationTab = ({
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           if (confirmDeleteText !== "DELETE") {
-            throw new Error(
-              t("settingsPage.account.modification.deleteConfirmationInvalid")
+            throw new NotegicError(
+              "DeleteConfirmationMismatch"
+            ).setPresentation(
+              "settingsPage.account.modification.deleteConfirmationInvalid"
             );
           }
 
@@ -218,6 +221,7 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
@@ -285,6 +289,7 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
@@ -365,6 +370,7 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
@@ -456,6 +462,7 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {

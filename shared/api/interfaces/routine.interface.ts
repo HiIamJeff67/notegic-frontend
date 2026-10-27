@@ -13,6 +13,7 @@ import {
   VisualizeResponseSchema,
   VisualizeTimeBucketRequestSchema,
 } from "./visualize.interface";
+import { DescriptionSchema, ItemNameSchema } from "./workspaceInput.schema";
 
 export const RoutineAdmissionStates = [
   "Unknown",
@@ -25,6 +26,12 @@ export const RoutineAdmissionStates = [
 ] as const;
 
 export type RoutineAdmissionState = (typeof RoutineAdmissionStates)[number];
+
+export const RoutineTimeoutSchema = z
+  .number({ error: "validation.timeout" })
+  .int({ error: "validation.timeout" })
+  .min(60, { error: "validation.timeout" })
+  .max(3600, { error: "validation.timeout" });
 
 /* ============================== Visualize Routine Charts ============================== */
 
@@ -192,8 +199,8 @@ export const GetMyRoutinesByTimeRangeRequestSchema =
       })
       .optional(),
     param: z.object({
-      from: z.coerce.date(),
-      to: z.coerce.date(),
+      from: z.coerce.date({ error: "workspace.validation.invalidSchedule" }),
+      to: z.coerce.date({ error: "workspace.validation.invalidSchedule" }),
       stationIds: z.array(z.uuidv4()).min(1).max(1024),
       areDeleted: z.boolean().optional().default(false),
     }),
@@ -253,14 +260,18 @@ export const CreateRoutineByStationIdRequestSchema =
       .object({
         id: z.uuidv4().optional(),
         stationId: z.uuidv4(),
-        title: z.string().min(1).max(128),
-        description: z.string().max(1024),
-        timeoutSeconds: z.number().int().min(60).max(3600).optional(),
+        title: ItemNameSchema,
+        description: DescriptionSchema,
+        timeoutSeconds: RoutineTimeoutSchema.optional(),
         isActive: z.boolean().optional(),
         hasCustomSchedule: z.boolean().optional(),
         isPinned: z.boolean(),
-        scheduledStartAt: z.coerce.date(),
-        scheduledEndAt: z.coerce.date(),
+        scheduledStartAt: z.coerce.date({
+          error: "workspace.validation.invalidSchedule",
+        }),
+        scheduledEndAt: z.coerce.date({
+          error: "workspace.validation.invalidSchedule",
+        }),
         period: z.enum(AllRoutinePeriods).nullable(),
         timezone: z.string().max(64),
       })
@@ -308,14 +319,18 @@ export const CreateRoutinesByStationIdsRequestSchema =
           .object({
             id: z.uuidv4().optional(),
             stationId: z.uuidv4(),
-            title: z.string().min(1).max(128),
-            description: z.string().max(1024),
-            timeoutSeconds: z.number().int().min(60).max(3600).optional(),
+            title: ItemNameSchema,
+            description: DescriptionSchema,
+            timeoutSeconds: RoutineTimeoutSchema.optional(),
             isActive: z.boolean().optional(),
             hasCustomSchedule: z.boolean().optional(),
             isPinned: z.boolean(),
-            scheduledStartAt: z.coerce.date(),
-            scheduledEndAt: z.coerce.date(),
+            scheduledStartAt: z.coerce.date({
+              error: "workspace.validation.invalidSchedule",
+            }),
+            scheduledEndAt: z.coerce.date({
+              error: "workspace.validation.invalidSchedule",
+            }),
             period: z.enum(AllRoutinePeriods).nullable(),
             timezone: z.string().max(64),
           })
@@ -363,14 +378,18 @@ export const UpdateMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
     values: z
       .object({
         stationId: z.uuidv4(),
-        title: z.string().min(1).max(128),
-        description: z.string().max(1024),
-        timeoutSeconds: z.number().int().min(60).max(3600),
+        title: ItemNameSchema,
+        description: DescriptionSchema,
+        timeoutSeconds: RoutineTimeoutSchema,
         isActive: z.boolean().optional(),
         hasCustomSchedule: z.boolean().optional(),
         isPinned: z.boolean(),
-        scheduledStartAt: z.coerce.date(),
-        scheduledEndAt: z.coerce.date(),
+        scheduledStartAt: z.coerce.date({
+          error: "workspace.validation.invalidSchedule",
+        }),
+        scheduledEndAt: z.coerce.date({
+          error: "workspace.validation.invalidSchedule",
+        }),
         period: z.enum(AllRoutinePeriods).nullable(),
         timezone: z.string().max(64),
       })
@@ -416,13 +435,17 @@ export const UpdateMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
         values: z
           .object({
             stationId: z.uuidv4(),
-            title: z.string().min(1).max(128),
-            description: z.string().max(1024),
+            title: ItemNameSchema,
+            description: DescriptionSchema,
             isActive: z.boolean().optional(),
             hasCustomSchedule: z.boolean().optional(),
             isPinned: z.boolean(),
-            scheduledStartAt: z.coerce.date(),
-            scheduledEndAt: z.coerce.date(),
+            scheduledStartAt: z.coerce.date({
+              error: "workspace.validation.invalidSchedule",
+            }),
+            scheduledEndAt: z.coerce.date({
+              error: "workspace.validation.invalidSchedule",
+            }),
             period: z.enum(AllRoutinePeriods).nullable(),
             timezone: z.string().max(64),
           })

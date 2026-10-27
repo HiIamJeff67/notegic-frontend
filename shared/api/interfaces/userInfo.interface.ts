@@ -39,11 +39,22 @@ export const UpdateMyInfoRequestSchema = NotegicRequestSchema.extend({
     .optional(),
   body: z.object({
     values: z.object({
-      header: z.string().min(0).max(64).nullable().optional(),
-      introduction: z.string().min(0).max(256).nullable().optional(),
+      header: z
+        .string({ error: "validation.headline" })
+        .max(64, { error: "validation.headline" })
+        .nullable()
+        .optional(),
+      introduction: z
+        .string({ error: "validation.introduction" })
+        .max(256, { error: "validation.introduction" })
+        .nullable()
+        .optional(),
       gender: z.enum(UserGender).optional(),
       country: z.enum(Country).nullable().optional(),
-      birthDate: z.coerce.date().max(new Date()).optional(),
+      birthDate: z.coerce
+        .date({ error: "validation.birthDate" })
+        .refine(date => date <= new Date(), { error: "validation.birthDate" })
+        .optional(),
     }),
     setNull: z.record(z.string(), z.boolean()).optional(),
     avatarFile: z.file().optional(),

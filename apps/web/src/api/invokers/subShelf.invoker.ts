@@ -1,35 +1,9 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
-  MoveMySubShelvesByRootShelfIds,
-  CreateSubShelfByRootShelfId,
-  CreateSubShelvesByRootShelfIds,
-  DeleteMySubShelfById,
-  DeleteMySubShelvesByIds,
-  HardDeleteMySubShelvesByIds,
-  GetMySubShelvesByRootShelfId,
-  GetMySubShelfById,
-  GetMySubShelvesAndItemsByPrevSubShelfId,
-  GetMySubShelvesByPrevSubShelfId,
-  MoveMySubShelf,
-  MoveMySubShelvesByRootShelfId,
-  RestoreMySubShelfById,
-  RestoreMySubShelvesByIds,
-  UpdateMySubShelfById,
-  UpdateMySubShelvesByIds,
-} from "@/api/functions/subShelf.serverFn";
-import {
-  type HardDeleteMySubShelvesByIdsRequest,
-  HardDeleteMySubShelvesByIdsRequestSchema,
-  type HardDeleteMySubShelvesByIdsResponse,
-  HardDeleteMySubShelvesByIdsResponseSchema,
-  type MoveMySubShelvesByRootShelfIdsRequest,
-  MoveMySubShelvesByRootShelfIdsRequestSchema,
-  type MoveMySubShelvesByRootShelfIdsResponse,
-  MoveMySubShelvesByRootShelfIdsResponseSchema,
   type CreateSubShelfByRootShelfIdRequest,
   CreateSubShelfByRootShelfIdRequestSchema,
   type CreateSubShelfByRootShelfIdResponse,
@@ -46,10 +20,6 @@ import {
   DeleteMySubShelvesByIdsRequestSchema,
   type DeleteMySubShelvesByIdsResponse,
   DeleteMySubShelvesByIdsResponseSchema,
-  type GetMySubShelvesByRootShelfIdRequest,
-  GetMySubShelvesByRootShelfIdRequestSchema,
-  type GetMySubShelvesByRootShelfIdResponse,
-  GetMySubShelvesByRootShelfIdResponseSchema,
   type GetMySubShelfByIdRequest,
   GetMySubShelfByIdRequestSchema,
   type GetMySubShelfByIdResponse,
@@ -62,6 +32,14 @@ import {
   GetMySubShelvesByPrevSubShelfIdRequestSchema,
   type GetMySubShelvesByPrevSubShelfIdResponse,
   GetMySubShelvesByPrevSubShelfIdResponseSchema,
+  type GetMySubShelvesByRootShelfIdRequest,
+  GetMySubShelvesByRootShelfIdRequestSchema,
+  type GetMySubShelvesByRootShelfIdResponse,
+  GetMySubShelvesByRootShelfIdResponseSchema,
+  type HardDeleteMySubShelvesByIdsRequest,
+  HardDeleteMySubShelvesByIdsRequestSchema,
+  type HardDeleteMySubShelvesByIdsResponse,
+  HardDeleteMySubShelvesByIdsResponseSchema,
   type MoveMySubShelfRequest,
   MoveMySubShelfRequestSchema,
   type MoveMySubShelfResponse,
@@ -70,6 +48,10 @@ import {
   MoveMySubShelvesByRootShelfIdRequestSchema,
   type MoveMySubShelvesByRootShelfIdResponse,
   MoveMySubShelvesByRootShelfIdResponseSchema,
+  type MoveMySubShelvesByRootShelfIdsRequest,
+  MoveMySubShelvesByRootShelfIdsRequestSchema,
+  type MoveMySubShelvesByRootShelfIdsResponse,
+  MoveMySubShelvesByRootShelfIdsResponseSchema,
   type RestoreMySubShelfByIdRequest,
   RestoreMySubShelfByIdRequestSchema,
   type RestoreMySubShelfByIdResponse,
@@ -87,7 +69,26 @@ import {
   type UpdateMySubShelvesByIdsResponse,
   UpdateMySubShelvesByIdsResponseSchema,
 } from "@shared/api/interfaces/subShelf.interface";
+import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
+import {
+  CreateSubShelfByRootShelfId,
+  CreateSubShelvesByRootShelfIds,
+  DeleteMySubShelfById,
+  DeleteMySubShelvesByIds,
+  GetMySubShelfById,
+  GetMySubShelvesAndItemsByPrevSubShelfId,
+  GetMySubShelvesByPrevSubShelfId,
+  GetMySubShelvesByRootShelfId,
+  HardDeleteMySubShelvesByIds,
+  MoveMySubShelf,
+  MoveMySubShelvesByRootShelfId,
+  MoveMySubShelvesByRootShelfIds,
+  RestoreMySubShelfById,
+  RestoreMySubShelvesByIds,
+  UpdateMySubShelfById,
+  UpdateMySubShelvesByIds,
+} from "@/api/functions/subShelf.serverFn";
 
 export const queryFnGetMySubShelfById = async (
   request: GetMySubShelfByIdRequest
@@ -214,9 +215,11 @@ export const queryFnGetMySubShelvesAndItemsByPrevSubShelfId = async (
 export const mutationFnCreateSubShelfByRootShelfId = async (
   request: CreateSubShelfByRootShelfIdRequest
 ): Promise<CreateSubShelfByRootShelfIdResponse> => {
+  const validatedRequest = parseRequest(
+    CreateSubShelfByRootShelfIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      CreateSubShelfByRootShelfIdRequestSchema.parse(request);
     const response = await CreateSubShelfByRootShelfId({
       data: validatedRequest,
     });
@@ -229,7 +232,7 @@ export const mutationFnCreateSubShelfByRootShelfId = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -245,9 +248,11 @@ export const mutationFnCreateSubShelfByRootShelfId = async (
 export const mutationFnCreateSubShelvesByRootShelfIds = async (
   request: CreateSubShelvesByRootShelfIdsRequest
 ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
+  const validatedRequest = parseRequest(
+    CreateSubShelvesByRootShelfIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      CreateSubShelvesByRootShelfIdsRequestSchema.parse(request);
     const response = await CreateSubShelvesByRootShelfIds({
       data: validatedRequest,
     });
@@ -260,7 +265,7 @@ export const mutationFnCreateSubShelvesByRootShelfIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -276,8 +281,11 @@ export const mutationFnCreateSubShelvesByRootShelfIds = async (
 export const mutationFnUpdateMySubShelfById = async (
   request: UpdateMySubShelfByIdRequest
 ): Promise<UpdateMySubShelfByIdResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMySubShelfByIdRequestSchema,
+    request
+  );
   try {
-    const validatedRequest = UpdateMySubShelfByIdRequestSchema.parse(request);
     const response = await UpdateMySubShelfById({
       data: validatedRequest,
     });
@@ -287,7 +295,7 @@ export const mutationFnUpdateMySubShelfById = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:
@@ -303,9 +311,11 @@ export const mutationFnUpdateMySubShelfById = async (
 export const mutationFnUpdateMySubShelvesByIds = async (
   request: UpdateMySubShelvesByIdsRequest
 ): Promise<UpdateMySubShelvesByIdsResponse> => {
+  const validatedRequest = parseRequest(
+    UpdateMySubShelvesByIdsRequestSchema,
+    request
+  );
   try {
-    const validatedRequest =
-      UpdateMySubShelvesByIdsRequestSchema.parse(request);
     const response = await UpdateMySubShelvesByIds({
       data: validatedRequest,
     });
@@ -318,7 +328,7 @@ export const mutationFnUpdateMySubShelvesByIds = async (
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
-      );
+      ).setPresentation("validation.invalidResponse");
     } else if (error instanceof NotegicAPIError) {
       switch (error.unWrap.reason) {
         default:

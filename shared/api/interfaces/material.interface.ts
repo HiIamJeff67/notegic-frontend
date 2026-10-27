@@ -4,6 +4,7 @@ import {
 } from "@shared/api/interfaces/context.interface";
 import { AllMaterialContentTypes } from "@shared/api/interfaces/enums";
 import z from "zod";
+import { ItemNameSchema } from "./workspaceInput.schema";
 
 const MaterialObjectTicketRequestHeaderSchema = z
   .object({
@@ -252,7 +253,7 @@ export const CreateMyMaterialRequestSchema = NotegicRequestSchema.extend({
     .optional(),
   body: z.object({
     parentSubShelfId: z.uuidv4(),
-    name: z.string().min(1).max(128),
+    name: ItemNameSchema,
   }),
   affected: z.object({
     rootShelfId: z.uuidv4(),
@@ -291,7 +292,7 @@ export const UpdateMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
     materialId: z.uuidv4(),
     values: z
       .object({
-        name: z.string().min(1).max(128),
+        name: ItemNameSchema,
       })
       .partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),

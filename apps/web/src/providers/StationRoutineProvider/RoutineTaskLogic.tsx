@@ -1,6 +1,3 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   SearchRoutineTaskSortBy,
   SearchSortOrder,
@@ -11,6 +8,7 @@ import {
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
+import { parseRequest } from "@shared/api/validation";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxSearchLimit } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
@@ -18,6 +16,7 @@ import { LRUCache } from "@shared/lib/LRUCache";
 import toast from "@shared/lib/toast";
 import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
 import type { StationNode } from "@shared/types/stationNode.type";
+import { compareEntityNames } from "@shared/util/compareEntityNames";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -433,7 +432,7 @@ export const useRoutineTaskLogic = ({
       }
       if (!stationNode || !routineNode)
         throw new Error("routine does not exist");
-      const validation = CreateRoutineTaskByRoutineIdRequestSchema.safeParse({
+      const { body } = parseRequest(CreateRoutineTaskByRoutineIdRequestSchema, {
         body: {
           routineId,
           expectedDefinitionVersion:
@@ -448,13 +447,6 @@ export const useRoutineTaskLogic = ({
           maxAttempts,
         },
       });
-      if (!validation.success) {
-        throw new NotegicValidationError(
-          ValidationClientException.ZodParsingFailed(validation.error)
-        );
-      }
-
-      const body = validation.data.body;
       const response = await createRoutineTaskMutator.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body,
