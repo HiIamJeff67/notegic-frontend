@@ -20,8 +20,9 @@ import toast from '@shared/lib/toast';
 import { Toaster } from '@/components/ui/toaster';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { useToastManager } from '@/components/ui/toast';
+import { toastManager, useToastManager } from '@/components/ui/toast';
 window.notify = toast;
+window.nativeNotify = toastManager.add;
 function Probe() {
   const widgets = useWidget();
   const { toasts } = useToastManager();
@@ -147,6 +148,43 @@ describe("shared Toast placement and duration in Chromium", () => {
     else expect(Math.abs(rect.x + rect.width / 2 - 640)).toBeLessThan(1);
   });
 
+  it.each([
+    "default",
+    "success",
+    "info",
+    "warning",
+    "error",
+  ])("defaults %s messages to the viewport's top center", async kind => {
+    await page.evaluate(kind => {
+      const notify = (window as unknown as { notify: any }).notify;
+      if (kind === "default")
+        notify("Default location", { duration: Infinity });
+      else notify[kind]("Default location", { duration: Infinity });
+    }, kind);
+    const toast = page.locator(activeToast);
+    await browserExpect(toast).toHaveAttribute("data-position", "top-center");
+    await toast.evaluate(element =>
+      Promise.all(element.getAnimations().map(animation => animation.finished))
+    );
+    const rect = (await toast.boundingBox())!;
+    expect(rect.y).toBe(16);
+    expect(Math.abs(rect.x + rect.width / 2 - 640)).toBeLessThan(1);
+    await page.getByRole("button", { name: "Edit", exact: true }).click();
+  });
+
+  it("groups native manager messages without position data into the default stack", async () => {
+    await page.evaluate(
+      "nativeNotify({title:'Native message',timeout:0});notify.info('Facade message',{duration:Infinity})"
+    );
+    const toasts = page.locator(activeToast);
+    await browserExpect(toasts).toHaveCount(2);
+    for (const toast of await toasts.all()) {
+      await browserExpect(toast).toHaveAttribute("data-position", "top-center");
+    }
+    await browserExpect(toasts.first()).toHaveCSS("--toast-stack-index", "0");
+    await browserExpect(toasts.last()).toHaveCSS("--toast-stack-index", "1");
+  });
+
   it("keeps all six placements in the same mobile location", async () => {
     await page.setViewportSize({ width: 375, height: 812 });
     for (const position of [
@@ -193,8 +231,10 @@ describe("shared Toast placement and duration in Chromium", () => {
     await browserExpect(page.locator(activeToast)).toHaveCount(0);
   });
 
-  it("places only WidgetProvider's saved message at desktop top center without covering Edit", async () => {
-    await page.evaluate("saveWidgets();notify.success('Other saved message')");
+  it("keeps widgets saved at the default top center alongside a bottom-right override without covering Edit", async () => {
+    await page.evaluate(
+      "saveWidgets();notify.success('Other saved message',{position:'bottom-right'})"
+    );
     const saved = page.locator('[data-position="top-center"]');
     const other = page.locator('[data-position="bottom-right"]');
     await browserExpect(saved).toHaveText(
@@ -225,18 +265,20 @@ describe("shared Toast placement and duration in Chromium", () => {
     await other.hover();
     await other.getByRole("button", { name: "common.close" }).click();
     await page.getByRole("button", { name: "Edit", exact: true }).click();
-    // Content alone must not select the special location.
+    // Ordinary messages join the same default stack as widgets saved.
     await page.evaluate(
       "notify.success('workspace.notifications.widgetsSaved')"
     );
     await browserExpect(
-      page.locator(`${activeToast}[data-position="bottom-right"]`)
-    ).toHaveCount(1);
+      page.locator(`${activeToast}[data-position="top-center"]`)
+    ).toHaveCount(2);
   });
 
   it("keeps both message types in one upper stack on mobile and adapts when resized", async () => {
     await page.setViewportSize({ width: 375, height: 812 });
-    await page.evaluate("saveWidgets();notify.error('Other error')");
+    await page.evaluate(
+      "saveWidgets();notify.error('Other error',{position:'bottom-right'})"
+    );
     const toasts = page.locator("[data-position]");
     await browserExpect(toasts).toHaveCount(2);
     await toasts.evaluateAll(elements =>
@@ -328,6 +370,111 @@ describe("shared Toast placement and duration in Chromium", () => {
     await page.mouse.move(box.x + 180, box.y + box.height / 2, { steps: 8 });
     await page.mouse.up();
     await browserExpect(toast).toHaveCount(0);
+  });
+
+  it.each([
+    "top-center",
+    "bottom-right",
+  ])("animates %s messages from their screen edge with a small scale change", async position => {
+    await page.evaluate(position => {
+      (window as unknown as { notify: any }).notify.error("Animated message", {
+        position,
+        duration: Infinity,
+      });
+    }, position);
+    const toast = page.locator(activeToast);
+    await toast.waitFor({ state: "attached" });
+    const entry = await toast.evaluate(element => {
+      const animation = element
+        .getAnimations()
+        .find(
+          animation =>
+            animation instanceof CSSTransition &&
+            animation.transitionProperty === "transform"
+        );
+      if (!animation) throw new Error("Missing native Toast entry transition");
+      animation.pause();
+      animation.currentTime = 0;
+      const start = new DOMMatrix(getComputedStyle(element).transform);
+      const startOpacity = getComputedStyle(element).opacity;
+      animation.finish();
+      const end = new DOMMatrix(getComputedStyle(element).transform);
+      return {
+        startY: start.m42,
+        startScale: start.a,
+        startOpacity,
+        endOpacity: getComputedStyle(element).opacity,
+        endY: end.m42,
+        endScale: end.a,
+      };
+    });
+    expect(entry.startScale).toBeCloseTo(0.94);
+    expect(entry.endScale).toBe(1);
+    expect(entry.startOpacity).toBe("1");
+    expect(entry.endOpacity).toBe("1");
+    expect(entry.endY).toBe(0);
+    if (position.startsWith("top")) expect(entry.startY).toBeLessThan(0);
+    else expect(entry.startY).toBeGreaterThan(0);
+    await page.evaluate("notify.dismiss()");
+    const exiting = page.locator('[data-slot="toast"][data-ending-style]');
+    await exiting.waitFor({ state: "attached" });
+    const exit = await exiting.evaluate(element => {
+      const animation = element
+        .getAnimations()
+        .find(
+          animation =>
+            animation instanceof CSSTransition &&
+            animation.transitionProperty === "transform"
+        );
+      if (!animation) throw new Error("Missing native Toast exit transition");
+      animation.finish();
+      const end = new DOMMatrix(getComputedStyle(element).transform);
+      return {
+        y: end.m42,
+        scale: end.a,
+        opacity: getComputedStyle(element).opacity,
+      };
+    });
+    expect(exit.scale).toBeCloseTo(0.96);
+    expect(exit.opacity).toBe("1");
+    if (position.startsWith("top")) expect(exit.y).toBeLessThan(0);
+    else expect(exit.y).toBeGreaterThan(0);
+    await browserExpect(page.locator('[data-slot="toast"]')).toHaveCount(0);
+  });
+
+  it("honors reduced motion without delaying notification dismissal", async () => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.evaluate("notify.success('Reduced motion',{duration:Infinity})");
+    const toast = page.locator(activeToast);
+    await browserExpect(toast).toHaveCSS("transition-property", "none");
+    await browserExpect(toast).toHaveCSS("opacity", "1");
+    await page.evaluate("notify.dismiss()");
+    await browserExpect(page.locator('[data-slot="toast"]')).toHaveCount(0);
+  });
+
+  it.each([
+    "dark",
+    "light",
+  ])("keeps stacked %s notifications fully opaque", async theme => {
+    await page.evaluate(theme => {
+      document.documentElement.className = theme;
+      const notify = (window as unknown as { notify: any }).notify;
+      notify.info("Older notification", { duration: Infinity });
+      notify.success("Newer notification", { duration: Infinity });
+    }, theme);
+    const toasts = page.locator(activeToast);
+    await browserExpect(toasts).toHaveCount(2);
+    for (const toast of await toasts.all()) {
+      await browserExpect(toast).toHaveCSS("opacity", "1");
+      expect(
+        await toast.evaluate(element => {
+          const context = document.createElement("canvas").getContext("2d")!;
+          context.fillStyle = getComputedStyle(element).backgroundColor;
+          context.fillRect(0, 0, 1, 1);
+          return context.getImageData(0, 0, 1, 1).data[3];
+        })
+      ).toBe(255);
+    }
   });
 
   it.each([

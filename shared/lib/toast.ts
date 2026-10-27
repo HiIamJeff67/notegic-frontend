@@ -21,7 +21,7 @@ const createToast = (
   {
     description,
     duration,
-    position = "bottom-right",
+    position = "top-center",
     variant = "default",
   }: ToastOptions = {}
 ) => {

@@ -23,30 +23,29 @@ const iconByType = {
   error: OctagonX,
 };
 const positionClasses = {
-  "top-left":
-    "sm:top-4 sm:right-auto sm:bottom-auto sm:left-4 sm:origin-top-left sm:[--toast-stack-direction:1]",
-  "top-center":
-    "sm:top-4 sm:right-auto sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:origin-top sm:[--toast-stack-direction:1]",
-  "top-right":
-    "sm:top-4 sm:right-4 sm:bottom-auto sm:origin-top-right sm:[--toast-stack-direction:1]",
-  "bottom-left": "sm:right-auto sm:bottom-4 sm:left-4 sm:origin-bottom-left",
+  "top-left": "sm:top-4 sm:right-auto sm:left-4 sm:origin-top-left",
+  "top-center": "",
+  "top-right": "sm:top-4 sm:right-4 sm:left-auto sm:origin-top-right",
+  "bottom-left":
+    "sm:top-auto sm:right-auto sm:bottom-4 sm:left-4 sm:origin-bottom-left sm:[--toast-stack-direction:-1]",
   "bottom-center":
-    "sm:right-auto sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:origin-bottom",
-  "bottom-right": "",
+    "sm:top-auto sm:right-auto sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:origin-bottom sm:[--toast-stack-direction:-1]",
+  "bottom-right":
+    "sm:top-auto sm:right-4 sm:bottom-4 sm:left-auto sm:origin-bottom-right sm:[--toast-stack-direction:-1]",
 } satisfies Record<ToastPosition, string>;
 
 function ToastList() {
   const { t } = useTranslation();
   const { toasts } = useToastManager<{ position?: ToastPosition }>();
   return toasts.map((item, index) => {
-    const position = item.data?.position ?? "bottom-right";
+    const position = item.data?.position ?? "top-center";
     const previous = toasts
       .slice(0, index)
       .filter(
         other =>
           !other.limited &&
           other.transitionStatus !== "ending" &&
-          (other.data?.position ?? "bottom-right") === position
+          (other.data?.position ?? "top-center") === position
       );
     const Icon = iconByType[item.type as keyof typeof iconByType] ?? Info;
     return (
@@ -56,7 +55,7 @@ function ToastList() {
         data-position={position}
         swipeDirection="right"
         className={cn(
-          position !== "bottom-right" &&
+          position !== "top-center" &&
             "sm:fixed sm:w-[calc(100%-2rem)] sm:max-w-sm",
           positionClasses[position]
         )}

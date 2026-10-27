@@ -184,9 +184,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
       );
 
       if (hasChangedRef.current) {
-        toast.success(t("workspace.notifications.widgetsSaved"), {
-          position: "top-center",
-        });
+        toast.success(t("workspace.notifications.widgetsSaved"));
       }
 
       hasChangedRef.current = false;
