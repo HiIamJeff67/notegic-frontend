@@ -43,6 +43,7 @@ export default defineConfig(({ mode }) => {
   return {
     root: webRoot,
     envDir: webRoot,
+    cacheDir: env.NOTEGIC_VITE_CACHE_DIR,
     base: basePath,
     server: {
       port: Number(env.VITE_PORT || 6776),
@@ -52,8 +53,21 @@ export default defineConfig(({ mode }) => {
       },
     },
     optimizeDeps: {
-      // TanStack Start discovers client-only virtual modules while the first page
-      // is loading. Serving the initial optimized set avoids a stale chunk URL.
+      // Runtime imports missed by the initial scan otherwise replace live chunks.
+      include: [
+        "@apollo/client-react-streaming",
+        "@apollo/client/utilities/invariant",
+        "@handlewithcare/prosemirror-inputrules",
+        "@tanstack/history",
+        "@tanstack/router-core",
+        "@tanstack/router-core/isServer",
+        "@tanstack/router-core/ssr/client",
+        "@tanstack/router-core/ssr/server",
+        "katex",
+        "prosemirror-model",
+        "prosemirror-state",
+        "seroval",
+      ],
       holdUntilCrawlEnd: false,
     },
     resolve: {

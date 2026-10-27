@@ -19,6 +19,8 @@ export default defineConfig({
       ? "npm run start --workspace=@notegic/web"
       : "npm run dev --workspace=@notegic/web -- --host 127.0.0.1 --port 4173 --strictPort",
     env: {
+      // E2E optimization must not replace a running developer server's chunks.
+      NOTEGIC_VITE_CACHE_DIR: "node_modules/.vite-playwright",
       VITE_APP_BASE_PATH: "/",
       PORT: String(port),
       HOST: "127.0.0.1",
