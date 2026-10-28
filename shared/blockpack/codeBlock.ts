@@ -28,6 +28,7 @@ export const codeBlockSpec: typeof base = {
             },
           });
       const view = spec.implementation.render.call(this, block, editor);
+      view.contentDOM?.setAttribute("spellcheck", "false");
       view.dom
         .querySelector("select")
         ?.setAttribute(

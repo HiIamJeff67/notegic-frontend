@@ -34,10 +34,18 @@ for (const surface of ["blockpack", "payload"]) {
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
     const section = page.locator(`[data-editor="${surface}"]`);
+    await section.locator(".bn-editor").evaluate(element => {
+      element.setAttribute("spellcheck", "true");
+    });
     const block = section.locator('[data-id="code"]').first();
     const picker = block.getByRole("combobox");
     await expect(picker).toHaveValue("javascript");
     await expect(block.locator(".shiki").first()).toBeVisible();
+    await expect(block.locator("code")).toHaveAttribute("spellcheck", "false");
+    await expect(section.locator(".bn-editor")).toHaveAttribute(
+      "spellcheck",
+      "true"
+    );
     await block.screenshot({
       path: testInfo.outputPath(`${surface}-code-block.png`),
     });
@@ -49,6 +57,7 @@ for (const surface of ["blockpack", "payload"]) {
     }, surface);
     await picker.selectOption("typescript");
     await expect(picker).toHaveValue("typescript");
+    await expect(block.locator("code")).toHaveAttribute("spellcheck", "false");
     await expect(block.locator("code")).toHaveText(original);
     await expect(section.locator('[data-id="alias"] select')).toHaveValue("ts");
     await expect(
@@ -95,6 +104,7 @@ for (const surface of ["blockpack", "payload"]) {
     });
     await expect(picker).toHaveValue("typescript");
     await expect(block.locator(".shiki").first()).toBeVisible();
+    await expect(block.locator("code")).toHaveAttribute("spellcheck", "false");
     expect(errors).toEqual([]);
   });
 }
