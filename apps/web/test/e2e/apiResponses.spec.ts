@@ -196,7 +196,7 @@ test("the JavaScript highlighter preserves all supported languages and rejects u
   page,
 }) => {
   const results = await page.evaluate(async () => {
-    const path = "/src/hooks/useHighlightedCode.ts";
+    const path = "/test/e2e/apiResponseTestSupport.tsx";
     const { loadHighlighter } = await import(/* @vite-ignore */ path);
     const examples = [
       ["curl", "curl https://example.test\n# Example"],

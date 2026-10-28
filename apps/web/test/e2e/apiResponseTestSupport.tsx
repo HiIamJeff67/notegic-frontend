@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import EndpointDetails from "@/pages/document/api-reference/EndpointDetails";
 import type { DocumentEndpoint } from "@/pages/document/api-reference/generated/publicAPIData";
 
+export { loadHighlighter } from "@shared/lib/codeHighlighter";
+
 export const mountResponseExamples = () => {
   const container = document.createElement("div");
   container.id = "api-response-test-root";

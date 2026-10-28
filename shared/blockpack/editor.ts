@@ -6,11 +6,18 @@ import {
   defaultStyleSpecs,
   type PartialBlock,
 } from "@blocknote/core";
+import { SyntaxHighlightingExtension } from "@blocknote/core/extensions";
 import {
   CollaborationExtension,
   type CollaborationOptions,
 } from "@blocknote/core/yjs";
+import { getCodeHighlighter } from "../lib/codeHighlighter";
+import { codeBlockSpec } from "./codeBlock";
 import { blockPackShortcutExtensions } from "./extensions/shortcuts/shortcut";
+
+const syntaxHighlighting = SyntaxHighlightingExtension({
+  createHighlighter: getCodeHighlighter,
+});
 
 type NotegicBlockPackEditorOptions = {
   initialContent?: PartialBlock<any, any, any>[];
@@ -33,7 +40,7 @@ export class NotegicBlockPackEditor {
     audio: defaultBlockSpecs.audio,
     file: defaultBlockSpecs.file,
     table: defaultBlockSpecs.table,
-    codeBlock: defaultBlockSpecs.codeBlock,
+    codeBlock: codeBlockSpec,
   } as const;
 
   static create({
@@ -54,11 +61,12 @@ export class NotegicBlockPackEditor {
       ...(collaboration
         ? {
             extensions: [
+              syntaxHighlighting,
               ...blockPackShortcutExtensions,
               CollaborationExtension(collaboration),
             ],
           }
-        : { extensions: [...blockPackShortcutExtensions] }),
+        : { extensions: [syntaxHighlighting, ...blockPackShortcutExtensions] }),
       trailingBlock,
     }) as BlockNoteEditor<any, any, any>;
   }

@@ -15,6 +15,7 @@ import { useTranslation } from "@shared/i18n/useTranslation";
 import { Form, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
+import { useTheme } from "@/hooks/useTheme";
 import type { PatternBlock } from "./CreateBlockPackPayloadEditor";
 import "@/global/styles/block-editor.css";
 
@@ -109,12 +110,14 @@ const CreateBlockPackPayloadTemplateEditor = ({
   isSaveDisabled = false,
 }: CreateBlockPackPayloadTemplateEditorProps) => {
   const { t } = useTranslation();
+  const { currentTheme } = useTheme();
   return (
     <main className="flex h-full min-h-0 flex-col overflow-hidden bg-card md:max-h-[72vh]">
       <div className="min-h-0 flex-1 overflow-y-auto py-6 pr-4 pl-7">
         <section className="min-w-0">
           <BlockNoteView
             editor={editor}
+            theme={currentTheme.isDark ? "dark" : "light"}
             sideMenu={false}
             portalElements={{ default: portalElement }}
             className="notegic-block-editor caret-muted-foreground [&_.bn-editor]:px-4"

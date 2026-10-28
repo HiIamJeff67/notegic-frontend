@@ -124,3 +124,71 @@ html[data-density] .notegic-block-editor .bn-table-cell-handle,
   height: 10px;
   padding: 0 3px;
 }
+
+/* Keep editable code and its language picker consistent in both editor surfaces. */
+.notegic-block-editor .bn-block-content[data-content-type="codeBlock"] {
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.notegic-block-editor .bn-block-content[data-content-type="codeBlock"] > pre {
+  padding: 0.75rem 1rem;
+}
+
+.notegic-block-editor
+  .bn-block-content[data-content-type="codeBlock"]
+  > div
+  > select {
+  position: static;
+  display: block;
+  max-width: calc(100% - 2rem);
+  margin: 0.5rem 1rem 0;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+  opacity: 1;
+  transition: none;
+  appearance: auto;
+}
+
+.notegic-block-editor
+  .bn-block-content[data-content-type="codeBlock"]
+  > div
+  > select:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px;
+}
+
+.notegic-block-editor
+  .bn-block-content[data-content-type="codeBlock"]
+  > div
+  > select
+  > option {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.notegic-block-editor .bn-block-content[data-content-type="codeBlock"] .shiki {
+  color: var(--shiki-light);
+}
+
+.dark
+  .notegic-block-editor
+  .bn-block-content[data-content-type="codeBlock"]
+  .shiki {
+  color: var(--shiki-dark);
+}
+
+.dark
+  .notegic-block-editor
+  .bn-block-content[data-content-type="codeBlock"]
+  > div
+  > select {
+  color-scheme: dark;
+}

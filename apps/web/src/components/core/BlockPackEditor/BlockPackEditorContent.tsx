@@ -47,6 +47,7 @@ import { ChevronDownIcon, Download, Import } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useTheme } from "@/hooks/useTheme";
 import "@/global/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {
@@ -61,6 +62,7 @@ const BlockPackEditorContent = ({
   const sidebarManager = useSidebar();
   const shelfItemManager = useShelfItem();
   const { preferences } = useLocalPreferences();
+  const { currentTheme } = useTheme();
 
   const { editor, state, resync, maximumBlockCount, rejectQuotaExceededEdit } =
     useBlockEditor();
@@ -486,6 +488,7 @@ const BlockPackEditorContent = ({
           ) : (
             <BlockNoteView
               editor={editor}
+              theme={currentTheme.isDark ? "dark" : "light"}
               editable={state !== "readOnly"}
               onChange={handleEditorChange}
               slashMenu={false}
