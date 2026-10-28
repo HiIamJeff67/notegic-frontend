@@ -12,6 +12,7 @@ export type RealtimeErrorFrame = {
   channelId?: string;
   channelType?: string;
   connectorChannelId?: number;
+  recoverable?: boolean;
 };
 
 export const parseRealtimeErrorFrame = (
@@ -28,6 +29,7 @@ export const parseRealtimeErrorFrame = (
       typeof frame.requestId === "string" ? frame.requestId : undefined,
     code: frame.code,
     message: frame.message,
+    recoverable: frame.recoverable === true,
     channelId:
       typeof frame.channelId === "string" ? frame.channelId : undefined,
     channelType:

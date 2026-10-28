@@ -18,6 +18,7 @@ export type RealtimeErrorCode =
   | "room_admission_unavailable"
   | "room_connection_limit_exceeded"
   | "resync_required"
+  | "resubscribe_required"
   | "ticket_already_used"
   | "unsupported_binary_type"
   | "unsupported_channel_type"

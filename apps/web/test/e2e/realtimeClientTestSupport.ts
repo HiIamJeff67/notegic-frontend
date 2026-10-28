@@ -1,10 +1,10 @@
-import { RealtimeClient } from "@/api/websocketClient";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { RealtimePermission } from "@shared/api/interfaces/enums";
 import type {
   RealtimeBlockPackChannelTicket,
   RealtimeConnectionTicket,
 } from "@shared/api/websocket";
+import { RealtimeClient } from "@/api/websocketClient";
 
 export class RealtimeTestSocket {
   static CONNECTING = 0;
@@ -16,6 +16,8 @@ export class RealtimeTestSocket {
   readyState = RealtimeTestSocket.CONNECTING;
   binaryType = "arraybuffer";
   autoPong = true;
+  deferClose = false;
+  failBinarySend = false;
   sent: (string | ArrayBuffer)[] = [];
   onopen: ((event: Event) => void) | null = null;
   onerror: ((event: Event) => void) | null = null;
@@ -44,6 +46,12 @@ export class RealtimeTestSocket {
   }
 
   send(data: string | ArrayBuffer) {
+    if (typeof data !== "string" && this.failBinarySend) {
+      throw new DOMException(
+        "Fixture socket closed during send",
+        "InvalidStateError"
+      );
+    }
     this.sent.push(data);
     if (typeof data !== "string" || !this.autoPong) return;
     const frame = JSON.parse(data);
@@ -55,7 +63,9 @@ export class RealtimeTestSocket {
   }
 
   close() {
-    this.readyState = RealtimeTestSocket.CLOSED;
+    this.readyState = this.deferClose
+      ? RealtimeTestSocket.CLOSING
+      : RealtimeTestSocket.CLOSED;
   }
 }
 

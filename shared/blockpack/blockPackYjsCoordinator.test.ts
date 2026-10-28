@@ -6,9 +6,15 @@ jest.mock("@shared/blockpack/localYjsDocumentStore", () => ({
   },
 }));
 
+import { RealtimeBinaryFrameType } from "@shared/api/websocket/types";
 import { BlockPackYjsCoordinator } from "@shared/blockpack/blockPackYjsCoordinator";
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
-import { RealtimeBinaryFrameType } from "@shared/api/websocket/types";
+import {
+  Awareness,
+  applyAwarenessUpdate,
+  encodeAwarenessUpdate,
+  removeAwarenessStates,
+} from "y-protocols/awareness";
 import * as Y from "yjs";
 
 const load = jest.mocked(LocalYjsDocumentStore.load);
@@ -20,6 +26,108 @@ describe("BlockPackYjsCoordinator", () => {
     remove.mockResolvedValue();
     load.mockResolvedValue(null);
     jest.mocked(LocalYjsDocumentStore.save).mockResolvedValue();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("does not publish a remote awareness timeout as a local removal", async () => {
+    jest.useFakeTimers();
+    const document = new Y.Doc();
+    const remoteDocument = new Y.Doc();
+    const remoteAwareness = new Awareness(remoteDocument);
+    remoteAwareness.setLocalState({ user: "remote-fixture" });
+    const provider = new BlockPackYjsCoordinator(
+      document,
+      "block-pack-id" as never,
+      "user-id"
+    );
+    const observerDocument = new Y.Doc();
+    const observer = new Awareness(observerDocument);
+    observer.setLocalState(null);
+    const sentClientIds: number[] = [];
+    observer.on(
+      "update",
+      (changes: { added: number[]; updated: number[]; removed: number[] }) => {
+        sentClientIds.push(
+          ...changes.added,
+          ...changes.updated,
+          ...changes.removed
+        );
+      }
+    );
+    provider.connect((type, payload) => {
+      if (type === RealtimeBinaryFrameType.Awareness) {
+        applyAwarenessUpdate(observer, payload, "fixture");
+      }
+      return true;
+    });
+    provider.applyAwarenessUpdate(
+      encodeAwarenessUpdate(remoteAwareness, [remoteAwareness.clientID])
+    );
+    expect(provider.awareness.getStates().has(remoteAwareness.clientID)).toBe(
+      true
+    );
+    sentClientIds.length = 0;
+
+    // lib0 captures Date.now at import time, before Jest installs its clock.
+    provider.awareness.meta.get(remoteAwareness.clientID)!.lastUpdated -=
+      31_000;
+    provider.awareness.meta.get(provider.awareness.clientID)!.lastUpdated -=
+      16_000;
+    jest.advanceTimersByTime(3_000);
+
+    expect(provider.awareness.getStates().has(remoteAwareness.clientID)).toBe(
+      false
+    );
+    expect(sentClientIds.length).toBeGreaterThan(0);
+    expect(new Set(sentClientIds)).toEqual(
+      new Set([provider.awareness.clientID])
+    );
+
+    await provider.destroy();
+    document.destroy();
+    remoteAwareness.destroy();
+    remoteDocument.destroy();
+    observer.destroy();
+    observerDocument.destroy();
+  });
+
+  it("advances its awareness clock on reattachment after a server removal", async () => {
+    const document = new Y.Doc();
+    const serverDocument = new Y.Doc();
+    const server = new Awareness(serverDocument);
+    server.setLocalState(null);
+    const provider = new BlockPackYjsCoordinator(
+      document,
+      "block-pack-id" as never,
+      "user-id"
+    );
+    const send = (type: RealtimeBinaryFrameType, payload: Uint8Array) => {
+      if (type === RealtimeBinaryFrameType.Awareness)
+        applyAwarenessUpdate(server, payload, "fixture");
+      return true;
+    };
+    provider.awareness.setLocalState({ user: "local-fixture" });
+    const clientId = provider.awareness.clientID;
+    provider.connect(send);
+    const originalClock = server.meta.get(clientId)!.clock;
+    provider.disconnect();
+    removeAwarenessStates(server, [clientId], "detached");
+    document.getMap("draft").set("text", "offline edit");
+
+    provider.connect(send);
+
+    expect(server.meta.get(clientId)!.clock).toBeGreaterThan(originalClock);
+    expect(server.getStates().get(clientId)).toEqual({ user: "local-fixture" });
+    expect(provider.awareness.clientID).toBe(clientId);
+    expect(document.getMap("draft").get("text")).toBe("offline edit");
+    expect(remove).not.toHaveBeenCalled();
+    await provider.destroy();
+    document.destroy();
+    server.destroy();
+    serverDocument.destroy();
   });
 
   it("replays sent but unconfirmed changes after disconnect without rebuilding the document", async () => {

@@ -1,5 +1,5 @@
-import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
 import { NotegicAPIError } from "@shared/api/exceptions";
+import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
 import {
   RealtimePermission,
   RealtimePermissionSchema,
@@ -66,7 +66,6 @@ const logRealtimeClient = (message: string, data?: Record<string, unknown>) => {
   }
 };
 
-const MAX_REALTIME_RECONNECT_ATTEMPTS = 5;
 const REALTIME_RECONNECT_BASE_DELAY_MS = 1_000;
 const REALTIME_RECONNECT_MAX_DELAY_MS = 10_000;
 const REALTIME_HEARTBEAT_INTERVAL_MS = 30_000;
@@ -76,6 +75,7 @@ const serverDetachedChannelCodes = new Set<RealtimeErrorFrame["code"]>([
   "permission_revoked",
   "resource_unavailable",
   "resync_required",
+  "resubscribe_required",
   "channel_backpressure",
   "worker_unavailable",
   "block_pack_quota_exceeded",
@@ -277,7 +277,8 @@ export class RealtimeClient {
       });
       return false;
     }
-    if (!this.isSocketOpen()) {
+    const socket = this.socket;
+    if (socket === null || socket.readyState !== WebSocket.OPEN) {
       logRealtimeClient("skip binary send: socket not open", {
         blockPackId,
         type,
@@ -303,14 +304,18 @@ export class RealtimeClient {
       type,
       byteLength: payload.byteLength,
     });
-    this.sendBinaryFrame(
-      encodeRealtimeBinaryFrame({
-        type,
-        connectorChannelId: channel.connectorChannelId,
-        payload,
-      })
-    );
-    return true;
+    const frame = encodeRealtimeBinaryFrame({
+      type,
+      connectorChannelId: channel.connectorChannelId,
+      payload,
+    });
+    try {
+      socket.send(frame);
+      return true;
+    } catch {
+      this.reconnect(socket);
+      return false;
+    }
   }
 
   private async connect() {
@@ -354,29 +359,11 @@ export class RealtimeClient {
 
       socket.onerror = () => {
         if (this.socket !== socket || !this.shouldReconnect) return;
-        console.warn("[RealtimeClient] reconnecting after socket error", {
-          readyState: socket.readyState,
-          reconnectAttempt: this.reconnectAttempt,
-        });
         this.reconnect(socket);
       };
 
-      socket.onclose = event => {
+      socket.onclose = () => {
         if (this.socket !== socket || !this.shouldReconnect) return;
-        const closeDetails = {
-          code: event.code,
-          reason: event.reason,
-          wasClean: event.wasClean,
-          reconnectAttempt: this.reconnectAttempt,
-        };
-        if (!event.wasClean || event.code !== 1000) {
-          console.warn(
-            "[RealtimeClient] socket closed unexpectedly",
-            closeDetails
-          );
-        } else {
-          logRealtimeClient("socket closed", closeDetails);
-        }
         this.reconnect(socket);
       };
     } catch (error) {
@@ -424,7 +411,6 @@ export class RealtimeClient {
     this.heartbeatRequestId = this.createRequestId("ping");
     this.heartbeatTimeout = setTimeout(() => {
       if (this.socket !== socket || !this.shouldReconnect) return;
-      console.warn("[RealtimeClient] heartbeat timed out");
       this.reconnect(socket);
     }, REALTIME_HEARTBEAT_TIMEOUT_MS);
     try {
@@ -735,7 +721,13 @@ export class RealtimeClient {
 
     const channel = this.channels.get(blockPackId);
     if (!channel) return;
-    if (channel.resyncRequired && frame.code === "worker_unavailable") return;
+    const canResubscribe =
+      frame.code === "worker_unavailable" ||
+      frame.code === "channel_backpressure" ||
+      ((frame.code === "resync_required" ||
+        frame.code === "resubscribe_required") &&
+        frame.recoverable === true);
+    if (channel.resyncRequired && canResubscribe) return;
     if (
       frame.requestId !== undefined &&
       channel.pendingRequestId !== frame.requestId
@@ -804,11 +796,11 @@ export class RealtimeClient {
         channel.connectorChannelId = null;
         channel.pendingRequestId = null;
         channel.ticketRetryCount = 0;
-        channel.resyncRequired = frame.code !== "worker_unavailable";
+        channel.resyncRequired = !canResubscribe;
       }
     }
 
-    if (frame.code === "worker_unavailable" && !channel.resyncRequired) {
+    if (canResubscribe && !channel.resyncRequired) {
       this.options.onChannelStatus?.(blockPackId, "idle");
       this.options.onChannelError?.(blockPackId, frame);
       this.scheduleChannelRetry(channel);
@@ -862,21 +854,13 @@ export class RealtimeClient {
 
   private scheduleReconnect() {
     if (!this.shouldReconnect || this.reconnectTimeout !== null) return;
-    if (this.reconnectAttempt >= MAX_REALTIME_RECONNECT_ATTEMPTS) {
-      this.shouldReconnect = false;
-      this.options.onState?.("error");
-      this.options.onError?.(
-        new Error("Realtime connection retry limit reached.")
-      );
-      return;
-    }
 
     this.options.onState?.("reconnecting");
     const delay = Math.min(
       REALTIME_RECONNECT_BASE_DELAY_MS * 2 ** this.reconnectAttempt,
       REALTIME_RECONNECT_MAX_DELAY_MS
     );
-    this.reconnectAttempt += 1;
+    if (delay < REALTIME_RECONNECT_MAX_DELAY_MS) this.reconnectAttempt += 1;
     this.reconnectTimeout = setTimeout(() => {
       this.reconnectTimeout = null;
       void this.connect();
@@ -892,13 +876,6 @@ export class RealtimeClient {
     logRealtimeClient("send control frame", {
       label,
       byteLength: this.textEncoder.encode(payload).byteLength,
-    });
-    this.socket?.send(payload);
-  }
-
-  private sendBinaryFrame(payload: ArrayBuffer) {
-    logRealtimeClient("send encoded binary frame", {
-      byteLength: payload.byteLength,
     });
     this.socket?.send(payload);
   }

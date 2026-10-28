@@ -180,7 +180,7 @@ test.describe("realtime client lifecycle", () => {
     ).toEqual({ failures: 0, errors: [], state: "connected" });
   });
 
-  test("retry exhaustion reports one failure instead of a toast on every attempt", async ({
+  test("a prolonged outage keeps retrying at the capped delay without notifications", async ({
     page,
   }) => {
     for (const delay of [1000, 2000, 4000, 8000, 10000]) {
@@ -203,9 +203,9 @@ test.describe("realtime client lifecycle", () => {
         requests: window.realtimeExample.events.ticketRequests,
       }))
     ).toEqual({
-      errors: ["Error: Realtime connection retry limit reached."],
-      state: "error",
-      requests: 6,
+      errors: [],
+      state: "reconnecting",
+      requests: 7,
     });
   });
 
@@ -651,6 +651,214 @@ test.describe("realtime client lifecycle", () => {
         page.evaluate(() => window.realtimeExample.channelFrames().length)
       )
       .toBe(2);
+  });
+
+  test("recoverable resubscriptions preserve the live editor, offline edits and silent recovery", async ({
+    page,
+  }) => {
+    const notifications: string[] = [];
+    page.on("console", message => {
+      if (
+        (message.type() === "warning" || message.type() === "error") &&
+        /Realtime|resync/i.test(message.text())
+      ) {
+        notifications.push(message.text());
+      }
+    });
+    await page.route("**/src/api/invokers/realtime.invoker.ts*", route =>
+      route.fulfill({
+        contentType: "application/javascript",
+        body: `export const mutationFnCreateMyRealtimeConnectionTicket = async () => ({ data: window.realtimeExample.ticket() });
+        export const mutationFnCreateMyBlockPackChannelTicket = async () => ({ data: window.realtimeExample.channelTicket() });`,
+      })
+    );
+    await page.evaluate(async () => {
+      const fixture = window.realtimeExample;
+      fixture.client.stop();
+      const path = "/test/e2e/realtimeProviderTestSupport.tsx";
+      const { mountRealtimeProviderExample } = await import(
+        /* @vite-ignore */ path
+      );
+      window.realtimeProviderExample = mountRealtimeProviderExample(
+        fixture.channelTicket()
+          .channelId as `${string}-${string}-${string}-${string}-${string}`,
+        true
+      );
+    });
+    await expect
+      .poll(() => page.evaluate(() => window.realtimeExample.sockets.length))
+      .toBe(2);
+    await page.evaluate(() => window.realtimeExample.sockets[1].open());
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(1);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[1].message({
+        version: 1,
+        type: "subscribed",
+        requestId: fixture.channelFrames().at(-1).requestId,
+        channelType: "BlockPack",
+        channelId: fixture.channelTicket().channelId,
+        connectorChannelId: 1,
+        existing: false,
+        documentQuotaPolicyVersion: 1,
+        maximumBlockCount: 100,
+        participants: [],
+      });
+    });
+    await expect(page.locator("[data-editor-state]")).toHaveAttribute(
+      "data-editor-state",
+      "ready"
+    );
+    const editorElement = await page
+      .locator("[data-editor-state] .ProseMirror")
+      .elementHandle();
+    expect(editorElement).not.toBeNull();
+
+    for (const [index, code] of [
+      "resubscribe_required",
+      "channel_backpressure",
+    ].entries()) {
+      const before = await page.evaluate(
+        () => window.realtimeExample.channelFrames().length
+      );
+      await page.evaluate(
+        ({ code, index }) => {
+          const fixture = window.realtimeExample;
+          fixture.sockets[1].message({
+            version: 1,
+            type: "error",
+            channelId: fixture.channelTicket().channelId,
+            connectorChannelId: index + 1,
+            code,
+            recoverable: true,
+            message: "fixture temporary recovery",
+          });
+        },
+        { code, index }
+      );
+      await expect(page.locator("[data-channel-status]")).toHaveAttribute(
+        "data-channel-status",
+        "idle"
+      );
+      await expect(page.locator("[data-editor-state]")).toHaveAttribute(
+        "data-editor-state",
+        "ready"
+      );
+      await page
+        .locator("[data-editor-state] .ProseMirror")
+        .pressSequentially(`offline-${index} `);
+      await page.evaluate(async () => {
+        await window.realtimeProviderExample
+          .getChannel()!
+          .provider.snapshotLocalDocument();
+      });
+      expect(
+        await page.evaluate(
+          async () =>
+            (await window.realtimeProviderExample.getCachedDocument())
+              ?.needsFlush
+        )
+      ).toBe(true);
+      await page.clock.runFor(1000);
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.realtimeExample.channelFrames().length)
+        )
+        .toBe(before + 1);
+      await page.evaluate(index => {
+        const fixture = window.realtimeExample;
+        fixture.sockets[1].message({
+          version: 1,
+          type: "subscribed",
+          requestId: fixture.channelFrames().at(-1).requestId,
+          channelType: "BlockPack",
+          channelId: fixture.channelTicket().channelId,
+          connectorChannelId: index + 2,
+          existing: false,
+          documentQuotaPolicyVersion: 1,
+          maximumBlockCount: 100,
+          participants: [],
+        });
+      }, index);
+      await expect(page.locator("[data-channel-status]")).toHaveAttribute(
+        "data-channel-status",
+        "subscribed"
+      );
+    }
+
+    await page.evaluate(() => {
+      const socket = window.realtimeExample.sockets[1];
+      socket.deferClose = true;
+      socket.failBinarySend = true;
+    });
+    await page
+      .locator("[data-editor-state] .ProseMirror")
+      .pressSequentially("send-failure ");
+    await page.evaluate(async () => {
+      await window.realtimeProviderExample
+        .getChannel()!
+        .provider.flushPendingDocumentUpdatesNow();
+    });
+    await page.clock.runFor(1000);
+    await expect
+      .poll(() => page.evaluate(() => window.realtimeExample.sockets.length))
+      .toBe(3);
+    expect(
+      await page.evaluate(() => window.realtimeExample.sockets[1].readyState)
+    ).toBe(2);
+    await page.evaluate(() => window.realtimeExample.sockets[2].open());
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.realtimeExample.channelFrames().length)
+      )
+      .toBe(4);
+    await page.evaluate(() => {
+      const fixture = window.realtimeExample;
+      fixture.sockets[2].message({
+        version: 1,
+        type: "subscribed",
+        requestId: fixture.channelFrames().at(-1).requestId,
+        channelType: "BlockPack",
+        channelId: fixture.channelTicket().channelId,
+        connectorChannelId: 1,
+        existing: false,
+        documentQuotaPolicyVersion: 1,
+        maximumBlockCount: 100,
+        participants: [],
+      });
+    });
+    await expect(page.locator("[data-editor-state]")).toHaveAttribute(
+      "data-editor-state",
+      "ready"
+    );
+    expect(
+      await editorElement!.evaluate(
+        element =>
+          element === document.querySelector("[data-editor-state] .ProseMirror")
+      )
+    ).toBe(true);
+    await expect(page.locator("[data-editor-state]")).toContainText(
+      "offline-0 offline-1 send-failure"
+    );
+    expect(
+      await page.evaluate(() => ({
+        editable:
+          window.realtimeProviderExample.getBlockEditor()!.editor.isEditable,
+        replayed: window.realtimeExample.sockets[2].sent.some(
+          frame => frame instanceof ArrayBuffer
+        ),
+      }))
+    ).toEqual({ editable: true, replayed: true });
+    expect(
+      await page.evaluate(() => window.realtimeProviderExample.getNavigations())
+    ).toBe(0);
+    await expect(page.locator("[data-slot='toast']")).toHaveCount(0);
+    expect(notifications).toEqual([]);
+    await page.evaluate(() => window.realtimeProviderExample.unmount());
   });
 
   test("provider keeps the document and pending edits during worker recovery", async ({

@@ -35,7 +35,15 @@ export class BlockPackYjsCoordinator {
     if (origin === NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN) return;
     if (this.readOnly) return;
     this.hasLocalUpdates = true;
-    this.sendOrQueue(RealtimeBinaryFrameType.YjsDocument, update);
+    this.pendingDocumentUpdates.push(update);
+    void this.persistLocalDocument(true);
+    if (this.send === null) return;
+
+    this.clearDocumentFlushTimeout();
+    this.documentFlushTimeout = setTimeout(() => {
+      this.documentFlushTimeout = null;
+      void this.flushPendingDocumentUpdates();
+    }, NOTEGIC_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS);
   };
   private readonly handleAwarenessUpdate = (
     changes: { added: number[]; updated: number[]; removed: number[] },
@@ -46,9 +54,9 @@ export class BlockPackYjsCoordinator {
       ...changes.added,
       ...changes.updated,
       ...changes.removed,
-    ];
-    if (changedClients.length === 0) return;
-    this.sendOrQueue(
+    ].filter(clientId => clientId === this.awareness.clientID);
+    if (changedClients.length === 0 || this.send === null) return;
+    this.send(
       RealtimeBinaryFrameType.Awareness,
       encodeAwarenessUpdate(this.awareness, changedClients)
     );
@@ -68,9 +76,13 @@ export class BlockPackYjsCoordinator {
     send: (type: RealtimeBinaryFrameType, payload: Uint8Array) => boolean
   ) {
     this.send = send;
-    this.flushPendingUpdates();
-    void this.hydrationPromise.then(() => this.flushPendingUpdates());
-    this.announceLocalAwarenessState();
+    void this.flushPendingDocumentUpdates();
+    void this.hydrationPromise.then(() => this.flushPendingDocumentUpdates());
+    const localState = this.awareness.getLocalState();
+    if (localState !== null) {
+      // A previous attachment may have published a removal at this clock.
+      this.awareness.setLocalState(localState);
+    }
   }
 
   disconnect() {
@@ -80,7 +92,16 @@ export class BlockPackYjsCoordinator {
       this.pendingDocumentUpdates.push(Y.encodeStateAsUpdate(this.doc));
     }
     this.send = null;
-    this.clearRemoteAwarenessStates();
+    const remoteClientIds = Array.from(
+      this.awareness.getStates().keys()
+    ).filter(clientId => clientId !== this.awareness.clientID);
+    if (remoteClientIds.length > 0) {
+      removeAwarenessStates(
+        this.awareness,
+        remoteClientIds,
+        NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
+      );
+    }
   }
 
   flushPendingDocumentUpdatesNow() {
@@ -158,46 +179,18 @@ export class BlockPackYjsCoordinator {
   async destroy() {
     await this.flushPendingDocumentUpdatesNow();
     await this.persistencePromise;
-    this.announceLocalAwarenessRemoval();
+    if (this.awareness.getLocalState() !== null) {
+      removeAwarenessStates(
+        this.awareness,
+        [this.awareness.clientID],
+        NOTEGIC_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN
+      );
+    }
     this.disconnect();
     this.pendingDocumentUpdates.length = 0;
     this.doc.off("update", this.handleDocUpdate);
     this.awareness.off("update", this.handleAwarenessUpdate);
     this.awareness.destroy();
-  }
-
-  private sendOrQueue(type: RealtimeBinaryFrameType, payload: Uint8Array) {
-    if (this.readOnly && type === RealtimeBinaryFrameType.YjsDocument) return;
-
-    if (type === RealtimeBinaryFrameType.YjsDocument) {
-      this.queueDocumentUpdate(payload);
-      return;
-    }
-
-    if (this.send === null) {
-      return;
-    }
-
-    this.send(type, payload);
-  }
-
-  private queueDocumentUpdate(payload: Uint8Array) {
-    this.pendingDocumentUpdates.push(payload);
-    void this.persistLocalDocument(true);
-
-    if (this.send === null) {
-      return;
-    }
-
-    this.scheduleDocumentFlush();
-  }
-
-  private scheduleDocumentFlush() {
-    this.clearDocumentFlushTimeout();
-    this.documentFlushTimeout = setTimeout(() => {
-      this.documentFlushTimeout = null;
-      this.flushPendingDocumentUpdates();
-    }, NOTEGIC_REALTIME_YJS_DOCUMENT_DEBOUNCE_MS);
   }
 
   private clearDocumentFlushTimeout() {
@@ -208,12 +201,11 @@ export class BlockPackYjsCoordinator {
 
   private async flushPendingDocumentUpdates() {
     const send = this.send;
-    if (
-      send === null ||
-      this.readOnly ||
-      this.pendingDocumentUpdates.length === 0
-    )
+    if (this.readOnly) {
+      this.pendingDocumentUpdates.length = 0;
       return;
+    }
+    if (send === null || this.pendingDocumentUpdates.length === 0) return;
 
     const updates = this.pendingDocumentUpdates.splice(0);
     const payload = updates.length === 1 ? updates[0] : Y.mergeUpdates(updates);
@@ -225,17 +217,6 @@ export class BlockPackYjsCoordinator {
     if (!send(RealtimeBinaryFrameType.YjsDocument, payload)) {
       this.pendingDocumentUpdates.unshift(...updates);
     }
-  }
-
-  private flushPendingUpdates() {
-    const send = this.send;
-    if (send === null) return;
-
-    if (this.readOnly) {
-      this.pendingDocumentUpdates.length = 0;
-    }
-
-    void this.flushPendingDocumentUpdates();
   }
 
   private async hydrateLocalDocument() {
@@ -291,38 +272,5 @@ export class BlockPackYjsCoordinator {
         );
       });
     return this.persistencePromise;
-  }
-
-  private announceLocalAwarenessState() {
-    const send = this.send;
-    const localState = this.awareness.getLocalState();
-    if (send === null || localState === null) return;
-
-    const payload = encodeAwarenessUpdate(this.awareness, [
-      this.awareness.clientID,
-    ]);
-    send(RealtimeBinaryFrameType.Awareness, payload);
-  }
-
-  private announceLocalAwarenessRemoval() {
-    if (this.awareness.getLocalState() === null) return;
-    removeAwarenessStates(
-      this.awareness,
-      [this.awareness.clientID],
-      NOTEGIC_REALTIME_YJS_LOCAL_AWARENESS_REMOVAL_ORIGIN
-    );
-  }
-
-  private clearRemoteAwarenessStates() {
-    const remoteClientIds = Array.from(
-      this.awareness.getStates().keys()
-    ).filter(clientId => clientId !== this.awareness.clientID);
-    if (remoteClientIds.length === 0) return;
-
-    removeAwarenessStates(
-      this.awareness,
-      remoteClientIds,
-      NOTEGIC_REALTIME_YJS_REMOTE_ORIGIN
-    );
   }
 }

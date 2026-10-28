@@ -99,14 +99,14 @@ export const BlockEditorProvider = ({
   }, [channel.permission, channel.provider, editor]);
 
   const state: BlockEditorState =
-    channel.status === "ticketing" || channel.status === "subscribing"
-      ? "subscribing"
-      : channel.status === "subscribed"
-        ? "ready"
-        : channel.status === "readOnly"
-          ? "readOnly"
-          : channel.status === "error"
-            ? "syncError"
+    channel.status === "error"
+      ? "syncError"
+      : channel.permission === RealtimePermission.Read
+        ? "readOnly"
+        : channel.hasSubscribed
+          ? "ready"
+          : channel.status === "ticketing" || channel.status === "subscribing"
+            ? "subscribing"
             : "connecting";
 
   useEffect(() => {
@@ -127,6 +127,7 @@ export const BlockEditorProvider = ({
     if (channel.lifecycleErrorCode === null) return;
     if (
       channel.lifecycleErrorCode === "resync_required" ||
+      channel.lifecycleErrorCode === "resubscribe_required" ||
       channel.lifecycleErrorCode === "channel_backpressure" ||
       channel.lifecycleErrorCode === "worker_unavailable"
     )

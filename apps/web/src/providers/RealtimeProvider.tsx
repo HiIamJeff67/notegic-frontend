@@ -43,10 +43,7 @@ import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
-import {
-  canSendDesktopNotification,
-  isQuietHours,
-} from "./LocalPreferencesProvider";
+import { canSendDesktopNotification } from "./LocalPreferencesProvider";
 
 const RealtimeBlockPackChannelReleaseDelayMs =
   Number.parseInt(
@@ -65,6 +62,7 @@ export type RealtimeBlockPackChannel = {
   lifecycleErrorCode: RealtimeErrorCode | null;
   documentQuotaPolicyVersion: number | null;
   maximumBlockCount: number | null;
+  hasSubscribed: boolean;
   hasRejectedDraft: boolean;
 };
 
@@ -152,10 +150,6 @@ export const RealtimeProvider = ({
     [clearReleaseTimer]
   );
 
-  const getRequestHeader = useCallback(() => {
-    return getClientRequestHeaders();
-  }, []);
-
   const setChannelStatus = useCallback(
     (blockPackId: string, status: RealtimeBlockPackChannelStatus) => {
       const channel = channelsRef.current.get(blockPackId as UUID);
@@ -184,22 +178,6 @@ export const RealtimeProvider = ({
 
   const showSyncError = useCallback((message: string) => {
     if (preferencesRef.current.syncNotifications) toast.error(message);
-  }, []);
-
-  const showSyncConnected = useCallback(() => {
-    const currentPreferences = preferencesRef.current;
-    if (
-      !currentPreferences.syncNotifications ||
-      (currentPreferences.quietMode &&
-        isQuietHours(
-          new Date(),
-          currentPreferences.quietModeStart,
-          currentPreferences.quietModeEnd
-        ))
-    ) {
-      return;
-    }
-    toast.success(t("workspace.notifications.syncConnected"));
   }, []);
 
   const showDesktopNotification = useCallback(
@@ -347,14 +325,14 @@ export const RealtimeProvider = ({
     const client = new RealtimeClient({
       getConnectionTicket: async () => {
         const response = await mutationFnCreateMyRealtimeConnectionTicket({
-          header: getRequestHeader(),
+          header: getClientRequestHeaders(),
           body: {},
         });
         return response.data;
       },
       getBlockPackChannelTicket: async (blockPackId, permission) => {
         const response = await mutationFnCreateMyBlockPackChannelTicket({
-          header: getRequestHeader(),
+          header: getClientRequestHeaders(),
           body: {
             blockPackId,
             permission,
@@ -374,7 +352,6 @@ export const RealtimeProvider = ({
         void queryClient.invalidateQueries({
           queryKey: queryKeys.notification.unreadCount(),
         });
-        showSyncConnected();
       },
       onNotification: frame => {
         if (!userPublicId) return;
@@ -439,6 +416,7 @@ export const RealtimeProvider = ({
         channel.permission = permission;
         channel.documentQuotaPolicyVersion = frame.documentQuotaPolicyVersion;
         channel.maximumBlockCount = frame.maximumBlockCount;
+        channel.hasSubscribed = true;
         channel.provider.setReadOnly(permission === RealtimePermission.Read);
         channel.provider.connect((type, payload) => {
           return client.sendBlockPackBinary(blockPackId, type, payload);
@@ -544,7 +522,13 @@ export const RealtimeProvider = ({
           return;
         }
 
-        if (frame.code === "worker_unavailable") {
+        if (
+          frame.code === "worker_unavailable" ||
+          frame.code === "channel_backpressure" ||
+          ((frame.code === "resubscribe_required" ||
+            frame.code === "resync_required") &&
+            frame.recoverable === true)
+        ) {
           channel.error = null;
           channel.connectorChannelId = null;
           channel.status = "idle";
@@ -567,6 +551,7 @@ export const RealtimeProvider = ({
           showSyncError(t("workspace.notifications.blockPackUnavailable"));
         } else if (
           frame.code === "resync_required" ||
+          frame.code === "resubscribe_required" ||
           frame.code === "channel_backpressure"
         ) {
           channel.lifecycleErrorCode = frame.code;
@@ -600,14 +585,12 @@ export const RealtimeProvider = ({
     };
   }, [
     disposeBlockPackChannel,
-    getRequestHeader,
     handleResourceEvent,
     isOnline,
     refetchCanonicalState,
     rerender,
     setChannelStatus,
     showDesktopNotification,
-    showSyncConnected,
     showSyncError,
     userPublicId,
   ]);
@@ -636,6 +619,7 @@ export const RealtimeProvider = ({
         lifecycleErrorCode: null,
         documentQuotaPolicyVersion: null,
         maximumBlockCount: null,
+        hasSubscribed: false,
         hasRejectedDraft: rejectedDraftBlockPackIdsRef.current.has(blockPackId),
         retainCount,
         isDisposed: false,

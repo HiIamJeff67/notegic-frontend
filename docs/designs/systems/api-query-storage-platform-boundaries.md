@@ -87,6 +87,40 @@ Gateway processes and an acceptance database. It exercises empty-tab storage,
 real access refresh, and two-page graph conflict/draft recovery without using
 production credentials or changing a user's development account.
 
+## BlockPack realtime recovery
+
+WebSocket and recoverable channel failures are background work. Retain the
+mounted editor and its Y.Doc; do not reset the document, change its identity,
+show a recovery toast/animation, or navigate away. Once a channel has subscribed,
+temporary ticketing/subscribing/idle states keep its editor ready for local
+edits. The existing Yjs cache is in IndexedDB, separately from SQLite metadata;
+normal cache failures remain visible errors rather than a durability guarantee.
+
+`BlockPackYjsCoordinator` publishes only its own awareness client ID. Remote
+awareness expiry is local cleanup and is never sent as another user's removal.
+Each reattachment advances the local awareness clock before its announcement.
+The backend retains ownership until the previous connection detaches; presence
+may be temporarily absent while document editing continues.
+
+Worker unavailability, channel backpressure, and explicit
+`resubscribe_required`/`resync_required` frames with `recoverable: true` use the
+existing channel retry lifecycle. Keep pending updates and replay them after
+fresh ticket validation. Root reconnects continue at capped exponential delays;
+stopping, logout and authentication failure still cancel recovery. Stale
+socket, ticket and channel responses cannot revive a replaced attachment.
+
+Missing or invalid recovery metadata is conservative. Permission revocation,
+quota rejection and rejected document validation retain their existing separate
+handling; do not repeatedly replay rejected content or clear its saved draft.
+Backend telemetry remains available for diagnosis while ordinary browser
+reconnects remain quiet. Deploy this frontend before the matching gateway/worker
+recovery metadata; neither database needs a new up/down step for this change.
+
+Regression coverage is in `blockPackYjsCoordinator.test.ts`,
+`error.frame.test.ts` and the browser `realtimeClient.spec.ts` suite. It covers
+remote awareness expiry, clock advancement after removal, delayed socket close,
+retained editor identity, offline cache writes and automatic resubscription.
+
 ## Web user-settings synchronization
 
 `UserSettingsProvider` loads cached settings before one remote read per mounted
