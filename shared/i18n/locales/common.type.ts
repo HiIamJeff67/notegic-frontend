@@ -3,6 +3,10 @@ export interface CommonTranslation {
     separator: string;
   };
   common: {
+    play: string;
+    pause: string;
+    openVideo: string;
+    mediaUnavailable: string;
     loading: string;
     error: string;
     success: string;

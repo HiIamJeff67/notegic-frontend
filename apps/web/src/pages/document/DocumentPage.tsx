@@ -9,7 +9,6 @@ import {
 } from "@/components/commons/Article/Article";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import APIReference, { apiReferenceNavigation } from "./APIReference";
-import { gatewayEndpointGroups } from "./api-reference/generated/publicAPIData";
 import Overview, { overviewNavigation } from "./Overview";
 import PrivacyPolicy, { privacyPolicyNavigation } from "./PrivacyPolicy";
 import Versions, { versionsNavigation } from "./Versions";
@@ -17,10 +16,6 @@ import Website, { websiteNavigation } from "./Website";
 
 const DocumentPage = () => {
   const articleRef = useRef<HTMLElement>(null);
-  const operationCount = gatewayEndpointGroups.reduce(
-    (count, group) => count + group.endpoints.length,
-    0
-  );
   const navigationItems = [
     overviewNavigation,
     websiteNavigation,
@@ -43,10 +38,7 @@ const DocumentPage = () => {
               </div>
               <Article scrollRef={articleRef} className="h-0 min-w-0 flex-1">
                 <ArticleContent className="max-w-full md:max-w-4xl md:[--article-reading-width:var(--container-2xl)] xl:max-w-6xl xl:[--article-reading-width:var(--container-4xl)] 2xl:max-w-7xl">
-                  <Overview
-                    operationCount={operationCount}
-                    domainCount={gatewayEndpointGroups.length}
-                  />
+                  <Overview />
                   <ArticleParagraphSeparator fullWidth />
                   <Website />
                   <ArticleParagraphSeparator fullWidth />

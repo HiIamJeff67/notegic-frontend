@@ -41,59 +41,50 @@ const apiReferenceDomains = [
     icon: RootShelfIcon,
     summary:
       "A root shelf is the top-level workspace boundary for a collection of Notegic content.",
-    structure: "Root shelf → sub shelves → Block Packs → blocks",
   },
   {
     id: "sub-shelves",
     icon: SubShelfIcon,
     summary:
       "Sub shelves divide a root shelf into smaller, navigable areas without creating another top-level workspace.",
-    structure: "Root shelf → sub shelf → ordered items",
   },
   {
     id: "block-packs",
     icon: BlockPackIcon,
     summary:
       "A Block Pack is a collaborative document container made from one or more blocks.",
-    structure: "Block Pack → ordered blocks → realtime editing session",
   },
   {
     id: "blocks",
     icon: BlocksIcon,
     summary: "Blocks are the small content units that make up a Block Pack.",
-    structure: "Block Pack → block id → content + ordering metadata",
   },
   {
     id: "stations",
     icon: StationIcon,
     summary:
       "Stations are execution-oriented workspaces where routines and their resources come together.",
-    structure: "Station → members + permissions + routine links",
   },
   {
     id: "routines",
     icon: RoutineIcon,
     summary:
       "A routine describes a repeatable automation flow and its schedule.",
-    structure: "Routine → schedule → routine tasks",
   },
   {
     id: "routine-tasks",
     icon: RoutineTaskIcon,
     summary: "Routine tasks define individual steps of a routine.",
-    structure: "Routine → task purpose + payload + dependencies",
   },
   {
     id: "routine-task-dependencies",
     icon: GitBranchIcon,
     summary: "Dependencies connect steps within a routine.",
-    structure: "Routine → preceding task → dependent task",
   },
   {
     id: "routine-tags",
     icon: RoutineTagIcon,
     summary: "Routine tags are labels for grouping and finding routines.",
-    structure: "Tag → linked routines → filtered routine view",
   },
 ] as const;
 
@@ -179,10 +170,6 @@ const APIReference = () => {
         <h2 className="text-2xl font-semibold tracking-tight">
           {apiReferenceNavigation.title}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Find request parameters, body fields, and response formats for
-          supported integrations.
-        </p>
       </ArticleParagraphHeader>
       <ArticleParagraphContent>
         <APIKey />
@@ -194,18 +181,17 @@ const APIReference = () => {
           <ArticleSubParagraphHeader>Contract</ArticleSubParagraphHeader>
           <ArticleSubParagraphContent>
             <p>
-              Use HTTPS and an X-API-Key header for public API requests. The
-              reference describes the API using OpenAPI 3.1.
-            </p>
-            <p>
               Base URL:{" "}
               <code className="break-all font-mono text-sm">
                 {publicApiBaseURL}
               </code>
             </p>
             <p className="text-sm text-muted-foreground">
-              Contract revision: {contractVersion}. This is separate from the
-              API URL version v1 and the product version.
+              OpenAPI 3.1 · Contract revision: {contractVersion}
+            </p>
+            <p>
+              Replace example API keys and resource IDs before sending requests.
+              Follow the parameter and field constraints for each operation.
             </p>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
@@ -225,16 +211,13 @@ const APIReference = () => {
               </ArticleSubParagraphHeader>
               <ArticleSubParagraphContent>
                 <p className="mx-auto max-w-full md:max-w-2xl xl:max-w-4xl">
-                  {guide?.summary ?? group.description}
-                </p>
-                {guide && (
-                  <p className="mx-auto max-w-full text-sm leading-6 text-muted-foreground md:max-w-2xl xl:max-w-4xl">
-                    {guide.structure}{" "}
+                  {guide?.summary ?? group.description}{" "}
+                  {guide && (
                     <ArticleLink href={`/document#${group.id}`}>
                       Read the resource guide
                     </ArticleLink>
-                  </p>
-                )}
+                  )}
+                </p>
                 <EndpointTable endpoints={group.endpoints} />
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
@@ -248,10 +231,6 @@ const APIReference = () => {
         >
           <ArticleSubParagraphHeader>Rules</ArticleSubParagraphHeader>
           <ArticleSubParagraphContent>
-            <p>
-              These rules describe authentication, request handling, security,
-              retries, and compatibility across the public API.
-            </p>
             {gatewayRules.map(rule => (
               <ArticleSubParagraph
                 id={`gateway-rule-${rule.id}`}

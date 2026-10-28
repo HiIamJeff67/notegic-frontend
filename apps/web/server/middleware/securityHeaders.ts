@@ -1,12 +1,17 @@
-import { defineHandler, setResponseHeaders } from "nitro/h3";
+import { defineHandler } from "nitro/h3";
+import { getCrossOriginIsolationHeaders } from "../../../../shared/lib/crossOriginIsolation";
 
 /**
- * Keep production responses cross-origin isolated for the local SQLite/OPFS
- * runtime. The same headers are configured on the Vite dev server as well.
+ * Public documentation embeds third-party players without the SQLite runtime.
+ * Other pages retain isolation; crossing this boundary requires a document load.
  */
 export default defineHandler(event => {
-  setResponseHeaders(event, {
-    "Cross-Origin-Embedder-Policy": "require-corp",
-    "Cross-Origin-Opener-Policy": "same-origin",
-  });
+  const headers = getCrossOriginIsolationHeaders(
+    event.url.pathname,
+    import.meta.env.BASE_URL
+  );
+  for (const [name, value] of Object.entries(headers)) {
+    event.res.headers.set(name, value);
+    event.res.errHeaders.set(name, value);
+  }
 });

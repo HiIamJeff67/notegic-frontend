@@ -5,6 +5,10 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     separator: "",
   },
   common: {
+    play: "播放",
+    pause: "暂停",
+    openVideo: "打开视频",
+    mediaUnavailable: "无法加载媒体。",
     loading: "加载中...",
     error: "错误",
     success: "成功",

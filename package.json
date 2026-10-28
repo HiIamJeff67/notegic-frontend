@@ -9,6 +9,7 @@
     "apps/*"
   ],
   "scripts": {
+    "generate:website-guide": "node scripts/generateWebsiteGuide.mjs && biome format apps/web/src/pages/document/website/WebsiteEnglish.tsx apps/web/src/pages/document/website/websiteNavigation.ts --write",
     "dev": "turbo run dev --filter=@notegic/web",
     "build": "turbo run build --filter=@notegic/web",
     "build:web": "turbo run build --filter=@notegic/web",

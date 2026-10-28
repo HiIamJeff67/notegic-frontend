@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Media Production"
+  short_description: "Create Notegic demos, screenshots, and video assets"
+  default_prompt: "Use $product-media-production to prepare and verify Notegic promotional media."

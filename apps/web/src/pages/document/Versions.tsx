@@ -52,9 +52,6 @@ const Versions = () => {
         <h2 className="text-2xl font-semibold tracking-tight">
           {versionsNavigation.title}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          See what is available now and what we are working toward next.
-        </p>
       </ArticleParagraphHeader>
       <ArticleParagraphContent>
         <div className="space-y-0">

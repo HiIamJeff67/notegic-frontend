@@ -5,6 +5,8 @@ export {
 } from "./ArticleContext";
 export { type ArticleField, ArticleFieldList } from "./ArticleFieldList";
 export { ArticleInlineText } from "./ArticleInlineText";
+export { ArticleImage } from "./ArticleImage";
+export { ArticleVideo } from "./ArticleVideo";
 export {
   Article,
   ArticleContent,

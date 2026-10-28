@@ -28,6 +28,7 @@ typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 | `npm run codegen` | Generate frontend GraphQL artifacts |
 | `npm run codegen:check` | Regenerate GraphQL artifacts and fail on tracked drift |
 | `npm run codegen:watch` | Watch and regenerate GraphQL artifacts |
+| `npm run generate:website-guide` | Compile the English Website guide Markdown into TSX and refresh its navigation; see [Website guide](website-guide.md) |
 | `npm run devlog` | Generate today's change snapshot and refresh the README index |
 | `npm run install-hooks` | Enable the repository pre-commit checks |
 | `npm run generate-local-migrations` | Generate the incremental Drizzle migration and refresh the current-schema bootstrap |
@@ -128,6 +129,9 @@ Cloudflare maintenance mode is documented in
 [Cloudflare maintenance mode](cloudflare-maintenance-mode.md).
 
 ## Runbook expectations
+
+The [Product media production](product-media-production.md) runbook covers
+promotional recordings, screenshots, editing, and publication handoff.
 
 Each future runbook should state prerequisites, the command or procedure, the
 expected result, common failure causes, and whether it changes generated or

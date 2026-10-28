@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 for (const width of [320, 390, 767, 768, 900, 1024, 1280, 1440, 1536, 2560]) {
   test(`document tables stay reachable within a ${width}px viewport`, async ({
     page,
@@ -144,10 +150,9 @@ for (const width of [320, 768, 900, 1280, 2560]) {
           .evaluate(element => element.getBoundingClientRect().right)
       ).toBeLessThanOrEqual(width);
     }
-    const question = page.locator("#q-and-a").getByRole("button").last();
-    await question.focus();
-    await question.press("Enter");
-    await expect(question).toHaveAttribute("aria-expanded", "true");
+    const guidance = page.locator("#q-and-a li").last();
+    await guidance.scrollIntoViewIfNeeded();
+    await expect(guidance).toBeVisible();
     expect(
       await page
         .locator("article")
@@ -335,7 +340,9 @@ for (const width of [320, 767]) {
     expect(
       await sidebar.evaluate(node => node.getBoundingClientRect().right)
     ).toBeLessThanOrEqual(width);
-    await sidebar.getByRole("link", { name: "Q&A", exact: true }).click();
+    await sidebar
+      .getByRole("link", { name: "Common situations", exact: true })
+      .click();
     await page.keyboard.press("Escape");
     await expect(sidebar).toBeHidden();
     await expect(trigger).toBeInViewport();

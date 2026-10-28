@@ -1,6 +1,5 @@
 import { BookOpenIcon } from "lucide-react";
 import {
-  ArticleLink,
   ArticleParagraph,
   ArticleParagraphContent,
   ArticleParagraphHeader,
@@ -14,52 +13,26 @@ export const overviewNavigation = {
   icon: BookOpenIcon,
 } as const;
 
-const Overview = ({
-  operationCount,
-  domainCount,
-}: {
-  operationCount: number;
-  domainCount: number;
-}) => {
+const Overview = () => {
   return (
     <ArticleParagraph
       id={overviewNavigation.id}
       className="mx-auto max-w-full md:max-w-2xl xl:max-w-4xl"
     >
       <ArticleParagraphHeader>
-        <h1 className="text-3xl font-semibold tracking-tight">Document</h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Guides for using Notegic and building integrations with its public
-          API.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">Overview</h1>
       </ArticleParagraphHeader>
-      <ArticleParagraphContent>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            [String(operationCount), "API operations"],
-            ["OpenAPI 3.1", "Public HTTP contract"],
-            [String(domainCount), "API-key resource domains"],
-          ].map(([value, label]) => (
-            <div
-              className="rounded-sm border border-border/70 bg-background p-4"
-              key={label}
-            >
-              <p className="font-mono text-lg font-semibold text-foreground">
-                {value}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">{label}</p>
-            </div>
-          ))}
-        </div>
+      <ArticleParagraphContent className="mt-4 space-y-3">
         <p>
-          Build server-side integrations with shelves, documents, stations, and
-          routines. Start with an API key, then use the resource reference to
-          choose an operation.
+          Notegic brings notes, reference files, collaboration, and recurring
+          work into one workspace. This documentation covers using the website
+          and connecting external tools through the public API.
         </p>
         <p>
-          <ArticleLink href="/document#website">
-            Explore the Website guide
-          </ArticleLink>
+          Start with Website for note editing, file previews, routines, and
+          settings. Use API for authentication, endpoints, and request and
+          response formats. Versions covers releases and planned work; Privacy
+          and policy explains data handling.
         </p>
       </ArticleParagraphContent>
     </ArticleParagraph>

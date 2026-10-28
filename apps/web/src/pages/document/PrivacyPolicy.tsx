@@ -42,10 +42,6 @@ const PrivacyPolicy = () => {
         <h2 className="text-2xl font-semibold tracking-tight">
           {privacyPolicyNavigation.title}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Read how Notegic handles your information. Review a third-party
-          integration's privacy policy before giving it access to your data.
-        </p>
       </ArticleParagraphHeader>
       <ArticleParagraphContent>
         <PrivacyPolicySections separatorFullWidth />

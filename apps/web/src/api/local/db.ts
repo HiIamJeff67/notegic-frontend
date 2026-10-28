@@ -1,4 +1,5 @@
 import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
+import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
 import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
 import { IndexedDBKey } from "@shared/types/indexedDB.type";
 import { eq } from "drizzle-orm";
@@ -21,13 +22,18 @@ import {
 } from "./recovery";
 import * as schema from "./schemas";
 
-const isClient = typeof window !== "undefined";
+const isLocalRuntime =
+  typeof window !== "undefined" &&
+  requiresCrossOriginIsolation(
+    window.location.pathname,
+    import.meta.env.BASE_URL
+  );
 
 const localDBDiagnosticsStorageKey = `notegic-local-db-diagnostics:${String(
   import.meta.env.VITE_LOCAL_DATABASE_PATH ?? "default"
 )}`;
 const localDBDiagnosticsStorage = (() => {
-  if (!isClient) return null;
+  if (!isLocalRuntime) return null;
   try {
     return window.localStorage;
   } catch {
@@ -37,7 +43,7 @@ const localDBDiagnosticsStorage = (() => {
 const localDBDiagnostics = createLocalDBDiagnostics(
   localDBDiagnosticsStorage,
   localDBDiagnosticsStorageKey,
-  isClient ? "worker-connection-pending" : "disabled"
+  isLocalRuntime ? "worker-connection-pending" : "disabled"
 );
 let localDBReadOnly = false;
 const isLocalDBReadOnly = (): boolean => localDBReadOnly;
@@ -55,7 +61,7 @@ const runWithMigrationLock = async <T>(
   operation: () => Promise<T>
 ): Promise<T> => {
   localDBDiagnostics.transition("migration-lock-pending");
-  if (!isClient || !navigator.locks) {
+  if (!isLocalRuntime || !navigator.locks) {
     localDBDiagnostics.transition("migration-lock-acquired");
     return await operation();
   }
@@ -124,7 +130,7 @@ const markSQLocalConnectionReady = () => {
   });
   resolveSQLocalConnectionReady();
 };
-if (isClient) {
+if (isLocalRuntime) {
   sqlocalConnectionReady =
     hotReloadable?.sqlocalConnectionReady ??
     new Promise<void>((resolve, reject) => {
@@ -134,14 +140,14 @@ if (isClient) {
 }
 const hasReusableHotReloadState =
   hotReloadable?.sqlocalDrizzle && hotReloadable.sqlocalConnectionReady;
-const sqlocalWorker = isClient
+const sqlocalWorker = isLocalRuntime
   ? (hotReloadable?.sqlocalWorker ??
     new Worker(new URL("./sqlocal.worker.ts", import.meta.url), {
       type: "module",
     }))
   : undefined;
 
-if (isClient && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
+if (isLocalRuntime && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
   sqlocalWorker.addEventListener("message", handleSQLocalWorkerMessage);
   sqlocalWorker.addEventListener("error", event => {
     localDBDiagnostics.recordWorkerEvent({
@@ -194,7 +200,7 @@ if (isClient && sqlocalWorker && !hotReloadable?.sqlocalWorker) {
 }
 // create the sqlocal drizzle using either the data from HMR hot reload whose type is defined on the above
 // or the new sqlocal drizzle instance created here
-const sqlocalDrizzle = isClient
+const sqlocalDrizzle = isLocalRuntime
   ? hasReusableHotReloadState
     ? hotReloadable.sqlocalDrizzle
     : new SQLocalDrizzle({
@@ -212,7 +218,7 @@ let _SQLOperationChain: Promise<void> =
 let sqlocalLifecycle: "open" | "closing" | "closed" = "open";
 let sqlocalTeardownPromise: Promise<void> | null = null;
 const localDBRecoveryChannel =
-  isClient && "BroadcastChannel" in window
+  isLocalRuntime && "BroadcastChannel" in window
     ? new BroadcastChannel("notegic-local-db-recovery")
     : null;
 
@@ -488,7 +494,7 @@ let migrationError: unknown = null;
 
 // automatically reset the isReady signal to false every 60 seconds
 const LOCAL_DB_READY_REVALIDATE_MS = 60_000;
-const isLocalDBReadyInvalidationInterval = isClient
+const isLocalDBReadyInvalidationInterval = isLocalRuntime
   ? setInterval(() => {
       isReady = false;
     }, LOCAL_DB_READY_REVALIDATE_MS)
@@ -578,7 +584,7 @@ const verifyMigrationVersion = async (
 const ensureMigrated = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
-  if (!isClient || !isLocalPreferenceEnabled("localVault")) {
+  if (!isLocalRuntime || !isLocalPreferenceEnabled("localVault")) {
     localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
   }
@@ -694,7 +700,7 @@ const ensureMigrated = async (
 const ensureReady = async (
   options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
 ): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
-  if (!isClient || !isLocalPreferenceEnabled("localVault")) {
+  if (!isLocalRuntime || !isLocalPreferenceEnabled("localVault")) {
     localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
   }
@@ -748,7 +754,7 @@ const ensureReady = async (
 };
 
 const download = async (): Promise<File> => {
-  if (!isClient || !sqlocalDrizzle) {
+  if (!isLocalRuntime || !sqlocalDrizzle) {
     throw new Error("local database export is unavailable on the server.");
   }
 
@@ -767,7 +773,7 @@ const download = async (): Promise<File> => {
 };
 
 const downloadLocalData = async (): Promise<void> => {
-  if (!isClient || !sqlocalDrizzle) {
+  if (!isLocalRuntime || !sqlocalDrizzle) {
     throw new Error("local data export is unavailable on the server.");
   }
 
@@ -953,7 +959,7 @@ const rebuild = async (options: {
     );
   }
 
-  if (!isClient || !navigator.locks) {
+  if (!isLocalRuntime || !navigator.locks) {
     const errorMessage =
       "The browser cannot guarantee that another tab is not using the local database.";
     localDBDiagnostics.transition("manual-recovery", {
@@ -1048,20 +1054,22 @@ localDB.transaction = wrappedTransaction;
 
 Object.defineProperties(localDB, {
   isMigrated: {
-    get: () => isClient && isLocalPreferenceEnabled("localVault") && isMigrated,
+    get: () =>
+      isLocalRuntime && isLocalPreferenceEnabled("localVault") && isMigrated,
     enumerable: true,
   },
   isEnabled: {
-    get: () => isClient && isLocalPreferenceEnabled("localVault"),
+    get: () => isLocalRuntime && isLocalPreferenceEnabled("localVault"),
     enumerable: true,
   },
   isReady: {
-    get: () => isClient && isLocalPreferenceEnabled("localVault") && isReady,
+    get: () =>
+      isLocalRuntime && isLocalPreferenceEnabled("localVault") && isReady,
     enumerable: true,
   },
   migrationError: {
     get: () =>
-      isClient && isLocalPreferenceEnabled("localVault")
+      isLocalRuntime && isLocalPreferenceEnabled("localVault")
         ? migrationError
         : null,
     enumerable: true,

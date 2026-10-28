@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("documentation copy stays in English when the shared UI language changes", async ({
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
+test("API and Website guides stay in English regardless of the UI language", async ({
   page,
 }) => {
   test.skip(
@@ -31,11 +37,16 @@ test("documentation copy stays in English when the shared UI language changes", 
     .click();
   await expect(
     page.locator("#api-key-management").getByRole("heading", {
-      name: "Manage and revoke keys",
+      name: "Review and revoke",
       exact: true,
     })
   ).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-TW");
+  await expect(page.locator("#website")).toContainText(
+    "Write and organize notes, keep reference files"
+  );
+  await expect(page.locator('#website [lang="en"]')).toBeVisible();
+  await expect(page.locator("#website > header button")).toHaveCount(0);
 });
 
 test("document HTML renders its quick start without relying on client-side recovery", async ({
@@ -77,8 +88,14 @@ test("document sections keep their DOM boundaries and API operations remain sear
   await page.goto("/document");
   await page.waitForLoadState("networkidle");
   await expect(
-    page.getByRole("heading", { name: "Document", exact: true })
+    page.getByRole("heading", { name: "Overview", exact: true })
   ).toBeVisible();
+  await expect(page.locator("#overview p")).toHaveCount(2);
+  await expect(page.locator("#overview")).toContainText("Start with Website");
+  await expect(page.locator("#overview").getByRole("link")).toHaveCount(0);
+  await expect(
+    page.locator('#overview + [data-article-separator="paragraph"] + #website')
+  ).toHaveCount(1);
   const sections = page.locator(
     '.article-content > section[data-article-level="0"]'
   );
@@ -108,8 +125,11 @@ test("document sections keep their DOM boundaries and API operations remain sear
     page.locator("#gateway-rule-rate-limits-and-retries strong").first()
   ).toHaveText("1,000 requests per minute");
   await expect(page.locator("#gateway-rules")).not.toContainText("**");
+  await page.locator("#quick-start").scrollIntoViewIfNeeded();
   await expect(
-    page.locator("#quick-start pre:visible .token").first()
+    page
+      .locator('#quick-start pre:visible span[style*="--shiki-light"]')
+      .first()
   ).toBeVisible();
   await expect(page.locator("#versions")).not.toContainText("Product Roadmap");
   await expect(page.locator("#versions [data-slot=progress]")).toHaveCount(0);
@@ -187,59 +207,42 @@ test("document sections keep their DOM boundaries and API operations remain sear
   }
 });
 
-test("Website deep links and resource links work within document", async ({
+test("Website deep links and API resource guide links remain usable", async ({
   page,
 }) => {
   await page.goto("/document#api-keys");
   await page.waitForLoadState("networkidle");
-  await expect(page).toHaveURL(/\/document#api-keys$/);
-  await expect(page.locator("#api-keys > h3")).toBeInViewport();
+  await expect(page.locator("#api-keys > h5")).toBeInViewport();
   await expect(page.locator("#website #api-keys")).toHaveCount(1);
-  await expect(
-    page.locator("#api-keys ol li").last().locator("code")
-  ).toHaveText("X-API-Key");
 
-  await page.getByRole("link", { name: "Q&A", exact: true }).click();
-  await expect(page.locator("#q-and-a")).toBeVisible();
   await page
-    .getByRole("button", { name: "What is a Block Pack?", exact: true })
+    .getByRole("link", { name: "Common situations", exact: true })
     .click();
-  await expect(
-    page.getByText(
-      "A Block Pack is a collaborative document container made from ordered blocks.",
-      { exact: false }
-    )
-  ).toBeVisible();
+  await expect(page.locator("#q-and-a")).toBeInViewport();
+  await expect(page.locator("#q-and-a li")).toHaveCount(6);
 
-  await page.locator('[data-sidebar][href="#root-shelves"]').click();
-  const link = page
-    .locator("#root-shelves")
-    .getByRole("link", { name: "View Root Shelves API operations" });
-  await expect(link).toHaveAttribute("href", "/document#gateway-root-shelves");
-  await link.click();
-  await expect(page).toHaveURL(/\/document#gateway-root-shelves$/);
-  await expect(page.locator("#gateway-root-shelves")).toBeInViewport();
+  await page.goto("/document#gateway-root-shelves");
+  await page
+    .locator("#gateway-root-shelves")
+    .getByRole("link", { name: "Read the resource guide", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#root-shelves$/);
+  await expect(page.locator("#root-shelves > h5")).toBeInViewport();
   await page.goto("/document#materials");
-  await expect(page.locator("#materials > h3")).toBeInViewport();
+  await expect(page.locator("#materials > h5")).toBeInViewport();
+  await expect(page.locator("#materials")).toContainText(
+    "A Material holds a reference file"
+  );
   await expect(
     page.locator("#materials a[href='/document#gateway-materials']")
   ).toHaveCount(0);
-  await expect(page.locator("#materials")).toContainText(
-    "does not currently have a public integration API"
-  );
   await page.goto("/document#routine-task-dependencies");
   await expect(
-    page.locator("#routine-task-dependencies > h3")
+    page.locator("#routine-task-dependencies > h5")
   ).toBeInViewport();
-  await page
-    .locator("#routine-task-dependencies")
-    .getByRole("link", {
-      name: "View Routine Task Dependencies API operations",
-    })
-    .click();
-  await expect(
-    page.locator("#gateway-routine-task-dependencies")
-  ).toBeInViewport();
+  await expect(page.locator("#routine-task-dependencies")).toContainText(
+    "Dependencies specify which step must wait"
+  );
 });
 
 test("the removed tutorial route returns 404 without redirecting", async ({

@@ -7,6 +7,7 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import sqlocal from "sqlocal/vite";
 import { defineConfig, loadEnv } from "vite";
+import { getCrossOriginIsolationHeaders } from "../../shared/lib/crossOriginIsolation";
 
 export default defineConfig(({ mode }) => {
   const webRoot = dirname(fileURLToPath(import.meta.url));
@@ -47,10 +48,6 @@ export default defineConfig(({ mode }) => {
     base: basePath,
     server: {
       port: Number(env.VITE_PORT || 6776),
-      headers: {
-        "Cross-Origin-Embedder-Policy": "require-corp",
-        "Cross-Origin-Opener-Policy": "same-origin",
-      },
     },
     optimizeDeps: {
       // Runtime imports missed by the initial scan otherwise replace live chunks.
@@ -82,6 +79,21 @@ export default defineConfig(({ mode }) => {
       noExternal: ["@blocknote/math-block"],
     },
     plugins: [
+      {
+        name: "document-isolation-headers",
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            const pathname = new URL(req.url ?? "/", "http://vite.local")
+              .pathname;
+            for (const [name, value] of Object.entries(
+              getCrossOriginIsolationHeaders(pathname, basePath)
+            )) {
+              res.setHeader(name, value);
+            }
+            next();
+          });
+        },
+      },
       {
         name: "sqlite-wasm-dev-asset-fix",
         apply: "serve",

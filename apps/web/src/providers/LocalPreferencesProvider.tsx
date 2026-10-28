@@ -5,6 +5,7 @@ import {
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
 import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
 import { LocalStorageKey } from "@shared/types/localStorage.type";
 import React, { createContext, useEffect, useState } from "react";
 import { cleanupLocalData } from "@/api/local/cleanup";
@@ -293,7 +294,14 @@ export const LocalPreferencesProvider = ({
   }, [isReady, preferences]);
 
   useEffect(() => {
-    if (!isReady) return;
+    if (
+      !isReady ||
+      !requiresCrossOriginIsolation(
+        window.location.pathname,
+        import.meta.env.BASE_URL
+      )
+    )
+      return;
     void cleanupLocalData(preferences.cleanupAfterDays).catch(error => {
       console.error("Failed to clean up local data.", error);
     });

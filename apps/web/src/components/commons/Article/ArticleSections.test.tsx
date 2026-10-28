@@ -14,30 +14,32 @@ test("paragraph and subparagraph separators keep separate semantic hierarchy", (
     <ArticleSubParagraphSeparator className="w-full" />
   );
   expect(paragraph).toContain('data-article-separator="paragraph"');
-  expect(paragraph).toContain("border-t-2 border-foreground/20");
+  expect(paragraph).toContain("h-0.5");
+  expect(paragraph).toContain("bg-foreground/20");
+  expect(paragraph).not.toContain("border-t");
   expect(paragraph).toContain("my-8");
   expect(paragraph).not.toContain("mb-6");
   expect(paragraph).toContain(
     "max-w-[calc(var(--article-reading-width,100%)+2rem)]"
   );
   expect(subparagraph).toContain('data-article-separator="subparagraph"');
-  expect(subparagraph).toContain(
-    "max-w-[min(calc(100%-2rem),var(--article-reading-width,100%))]"
-  );
+  expect(subparagraph).toContain("max-w-(--article-reading-width)");
   expect(subparagraph).toContain("bg-foreground/10");
 });
 
-test("automatic subparagraph separators stay inset and are only inserted between siblings", () => {
+test("automatic subparagraph separators align with content and own the gap between siblings", () => {
   const markup = renderToStaticMarkup(
     <ArticleSubParagraph>Content</ArticleSubParagraph>
   );
-  expect(markup).toContain("[&amp;+&amp;]:before:w-[calc(100%-2rem)]");
+  expect(markup).toContain("[&amp;+&amp;]:before:w-full");
   expect(markup).toContain(
     "[&amp;+&amp;]:before:max-w-(--article-reading-width)"
   );
   expect(markup).not.toContain("before:mx-4");
   expect(markup).not.toContain("after:");
   expect(markup).toContain("[&amp;:has(+&amp;)]:mb-0");
+  expect(markup).toContain("[&amp;:has(+&amp;)]:pb-0");
+  expect(markup).toContain("[&amp;+&amp;]:pt-0");
   expect(markup).toContain(
     "[&amp;+&amp;]:before:my-(--article-separator-spacing)"
   );

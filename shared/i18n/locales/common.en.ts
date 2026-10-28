@@ -5,6 +5,10 @@ export const EnglishCommonTranslation: CommonTranslation = {
     separator: " ",
   },
   common: {
+    play: "Play",
+    pause: "Pause",
+    openVideo: "Open video",
+    mediaUnavailable: "Media could not be loaded.",
     loading: "Loading...",
     error: "Error",
     success: "Success",

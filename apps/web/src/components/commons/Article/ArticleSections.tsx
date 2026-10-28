@@ -2,6 +2,7 @@ import { cn } from "@shared/util/utils";
 import type { CSSProperties, HTMLAttributes } from "react";
 import { createContext, useContext } from "react";
 import { ArticleDisplayContext } from "./ArticleContext";
+import { Separator } from "@/components/ui/separator";
 
 // Visual levels control tone and indentation; separator spacing follows actual nesting.
 const ArticleSubParagraphDepthContext = createContext(0);
@@ -112,11 +113,11 @@ export const ArticleParagraphSeparator = ({
   if (display?.mode === "pagination") return null;
 
   return (
-    <div
-      role="separator"
+    <Separator
+      decorative={false}
       data-article-separator="paragraph"
       className={cn(
-        "mx-auto my-8 w-full max-w-[calc(var(--article-reading-width,100%)+2rem)] shrink-0 border-t-2 border-foreground/20",
+        "mx-auto my-8 h-0.5 w-full max-w-[calc(var(--article-reading-width,100%)+2rem)] bg-foreground/20",
         fullWidth &&
           "shadow-[0_0_0_100vmax] shadow-foreground/20 [clip-path:inset(0_-100vmax)]",
         className
@@ -145,7 +146,7 @@ export const ArticleSubParagraph = ({
       <section
         data-article-level={level}
         className={cn(
-          "scroll-mt-8 flex w-full min-w-0 flex-col items-center py-2 [&:has(+&)]:mb-0 [&+&]:mt-0 [&+&]:before:my-(--article-separator-spacing) [&+&]:before:block [&+&]:before:h-px [&+&]:before:w-[calc(100%-2rem)] [&+&]:before:max-w-(--article-reading-width) [&+&]:before:shrink-0 [&+&]:before:bg-foreground/10",
+          "scroll-mt-8 flex w-full min-w-0 flex-col items-center py-2 [&:has(+&)]:mb-0 [&:has(+&)]:pb-0 [&+&]:mt-0 [&+&]:pt-0 [&+&]:before:my-(--article-separator-spacing) [&+&]:before:block [&+&]:before:h-px [&+&]:before:w-full [&+&]:before:max-w-(--article-reading-width) [&+&]:before:shrink-0 [&+&]:before:bg-foreground/10",
           separatorFullWidth &&
             "[&+&]:before:shadow-[0_0_0_100vmax] [&+&]:before:shadow-foreground/10 [&+&]:before:[clip-path:inset(0_-100vmax)]",
           articleTone(level),
@@ -170,11 +171,15 @@ export const ArticleSubParagraph = ({
 export const ArticleSubParagraphHeader = ({
   className,
   children,
+  as: Heading = "h3",
   level = 1,
   style,
   ...props
-}: HTMLAttributes<HTMLHeadingElement> & { level?: number }) => (
-  <h3
+}: HTMLAttributes<HTMLHeadingElement> & {
+  level?: number;
+  as?: "h3" | "h4" | "h5" | "h6";
+}) => (
+  <Heading
     className={cn(
       "w-full min-w-0 whitespace-normal break-words text-xl font-semibold tracking-tight",
       articleTone(level),
@@ -184,7 +189,7 @@ export const ArticleSubParagraphHeader = ({
     {...props}
   >
     {children}
-  </h3>
+  </Heading>
 );
 
 export const ArticleSubParagraphContent = ({
@@ -213,11 +218,11 @@ export const ArticleSubParagraphSeparator = ({
   const depth = useContext(ArticleSubParagraphDepthContext);
 
   return (
-    <div
-      role="separator"
+    <Separator
+      decorative={false}
       data-article-separator="subparagraph"
       className={cn(
-        "mx-auto my-(--article-separator-spacing) h-px w-[calc(100%-2rem)] max-w-[min(calc(100%-2rem),var(--article-reading-width,100%))] shrink-0 bg-foreground/10",
+        "mx-auto my-(--article-separator-spacing) h-px w-full max-w-(--article-reading-width) shrink-0 bg-foreground/10",
         fullWidth &&
           "shadow-[0_0_0_100vmax] shadow-foreground/10 [clip-path:inset(0_-100vmax)]",
         className

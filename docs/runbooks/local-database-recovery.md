@@ -19,6 +19,12 @@ SQLite WASM, OPFS, IndexedDB, transaction, and Yjs boundaries.
 Migration failure never deletes the OPFS database. The previous committed
 version remains the retry point.
 
+The public `/document` page embeds external players and does not start SQLocal
+or run local-data cleanup. Entering or leaving it performs a document navigation
+so application pages retain cross-origin isolation and SharedArrayBuffer access.
+Existing OPFS data is retained across this boundary; see
+[Website guide isolation](website-guide.md#cross-origin-isolation).
+
 ## Transaction isolation
 
 The shared Drizzle driver serializes raw SQL, query builders, prepared and

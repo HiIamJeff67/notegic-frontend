@@ -4,56 +4,35 @@ import {
   ArticleParagraphContent,
   ArticleParagraphHeader,
 } from "@/components/commons/Article/Article";
-import APIKeys, { apiKeysNavigation } from "./website/APIKeys";
-import Integration, { integrationNavigation } from "./website/Integration";
-import KeyManagement, {
-  keyManagementNavigation,
-} from "./website/KeyManagement";
-import Questions, { questionsNavigation } from "./website/Questions";
-import Resources, { resourceNavigation } from "./website/Resources";
-import Structure, { structureNavigation } from "./website/Structure";
+import WebsiteEnglish from "./website/WebsiteEnglish";
+import { websiteSections } from "./website/websiteNavigation";
 
 export const websiteNavigation = {
   id: "website",
   title: "Website",
-  description: "Guides to Notegic resources, API keys, and integrations.",
+  description:
+    "Write notes, review references, and configure recurring work in Notegic.",
   weight: 5 as const,
   icon: BookOpenIcon,
-  children: [
-    apiKeysNavigation,
-    keyManagementNavigation,
-    structureNavigation,
-    ...resourceNavigation,
-    integrationNavigation,
-    questionsNavigation,
-  ],
+  children: websiteSections,
 };
 
-const Website = () => (
-  <ArticleParagraph
-    id={websiteNavigation.id}
-    className="mx-auto max-w-full md:max-w-2xl xl:max-w-4xl"
-  >
-    <ArticleParagraphHeader>
-      <h2 className="text-2xl font-semibold tracking-tight">Website</h2>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        A practical guide to API-key integrations and the Notegic resource
-        model.
-      </p>
-    </ArticleParagraphHeader>
-    <ArticleParagraphContent>
-      <p>
-        Start with the API key workflow, then use the Notegic structure guide to
-        understand which resource family your integration should call.
-      </p>
-      <APIKeys />
-      <KeyManagement />
-      <Structure />
-      <Resources />
-      <Integration />
-      <Questions />
-    </ArticleParagraphContent>
-  </ArticleParagraph>
-);
+const Website = () => {
+  return (
+    <ArticleParagraph
+      id={websiteNavigation.id}
+      className="mx-auto max-w-full md:max-w-2xl xl:max-w-4xl"
+    >
+      <ArticleParagraphHeader>
+        <h2 className="text-2xl font-semibold tracking-tight">Website</h2>
+      </ArticleParagraphHeader>
+      <ArticleParagraphContent>
+        <div lang="en">
+          <WebsiteEnglish />
+        </div>
+      </ArticleParagraphContent>
+    </ArticleParagraph>
+  );
+};
 
 export default Website;

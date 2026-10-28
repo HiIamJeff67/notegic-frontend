@@ -4,7 +4,15 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CodeExample from "./CodeExample";
 
-type CodeLanguage = "curl" | "go" | "http" | "json" | "python" | "typescript";
+type CodeLanguage =
+  | "curl"
+  | "go"
+  | "http"
+  | "json"
+  | "python"
+  | "typescript"
+  | "text"
+  | "mermaid";
 
 interface CodeExamplePanelProps {
   code: Partial<Record<CodeLanguage, string>>;
@@ -14,6 +22,8 @@ interface CodeExamplePanelProps {
 }
 
 const languages = {
+  text: { label: "Text", icon: FileCode2 },
+  mermaid: { label: "Mermaid", icon: FileCode2 },
   curl: { label: "cURL", icon: Terminal },
   go: { label: "Go", icon: FileCode2 },
   http: { label: "HTTP", icon: Globe2 },

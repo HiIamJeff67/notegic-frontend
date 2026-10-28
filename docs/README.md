@@ -26,7 +26,7 @@ describe backend implementation as if it belongs to this repository.
 
 | Area | Scope |
 | --- | --- |
-| [documentations](documentations/) | Product documentation drafts and screenshots for editorial review; not automatically published |
+| [introductions](introductions/) | English Website guide source, screenshots, GIFs, media inventory, and published video links |
 | [designs](designs/README.md) | Current route, codebase, and system design decisions |
 | [conventions](conventions/) | Naming, UI, styling, icons, generated code, and implementation conventions |
 | [runbooks](runbooks/) | Local development, verification, code generation, and troubleshooting procedures |
@@ -48,6 +48,10 @@ Before choosing or introducing an icon, consult the
 Keep current design decisions in `designs/`, contributor rules in
 `conventions/`, repeatable procedures in `runbooks/`, and dated implementation
 context in `devlogs/`.
+
+For promotional videos, GIFs, and screenshots, use the
+[Product media production skill](../.agents/skills/product-media-production/SKILL.md)
+and its [runbook](runbooks/product-media-production.md).
 
 ## Repository boundary
 

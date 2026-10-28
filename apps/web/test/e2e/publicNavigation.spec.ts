@@ -33,7 +33,9 @@ test("@environment visitors can open the published API documentation", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "View Docs" }).click();
   await expect(page).toHaveURL(/\/document$/);
-  await expect(page.getByRole("heading", { name: "Document" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Overview", exact: true, level: 1 })
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "API", exact: true })
   ).toBeVisible();

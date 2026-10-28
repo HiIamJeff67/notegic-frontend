@@ -44,18 +44,12 @@ const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {
       <div className="min-w-0">
         <p className="mb-3 text-base font-semibold text-foreground">Request</p>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-sm leading-6 text-muted-foreground">
-              Examples are illustrative. Replace the API key and resource IDs,
-              and follow the field constraints before sending a request.
-            </p>
-            <CodeExamplePanel
-              title="Headers"
-              code={{
-                json: requestHeadersJson,
-              }}
-            />
-          </div>
+          <CodeExamplePanel
+            title="Headers"
+            code={{
+              json: requestHeadersJson,
+            }}
+          />
           {userAgentParameter && (
             <div className="space-y-2">
               <CodeExamplePanel

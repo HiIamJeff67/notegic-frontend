@@ -5,6 +5,10 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     separator: "",
   },
   common: {
+    play: "再生",
+    pause: "一時停止",
+    openVideo: "動画を開く",
+    mediaUnavailable: "メディアを読み込めませんでした。",
     loading: "読み込み中...",
     error: "エラー",
     success: "成功",

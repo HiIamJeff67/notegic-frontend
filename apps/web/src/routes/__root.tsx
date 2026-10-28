@@ -1,13 +1,36 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start";
-import { createRootRouteWithContext } from "@tanstack/react-router";
+import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
+import { createRootRouteWithContext, redirect } from "@tanstack/react-router";
 import appCSS from "@/global/styles/globals.css?url";
 import { RootDocument } from "@/pages/RootDocument";
 import { RootNotFoundPage } from "@/pages/RootNotFoundPage";
 // @ts-ignore: allow side-effect import of global CSS without declaration
 import "@/global/styles/globals.css";
 
+const isolatedDocument =
+  typeof window === "undefined"
+    ? null
+    : requiresCrossOriginIsolation(
+        window.location.pathname,
+        import.meta.env.BASE_URL
+      );
+
 export const Route =
   createRootRouteWithContext<ApolloClientIntegration.RouterContext>()({
+    beforeLoad: ({ location, preload }) => {
+      if (
+        !preload &&
+        isolatedDocument !== null &&
+        isolatedDocument !==
+          requiresCrossOriginIsolation(
+            location.pathname,
+            import.meta.env.BASE_URL
+          )
+      ) {
+        // COEP belongs to the HTML document and cannot change during SPA navigation.
+        throw redirect({ href: location.publicHref, reloadDocument: true });
+      }
+    },
     head: () => ({
       meta: [
         { charSet: "utf-8" },

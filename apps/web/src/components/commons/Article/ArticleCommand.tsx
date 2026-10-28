@@ -89,7 +89,9 @@ const ArticleCommand = ({
     const rootGroups: ArticleCommandGroup[] = [];
 
     for (const section of sections) {
-      const heading = section.querySelector<HTMLElement>("h1, h2, h3");
+      const heading = section.querySelector<HTMLElement>(
+        "h1, h2, h3, h4, h5, h6"
+      );
       const title = heading?.textContent?.trim();
       if (!title || sectionGroups.has(section.id)) continue;
 

@@ -5,6 +5,10 @@ export const KoreanCommonTranslation: CommonTranslation = {
     separator: "",
   },
   common: {
+    play: "재생",
+    pause: "일시 정지",
+    openVideo: "동영상 열기",
+    mediaUnavailable: "미디어를 불러올 수 없습니다.",
     loading: "로딩 중...",
     error: "오류",
     success: "성공",
