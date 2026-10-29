@@ -939,6 +939,12 @@
             "maxLength": 1024,
             "type": "string"
           },
+          "hasCustomSchedule": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "id": {
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
@@ -2506,6 +2512,12 @@
                   "description": "Optional human-readable description of this resource or dependency.",
                   "maxLength": 1024,
                   "type": "string"
+                },
+                "hasCustomSchedule": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
                 },
                 "id": {
                   "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
@@ -6437,6 +6449,9 @@
             "description": "Optional human-readable description of this resource or dependency.",
             "type": "string"
           },
+          "hasCustomSchedule": {
+            "type": "boolean"
+          },
           "id": {
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
@@ -6544,6 +6559,7 @@
           "definitionVersion",
           "isActive",
           "timeoutSeconds",
+          "hasCustomSchedule",
           "scheduledStartAt",
           "scheduledEndAt",
           "period",
@@ -8743,6 +8759,9 @@
               "description": "Optional human-readable description of this resource or dependency.",
               "type": "string"
             },
+            "hasCustomSchedule": {
+              "type": "boolean"
+            },
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
@@ -8850,6 +8869,7 @@
             "definitionVersion",
             "isActive",
             "timeoutSeconds",
+            "hasCustomSchedule",
             "scheduledStartAt",
             "scheduledEndAt",
             "period",
@@ -8938,6 +8958,9 @@
               "description": "Optional human-readable description of this resource or dependency.",
               "type": "string"
             },
+            "hasCustomSchedule": {
+              "type": "boolean"
+            },
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
               "format": "uuid",
@@ -9045,6 +9068,7 @@
             "definitionVersion",
             "isActive",
             "timeoutSeconds",
+            "hasCustomSchedule",
             "scheduledStartAt",
             "scheduledEndAt",
             "period",
@@ -12078,6 +12102,9 @@
             "description": "Optional human-readable description of this resource or dependency.",
             "type": "string"
           },
+          "hasCustomSchedule": {
+            "type": "boolean"
+          },
           "id": {
             "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
             "format": "uuid",
@@ -12185,6 +12212,7 @@
           "definitionVersion",
           "isActive",
           "timeoutSeconds",
+          "hasCustomSchedule",
           "scheduledStartAt",
           "scheduledEndAt",
           "period",
@@ -12289,6 +12317,9 @@
             "description": {
               "description": "Optional human-readable description of this resource or dependency.",
               "type": "string"
+            },
+            "hasCustomSchedule": {
+              "type": "boolean"
             },
             "id": {
               "description": "Identifier of the represented resource or aggregate bucket. The schema specifies whether it is a UUID; example IDs are illustrative and must be replaced.",
@@ -12397,6 +12428,7 @@
             "definitionVersion",
             "isActive",
             "timeoutSeconds",
+            "hasCustomSchedule",
             "scheduledStartAt",
             "scheduledEndAt",
             "period",
@@ -13968,6 +14000,12 @@
                   "null"
                 ]
               },
+              "hasCustomSchedule": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
               "isActive": {
                 "type": [
                   "boolean",
@@ -14057,6 +14095,23 @@
       "UpdateMyRoutineByIdResponseData": {
         "description": "Operation result; its shape is defined by this response schema.",
         "properties": {
+          "definitionVersion": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "hasCustomSchedule": {
+            "type": "boolean"
+          },
+          "scheduledEndAt": {
+            "description": "Scheduled start or end of the Routine as an RFC 3339 timestamp; null means it is unset.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "scheduledStartAt": {
+            "description": "Scheduled start or end of the Routine as an RFC 3339 timestamp; null means it is unset.",
+            "format": "date-time",
+            "type": "string"
+          },
           "updatedAt": {
             "description": "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
             "format": "date-time",
@@ -14064,7 +14119,11 @@
           }
         },
         "required": [
-          "updatedAt"
+          "updatedAt",
+          "hasCustomSchedule",
+          "scheduledStartAt",
+          "scheduledEndAt",
+          "definitionVersion"
         ],
         "type": "object"
       },
@@ -15174,6 +15233,12 @@
                       "maxLength": 1024,
                       "type": [
                         "string",
+                        "null"
+                      ]
+                    },
+                    "hasCustomSchedule": {
+                      "type": [
+                        "boolean",
                         "null"
                       ]
                     },
@@ -36510,6 +36575,7 @@
                       "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
+                      "hasCustomSchedule": true,
                       "id": "00000000-0000-4000-8000-000000000001",
                       "isActive": true,
                       "isPinned": true,
@@ -37117,6 +37183,7 @@
                 "createdRoutines": [
                   {
                     "description": "example",
+                    "hasCustomSchedule": true,
                     "id": "00000000-0000-4000-8000-000000000001",
                     "isActive": true,
                     "isPinned": true,
@@ -37434,6 +37501,7 @@
                     "setNull": {},
                     "values": {
                       "description": "example",
+                      "hasCustomSchedule": true,
                       "isActive": true,
                       "isPinned": true,
                       "period": "Daily",
@@ -38068,6 +38136,7 @@
                       "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
+                      "hasCustomSchedule": true,
                       "id": "00000000-0000-4000-8000-000000000001",
                       "isActive": true,
                       "isPinned": true,
@@ -38711,6 +38780,7 @@
                       "definitionVersion": 1,
                       "deletedAt": null,
                       "description": "example",
+                      "hasCustomSchedule": true,
                       "id": "00000000-0000-4000-8000-000000000001",
                       "isActive": true,
                       "isPinned": true,
@@ -39026,6 +39096,7 @@
             "application/json": {
               "example": {
                 "description": "example",
+                "hasCustomSchedule": true,
                 "id": "00000000-0000-4000-8000-000000000001",
                 "isActive": true,
                 "isPinned": true,
@@ -41270,6 +41341,7 @@
                     "definitionVersion": 1,
                     "deletedAt": null,
                     "description": "example",
+                    "hasCustomSchedule": true,
                     "id": "00000000-0000-4000-8000-000000000001",
                     "isActive": true,
                     "isPinned": true,
@@ -41587,6 +41659,7 @@
                 "setNull": {},
                 "values": {
                   "description": "example",
+                  "hasCustomSchedule": true,
                   "isActive": true,
                   "isPinned": true,
                   "period": "Daily",
@@ -41611,6 +41684,10 @@
               "application/json": {
                 "example": {
                   "data": {
+                    "definitionVersion": 1,
+                    "hasCustomSchedule": true,
+                    "scheduledEndAt": "2026-01-02T00:00:00Z",
+                    "scheduledStartAt": "2026-01-01T00:00:00Z",
                     "updatedAt": "2026-01-01T00:00:00Z"
                   },
                   "exception": null,
@@ -42518,6 +42595,7 @@
                     "definitionVersion": 1,
                     "deletedAt": null,
                     "description": "example",
+                    "hasCustomSchedule": true,
                     "id": "00000000-0000-4000-8000-000000000001",
                     "isActive": true,
                     "isPinned": true,

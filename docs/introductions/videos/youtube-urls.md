@@ -1,6 +1,0 @@
-1. [workspace-overview](https://youtu.be/pH21Od0Io58)
-2. [first-note](https://youtu.be/s05mQsBdZ9Q)
-3. [block-pack-editor](https://youtu.be/sloOOtnHToM)
-4. [material-viewer](https://youtu.be/xQ77zM2-PxM)
-5. [routine-setup-and-results](https://youtu.be/H2PQbdqwrq0)
-6. [routine-task-payload](https://youtu.be/CvWLjJelp9A)

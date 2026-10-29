@@ -13,8 +13,8 @@ export const ArticleLink = ({
   const router = useRouter();
   const target = router.buildLocation({ to, hash });
   const reloadDocument =
-    requiresCrossOriginIsolation(pathname, import.meta.env.BASE_URL) !==
-    requiresCrossOriginIsolation(target.pathname, import.meta.env.BASE_URL);
+    requiresCrossOriginIsolation(pathname) !==
+    requiresCrossOriginIsolation(target.pathname);
 
   return (
     <Link

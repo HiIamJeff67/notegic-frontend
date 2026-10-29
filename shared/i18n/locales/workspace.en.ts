@@ -827,8 +827,8 @@ export const EnglishWorkspaceTranslation = {
     guideRoutineDescription:
       "Use routines when a task or review should happen regularly.",
     videoGuideTitle: "Walkthrough video",
-    videoGuideDescription: "A short product walkthrough will be added here.",
-    videoGuidePlaceholder: "Your walkthrough video will appear here.",
+    videoGuideDescription:
+      "Watch Workspace Overview for a tour of notes, files, and routines.",
     clickToEdit: "Click to edit",
     memoPlaceholder: "Write a memo here...",
     saveChanges: "Save changes",

@@ -1,6 +1,12 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ context }) => {
+  await context.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 const apiURL = process.env.E2E_ROUTINE_API_URL;
 const database = process.env.E2E_ROUTINE_DATABASE;
 const userAgent =

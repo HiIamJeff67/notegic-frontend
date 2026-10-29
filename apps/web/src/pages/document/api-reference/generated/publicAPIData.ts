@@ -6256,6 +6256,7 @@ const responseSpecifications: DocumentResponse[] = [
             definitionVersion: 0,
             deletedAt: "2026-01-01T00:00:00Z",
             description: "example",
+            hasCustomSchedule: false,
             id: "00000000-0000-4000-8000-000000000001",
             isActive: false,
             isPinned: false,
@@ -6326,6 +6327,14 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Optional human-readable description of this resource or dependency.",
             example: "example",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "hasCustomSchedule",
+            type: "boolean",
+            required: true,
+            example: false,
             constraints: [],
             children: [],
           },
@@ -6531,6 +6540,7 @@ const responseSpecifications: DocumentResponse[] = [
           definitionVersion: 1,
           deletedAt: null,
           description: "example",
+          hasCustomSchedule: true,
           id: "00000000-0000-4000-8000-000000000001",
           isActive: true,
           isPinned: true,
@@ -6569,6 +6579,7 @@ const responseSpecifications: DocumentResponse[] = [
           definitionVersion: 0,
           deletedAt: "2026-01-01T00:00:00Z",
           description: "example",
+          hasCustomSchedule: false,
           id: "00000000-0000-4000-8000-000000000001",
           isActive: false,
           isPinned: false,
@@ -6638,6 +6649,14 @@ const responseSpecifications: DocumentResponse[] = [
             description:
               "Optional human-readable description of this resource or dependency.",
             example: "example",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "hasCustomSchedule",
+            type: "boolean",
+            required: true,
+            example: false,
             constraints: [],
             children: [],
           },
@@ -6842,6 +6861,7 @@ const responseSpecifications: DocumentResponse[] = [
         definitionVersion: 1,
         deletedAt: null,
         description: "example",
+        hasCustomSchedule: true,
         id: "00000000-0000-4000-8000-000000000001",
         isActive: true,
         isPinned: true,
@@ -6856,6 +6876,129 @@ const responseSpecifications: DocumentResponse[] = [
         timeoutSeconds: 1,
         timezone: "Asia/Taipei",
         title: "example",
+        updatedAt: "2026-01-01T00:00:00Z",
+      },
+      exception: null,
+      success: true,
+    },
+  },
+  {
+    status: "200",
+    description: "Completed",
+    hasBody: true,
+    fields: [
+      {
+        name: "data",
+        type: "object",
+        required: true,
+        description:
+          "Operation result; its shape is defined by this response schema.",
+        example: {
+          definitionVersion: 0,
+          hasCustomSchedule: false,
+          scheduledEndAt: "2026-01-01T00:00:00Z",
+          scheduledStartAt: "2026-01-01T00:00:00Z",
+          updatedAt: "2026-01-01T00:00:00Z",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "definitionVersion",
+            type: "integer (int64)",
+            required: true,
+            example: 0,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "hasCustomSchedule",
+            type: "boolean",
+            required: true,
+            example: false,
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "scheduledEndAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Scheduled start or end of the Routine as an RFC 3339 timestamp; null means it is unset.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "scheduledStartAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Scheduled start or end of the Routine as an RFC 3339 timestamp; null means it is unset.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+          {
+            name: "updatedAt",
+            type: "string (date-time)",
+            required: true,
+            description:
+              "Resource creation, last update, deletion, or analysis time as an RFC 3339 timestamp, according to the field name; null means that event has not occurred.",
+            example: "2026-01-01T00:00:00Z",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "embedded",
+        type: "object",
+        required: false,
+        description:
+          "Optional authenticated-user context attached to the response.",
+        example: {
+          publicId: "00000000-0000-4000-8000-000000000001",
+        },
+        constraints: [],
+        children: [
+          {
+            name: "publicId",
+            type: "string (uuid)",
+            required: true,
+            description:
+              "Public identifier of the represented user or resource.",
+            example: "00000000-0000-4000-8000-000000000001",
+            constraints: [],
+            children: [],
+          },
+        ],
+      },
+      {
+        name: "exception",
+        type: "null",
+        required: true,
+        description:
+          "Public error details when success is false; otherwise null.",
+        example: null,
+        constraints: [],
+        children: [],
+      },
+      {
+        name: "success",
+        type: "true",
+        required: true,
+        description: "Whether the request completed successfully.",
+        example: true,
+        constraints: [],
+        children: [],
+      },
+    ],
+    example: {
+      data: {
+        definitionVersion: 1,
+        hasCustomSchedule: true,
+        scheduledEndAt: "2026-01-02T00:00:00Z",
+        scheduledStartAt: "2026-01-01T00:00:00Z",
         updatedAt: "2026-01-01T00:00:00Z",
       },
       exception: null,
@@ -15482,6 +15625,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           createdRoutines: [
             {
               description: "example",
+              hasCustomSchedule: true,
               id: "00000000-0000-4000-8000-000000000001",
               isActive: true,
               isPinned: true,
@@ -15505,6 +15649,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
             example: [
               {
                 description: "example",
+                hasCustomSchedule: null,
                 id: "00000000-0000-4000-8000-000000000001",
                 isActive: null,
                 isPinned: null,
@@ -15527,6 +15672,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Optional human-readable description of this resource or dependency.",
                 example: "example",
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "hasCustomSchedule",
+                type: "boolean | null",
+                required: false,
+                example: null,
+                constraints: [],
                 children: [],
               },
               {
@@ -15632,9 +15785,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}\'',
-          http: 'POST https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    ]\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "hasCustomSchedule": true,\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}\'',
+          http: 'POST https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "createdRoutines": [\n    {\n      "description": "example",\n      "hasCustomSchedule": true,\n      "id": "00000000-0000-4000-8000-000000000001",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "createdRoutines": [\n      {\n        "description": "example",\n        "hasCustomSchedule": true,\n        "id": "00000000-0000-4000-8000-000000000001",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -15886,6 +16039,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         ],
         requestExample: {
           description: "example",
+          hasCustomSchedule: true,
           id: "00000000-0000-4000-8000-000000000001",
           isActive: true,
           isPinned: true,
@@ -15906,6 +16060,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Optional human-readable description of this resource or dependency.",
             example: "example",
             constraints: ["maxLength: 1024"],
+            children: [],
+          },
+          {
+            name: "hasCustomSchedule",
+            type: "boolean | null",
+            required: false,
+            example: null,
+            constraints: [],
             children: [],
           },
           {
@@ -16008,9 +16170,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}\'',
-          http: 'POST https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
+          curl: 'curl --request POST \'https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "description": "example",\n  "hasCustomSchedule": true,\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}\'',
+          http: 'POST https://api.notegic.com/v1/routines/station/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "description": "example",\n  "hasCustomSchedule": true,\n  "id": "00000000-0000-4000-8000-000000000001",\n  "isActive": true,\n  "isPinned": true,\n  "period": "Daily",\n  "scheduledEndAt": "2026-01-02T00:00:00Z",\n  "scheduledStartAt": "2026-01-01T00:00:00Z",\n  "stationId": "00000000-0000-4000-8000-000000000001",\n  "timeoutSeconds": 60,\n  "timezone": "Asia/Taipei",\n  "title": "example"\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "description": "example",\n    "hasCustomSchedule": true,\n    "id": "00000000-0000-4000-8000-000000000001",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -16181,6 +16343,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           setNull: {},
           values: {
             description: "example",
+            hasCustomSchedule: true,
             isActive: true,
             isPinned: true,
             period: "Daily",
@@ -16221,6 +16384,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               "Fields to replace in a partial update. Omitted fields are unchanged; use setNull for an explicit null where the field permits it. Empty strings and arrays are values, not omissions.",
             example: {
               description: null,
+              hasCustomSchedule: null,
               isActive: null,
               isPinned: null,
               period: "Daily",
@@ -16241,6 +16405,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Optional human-readable description of this resource or dependency.",
                 example: null,
                 constraints: ["maxLength: 1024"],
+                children: [],
+              },
+              {
+                name: "hasCustomSchedule",
+                type: "boolean | null",
+                required: false,
+                example: null,
+                constraints: [],
                 children: [],
               },
               {
@@ -16336,13 +16508,13 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "hasCustomSchedule": true,\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routines/00000000-0000-4000-8000-000000000001\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "routineId": "00000000-0000-4000-8000-000000000001",\n  "setNull": {},\n  "values": {\n    "description": "example",\n    "hasCustomSchedule": true,\n    "isActive": true,\n    "isPinned": true,\n    "period": "Daily",\n    "scheduledEndAt": "2026-01-02T00:00:00Z",\n    "scheduledStartAt": "2026-01-01T00:00:00Z",\n    "stationId": "00000000-0000-4000-8000-000000000001",\n    "timeoutSeconds": 60,\n    "timezone": "Asia/Taipei",\n    "title": "example"\n  }\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "routineId": "00000000-0000-4000-8000-000000000001",\n    "setNull": {},\n    "values": {\n      "description": "example",\n      "hasCustomSchedule": true,\n      "isActive": true,\n      "isPinned": true,\n      "period": "Daily",\n      "scheduledEndAt": "2026-01-02T00:00:00Z",\n      "scheduledStartAt": "2026-01-01T00:00:00Z",\n      "stationId": "00000000-0000-4000-8000-000000000001",\n      "timeoutSeconds": 60,\n      "timezone": "Asia/Taipei",\n      "title": "example"\n    }\n  }\n}',
         },
         tag: "routines",
         responses: [
-          responseSpecifications[8],
+          responseSpecifications[38],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16380,6 +16552,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
               setNull: {},
               values: {
                 description: "example",
+                hasCustomSchedule: true,
                 isActive: true,
                 isPinned: true,
                 period: "Daily",
@@ -16406,6 +16579,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                 setNull: {},
                 values: {
                   description: null,
+                  hasCustomSchedule: null,
                   isActive: null,
                   isPinned: null,
                   period: "Daily",
@@ -16448,6 +16622,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                   "Fields to replace in a partial update. Omitted fields are unchanged; use setNull for an explicit null where the field permits it. Empty strings and arrays are values, not omissions.",
                 example: {
                   description: null,
+                  hasCustomSchedule: null,
                   isActive: null,
                   isPinned: null,
                   period: "Daily",
@@ -16468,6 +16643,14 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
                       "Optional human-readable description of this resource or dependency.",
                     example: null,
                     constraints: ["maxLength: 1024"],
+                    children: [],
+                  },
+                  {
+                    name: "hasCustomSchedule",
+                    type: "boolean | null",
+                    required: false,
+                    example: null,
+                    constraints: [],
                     children: [],
                   },
                   {
@@ -16565,9 +16748,9 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
           },
         ],
         examples: {
-          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
-          http: 'PUT https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}',
-          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "isActive": true,\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-02T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timeoutSeconds": 60,\n          "timezone": "Asia/Taipei",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
+          curl: 'curl --request PUT \'https://api.notegic.com/v1/routines/batch\' \\\n  -H \'X-API-Key: <YOUR_API_KEY>\' \\\n  -H \'User-Agent: NotegicIntegration/1.0\' \\\n  -H \'Content-Type: application/json\' \\\n  --data-raw \'{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "hasCustomSchedule": true,\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}\'',
+          http: 'PUT https://api.notegic.com/v1/routines/batch\nX-API-Key: <YOUR_API_KEY>\nUser-Agent: NotegicIntegration/1.0\nContent-Type: application/json\n\n{\n  "updatedRoutines": [\n    {\n      "routineId": "00000000-0000-4000-8000-000000000001",\n      "setNull": {},\n      "values": {\n        "description": "example",\n        "hasCustomSchedule": true,\n        "isActive": true,\n        "isPinned": true,\n        "period": "Daily",\n        "scheduledEndAt": "2026-01-02T00:00:00Z",\n        "scheduledStartAt": "2026-01-01T00:00:00Z",\n        "stationId": "00000000-0000-4000-8000-000000000001",\n        "timeoutSeconds": 60,\n        "timezone": "Asia/Taipei",\n        "title": "example"\n      }\n    }\n  ]\n}',
+          json: '{\n  "headers": {\n    "X-API-Key": "<YOUR_API_KEY>",\n    "User-Agent": "NotegicIntegration/1.0",\n    "Content-Type": "application/json"\n  },\n  "body": {\n    "updatedRoutines": [\n      {\n        "routineId": "00000000-0000-4000-8000-000000000001",\n        "setNull": {},\n        "values": {\n          "description": "example",\n          "hasCustomSchedule": true,\n          "isActive": true,\n          "isPinned": true,\n          "period": "Daily",\n          "scheduledEndAt": "2026-01-02T00:00:00Z",\n          "scheduledStartAt": "2026-01-01T00:00:00Z",\n          "stationId": "00000000-0000-4000-8000-000000000001",\n          "timeoutSeconds": 60,\n          "timezone": "Asia/Taipei",\n          "title": "example"\n        }\n      }\n    ]\n  }\n}',
         },
         tag: "routines",
         responses: [
@@ -16938,7 +17121,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[38],
+          responseSpecifications[39],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -16998,7 +17181,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[39],
+          responseSpecifications[40],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -17049,7 +17232,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[40],
+          responseSpecifications[41],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -17423,7 +17606,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[41],
+          responseSpecifications[42],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18041,7 +18224,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[42],
+          responseSpecifications[43],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18094,7 +18277,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[43],
+          responseSpecifications[44],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18646,7 +18829,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "stations",
         responses: [
-          responseSpecifications[44],
+          responseSpecifications[45],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18713,7 +18896,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[45],
+          responseSpecifications[46],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18774,7 +18957,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[46],
+          responseSpecifications[47],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18834,7 +19017,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[46],
+          responseSpecifications[47],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -18895,7 +19078,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[47],
+          responseSpecifications[48],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -19599,7 +19782,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[45],
+          responseSpecifications[46],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -19652,7 +19835,7 @@ export const gatewayEndpointGroups: DocumentEndpointGroup[] = [
         },
         tag: "sub-shelves",
         responses: [
-          responseSpecifications[46],
+          responseSpecifications[47],
           responseSpecifications[1],
           responseSpecifications[2],
           responseSpecifications[3],
@@ -19771,11 +19954,11 @@ export const gatewayRules: DocumentRule[] = [
     id: "authentication",
     title: "Authentication",
     summary:
-      "Create an API key in Notegic **Account settings → API keys** while signed in. The secret is displayed only when the key is created; copy it to a trusted server or CLI secret store before leaving that screen. Send it with each public API request:",
+      "Create an API key in Notegic **Account settings → API keys**. Copy the secret when it is created and store it in your server or CLI's secret store. Send it with each request:",
     blocks: [
       {
         type: "paragraph",
-        text: "Create an API key in Notegic **Account settings → API keys** while signed in. The secret is displayed only when the key is created; copy it to a trusted server or CLI secret store before leaving that screen. Send it with each public API request:",
+        text: "Create an API key in Notegic **Account settings → API keys**. Copy the secret when it is created and store it in your server or CLI's secret store. Send it with each request:",
       },
       {
         type: "code",
@@ -19783,11 +19966,11 @@ export const gatewayRules: DocumentRule[] = [
       },
       {
         type: "paragraph",
-        text: "Keys belong to the creating user. Access to a resource follows that user's current permissions; a key cannot grant access the user does not have. The current public API does not offer per-key resource scopes. A key may have an expiration time and can be revoked in Account settings. An expired or revoked key cannot be used for new requests. If a key might be exposed, create a replacement, update every trusted consumer, verify it works, then revoke the old key. Do not assume in-flight requests are cancelled by revocation.",
+        text: "Each key uses its owner's current resource permissions. Manage expiration and revocation in Account settings. Replace exposed keys, update your integrations, then revoke the old key.",
       },
       {
         type: "paragraph",
-        text: "Do not share a key between users or place it in browser code, frontend environment files, URLs, or logs. A missing, invalid, expired, or revoked key results in HTTP 401; an authenticated request without sufficient resource permission can result in HTTP 403.",
+        text: "Missing, invalid, expired, or revoked keys return HTTP 401. Insufficient resource permissions return HTTP 403.",
       },
     ],
   },
@@ -19795,75 +19978,35 @@ export const gatewayRules: DocumentRule[] = [
     id: "http-contract",
     title: "HTTP contract",
     summary:
-      "The production base URL is `https://api.notegic.com/v1`. Send and receive JSON with `Content-Type: application/json` where a request body is required. Resource IDs in paths are UUID strings unless an operation states otherwise; timestamps are RFC 3339 date-time strings.",
+      "Use `https://api.notegic.com/v1` and send JSON request bodies with `Content-Type: application/json`. Resource IDs are UUID strings unless specified otherwise; timestamps use RFC 3339.",
     blocks: [
       {
         type: "paragraph",
-        text: "The production base URL is `https://api.notegic.com/v1`. Send and receive JSON with `Content-Type: application/json` where a request body is required. Resource IDs in paths are UUID strings unless an operation states otherwise; timestamps are RFC 3339 date-time strings.",
+        text: "Use `https://api.notegic.com/v1` and send JSON request bodies with `Content-Type: application/json`. Resource IDs are UUID strings unless specified otherwise; timestamps use RFC 3339.",
       },
       {
         type: "paragraph",
-        text: "Successful JSON responses set `success` to true, put the result in `data`, and set `exception` to null. Failures set `success` to false, `data` to null, and include a public exception with `reason`, `domain`, `operation`, `message`, and `retryable`. Some successful operations return HTTP 204 with no body. An optional `embedded.publicId` is the public identifier of the authenticated user; it is context, not a substitute for resource authorization. Read the operation's response schema for the actual data shape and status.",
+        text: "Successful JSON responses contain `success: true`, a result in `data`, and `exception: null`. Failed responses contain `success: false`, `data: null`, and an exception with `reason`, `domain`, `operation`, `message`, and `retryable`. HTTP 204 responses have an empty body. The optional `embedded.publicId` identifies the authenticated user.",
       },
       {
         type: "paragraph",
-        text: "For partial updates, `values` contains only fields to replace and `setNull` is an object mapping field names to booleans; a true entry requests that field be cleared where supported. An omitted field or a null value inside `values` leaves that field unchanged. Empty strings and arrays are explicit values and must satisfy the field's validation rules. Use `setNull` to clear a supported field. A replacement supplied in both places can take precedence over clearing; avoid conflicting entries. Unsupported properties are outside the contract and are not guaranteed to produce an error.",
+        text: 'For partial updates, put replacement fields in `values` and clear supported fields with `setNull: {"field": true}`. Omitted fields and null entries in `values` leave existing values unchanged. Empty strings and arrays are explicit replacement values. Supply each field through one of `values` or `setNull` and follow the operation\'s schema.',
       },
       {
         type: "paragraph",
-        text: "Deletion filters vary by resource. For RootShelf, SubShelf, BlockPack, Station, and Routine reads with `isDeleted` or `areDeleted`, false selects active resources, true selects deleted resources, and omission applies no deletion-state filter. Parent availability and access checks still apply. Routine Tasks and Routine Tags have no soft-deleted view: omission or false returns current resources; true produces an empty list or a not-found result for a single ID. Use false explicitly when an integration needs active resources only.",
+        text: "RootShelf, SubShelf, BlockPack, Station, and Routine reads support `isDeleted`/`areDeleted` filters: `false` selects active resources, `true` selects deleted resources, and omission searches both states. Routine Task and Routine Tag reads return current entries for `false` or omission; `true` produces an empty list or HTTP 404 for a single resource. Access and parent-resource checks apply to every read.",
       },
       {
         type: "paragraph",
-        text: "Deletion may be reversible or permanent. Paths containing `permanently` perform permanent deletion; use a restore operation only for resources that support it. Batch inputs can affect multiple resources; do not assume a batch is all-or-nothing or safe to replay unless its operation explicitly says so. List ordering, result size, and pagination are defined only when stated by the corresponding operation; no cursor-pagination protocol is promised by this v1 contract. Routine definitions and Task definitions are distinct from execution records, which are not exposed by this integration API.",
+        text: "Paths containing `permanently` perform permanent deletion. Follow each operation's restore and batch semantics, and verify affected resources before retrying a batch.",
       },
       {
         type: "paragraph",
-        text: "RootShelves contain SubShelves, which organize BlockPacks and existing Materials. BlockPacks contain Blocks. Stations group Routines; each Routine owns Task definitions and can link to Routine Tags and items. A Routine Tag links to a Routine rather than directly to a Task. Resource access follows the owner's applicable shelf/station permissions. Deleting or losing access to a containing resource can make its contents unavailable. Block read views can trail accepted edits; `isProjectionCurrent` on the containing BlockPack indicates whether its read view has caught up. This API supports the published Block read operations; it provides no direct collaborative editing or realtime integration protocol.",
+        text: "Task creation stores a definition; execution follows its Routine configuration. Purpose-specific payload fields and constraints are listed in the operation's schema. `isProjectionCurrent` on a BlockPack reports whether its Block read view has caught up with accepted edits.",
       },
       {
         type: "paragraph",
-        text: "Task creation saves a definition and validates its purpose-specific payload; it does not run the task. The OpenAPI payload variants describe all current purposes:",
-      },
-      {
-        type: "list",
-        items: [
-          "GetSubShelf, GetBlockPack, GetRoutine, and GetMaterial select an existing target by its corresponding resource ID. Delete variants select the same target and request its deletion when the Task executes.",
-          "CreateSubShelf needs a RootShelf, name, and task-local `fakeId`. Object references use a UUID or `f_` followed by 32 hexadecimal digits; a created object's reference may be used by a dependent Task in that execution.",
-          "CreateBlockPack needs a target SubShelf reference and a template with a name and at least one editable Block entry. UpdateBlockPack needs a BlockPack ID and 1–1000 distinct Block IDs with replacement Block trees.",
-          "CreateRoutine needs a Station and title, with optional scheduling fields. UpdateRoutine and UpdateSubShelf accept the target ID and the replacement fields described by their payload schemas.",
-          "CreateMaterial and UpdateMaterial use an existing content reference; they do not add a public upload API. UpdateMaterial requires at least one changed content or metadata field. Direct Material and execution-record endpoints remain outside this API.",
-        ],
-        ordered: false,
-      },
-      {
-        type: "paragraph",
-        text: "Task dependencies connect a Task to a prerequisite in the same Routine. Self-dependencies and cycles are rejected. Deleting a dependency removes the relation, not either Task. A Task's configured execution attempts may repeat work after a failure; designing a mutation payload requires considering repeated effects. Plan limits and execution usage apply when work runs rather than when a Task definition is saved. An accepted definition is not a promise that a future execution will succeed.",
-      },
-      {
-        type: "paragraph",
-        text: "Public error fields are machine-readable except `message`, which is explanatory text and must not be parsed as a code:",
-      },
-      {
-        type: "list",
-        items: [
-          "Invalid request (400): `InvalidDto` or `InvalidInput`, with the affected resource domain and `Bind` or `Validate` operation. Correct the documented field, type, value, or size.",
-          "Authentication failure (401): `Unauthorized` with domain `Gateway` or `Core` and operation `AuthenticateAPIKey`. Check key presence, expiration, and revocation.",
-          "Permission failure (403): `PermissionDenied` with the affected resource domain and operation `Authorize`. Check the owner's resource access.",
-          "Unavailable or not found (404): `NotFound` with the affected resource domain and operation `Repository`. Check the ID and access/deletion state without inferring another user's resources.",
-          "Dependency conflict (409): `DependencyAlreadyExists`, domain `RoutineTaskDependency`, operation `Create`. Reload the dependency list; omit already existing or repeated pairs.",
-          "Rate limit (429): `PermissionDeniedDueToTooManyRequests`, domain `Auth`, operation `Authorize`. Wait and apply bounded backoff.",
-          "Internal failure (500): the safe fallback is `InternalServerError`, domain `General`, operation `Respond`. Reconcile writes before any retry and report a persistent failure.",
-        ],
-        ordered: false,
-      },
-      {
-        type: "paragraph",
-        text: "These are representative shipped classifications, not an exhaustive list or a new code registry. Their `retryable` value is normally false; a returned true value remains only a transient-condition hint. The HTTP status and the operation's retry safety still govern the consumer's action. OpenAPI lists verified common statuses and uses a default public-error schema for other outcomes; it does not claim every domain error can occur on every operation.",
-      },
-      {
-        type: "paragraph",
-        text: "When reporting a problem, include only time, method, a redacted path, HTTP status, and safe public error fields. Never include an API key or private document body.",
+        text: "Use HTTP status and exception `reason`, `domain`, and `operation` to classify errors; `message` provides human-readable context. Treat `retryable` as a transient-failure hint and check the operation's replay safety before retrying a write. For support, provide the request time, method, redacted path, HTTP status, and public error fields.",
       },
     ],
   },
@@ -19871,19 +20014,15 @@ export const gatewayRules: DocumentRule[] = [
     id: "origins-and-security",
     title: "Origins and security",
     summary:
-      "The API-key surface is for a trusted server or CLI. A third-party web UI should call its own trusted backend; do not ship a Notegic key in browser JavaScript, browser storage, or a public frontend environment variable. Do not ask users for their Notegic password to operate an integration.",
+      "Run API-key integrations on a trusted server or CLI. Browser applications should call their own backend, which stores and uses the Notegic API key.",
     blocks: [
       {
         type: "paragraph",
-        text: "The API-key surface is for a trusted server or CLI. A third-party web UI should call its own trusted backend; do not ship a Notegic key in browser JavaScript, browser storage, or a public frontend environment variable. Do not ask users for their Notegic password to operate an integration.",
+        text: "Run API-key integrations on a trusted server or CLI. Browser applications should call their own backend, which stores and uses the Notegic API key.",
       },
       {
         type: "paragraph",
-        text: "Use HTTPS, a secret manager or protected local environment, and redacted logs. Never place keys, account passwords, or authorization codes in URLs or query parameters. Request only the data your integration needs and check the current user's resource access.",
-      },
-      {
-        type: "paragraph",
-        text: "Browser CORS policy is separate from authentication and authorization. An allowed Origin does not grant resource access, and a failed CORS preflight is not a reason to spoof an Origin or move a key into client code. Browser-based third-party access is not documented as a supported direct integration path.",
+        text: "Use HTTPS and a secret manager or protected environment. Keep API keys, passwords, and authorization codes out of browser bundles, URLs, and logs. Request only the resources your integration needs and use the key owner's applicable permissions.",
       },
     ],
   },
@@ -19891,30 +20030,19 @@ export const gatewayRules: DocumentRule[] = [
     id: "rate-limits-and-retries",
     title: "Rate limits and retries",
     summary:
-      "Public API requests from the same client IP currently share an allowance of **1,000 requests per minute**, with additional short-burst controls. Different keys do not provide independent allowances for that source. This is an API traffic limit, not a product-plan execution quota or a permanent entitlement. Plan traffic from the response headers when present; early failures may occur before these headers are added:",
+      "Public API requests share a limit of **1,000 requests per minute** per client IP, with additional burst limits.",
     blocks: [
       {
         type: "paragraph",
-        text: "Public API requests from the same client IP currently share an allowance of **1,000 requests per minute**, with additional short-burst controls. Different keys do not provide independent allowances for that source. This is an API traffic limit, not a product-plan execution quota or a permanent entitlement. Plan traffic from the response headers when present; early failures may occur before these headers are added:",
-      },
-      {
-        type: "list",
-        items: [
-          "`X-RateLimit-Limit`: integer request allowance in the active window.",
-          "`X-RateLimit-Remaining`: estimated integer requests remaining, not a reservation.",
-          "`X-RateLimit-Reset`: a forward reset estimate from response time as a Unix timestamp in seconds; it is not an exact boundary or a guarantee that the next request will be accepted.",
-          "`X-RateLimit-Window`: window duration as duration text; `1m0s` means one minute.",
-          "`X-RateLimit-Policy`: informational policy label; treat it as opaque and use the allowance/window headers when planning requests.",
-        ],
-        ordered: false,
+        text: "Public API requests share a limit of **1,000 requests per minute** per client IP, with additional burst limits.",
       },
       {
         type: "paragraph",
-        text: "The current response does **not** emit `Retry-After`; do not require it. On HTTP 429, wait until the estimated reset and add bounded exponential backoff with jitter. Use a timeout for every request and cap retry attempts. A network failure or timeout may occur after a write succeeded: read the affected resource and reconcile state before sending another mutation. No idempotency-key header is provided for these operations.",
+        text: "When present, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` provide the allowance, estimated remaining requests, and estimated reset time as Unix seconds.",
       },
       {
         type: "paragraph",
-        text: "HTTP status identifies the outcome; `exception.retryable` may indicate a transient server condition but does not make a mutation safe to repeat. Automatically replay only reads or writes whose idempotency you have independently established.",
+        text: "On HTTP 429, pause requests and retry with bounded exponential backoff and jitter. Use available rate-limit headers to guide request pacing. Set request timeouts and cap retry attempts. Before retrying a write after a timeout or connection failure, check whether the change was applied.",
       },
     ],
   },
@@ -19922,15 +20050,15 @@ export const gatewayRules: DocumentRule[] = [
     id: "versioning",
     title: "Versions and changes",
     summary:
-      "The `/v1` URL segment is the public HTTP compatibility version. The OpenAPI `info.version` is a revision of this published contract, not the Notegic product release number. Product releases and API contract revisions can change independently.",
+      "Use `/v1` to identify the HTTP compatibility version and OpenAPI `info.version` to identify the published contract revision.",
     blocks: [
       {
         type: "paragraph",
-        text: "The `/v1` URL segment is the public HTTP compatibility version. The OpenAPI `info.version` is a revision of this published contract, not the Notegic product release number. Product releases and API contract revisions can change independently.",
+        text: "Use `/v1` to identify the HTTP compatibility version and OpenAPI `info.version` to identify the published contract revision.",
       },
       {
         type: "paragraph",
-        text: "New optional fields or operations may be added within v1. Clients should tolerate unknown response fields and enum values while sending only documented request fields. A removal or incompatible change requires explicit migration guidance and a reviewed compatibility decision; no automatic deprecation period or notification channel is promised here. When an operation is deprecated, its OpenAPI entry or these rules will carry the current migration notice. Check the current published contract before upgrading an integration.",
+        text: "Send documented request fields and tolerate additional response fields. Review the published contract and migration notes when upgrading an integration. Incompatible changes require explicit migration guidance.",
       },
     ],
   },

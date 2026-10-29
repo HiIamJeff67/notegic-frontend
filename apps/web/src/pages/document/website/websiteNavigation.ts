@@ -1,4 +1,4 @@
-// Generated from docs/introductions/website.md; run npm run generate:website-guide.
+// Generated from docs/document/website.md; run npm run generate:website-guide.
 import type { ArticleNavigationItem } from "@/components/commons/Article/Article";
 export const websiteSections = [
   {

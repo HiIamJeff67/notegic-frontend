@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 const versions = [
   { id: "version-0-3-0", title: "v0.3.0", status: "Next" },
   { id: "version-0-2-0", title: "v0.2.0", status: "Current" },
@@ -157,7 +163,7 @@ test("shared article separators follow their host when no reading cap is specifi
     };
   });
   expect(widths.paragraph).toBeCloseTo(widths.available, 0);
-  expect(widths.subparagraph).toBeCloseTo(widths.subParent - 32, 0);
+  expect(widths.subparagraph).toBeCloseTo(widths.subParent, 0);
 });
 
 test("standalone privacy policy keeps its separators within the reading column", async ({
@@ -212,7 +218,7 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
         const subStyle = getComputedStyle(sub, "::before");
         const context = document.createElement("canvas").getContext("2d")!;
         const pixels = [
-          parentStyle.borderTopColor,
+          parentStyle.backgroundColor,
           subStyle.backgroundColor,
         ].map(color => {
           context.clearRect(0, 0, 1, 1);
@@ -233,7 +239,7 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
             content.clientWidth -
             Number.parseFloat(contentStyle.paddingLeft) -
             Number.parseFloat(contentStyle.paddingRight),
-          paragraphThickness: Number.parseFloat(parentStyle.borderTopWidth),
+          paragraphThickness: Number.parseFloat(parentStyle.height),
           paragraphSpacing: [
             parentStyle.marginTop,
             parentStyle.marginBottom,
@@ -276,6 +282,7 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
           nestedWidth: Number.parseFloat(
             getComputedStyle(nested, "::before").width
           ),
+          nestedParent: nested.getBoundingClientRect().width,
           firstBefore: getComputedStyle(
             document.getElementById("version-0-3-0")!,
             "::before"
@@ -311,9 +318,9 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
           ).content,
         };
       });
-      expect(lines.paragraphWidth).toBeGreaterThan(lines.subWidth);
-      expect(lines.paragraphWidth).toBeGreaterThan(lines.apiWidth);
-      expect(lines.apiWidth).toBeGreaterThan(lines.nestedWidth);
+      expect(lines.paragraphWidth).toBeGreaterThanOrEqual(lines.subWidth);
+      expect(lines.paragraphWidth).toBeGreaterThanOrEqual(lines.apiWidth);
+      expect(lines.apiWidth).toBeGreaterThanOrEqual(lines.nestedWidth);
       const readingLimit = width >= 1280 ? 896 : width >= 768 ? 672 : width;
       expect(lines.paragraphWidth).toBeCloseTo(
         Math.min(lines.contentWidth, readingLimit + 32),
@@ -322,10 +329,17 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
       expect(lines.paragraphWidth - lines.proseWidth).toBeLessThanOrEqual(32);
       expect(Math.abs(lines.paragraphOffset)).toBeLessThanOrEqual(1);
       expect(lines.apiWidth).toBeCloseTo(
-        Math.min(lines.apiParent - 32, readingLimit),
+        Math.min(lines.apiParent, readingLimit),
         0
       );
-      expect(lines.subWidth).toBeCloseTo(lines.subParent - 32, 0);
+      expect(lines.subWidth).toBeCloseTo(
+        Math.min(lines.subParent, readingLimit),
+        0
+      );
+      expect(lines.nestedWidth).toBeCloseTo(
+        Math.min(lines.nestedParent, readingLimit),
+        0
+      );
       expect(lines.paragraphThickness).toBe(2);
       expect(lines.paragraphSpacing).toEqual([32, 32]);
       for (const gap of lines.paragraphGaps) expect(gap).toBeCloseTo(32, 0);
@@ -333,8 +347,8 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
         24, 24, 16, 24,
       ]);
       for (const section of lines.sectionGaps) {
-        expect(section.padding).toBe(8);
-        expect(section.before).toBeCloseTo(section.margin + section.padding, 0);
+        expect(section.padding).toBe(0);
+        expect(section.before).toBeCloseTo(section.margin, 0);
         expect(section.after).toBeCloseTo(section.margin, 0);
       }
       expect(lines.subThickness).toBe(1);

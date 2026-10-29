@@ -2,6 +2,12 @@ import { expect, test } from "@playwright/test";
 import { parse } from "graphql";
 import { SearchRoutineRecordsDocument } from "../../../../shared/api/graphql/generated/graphql";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 test("Apollo stores consecutive renewals before surfacing GraphQL errors", async ({
   page,
 }) => {

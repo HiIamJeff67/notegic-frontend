@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
   test.skip(
     process.env.E2E_PRODUCTION === "true",
     "Uses a Vite component fixture."

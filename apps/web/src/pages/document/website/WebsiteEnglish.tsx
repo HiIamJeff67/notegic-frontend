@@ -1,29 +1,29 @@
-// Generated from docs/introductions/website.md; run npm run generate:website-guide.
-import media0 from "../../../../../../docs/introductions/images/dashboard-overview.png?url";
-import media1 from "../../../../../../docs/introductions/images/widgets-defaults-picker.jpg?url";
-import media2 from "../../../../../../docs/introductions/images/widgets-clock-settings.jpg?url";
-import media3 from "../../../../../../docs/introductions/images/widgets-timer-duration.jpg?url";
-import media4 from "../../../../../../docs/introductions/images/widgets-todo-usage.jpg?url";
-import media5 from "../../../../../../docs/introductions/images/widgets-calendar.jpg?url";
-import media6 from "../../../../../../docs/introductions/images/widgets-scratch-pad-editing.jpg?url";
-import media7 from "../../../../../../docs/introductions/images/widgets-scratch-pad-preview.jpg?url";
-import media8 from "../../../../../../docs/introductions/images/dashboard-layout-editing.jpg?url";
-import media9 from "../../../../../../docs/introductions/images/widgets-item-menu.jpg?url";
-import media10 from "../../../../../../docs/introductions/images/sidebar-overview.jpg?url";
-import media11 from "../../../../../../docs/introductions/videos/sidebar-navigation.gif?url";
-import media12 from "../../../../../../docs/introductions/images/editor-block-menu.jpg?url";
-import media13 from "../../../../../../docs/introductions/images/editor-diagram-preview.jpg?url";
-import media14 from "../../../../../../docs/introductions/images/editor-diagram-code.jpg?url";
-import media15 from "../../../../../../docs/introductions/videos/sharing-and-permissions.gif?url";
-import media16 from "../../../../../../docs/introductions/images/routines-overview.jpg?url";
-import media17 from "../../../../../../docs/introductions/images/routines-chart-picker.jpg?url";
-import media18 from "../../../../../../docs/introductions/images/station-create-form.jpg?url";
-import media19 from "../../../../../../docs/introductions/images/routine-create-form.jpg?url";
-import media20 from "../../../../../../docs/introductions/images/routine-schedule-picker.jpg?url";
-import media21 from "../../../../../../docs/introductions/videos/routine-dependencies.gif?url";
-import media22 from "../../../../../../docs/introductions/images/preferences-appearance.jpg?url";
-import media23 from "../../../../../../docs/introductions/images/preferences-editor.jpg?url";
-import media24 from "../../../../../../docs/introductions/videos/settings-presentation.gif?url";
+// Generated from docs/document/website.md; run npm run generate:website-guide.
+import media0 from "@assets/document/images/dashboard-overview.png?url";
+import media1 from "@assets/document/images/widgets-defaults-picker.jpg?url";
+import media2 from "@assets/document/images/widgets-clock-settings.jpg?url";
+import media3 from "@assets/document/images/widgets-timer-duration.jpg?url";
+import media4 from "@assets/document/images/widgets-todo-usage.jpg?url";
+import media5 from "@assets/document/images/widgets-calendar.jpg?url";
+import media6 from "@assets/document/images/widgets-scratch-pad-editing.jpg?url";
+import media7 from "@assets/document/images/widgets-scratch-pad-preview.jpg?url";
+import media8 from "@assets/document/images/dashboard-layout-editing.jpg?url";
+import media9 from "@assets/document/images/widgets-item-menu.jpg?url";
+import media10 from "@assets/document/images/sidebar-overview.jpg?url";
+import media11 from "@assets/document/videos/sidebar-navigation.gif?url";
+import media12 from "@assets/document/images/editor-block-menu.jpg?url";
+import media13 from "@assets/document/images/editor-diagram-preview.jpg?url";
+import media14 from "@assets/document/images/editor-diagram-code.jpg?url";
+import media15 from "@assets/document/videos/sharing-and-permissions.gif?url";
+import media16 from "@assets/document/images/routines-overview.jpg?url";
+import media17 from "@assets/document/images/routines-chart-picker.jpg?url";
+import media18 from "@assets/document/images/station-create-form.jpg?url";
+import media19 from "@assets/document/images/routine-create-form.jpg?url";
+import media20 from "@assets/document/images/routine-schedule-picker.jpg?url";
+import media21 from "@assets/document/videos/routine-dependencies.gif?url";
+import media22 from "@assets/document/images/preferences-appearance.jpg?url";
+import media23 from "@assets/document/images/preferences-editor.jpg?url";
+import media24 from "@assets/document/videos/settings-presentation.gif?url";
 import {
   ArticleImage,
   ArticleVideo,
@@ -40,12 +40,16 @@ const WebsiteEnglish = () => (
         "Write and organize notes, keep reference files, collaborate, and manage recurring work in Notegic."
       }
     </p>
-    <ArticleSubParagraph id="website-beginning" level={1}>
+    <ArticleSubParagraph id="website-beginning" level={1} separatorFullWidth>
       <ArticleSubParagraphHeader as="h3" level={0} className="text-xl">
         {"Beginning"}
       </ArticleSubParagraphHeader>
       <ArticleSubParagraphContent level={1}>
-        <ArticleSubParagraph id="website-demonstration" level={2}>
+        <ArticleSubParagraph
+          id="website-demonstration"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Demonstration"}
           </ArticleSubParagraphHeader>
@@ -76,12 +80,20 @@ const WebsiteEnglish = () => (
             />
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-big-picture" level={2}>
+        <ArticleSubParagraph
+          id="website-big-picture"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Big picture"}
           </ArticleSubParagraphHeader>
           <ArticleSubParagraphContent level={1}>
-            <ArticleSubParagraph id="website-what-can-this-app-do" level={3}>
+            <ArticleSubParagraph
+              id="website-what-can-this-app-do"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -102,7 +114,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-why-this-app" level={3}>
+            <ArticleSubParagraph
+              id="website-why-this-app"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -128,7 +144,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-how-can-we-get-started" level={3}>
+            <ArticleSubParagraph
+              id="website-how-can-we-get-started"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -190,7 +210,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-future-development" level={2}>
+        <ArticleSubParagraph
+          id="website-future-development"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Future development"}
           </ArticleSubParagraphHeader>
@@ -202,7 +226,11 @@ const WebsiteEnglish = () => (
               <ArticleLink href="/document#versions">{"Versions"}</ArticleLink>
               {" for published changes and recent plans."}
             </p>
-            <ArticleSubParagraph id="website-ai-rag-in-routine-tasks" level={3}>
+            <ArticleSubParagraph
+              id="website-ai-rag-in-routine-tasks"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -218,7 +246,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-mcp-and-tool-calling" level={3}>
+            <ArticleSubParagraph
+              id="website-mcp-and-tool-calling"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -237,6 +269,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-chat-ai-and-note-assist-ai"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -256,6 +289,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-more-components-for-learning-and-researching"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -274,7 +308,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-currently-working-on" level={2}>
+        <ArticleSubParagraph
+          id="website-currently-working-on"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Currently working on"}
           </ArticleSubParagraphHeader>
@@ -288,12 +326,12 @@ const WebsiteEnglish = () => (
         </ArticleSubParagraph>
       </ArticleSubParagraphContent>
     </ArticleSubParagraph>
-    <ArticleSubParagraph id="website-component" level={1}>
+    <ArticleSubParagraph id="website-component" level={1} separatorFullWidth>
       <ArticleSubParagraphHeader as="h3" level={0} className="text-xl">
         {"Component"}
       </ArticleSubParagraphHeader>
       <ArticleSubParagraphContent level={1}>
-        <ArticleSubParagraph id="notegic-model" level={2}>
+        <ArticleSubParagraph id="notegic-model" level={2} separatorFullWidth>
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Structured storage"}
           </ArticleSubParagraphHeader>
@@ -313,7 +351,7 @@ const WebsiteEnglish = () => (
                 "This example illustrates how the content types work together. Available creation and movement options depend on the current menu."
               }
             </p>
-            <ArticleSubParagraph id="root-shelves" level={3}>
+            <ArticleSubParagraph id="root-shelves" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -344,7 +382,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="sub-shelves" level={3}>
+            <ArticleSubParagraph id="sub-shelves" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -370,7 +408,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="block-packs" level={3}>
+            <ArticleSubParagraph id="block-packs" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -396,7 +434,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="materials" level={3}>
+            <ArticleSubParagraph id="materials" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -422,7 +460,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="blocks" level={3}>
+            <ArticleSubParagraph id="blocks" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -445,7 +483,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="integration-patterns" level={2}>
+        <ArticleSubParagraph
+          id="integration-patterns"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Automation"}
           </ArticleSubParagraphHeader>
@@ -472,7 +514,7 @@ const WebsiteEnglish = () => (
                 "Changing a definition does not mean it has run successfully, and a schedule alone does not confirm that a result exists."
               }
             </p>
-            <ArticleSubParagraph id="stations" level={3}>
+            <ArticleSubParagraph id="stations" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -493,7 +535,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="routines" level={3}>
+            <ArticleSubParagraph id="routines" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -519,7 +561,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="routine-tasks" level={3}>
+            <ArticleSubParagraph
+              id="routine-tasks"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -545,7 +591,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="routine-task-dependencies" level={3}>
+            <ArticleSubParagraph
+              id="routine-task-dependencies"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -571,7 +621,7 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="routine-tags" level={3}>
+            <ArticleSubParagraph id="routine-tags" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -594,7 +644,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-future-not-implemented" level={2}>
+        <ArticleSubParagraph
+          id="website-future-not-implemented"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Future (not implemented)"}
           </ArticleSubParagraphHeader>
@@ -613,12 +667,20 @@ const WebsiteEnglish = () => (
         </ArticleSubParagraph>
       </ArticleSubParagraphContent>
     </ArticleSubParagraph>
-    <ArticleSubParagraph id="website-user-interface" level={1}>
+    <ArticleSubParagraph
+      id="website-user-interface"
+      level={1}
+      separatorFullWidth
+    >
       <ArticleSubParagraphHeader as="h3" level={0} className="text-xl">
         {"User Interface"}
       </ArticleSubParagraphHeader>
       <ArticleSubParagraphContent level={1}>
-        <ArticleSubParagraph id="website-dashboard" level={2}>
+        <ArticleSubParagraph
+          id="website-dashboard"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Dashboard"}
           </ArticleSubParagraphHeader>
@@ -628,7 +690,11 @@ const WebsiteEnglish = () => (
                 "Dashboard is your working home page. Add clocks, timers, tasks, and notes to see useful information when you open the website. These tools do not change document organization in the Sidebar. Use Shelves for notes and Routines for automation."
               }
             </p>
-            <ArticleSubParagraph id="website-header-background-image" level={3}>
+            <ArticleSubParagraph
+              id="website-header-background-image"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -649,7 +715,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-widgets" level={3}>
+            <ArticleSubParagraph
+              id="website-widgets"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -663,7 +733,11 @@ const WebsiteEnglish = () => (
                     "A Widget is a small tool on Dashboard. Choose a built-in tool and adjust its position and size without writing code. Each tool has different controls; the sections below explain its purpose and how to add, edit, and save it."
                   }
                 </p>
-                <ArticleSubParagraph id="website-defaults" level={3}>
+                <ArticleSubParagraph
+                  id="website-defaults"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -690,7 +764,11 @@ const WebsiteEnglish = () => (
                         "Previews help you recognize tools; they are not interactive versions of the widgets. Select an item to add it to Dashboard. You can add more later without arranging the entire page at once."
                       }
                     </p>
-                    <ArticleSubParagraph id="website-clock" level={3}>
+                    <ArticleSubParagraph
+                      id="website-clock"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -747,7 +825,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-timer" level={3}>
+                    <ArticleSubParagraph
+                      id="website-timer"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -800,7 +882,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-to-do-list" level={3}>
+                    <ArticleSubParagraph
+                      id="website-to-do-list"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -863,7 +949,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-calendar" level={3}>
+                    <ArticleSubParagraph
+                      id="website-calendar"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -897,7 +987,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-scratch-pad" level={3}>
+                    <ArticleSubParagraph
+                      id="website-scratch-pad"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -954,7 +1048,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-getting-started" level={3}>
+                    <ArticleSubParagraph
+                      id="website-getting-started"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -983,6 +1081,7 @@ const WebsiteEnglish = () => (
                     <ArticleSubParagraph
                       id="website-walkthrough-video"
                       level={3}
+                      separatorFullWidth
                     >
                       <ArticleSubParagraphHeader
                         as="h6"
@@ -994,7 +1093,7 @@ const WebsiteEnglish = () => (
                       <ArticleSubParagraphContent level={1}>
                         <p>
                           {
-                            "This Widget provides product guidance. You can also watch the website tour through this guide's "
+                            "Watch Workspace Overview directly in this Widget for a tour of notes, reference files, and routines. Select play to load the video; use the player controls to pause, seek, or enter full screen. You can also "
                           }
                           <a
                             className="underline underline-offset-4 hover:text-primary"
@@ -1002,11 +1101,9 @@ const WebsiteEnglish = () => (
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {"Workspace Overview"}
+                            {"watch Workspace Overview on YouTube"}
                           </a>
-                          {
-                            ". If the Widget has no playable content, use that link directly."
-                          }
+                          {"."}
                         </p>
                         <p>
                           {
@@ -1017,7 +1114,11 @@ const WebsiteEnglish = () => (
                     </ArticleSubParagraph>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-usage" level={3}>
+                <ArticleSubParagraph
+                  id="website-usage"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1031,7 +1132,11 @@ const WebsiteEnglish = () => (
                         "Distinguish three kinds of Widget changes: moving the tool on the page, changing its appearance, and editing its content. They have different controls and may use different save buttons."
                       }
                     </p>
-                    <ArticleSubParagraph id="website-add-a-widget" level={3}>
+                    <ArticleSubParagraph
+                      id="website-add-a-widget"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -1057,7 +1162,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-move-and-resize" level={3}>
+                    <ArticleSubParagraph
+                      id="website-move-and-resize"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -1096,7 +1205,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-edit-a-widget" level={3}>
+                    <ArticleSubParagraph
+                      id="website-edit-a-widget"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -1128,6 +1241,7 @@ const WebsiteEnglish = () => (
                     <ArticleSubParagraph
                       id="website-save-your-changes"
                       level={3}
+                      separatorFullWidth
                     >
                       <ArticleSubParagraphHeader
                         as="h6"
@@ -1154,7 +1268,11 @@ const WebsiteEnglish = () => (
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
-                    <ArticleSubParagraph id="website-remove-a-widget" level={3}>
+                    <ArticleSubParagraph
+                      id="website-remove-a-widget"
+                      level={3}
+                      separatorFullWidth
+                    >
                       <ArticleSubParagraphHeader
                         as="h6"
                         level={0}
@@ -1177,7 +1295,11 @@ const WebsiteEnglish = () => (
                     </ArticleSubParagraph>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-customized" level={3}>
+                <ArticleSubParagraph
+                  id="website-customized"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1198,6 +1320,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-other-interactive-ui-components"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1226,7 +1349,7 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-sidebar" level={2}>
+        <ArticleSubParagraph id="website-sidebar" level={2} separatorFullWidth>
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Sidebar"}
           </ArticleSubParagraphHeader>
@@ -1258,7 +1381,11 @@ const WebsiteEnglish = () => (
               animated
             />
 
-            <ArticleSubParagraph id="website-structured-storage-area" level={3}>
+            <ArticleSubParagraph
+              id="website-structured-storage-area"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1306,7 +1433,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-automation-area" level={3}>
+            <ArticleSubParagraph
+              id="website-automation-area"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1330,6 +1461,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-document-trash-and-report-area"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1363,7 +1495,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-user-information" level={3}>
+            <ArticleSubParagraph
+              id="website-user-information"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1384,7 +1520,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-settings-and-logout" level={3}>
+            <ArticleSubParagraph
+              id="website-settings-and-logout"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1410,7 +1550,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-notification" level={3}>
+            <ArticleSubParagraph
+              id="website-notification"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1438,7 +1582,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-block-pack-editor" level={2}>
+        <ArticleSubParagraph
+          id="website-block-pack-editor"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Block pack editor"}
           </ArticleSubParagraphHeader>
@@ -1446,6 +1594,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-block-based-editor-introduction"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1471,7 +1620,11 @@ const WebsiteEnglish = () => (
                     "Documents consist of Blocks. Each paragraph, heading, or table has its own content and actions, allowing you to move one part without cutting and pasting the whole document."
                   }
                 </p>
-                <ArticleSubParagraph id="website-insert-a-block" level={3}>
+                <ArticleSubParagraph
+                  id="website-insert-a-block"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1509,7 +1662,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-headings-and-lists" level={3}>
+                <ArticleSubParagraph
+                  id="website-headings-and-lists"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1530,7 +1687,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-tables-and-code" level={3}>
+                <ArticleSubParagraph
+                  id="website-tables-and-code"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1551,7 +1712,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-math-and-diagrams" level={3}>
+                <ArticleSubParagraph
+                  id="website-math-and-diagrams"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1604,6 +1769,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-images-and-other-media"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -1628,6 +1794,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-arrange-your-content"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -1672,6 +1839,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-sharing-and-collaborating"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1701,6 +1869,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-permission-and-access-control"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1735,7 +1904,11 @@ const WebsiteEnglish = () => (
                 />
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-editor-topbar" level={3}>
+            <ArticleSubParagraph
+              id="website-editor-topbar"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1749,7 +1922,11 @@ const WebsiteEnglish = () => (
                     "The topbar provides the document name, participants, and import and export actions. Hover over an unfamiliar icon to read its hint. Import and export act in opposite directions, so check the action before selecting a file."
                   }
                 </p>
-                <ArticleSubParagraph id="website-import" level={3}>
+                <ArticleSubParagraph
+                  id="website-import"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1796,7 +1973,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-export" level={3}>
+                <ArticleSubParagraph
+                  id="website-export"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -1846,7 +2027,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-editor-item-path" level={3}>
+            <ArticleSubParagraph
+              id="website-editor-item-path"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -1870,6 +2055,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-connection-and-saving-feedback"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1908,7 +2094,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-material-viewer" level={2}>
+        <ArticleSubParagraph
+          id="website-material-viewer"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Material viewer"}
           </ArticleSubParagraphHeader>
@@ -1916,6 +2106,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-file-holder-introduction"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -1960,7 +2151,11 @@ const WebsiteEnglish = () => (
                 </ol>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-supported-file-types" level={3}>
+            <ArticleSubParagraph
+              id="website-supported-file-types"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2041,7 +2236,11 @@ const WebsiteEnglish = () => (
                     </tbody>
                   </table>
                 </div>
-                <ArticleSubParagraph id="website-read-the-preview" level={3}>
+                <ArticleSubParagraph
+                  id="website-read-the-preview"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -2070,6 +2269,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-when-a-preview-does-not-load"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2093,7 +2293,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-viewer-topbar" level={3}>
+            <ArticleSubParagraph
+              id="website-viewer-topbar"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2114,7 +2318,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-viewer-item-path" level={3}>
+            <ArticleSubParagraph
+              id="website-viewer-item-path"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2138,7 +2346,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-routine-overviewer" level={2}>
+        <ArticleSubParagraph
+          id="website-routine-overviewer"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Routine overviewer"}
           </ArticleSubParagraphHeader>
@@ -2161,7 +2373,11 @@ const WebsiteEnglish = () => (
                 "The example uses My First Station, which has no Routines, so the time rail shows No routines. Charts below may still show workspace-wide statistics; do not interpret every number as belonging to that Station."
               }
             </p>
-            <ArticleSubParagraph id="website-scope-and-filters" level={3}>
+            <ArticleSubParagraph
+              id="website-scope-and-filters"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2170,7 +2386,11 @@ const WebsiteEnglish = () => (
                 {"Scope and filters"}
               </ArticleSubParagraphHeader>
               <ArticleSubParagraphContent level={1}>
-                <ArticleSubParagraph id="website-choose-what-to-show" level={3}>
+                <ArticleSubParagraph
+                  id="website-choose-what-to-show"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -2194,6 +2414,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-find-a-missing-routine"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2220,6 +2441,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-overview-background-image"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -2236,7 +2458,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-time-rail" level={3}>
+            <ArticleSubParagraph
+              id="website-time-rail"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2248,6 +2474,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-change-the-visible-time-range"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2272,6 +2499,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-read-a-scheduled-item"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2295,7 +2523,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-charts" level={3}>
+            <ArticleSubParagraph
+              id="website-charts"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2307,6 +2539,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-add-and-choose-a-chart"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2358,6 +2591,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-read-and-manage-charts"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2386,7 +2620,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-routine-table" level={3}>
+            <ArticleSubParagraph
+              id="website-routine-table"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2415,6 +2653,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-routine-execution-record-table"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -2436,7 +2675,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-routine-task-table" level={3}>
+            <ArticleSubParagraph
+              id="website-routine-task-table"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2460,6 +2703,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-routine-task-record-table"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -2489,6 +2733,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-create-your-first-routine"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -2503,7 +2748,11 @@ const WebsiteEnglish = () => (
                     "Start with test data and a single task. Understanding one simple step makes it easier to diagnose problems than adding a schedule, many tasks, and multiple dependencies at once."
                   }
                 </p>
-                <ArticleSubParagraph id="website-create-a-station" level={3}>
+                <ArticleSubParagraph
+                  id="website-create-a-station"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -2532,7 +2781,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-configure-a-routine" level={3}>
+                <ArticleSubParagraph
+                  id="website-configure-a-routine"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -2585,6 +2838,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-choose-dates-and-times"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2617,6 +2871,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-add-a-task-and-check-the-result"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -2698,7 +2953,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-inspector" level={2}>
+        <ArticleSubParagraph
+          id="website-inspector"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Inspector"}
           </ArticleSubParagraphHeader>
@@ -2713,7 +2972,11 @@ const WebsiteEnglish = () => (
                 "Check the name before editing. Similar-looking panels may change different things, such as a Station's name, a Routine's schedule, or a task's inputs."
               }
             </p>
-            <ArticleSubParagraph id="website-station-inspector" level={3}>
+            <ArticleSubParagraph
+              id="website-station-inspector"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2734,7 +2997,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-routine-inspector" level={3}>
+            <ArticleSubParagraph
+              id="website-routine-inspector"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2755,7 +3022,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-routine-task-inspector" level={3}>
+            <ArticleSubParagraph
+              id="website-routine-task-inspector"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2776,7 +3047,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-routine-tag-inspector" level={3}>
+            <ArticleSubParagraph
+              id="website-routine-tag-inspector"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2802,6 +3077,7 @@ const WebsiteEnglish = () => (
         <ArticleSubParagraph
           id="website-routine-task-dependency-graph-editor"
           level={2}
+          separatorFullWidth
         >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Routine task dependency graph editor"}
@@ -2812,7 +3088,11 @@ const WebsiteEnglish = () => (
                 "This graph configures work, rather than illustrating a note. It contains Start nodes and Routine Task nodes that perform actions. Connections define entry points and ordering requirements. Confirm the current Routine before editing so you do not confuse steps from different workflows."
               }
             </p>
-            <ArticleSubParagraph id="website-read-the-graph" level={3}>
+            <ArticleSubParagraph
+              id="website-read-the-graph"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2838,7 +3118,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-create-a-dependency" level={3}>
+            <ArticleSubParagraph
+              id="website-create-a-dependency"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2875,7 +3159,11 @@ const WebsiteEnglish = () => (
                 </ol>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-check-saving-and-sync" level={3}>
+            <ArticleSubParagraph
+              id="website-check-saving-and-sync"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2916,7 +3204,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-routine-task-payload-editor" level={2}>
+        <ArticleSubParagraph
+          id="website-routine-task-payload-editor"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Routine task payload editor"}
           </ArticleSubParagraphHeader>
@@ -2926,7 +3218,11 @@ const WebsiteEnglish = () => (
                 "A Payload supplies the data a task needs for its action. Creating a document requires a destination, name, and content; querying resources requires a target. Choose the purpose first, then configure its inputs rather than preparing JSON before deciding which task it belongs to."
               }
             </p>
-            <ArticleSubParagraph id="website-use-a-form" level={3}>
+            <ArticleSubParagraph
+              id="website-use-a-form"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2947,7 +3243,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-use-json" level={3}>
+            <ArticleSubParagraph
+              id="website-use-json"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -2968,7 +3268,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-confirm-and-save" level={3}>
+            <ArticleSubParagraph
+              id="website-confirm-and-save"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3027,7 +3331,7 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-dialogs" level={2}>
+        <ArticleSubParagraph id="website-dialogs" level={2} separatorFullWidth>
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Dialogs"}
           </ArticleSubParagraphHeader>
@@ -3070,7 +3374,7 @@ const WebsiteEnglish = () => (
         </ArticleSubParagraph>
       </ArticleSubParagraphContent>
     </ArticleSubParagraph>
-    <ArticleSubParagraph id="website-settings" level={1}>
+    <ArticleSubParagraph id="website-settings" level={1} separatorFullWidth>
       <ArticleSubParagraphHeader as="h3" level={0} className="text-xl">
         {"Settings"}
       </ArticleSubParagraphHeader>
@@ -3085,7 +3389,11 @@ const WebsiteEnglish = () => (
             "Open them from the account or settings menu at the bottom of the Sidebar. Field names may vary with the interface language, but their purposes remain the same. Some preferences apply immediately; profile and other forms may require saving. Check the controls in the current section."
           }
         </p>
-        <ArticleSubParagraph id="website-account-settings" level={2}>
+        <ArticleSubParagraph
+          id="website-account-settings"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Account settings"}
           </ArticleSubParagraphHeader>
@@ -3093,6 +3401,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-profile-and-account-information"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -3102,7 +3411,11 @@ const WebsiteEnglish = () => (
                 {"Profile and account information"}
               </ArticleSubParagraphHeader>
               <ArticleSubParagraphContent level={1}>
-                <ArticleSubParagraph id="website-personal-profile" level={3}>
+                <ArticleSubParagraph
+                  id="website-personal-profile"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3123,7 +3436,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-account-identity" level={3}>
+                <ArticleSubParagraph
+                  id="website-account-identity"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3146,7 +3463,7 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="api-keys" level={3}>
+            <ArticleSubParagraph id="api-keys" level={3} separatorFullWidth>
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3164,7 +3481,11 @@ const WebsiteEnglish = () => (
                   </ArticleLink>
                   {" when an external application or tool needs integration."}
                 </p>
-                <ArticleSubParagraph id="website-create-a-key" level={3}>
+                <ArticleSubParagraph
+                  id="website-create-a-key"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3185,7 +3506,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="api-key-management" level={3}>
+                <ArticleSubParagraph
+                  id="api-key-management"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3214,7 +3539,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-upgrade-and-quotas" level={3}>
+            <ArticleSubParagraph
+              id="website-upgrade-and-quotas"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3240,7 +3569,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-security" level={3}>
+            <ArticleSubParagraph
+              id="website-security"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3264,6 +3597,7 @@ const WebsiteEnglish = () => (
             <ArticleSubParagraph
               id="website-linked-sign-in-and-recovery-methods"
               level={3}
+              separatorFullWidth
             >
               <ArticleSubParagraphHeader
                 as="h5"
@@ -3290,7 +3624,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-account-modification" level={3}>
+            <ArticleSubParagraph
+              id="website-account-modification"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3335,7 +3673,11 @@ const WebsiteEnglish = () => (
             </ArticleSubParagraph>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-preference-settings" level={2}>
+        <ArticleSubParagraph
+          id="website-preference-settings"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Preference settings"}
           </ArticleSubParagraphHeader>
@@ -3349,7 +3691,11 @@ const WebsiteEnglish = () => (
                 " to adjust how you use the website. These are mainly choices for the current browser, rather than changes for every collaborator. Do not expect all preferences to synchronize automatically to another browser."
               }
             </p>
-            <ArticleSubParagraph id="website-appearance" level={3}>
+            <ArticleSubParagraph
+              id="website-appearance"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3393,7 +3739,11 @@ const WebsiteEnglish = () => (
                 />
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-dashboard-1" level={3}>
+            <ArticleSubParagraph
+              id="website-dashboard-1"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3419,7 +3769,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-editor" level={3}>
+            <ArticleSubParagraph
+              id="website-editor"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3469,7 +3823,11 @@ const WebsiteEnglish = () => (
                 />
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-offline-and-local-data" level={3}>
+            <ArticleSubParagraph
+              id="website-offline-and-local-data"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3481,6 +3839,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-understand-local-storage"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -3502,7 +3861,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-reconnect-safely" level={3}>
+                <ArticleSubParagraph
+                  id="website-reconnect-safely"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3523,7 +3886,11 @@ const WebsiteEnglish = () => (
                     </p>
                   </ArticleSubParagraphContent>
                 </ArticleSubParagraph>
-                <ArticleSubParagraph id="website-clean-up-carefully" level={3}>
+                <ArticleSubParagraph
+                  id="website-clean-up-carefully"
+                  level={3}
+                  separatorFullWidth
+                >
                   <ArticleSubParagraphHeader
                     as="h6"
                     level={0}
@@ -3546,7 +3913,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-privacy" level={3}>
+            <ArticleSubParagraph
+              id="website-privacy"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3558,6 +3929,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-start-page-and-previews"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -3582,6 +3954,7 @@ const WebsiteEnglish = () => (
                 <ArticleSubParagraph
                   id="website-clipboard-protection"
                   level={3}
+                  separatorFullWidth
                 >
                   <ArticleSubParagraphHeader
                     as="h6"
@@ -3614,7 +3987,11 @@ const WebsiteEnglish = () => (
                 </ArticleSubParagraph>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-browser-permissions" level={3}>
+            <ArticleSubParagraph
+              id="website-browser-permissions"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3645,7 +4022,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-feedback" level={3}>
+            <ArticleSubParagraph
+              id="website-feedback"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3671,7 +4052,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-notifications" level={3}>
+            <ArticleSubParagraph
+              id="website-notifications"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3697,7 +4082,11 @@ const WebsiteEnglish = () => (
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
-            <ArticleSubParagraph id="website-about" level={3}>
+            <ArticleSubParagraph
+              id="website-about"
+              level={3}
+              separatorFullWidth
+            >
               <ArticleSubParagraphHeader
                 as="h5"
                 level={0}
@@ -3732,6 +4121,7 @@ const WebsiteEnglish = () => (
         <ArticleSubParagraph
           id="website-full-page-and-sheet-presentation"
           level={2}
+          separatorFullWidth
         >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Full-page and sheet presentation"}
@@ -3759,12 +4149,20 @@ const WebsiteEnglish = () => (
         </ArticleSubParagraph>
       </ArticleSubParagraphContent>
     </ArticleSubParagraph>
-    <ArticleSubParagraph id="website-contact-support" level={1}>
+    <ArticleSubParagraph
+      id="website-contact-support"
+      level={1}
+      separatorFullWidth
+    >
       <ArticleSubParagraphHeader as="h3" level={0} className="text-xl">
         {"Contact & Support"}
       </ArticleSubParagraphHeader>
       <ArticleSubParagraphContent level={1}>
-        <ArticleSubParagraph id="website-find-the-right-information" level={2}>
+        <ArticleSubParagraph
+          id="website-find-the-right-information"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Find the right information"}
           </ArticleSubParagraphHeader>
@@ -3802,7 +4200,11 @@ const WebsiteEnglish = () => (
             </ul>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-before-reporting-a-problem" level={2}>
+        <ArticleSubParagraph
+          id="website-before-reporting-a-problem"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Before reporting a problem"}
           </ArticleSubParagraphHeader>
@@ -3840,7 +4242,11 @@ const WebsiteEnglish = () => (
             </p>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="website-a-useful-problem-report" level={2}>
+        <ArticleSubParagraph
+          id="website-a-useful-problem-report"
+          level={2}
+          separatorFullWidth
+        >
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"A useful problem report"}
           </ArticleSubParagraphHeader>
@@ -3862,7 +4268,7 @@ const WebsiteEnglish = () => (
             </p>
           </ArticleSubParagraphContent>
         </ArticleSubParagraph>
-        <ArticleSubParagraph id="q-and-a" level={2}>
+        <ArticleSubParagraph id="q-and-a" level={2} separatorFullWidth>
           <ArticleSubParagraphHeader as="h4" level={0} className="text-lg">
             {"Common situations"}
           </ArticleSubParagraphHeader>

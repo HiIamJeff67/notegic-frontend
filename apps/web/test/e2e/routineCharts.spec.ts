@@ -3,6 +3,12 @@ import { expect, test } from "@playwright/test";
 import { fromJSON } from "seroval";
 import type { mountRoutineChartsExample } from "./routineChartsTestSupport";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 declare global {
   interface Window {
     routineChartsExample: ReturnType<typeof mountRoutineChartsExample>;

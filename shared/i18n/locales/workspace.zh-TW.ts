@@ -798,8 +798,8 @@ export const TraditionalChineseWorkspaceTranslation = {
     guideRoutineTitle: "讓工作可重複",
     guideRoutineDescription: "需要定期執行或檢查的工作，可以交給流程處理。",
     videoGuideTitle: "操作影片",
-    videoGuideDescription: "這裡會放置一段簡短的產品操作影片。",
-    videoGuidePlaceholder: "操作影片將會放在這裡。",
+    videoGuideDescription:
+      "觀看 Workspace Overview，認識筆記、檔案與流程操作。",
     clickToEdit: "點擊以編輯",
     memoPlaceholder: "在此寫下備忘……",
     saveChanges: "儲存變更",

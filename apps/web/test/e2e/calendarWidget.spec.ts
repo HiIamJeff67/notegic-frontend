@@ -8,6 +8,9 @@ declare global {
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
   test.skip(process.env.E2E_PRODUCTION === "true", "Uses Vite source imports");
   // August 2026 needs six rows, including the last day on the bottom row.
   await page.clock.setFixedTime(new Date("2026-08-15T12:00:00"));

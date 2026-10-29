@@ -186,20 +186,25 @@ for (const width of [320, 768, 1440]) {
 }
 
 for (const width of [390, 1440]) {
-  test(`Article separators keep consistent strokes at ${width}px`, async ({
+  test(`Article separators fill the reading viewport with consistent strokes at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/document");
     await page.waitForLoadState("networkidle");
     const strokes = await page.evaluate(() => {
+      const articleWidth = document.querySelector("article")!.clientWidth;
       const stroke = (element: Element, pseudo?: string) => {
         const style = getComputedStyle(element, pseudo);
+        const spread = Number.parseFloat(
+          style.boxShadow.match(/-?\d+(?:\.\d+)?px/g)?.at(-1) ?? "0"
+        );
         return {
           height: Number.parseFloat(style.height),
           border: Number.parseFloat(style.borderTopWidth),
           color: style.backgroundColor,
           shrink: style.flexShrink,
+          fullWidth: spread >= articleWidth && style.clipPath !== "none",
         };
       };
       return {
@@ -228,12 +233,13 @@ for (const width of [390, 1440]) {
           border: 0,
           color: lines[0].color,
           shrink: "0",
+          fullWidth: true,
         });
       }
     }
   });
 
-  test(`guide separators align with prose and have balanced spacing at ${width}px`, async ({
+  test(`guide separators keep balanced spacing without duplicate lines at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 800 });

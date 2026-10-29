@@ -21,6 +21,7 @@ export default defineConfig({
     env: {
       // E2E optimization must not replace a running developer server's chunks.
       NOTEGIC_VITE_CACHE_DIR: "node_modules/.vite-playwright",
+      NOTEGIC_NITRO_BUILD_DIR: "node_modules/.nitro-playwright",
       VITE_APP_BASE_PATH: "/",
       PORT: String(port),
       HOST: "127.0.0.1",

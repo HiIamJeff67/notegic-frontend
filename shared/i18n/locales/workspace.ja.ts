@@ -828,8 +828,8 @@ export const JapaneseWorkspaceTranslation = {
     guideRoutineTitle: "繰り返しを仕組み化する",
     guideRoutineDescription: "定期的な作業や確認にはルーチンを使えます。",
     videoGuideTitle: "操作動画",
-    videoGuideDescription: "短い製品操作動画をここに追加します。",
-    videoGuidePlaceholder: "操作動画はここに表示されます。",
+    videoGuideDescription:
+      "Workspace Overview でノート、ファイル、ルーティンの操作をご覧ください。",
     clickToEdit: "クリックして編集",
     memoPlaceholder: "ここにメモを入力…",
     saveChanges: "変更を保存",

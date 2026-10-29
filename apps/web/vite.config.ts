@@ -143,6 +143,9 @@ export default defineConfig(({ mode }) => {
       viteReact(),
       nitro({
         preset: nitroPreset,
+        buildDir: env.NOTEGIC_NITRO_BUILD_DIR
+          ? resolve(webRoot, env.NOTEGIC_NITRO_BUILD_DIR)
+          : undefined,
         serverDir: join(webRoot, "server"),
         routeRules: {
           "/assets/**": {

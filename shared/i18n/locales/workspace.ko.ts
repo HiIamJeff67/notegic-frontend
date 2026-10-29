@@ -822,8 +822,8 @@ export const KoreanWorkspaceTranslation = {
     guideRoutineDescription:
       "정기적으로 해야 할 작업이나 검토에는 루틴을 사용하세요.",
     videoGuideTitle: "사용 안내 영상",
-    videoGuideDescription: "짧은 제품 사용 안내 영상이 여기에 추가됩니다.",
-    videoGuidePlaceholder: "사용 안내 영상이 여기에 표시됩니다.",
+    videoGuideDescription:
+      "Workspace Overview에서 노트, 파일, 루틴 사용 방법을 확인하세요.",
     clickToEdit: "클릭하여 편집",
     memoPlaceholder: "여기에 메모를 작성하세요…",
     saveChanges: "변경 사항 저장",

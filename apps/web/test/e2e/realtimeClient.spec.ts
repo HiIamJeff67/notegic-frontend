@@ -2,6 +2,12 @@ import { expect, test } from "@playwright/test";
 import type { RealtimeExample } from "./realtimeClientTestSupport";
 import type { mountRealtimeProviderExample } from "./realtimeProviderTestSupport";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 declare global {
   interface Window {
     realtimeExample: RealtimeExample;

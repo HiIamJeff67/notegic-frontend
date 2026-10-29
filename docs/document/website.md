@@ -8,7 +8,7 @@ Write and organize notes, keep reference files, collaborate, and manage recurrin
 
 Dashboard provides widgets, the Sidebar organizes notes and files, and Routines manages automated work. The examples below use a research project.
 
-![Example Dashboard with Clock, Timer, To-do list, Calendar, and Scratch Pad widgets](images/dashboard-overview.png)
+![Example Dashboard with Clock, Timer, To-do list, Calendar, and Scratch Pad widgets](../../apps/web/assets/document/images/dashboard-overview.png)
 
 Image 01 — Dashboard overview
 
@@ -207,7 +207,7 @@ A Widget is a small tool on Dashboard. Choose a built-in tool and adjust its pos
 
 Defaults refers to tools already available to add, rather than tools that all appear automatically on first use. The picker groups basic tools and guidance content so you can choose what you need.
 
-![Widget picker showing Clock and Timer previews and the Guides group](images/widgets-defaults-picker.jpg)
+![Widget picker showing Clock and Timer previews and the Guides group](../../apps/web/assets/document/images/widgets-defaults-picker.jpg)
 
 Image 02 — Widget picker
 
@@ -225,7 +225,7 @@ Open Edit from the Widget menu to adjust:
 - Region name: whether to show the selected region and timezone.
 - Text size: separate sizes for the digital time and region information.
 
-![Clock settings with timezone, style, digital time, region name, and text-size controls](images/widgets-clock-settings.jpg)
+![Clock settings with timezone, style, digital time, region name, and text-size controls](../../apps/web/assets/document/images/widgets-clock-settings.jpg)
 
 Image 03 — Clock settings
 
@@ -242,7 +242,7 @@ The main controls are:
 3. Select Pause to stop temporarily, then Resume to continue.
 4. Select Reset to return to the configured starting duration, rather than the time remaining when you paused.
 
-![Timer duration editor with hours, minutes, seconds, Save, and Cancel](images/widgets-timer-duration.jpg)
+![Timer duration editor with hours, minutes, seconds, Save, and Cancel](../../apps/web/assets/document/images/widgets-timer-duration.jpg)
 
 Image 04 — Timer duration
 
@@ -264,7 +264,7 @@ To begin:
 
 Hover over a row to reveal actions such as adding a link or removing the item. Links can point to reading sources or related pages. Check unfamiliar external URLs before opening them.
 
-![Unsaved to-do list with items, checkboxes, drag handles, links, removal, an add-item control, and Save changes](images/widgets-todo-usage.jpg)
+![Unsaved to-do list with items, checkboxes, drag handles, links, removal, an add-item control, and Save changes](../../apps/web/assets/document/images/widgets-todo-usage.jpg)
 
 Image 05 — To-do list controls
 
@@ -276,7 +276,7 @@ Widget appearance settings adjust the title font, item font, and row height. For
 
 Use Calendar to check dates or select a date while planning. Change the month and year with the menus or arrows, then select the date you need.
 
-![Calendar with month and year controls, navigation arrows, a complete date grid, and a selected date](images/widgets-calendar.jpg)
+![Calendar with month and year controls, navigation arrows, a complete date grid, and a selected date](../../apps/web/assets/document/images/widgets-calendar.jpg)
 
 Image 06 — Calendar navigation
 
@@ -290,13 +290,13 @@ Scratch Pad is a Dashboard note for brief ideas, next steps, and reminders. Sele
 
 It supports Markdown for basic formatting such as headings, lists, and bold text. For example, enter `# Research Notes` as a heading and start lines with `-` to list work to organize. Editing shows the source syntax; reading mode displays the formatted result.
 
-![Scratch Pad editing mode with Markdown heading, bold and list syntax, widget controls, and Save changes](images/widgets-scratch-pad-editing.jpg)
+![Scratch Pad editing mode with Markdown heading, bold and list syntax, widget controls, and Save changes](../../apps/web/assets/document/images/widgets-scratch-pad-editing.jpg)
 
 Image 07 — Scratch Pad editing
 
 Select Save changes within the note after editing. Returning to preview by clicking elsewhere is separate from saving. Appearance settings can adjust text size to suit the Widget's dimensions.
 
-![The same Scratch Pad note rendered as a heading and list](images/widgets-scratch-pad-preview.jpg)
+![The same Scratch Pad note rendered as a heading and list](../../apps/web/assets/document/images/widgets-scratch-pad-preview.jpg)
 
 Image 08 — Scratch Pad preview
 
@@ -312,7 +312,7 @@ You can complete the first page and continue with your own work. The checklist d
 
 ###### Walkthrough video
 
-This Widget provides product guidance. You can also watch the website tour through this guide's [Workspace Overview](https://youtu.be/pH21Od0Io58). If the Widget has no playable content, use that link directly.
+Watch Workspace Overview directly in this Widget for a tour of notes, reference files, and routines. Select play to load the video; use the player controls to pause, seek, or enter full screen. You can also [watch Workspace Overview on YouTube](https://youtu.be/pH21Od0Io58).
 
 Getting started and Walkthrough video are guidance content and may span the workspace width, unlike smaller clocks. Neither currently has the standard Widget appearance panel.
 
@@ -332,7 +332,7 @@ Add one or two tools first, then arrange the page gradually so it remains clear 
 
 In layout editing mode, drag tools to allowed positions and use their bottom-right handles to resize them. Widgets follow the grid and supported sizes; not every tool can take any width or height.
 
-![Clock being dragged on Dashboard, with an empty origin and a pale destination preview with a white outline](images/dashboard-layout-editing.jpg)
+![Clock being dragged on Dashboard, with an empty origin and a pale destination preview with a white outline](../../apps/web/assets/document/images/dashboard-layout-editing.jpg)
 
 Image 09 — Widget drag destination
 
@@ -346,7 +346,7 @@ The narrow/wide control at the bottom right changes the available width of Dashb
 
 During layout editing, a Widget's three-dot menu shows its available actions. Tools with dedicated settings provide Edit; other tools may offer different options.
 
-![To-do Widget actions menu with Edit and Delete](images/widgets-item-menu.jpg)
+![To-do Widget actions menu with Edit and Delete](../../apps/web/assets/document/images/widgets-item-menu.jpg)
 
 Image 10 — Widget actions menu
 
@@ -384,11 +384,11 @@ Use the Sidebar to find documents and switch pages. Dashboard and Routines are a
 
 Collapse it on narrower screens or when you need more space for content, then reopen it to navigate. Collapsing the Sidebar does not delete data or remove you from a project.
 
-![Expanded Sidebar with page navigation, Shelves, Stations, and account actions, alongside a narrow portion of Dashboard](images/sidebar-overview.jpg)
+![Expanded Sidebar with page navigation, Shelves, Stations, and account actions, alongside a narrow portion of Dashboard](../../apps/web/assets/document/images/sidebar-overview.jpg)
 
 Image 11 — Sidebar overview
 
-![Expanding a Shelf and subcategories to inspect the document hierarchy and item hints](videos/sidebar-navigation.gif)
+![Expanding a Shelf and subcategories to inspect the document hierarchy and item hints](../../apps/web/assets/document/videos/sidebar-navigation.gif)
 
 GIF 01 — Sidebar navigation
 
@@ -454,7 +454,7 @@ Documents consist of Blocks. Each paragraph, heading, or table has its own conte
 
 Type `/` at an editable position to view the available types. Select an item directly, or continue typing its name to narrow the list and choose with the keyboard or mouse.
 
-![Block insertion menu in a note template, showing headings, quotes, and lists](images/editor-block-menu.jpg)
+![Block insertion menu in a note template, showing headings, quotes, and lists](../../apps/web/assets/document/images/editor-block-menu.jpg)
 
 Image 12 — Block insertion menu
 
@@ -480,7 +480,7 @@ Formulas can appear in their own Blocks or within text. Use a separate formula f
 
 Diagram renders Mermaid text as a diagram. This simple example contains Start and Stop nodes:
 
-![Mermaid diagram preview with an arrow connecting Start and Stop](images/editor-diagram-preview.jpg)
+![Mermaid diagram preview with an arrow connecting Start and Stop](../../apps/web/assets/document/images/editor-diagram-preview.jpg)
 
 Image 13 — Diagram preview
 
@@ -491,7 +491,7 @@ graph TD
     A[Start] --> B[Stop]
 ```
 
-![Diagram source editor with the Mermaid text, preview, and OK control](images/editor-diagram-code.jpg)
+![Diagram source editor with the Mermaid text, preview, and OK control](../../apps/web/assets/document/images/editor-diagram-code.jpg)
 
 Image 14 — Diagram source editor
 
@@ -535,7 +535,7 @@ If a document opens but cannot be edited, check whether access is read-only. The
 
 Root Shelf and Station permissions are separate. Document collaboration does not grant automation management access. Do not share accounts or API keys to bypass permission boundaries.
 
-![Opening participants and Sharing overview to inspect Permission and Status fields](videos/sharing-and-permissions.gif)
+![Opening participants and Sharing overview to inspect Permission and Status fields](../../apps/web/assets/document/videos/sharing-and-permissions.gif)
 
 GIF 02 — Sharing and permissions
 
@@ -646,7 +646,7 @@ Video 04 — Import and Read a PDF
 
 This page brings together the time rail, charts, workflow definitions, and execution records. Start by deciding whether you need a task's configuration or the result of a particular execution, then choose the corresponding view.
 
-![Routines overview for My First Station, including scope counts, the time rail, and charts](images/routines-overview.jpg)
+![Routines overview for My First Station, including scope counts, the time rail, and charts](../../apps/web/assets/document/images/routines-overview.jpg)
 
 Image 15 — Routines overview
 
@@ -696,7 +696,7 @@ If there are no charts, select Add charts in the chart area or use the add-chart
 - Scheduled start and end times: the distribution of schedules over time.
 - Task purpose: the distribution of Routine Task purposes.
 
-![Add chart picker with Overall and Routine previews and Added indicators](images/routines-chart-picker.jpg)
+![Add chart picker with Overall and Routine previews and Added indicators](../../apps/web/assets/document/images/routines-chart-picker.jpg)
 
 Image 16 — Chart picker
 
@@ -746,7 +746,7 @@ Start with test data and a single task. Understanding one simple step makes it e
 
 Select the add button beside Stations in the Sidebar and enter a name. Use a description to explain the work. Icons and backgrounds help identify the Station but are not execution requirements.
 
-![Create station form with name, description, icon, and background URL fields](images/station-create-form.jpg)
+![Create station form with name, description, icon, and background URL fields](../../apps/web/assets/document/images/station-create-form.jpg)
 
 Image 17 — Station creation form
 
@@ -762,7 +762,7 @@ The Routine form requires a name and provides description, execution timeout, sc
 - Recurrence: whether to repeat and the daily, weekly, monthly, or other options provided by the interface.
 - Pinning: makes the Routine easier to identify or access, rather than setting execution order.
 
-![Create routine form with name, description, timeout, custom schedule, recurrence, and pinning](images/routine-create-form.jpg)
+![Create routine form with name, description, timeout, custom schedule, recurrence, and pinning](../../apps/web/assets/document/images/routine-create-form.jpg)
 
 Image 18 — Routine creation form
 
@@ -770,7 +770,7 @@ Image 18 — Routine creation form
 
 After enabling a custom schedule, open the start and end pickers, select dates, and check hours and minutes. End conditions must satisfy the current recurrence's rules. Correct validation messages before submitting.
 
-![Routine start-time picker with month, date, 12H/24H, hour, and minute controls](images/routine-schedule-picker.jpg)
+![Routine start-time picker with month, date, 12H/24H, hour, and minute controls](../../apps/web/assets/document/images/routine-schedule-picker.jpg)
 
 Image 19 — Routine date and time picker
 
@@ -861,7 +861,7 @@ Reload, retry, reset, and export are different actions. Export provides a copy o
 
 Removing a connection changes an ordering relationship; deleting a task affects a workflow step. Confirm which item you selected before proceeding.
 
-![Inspecting nodes in an existing Routine graph and zooming and panning the canvas](videos/routine-dependencies.gif)
+![Inspecting nodes in an existing Routine graph and zooming and panning the canvas](../../apps/web/assets/document/videos/routine-dependencies.gif)
 
 GIF 03 — Routine dependencies
 
@@ -1003,7 +1003,7 @@ Adjust the theme, interface language, density, and motion according to your need
 - To limit animations, enable reduced motion.
 - For subtle interaction responses, review the feedback options. Their effect also depends on device support.
 
-![Appearance preferences for theme, interface language, density, reduced motion, and interaction feedback](images/preferences-appearance.jpg)
+![Appearance preferences for theme, interface language, density, reduced motion, and interaction feedback](../../apps/web/assets/document/images/preferences-appearance.jpg)
 
 Image 20 — Appearance preferences
 
@@ -1025,7 +1025,7 @@ Editor preferences combine reading options and interaction tools. Open a test do
 - Spellcheck: use browser-provided checking, whose results depend on browser language and settings.
 - Block drag handles: choose whether to show the controls used to move or manage Blocks.
 
-![Editor preferences for page width, text size, wrapping, spellcheck, and Block drag handles](images/preferences-editor.jpg)
+![Editor preferences for page width, text size, wrapping, spellcheck, and Block drag handles](../../apps/web/assets/document/images/preferences-editor.jpg)
 
 Image 21 — Editor preferences
 
@@ -1105,7 +1105,7 @@ On supported screen sizes, the settings view can switch between a full page and 
 
 Complete any required form confirmation before switching presentation. Some settings apply immediately and others require saving; do not assume every section behaves the same way.
 
-![Switching preferences between a full page and side sheet, including theme and reading-width changes, and ending on the full page](videos/settings-presentation.gif)
+![Switching preferences between a full page and side sheet, including theme and reading-width changes, and ending on the full page](../../apps/web/assets/document/videos/settings-presentation.gif)
 
 GIF 04 — Settings presentation switch
 

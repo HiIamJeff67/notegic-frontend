@@ -13,12 +13,12 @@ For application code changes, follow the repository's coding and test skills.
 
 - [Product media runbook](../../../docs/runbooks/product-media-production.md):
   capture, editing, presentation, privacy, and verification requirements.
-- [Website guide](../../../docs/introductions/website.md): current product
+- [Website guide](../../../docs/document/website.md): current product
   terminology and the user workflow being demonstrated. Check the running
   application and source when the guide and current behavior differ.
-- [Media index](../../../docs/introductions/media-index.md): existing shots,
-  numbering, edit decisions, and known source limitations. Read only the
-  relevant entry when replacing a capture.
+- [Documentation media](../../../apps/web/assets/document/): shipped images,
+  GIFs, and the walkthrough recording. Match filenames to the Website guide
+  captions; the production runbook records capture requirements and limitations.
 
 ## Workflow
 
@@ -43,9 +43,9 @@ For application code changes, follow the repository's coding and test skills.
 5. Inspect the exported result, not only the editor preview: opening, transitions,
    important actions, ending, frame edges, floating windows, timing, and text
    readability. Replace a reviewed asset only after the replacement passes.
-6. Update the media index and affected guide links/captions. For published
-   videos, use the owner's actual links in
-   [youtube-urls.md](../../../docs/introductions/videos/youtube-urls.md).
+6. Keep reviewed media in `apps/web/assets/document/` and update affected
+   [Website guide](../../../docs/document/website.md) links/captions. Use the
+   owner's actual published video links recorded in that guide.
    Prepare plain, accurate titles, descriptions, and tags when requested;
    publishing or uploading requires its own explicit instruction.
 

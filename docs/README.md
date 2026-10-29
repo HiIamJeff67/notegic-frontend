@@ -26,7 +26,7 @@ describe backend implementation as if it belongs to this repository.
 
 | Area | Scope |
 | --- | --- |
-| [introductions](introductions/) | English Website guide source, screenshots, GIFs, media inventory, and published video links |
+| [document](document/website.md) | English Website guide source and published video links; media lives in [Web assets](../apps/web/assets/document/) |
 | [designs](designs/README.md) | Current route, codebase, and system design decisions |
 | [conventions](conventions/) | Naming, UI, styling, icons, generated code, and implementation conventions |
 | [runbooks](runbooks/) | Local development, verification, code generation, and troubleshooting procedures |

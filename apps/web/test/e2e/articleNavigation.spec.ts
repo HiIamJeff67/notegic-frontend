@@ -113,7 +113,7 @@ test("document sections keep their DOM boundaries and API operations remain sear
   );
   await expect(
     page.locator("#gateway-rule-rate-limits-and-retries")
-  ).toContainText("reconcile state");
+  ).toContainText("check whether the change was applied");
   await expect(page.locator("#quick-start")).toContainText(
     "https://api.notegic.com/v1/routine-tags"
   );

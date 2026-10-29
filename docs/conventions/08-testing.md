@@ -48,6 +48,11 @@ SQLite/WASM startup. Use `--workers` explicitly for concurrency experiments.
 The two-tab startup, reload and row-retention scenario has a 60-second total
 test budget; individual database worker connections retain their 15-second
 deadline and startup-error assertions.
+The temporary Vite server's cold startup and prefixed documentation round trip
+also have a 60-second total budget because they compile route trees from fresh
+optimizer and Nitro output. They retain successful hydration, isolation, player,
+startup-error, and browser-script assertions; this does not extend the database
+worker connection deadline.
 
 CI runs one job and one `npm ci`: `npm run test:environment` selects the four
 `@environment` public-navigation and worker startup/reload smoke tests against
@@ -104,6 +109,13 @@ The development Playwright server must not share its dependency optimizer cache
 with a running developer server. Vite replaces the cache when its optimization
 inputs change; another server can retain URLs to chunks removed by that
 replacement. A successful retry can hide this missing-file failure.
+
+Nitro build directories must also be separate: generated service entries and
+runtime files belong to one server. Playwright sets the Node-only
+`NOTEGIC_NITRO_BUILD_DIR` to `node_modules/.nitro-playwright`; development keeps
+Nitro's default. Fixtures that create additional real Vite servers provide a
+temporary `nitro.buildDir` alongside their temporary optimizer cache. Sharing
+these files can break hydration when differently based servers run concurrently.
 
 `playwright.config.ts` sets the Node-only `NOTEGIC_VITE_CACHE_DIR` override to
 `node_modules/.vite-playwright`, resolved against `apps/web/`. Normal development

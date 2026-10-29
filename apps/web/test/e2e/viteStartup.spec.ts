@@ -34,6 +34,7 @@ test.beforeAll(async () => {
     server = await createServer({
       configFile: join(repository, "apps/web/vite.config.ts"),
       cacheDir: join(temporary, "cache"),
+      nitro: { buildDir: join(temporary, "nitro") },
       logLevel: "warn",
       server: {
         host: "127.0.0.1",
@@ -57,6 +58,8 @@ test.afterAll(async () => {
 test("cold startup hydrates without outdated dependencies or an automatic full reload", async ({
   page,
 }) => {
+  // Compilation from this fixture's fresh optimizer and Nitro output is included.
+  test.setTimeout(60_000);
   const failures: Array<{ url: string; status: number }> = [];
   const reloads: string[] = [];
   const errors: string[] = [];

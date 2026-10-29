@@ -1,7 +1,7 @@
 # Website guide
 
 The documentation page's Website section is authored in
-`docs/introductions/website.md` and is published in English.
+`docs/document/website.md` and is published in English.
 
 Run `npm run generate:website-guide` explicitly after changes. It compiles
 the English document to `WebsiteEnglish.tsx` and navigation under
@@ -12,11 +12,16 @@ edit generated TSX or parse Markdown during page rendering.
 
 Adjacent sections use Article's automatic separators. A Markdown thematic break
 at the same boundary does not produce a second line; thematic breaks within
-section content remain explicit separators.
+section content remain explicit separators. The generator sets
+`separatorFullWidth` on sections and `fullWidth` on explicit separators to match
+the other documentation sections. Article keeps paragraph separators at 2px and
+subparagraph separators at 1px; full-width lines leave the text's reading width
+unchanged.
 
 Vite imports the original local images and GIFs as asset URLs and emits them
-with the Web build. Keep the source files under `docs/introductions/`; no
-duplicate asset copy or media download is required. The Website guide remains
+with the Web build. Keep media under `apps/web/assets/document/` and use relative
+links from `docs/document/website.md`. Generation emits `@assets/document/`
+imports and rejects media outside that asset directory. The Website guide remains
 in English regardless of the application UI language and has no language picker.
 
 `ArticleImage` reserves media dimensions, uses native lazy image loading and
@@ -32,6 +37,15 @@ guide uses YouTube privacy-enhanced embed URLs; other providers must supply
 an iframe-compatible URL and permit embedding. Guide videos do not autoplay;
 YouTube's inline playback option keeps supported mobile playback in the page.
 The original-video link is always available in the caption.
+
+The Dashboard's Walkthrough video Widget uses the same Workspace Overview
+recording as a same-origin MP4 under `apps/web/assets/document/videos/`, with its existing
+thumbnail as the poster and `preload="none"`. This keeps playback compatible
+with the App's COEP in browsers without credentialless iframes. Empty saved
+`videoURL` values use the bundled recording; explicit custom URLs remain intact.
+Keep the default URL in the component so saved Widget data does not retain an
+outdated build asset hash. The documentation's six YouTube embeds remain owned
+by `ArticleVideo`.
 
 ## Cross-origin isolation
 
@@ -54,6 +68,25 @@ COEP is fixed for the lifetime of an HTML document. The root route forces a
 document navigation when entering or leaving documentation; navigation between
 documentation anchors stays within the page. Do not replace this with ordinary
 SPA navigation or remove isolation from application pages.
+
+Use browser/server URL pathnames with the configured base path when selecting
+headers or checking the initially loaded document. TanStack Router's
+`location.pathname` and `buildLocation().pathname` already exclude that prefix;
+classify those with the default `/` base. Passing `/development/v1/` again
+misclassifies `/document` as an isolated route, skips the required document
+navigation from the App, and leaves third-party frames under the App's COEP.
+Root-path tests alone cannot detect this mismatch.
+
+`documentIsolation.spec.ts` uses a separate real Vite server under
+`/development/v1/` and isolated browser storage. It checks navigation in both
+directions, anchors within documentation, guide HMR through a temporary imported
+module, and a Vite automatic full reload. Both update paths must preserve
+non-isolated documentation and all six embedded player fixtures. The fixture
+uses its own optimizer cache and Nitro build directory and never edits the
+authored guide or clears the developer's cache or local data. Run one normal
+development server per checkout;
+additional verification servers need separate optimizer caches and Nitro build
+directories.
 
 The documentation document does not create the SQLocal worker, access SQL
 diagnostics storage, or run local-data cleanup. Returning to an isolated page
@@ -79,9 +112,12 @@ npm run lint
 npm run typecheck
 npm run test:unit -- apps/web/src/components/commons/Article/ArticleMedia.test.tsx apps/web/test/integration/iconConventions.test.ts
 npm run test:e2e -- websiteGuide.spec.ts articleNavigation.spec.ts articleResponsive.spec.ts --workers=1
-npm run test:e2e -- crossOriginIsolation.spec.ts localDatabaseStartup.spec.ts --workers=1
+npm run test:e2e -- crossOriginIsolation.spec.ts documentIsolation.spec.ts localDatabaseStartup.spec.ts --workers=1
 ```
 
 The browser tests use isolated storage and a controlled cross-origin player
 response. They verify loading boundaries and embedding configuration, not
 YouTube availability or actual remote playback.
+Other component suites mounted on `/document` must also fulfill the YouTube
+embed requests before navigation so readiness does not depend on live provider
+traffic.

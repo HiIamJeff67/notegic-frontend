@@ -9,6 +9,12 @@ import {
 import type { createApolloClient } from "../../src/api/apolloClient";
 import type { mountRoutineRecords } from "./routineRecordsTestSupport";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://www.youtube-nocookie.com/embed/**", route =>
+    route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" })
+  );
+});
+
 declare global {
   interface Window {
     routineRecordsExample: ReturnType<typeof mountRoutineRecords>;
@@ -386,12 +392,19 @@ for (const mode of [
             { name: control, exact: true }
           );
           await expect(panel).toBeVisible();
-          const box = (await panel.boundingBox())!;
-          expect(box.height).toBeLessThanOrEqual(321);
-          expect(box.x).toBeGreaterThanOrEqual(0);
-          expect(box.x + box.width).toBeLessThanOrEqual(size.width);
-          expect(box.y).toBeGreaterThanOrEqual(0);
-          expect(box.y + box.height).toBeLessThanOrEqual(size.height);
+          await expect
+            .poll(async () => {
+              const box = await panel.boundingBox();
+              return (
+                box !== null &&
+                box.height <= 321 &&
+                box.x >= 0 &&
+                box.x + box.width <= size.width &&
+                box.y >= 0 &&
+                box.y + box.height <= size.height
+              );
+            })
+            .toBe(true);
           if (control === "Record filters") {
             const label = (await panel.locator("label").first().boundingBox())!;
             const input = (await panel

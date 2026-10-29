@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const source = path.join(root, "docs/introductions");
+const source = path.join(root, "docs/document");
+const assets = path.join(root, "apps/web/assets/document");
 const output = path.join(root, "apps/web/src/pages/document/website");
 const legacyIds = {
   "structured-storage": "notegic-model",
@@ -147,7 +148,7 @@ const blocks = tokens =>
             quote(token.id) +
             " level={" +
             Math.min(token.depth - 1, 3) +
-            "}>" +
+            "} separatorFullWidth>" +
             '<ArticleSubParagraphHeader as="h' +
             depth +
             '" level={0} className="' +
@@ -174,11 +175,11 @@ const blocks = tokens =>
               /^(Image|GIF) \d{2} — /,
               "Missing media caption"
             );
+            const asset = path.resolve(source, image.href);
             assert.match(
-              image.href,
+              path.relative(assets, asset).split(path.sep).join("/"),
               /^(images|videos)\/[\w-]+\.(png|jpg|gif)$/
             );
-            const asset = path.join(source, image.href);
             assert(fs.existsSync(asset), "Missing media: " + image.href);
             if (!media.has(asset)) media.set(asset, "media" + media.size);
             return (
@@ -252,7 +253,7 @@ const blocks = tokens =>
             "}} />"
           );
         case "hr":
-          return "<ArticleSubParagraphSeparator />";
+          return "<ArticleSubParagraphSeparator fullWidth />";
         case "table":
           return (
             '<div role="region" aria-label=' +
@@ -312,13 +313,17 @@ const imports = [...media]
       "import " +
       name +
       " from " +
-      quote(path.relative(output, file).split(path.sep).join("/") + "?url") +
+      quote(
+        "@assets/document/" +
+          path.relative(assets, file).split(path.sep).join("/") +
+          "?url"
+      ) +
       ";"
   )
   .join("\n");
 destinations.push([
   path.join(output, name + ".tsx"),
-  "// Generated from docs/introductions/" +
+  "// Generated from docs/document/" +
     file +
     "; run npm run generate:website-guide.\n" +
     imports +
@@ -338,7 +343,7 @@ destinations.push([
 ]);
 destinations.push([
   path.join(output, "websiteNavigation.ts"),
-  '// Generated from docs/introductions/website.md; run npm run generate:website-guide.\nimport type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
+  '// Generated from docs/document/website.md; run npm run generate:website-guide.\nimport type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
     "export const websiteSections = " +
     JSON.stringify(navigation, null, 2) +
     " satisfies ArticleNavigationItem[];\n",

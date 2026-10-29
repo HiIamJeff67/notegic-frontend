@@ -79,7 +79,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-10-24, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **128 referenced export names / 103 distinct
+imports and re-exports (excluding tests). There are **127 referenced export names / 102 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -162,7 +162,6 @@ The source column gives a representative existing consumer, not every call site.
 | `PanelLeftIcon` | Toggle sidebar | [Sidebar] |
 | `PanelRightOpenIcon` | Open settings in side panel | [AccountSettingsPage] |
 | `Pencil`, `PencilIcon` | Rename / PDF drawing tool | [RootShelfMenu], [RoutineMenu], [MaterialPDFViewer] |
-| `Play` | Play video guide | [VideoGuideWidget] |
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
 | `Power` | Active Routine toggle state | [GraphToolbar] |
 | `PowerOff` | Inactive Routine toggle state | [GraphToolbar] |
@@ -348,7 +347,6 @@ assets or Docker services were removed. No commit or push was performed.
 [Sidebar]: ../../apps/web/src/components/ui/sidebar.tsx
 [Editable]: ../../apps/web/src/components/commons/Editable/Editable.tsx
 [TemplatePatternEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/TemplatePatternEditor.tsx
-[VideoGuideWidget]: ../../apps/web/src/components/widgets/guide/VideoGuideWidget.tsx
 [BrowserPermissionsTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/BrowserPermissionsTab.tsx
 [Command]: ../../apps/web/src/components/ui/command.tsx
 [PrivacyPolicy]: ../../apps/web/src/pages/document/PrivacyPolicy.tsx

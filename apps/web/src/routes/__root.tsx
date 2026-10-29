@@ -18,14 +18,11 @@ const isolatedDocument =
 export const Route =
   createRootRouteWithContext<ApolloClientIntegration.RouterContext>()({
     beforeLoad: ({ location, preload }) => {
+      // Router pathnames already exclude the application's base path.
       if (
         !preload &&
         isolatedDocument !== null &&
-        isolatedDocument !==
-          requiresCrossOriginIsolation(
-            location.pathname,
-            import.meta.env.BASE_URL
-          )
+        isolatedDocument !== requiresCrossOriginIsolation(location.pathname)
       ) {
         // COEP belongs to the HTML document and cannot change during SPA navigation.
         throw redirect({ href: location.publicHref, reloadDocument: true });

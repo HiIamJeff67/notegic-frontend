@@ -3,10 +3,10 @@
 Create promotional videos, GIFs, screenshots, and publishing copy that show
 Notegic's actual behavior. The entry point for agents is
 [product-media-production](../../.agents/skills/product-media-production/SKILL.md).
-Use the [Website guide](../introductions/website.md) for product terminology and
-the [media index](../introductions/media-index.md) for existing assets and
-individual edit decisions. This runbook owns the reusable production procedure;
-the index owns capture history and the published asset inventory.
+Use the [Website guide](../document/website.md) for product terminology,
+published video links, and numbered captions. Existing shipped images, GIFs,
+and the walkthrough recording live in [Web assets](../../apps/web/assets/document/).
+This runbook owns the reusable production procedure.
 
 ## Plan the demonstration
 
@@ -77,6 +77,8 @@ Sidebar image can be narrower while retaining enough surrounding context.
   Composite them above the application mask and border. Capture their complete
   area in the source: window-only footage cannot recover pixels outside its
   capture boundary. Use an authorized supplemental take when necessary.
+  The published Material viewer video clips part of Finder; obtain supplemental
+  import footage before presenting it as complete floating-window coverage.
 - Keep labels outside application controls. For an accelerated passive wait,
   use an English numeric indicator such as `>> 4x` in the background gutter.
   A requested clock/date overlay also belongs outside the application. Describe
@@ -124,15 +126,18 @@ and takes that are no longer needed; do not delete an unrelated recording librar
 
 ## Repository and publication handoff
 
-Keep guide sources and reviewed images/GIFs under `docs/introductions/`.
+Keep the guide source in `docs/document/website.md` and reviewed media under
+`apps/web/assets/document/`, with `images/` and `videos/` subdirectories. The
+Walkthrough Widget and documentation share these assets without duplicate copies.
 Use descriptive filenames, with separate Image, GIF, and Video numbering in
 captions. Keep raw captures, editor projects, temporary exports, and local YouTube
-upload packages out of Git. The current `.gitignore` excludes `youtube/` packages;
+upload packages out of Git. The current `.gitignore` excludes `promotions/` packages;
 that exclusion does not replace reviewing the staged file list.
 
 The owner uploaded the current six videos publicly; their actual links live in
-[youtube-urls.md](../introductions/videos/youtube-urls.md). Use those links for
-public guide content rather than a workstation-local MP4. Uploading, changing
+the [Website guide](../document/website.md). Use those links for public guide
+embeds. The Dashboard's Walkthrough Widget uses the shipped same-origin MP4
+to preserve App cross-origin isolation. Uploading, changing
 visibility, or publishing another asset requires an explicit instruction.
 When asked, supply a complete, plain product title, a concise description of
 the demonstrated outcome, relevant tags, and an accurate thumbnail. Avoid hype
@@ -142,4 +147,4 @@ After changing the Website source, follow the
 [Website generation workflow](website-guide.md), regenerate explicitly, and
 review the generated TSX with its source. Image/GIF loading and video embedding
 remain owned by Article components; do not add publishing or runtime dependencies
-on this operational runbook or the media inventory.
+on this operational runbook.
