@@ -49,6 +49,8 @@ content, user uploads and prose emoji are not separate reusable application icon
 | Routine and record sort order | `ArrowDownUp` | Sorting field and direction; [RoutineSearchOrder]. |
 | Realign dependency graph | `Workflow` | Whole Routine task graph realignment; [GraphToolbar]. |
 | Routine activation state | `Power` / `PowerOff` | Active / inactive Routine toggle in [GraphToolbar]; not execution or task status. |
+| Local recovery eligibility | `ShieldCheckIcon` | Safety/preflight inspection in [LocalDBRecoveryCover]; advisory, not proof that local data can be discarded. |
+| Local database rebuild | `RotateCcwIcon` | Explicit destructive local reset in [LocalDBRecoveryCover]; Retry remains `RefreshCwIcon`. |
 | Copy to clipboard / duplicate | `CopyIcon` / `Copy` | Preferences, API keys, code and existing duplicate actions. A successful-copy `CheckIcon` is state feedback. |
 
 ## Canonical workspace entities
@@ -101,7 +103,7 @@ The source column gives a representative existing consumer, not every call site.
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
 | `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable], [CodeBlock] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
-| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field | [Select], [GuideWidget] |
+| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field; native open-state rotation for recovery Export | [Select], [GuideWidget], [LocalDBRecoveryCover] |
 | `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month / PDF page | [GuideWidget], [Calendar], [MaterialPDFViewer] |
 | `ChevronRight`, `ChevronRightIcon` | Next / submenu / breadcrumb / PDF page | [ContextMenu], [ItemPath], [MaterialPDFViewer] |
 | `ChevronUpIcon` | Collapse / previous field | [VersionCard], [CreateRoutineTaskDialog] |
@@ -117,7 +119,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Copy`, `CopyIcon` | Copy / duplicate | [AboutTab], [CodeBlock], [RoutineTaskMenu] |
 | `Crown` | Ownership | [RootShelfMenu], [StationMenu] |
 | `DatabaseIcon` | Plan storage/resources | [UpgradeTab] |
-| `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer] |
+| `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer], [LocalDBRecoveryCover] |
 | `EllipsisVerticalIcon` | Overflow / more actions | [Extendable]; graph nodes use their context menu instead |
 | `EraserIcon` | Erase PDF annotation | [MaterialPDFViewer] |
 | `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item | [MaterialMenu], [PrivacyPolicyPage] |
@@ -148,7 +150,7 @@ The source column gives a representative existing consumer, not every call site.
 | `MailIcon` | Contact/email navigation | [ArticleNavigation] |
 | `Map` | Graph minimap control (local alias `MapIcon`) | [GraphCanvas] |
 | `Maximize2Icon` | Expand settings view | [AccountSettingsPage] |
-| `MessageSquareWarningIcon` | Feedback navigation | [AppSidebar] |
+| `MessageSquareWarningIcon` | Feedback navigation / recovery report | [AppSidebar], [LocalDBRecoveryCover] |
 | `MinusIcon` | Zoom out | [MaterialPDFViewer] |
 | `MoreHorizontal` | Collapsed breadcrumb items | [Breadcrumb] |
 | `MousePointer` | PDF selection tool | [MaterialPDFViewer] |
@@ -164,12 +166,12 @@ The source column gives a representative existing consumer, not every call site.
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
 | `Power` | Active Routine toggle state | [GraphToolbar] |
 | `PowerOff` | Inactive Routine toggle state | [GraphToolbar] |
-| `RefreshCw`, `RefreshCwIcon` | Refresh / retry / browser permission check | [MaterialViewerFrame], [BrowserPermissionsTab] |
-| `RotateCcwIcon` | Reset preferences / PDF zoom | [AboutTab], [MaterialPDFViewer] |
+| `RefreshCw`, `RefreshCwIcon` | Refresh / retry / browser permission check | [MaterialViewerFrame], [BrowserPermissionsTab], [LocalDBRecoveryCover] |
+| `RotateCcwIcon` | Reset preferences / PDF zoom / destructive local database rebuild | [AboutTab], [MaterialPDFViewer], [LocalDBRecoveryCover] |
 | `SaveIcon` | Save changes / submit graph layout | [MaterialPDFViewer], [GraphToolbar] |
 | `SearchIcon` | Search / command / filter | [SupportedIconTable], [Command] |
 | `SettingsIcon` | Settings navigation | [AppSidebar] |
-| `ShieldCheckIcon` | Security / authenticated API context | [UpgradeTab], [APIReference] |
+| `ShieldCheckIcon` | Security / authenticated API context / local rebuild eligibility check | [UpgradeTab], [APIReference], [LocalDBRecoveryCover] |
 | `ShieldIcon` | Privacy documentation | [PrivacyPolicy] |
 | `SlidersHorizontalIcon` | Preferences navigation | [AppSidebar] |
 | `SmilePlusIcon` | Choose a user emoji | [SupportedIconTable] |
@@ -376,3 +378,5 @@ assets or Docker services were removed. No commit or push was performed.
 
 [RoutineSearchOrder]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineSearchOrder/RoutineSearchOrder.tsx
 [RoutineTaskTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable.tsx
+
+[LocalDBRecoveryCover]: ../../apps/web/src/components/covers/LocalDBRecoveryCover/LocalDBRecoveryCover.tsx

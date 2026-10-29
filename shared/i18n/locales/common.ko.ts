@@ -202,6 +202,25 @@ export const KoreanCommonTranslation: CommonTranslation = {
     title: "로컬 데이터 복구가 필요합니다",
     description:
       "로컬 데이터는 보존되었으며 자동으로 파괴적인 초기화를 수행하지 않았습니다.",
+    rebuildWarning:
+      "재구축하면 이 브라우저의 로컬 데이터베이스, 모든 테이블, 동기화 대기 변경 사항, 문서 초안 및 첨부 파일 캐시가 삭제됩니다. 동기화되지 않은 데이터는 사라집니다. 클라우드나 다른 브라우저의 데이터는 삭제되지 않습니다. 먼저 다른 Notegic 탭을 닫아 주세요.",
+    rebuildHelp:
+      "먼저 진단 및 로컬 데이터를 내보내고 두 파일을 저장한 뒤 재구축하세요. 이후 로그인하여 클라우드 데이터가 나타나는지 확인하고, 여전히 누락된 경우 신고하세요.",
+    backupHelp:
+      "“내보내기”에서 진단 및 로컬 데이터를 다운로드하고 두 파일을 저장한 후 계속하세요.",
+    confirmRebuild:
+      "두 파일을 저장했으며 이 브라우저의 로컬 데이터를 영구 삭제하는 데 동의합니다.",
+    reportHelp:
+      "재구축을 시도한 후 로그인하여 앱에서 클라우드 데이터를 확인하세요. 데이터가 여전히 없거나 재구축에 실패하면 신고하세요. 해결될 때까지 내보낸 파일을 보관하세요.",
+    reportPrivacy:
+      "이메일에 진단 파일을 첨부하세요. 로컬 데이터에는 개인 노트와 파일이 포함될 수 있으므로 필요한 경우에만 내용을 확인한 뒤 첨부하세요. 파일이 자동으로 첨부되거나 전송되지는 않습니다.",
+    confirmReport:
+      "재구축을 시도했고 앱을 열 수 있는 경우 클라우드 데이터를 확인했지만 문제가 남아 있습니다.",
+    reportSubject: "로컬 데이터 복구 문제",
+    reportBody:
+      "진단 및 로컬 데이터를 내보내고 재구축을 시도했지만 문제가 남아 있습니다.\n\n진행 단계 및 결과:\n\n누락된 데이터(있는 경우):\n\n진단 파일을 첨부하세요. 로컬 데이터는 필요한 경우에만 내용을 확인하여 첨부하세요.",
+    rebuildAttemptedDescription:
+      "수동 재구축을 시도했습니다. 일부 로컬 데이터가 이미 삭제되었을 수 있습니다. 내보낸 파일을 보관하세요.",
     technicalDetails: "기술 세부 정보",
     phases: {
       workerConnectionPending: "로컬 데이터베이스 워커를 기다리는 중",
@@ -229,6 +248,8 @@ export const KoreanCommonTranslation: CommonTranslation = {
       manualRecovery: "로컬 데이터베이스를 수동으로 복구해야 합니다",
     },
     labels: {
+      rebuildEligibility: "재구축 조건",
+
       currentPhase: "현재 단계",
       recoveryResult: "복구 결과",
       recoverability: "복구 가능성",
@@ -243,13 +264,15 @@ export const KoreanCommonTranslation: CommonTranslation = {
       manualRecovery: "수동 복구 필요",
     },
     actions: {
+      export: "내보내기",
+      report: "문제 신고",
+      sendEmail: "이메일 열기",
+
       retry: "다시 시도",
-      reconnect: "다시 연결",
       exportDiagnostics: "진단 정보 내보내기",
       exportLocalData: "로컬 데이터 내보내기",
-      checkRebuildEligibility: "재구축 조건 확인",
-      continueReadOnly: "읽기 전용으로 계속",
-      rebuildLocalData: "로컬 데이터 재구축",
+      checkRebuildEligibility: "조건 확인",
+      rebuildLocalData: "재구축",
     },
     confirmExport:
       "이 내보내기 파일에는 노트와 개인 작업 공간 데이터가 포함될 수 있습니다. 계속하시겠습니까?",

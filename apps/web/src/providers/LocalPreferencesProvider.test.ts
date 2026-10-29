@@ -1,10 +1,27 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { transformSync } from "esbuild";
+
 jest.mock("@/api/local/cleanup", () => ({}));
 jest.mock("@/providers/MaterialAttachmentCacheProvider", () => ({}));
 
-import {
-  canSendDesktopNotification,
-  isQuietHours,
-} from "@/providers/LocalPreferencesProvider";
+// Jest loads CommonJS; compile the target's Vite environment expression first.
+const compiled = transformSync(
+  readFileSync(join(__dirname, "LocalPreferencesProvider.tsx"), "utf8"),
+  {
+    loader: "tsx",
+    format: "cjs",
+    define: { "import.meta.env.BASE_URL": '"/"' },
+  }
+);
+const provider = { exports: {} };
+new Function("require", "module", "exports", compiled.code)(
+  require,
+  provider,
+  provider.exports
+);
+const { canSendDesktopNotification, isQuietHours } =
+  provider.exports as typeof import("./LocalPreferencesProvider");
 
 const preferences = {
   desktopNotifications: true,

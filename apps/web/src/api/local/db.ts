@@ -17,6 +17,7 @@ import { LocalDBMigrator } from "./migrator";
 import {
   classifyLocalDBError,
   createLocalDBDiagnosticsExport,
+  createLocalDataExport,
   downloadTextFile,
   isOPFSMissingFileError,
 } from "./recovery";
@@ -542,8 +543,9 @@ type LocalDB = typeof drizzleDB & {
     remoteDataValidated?: boolean;
   }) => Promise<LocalDBRebuildPreflight>;
   rebuild: (options: {
+    diagnosticsExported: boolean;
     localDataExported: boolean;
-    remoteDataValidated: boolean;
+    discardLocalData: boolean;
   }) => Promise<void>;
 };
 
@@ -778,28 +780,9 @@ const downloadLocalData = async (): Promise<void> => {
   }
 
   const databaseFile = await sqlocalDrizzle.getDatabaseFile();
-  const databaseBytes = new Uint8Array(await databaseFile.arrayBuffer());
-  let binary = "";
-  for (let index = 0; index < databaseBytes.length; index += 0x8000) {
-    binary += String.fromCharCode(
-      ...databaseBytes.subarray(index, index + 0x8000)
-    );
-  }
-
-  const exportContents = JSON.stringify(
-    {
-      exportedAt: new Date().toISOString(),
-      warning:
-        "This export may contain notes, personal workspace data, and local synchronization metadata.",
-      database: {
-        name: databaseFile.name,
-        contentType: databaseFile.type,
-        base64: btoa(binary),
-      },
-      indexedDB: await IndexedDBManipulator.getAllItems(),
-    },
-    null,
-    2
+  const exportContents = await createLocalDataExport(
+    databaseFile,
+    await IndexedDBManipulator.getAllItems()
   );
   downloadTextFile(
     exportContents,
@@ -817,14 +800,6 @@ const downloadDiagnostics = (): void => {
 const getRebuildPreflight = async (options?: {
   remoteDataValidated?: boolean;
 }): Promise<LocalDBRebuildPreflight> => {
-  localDBDiagnostics.transition("checking-rebuildability", {
-    result: "manual-recovery",
-    recoverability: "manual-recovery",
-    error: null,
-    errorCode: null,
-    errorMessage: null,
-  });
-
   if (!sqlocalDrizzle) {
     const result: LocalDBRebuildPreflight = {
       result: "manual-recovery",
@@ -836,21 +811,11 @@ const getRebuildPreflight = async (options?: {
       reason:
         "The local database is not ready, so its contents cannot be classified safely.",
     };
-    localDBDiagnostics.transition("manual-recovery", {
-      result: result.result,
-      recoverability: result.result,
-      pendingCount: result.pendingCount,
-      terminalFailureCount: result.terminalFailureCount,
-      activeOperationCount: result.activeOperationCount,
-      errorMessage: result.reason,
-      error: result.reason,
-    });
     return result;
   }
 
   try {
     await sqlocalConnectionReady;
-    localDBDiagnostics.transition("checking-transaction-queue");
     const loggedInUser = (
       await drizzleDB
         .select({ publicId: schema.User.publicId })
@@ -877,7 +842,7 @@ const getRebuildPreflight = async (options?: {
     const pendingYjsCount =
       yjsCache?.contents.filter(content => content.needsFlush).length ?? 0;
 
-    localDBDiagnostics.transition("waiting-for-local-operations", {
+    localDBDiagnostics.transition(localDBDiagnostics.getState().phase, {
       pendingCount,
       terminalFailureCount,
       activeOperationCount,
@@ -908,35 +873,12 @@ const getRebuildPreflight = async (options?: {
       pendingYjsCount,
       reason,
     };
-    localDBDiagnostics.transition(
-      reason
-        ? result.result === "manual-recovery"
-          ? "manual-recovery"
-          : "needs-action"
-        : "checking-rebuildability",
-      {
-        result: result.result,
-        recoverability: result.result,
-        pendingCount,
-        terminalFailureCount,
-        activeOperationCount,
-        errorMessage: reason,
-        error: reason,
-      }
-    );
     return result;
   } catch (error) {
     const classification = classifyLocalDBError(
       error,
       "checking-rebuildability"
     );
-    localDBDiagnostics.transition("manual-recovery", {
-      result: "manual-recovery",
-      recoverability: "manual-recovery",
-      errorCode: classification.errorCode,
-      errorMessage: classification.errorMessage,
-      error: classification.errorMessage,
-    });
     return {
       result: "manual-recovery",
       canRebuild: false,
@@ -950,12 +892,17 @@ const getRebuildPreflight = async (options?: {
 };
 
 const rebuild = async (options: {
+  diagnosticsExported: boolean;
   localDataExported: boolean;
-  remoteDataValidated: boolean;
+  discardLocalData: boolean;
 }): Promise<void> => {
-  if (!options.localDataExported || !options.remoteDataValidated) {
+  if (
+    !options.diagnosticsExported ||
+    !options.localDataExported ||
+    !options.discardLocalData
+  ) {
     throw new Error(
-      "Local data export and remote source validation are required before rebuild."
+      "Export diagnostics and local data, then confirm discarding local data before rebuild."
     );
   }
 
@@ -990,6 +937,7 @@ const rebuild = async (options: {
       }
 
       const wasReadOnly = isLocalDBReadOnly();
+      let deletionStarted = false;
       try {
         setLocalDBReadOnly(true);
         localDBDiagnostics.transition("freezing-local-writes", {
@@ -1002,14 +950,6 @@ const rebuild = async (options: {
         });
         await _SQLOperationChain;
 
-        const preflight = await getRebuildPreflight({
-          remoteDataValidated: options.remoteDataValidated,
-        });
-        if (!preflight.canRebuild) {
-          throw new Error(
-            preflight.reason ?? "Local data cannot be rebuilt safely."
-          );
-        }
         if (!sqlocalDrizzle) throw new Error("local database is unavailable");
 
         localDBDiagnostics.transition("clearing-local-storage", {
@@ -1019,27 +959,39 @@ const rebuild = async (options: {
         localDBDiagnostics.transition("rebuild-in-progress", {
           result: "safe-to-rebuild",
           recoverability: "safe-to-rebuild",
+          rebuildAttemptedAt: Date.now(),
         });
-        await sqlocalDrizzle.destroy();
+        deletionStarted = true;
+        sqlocalLifecycle = "closing";
+        // SQLocal must still have a live worker to delete and reopen the file.
         await sqlocalDrizzle.deleteDatabaseFile();
-        await Promise.all([
-          IndexedDBManipulator.removeItem(IndexedDBKey.backgroundImages),
-          IndexedDBManipulator.removeItem(
-            IndexedDBKey.backgroundImageThumbnails
-          ),
-          IndexedDBManipulator.removeItem(IndexedDBKey.currentBackgroundImage),
-        ]);
+        if (!(await IndexedDBManipulator.clearAllItems())) {
+          throw new Error(
+            "Failed to clear local document and attachment caches."
+          );
+        }
+        await sqlocalDrizzle.destroy();
+        sqlocalLifecycle = "closed";
         localDBDiagnostics.transition("bootstrapping", {
           result: "success",
           recoverability: "success",
           currentVersion: 0,
           targetVersion: localDBMigrator.getLatestMigrationVersion(),
+          rebuildAttemptedAt: Date.now(),
+          error: null,
+          errorCode: null,
+          errorMessage: null,
         });
         window.location.reload();
       } catch (error) {
-        if (localDBDiagnostics.getState().phase !== "rebuild-in-progress") {
-          setLocalDBReadOnly(wasReadOnly);
-        }
+        if (!deletionStarted) setLocalDBReadOnly(wasReadOnly);
+        localDBDiagnostics.transition("manual-recovery", {
+          result: "manual-recovery",
+          recoverability: "manual-recovery",
+          errorCode: "LOCAL_DB_REBUILD_FAILED",
+          errorMessage: getLocalDBErrorMessage(error),
+          error: getLocalDBErrorMessage(error),
+        });
         throw error;
       }
     }

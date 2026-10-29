@@ -183,6 +183,22 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
   localDBRecovery: {
     title: "需要復原本地資料",
     description: "你的本地資料已保留，系統沒有自動執行破壞性重設。",
+    rebuildWarning:
+      "重建會刪除此瀏覽器的本地資料庫及所有資料表、待同步變更、文件草稿與附件快取。尚未同步的資料將遺失，不會刪除雲端或其他瀏覽器的資料。請先關閉其他 Notegic 分頁。",
+    rebuildHelp:
+      "請先匯出診斷與本地資料，儲存兩份檔案後再重建。完成後登入並確認雲端資料是否出現，仍缺資料時再回報。",
+    backupHelp: "請先透過「匯出」下載診斷與本地資料，並儲存兩份檔案後再繼續。",
+    confirmRebuild: "我已儲存兩份匯出檔，並同意永久刪除此瀏覽器的本地資料。",
+    reportHelp:
+      "嘗試重建後，請登入並進入 App 確認雲端資料。若仍缺資料或重建失敗，再回報問題；問題解決前請保留匯出檔。",
+    reportPrivacy:
+      "請在郵件中附上診斷檔。本地資料可能包含私人筆記與檔案，僅在需要時確認內容後附上。系統不會自動附檔或寄送。",
+    confirmReport: "我已嘗試重建，並在能進入 App 時確認雲端資料，問題仍存在。",
+    reportSubject: "本地資料復原問題",
+    reportBody:
+      "我已匯出診斷與本地資料並嘗試重建，但問題仍存在。\n\n操作步驟與結果：\n\n缺少的資料（如有）：\n\n請附上診斷檔；僅在需要時附上已確認內容的本地資料。",
+    rebuildAttemptedDescription:
+      "已嘗試手動重建，部分本地資料可能已被移除。請保留匯出檔。",
     technicalDetails: "技術詳細資訊",
     phases: {
       workerConnectionPending: "正在等待本地資料庫 Worker",
@@ -209,6 +225,8 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
       manualRecovery: "本地資料庫需要手動復原",
     },
     labels: {
+      rebuildEligibility: "重建條件",
+
       currentPhase: "目前階段",
       recoveryResult: "復原結果",
       recoverability: "可復原性",
@@ -223,13 +241,15 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
       manualRecovery: "需要手動復原",
     },
     actions: {
+      export: "匯出",
+      report: "回報問題",
+      sendEmail: "開啟郵件",
+
       retry: "重試",
-      reconnect: "重新連接",
       exportDiagnostics: "匯出診斷資料",
       exportLocalData: "匯出本地資料",
-      checkRebuildEligibility: "檢查重建條件",
-      continueReadOnly: "以唯讀模式繼續",
-      rebuildLocalData: "重建本地資料",
+      checkRebuildEligibility: "檢查條件",
+      rebuildLocalData: "重建",
     },
     confirmExport: "這份匯出檔可能包含筆記與個人工作區資料。要繼續嗎？",
     errors: {

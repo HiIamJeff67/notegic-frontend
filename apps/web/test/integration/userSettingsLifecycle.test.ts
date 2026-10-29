@@ -65,7 +65,10 @@ describe("user settings lifecycle in Chromium", () => {
       bundle: true,
       write: false,
       platform: "browser",
-      define: { "process.env.NODE_ENV": '"development"' },
+      define: {
+        "process.env.NODE_ENV": '"development"',
+        "import.meta.env.BASE_URL": '"/"',
+      },
       tsconfig: path.resolve("apps/web/tsconfig.json"),
       plugins: [
         {

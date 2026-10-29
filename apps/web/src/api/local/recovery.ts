@@ -131,6 +131,65 @@ export const createLocalDBDiagnosticsExport = (
     2
   );
 
+// JSON alone drops Blob/File contents and the type of Yjs byte arrays.
+export const createLocalDataExport = async (
+  database: File,
+  indexedDB: unknown
+): Promise<string> => {
+  const encode = async (value: unknown): Promise<unknown> => {
+    if (
+      value instanceof Blob ||
+      value instanceof ArrayBuffer ||
+      ArrayBuffer.isView(value)
+    ) {
+      const bytes =
+        value instanceof Blob
+          ? new Uint8Array(await value.arrayBuffer())
+          : value instanceof ArrayBuffer
+            ? new Uint8Array(value)
+            : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      let binary = "";
+      for (let index = 0; index < bytes.length; index += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+      }
+      return {
+        type: value.constructor.name,
+        base64: btoa(binary),
+        ...(value instanceof Blob ? { contentType: value.type } : {}),
+        ...(value instanceof File
+          ? { name: value.name, lastModified: value.lastModified }
+          : {}),
+      };
+    }
+    if (value instanceof Date) return value.toISOString();
+    if (Array.isArray(value)) return await Promise.all(value.map(encode));
+    if (value !== null && typeof value === "object") {
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(value).map(async ([key, item]) => [
+            key,
+            await encode(item),
+          ])
+        )
+      );
+    }
+    return value;
+  };
+
+  return JSON.stringify(
+    {
+      formatVersion: 2,
+      exportedAt: new Date().toISOString(),
+      warning:
+        "This export may contain notes, personal workspace data, and local synchronization metadata.",
+      database: await encode(database),
+      indexedDB: await encode(indexedDB),
+    },
+    null,
+    2
+  );
+};
+
 export const downloadTextFile = (
   contents: string,
   filename: string,

@@ -1,6 +1,7 @@
 import {
   classifyLocalDBError,
   createLocalDBDiagnosticsExport,
+  createLocalDataExport,
   isOPFSMissingFileError,
 } from "./recovery";
 
@@ -40,6 +41,36 @@ describe("local database recovery policy", () => {
     });
   });
 
+  it("exports SQLite, attachments and Yjs byte slices without losing their contents", async () => {
+    const bytes = new Uint8Array([99, 1, 2, 3, 99]);
+    const exported = JSON.parse(
+      await createLocalDataExport(
+        new File(["sqlite fixture"], "database.sqlite3", {
+          type: "application/x-sqlite3",
+        }),
+        {
+          document: {
+            update: bytes.subarray(1, 4),
+            updatedAt: new Date("2026-01-01T00:00:00Z"),
+          },
+          attachment: new Blob(["private file"], { type: "text/plain" }),
+        }
+      )
+    );
+    expect(exported.formatVersion).toBe(2);
+    expect(atob(exported.database.base64)).toBe("sqlite fixture");
+    expect(exported.database.name).toBe("database.sqlite3");
+    expect(exported.indexedDB.document.update).toEqual({
+      type: "Uint8Array",
+      base64: "AQID",
+    });
+    expect(exported.indexedDB.document.updatedAt).toBe(
+      "2026-01-01T00:00:00.000Z"
+    );
+    expect(atob(exported.indexedDB.attachment.base64)).toBe("private file");
+    expect(exported.indexedDB.attachment.contentType).toBe("text/plain");
+  });
+
   it("exports diagnostics without authentication material", () => {
     const output = createLocalDBDiagnosticsExport({
       phase: "needs-action",
@@ -55,6 +86,7 @@ describe("local database recovery policy", () => {
       errorMessage: "migration failed",
       error: "migration failed",
       updatedAt: 1,
+      rebuildAttemptedAt: null,
       workerEvents: [],
     });
 

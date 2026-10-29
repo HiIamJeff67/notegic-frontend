@@ -76,23 +76,15 @@ export class IndexedDBManipulator {
   };
 
   static getAllItems = async (): Promise<Partial<IndexedDBItem>> => {
-    if (!this.isIndexedDBAvailable()) return {} as Partial<IndexedDBItem>;
-
+    // A recovery backup must fail rather than silently export an empty cache.
     const result = {} as Partial<IndexedDBItem>;
-    try {
-      const allEntries = await entries();
-      allEntries.forEach(([key, value]) => {
-        if (typeof key === "string" && key.startsWith(this.IndexedDBPrefix)) {
-          const cleanKey = key.replace(
-            this.IndexedDBPrefix,
-            ""
-          ) as IndexedDBKey;
-          result[cleanKey] = value;
-        }
-      });
-    } catch (error) {
-      console.error("Failed to get all indexedDB items:", error);
-    }
+    const allEntries = await entries();
+    allEntries.forEach(([key, value]) => {
+      if (typeof key === "string" && key.startsWith(this.IndexedDBPrefix)) {
+        const cleanKey = key.slice(this.IndexedDBPrefix.length) as IndexedDBKey;
+        result[cleanKey] = value;
+      }
+    });
     return result;
   };
 

@@ -180,6 +180,22 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
   localDBRecovery: {
     title: "需要恢复本地数据",
     description: "你的本地数据已保留，系统没有自动执行破坏性重置。",
+    rebuildWarning:
+      "重建会删除此浏览器的本地数据库及所有数据表、待同步更改、文档草稿与附件缓存。尚未同步的数据将丢失，不会删除云端或其他浏览器的数据。请先关闭其他 Notegic 标签页。",
+    rebuildHelp:
+      "请先导出诊断与本地数据，保存两份文件后再重建。完成后登录并确认云端数据是否出现，仍缺数据时再反馈。",
+    backupHelp: "请先通过“导出”下载诊断与本地数据，并保存两份文件后再继续。",
+    confirmRebuild: "我已保存两份导出文件，并同意永久删除此浏览器的本地数据。",
+    reportHelp:
+      "尝试重建后，请登录并进入 App 确认云端数据。若仍缺数据或重建失败，再反馈问题；问题解决前请保留导出文件。",
+    reportPrivacy:
+      "请在邮件中附上诊断文件。本地数据可能包含私人笔记与文件，仅在需要时确认内容后附上。系统不会自动附加或发送文件。",
+    confirmReport: "我已尝试重建，并在能进入 App 时确认云端数据，问题仍存在。",
+    reportSubject: "本地数据恢复问题",
+    reportBody:
+      "我已导出诊断与本地数据并尝试重建，但问题仍存在。\n\n操作步骤与结果：\n\n缺少的数据（如有）：\n\n请附上诊断文件；仅在需要时附上已确认内容的本地数据。",
+    rebuildAttemptedDescription:
+      "已尝试手动重建，部分本地数据可能已被移除。请保留导出文件。",
     technicalDetails: "技术详细信息",
     phases: {
       workerConnectionPending: "正在等待本地数据库 Worker",
@@ -206,6 +222,8 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
       manualRecovery: "本地数据库需要手动恢复",
     },
     labels: {
+      rebuildEligibility: "重建条件",
+
       currentPhase: "当前阶段",
       recoveryResult: "恢复结果",
       recoverability: "可恢复性",
@@ -220,13 +238,15 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
       manualRecovery: "需要手动恢复",
     },
     actions: {
+      export: "导出",
+      report: "反馈问题",
+      sendEmail: "打开邮件",
+
       retry: "重试",
-      reconnect: "重新连接",
       exportDiagnostics: "导出诊断数据",
       exportLocalData: "导出本地数据",
-      checkRebuildEligibility: "检查重建条件",
-      continueReadOnly: "以只读模式继续",
-      rebuildLocalData: "重建本地数据",
+      checkRebuildEligibility: "检查条件",
+      rebuildLocalData: "重建",
     },
     confirmExport: "这份导出文件可能包含笔记和个人工作区数据。要继续吗？",
     errors: {

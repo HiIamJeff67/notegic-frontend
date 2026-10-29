@@ -203,6 +203,25 @@ export const EnglishCommonTranslation: CommonTranslation = {
     title: "Local data recovery required",
     description:
       "Your local data has been preserved; no automatic destructive reset was performed.",
+    rebuildWarning:
+      "Rebuild removes this browser’s local database, including all tables, pending changes, document drafts and attachment caches. Unsynced data will be lost. Cloud data and other browsers are not deleted. Close other Notegic tabs first.",
+    rebuildHelp:
+      "First export diagnostics and local data. Rebuild only after saving both files. Then sign in and check whether your cloud data appears before reporting missing data.",
+    backupHelp:
+      "Use Export to download diagnostics and local data, then save both files before continuing.",
+    confirmRebuild:
+      "I have saved both exports and agree to permanently discard this browser’s local data.",
+    reportHelp:
+      "After trying Rebuild, sign in and open the app to check your cloud data. If data is still missing, or rebuilding failed, report the issue. Keep your exports until it is resolved.",
+    reportPrivacy:
+      "Attach the diagnostics file in your email. Local data may contain private notes and files; attach it only if needed, after reviewing it. Files are never attached or sent automatically.",
+    confirmReport:
+      "I tried rebuilding and checked my cloud data if the app could open; the problem remains.",
+    reportSubject: "Local data recovery problem",
+    reportBody:
+      "I exported diagnostics and local data and tried rebuilding. The problem remains.\n\nSteps and result:\n\nMissing data (if any):\n\nPlease attach the diagnostics file. Include reviewed local data only if necessary.",
+    rebuildAttemptedDescription:
+      "A manual rebuild was attempted. Keep your exports; some local data may already have been removed.",
     technicalDetails: "Technical details",
     phases: {
       workerConnectionPending: "Waiting for the local database worker",
@@ -230,6 +249,8 @@ export const EnglishCommonTranslation: CommonTranslation = {
       manualRecovery: "The local database needs manual recovery",
     },
     labels: {
+      rebuildEligibility: "Rebuild eligibility",
+
       currentPhase: "Current phase",
       recoveryResult: "Recovery result",
       recoverability: "Recoverability",
@@ -244,13 +265,15 @@ export const EnglishCommonTranslation: CommonTranslation = {
       manualRecovery: "Manual recovery required",
     },
     actions: {
+      export: "Export",
+      report: "Report",
+      sendEmail: "Open email",
+
       retry: "Retry",
-      reconnect: "Reconnect",
       exportDiagnostics: "Export diagnostics",
       exportLocalData: "Export local data",
-      checkRebuildEligibility: "Check rebuild eligibility",
-      continueReadOnly: "Continue read-only",
-      rebuildLocalData: "Rebuild local data",
+      checkRebuildEligibility: "Check Eligibility",
+      rebuildLocalData: "Rebuild",
     },
     confirmExport:
       "This export may contain notes and personal workspace data. Continue?",

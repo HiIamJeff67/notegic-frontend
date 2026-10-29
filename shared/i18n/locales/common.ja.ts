@@ -206,6 +206,25 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     title: "ローカルデータの復旧が必要です",
     description:
       "ローカルデータは保持されています。破壊的な自動リセットは実行されていません。",
+    rebuildWarning:
+      "再構築すると、このブラウザーのローカルデータベース、全テーブル、未同期の変更、文書の下書き、添付ファイルのキャッシュが削除されます。未同期データは失われます。クラウドや他のブラウザーのデータは削除されません。先に他の Notegic タブを閉じてください。",
+    rebuildHelp:
+      "まず診断とローカルデータをエクスポートし、両方を保存してから再構築してください。その後ログインしてクラウドのデータを確認し、まだ不足している場合に報告してください。",
+    backupHelp:
+      "「エクスポート」から診断とローカルデータをダウンロードし、両方を保存してから続行してください。",
+    confirmRebuild:
+      "両方のファイルを保存し、このブラウザーのローカルデータを完全に削除することに同意します。",
+    reportHelp:
+      "再構築を試した後、ログインしてアプリでクラウドのデータを確認してください。まだ不足している、または再構築に失敗した場合は報告してください。解決までエクスポートしたファイルを保管してください。",
+    reportPrivacy:
+      "メールに診断ファイルを添付してください。ローカルデータには個人のノートやファイルが含まれるため、必要な場合のみ内容を確認して添付してください。自動で添付・送信されることはありません。",
+    confirmReport:
+      "再構築を試し、アプリを開けた場合はクラウドのデータを確認しましたが、問題が残っています。",
+    reportSubject: "ローカルデータの復旧に関する問題",
+    reportBody:
+      "診断とローカルデータをエクスポートして再構築を試しましたが、問題が残っています。\n\n操作手順と結果：\n\n不足しているデータ（ある場合）：\n\n診断ファイルを添付してください。ローカルデータは必要な場合のみ内容を確認して添付してください。",
+    rebuildAttemptedDescription:
+      "手動で再構築を試しました。一部のローカルデータが削除されている可能性があります。エクスポートしたファイルを保管してください。",
     technicalDetails: "技術的な詳細",
     phases: {
       workerConnectionPending: "ローカルデータベースワーカーを待機しています",
@@ -233,6 +252,8 @@ export const JapaneseCommonTranslation: CommonTranslation = {
       manualRecovery: "ローカルデータベースの手動復旧が必要です",
     },
     labels: {
+      rebuildEligibility: "再構築の条件",
+
       currentPhase: "現在のフェーズ",
       recoveryResult: "復旧結果",
       recoverability: "復旧可能性",
@@ -247,13 +268,15 @@ export const JapaneseCommonTranslation: CommonTranslation = {
       manualRecovery: "手動復旧が必要です",
     },
     actions: {
+      export: "エクスポート",
+      report: "問題を報告",
+      sendEmail: "メールを開く",
+
       retry: "再試行",
-      reconnect: "再接続",
       exportDiagnostics: "診断情報をエクスポート",
       exportLocalData: "ローカルデータをエクスポート",
-      checkRebuildEligibility: "再構築条件を確認",
-      continueReadOnly: "読み取り専用で続行",
-      rebuildLocalData: "ローカルデータを再構築",
+      checkRebuildEligibility: "条件を確認",
+      rebuildLocalData: "再構築",
     },
     confirmExport:
       "このエクスポートにはノートや個人ワークスペースのデータが含まれる場合があります。続行しますか？",

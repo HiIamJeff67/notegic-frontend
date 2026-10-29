@@ -178,6 +178,16 @@ export interface CommonTranslation {
   localDBRecovery: {
     title: string;
     description: string;
+    rebuildWarning: string;
+    rebuildHelp: string;
+    backupHelp: string;
+    confirmRebuild: string;
+    reportHelp: string;
+    reportPrivacy: string;
+    confirmReport: string;
+    reportSubject: string;
+    reportBody: string;
+    rebuildAttemptedDescription: string;
     technicalDetails: string;
     phases: {
       workerConnectionPending: string;
@@ -204,6 +214,7 @@ export interface CommonTranslation {
       manualRecovery: string;
     };
     labels: {
+      rebuildEligibility: string;
       currentPhase: string;
       recoveryResult: string;
       recoverability: string;
@@ -218,12 +229,13 @@ export interface CommonTranslation {
       manualRecovery: string;
     };
     actions: {
+      export: string;
+      report: string;
+      sendEmail: string;
       retry: string;
-      reconnect: string;
       exportDiagnostics: string;
       exportLocalData: string;
       checkRebuildEligibility: string;
-      continueReadOnly: string;
       rebuildLocalData: string;
     };
     confirmExport: string;

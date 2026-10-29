@@ -60,6 +60,7 @@ const mocks: Record<string, string> = {
   `,
   "@/hooks/useModal": "export const useModal = () => ({});",
   "@/hooks/useUser": "export const useUser = () => ({});",
+  "@/hooks/useTheme": `export const useTheme = () => ({currentTheme:{isDark:document.documentElement.classList.contains('dark')}});`,
   "@/hooks/useBlockEditor": `export const useBlockEditor = () => ({editor:{}, state:'syncError'});`,
   "@/hooks/useLocalPreferences": `export const useLocalPreferences = () => ({preferences:{editorWidth:'standard',editorFontSize:16}});`,
   "@/api/hooks/material.hook":
@@ -106,6 +107,7 @@ describe("editor chrome in Chromium", () => {
   let page: Page;
   let script: string;
   let css: string;
+  let errors: string[];
 
   beforeAll(async () => {
     const bundle = await build({
@@ -117,6 +119,7 @@ describe("editor chrome in Chromium", () => {
       jsx: "automatic",
       define: {
         "process.env.NODE_ENV": '"development"',
+        "import.meta.env.BASE_URL": '"/"',
         "import.meta.url": '"http://editor-layout.test/"',
       },
       tsconfig: path.resolve("apps/web/tsconfig.json"),
@@ -166,7 +169,9 @@ describe("editor chrome in Chromium", () => {
   }, 30_000);
 
   beforeEach(async () => {
+    errors = [];
     page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+    page.on("pageerror", error => errors.push(error.message));
     await page.route("http://editor-layout.test/", route =>
       route.fulfill({ contentType: "text/html", body: '<div id="root"></div>' })
     );
@@ -176,6 +181,7 @@ describe("editor chrome in Chromium", () => {
   });
   afterEach(async () => {
     await page?.close();
+    expect(errors).toEqual([]);
   });
   afterAll(async () => {
     await browser?.close();

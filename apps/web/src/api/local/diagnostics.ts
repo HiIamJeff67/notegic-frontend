@@ -86,6 +86,7 @@ export type LocalDBDiagnostics = {
   errorMessage: string | null;
   error: string | null;
   updatedAt: number;
+  rebuildAttemptedAt: number | null;
   workerEvents: LocalDBWorkerDiagnostic[];
 };
 
@@ -193,6 +194,7 @@ const readPersistedDiagnostics = (
   | "errorMessage"
   | "error"
   | "workerEvents"
+  | "rebuildAttemptedAt"
 > | null => {
   if (!storage) return null;
 
@@ -244,6 +246,10 @@ const readPersistedDiagnostics = (
             ? persisted.error
             : null,
       error: typeof persisted.error === "string" ? persisted.error : null,
+      rebuildAttemptedAt:
+        typeof persisted.rebuildAttemptedAt === "number"
+          ? persisted.rebuildAttemptedAt
+          : null,
       workerEvents: Array.isArray(persisted.workerEvents)
         ? persisted.workerEvents.filter(isLocalDBWorkerDiagnostic).slice(-100)
         : [],
@@ -273,6 +279,7 @@ export const createLocalDBDiagnostics = (
     errorMessage: persisted?.errorMessage ?? null,
     error: persisted?.error ?? null,
     updatedAt: Date.now(),
+    rebuildAttemptedAt: persisted?.rebuildAttemptedAt ?? null,
     workerEvents: persisted?.workerEvents ?? [],
   };
 
@@ -306,6 +313,7 @@ export const createLocalDBDiagnostics = (
         | "errorCode"
         | "errorMessage"
         | "error"
+        | "rebuildAttemptedAt"
       >
     > = {}
   ): LocalDBDiagnostics => {
@@ -345,7 +353,7 @@ export const createLocalDBDiagnostics = (
   };
 
   return {
-    getState: (): LocalDBDiagnostics => ({ ...state }),
+    getState: (): LocalDBDiagnostics => state,
     subscribe,
     transition,
     recordWorkerEvent,
