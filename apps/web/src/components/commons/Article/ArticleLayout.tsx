@@ -1,4 +1,4 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import type { HTMLAttributes, RefObject } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";

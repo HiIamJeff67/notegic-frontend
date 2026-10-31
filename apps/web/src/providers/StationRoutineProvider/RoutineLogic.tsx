@@ -11,13 +11,9 @@ import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/ro
 import { parseRequest } from "@shared/api/validation";
 import { MaxSearchLimit } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LRUCache } from "@shared/lib/LRUCache";
-import toast from "@shared/lib/toast";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
-import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
-import { compareEntityNames } from "@shared/util/compareEntityNames";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -29,6 +25,10 @@ import {
   useLinkRoutineTagById,
   useUpdateMyRoutineById,
 } from "@/api/hooks/routine.hook";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
+import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface UseRoutineLogicProps {
   inputRef: RefObject<HTMLInputElement | null>;

@@ -1,5 +1,23 @@
-import { ScreenBreakpoint } from "@shared/types/screenBreakpoint";
 import { createContext, useEffect, useState } from "react";
+
+export type ScreenBreakpoint =
+  | "base"
+  | "sm"
+  | "md"
+  | "lg"
+  | "xl"
+  | "2xl"
+  | "3xl";
+
+export const getBreakpoint = (width: number): ScreenBreakpoint => {
+  if (width >= 1920) return "3xl";
+  if (width >= 1536) return "2xl";
+  if (width >= 1280) return "xl";
+  if (width >= 1024) return "lg";
+  if (width >= 768) return "md";
+  if (width >= 640) return "sm";
+  return "base";
+};
 
 interface ScreenContextType {
   width: number;
@@ -11,16 +29,6 @@ interface ScreenContextType {
 export const ScreenContext = createContext<ScreenContextType | undefined>(
   undefined
 );
-
-const getBreakpoint = (width: number): ScreenBreakpoint => {
-  if (width >= 1920) return "3xl";
-  if (width >= 1536) return "2xl";
-  if (width >= 1280) return "xl";
-  if (width >= 1024) return "lg";
-  if (width >= 768) return "md";
-  if (width >= 640) return "sm";
-  return "base";
-};
 
 interface ScreenProviderProps {
   children: React.ReactNode;

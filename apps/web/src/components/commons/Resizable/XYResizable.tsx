@@ -1,4 +1,4 @@
-import { clamp } from "@shared/util/math";
+import { clamp } from "@shared/lib/math/clamp";
 import {
   CSSProperties,
   MouseEvent as ReactMouseEvent,

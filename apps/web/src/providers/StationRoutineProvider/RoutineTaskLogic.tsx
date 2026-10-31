@@ -12,11 +12,9 @@ import { parseRequest } from "@shared/api/validation";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxSearchLimit } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LRUCache } from "@shared/lib/LRUCache";
-import toast from "@shared/lib/toast";
-import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
-import { compareEntityNames } from "@shared/util/compareEntityNames";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -28,6 +26,8 @@ import {
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
 import { useGetMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
+import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface UseRoutineTaskLogicProps {
   stationsRef: RefObject<LRUCache<UUID, StationNode>>;

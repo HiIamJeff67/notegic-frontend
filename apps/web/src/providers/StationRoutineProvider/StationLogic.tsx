@@ -11,9 +11,7 @@ import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.
 import { CreateStationRequestSchema } from "@shared/api/interfaces/station.interface";
 import { parseRequest } from "@shared/api/validation";
 import { MaxSearchLimit } from "@shared/constants";
-import { LRUCache } from "@shared/lib/LRUCache";
-import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -25,6 +23,8 @@ import {
   useTransferMyStationOwnership,
   useUpdateMyStationById,
 } from "@/api/hooks/station.hook";
+import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface UseStationLogicProps {
   inputRef: RefObject<HTMLInputElement | null>;

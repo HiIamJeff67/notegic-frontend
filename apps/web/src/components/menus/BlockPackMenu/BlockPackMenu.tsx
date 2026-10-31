@@ -1,8 +1,8 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { SubShelfNode } from "@shared/types/shelfNodes.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import toast from "@shared/lib/toast/toast";
 import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuItem";

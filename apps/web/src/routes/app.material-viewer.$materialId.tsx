@@ -1,5 +1,5 @@
 import { queryKeys } from "@shared/api/queryKeys";
-import { isValidUUID } from "@shared/types/uuidv4.type";
+import { isValidUUID } from "@shared/lib/uuid/uuidv4.type";
 import { useQuery } from "@tanstack/react-query";
 import {
   createFileRoute,

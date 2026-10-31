@@ -1,6 +1,6 @@
+import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
 import { fetchGetUserData } from "@/api/fetches/user.fetch";
 import { HasAuthCookies } from "@/api/functions/auth.serverFn";
-import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
 import LoginPage from "@/pages/auth/LoginPage";
 
 export const Route = createFileRoute("/_auth/login")({

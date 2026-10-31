@@ -1,9 +1,11 @@
 import { MaxTriggerValue } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import toast from "@shared/lib/toast/toast";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
 import { toWidget, Widget } from "@/components/widgets/widget";
@@ -54,18 +56,37 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
   useEffect(() => {
     const initializeWidgets = async () => {
       if (userManager.userData === null) return;
-      const widgetsEncoded = LocalStorageManipulator.getItemByKey(
+      const widgetsEncoded = LocalStorage.getItemByKey(
         LocalStorageKey.dashboardWidgets,
         userManager.userData?.publicId
       );
       if (widgetsEncoded !== null) {
         try {
-          widgetsRef.current = (
-            JSON.parse(widgetsEncoded).map((widgetEncoded: any) => ({
-              ...widgetEncoded,
-              component: DashboardPreviewWidgets[widgetEncoded.name]?.component,
-            })) as Partial<Widget>[]
-          ).filter(widget => widget.component !== undefined) as Widget[];
+          widgetsRef.current = (JSON.parse(widgetsEncoded) as any[])
+            .map(widget => {
+              const previewWidget = DashboardPreviewWidgets[widget.name];
+              if (
+                widget.layoutMode === "full-width" &&
+                (widget.name === "guide" || widget.name === "videoGuide")
+              ) {
+                const { data, setting } = widget;
+                Object.assign(widget, previewWidget, {
+                  data,
+                  setting,
+                  layoutMode: undefined,
+                  position: {
+                    leftFrameCount: widget.name === "videoGuide" ? 2 : 0,
+                    topFrameCount: 0,
+                  },
+                });
+              }
+
+              return {
+                ...widget,
+                component: previewWidget?.component,
+              };
+            })
+            .filter((widget: Widget) => widget.component !== undefined);
           forceUpdate();
         } catch (error) {
           toast.error(tError(error, t));
@@ -79,11 +100,11 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
           topFrameCount: 0,
         }),
         toWidget(DashboardPreviewWidgets.videoGuide, {
-          leftFrameCount: 0,
-          topFrameCount: 4,
+          leftFrameCount: 2,
+          topFrameCount: 0,
         }),
       ];
-      LocalStorageManipulator.setItem(
+      LocalStorage.setItem(
         LocalStorageKey.dashboardWidgets,
         JSON.stringify(widgetsRef.current),
         userManager.userData.publicId
@@ -177,7 +198,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
 
       widgetsRef.current = sortedWidgets;
 
-      LocalStorageManipulator.setItem(
+      LocalStorage.setItem(
         LocalStorageKey.dashboardWidgets,
         JSON.stringify(sortedWidgets),
         userManager.userData?.publicId

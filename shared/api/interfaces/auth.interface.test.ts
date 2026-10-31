@@ -1,4 +1,7 @@
-import { UserDataSchema, UserSchema } from "@shared/types/user.type";
+import {
+  UserDataSchema,
+  UserSchema,
+} from "@shared/api/interfaces/types/user.type";
 import { LoginRequestSchema, RegisterRequestSchema } from "./auth.interface";
 
 describe("login credentials", () => {

@@ -1,10 +1,12 @@
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { cn } from "@shared/util/utils";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import toast from "@shared/lib/toast/toast";
+import { cn } from "@shared/lib/className/cn";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -78,7 +80,7 @@ const ColorSelector = ({
   useEffect(() => {
     const initializeColors = async () => {
       if (userManager.userData === null) return;
-      const colorsEncoded = LocalStorageManipulator.getItemByKey(
+      const colorsEncoded = LocalStorage.getItemByKey(
         LocalStorageKey.colors,
         userManager.userData.publicId
       );
@@ -101,7 +103,7 @@ const ColorSelector = ({
     (syncColors?: string[]) => {
       const targetColors =
         syncColors !== undefined ? syncColors : colorsRef.current;
-      LocalStorageManipulator.setItem(
+      LocalStorage.setItem(
         LocalStorageKey.colors,
         JSON.stringify(targetColors),
         userManager.userData?.publicId

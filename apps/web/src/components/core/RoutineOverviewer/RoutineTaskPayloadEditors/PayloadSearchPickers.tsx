@@ -1,4 +1,3 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import {
   SearchRootShelfSortBy,
@@ -7,7 +6,8 @@ import {
   SearchSubShelfSortBy,
 } from "@shared/api/graphql/generated/graphql";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";

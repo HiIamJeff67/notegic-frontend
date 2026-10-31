@@ -1,5 +1,9 @@
 import { UserStatus } from "@shared/api/interfaces/enums";
-import { UserDataSchema, UserSchema } from "@shared/types/user.type";
+import {
+  DisplayNameSchema,
+  UserDataSchema,
+  UserSchema,
+} from "@shared/api/interfaces/types/user.type";
 import { z } from "zod";
 import {
   NotegicRequestSchema,
@@ -49,14 +53,6 @@ export const GetMeResponseSchema = NotegicResponseSchema.extend({
 });
 
 export type GetMeResponse = z.infer<typeof GetMeResponseSchema>;
-
-export const DisplayNameSchema = z
-  .string({ error: "validation.displayNameLength" })
-  .min(6, { error: "validation.displayNameLength" })
-  .max(32, { error: "validation.displayNameLength" })
-  .regex(/^(?=.*\p{L})(?=.*\p{Nd})[\p{L}\p{Nd}]+$/u, {
-    error: "validation.displayNameFormat",
-  });
 
 /* ============================== UpdateMe ============================== */
 

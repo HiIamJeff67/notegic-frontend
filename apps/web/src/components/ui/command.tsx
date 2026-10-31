@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
 import * as React from "react";

@@ -1,7 +1,7 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { RootShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { RootShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
 import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import SubShelfMenuItem from "@/components/menus/SubShelfMenu/SubShelfMenuItem";

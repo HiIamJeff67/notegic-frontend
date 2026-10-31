@@ -115,7 +115,9 @@ describe("Turnstile container sizing in Chromium", () => {
       if (siteKey) script = result.outputFiles[0].text;
       else disabledScript = result.outputFiles[0].text;
     }
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
 
   beforeEach(async () => {

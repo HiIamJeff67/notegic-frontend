@@ -31,6 +31,8 @@
 
 html[data-density] .notegic-block-editor .bn-side-menu button.bn-button,
 .notegic-block-editor .bn-side-menu button.bn-button {
+  box-sizing: border-box;
+  flex: 0 0 24px;
   width: 24px;
   min-width: 24px;
   height: 24px;
@@ -44,8 +46,12 @@ html[data-density] .notegic-block-editor .bn-side-menu button.bn-button,
 }
 
 .notegic-block-editor .bn-side-menu {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
   padding-inline-end: 8px;
   translate: 0 1px;
+  width: max-content;
 }
 
 .notegic-block-editor :is(.bn-drag-handle-menu, .bn-color-picker-dropdown) {

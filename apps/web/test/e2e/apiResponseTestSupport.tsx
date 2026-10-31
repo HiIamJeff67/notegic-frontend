@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client";
-import EndpointDetails from "@/pages/document/api-reference/EndpointDetails";
-import type { DocumentEndpoint } from "@/pages/document/api-reference/generated/publicAPIData";
+import EndpointDetails from "@/pages/document/api/EndpointDetails";
+import type { DocumentEndpoint } from "@/pages/document/api/generated";
 
-export { loadHighlighter } from "@shared/lib/codeHighlighter";
+export { loadHighlighter } from "@shared/lib/code/codeHighlighter";
 
 export const mountResponseExamples = () => {
   const container = document.createElement("div");

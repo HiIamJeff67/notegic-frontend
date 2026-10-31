@@ -47,6 +47,10 @@ test("API and Website guides stay in English regardless of the UI language", asy
   );
   await expect(page.locator('#website [lang="en"]')).toBeVisible();
   await expect(page.locator("#website > header button")).toHaveCount(0);
+  await expect(page.locator('#privacy-policy [lang="en"]')).toBeVisible();
+  await expect(page.locator("#privacy-collection")).toContainText(
+    "1. Information we collect"
+  );
 });
 
 test("document HTML renders its quick start without relying on client-side recovery", async ({

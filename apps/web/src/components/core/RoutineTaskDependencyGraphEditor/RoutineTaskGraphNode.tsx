@@ -8,7 +8,7 @@ import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.t
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { SquarePen, Trash2 } from "lucide-react";

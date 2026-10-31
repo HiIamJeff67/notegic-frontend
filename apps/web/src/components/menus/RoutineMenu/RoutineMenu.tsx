@@ -1,9 +1,9 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { lazy, Suspense } from "react";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
 import { useStationRoutine } from "@/hooks";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import RoutineMenuItem from "./RoutineMenuItem";
 
 interface RoutineMenuProps {

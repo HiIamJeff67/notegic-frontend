@@ -1,5 +1,5 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { ExceptionReasonDictionary } from "@shared/api/exceptions";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 
 export const isNetworkFallbackError = (error: unknown): boolean => {
   if (error instanceof TypeError) return true;

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import * as lucide from "lucide-react";
 import ts from "typescript";
@@ -178,6 +178,7 @@ describe("application icon conventions", () => {
 
   test("custom component sources and local map links remain valid", () => {
     for (const file of readdirSync(iconDirectory)) {
+      if (file.endsWith(".type.ts")) continue;
       expect(iconMap).toContain(`../../${iconDirectory}/${file}`);
       const name = path.parse(file).name;
       expect(

@@ -1,20 +1,20 @@
-import { getQueryClient } from "@shared/api/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import RoutineTable from "@/components/core/RoutineOverviewer/RoutineTable/RoutineTable";
-import RoutineTaskTable from "@/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable";
-import { TransactionSynchronizerContext } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
+import { getQueryClient } from "@shared/api/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
 import type { UUID } from "crypto";
 import type { ContextType } from "react";
 import { createRoot } from "react-dom/client";
 import { getClientCSRFToken } from "@/api/clientHeaders";
 import { searchPaginationPolicy } from "@/api/policies/searchPagination.policy";
 import RoutineRecordTable from "@/components/core/RoutineOverviewer/RoutineRecordTable/RoutineRecordTable";
+import RoutineTable from "@/components/core/RoutineOverviewer/RoutineTable/RoutineTable";
 import RoutineTaskRecordTable from "@/components/core/RoutineOverviewer/RoutineTaskRecordTable/RoutineTaskRecordTable";
+import RoutineTaskTable from "@/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable";
 import RoutineTaskRecordDialog from "@/components/dialogs/StationRoutineDialog/RoutineTaskRecordDialog";
 import { ModalProvider } from "@/providers/ModalProvider";
 import { StationRoutineContext } from "@/providers/StationRoutineProvider/StationRoutineProvider";
+import { TransactionSynchronizerContext } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 
 export const mountRoutineRecords = (
   mode:

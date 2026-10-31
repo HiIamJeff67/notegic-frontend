@@ -1,6 +1,6 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
-import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { lazy, Suspense } from "react";
+import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import RoutineTaskMenuItemSkeleton from "./RoutineTaskMenuItemSkeleton";
 
 const RoutineTaskMenuItem = lazy(() => import("./RoutineTaskMenuItem"));

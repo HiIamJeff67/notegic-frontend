@@ -1,7 +1,7 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { formatTimezone } from "@shared/i18n/timezone";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";

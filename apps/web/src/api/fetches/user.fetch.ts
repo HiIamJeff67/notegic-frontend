@@ -4,11 +4,11 @@ import type {
   GetUserDataRequest,
   GetUserDataResponse,
 } from "@shared/api/interfaces/user.interface";
-import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
+import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
 
 export const fetchGetUserData = async (
   fetchRequest: GetUserDataRequest,

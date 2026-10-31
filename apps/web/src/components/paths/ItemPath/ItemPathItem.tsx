@@ -1,10 +1,10 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import toast from "@shared/lib/toast/toast";
 import { ChevronRightIcon } from "lucide-react";
 import { useCallback } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";

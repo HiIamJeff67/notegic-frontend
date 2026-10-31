@@ -1,33 +1,33 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import {
+  type DeleteNotificationsRequest,
+  DeleteNotificationsRequestSchema,
+  type DeleteNotificationsResponse,
+  DeleteNotificationsResponseSchema,
+  type GetUnreadNotificationCountRequest,
+  GetUnreadNotificationCountRequestSchema,
+  type GetUnreadNotificationCountResponse,
+  GetUnreadNotificationCountResponseSchema,
+  type ListNotificationsRequest,
+  ListNotificationsRequestSchema,
+  type ListNotificationsResponse,
+  ListNotificationsResponseSchema,
+  type MarkNotificationsReadRequest,
+  MarkNotificationsReadRequestSchema,
+  type MarkNotificationsReadResponse,
+  MarkNotificationsReadResponseSchema,
+} from "@shared/api/interfaces/notification.interface";
+import { ZodError } from "zod";
 import {
   DeleteNotifications,
   GetUnreadNotificationCount,
   ListNotifications,
   MarkNotificationsRead,
 } from "@/api/functions/notification.serverFn";
-import {
-  DeleteNotificationsRequestSchema,
-  DeleteNotificationsResponseSchema,
-  GetUnreadNotificationCountRequestSchema,
-  GetUnreadNotificationCountResponseSchema,
-  ListNotificationsRequestSchema,
-  ListNotificationsResponseSchema,
-  MarkNotificationsReadRequestSchema,
-  MarkNotificationsReadResponseSchema,
-  type DeleteNotificationsRequest,
-  type DeleteNotificationsResponse,
-  type GetUnreadNotificationCountRequest,
-  type GetUnreadNotificationCountResponse,
-  type ListNotificationsRequest,
-  type ListNotificationsResponse,
-  type MarkNotificationsReadRequest,
-  type MarkNotificationsReadResponse,
-} from "@shared/api/interfaces/notification.interface";
-import { ZodError } from "zod";
 
 const rethrowNotificationError = (error: unknown): never => {
   if (error instanceof ZodError) {

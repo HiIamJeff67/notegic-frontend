@@ -85,7 +85,7 @@ jest.mock("@/hooks/useTransactionSynchronizer", () => ({
   useTransactionSynchronizer: () => ({ synchronizationRevision: 0 }),
 }));
 jest.mock("@/hooks/useLoading", () => ({ useLoading: () => ({}) }));
-jest.mock("@shared/lib/toast", () => ({
+jest.mock("@shared/lib/toast/toast", () => ({
   __esModule: true,
   default: { error: jest.fn(), info: jest.fn() },
 }));

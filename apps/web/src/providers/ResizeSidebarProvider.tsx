@@ -1,6 +1,8 @@
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { clamp } from "@shared/util/math";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import { clamp } from "@shared/lib/math/clamp";
 import {
   CSSProperties,
   createContext,
@@ -56,9 +58,7 @@ export function ResizeSidebarProvider({
   const [width, setWidth] = useState<number>(defaultWidth);
 
   useEffect(() => {
-    const saved = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.sidebarWidth
-    );
+    const saved = LocalStorage.getItemByKey(LocalStorageKey.sidebarWidth);
     if (saved) {
       const parsed = Number(saved);
       if (!Number.isNaN(parsed)) {
@@ -73,10 +73,7 @@ export function ResizeSidebarProvider({
     (next: number) => {
       const clamped = clamp(next, minWidth, maxWidth);
       setWidth(clamped);
-      LocalStorageManipulator.setItem(
-        LocalStorageKey.sidebarWidth,
-        String(clamped)
-      );
+      LocalStorage.setItem(LocalStorageKey.sidebarWidth, String(clamped));
     },
     [minWidth, maxWidth]
   );

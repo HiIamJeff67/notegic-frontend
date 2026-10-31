@@ -1,9 +1,9 @@
-import { generateDynamicDNDType } from "@shared/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { generateDynamicDNDType } from "@/components/commons/DNDable/dnd.type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,8 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { StartSurface } from "@/providers/LocalPreferencesProvider";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import type { StartSurface } from "@/providers/LocalPreferencesProvider";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
 
 type RegexDragItem = {

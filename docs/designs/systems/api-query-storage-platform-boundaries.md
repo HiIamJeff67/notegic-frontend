@@ -80,8 +80,8 @@ metadata; only login/register seed a newly authenticated session, and logout
 or account deletion clears it. Preserve same-origin RPC checks and backend
 token validation; never manufacture a request header from an auth cookie.
 
-Regression coverage includes `clientHeaders.test.ts`, `session.bridge.unit.test.ts`,
-`apiResponse.adapter.unit.test.ts`, and the `csrfTransport.test.ts` source guard.
+Regression coverage includes `clientHeaders.test.ts`, `session.bridge.test.ts`,
+`apiResponse.adapter.test.ts`, and the `csrfTransport.test.ts` source guard.
 `sessionTabs.spec.ts` additionally requires explicitly isolated local Core and
 Gateway processes and an acceptance database. It exercises empty-tab storage,
 real access refresh, and two-page graph conflict/draft recovery without using

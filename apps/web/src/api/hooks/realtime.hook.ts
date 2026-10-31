@@ -1,12 +1,12 @@
-import type { UUID } from "crypto";
 import type {
   GetBlockPackParticipantsRequest,
   GetBlockPackParticipantsResponse,
 } from "@shared/api/interfaces/realtime.interface";
-import { queryFnGetBlockPackParticipants } from "@/api/invokers/realtime.invoker";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import type { UUID } from "crypto";
+import { queryFnGetBlockPackParticipants } from "@/api/invokers/realtime.invoker";
 
 export const useGetBlockPackParticipants = (
   hookRequest?: GetBlockPackParticipantsRequest,

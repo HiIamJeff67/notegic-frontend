@@ -1,6 +1,6 @@
-import { IconProps } from "@shared/types/iconProps.type";
-import { Image } from "@unpic/react";
 import { useEffect, useState } from "react";
+import Image from "@/components/commons/Image/Image";
+import { IconProps } from "@/components/icons/iconProps.type";
 
 interface AvatarIconProps extends IconProps {
   avatarURL: string | null;
@@ -48,8 +48,11 @@ export const AvatarIcon = ({
           crossOrigin="anonymous"
           width={80}
           height={80}
+          loading="eager"
           className="w-full h-full object-cover"
-          onError={() => setImageFailed(true)}
+          onLoadingStatusChange={status => {
+            if (status === "error") setImageFailed(true);
+          }}
         />
       ) : (
         <span

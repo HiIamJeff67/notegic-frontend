@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";

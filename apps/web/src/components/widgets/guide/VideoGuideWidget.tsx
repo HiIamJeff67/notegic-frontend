@@ -1,7 +1,7 @@
 import workspaceOverviewVideo from "@assets/document/videos/workspace-overview.mp4";
 import workspaceOverviewPoster from "@assets/document/videos/workspace-overview.png";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import type { WidgetProps } from "@widgets/widget";
 
 const VideoGuideWidget = ({ className, style, data }: WidgetProps) => {

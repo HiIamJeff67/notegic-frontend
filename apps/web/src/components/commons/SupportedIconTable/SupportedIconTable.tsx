@@ -1,6 +1,6 @@
 import { SupportedIcon } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { CheckIcon, SearchIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";

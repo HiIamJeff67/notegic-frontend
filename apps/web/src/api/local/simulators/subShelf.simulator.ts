@@ -1,21 +1,24 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
-  MoveMySubShelvesByRootShelfIdsRequest,
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelvesByRootShelfIdsRequest,
   DeleteMySubShelfByIdRequest,
   DeleteMySubShelvesByIdsRequest,
-  GetMySubShelvesByRootShelfIdRequest,
   GetMySubShelfByIdRequest,
   GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   GetMySubShelvesByPrevSubShelfIdRequest,
+  GetMySubShelvesByRootShelfIdRequest,
   MoveMySubShelfRequest,
   MoveMySubShelvesByRootShelfIdRequest,
+  MoveMySubShelvesByRootShelfIdsRequest,
   RestoreMySubShelfByIdRequest,
   RestoreMySubShelvesByIdsRequest,
   UpdateMySubShelfByIdRequest,
   UpdateMySubShelvesByIdsRequest,
 } from "@shared/api/interfaces/subShelf.interface";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
+import type { UUID } from "crypto";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   BlockPack,
@@ -27,9 +30,6 @@ import {
 } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { generateUUID } from "@shared/types/uuidv4.type";
-import type { UUID } from "crypto";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class SubShelfLocalSimulator {
   private static getPassPermissionCheckSQL = (

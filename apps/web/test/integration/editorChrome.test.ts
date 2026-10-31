@@ -2,12 +2,12 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
   type Browser,
-  chromium,
   expect as browserExpect,
+  chromium,
   type Page,
 } from "@playwright/test";
 import { compile } from "@tailwindcss/node";
-import { build } from "esbuild";
+import { build, transform } from "esbuild";
 
 // Render the actual sidebar, editor headers and breadcrumbs; isolate document/API state.
 const fixture = `
@@ -79,9 +79,9 @@ const mocks: Record<string, string> = {
   `,
   "@blocknote/react": "export const SideMenuController = () => null;",
   "@blocknote/shadcn": "export const BlockNoteView = () => null;",
-  "@/components/core/BlockPackEditor/BlockPackEditorSchema":
-    "export const NotegicSlashMenuController = () => null;",
-  "@shared/util/convertBlocksToFiles": [
+  "@/components/core/BlockPackEditor/SuggestionMenu":
+    "export const SuggestionMenu = () => null;",
+  "@shared/lib/blockpack/conversions": [
     "DOCX",
     "HTML",
     "JSON",
@@ -110,6 +110,16 @@ describe("editor chrome in Chromium", () => {
   let errors: string[];
 
   beforeAll(async () => {
+    const conversionSource = await readFile(
+      "shared/lib/blockpack/conversions.ts",
+      "utf8"
+    );
+    const enumSource = conversionSource.match(
+      /export enum FileContentType \{[^}]+\}/
+    )![0];
+    mocks["@shared/lib/blockpack/conversions"] +=
+      "\n" + (await transform(enumSource, { loader: "ts" })).code;
+
     const bundle = await build({
       stdin: { contents: fixture, resolveDir: process.cwd(), loader: "tsx" },
       bundle: true,
@@ -165,7 +175,9 @@ describe("editor chrome in Chromium", () => {
       }
     );
     css = compiler.build([fixture, ...sources].join(" ").split(/[\s"'`]+/));
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
 
   beforeEach(async () => {

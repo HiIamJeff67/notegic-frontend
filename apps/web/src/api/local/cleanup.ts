@@ -1,10 +1,9 @@
-import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
 import type {
   ImageInfo,
   ImageThumbnailInfo,
 } from "@shared/types/imageInfo.type";
-import { IndexedDBKey } from "@shared/types/indexedDB.type";
 import { eq } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import { User } from "@/api/local/schemas";
@@ -25,9 +24,9 @@ export const cleanupLocalData = async (
   await cleanupMaterialAttachmentCache(cutoff);
   const [backgroundImages, thumbnails, currentBackgroundImage] =
     await Promise.all([
-      IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImages),
-      IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
-      IndexedDBManipulator.getItemByKey(IndexedDBKey.currentBackgroundImage),
+      IndexedDB.getItemByKey(IndexedDBKey.backgroundImages),
+      IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
+      IndexedDB.getItemByKey(IndexedDBKey.currentBackgroundImage),
     ]);
 
   if (backgroundImages) {
@@ -42,7 +41,7 @@ export const cleanupLocalData = async (
 
     if (retainedImages.length !== backgroundImages.contents.length) {
       if (retainedImages.length === 0) {
-        await IndexedDBManipulator.removeItem(IndexedDBKey.backgroundImages);
+        await IndexedDB.removeItem(IndexedDBKey.backgroundImages);
       } else {
         const nextBackgroundImages: ImageInfo = {
           header: {
@@ -53,7 +52,7 @@ export const cleanupLocalData = async (
           },
           contents: retainedImages,
         };
-        await IndexedDBManipulator.setItem(
+        await IndexedDB.setItem(
           IndexedDBKey.backgroundImages,
           nextBackgroundImages
         );
@@ -64,9 +63,7 @@ export const cleanupLocalData = async (
           retainedImageIds.has(thumbnail.id)
         );
         if (retainedThumbnails.length === 0) {
-          await IndexedDBManipulator.removeItem(
-            IndexedDBKey.backgroundImageThumbnails
-          );
+          await IndexedDB.removeItem(IndexedDBKey.backgroundImageThumbnails);
         } else {
           const nextThumbnails: ImageThumbnailInfo = {
             header: {
@@ -78,7 +75,7 @@ export const cleanupLocalData = async (
             },
             contents: retainedThumbnails,
           };
-          await IndexedDBManipulator.setItem(
+          await IndexedDB.setItem(
             IndexedDBKey.backgroundImageThumbnails,
             nextThumbnails
           );

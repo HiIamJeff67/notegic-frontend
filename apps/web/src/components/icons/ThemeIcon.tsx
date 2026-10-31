@@ -1,4 +1,4 @@
-import { IconProps } from "@shared/types/iconProps.type";
+import { IconProps } from "@/components/icons/iconProps.type";
 
 export const ThemeIcon = ({
   size = 24,

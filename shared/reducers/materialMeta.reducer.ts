@@ -1,4 +1,4 @@
-import { generateUUID } from "@shared/types/uuidv4.type";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import type { UUID } from "crypto";
 
 export interface MaterialMeta {

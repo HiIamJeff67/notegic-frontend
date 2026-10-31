@@ -1,7 +1,7 @@
 import { UserPlan } from "@shared/api/interfaces/enums";
 import { type PlanLimitation, PlanLimitations } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { formatByteSize } from "@shared/util/formatByteSize";
+import { formatByteSize } from "@shared/lib/byte/byte.type";
 import {
   CheckIcon,
   DatabaseIcon,

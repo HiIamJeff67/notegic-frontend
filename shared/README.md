@@ -5,6 +5,17 @@ Mobile. It is a boundary for code with multiple real consumers, public or
 generated contracts, or cross-platform invariants. It is not a reason to move
 every directory into a package.
 
+Reusable packages live under `lib/`, including `lib/blockpack/` and
+`lib/charts/`. Independent shared definitions without a dedicated owner use
+`types/<name>.type.ts`, whether
+they are enums, interfaces, structural types or aliases; there is no separate
+root `enums/` directory. Package-owned, component-owned and generated types
+retain their owners, even when they have many callers.
+Contracts jointly owned by multiple independent domains also belong in
+`types/` when they have no narrower common owner. Related definitions may share
+a concise concept file; multiple callers within one domain still share that
+domain owner.
+
 Shared code may contain API request semantics, generated contract types,
 schemas, GraphQL documents and conversions, query/domain logic, translation
 resources and language types, portable reducers, shared types/utilities, and

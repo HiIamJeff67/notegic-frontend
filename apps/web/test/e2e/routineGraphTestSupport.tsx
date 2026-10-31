@@ -8,10 +8,6 @@ import { ApolloProvider } from "@apollo/client/react";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { DefaultStandardTheme } from "@shared/constants";
-import { getDefaultRoutineNode } from "@shared/types/routineNode.type";
-import { getDefaultRoutineTagNode } from "@shared/types/routineTagNode.type";
-import { getDefaultRoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import { getDefaultStationNode } from "@shared/types/stationNode.type";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { ContextType } from "react";
 import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";
@@ -27,10 +23,14 @@ import {
 } from "@/providers/LocalPreferencesProvider";
 import { RoutineTaskDependencyGraphDraftProvider } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 import { ScreenProvider } from "@/providers/ScreenProvider";
+import { getDefaultRoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import { getDefaultRoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
+import { getDefaultRoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import {
   StationRoutineContext,
   StationRoutineProvider,
 } from "@/providers/StationRoutineProvider/StationRoutineProvider";
+import { getDefaultStationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import { ThemeContext } from "@/providers/ThemeProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import "@xyflow/react/dist/style.css";

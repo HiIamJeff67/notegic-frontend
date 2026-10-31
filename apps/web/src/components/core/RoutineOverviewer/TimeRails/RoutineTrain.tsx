@@ -1,8 +1,7 @@
 import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { Bookmark } from "lucide-react";
 import type { PointerEvent } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
@@ -11,6 +10,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 
 const RoutineTrain = ({
   routine,

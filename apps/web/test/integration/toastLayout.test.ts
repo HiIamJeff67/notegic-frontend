@@ -16,7 +16,7 @@ const activeToast =
 const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import toast from '@shared/lib/toast';
+import toast from '@shared/lib/toast/toast';
 import { Toaster } from '@/components/ui/toaster';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
@@ -48,7 +48,7 @@ describe("shared Toast placement and duration in Chromium", () => {
   beforeAll(async () => {
     const mocks: Record<string, string> = {
       "@/hooks": `const userData={publicId:'fixture'};export const useUser=()=>({userData});`,
-      "@shared/lib/localStorageManipulator": `export const LocalStorageManipulator={getItemByKey:()=> '[]',setItem:()=>{}};`,
+      "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage={getItemByKey:()=> '[]',setItem:()=>{}};`,
       "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets={};`,
       "@shared/i18n/useTranslation": `export const useTranslation=()=>({t:key=>key});`,
     };

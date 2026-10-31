@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Image from "@/components/commons/Image/Image";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 
 interface LazyBackgroundProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -42,7 +43,7 @@ export const LazyBackground = React.forwardRef<
         if (cancelled) return;
 
         objectURL = URL.createObjectURL(currentImage.file);
-        preloadImage = new Image();
+        preloadImage = new window.Image();
         preloadImage.decoding = "async";
         preloadImage.src = objectURL;
 
@@ -108,12 +109,10 @@ export const LazyBackground = React.forwardRef<
       >
         {!imageURL && fallback}
         {imageURL && (
-          <img
+          <Image
             alt=""
             aria-hidden="true"
             className={`absolute inset-0 size-full object-cover ${imageClassName}`}
-            decoding="async"
-            loading="lazy"
             src={imageURL}
           />
         )}

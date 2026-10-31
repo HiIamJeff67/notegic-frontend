@@ -1,8 +1,7 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import type { StationNode } from "@shared/types/stationNode.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   CheckIcon,
@@ -17,7 +16,6 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   RoutineIcon,
   RoutineTaskIcon,
@@ -25,6 +23,7 @@ import {
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -53,6 +52,7 @@ import {
   useModal,
   useStationRoutine,
 } from "@/hooks";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface StationMenuItemProps {
   station: StationNode;

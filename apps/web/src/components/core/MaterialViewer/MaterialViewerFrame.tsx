@@ -1,9 +1,9 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import {
   ChevronDownIcon,
   Copy,
@@ -31,13 +31,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
 import { useShelfItem } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 

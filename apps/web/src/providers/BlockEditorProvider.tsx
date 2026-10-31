@@ -3,19 +3,22 @@ import {
   AccessControlPermission,
   RealtimePermission,
 } from "@shared/api/interfaces/enums";
-import {
-  getNotegicBlockNoteXmlFragment,
-  NotegicBlockPackEditor,
-} from "@shared/blockpack";
 import { WebURLPathDictionary } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import {
+  NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME,
+  NotegicBlockPackEditor,
+  notegicBlockPackSchema,
+} from "@shared/lib/blockpack";
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { createContext, useCallback, useEffect, useMemo } from "react";
 import type * as Y from "yjs";
-import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useBlockPackRealtimeChannel, useRealtime } from "@/hooks/useRealtime";
 import { useUser } from "@/hooks/useUser";
+
+const getBlockNoteXmlFragment = (doc: Y.Doc) =>
+  doc.getXmlFragment(NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME);
 
 interface BlockEditorContextType {
   editor: BlockNoteEditor<any, any, any>;
@@ -71,9 +74,7 @@ export const BlockEditorProvider = ({
       NotegicBlockPackEditor.create({
         schema: notegicBlockPackSchema,
         collaboration: {
-          fragment: getNotegicBlockNoteXmlFragment(
-            channel.doc
-          ) as Y.XmlFragment,
+          fragment: getBlockNoteXmlFragment(channel.doc),
           provider: channel.provider,
           user: {
             name:

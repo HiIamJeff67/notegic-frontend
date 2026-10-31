@@ -1,4 +1,4 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { Braces, FileCode2, Globe2, Terminal } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

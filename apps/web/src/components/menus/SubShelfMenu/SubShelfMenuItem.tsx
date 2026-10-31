@@ -1,12 +1,11 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { MaxShelfDepth } from "@shared/constants";
-import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
-import toast from "@shared/lib/toast";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { SubShelf } from "@shared/lib/shelf/subShelf";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
+import toast from "@shared/lib/toast/toast";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -18,8 +17,8 @@ import {
 } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -29,6 +28,7 @@ import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPac
 import MaterialMenu from "@/components/menus/MaterialMenu/MaterialMenu";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -109,7 +109,7 @@ const SubShelfMenuItem = ({
       if (
         draggedItem.prev === current || // cannot drop on its parent
         draggedItem.current === current || // cannot drop on itself
-        SubShelfManipulator.isChildByPath(draggedItem.current, current) // cannot drop on its children
+        SubShelf.isChildByPath(draggedItem.current, current) // cannot drop on its children
       ) {
         return;
       }

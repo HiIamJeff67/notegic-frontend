@@ -1,13 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  GetMyBlockById,
-  GetMyBlocksByBlockPackId,
-  GetMyBlocksByIds,
-} from "@/api/functions/block.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type GetMyBlockByIdRequest,
   GetMyBlockByIdRequestSchema,
@@ -23,6 +18,11 @@ import {
   GetMyBlocksByIdsResponseSchema,
 } from "@shared/api/interfaces/block.interface";
 import { ZodError } from "zod";
+import {
+  GetMyBlockById,
+  GetMyBlocksByBlockPackId,
+  GetMyBlocksByIds,
+} from "@/api/functions/block.serverFn";
 
 export const queryFnGetMyBlockById = async (
   request: GetMyBlockByIdRequest

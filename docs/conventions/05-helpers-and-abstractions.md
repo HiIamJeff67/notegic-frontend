@@ -186,15 +186,59 @@ helper when an existing frontend boundary already owns that behavior.
 
 ## Types and constants stay with their owner
 
-- Keep one-consumer types, interfaces, enums, and constants in the owning file
-  or nearest feature folder.
+- Place types, interfaces, enums, schemas and constants by the module that
+  defines their meaning, creates/validates their values or controls their
+  lifecycle. Count callers to understand impact, not to choose ownership.
+- A reusable component, library, utility or provider owns its public types too.
+  Export those types from its owning module or nearest feature folder even
+  when many external callers use them. For example, `ImageLoadingStatus`
+  belongs to `commons/Image/Image.tsx`; `ScreenBreakpoint` belongs with
+  `ScreenProvider`. A second consumer does not justify a global type file.
+- Keep page/tab-local definitions within that page/tab unless an existing
+  reusable owner actually defines the concept. Moving a type does not turn a
+  page into a shared package.
 - Do not split a local definition into `types/`, `constants/`, `models/`, or a
   helper file merely because its category has a familiar name.
-- Move a definition to `shared/types/` or `shared/constants/` only when it has
-  multiple real consumers, is generated/public contract data, or expresses a
-  cross-feature invariant.
+- Reserve `shared/types/` for runtime-neutral concepts without a narrower
+  owner, such as general coordinates in `cord.ts`, or deliberately shared
+  domain contracts whose boundary spans existing owners. Public visibility or
+  multiple imports alone are not reasons to place a definition there.
+- A contract jointly owned by several independent domains belongs in
+  `shared/types/` when no narrower common owner exists. Distinguish independent
+  ownership from multiple callers inside the same feature. Use concise concept
+  filenames and group closely related definitions and intrinsic operations in
+  an existing concept file rather than requiring one file per declaration.
+- Keep API data shapes with their schema/contract owner; using a response in a
+  provider does not make that provider the owner of the wire contract. Keep
+  generated definitions in their generator-owned location.
+- Storage modules own their key/value catalog and persistence API. Domain
+  modules can own the individual cached payloads; storing a value does not make
+  the storage wrapper the owner of every domain model. Resolve the catalog's
+  dependency direction before moving provider-owned payload types.
+- Trace producers, consumers and dependencies before relocating a type. Do not
+  make `shared/` import Web providers/components, including through type-only
+  imports, or introduce runtime cycles when a schema, enum or default factory
+  moves alongside a type. If no safe narrower owner exists yet, retain the
+  shared contract until the owning boundary is deliberately changed.
+- A `.type.ts` module may contain its type's schemas, validators/type guards,
+  constructors/default factories, constants and closely related pure
+  conversions or formatters. Keep these cohesive operations together rather
+  than scattering them across `validation`, `factory` or generic helper files.
+  For example, UUID validation/generation may stay in `uuidv4.type.ts`, and
+  byte formatting may live alongside `ByteType`. The suffix describes the
+  owning concept; it does not promise that every export is erased at runtime.
+- Keep side-effectful workflows outside the model: browser subscriptions,
+  storage reads/writes, API orchestration, navigation and multi-object tree
+  operations still belong to their existing owners. Move intrinsic operations
+  without pulling their callers' environment dependencies into a shared type.
+- Preserve different request/response validation rules and persisted formats;
+  co-location must not silently unify validators with different semantics. Do
+  not invent unused per-type wrappers or extract a one-use expression merely
+  to populate a type module. Keep already-colocated schemas and factories
+  together during later ownership or folder migrations.
 - A type or constant should move with an explicit ownership reason, not as a
-  speculative preparation for future reuse.
+  speculative preparation for future reuse. An ownership audit or convention
+  update does not itself authorize moving definitions or renaming modules.
 
 ## Layer boundaries
 

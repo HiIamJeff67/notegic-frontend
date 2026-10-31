@@ -2,16 +2,17 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   ImageContent,
   ImageInfo,
   ImageThumbnailInfo,
 } from "@shared/types/imageInfo.type";
-import { IndexedDBKey } from "@shared/types/indexedDB.type";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { generateUUID } from "@shared/types/uuidv4.type";
 import type { UUID } from "crypto";
 import { createContext, useCallback, useEffect, useState } from "react";
 
@@ -60,16 +61,13 @@ export const BackgroundImagesProvider = ({
   useEffect(() => {
     const fetchCurrentItems = async () => {
       const [savedCurrentBackgroundImage, savedThumbnails] = await Promise.all([
-        IndexedDBManipulator.getItemByKey(IndexedDBKey.currentBackgroundImage),
-        IndexedDBManipulator.getItemByKey(
-          IndexedDBKey.backgroundImageThumbnails
-        ),
+        IndexedDB.getItemByKey(IndexedDBKey.currentBackgroundImage),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
       ]);
 
-      const savedDefaultBackgroundImageId =
-        LocalStorageManipulator.getItemByKey(
-          LocalStorageKey.dashboardBackgroundImage
-        );
+      const savedDefaultBackgroundImageId = LocalStorage.getItemByKey(
+        LocalStorageKey.dashboardBackgroundImage
+      );
       if (
         savedDefaultBackgroundImageId &&
         (savedDefaultBackgroundImageId ===
@@ -101,16 +99,13 @@ export const BackgroundImagesProvider = ({
       return;
     }
     setDefaultBackgroundImageId(id);
-    LocalStorageManipulator.setItem(
-      LocalStorageKey.dashboardBackgroundImage,
-      id
-    );
+    LocalStorage.setItem(LocalStorageKey.dashboardBackgroundImage, id);
   }, []);
 
   const setCurrentBackgroundImage = useCallback(
     async (newCurrentBackgroundImage: ImageContent | null) => {
       _setCurrentBackgroundImage(newCurrentBackgroundImage);
-      await IndexedDBManipulator.setItem(
+      await IndexedDB.setItem(
         IndexedDBKey.currentBackgroundImage,
         newCurrentBackgroundImage
       );
@@ -125,7 +120,7 @@ export const BackgroundImagesProvider = ({
         return;
       }
 
-      const imageInfo = await IndexedDBManipulator.getItemByKey(
+      const imageInfo = await IndexedDB.getItemByKey(
         IndexedDBKey.backgroundImages
       );
       if (!imageInfo) throw new Error("No such image found in indexedDB");
@@ -195,10 +190,8 @@ export const BackgroundImagesProvider = ({
   const getCacheEstimate =
     useCallback(async (): Promise<BackgroundImageCacheEstimate> => {
       const [imageInfo, thumbnailsInfo] = await Promise.all([
-        IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImages),
-        IndexedDBManipulator.getItemByKey(
-          IndexedDBKey.backgroundImageThumbnails
-        ),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImages),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
       ]);
       const imageBytes =
         imageInfo?.contents.reduce(
@@ -245,11 +238,11 @@ export const BackgroundImagesProvider = ({
   const touchBackgroundImage = useCallback(async (id: UUID) => {
     const now = new Date();
     const [imageInfo, thumbnailsInfo] = await Promise.all([
-      IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImages),
-      IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
+      IndexedDB.getItemByKey(IndexedDBKey.backgroundImages),
+      IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
     ]);
     if (imageInfo) {
-      await IndexedDBManipulator.setItem(IndexedDBKey.backgroundImages, {
+      await IndexedDB.setItem(IndexedDBKey.backgroundImages, {
         ...imageInfo,
         contents: imageInfo.contents.map(img =>
           img.id === id ? { ...img, lastAccessedAt: now } : img
@@ -263,7 +256,7 @@ export const BackgroundImagesProvider = ({
           thumb.id === id ? { ...thumb, lastAccessedAt: now } : thumb
         ),
       };
-      await IndexedDBManipulator.setItem(
+      await IndexedDB.setItem(
         IndexedDBKey.backgroundImageThumbnails,
         nextThumbnailsInfo
       );
@@ -273,7 +266,7 @@ export const BackgroundImagesProvider = ({
 
   const getFullImageURL = useCallback(
     async (id: UUID): Promise<{ url: string; revoke: () => void }> => {
-      const imageInfo = await IndexedDBManipulator.getItemByKey(
+      const imageInfo = await IndexedDB.getItemByKey(
         IndexedDBKey.backgroundImages
       );
       if (!imageInfo) throw new Error("No such image found in indexedDB");
@@ -297,10 +290,8 @@ export const BackgroundImagesProvider = ({
       if (files.length === 0) return [];
 
       const [imageInfo, thumbnailsInfo] = await Promise.all([
-        IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImages),
-        IndexedDBManipulator.getItemByKey(
-          IndexedDBKey.backgroundImageThumbnails
-        ),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImages),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
       ]);
 
       const newImageInfo: ImageInfo = imageInfo ?? {
@@ -364,11 +355,8 @@ export const BackgroundImagesProvider = ({
       newThumbnailsInfo.contents.push(...pendingThumbnails);
 
       const isSaved = await Promise.all([
-        IndexedDBManipulator.setItem(
-          IndexedDBKey.backgroundImages,
-          newImageInfo
-        ),
-        IndexedDBManipulator.setItem(
+        IndexedDB.setItem(IndexedDBKey.backgroundImages, newImageInfo),
+        IndexedDB.setItem(
           IndexedDBKey.backgroundImageThumbnails,
           newThumbnailsInfo
         ),
@@ -393,10 +381,8 @@ export const BackgroundImagesProvider = ({
       if (ids.length === 0) return;
 
       const [imageInfo, thumbnailsInfo] = await Promise.all([
-        IndexedDBManipulator.getItemByKey(IndexedDBKey.backgroundImages),
-        IndexedDBManipulator.getItemByKey(
-          IndexedDBKey.backgroundImageThumbnails
-        ),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImages),
+        IndexedDB.getItemByKey(IndexedDBKey.backgroundImageThumbnails),
       ]);
 
       if (!imageInfo || !thumbnailsInfo) return;
@@ -426,11 +412,8 @@ export const BackgroundImagesProvider = ({
       };
 
       await Promise.all([
-        IndexedDBManipulator.setItem(
-          IndexedDBKey.backgroundImages,
-          newImageInfo
-        ),
-        IndexedDBManipulator.setItem(
+        IndexedDB.setItem(IndexedDBKey.backgroundImages, newImageInfo),
+        IndexedDB.setItem(
           IndexedDBKey.backgroundImageThumbnails,
           newThumbnailsInfo
         ),
@@ -448,7 +431,7 @@ export const BackgroundImagesProvider = ({
   );
 
   const clearUnused = useCallback(async () => {
-    const imageInfo = await IndexedDBManipulator.getItemByKey(
+    const imageInfo = await IndexedDB.getItemByKey(
       IndexedDBKey.backgroundImages
     );
     if (!imageInfo) return;
@@ -460,9 +443,9 @@ export const BackgroundImagesProvider = ({
 
   const clearAll = useCallback(async () => {
     await Promise.all([
-      IndexedDBManipulator.removeItem(IndexedDBKey.backgroundImages),
-      IndexedDBManipulator.removeItem(IndexedDBKey.backgroundImageThumbnails),
-      IndexedDBManipulator.removeItem(IndexedDBKey.currentBackgroundImage),
+      IndexedDB.removeItem(IndexedDBKey.backgroundImages),
+      IndexedDB.removeItem(IndexedDBKey.backgroundImageThumbnails),
+      IndexedDB.removeItem(IndexedDBKey.currentBackgroundImage),
     ]);
     setThumbnails(null);
     _setCurrentBackgroundImage(null);

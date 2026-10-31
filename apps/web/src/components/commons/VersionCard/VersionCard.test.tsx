@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { versionRoadmap } from "@/pages/document/versions/generated";
 import { VersionCard } from "./VersionCard";
-import { versionRoadmap } from "./versions";
 
 test("version labels use only the three public release states", () => {
   expect(versionRoadmap.map(version => version.label)).toEqual([

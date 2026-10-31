@@ -1,10 +1,10 @@
-import { IntChart } from "@shared/charts/components";
+import { useTranslation } from "@shared/i18n/useTranslation";
 import type {
   TwoDimensionalChartType,
   TwoDimensionalData,
-} from "@shared/charts/types";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+} from "@shared/lib/charts";
+import { IntChart } from "@shared/lib/charts";
+import { cn } from "@shared/lib/className/cn";
 import {
   Dialog,
   DialogContent,

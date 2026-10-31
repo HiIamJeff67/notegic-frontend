@@ -25,7 +25,7 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { generateUUID } from "@shared/types/uuidv4.type";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   type UseQueryOptions,
   useMutation,

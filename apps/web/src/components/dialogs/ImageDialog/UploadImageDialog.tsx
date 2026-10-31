@@ -1,8 +1,8 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Image } from "@unpic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
+import Image from "@/components/commons/Image/Image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,9 +36,21 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
 }) => {
   const { t } = useTranslation();
   const [uploadedImages, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ file: File; url: string }[]>([]);
   const [error, setError] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isRemoving, setIsRemoving] = useState<boolean>(false);
+
+  useEffect(() => {
+    const nextPreviews = uploadedImages.map(file => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setPreviews(nextPreviews);
+    return () => {
+      for (const preview of nextPreviews) URL.revokeObjectURL(preview.url);
+    };
+  }, [uploadedImages]);
 
   const uploadImages = async (files: File[]) => {
     try {
@@ -119,13 +131,13 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
         </DropFileZone>
         {maxCount > 1 && uploadedImages.length > 0 && (
           <div className="w-full flex flex-wrap gap-2 mt-2">
-            {uploadedImages.map((image, index) => (
+            {previews.map((image, index) => (
               <div
                 key={index}
                 className="w-16 h-16 relative rounded-lg overflow-hidden"
               >
                 <Closeable
-                  className="w-2 h-2 top-1 left-1 absolute"
+                  className="z-10 w-2 h-2 top-1 left-1 absolute"
                   onClose={() => {
                     setSelectedFiles(
                       uploadedImages.filter((_, i) => i !== index)
@@ -133,10 +145,11 @@ const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
                   }}
                 >
                   <Image
-                    src={URL.createObjectURL(image)}
+                    src={image.url}
                     width={160}
                     height={160}
-                    alt={image.name}
+                    alt={image.file.name}
+                    loading="eager"
                     className="object-cover w-full h-full"
                   />
                 </Closeable>

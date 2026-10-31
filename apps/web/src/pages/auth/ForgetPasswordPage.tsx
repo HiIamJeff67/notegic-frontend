@@ -2,7 +2,7 @@ import { NotegicError } from "@shared/api/exceptions/errors";
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import {
   Suspense,
   useCallback,

@@ -1,8 +1,8 @@
 import path from "node:path";
 import {
   type Browser,
-  chromium,
   expect as browserExpect,
+  chromium,
   type Page,
 } from "@playwright/test";
 import { build } from "esbuild";
@@ -18,10 +18,10 @@ import BlockPackMenuItem from '@/components/menus/BlockPackMenu/BlockPackMenuIte
 import MaterialMenuItem from '@/components/menus/MaterialMenu/MaterialMenuItem';
 import {SidebarProvider} from '@/components/ui/sidebar';
 import {HoverCard,HoverCardContent,HoverCardTrigger} from '@/components/ui/hover-card';
-import {LocalStorageManipulator} from '@shared/lib/localStorageManipulator';
-import {LocalStorageKey} from '@shared/types/localStorage.type';
+import {LocalStorage} from '@shared/lib/storage/localStorage';
+import {LocalStorageKey} from '@shared/lib/storage/localStorage';
 import i18n from '@/i18n';
-window.readSaved = () => LocalStorageManipulator.getItemByKey(LocalStorageKey.localPreferences);
+window.readSaved = () => LocalStorage.getItemByKey(LocalStorageKey.localPreferences);
 window.changeLanguage = language => i18n.changeLanguage(language);
 const parent={id:'parent',rootShelfId:'root'};
 const block={id:'block',name:'Notes',blockCount:7,createdAt:new Date(0),updatedAt:new Date(0)};
@@ -43,7 +43,7 @@ function Fixture(){
   </>;
 }
 window.mount = saved => {
-  if(saved!==undefined) LocalStorageManipulator.setItem(LocalStorageKey.localPreferences,saved);
+  if(saved!==undefined) LocalStorage.setItem(LocalStorageKey.localPreferences,saved);
   createRoot(document.getElementById('root')).render(<LocalPreferencesProvider><Fixture/></LocalPreferencesProvider>);
 };
 `;
@@ -52,7 +52,7 @@ const mocks: Record<string, string> = {
   "@/api/local/cleanup": "export const cleanupLocalData = async () => {};",
   "@/providers/MaterialAttachmentCacheProvider":
     "export const clearMaterialAttachmentCache = async () => {};",
-  "@shared/blockpack": "export const LocalYjsDocumentStore = {};",
+  "@shared/lib/blockpack": "export const LocalYjsDocumentStore = {};",
   "@/hooks": `
     export {useMobile} from '@/hooks/useMobile';
     const router={push:()=>window.opened=true,params:{}};
@@ -107,7 +107,9 @@ describe("sidebar hover preferences in Chromium", () => {
       ],
     });
     script = bundle.outputFiles[0].text;
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
   beforeEach(async () => {
     errors = [];

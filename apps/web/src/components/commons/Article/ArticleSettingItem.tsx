@@ -1,5 +1,5 @@
+import { cn } from "@shared/lib/className/cn";
 import type { ReactNode } from "react";
-import { cn } from "@shared/util/utils";
 import {
   ArticleSubParagraphHeader,
   ArticleSubParagraphSeparator,

@@ -19,8 +19,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { getDefaultStationNode } from "@shared/types/stationNode.type";
+import toast from "@shared/lib/toast/toast";
 import { replaceEqualDeep } from "@tanstack/react-query";
 import {
   type Connection,
@@ -63,6 +62,7 @@ import {
 import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
 import { useLoading } from "@/hooks/useLoading";
 import { useStationRoutine } from "@/hooks/useStationRoutine";
+import { getDefaultStationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 export interface RoutineTaskGraphNodeData extends Record<string, unknown> {
   title: string;

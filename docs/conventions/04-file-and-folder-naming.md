@@ -9,7 +9,8 @@ below reflect the current repository and are the default for new files.
 - Use `PascalCase` for React components, pages, providers, and component-owned
   companion files.
 - Use `smallCamelCase` for project-owned TypeScript/JavaScript modules,
-  libraries, utilities, scripts, and their test basenames.
+  libraries, utilities and scripts. Colocated tests retain their source's exact
+  basename and capitalization; standalone integration tests use smallCamelCase.
 - Keep kebab-case where a separate convention owns it: Markdown documents,
   stylesheets, shadcn UI primitives, and conventional infrastructure folders.
 - Use the existing dotted role suffix for API, type, enum, schema, reducer,
@@ -52,17 +53,20 @@ below reflect the current repository and are the default for new files.
 | Pages | `BigCamelCasePage.tsx` | `DashboardPage.tsx`, `PrivacyPolicyPage.tsx` |
 | Page folders | `some-thing/` | `material-viewer/`, `privacy-policy/` |
 | Providers | `BigCamelCaseProvider.tsx` or `BigCamelCaseProvider/` | `ThemeProvider.tsx`, `TransactionSynchronizerProvider/` |
-| Generic libraries/utilities | `someThing.ts` | `searchPage.ts`, `compareText.ts` |
+| Generic libraries/utilities | `someThing.ts` | `searchPage.ts`, `string/compare.ts`, `math/clamp.ts` |
 | API modules | `domain.role.ts` | `blockPack.hook.ts`, `userInfo.invoker.ts` |
 | GraphQL query hooks | `useSearchSomething.ts` | `useSearchRoutineRecords.ts` |
 | UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
-| Enums | `domain.enum.ts` | `routineStatus.enum.ts` |
+| General shared types, including enums | `domain.type.ts` in `shared/types/` | `range.type.ts` |
 | Constants | `domain.constant.ts` | `url.constant.ts`, `defaultThemes.constant.ts` |
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
-| Unit/performance tests | `name.unit.test.ts` or `name.performance.test.ts` | `i18n.unit.test.ts` |
+| Unit tests beside their source | `<source basename>.test.ts(x)` | `ScreenProvider.test.ts`, `routine.search.test.ts` |
+| Integration tests in the integration directory | `name.test.ts(x)` | `userProvider.test.ts` |
+| Browser E2E tests | `name.spec.ts` | `articleNavigation.spec.ts` |
+| Performance tests | `name.performance.test.ts` | `shelfNode.performance.test.ts` |
 
 Keep established API role suffixes where they describe the module, such as
 `routine.hook.ts` and `searchLocal.adapter.ts`. Do not invent a suffix or rename
@@ -83,17 +87,140 @@ imports, tests, dynamic source paths and documentation references, without
 compatibility re-exports. Preserve separately governed documentation, folders,
 framework routes, language tags, generated output and migration filenames.
 
+## Manipulator module names
+
+For new modules and explicitly scoped naming migrations, use the concrete
+domain name rather than a redundant `Manipulator` suffix. The current owners
+are:
+
+| Responsibility | Module and exported class |
+| --- | --- |
+| Local storage | `shared/lib/storage/localStorage.ts` — `LocalStorage` |
+| Session storage | `shared/lib/storage/sessionStorage.ts` — `SessionStorage` |
+| IndexedDB | `shared/lib/storage/indexedDB.ts` — `IndexedDB` |
+| Root-shelf operations | `shared/lib/shelf/rootShelf.ts` — `RootShelf` |
+| Sub-shelf operations | `shared/lib/shelf/subShelf.ts` — `SubShelf` |
+
+Rename matching test files in the same scope, such as
+`indexedDBManipulator.test.ts` to `indexedDB.test.ts`. Update imports, dynamic
+module paths, mocks, source guards and current documentation together. Do not
+leave compatibility re-exports that preserve the obsolete module path.
+
+This rule applies only to the actual `Manipulator` naming being migrated. Keep
+meaningful `Provider`, `Page`, `Tab`, `Store` and other role suffixes. Moving a
+provider-owned type never requires removing `Provider` from its component or
+file. Do not replace native `window.localStorage`, `sessionStorage` or
+`indexedDB` identifiers when updating project symbols, change stored key bytes,
+or redesign a class API merely to rename its file. Scope exported-symbol
+renames explicitly rather than applying a repository-wide text substitution.
+
+Keep other existing filenames until a naming migration is requested. An audit
+or documentation-only update does not authorize additional renames.
+
+## Library folders and models
+
+Shared conversion operations live in `shared/lib/conversions/`; entity
+comparators and their owned input types live in `shared/lib/comparisons/`.
+Keep their tests beside the implementation, without splitting a comparator's
+private input shape into a general shared type file.
+BlockPack import/export file types live directly in
+`shared/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
+portable package's file-format contract a Web UI type.
+
+Reusable editor and chart packages live under `shared/lib/blockpack/` and
+`shared/lib/charts/`. Independent shared type definitions without a dedicated
+owner have one root home:
+`shared/types/`. Use `<name>.type.ts` there for enums, interfaces, structural
+types and aliases alike; do not recreate a root `shared/enums/` directory.
+Keep intrinsic validation, constructors and conversions beside their type.
+This root-directory rule does not relocate owner-specific or generated API
+types from their existing package boundaries. When multiple independent owners
+jointly define and use a contract without a narrower common owner, put it in
+`shared/types/`. Multiple callers within one domain do not create multiple
+owners. For example, Web drag-and-drop types
+and their intrinsic operations live in
+`apps/web/src/components/commons/DNDable/dnd.type.ts`, not `shared/types/`.
+Shelf analysis status belongs with the summary it describes in
+`shared/lib/shelf/summary.type.ts`. Prefer concise concept names such as
+`summary.type.ts` and `dnd.type.ts` over repeating the folder or the word
+`Type`. Cohesive types and their intrinsic operations may share that file;
+reuse an existing concept file before adding one, without merging unrelated
+models or creating placeholders for hypothetical types.
+
+BlockNote block specifications live in `shared/lib/blockpack/specs/`, such as
+`codeBlock.spec.tsx`. Use `.spec.tsx` for every block specification, including
+specs that currently contain no JSX. Here the suffix identifies a production block specification;
+Jest excludes this directory, and its behavior is verified through editor tests.
+
+Group `shared/lib/` by the responsibility that owns the implementation. Keep
+the implementation, its tests and its intrinsic types/operations together;
+import the owner directly instead of keeping a compatibility file at the old
+root path. Use an existing group before adding another folder.
+
+```text
+shared/lib/
+  queue/deque.ts
+  queue/deque.test.ts
+  url/getURL.ts
+  storage/localStorage.ts
+  storage/sessionStorage.ts
+  storage/indexedDB.ts
+  storage/indexedDB.test.ts
+  storage/materialAttachmentCache.type.ts
+  shelf/rootShelf.ts
+  shelf/subShelf.ts
+  shelf/itemNodes.type.ts
+  shelf/shelfNodes.type.ts
+  shelf/summary.type.ts
+  auth/redirectState.type.ts
+  auth/tokenGenerator.ts
+  byte/byte.type.ts
+  uuid/uuidv4.type.ts
+```
+
+Other existing groups are `browser`, `cache`, `code`, `list`, `search`, `set`,
+`text` and `toast`. Preserve meaningful module/class names such as `LRUCache`,
+`LocalYjsDocumentStore` and `CSRFTokenGenerator`; grouping is not permission to
+remove their role suffixes. Do not recreate the removed OAuth storage helper:
+the login, registration, binding and callback components own those operations.
+
+Complete API object models and their schemas live under
+`shared/api/interfaces/types/`, including `user.type.ts` and
+`userQuota.type.ts`. This is part of the API contract owner, distinct from
+`interfaces/enums/` and from the general-purpose `shared/types/` directory.
+Keep their validation and pure operations together when moving them.
+
+The Shelf node/summary types remain separate files beside the tree operations.
+Station/Routine UI node models and their factories belong in
+`apps/web/src/providers/StationRoutineProvider/`; screen types and breakpoint
+conversion belong to `ScreenProvider.tsx`. Provider filenames retain their
+`Provider` suffix. Do not make shared libraries depend on these Web models.
+
+Storage key catalogs live with their storage modules. Yjs persisted document
+types live with `shared/lib/blockpack/localYjsDocumentStore.ts`; attachment payload
+types live in `storage/materialAttachmentCache.type.ts`. The storage catalog
+uses type-only imports for these payloads, without importing a Web Provider.
+Retain `shared/types/cord.ts` and `range.type.ts` as general concepts, and keep
+`imageInfo.type.ts` and `theme.type.ts` in place until their dependency boundaries
+are explicitly migrated.
+
 ## Local types and constants
 
 - If a type, interface, enum, or constant is used by one component, hook, page,
   or feature module, keep it in that module's file or nearest feature folder.
 - Do not create a new `types/`, `constants/`, or similarly generic folder for a
   single consumer.
-- Promote a definition into `shared/types/`, `shared/constants/`, or another
-  shared module only when it has multiple real consumers, is a public contract,
-  or defines a cross-feature invariant.
+- Export reusable component, library, utility and provider types from their
+  owner even when they have multiple real consumers. Use `shared/types/` only
+  when there is no narrower owner or a deliberately shared domain contract
+  requires that boundary. See
+  [Types and constants stay with their owner](05-helpers-and-abstractions.md#types-and-constants-stay-with-their-owner).
 - Keep local definitions close to the code that owns their behavior. A type or
   constant's category does not by itself justify a new file.
+- A `.type.ts` file can also own the type's validation, construction, defaults
+  and pure conversions/formatting. Do not move these operations away merely
+  because they execute at runtime; follow the ownership boundary in the
+  [type conventions](05-helpers-and-abstractions.md#types-and-constants-stay-with-their-owner).
 - Existing shared type and constant folders are retained for their current
   consumers; this rule does not require a broad relocation during unrelated
   changes.
@@ -127,7 +254,7 @@ Group cross-feature API modules by responsibility and retain the
 - `bridges/`: coordination between API/runtime boundaries, such as
   `cookie.bridge.ts` and `searchLocal.bridge.ts`.
 
-Keep unit tests beside their owner as `domain.role.unit.test.ts`. Import the
+Keep unit tests beside their owner as `domain.role.test.ts`. Import the
 owning module directly; do not leave compatibility re-export files at the API
 root. Storage-specific policies remain under `api/local/`; these categories
 do not override narrower ownership or server/client runtime boundaries.
@@ -163,6 +290,38 @@ fragments, queries, and schema files retain snake_case because that is the
 existing GraphQL convention and is shared with the backend schema vocabulary.
 
 ## Naming boundaries
+
+Public Document tabs live under `apps/web/src/pages/document/<tab>/`, with
+`DocumentPage.tsx` at the page root. Each tab keeps these roles directly inside
+its folder:
+
+- `<Tab>.tsx`: the owning tab component.
+- `<Tab>Content.tsx`: generated JSX inserted into the tab, when needed.
+- `generated.ts`: generated data, types and navigation metadata, when needed.
+- Necessary PascalCase subcomponents, such as `EndpointTable.tsx`.
+- `sources/`: all Markdown/JSON generation inputs, whether authored here or
+  copied from upstream. Keep source files flat; do not add nested reference,
+  rule, content or generated folders.
+
+API keys belong to the `api` tab, not a separate tab or `api-reference` folder.
+Keep tests in the existing integration/E2E test directories so these tab
+folders contain only the approved roles. README files belong only inside
+`sources/`, not at the page or tab root. Obtain explicit user agreement before
+introducing another file role or folder level in this page.
+
+Copied backend inputs use `@` on the filename, such as
+`api/sources/@openapi.json` and `api/sources/@authentication.md`; first-party
+Markdown keeps its ordinary filename. Preserve upstream bytes and record
+provenance in the source README. Review the complete source snapshot with
+generated output. Page content sources do not belong in a parallel folder in
+the contributor handbook. Never reference an external checkout directly from
+application imports, generation or build inputs.
+Relative paths between `apps/web` and `shared` remain valid because both are
+inside the same frontend repository. Check local import targets and configured
+aliases with
+`npm run test:unit -- apps/web/test/integration/importBoundaries.test.ts`.
+Use `apps/web/test/integration/documentStructure.test.ts` to verify the approved
+Document tab structure.
 
 For a scoped filename cleanup, run the local filename guard with
 `npm run test:unit -- apps/web/test/integration/fileNaming.test.ts`, then

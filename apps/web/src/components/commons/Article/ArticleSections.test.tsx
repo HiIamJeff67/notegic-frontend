@@ -1,12 +1,12 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ArticleDisplayContext } from "./ArticleContext";
-import ArticleSettingItem from "./ArticleSettingItem";
 import {
   ArticleParagraph,
   ArticleParagraphSeparator,
   ArticleSubParagraph,
   ArticleSubParagraphSeparator,
 } from "./ArticleSections";
+import ArticleSettingItem from "./ArticleSettingItem";
 
 test("paragraph and subparagraph separators keep separate semantic hierarchy", () => {
   const paragraph = renderToStaticMarkup(<ArticleParagraphSeparator />);

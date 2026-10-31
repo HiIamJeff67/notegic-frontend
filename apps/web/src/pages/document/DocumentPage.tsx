@@ -8,18 +8,20 @@ import {
   ArticleSidebar,
 } from "@/components/commons/Article/Article";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import APIReference, { apiReferenceNavigation } from "./APIReference";
-import Overview, { overviewNavigation } from "./Overview";
-import PrivacyPolicy, { privacyPolicyNavigation } from "./PrivacyPolicy";
-import Versions, { versionsNavigation } from "./Versions";
-import Website, { websiteNavigation } from "./Website";
+import API, { apiNavigation } from "./api/API";
+import Overview, { overviewNavigation } from "./overview/Overview";
+import PrivacyPolicy, {
+  privacyPolicyNavigation,
+} from "./privacy-policy/PrivacyPolicy";
+import Versions, { versionsNavigation } from "./versions/Versions";
+import Website, { websiteNavigation } from "./website/Website";
 
 const DocumentPage = () => {
   const articleRef = useRef<HTMLElement>(null);
   const navigationItems = [
     overviewNavigation,
     websiteNavigation,
-    apiReferenceNavigation,
+    apiNavigation,
     versionsNavigation,
     privacyPolicyNavigation,
   ] satisfies ArticleNavigationItem[];
@@ -42,7 +44,7 @@ const DocumentPage = () => {
                   <ArticleParagraphSeparator fullWidth />
                   <Website />
                   <ArticleParagraphSeparator fullWidth />
-                  <APIReference />
+                  <API />
                   <ArticleParagraphSeparator fullWidth />
                   <Versions />
                   <ArticleParagraphSeparator fullWidth />

@@ -1,13 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateMyBlockPackChannelTicket,
-  CreateMyRealtimeConnectionTicket,
-  GetBlockPackParticipants,
-} from "@/api/functions/realtime.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type CreateMyBlockPackChannelTicketRequest,
   CreateMyBlockPackChannelTicketRequestSchema,
@@ -23,6 +18,11 @@ import {
   GetBlockPackParticipantsResponseSchema,
 } from "@shared/api/interfaces/realtime.interface";
 import { ZodError } from "zod";
+import {
+  CreateMyBlockPackChannelTicket,
+  CreateMyRealtimeConnectionTicket,
+  GetBlockPackParticipants,
+} from "@/api/functions/realtime.serverFn";
 
 export const mutationFnCreateMyRealtimeConnectionTicket = async (
   request: CreateMyRealtimeConnectionTicketRequest

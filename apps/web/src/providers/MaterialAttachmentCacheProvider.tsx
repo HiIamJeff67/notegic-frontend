@@ -1,8 +1,5 @@
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
-import {
-  IndexedDBKey,
-  type MaterialAttachmentCacheContent,
-} from "@shared/types/indexedDB.type";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
+import { type MaterialAttachmentCacheContent } from "@shared/lib/storage/materialAttachmentCache.type";
 import type { UUID } from "crypto";
 import { createContext, type ReactNode } from "react";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
@@ -13,7 +10,7 @@ export const loadMaterialAttachment = async (
 ): Promise<Blob | null> => {
   if (!isLocalPreferenceEnabled("cacheAttachments")) return null;
 
-  const cache = (await IndexedDBManipulator.getItemByKey(
+  const cache = (await IndexedDB.getItemByKey(
     IndexedDBKey.materialAttachments
   )) ?? {
     header: { totalSize: 0 },
@@ -28,7 +25,7 @@ export const loadMaterialAttachment = async (
     return null;
   }
 
-  await IndexedDBManipulator.setItem(IndexedDBKey.materialAttachments, {
+  await IndexedDB.setItem(IndexedDBKey.materialAttachments, {
     header: cache.header,
     contents: cache.contents.map(item =>
       item.materialId === materialId
@@ -46,7 +43,7 @@ export const setCachedMaterialAttachment = async (
 ): Promise<void> => {
   if (!isLocalPreferenceEnabled("cacheAttachments")) return;
 
-  const cache = (await IndexedDBManipulator.getItemByKey(
+  const cache = (await IndexedDB.getItemByKey(
     IndexedDBKey.materialAttachments
   )) ?? {
     header: { totalSize: 0 },
@@ -66,24 +63,19 @@ export const setCachedMaterialAttachment = async (
     ...cache.contents.filter(item => item.materialId !== materialId),
     nextContent,
   ];
-  const isSaved = await IndexedDBManipulator.setItem(
-    IndexedDBKey.materialAttachments,
-    {
-      header: {
-        totalSize: contents.reduce((sum, item) => sum + item.byteSize, 0),
-      },
-      contents,
-    }
-  );
+  const isSaved = await IndexedDB.setItem(IndexedDBKey.materialAttachments, {
+    header: {
+      totalSize: contents.reduce((sum, item) => sum + item.byteSize, 0),
+    },
+    contents,
+  });
   if (!isSaved) throw new Error("Failed to persist material attachment cache.");
 };
 
 export const cleanupMaterialAttachmentCache = async (
   cutoff: number
 ): Promise<void> => {
-  const cache = await IndexedDBManipulator.getItemByKey(
-    IndexedDBKey.materialAttachments
-  );
+  const cache = await IndexedDB.getItemByKey(IndexedDBKey.materialAttachments);
   if (!cache) return;
 
   const contents = cache.contents.filter(
@@ -91,11 +83,11 @@ export const cleanupMaterialAttachmentCache = async (
   );
   if (contents.length === cache.contents.length) return;
   if (contents.length === 0) {
-    await IndexedDBManipulator.removeItem(IndexedDBKey.materialAttachments);
+    await IndexedDB.removeItem(IndexedDBKey.materialAttachments);
     return;
   }
 
-  await IndexedDBManipulator.setItem(IndexedDBKey.materialAttachments, {
+  await IndexedDB.setItem(IndexedDBKey.materialAttachments, {
     header: {
       totalSize: contents.reduce((sum, item) => sum + item.byteSize, 0),
     },
@@ -105,7 +97,7 @@ export const cleanupMaterialAttachmentCache = async (
 
 export const estimateMaterialAttachmentCache =
   async (): Promise<MaterialAttachmentCacheEstimate> => {
-    const cache = await IndexedDBManipulator.getItemByKey(
+    const cache = await IndexedDB.getItemByKey(
       IndexedDBKey.materialAttachments
     );
     return {
@@ -115,7 +107,7 @@ export const estimateMaterialAttachmentCache =
   };
 
 export const clearMaterialAttachmentCache = async (): Promise<void> => {
-  await IndexedDBManipulator.removeItem(IndexedDBKey.materialAttachments);
+  await IndexedDB.removeItem(IndexedDBKey.materialAttachments);
 };
 
 export interface MaterialAttachmentCacheEstimate {

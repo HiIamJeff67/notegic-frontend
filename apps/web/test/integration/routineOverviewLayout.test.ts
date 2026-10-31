@@ -67,7 +67,7 @@ const mocks: Record<string, string> = {
     export const useStationRoutine = () => manager;
     export const useModal = () => ({open:()=>{}});
   `,
-  "@shared/lib/localStorageManipulator": `export const LocalStorageManipulator = {
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = {
     getItemByKey:()=>String(window.savedWidth ?? 384), setItem:()=>true,
   };`,
 };
@@ -156,7 +156,9 @@ describe("Routine overview responsive layout in Chromium", () => {
       }
     );
     css = compiler.build([fixture, ...sources].join(" ").split(/[\s"'`]+/));
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
 
   beforeEach(async () => {

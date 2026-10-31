@@ -9,12 +9,9 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
-const referenceRoot = path.join(
-  projectRoot,
-  "apps/web/src/pages/document/api-reference"
-);
-const contractRoot = path.join(referenceRoot, "contracts");
-const output = path.join(referenceRoot, "generated/publicAPIData.ts");
+const referenceRoot = path.join(projectRoot, "apps/web/src/pages/document/api");
+const contractRoot = path.join(referenceRoot, "sources");
+const output = path.join(referenceRoot, "generated.ts");
 const ruleFiles = [
   "authentication.md",
   "http-contract.md",
@@ -27,14 +24,14 @@ if (process.argv.length === 3 && process.argv[2] === "--help") {
   console.log(`Usage: npm run generate:public-api
 
 Manually copy the backend's published contract into:
-  apps/web/src/pages/document/api-reference/contracts/
+  apps/web/src/pages/document/api/sources/
 
 Required files:
-  openapi.json (OpenAPI 3.1 JSON)
-${ruleFiles.map(file => `  rules/${file}`).join("\n")}
+  @openapi.json (OpenAPI 3.1 JSON)
+${ruleFiles.map(file => `  @${file}`).join("\n")}
 
 All six files must exist before generation. Missing inputs leave the existing output unchanged.
-Output: apps/web/src/pages/document/api-reference/generated/publicAPIData.ts
+Output: apps/web/src/pages/document/api/generated.ts
 `);
   process.exit(0);
 }
@@ -46,10 +43,7 @@ if (process.argv.length > 2) {
   process.exit(1);
 }
 
-const requiredFiles = [
-  "openapi.json",
-  ...ruleFiles.map(file => `rules/${file}`),
-];
+const requiredFiles = ["@openapi.json", ...ruleFiles.map(file => `@${file}`)];
 const missingFiles = requiredFiles.filter(file => {
   const filePath = path.join(contractRoot, file);
   try {
@@ -491,7 +485,7 @@ const publicRuleText = text => {
 const markdownRules = directory =>
   ruleFiles.map(file => {
     const tokens = marked.lexer(
-      fs.readFileSync(path.join(directory, file), "utf8")
+      fs.readFileSync(path.join(directory, `@${file}`), "utf8")
     );
     const title =
       tokens.find(token => token.type === "heading" && token.depth === 1)
@@ -524,7 +518,7 @@ const markdownRules = directory =>
   });
 
 const gateway = JSON.parse(
-  fs.readFileSync(path.join(contractRoot, "openapi.json"), "utf8")
+  fs.readFileSync(path.join(contractRoot, "@openapi.json"), "utf8")
 );
 const productionServer = gateway.servers?.find(
   server =>
@@ -537,7 +531,7 @@ if (!productionServer)
   );
 const publicApiBaseURL = productionServer.url.replace(/\/$/, "");
 const gatewayEndpointData = endpointGroups(gateway, publicApiBaseURL);
-const gatewayRuleData = markdownRules(path.join(contractRoot, "rules"));
+const gatewayRuleData = markdownRules(contractRoot);
 const responseSpecifications = [];
 const responseIndexes = new Map();
 const groupSources = gatewayEndpointData.map(({ endpoints, ...group }) => {

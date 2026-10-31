@@ -1,7 +1,6 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { IntChart } from "@shared/charts/components";
-import { hasPositiveChartValue } from "@shared/charts/util";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import { IntChart } from "@shared/lib/charts";
 import { useVisualizeMyTotalCount } from "@/api/hooks/station.hook";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { OverallChartType } from "./RoutineCharts";
@@ -23,7 +22,7 @@ const OverallChartWidget = ({
   });
   const points = query.data?.data.data ?? [];
   const displayPoints =
-    query.isError || !hasPositiveChartValue(points) ? [] : points;
+    query.isError || !points.some(point => point.value > 0) ? [] : points;
 
   return (
     <ChartWidgetFrame

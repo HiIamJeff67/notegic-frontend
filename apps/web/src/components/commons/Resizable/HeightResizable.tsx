@@ -1,4 +1,4 @@
-import { clamp } from "@shared/util/math";
+import { clamp } from "@shared/lib/math/clamp";
 import { MouseEvent as ReactMouseEvent, useCallback, useState } from "react";
 
 interface HeightResizableProps {

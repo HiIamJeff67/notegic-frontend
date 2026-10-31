@@ -1,5 +1,5 @@
 import type { Notification } from "@shared/api/interfaces/notification.interface";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import type { ReactNode } from "react";
 import {
   Popover,

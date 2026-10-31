@@ -14,9 +14,9 @@ import type {
 } from "@shared/api/websocket";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { compareEntityNames } from "@shared/util/compareEntityNames";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import toast from "@shared/lib/toast/toast";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";

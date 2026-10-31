@@ -2,11 +2,11 @@ import type {
   GetMyAccountRequest,
   GetMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
-import { queryFnGetMyAccount } from "@/api/invokers/userAccount.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
+import { queryFnGetMyAccount } from "@/api/invokers/userAccount.invoker";
 
 export const fetchGetMyAccount = async (
   fetchRequest: GetMyAccountRequest,

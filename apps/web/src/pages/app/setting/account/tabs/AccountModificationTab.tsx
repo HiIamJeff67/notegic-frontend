@@ -3,7 +3,7 @@ import { UserRole } from "@shared/api/interfaces/enums";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { useCallback, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import {

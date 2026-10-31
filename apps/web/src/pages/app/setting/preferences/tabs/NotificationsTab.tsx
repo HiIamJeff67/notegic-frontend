@@ -1,5 +1,8 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { dateToTimeString, timeStringToDate } from "@shared/util/timeString";
+import {
+  dateToTimeString,
+  timeStringToDate,
+} from "@shared/lib/string/timeString";
 import TimePicker from "@/components/commons/TimePicker/TimePicker";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";

@@ -4,11 +4,12 @@ import {
 } from "@assets/backgrounds";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import Closeable from "@/components/commons/Closeable/Closeable";
+import Image from "@/components/commons/Image/Image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -279,21 +280,26 @@ const SelectBackgroundImageDialog = ({
                   </span>
                 </GridBackground>
               ) : image.isDefault ? (
-                <img
-                  src={image.thumbnailURL ?? undefined}
-                  alt={t("workspace.dialogs.backgroundThumbnail")}
-                  className="w-full h-full object-cover"
-                />
+                image.thumbnailURL && (
+                  <Image
+                    src={image.thumbnailURL}
+                    alt={t("workspace.dialogs.backgroundThumbnail")}
+                    className="w-full h-full object-cover"
+                  />
+                )
               ) : (
                 <Closeable
                   onClose={() => void handleThumbnailOnRemove(image.id)}
                   hasParent
+                  className="z-10"
                 >
-                  <img
-                    src={image.thumbnailURL ?? undefined}
-                    alt={t("workspace.dialogs.backgroundThumbnail")}
-                    className="w-full h-full object-cover"
-                  />
+                  {image.thumbnailURL && (
+                    <Image
+                      src={image.thumbnailURL}
+                      alt={t("workspace.dialogs.backgroundThumbnail")}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </Closeable>
               )}
             </div>

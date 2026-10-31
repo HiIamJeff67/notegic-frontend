@@ -1,9 +1,5 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
-  type HardDeleteMySubShelvesByIdsRequest,
-  type HardDeleteMySubShelvesByIdsResponse,
-  MoveMySubShelvesByRootShelfIdsRequest,
-  MoveMySubShelvesByRootShelfIdsResponse,
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelfByRootShelfIdResponse,
   CreateSubShelvesByRootShelfIdsRequest,
@@ -12,14 +8,18 @@ import {
   DeleteMySubShelfByIdResponse,
   DeleteMySubShelvesByIdsRequest,
   DeleteMySubShelvesByIdsResponse,
-  GetMySubShelvesByRootShelfIdResponse,
   GetMySubShelfByIdResponse,
   GetMySubShelvesAndItemsByPrevSubShelfIdResponse,
   GetMySubShelvesByPrevSubShelfIdResponse,
+  GetMySubShelvesByRootShelfIdResponse,
+  type HardDeleteMySubShelvesByIdsRequest,
+  type HardDeleteMySubShelvesByIdsResponse,
   MoveMySubShelfRequest,
   MoveMySubShelfResponse,
   MoveMySubShelvesByRootShelfIdRequest,
   MoveMySubShelvesByRootShelfIdResponse,
+  MoveMySubShelvesByRootShelfIdsRequest,
+  MoveMySubShelvesByRootShelfIdsResponse,
   RestoreMySubShelfByIdRequest,
   RestoreMySubShelfByIdResponse,
   RestoreMySubShelvesByIdsRequest,
@@ -29,17 +29,17 @@ import {
   UpdateMySubShelvesByIdsRequest,
   UpdateMySubShelvesByIdsResponse,
 } from "@shared/api/interfaces/subShelf.interface";
+import type { UUID } from "crypto";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
-  Item,
-  RoutinesToItems,
   BlockPack,
+  Item,
   RootShelf,
+  RoutinesToItems,
   SubShelf,
   UsersToShelves,
 } from "@/api/local/schemas";
-import type { UUID } from "crypto";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class SubShelfLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

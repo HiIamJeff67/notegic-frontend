@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
+import {
+  UserInfo,
+  UserInfoSchema,
+} from "@shared/api/interfaces/types/user.type";
 import { UpdateMyInfoRequestSchema } from "@shared/api/interfaces/userInfo.interface";
 import { FakeUserInfo } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { UserInfo, UserInfoSchema } from "@shared/types/user.type";
+import toast from "@shared/lib/toast/toast";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -13,6 +16,7 @@ import { UseFormReturn, useForm } from "react-hook-form";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
+import Image from "@/components/commons/Image/Image";
 import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
@@ -193,16 +197,6 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
     };
   }, [coverBackgroundURL]);
 
-  const backgroundStyle = useMemo(
-    () => ({
-      minHeight: 180,
-      background: coverBackgroundBlobURL
-        ? `url(${coverBackgroundBlobURL}) center/cover no-repeat`
-        : "var(--foreground)",
-    }),
-    [coverBackgroundBlobURL]
-  );
-
   const avatarFallbackText =
     userManager.userData?.displayName || userManager.userData?.name || "U";
 
@@ -286,7 +280,18 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               : ""
           }`}
         >
-          <div className="relative w-full group" style={backgroundStyle}>
+          <div className="relative min-h-[180px] w-full bg-foreground group">
+            {coverBackgroundBlobURL && (
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <Image
+                  src={coverBackgroundBlobURL}
+                  alt=""
+                  aria-hidden="true"
+                  loading="eager"
+                  className="size-full object-cover"
+                />
+              </div>
+            )}
             <ModifyImageHover
               className="absolute inset-0 bg-black/30"
               onClick={() => {

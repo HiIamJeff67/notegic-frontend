@@ -1,5 +1,7 @@
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import {
+  SessionStorage,
+  SessionStorageKey,
+} from "@shared/lib/storage/sessionStorage";
 
 const getCSRFCookieName = () =>
   window.location.protocol === "https:"
@@ -18,7 +20,7 @@ export const setClientCSRFToken = (token: unknown): boolean => {
   try {
     // Like the authentication cookies, CSRF state must be shared across tabs.
     document.cookie = `${getCSRFCookieName()}=${encodeURIComponent(token)}; Path=/; SameSite=Strict; Max-Age=604800${window.location.protocol === "https:" ? "; Secure" : ""}`;
-    SessionStorageManipulator.ensureItem(SessionStorageKey.csrfToken, token);
+    SessionStorage.ensureItem(SessionStorageKey.csrfToken, token);
     return true;
   } catch {
     return false;
@@ -33,7 +35,7 @@ export const clearClientCSRFToken = (): void => {
   } catch {
     // Storage restrictions must not interrupt logout or its local cleanup.
   } finally {
-    SessionStorageManipulator.removeItem(SessionStorageKey.csrfToken);
+    SessionStorage.removeItem(SessionStorageKey.csrfToken);
   }
 };
 
@@ -56,9 +58,7 @@ export const getClientCSRFToken = (): string | null => {
     }
   }
 
-  const legacyToken = SessionStorageManipulator.getItemByKey(
-    SessionStorageKey.csrfToken
-  );
+  const legacyToken = SessionStorage.getItemByKey(SessionStorageKey.csrfToken);
   if (typeof legacyToken !== "string" || legacyToken.trim() === "") return null;
   setClientCSRFToken(legacyToken);
   return legacyToken;

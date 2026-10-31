@@ -14,6 +14,8 @@ export default {
     "**/*.spec.[jt]s?(x)",
   ],
   testPathIgnorePatterns: [
+    // BlockNote block specifications are production modules, not test suites.
+    "<rootDir>/shared/lib/blockpack/specs/",
     "<rootDir>/test/performance/",
     // Playwright suites run through `playwright test`, not Jest.
     "<rootDir>/apps/web/test/e2e/",

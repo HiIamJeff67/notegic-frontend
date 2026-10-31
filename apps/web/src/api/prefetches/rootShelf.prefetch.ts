@@ -1,10 +1,10 @@
 import { GetMyRootShelfByIdRequest } from "@shared/api/interfaces/rootShelf.interface";
-import { queryFnGetMyRootShelfById } from "@/api/invokers/rootShelf.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { PrefetchQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { QueryClient } from "@tanstack/react-query";
 import type { UUID } from "crypto";
+import { queryFnGetMyRootShelfById } from "@/api/invokers/rootShelf.invoker";
 
 export const prefetchGetMyRootShelfById = (
   initialQueryClient?: QueryClient

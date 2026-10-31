@@ -1,5 +1,5 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start";
-import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
+import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
 import { createRootRouteWithContext, redirect } from "@tanstack/react-router";
 import appCSS from "@/global/styles/globals.css?url";
 import { RootDocument } from "@/pages/RootDocument";

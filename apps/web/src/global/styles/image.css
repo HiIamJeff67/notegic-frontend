@@ -1,0 +1,32 @@
+.image {
+  opacity: 0;
+}
+
+.image[data-loading-status="loaded"] {
+  opacity: 1;
+}
+
+.image[data-loading-status="loaded"][data-reveal="true"] {
+  animation: image-reveal var(--image-reveal-duration, 350ms) ease-out backwards;
+}
+
+@keyframes image-reveal {
+  from {
+    filter: blur(var(--image-reveal-blur, 8px));
+    opacity: 0.5;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+html[data-reduce-motion="true"] .image[data-loading-status="loaded"] {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image[data-loading-status="loaded"][data-reveal="true"] {
+    animation: none;
+  }
+}

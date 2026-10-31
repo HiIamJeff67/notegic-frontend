@@ -1,4 +1,4 @@
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { ToastProvider, toastManager, useToastManager } from "./toast";

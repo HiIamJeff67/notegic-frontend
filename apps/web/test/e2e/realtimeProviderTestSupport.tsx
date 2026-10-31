@@ -2,7 +2,7 @@ import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { RealtimePermission } from "@shared/api/interfaces/enums";
-import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import { getDefaultBlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import type { UUID } from "crypto";
 import { type ContextType, useContext, useState } from "react";

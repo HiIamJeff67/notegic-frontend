@@ -3,9 +3,9 @@ import ClockWidget from "@widgets/basic/ClockWidget/ClockWidget";
 import TodoWidget from "@widgets/basic/TodoWidget/TodoWidget";
 import { PreviewWidget } from "@widgets/widget";
 import { getDefaultClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
+import { getDefaultGuideData } from "../guide/data/guideData";
 import GuideWidget from "../guide/GuideWidget";
 import VideoGuideWidget from "../guide/VideoGuideWidget";
-import { getDefaultGuideData } from "../guide/data/guideData";
 import { getDefaultScratchPadData } from "./ScratchPadWidget/data/scratchPadData";
 import ScratchPadWidget from "./ScratchPadWidget/ScratchPadWidget";
 import { getDefaultScratchPadSetting } from "./ScratchPadWidget/setting/scratchPadSetting";
@@ -14,6 +14,17 @@ import { getDefaultTimerSetting } from "./TimerWidget/setting/timerSetting";
 import TimerWidget from "./TimerWidget/TimerWidget";
 import { getDefaultTodoData } from "./TodoWidget/data/todoData";
 import { getDefaultTodoSetting } from "./TodoWidget/setting/todoSetting";
+
+const guideWidgetSizes = [
+  { widthFrameCount: 2, heightFrameCount: 1 },
+  { widthFrameCount: 3, heightFrameCount: 2 },
+  { widthFrameCount: 4, heightFrameCount: 2 },
+  { widthFrameCount: 5, heightFrameCount: 3 },
+  { widthFrameCount: 6, heightFrameCount: 3 },
+  { widthFrameCount: 6, heightFrameCount: 4 },
+  { widthFrameCount: 8, heightFrameCount: 4 },
+  { widthFrameCount: 8, heightFrameCount: 5 },
+];
 
 export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
   clock: {
@@ -160,17 +171,10 @@ export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
   guide: {
     name: "guide",
     component: GuideWidget,
-    layoutMode: "full-width",
-    size: { widthFrameCount: 3, heightFrameCount: 4 },
-    minSize: { widthFrameCount: 2, heightFrameCount: 2 },
-    maxSize: { widthFrameCount: 4, heightFrameCount: 5 },
-    availableSizes: [
-      { widthFrameCount: 2, heightFrameCount: 2 },
-      { widthFrameCount: 3, heightFrameCount: 3 },
-      { widthFrameCount: 3, heightFrameCount: 4 },
-      { widthFrameCount: 4, heightFrameCount: 4 },
-      { widthFrameCount: 4, heightFrameCount: 5 },
-    ],
+    size: guideWidgetSizes[0],
+    minSize: guideWidgetSizes[0],
+    maxSize: guideWidgetSizes[guideWidgetSizes.length - 1],
+    availableSizes: guideWidgetSizes,
     defaultSetting: {},
     defaultData: { completedSteps: {} },
     isEditable: false,
@@ -178,17 +182,10 @@ export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
   videoGuide: {
     name: "videoGuide",
     component: VideoGuideWidget,
-    layoutMode: "full-width",
-    size: { widthFrameCount: 3, heightFrameCount: 3 },
-    minSize: { widthFrameCount: 2, heightFrameCount: 2 },
-    maxSize: { widthFrameCount: 4, heightFrameCount: 4 },
-    availableSizes: [
-      { widthFrameCount: 2, heightFrameCount: 2 },
-      { widthFrameCount: 3, heightFrameCount: 2 },
-      { widthFrameCount: 3, heightFrameCount: 3 },
-      { widthFrameCount: 4, heightFrameCount: 3 },
-      { widthFrameCount: 4, heightFrameCount: 4 },
-    ],
+    size: guideWidgetSizes[0],
+    minSize: guideWidgetSizes[0],
+    maxSize: guideWidgetSizes[guideWidgetSizes.length - 1],
+    availableSizes: guideWidgetSizes,
     defaultSetting: {},
     defaultData: { videoURL: "" },
     isEditable: false,

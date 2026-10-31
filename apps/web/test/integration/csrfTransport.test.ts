@@ -140,7 +140,7 @@ test("CSRF storage has one owner across the frontend, not per-feature writers", 
       expect({
         file: name,
         writer:
-          /SessionStorageManipulator\.(?:ensureItem|setItem|removeItem)\(\s*SessionStorageKey\.csrfToken/.test(
+          /SessionStorage\.(?:ensureItem|setItem|removeItem)\(\s*SessionStorageKey\.csrfToken/.test(
             source
           ),
       }).toEqual({ file: name, writer: false });

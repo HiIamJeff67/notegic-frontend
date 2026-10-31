@@ -4,16 +4,15 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { ListFilter, SquarePen } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchRoutineTasksQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast";
-import { useDebounceValue } from "@/hooks/useDebounce";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,8 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -39,6 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
+import { useDebounceValue } from "@/hooks/useDebounce";
+import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
+import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 
 const RoutineTaskTable = () => {
   const { t } = useTranslation();

@@ -4,8 +4,7 @@ import type {
 } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import type { StationNode } from "@shared/types/stationNode.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -25,6 +24,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine } from "@/hooks";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 
 interface StationInspectorProps {

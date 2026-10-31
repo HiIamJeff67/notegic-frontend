@@ -1,4 +1,4 @@
-import { Image } from "@unpic/react";
+import Image from "@/components/commons/Image/Image";
 
 interface ModifyImageHoverProps {
   imageSrc?: string;
@@ -24,11 +24,11 @@ const ModifyImageHover = ({
     >
       {imageSrc && (
         <Image
-          src={`select-none ${imageSrc}`}
+          src={imageSrc}
           alt={imageAlt}
           width={240}
           height={240}
-          className="w-full h-full"
+          className="select-none w-full h-full"
         />
       )}
       <span className={hoverTextClassName}>{hoverText}</span>

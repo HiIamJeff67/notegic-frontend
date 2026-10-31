@@ -93,12 +93,12 @@ The source column gives a representative existing consumer, not every call site.
 | `ArrowDownUp` | Routine and record sorting field / direction | [RoutineSearchOrder] |
 | `ArchiveRestoreIcon` | Restore deleted workspace data | [TrashPage] |
 | `BellIcon` | Notifications | [NotificationPopover] |
-| `BlocksIcon` | Block content-unit identity in API reference | [APIReference]; not a Block pack identity substitute |
+| `BlocksIcon` | Block content-unit identity in API reference | [API]; not a Block pack identity substitute |
 | `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
 | `Bookmark` | Pin/unpin Routine presentation | [RoutineTable], [RoutineMenu] |
 | `Braces` | JSON code format | [CodeExamplePanel] |
 | `CalendarClock` | Routine time-rail schedule | [TimeRails] |
-| `CalendarDays`, `CalendarDaysIcon` | Calendar view / date field | [TimeRails], [BlockPackEditorSchema] |
+| `CalendarDays`, `CalendarDaysIcon` | Calendar view / date field | [TimeRails], [CalendarBlockSpec], [BlockSuggestionMenu] |
 | `CalendarIcon` | Date picker / profile date | [DatePicker], [ProfileTab] |
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
 | `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable], [CodeBlock] |
@@ -120,20 +120,20 @@ The source column gives a representative existing consumer, not every call site.
 | `Crown` | Ownership | [RootShelfMenu], [StationMenu] |
 | `DatabaseIcon` | Plan storage/resources | [UpgradeTab] |
 | `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer], [LocalDBRecoveryCover] |
-| `EllipsisVerticalIcon` | Overflow / more actions | [Extendable]; graph nodes use their context menu instead |
+| `EllipsisVerticalIcon` | Overflow / more actions | [BlockSideMenu], [Extendable]; graph nodes use their context menu instead |
 | `EraserIcon` | Erase PDF annotation | [MaterialPDFViewer] |
-| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item | [MaterialMenu], [PrivacyPolicyPage] |
+| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item | [MaterialMenu], [PrivacyPolicyPage], [DocumentPrivacyPolicy] |
 | `Eye` | View execution details | [RoutineRecordTable] |
-| `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [APIReference] |
+| `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [API] |
 | `FilePlus` | Import material content | [MaterialViewerFrame] |
 | `FileTextIcon` | Material base glyph; consume as `MaterialIcon` | [WorkspaceEntityIcons] |
 | `FolderIcon` | Sub shelf base glyph; use `SubShelfIcon` | [WorkspaceEntityIcons] |
 | `FolderPlus` | Create sub shelf | [RootShelfMenu], [SubShelfMenu] |
-| `Form` | Block pack template/form editing | [TemplateEditor] |
+| `Form` | Block pack template/form editing | [PatternToggleButton] |
 | `GaugeIcon` | Plan usage/limits | [UpgradeTab] |
-| `GitBranchIcon` | Versions / API-reference section | [Versions], [APIReference] |
-| `Globe2`, `Globe2Icon` | Web / HTTP / API context | [CodeExamplePanel], [APIReference] |
-| `GripVertical`, `GripVerticalIcon` | Drag / reorder / resize handle | [Resizable], [TodoWidget], [PrivacyTab] |
+| `GitBranchIcon` | Versions / API-reference section | [Versions], [API] |
+| `Globe2`, `Globe2Icon` | Web / HTTP / API context | [CodeExamplePanel], [API] |
+| `GripVertical`, `GripVerticalIcon` | Drag / reorder / resize handle | [BlockSideMenu], [Resizable], [TodoWidget], [PrivacyTab] |
 | `HardDriveIcon` | Local storage preferences | [PreferencesContent] |
 | `HeartIcon` | Support / upgrade page | [UpgradeTab] |
 | `GitFork` | Routine task Start kind; consume as `RoutineTaskStartIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
@@ -170,7 +170,7 @@ The source column gives a representative existing consumer, not every call site.
 | `SaveIcon` | Save changes / submit graph layout | [MaterialPDFViewer], [GraphToolbar] |
 | `SearchIcon` | Search / command / filter | [SupportedIconTable], [Command] |
 | `SettingsIcon` | Settings navigation | [AppSidebar] |
-| `ShieldCheckIcon` | Security / authenticated API context / local rebuild eligibility check | [UpgradeTab], [APIReference], [LocalDBRecoveryCover] |
+| `ShieldCheckIcon` | Security / authenticated API context / local rebuild eligibility check | [UpgradeTab], [API], [LocalDBRecoveryCover] |
 | `ShieldIcon` | Privacy documentation | [PrivacyPolicy] |
 | `SlidersHorizontalIcon` | Preferences navigation | [AppSidebar] |
 | `SmilePlusIcon` | Choose a user emoji | [SupportedIconTable] |
@@ -290,7 +290,7 @@ assets or Docker services were removed. No commit or push was performed.
 [NotificationDialog]: ../../apps/web/src/components/dialogs/NotificationDialog.tsx
 [Toaster]: ../../apps/web/src/components/ui/toaster.tsx
 [Toast]: ../../apps/web/src/components/ui/toast.tsx
-[APIReference]: ../../apps/web/src/pages/document/APIReference.tsx
+[API]: ../../apps/web/src/pages/document/api/API.tsx
 [ArticleNavigation]: ../../apps/web/src/components/commons/Article/ArticleNavigation.tsx
 [HomePage]: ../../apps/web/src/pages/home/HomePage.tsx
 [RoutineTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTable/RoutineTable.tsx
@@ -298,7 +298,8 @@ assets or Docker services were removed. No commit or push was performed.
 [CodeExamplePanel]: ../../apps/web/src/components/panels/CodeExamplePanel/CodeExamplePanel.tsx
 [CodeBlock]: ../../apps/web/src/components/ui/code-block.tsx
 [TimeRails]: ../../apps/web/src/components/core/RoutineOverviewer/TimeRails/TimeRails.tsx
-[BlockPackEditorSchema]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackEditorSchema.tsx
+[CalendarBlockSpec]: ../../shared/lib/blockpack/specs/calendar.spec.tsx
+[BlockSuggestionMenu]: ../../apps/web/src/components/core/BlockPackEditor/SuggestionMenu.tsx
 [DatePicker]: ../../apps/web/src/components/commons/DatePicker/DatePicker.tsx
 [ProfileTab]: ../../apps/web/src/pages/app/setting/account/tabs/ProfileTab.tsx
 [RoutineCharts]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineCharts/RoutineCharts.tsx
@@ -327,17 +328,19 @@ assets or Docker services were removed. No commit or push was performed.
 [Extendable]: ../../apps/web/src/components/commons/Extendable/Extendable.tsx
 [MaterialMenu]: ../../apps/web/src/components/menus/MaterialMenu/MaterialMenuItem.tsx
 [PrivacyPolicyPage]: ../../apps/web/src/pages/privacy-policy/PrivacyPolicyPage.tsx
+[DocumentPrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicyContent.tsx
 [MaterialViewerFrame]: ../../apps/web/src/components/core/MaterialViewer/MaterialViewerFrame.tsx
 [SubShelfMenu]: ../../apps/web/src/components/menus/SubShelfMenu/SubShelfMenuItem.tsx
 [TemplateEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor.tsx
-[Versions]: ../../apps/web/src/pages/document/Versions.tsx
+[Versions]: ../../apps/web/src/pages/document/versions/Versions.tsx
 [Resizable]: ../../apps/web/src/components/ui/resizable.tsx
 [TodoWidget]: ../../apps/web/src/components/widgets/basic/TodoWidget/TodoWidget.tsx
 [PrivacyTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/PrivacyTab.tsx
 [PreferencesContent]: ../../apps/web/src/pages/app/setting/preferences/PreferencesPageContent.tsx
 [RoutineTaskRecordTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskRecordTable/RoutineTaskRecordTable.tsx
 [BlockPackEditorContent]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackEditorContent.tsx
-[APIKey]: ../../apps/web/src/pages/document/APIKey.tsx
+[BlockSideMenu]: ../../apps/web/src/components/core/BlockPackEditor/BlockSideMenu.tsx
+[APIKey]: ../../apps/web/src/pages/document/api/APIKey.tsx
 [AppSidebar]: ../../apps/web/src/components/sidebar/AppSidebar/AppSidebar.tsx
 [Spinner]: ../../apps/web/src/components/ui/spinner.tsx
 [GraphCanvas]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas.tsx
@@ -349,7 +352,7 @@ assets or Docker services were removed. No commit or push was performed.
 [TemplatePatternEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/TemplatePatternEditor.tsx
 [BrowserPermissionsTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/BrowserPermissionsTab.tsx
 [Command]: ../../apps/web/src/components/ui/command.tsx
-[PrivacyPolicy]: ../../apps/web/src/pages/document/PrivacyPolicy.tsx
+[PrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicy.tsx
 [TrashPage]: ../../apps/web/src/pages/app/trash/TrashPage.tsx
 [ParticipantsDropdown]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackParticipantsDropdown.tsx
 [ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfSharingDialog/ShelfSharingOverviewDialog.tsx
@@ -370,7 +373,7 @@ assets or Docker services were removed. No commit or push was performed.
 [LoadingIndicator]: ../../apps/web/src/components/covers/LoadingCover/LoadingIndicator.tsx
 [Ring]: ../../apps/web/src/components/ui/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx
-[ChartFrame]: ../../shared/charts/components/ChartFrame.tsx
+[ChartFrame]: ../../shared/lib/charts/components/ChartFrame.tsx
 
 [RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx
 
@@ -378,3 +381,5 @@ assets or Docker services were removed. No commit or push was performed.
 [RoutineTaskTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable.tsx
 
 [LocalDBRecoveryCover]: ../../apps/web/src/components/covers/LocalDBRecoveryCover/LocalDBRecoveryCover.tsx
+
+[PatternToggleButton]: ../../apps/web/src/components/core/BlockPackEditor/PatternToggleButton.tsx

@@ -1,6 +1,6 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast";
+import { useTranslation } from "@shared/i18n/useTranslation";
+import toast from "@shared/lib/toast/toast";
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,8 +1,10 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { cn } from "@shared/util/utils";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import { cn } from "@shared/lib/className/cn";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 import {
@@ -112,7 +114,7 @@ const PreferencesPage = ({
               : t("settingsPage.openInSheet")
           }
           onClick={() => {
-            LocalStorageManipulator.setItem(
+            LocalStorage.setItem(
               LocalStorageKey.settingsDisplayMode,
               displayMode === "sheet" ? "page" : "sheet"
             );

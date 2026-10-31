@@ -1,4 +1,4 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 
 const methodTone: Record<string, string> = {
   GET: "bg-http-get/15 text-http-get-foreground",

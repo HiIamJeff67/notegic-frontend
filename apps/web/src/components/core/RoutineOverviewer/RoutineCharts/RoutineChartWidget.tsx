@@ -1,7 +1,6 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { IntChart } from "@shared/charts/components";
-import { hasPositiveChartValue } from "@shared/charts/util";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import { IntChart } from "@shared/lib/charts";
 import {
   useVisualizeMyRoutinePeriodCount,
   useVisualizeMyRoutineScheduledEndAtCount,
@@ -81,7 +80,7 @@ const RoutineChartWidget = ({
           : scheduledEndQuery;
   const points = query.data?.data.data ?? [];
   const displayPoints =
-    query.isError || !hasPositiveChartValue(points) ? [] : points;
+    query.isError || !points.some(point => point.value > 0) ? [] : points;
   const data = { data: displayPoints };
   const series = {
     id: "routineCount",

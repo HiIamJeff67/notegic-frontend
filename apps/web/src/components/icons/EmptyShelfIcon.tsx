@@ -1,4 +1,4 @@
-import { IconProps } from "@shared/types/iconProps.type";
+import { IconProps } from "@/components/icons/iconProps.type";
 
 const EmptyShelfIcon = ({ size = 24, className = "", ...props }: IconProps) => {
   return (

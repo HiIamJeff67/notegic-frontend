@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import type { RoutineNode } from "@shared/types/routineNode.type";
 import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 
 let mockEdges: Array<{
   node: { id: string; name: string };

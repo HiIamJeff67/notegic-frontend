@@ -2,11 +2,12 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import SeparatableTable from "@/components/commons/SeparatableTable/SeparatableTable";
+import type { PatternBlock } from "@/components/core/BlockPackEditor/PatternToggleButton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -28,7 +29,6 @@ import { ShelfLocationPicker } from "../PayloadSearchPickers";
 import TemplatePatternEditor, {
   type RoutineTaskTemplatePattern,
 } from "../TemplatePatternEditor";
-import type { PatternBlock } from "./CreateBlockPackPayloadEditor";
 
 interface CreateBlockPackPayloadEditorSidebarProps {
   purpose: string;

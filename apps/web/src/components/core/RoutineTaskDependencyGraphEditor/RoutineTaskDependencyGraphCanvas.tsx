@@ -7,8 +7,8 @@ import {
   MiniMap,
   type OnConnect,
   type OnEdgesChange,
-  type OnNodesChange,
   type OnInit,
+  type OnNodesChange,
   Panel,
   ReactFlow,
   useStore,
@@ -16,8 +16,8 @@ import {
 import { Map as MapIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScreen } from "@/hooks";
-import RoutineTaskGraphNode from "./RoutineTaskGraphNode";
 import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
+import RoutineTaskGraphNode from "./RoutineTaskGraphNode";
 
 interface RoutineTaskDependencyGraphCanvasProps {
   colorMode: "dark" | "light";

@@ -1,15 +1,16 @@
 jest.mock("@/api/local/policy", () => ({
   isLocalPreferenceEnabled: jest.fn(() => true),
 }));
-jest.mock("@shared/lib/indexedDBManipulator", () => ({
-  IndexedDBManipulator: {
+jest.mock("@shared/lib/storage/indexedDB", () => ({
+  ...jest.requireActual("@shared/lib/storage/indexedDB"),
+  IndexedDB: {
     getItemByKey: jest.fn(),
     setItem: jest.fn(),
     removeItem: jest.fn(),
   },
 }));
 
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
+import { IndexedDB } from "@shared/lib/storage/indexedDB";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import {
   cleanupMaterialAttachmentCache,
@@ -18,9 +19,9 @@ import {
   setCachedMaterialAttachment,
 } from "@/providers/MaterialAttachmentCacheProvider";
 
-const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);
-const setItem = jest.mocked(IndexedDBManipulator.setItem);
-const removeItem = jest.mocked(IndexedDBManipulator.removeItem);
+const getItemByKey = jest.mocked(IndexedDB.getItemByKey);
+const setItem = jest.mocked(IndexedDB.setItem);
+const removeItem = jest.mocked(IndexedDB.removeItem);
 const isEnabled = jest.mocked(isLocalPreferenceEnabled);
 
 describe("material attachment cache", () => {

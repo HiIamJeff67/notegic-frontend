@@ -1,6 +1,6 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import type { ToastPosition } from "@shared/lib/toast";
-import { cn } from "@shared/util/utils";
+import type { ToastPosition } from "@shared/lib/toast/toast";
+import { cn } from "@shared/lib/className/cn";
 import { CircleCheck, Info, OctagonX, TriangleAlert } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import {

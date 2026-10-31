@@ -4,9 +4,8 @@ export {
   type ArticleHeaderLink,
 } from "./ArticleContext";
 export { type ArticleField, ArticleFieldList } from "./ArticleFieldList";
-export { ArticleInlineText } from "./ArticleInlineText";
 export { ArticleImage } from "./ArticleImage";
-export { ArticleVideo } from "./ArticleVideo";
+export { ArticleInlineText } from "./ArticleInlineText";
 export {
   Article,
   ArticleContent,
@@ -30,3 +29,4 @@ export {
   ArticleSubParagraphSeparator,
 } from "./ArticleSections";
 export { default as ArticleSettingItem } from "./ArticleSettingItem";
+export { ArticleVideo } from "./ArticleVideo";

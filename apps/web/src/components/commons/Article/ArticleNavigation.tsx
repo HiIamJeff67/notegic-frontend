@@ -1,6 +1,6 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -24,8 +24,8 @@ import {
   SidebarMenuSubItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import "@/global/styles/article.css";
 import ArticleCommand from "./ArticleCommand";
 import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";

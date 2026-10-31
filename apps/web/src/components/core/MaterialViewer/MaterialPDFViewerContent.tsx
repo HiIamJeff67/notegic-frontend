@@ -1,7 +1,7 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import {
   ChevronLeftIcon,
@@ -13,8 +13,8 @@ import {
   MousePointer,
   PencilIcon,
   PlusIcon,
-  SaveIcon,
   RotateCcwIcon,
+  SaveIcon,
   TypeIcon,
   XIcon,
 } from "lucide-react";
@@ -31,22 +31,22 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenuItem,
   DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";

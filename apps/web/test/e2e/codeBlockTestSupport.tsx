@@ -1,17 +1,18 @@
 import type { PartialBlock } from "@blocknote/core";
 import { blocksToYDoc } from "@blocknote/core/yjs";
+import { SideMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/core/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import {
-  getNotegicBlockNoteXmlFragment,
-  NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME,
-} from "@shared/blockpack/contract";
-import { NotegicBlockPackEditor } from "@shared/blockpack/editor";
 import { DefaultStandardTheme } from "@shared/constants";
+import {
+  NotegicBlockPackEditor,
+  notegicBlockPackSchema,
+} from "@shared/lib/blockpack";
+import { NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME } from "@shared/lib/blockpack/blockPackYjsCoordinator";
 import { createRoot, type Root } from "react-dom/client";
 import * as Y from "yjs";
-import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
+import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import CreateBlockPackPayloadTemplateEditor from "@/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor";
 import { ThemeContext } from "@/providers/ThemeProvider";
 import "@/global/styles/block-editor.css";
@@ -75,7 +76,7 @@ export function mountCodeEditors(
   editors.blockpack = NotegicBlockPackEditor.create({
     schema: notegicBlockPackSchema,
     collaboration: {
-      fragment: getNotegicBlockNoteXmlFragment(document) as Y.XmlFragment,
+      fragment: document.getXmlFragment(NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME),
       user: { name: "Fixture", color: "#4477aa" },
     },
   });
@@ -102,8 +103,11 @@ export function setCodeTheme(isDark: boolean) {
         <BlockNoteView
           editor={editors.blockpack}
           theme={isDark ? "dark" : "light"}
-          className="notegic-block-editor"
-        />
+          sideMenu={false}
+          className="notegic-block-editor [&_.bn-editor]:!pl-16"
+        >
+          <SideMenuController sideMenu={() => <BlockSideMenu />} />
+        </BlockNoteView>
       </section>
       <section data-editor="payload">
         <CreateBlockPackPayloadTemplateEditor
@@ -127,5 +131,6 @@ export {
   codeLanguages,
   getCodeHighlighter,
   loadHighlighter,
-} from "@shared/lib/codeHighlighter";
+} from "@shared/lib/code/codeHighlighter";
+export { getSuggestionItems } from "@/components/core/BlockPackEditor/SuggestionMenu";
 export { NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME, Y };

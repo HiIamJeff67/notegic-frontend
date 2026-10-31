@@ -1,10 +1,12 @@
 import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import { cn } from "@shared/util/utils";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import toast from "@shared/lib/toast/toast";
+import { cn } from "@shared/lib/className/cn";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -197,7 +199,7 @@ const AccountSettingsPage = ({
               : t("settingsPage.openInSheet")
           }
           onClick={() => {
-            LocalStorageManipulator.setItem(
+            LocalStorage.setItem(
               LocalStorageKey.settingsDisplayMode,
               displayMode === "sheet" ? "page" : "sheet"
             );

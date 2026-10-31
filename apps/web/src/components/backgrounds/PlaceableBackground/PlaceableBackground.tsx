@@ -2,10 +2,10 @@ import {
   DefaultHeightTotalFrameCount,
   DefaultWidthTotalFrameCount,
 } from "@shared/constants/widgetLayout.constant";
-import { DNDType } from "@shared/enums";
 import { Cord, FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { DropTargetMonitor } from "react-dnd";
+import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import {
   getPositionValue,
   getSizeValue,

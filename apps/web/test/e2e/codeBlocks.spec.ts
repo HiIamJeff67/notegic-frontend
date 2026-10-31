@@ -31,6 +31,49 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const surface of ["blockpack", "payload"]) {
+  test(`${surface} keeps drag and block actions separate at narrow widths`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 760 });
+    const section = page.locator(`[data-editor="${surface}"]`);
+    const block = section.locator('[data-id="code"]').first();
+    await block.hover();
+
+    const sideMenu = page.locator("#code-editor-test-root .bn-side-menu");
+    const buttons = sideMenu.locator("button.bn-button");
+    await expect(buttons).toHaveCount(surface === "payload" ? 3 : 2);
+    const dragHandle = buttons.first();
+    const menuButton = buttons.last();
+    const dragBounds = await dragHandle.boundingBox();
+    const menuBounds = await menuButton.boundingBox();
+    const blockBounds = await block.boundingBox();
+
+    expect(dragBounds).not.toBeNull();
+    expect(menuBounds).not.toBeNull();
+    expect(blockBounds).not.toBeNull();
+    expect(dragBounds!.width).toBe(24);
+    expect(dragBounds!.height).toBe(24);
+    expect(menuBounds!.width).toBe(24);
+    expect(menuBounds!.height).toBe(24);
+    expect(dragBounds!.x).toBeLessThan(menuBounds!.x);
+    expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(
+      blockBounds!.x
+    );
+    expect(dragBounds!.x).toBeGreaterThanOrEqual(0);
+    expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
+
+    await menuButton.click();
+    const actionsMenu = page.locator(".bn-drag-handle-menu");
+    await expect(actionsMenu).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(actionsMenu).toBeHidden();
+
+    await dragHandle.dragTo(
+      section.locator('.bn-block-outer[data-id="alias"]')
+    );
+    await expect(actionsMenu).toBeHidden();
+  });
+
   test(`${surface} switches language, highlights code and preserves legacy content on reload`, async ({
     page,
   }, testInfo) => {
@@ -251,4 +294,74 @@ test("collaborative language changes and code survive Yjs replication", async ({
   expect(
     result.restored.find((block: any) => block.id === "code").props.language
   ).toBe("go");
+});
+
+test("shared calendar spec renders DayPicker and persists month changes", async ({
+  page,
+}) => {
+  await page.evaluate(async () => {
+    const path = "/test/e2e/codeBlockTestSupport.tsx";
+    const { editors } = await import(/* @vite-ignore */ path);
+    for (const editor of Object.values(editors) as any[]) {
+      editor.insertBlocks(
+        [
+          {
+            id: "calendar-test",
+            type: "calendar",
+            props: { anchorDate: "2026-01-01", timezone: "UTC" },
+          },
+        ],
+        editor.document[0],
+        "before"
+      );
+    }
+  });
+  for (const surface of ["blockpack", "payload"]) {
+    const calendar = page
+      .locator(`[data-editor="${surface}"] [data-id="calendar-test"]`)
+      .first();
+    await expect(
+      calendar.getByText("January 2026", { exact: true })
+    ).toBeVisible();
+    await calendar.getByRole("button", { name: /next month/i }).click();
+    await expect(
+      calendar.getByText("February 2026", { exact: true })
+    ).toBeVisible();
+    const props = await page.evaluate(async surface => {
+      const path = "/test/e2e/codeBlockTestSupport.tsx";
+      const { editors } = await import(/* @vite-ignore */ path);
+      return editors[surface].getBlock("calendar-test")?.props;
+    }, surface);
+    expect(props).toMatchObject({
+      anchorDate: "2026-02-01",
+      timezone: "UTC",
+      view: "month",
+    });
+  }
+});
+
+test("shared slash menu retains calendar, math, diagram and codeblock entries", async ({
+  page,
+}) => {
+  const entries = await page.evaluate(async () => {
+    const fixturePath = "/test/e2e/codeBlockTestSupport.tsx";
+    const { editors, getSuggestionItems } = await import(
+      /* @vite-ignore */ fixturePath
+    );
+    const getItems = getSuggestionItems(editors.payload);
+    const all = await getItems("");
+    return {
+      titles: all.map((item: any) => item.title),
+      code: (await getItems("codeblock")).map((item: any) => item.title),
+    };
+  });
+  expect(entries.titles).toEqual(
+    expect.arrayContaining([
+      "Calendar",
+      "Block Equation",
+      "Inline Equation",
+      "Diagram",
+    ])
+  );
+  expect(entries.code.length).toBeGreaterThan(0);
 });

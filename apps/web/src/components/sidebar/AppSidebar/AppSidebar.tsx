@@ -1,9 +1,11 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import toast from "@shared/lib/toast";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import toast from "@shared/lib/toast/toast";
 import {
   BookOpenIcon,
   ChevronDown,
@@ -106,9 +108,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
 
   const openSettings = (page: SettingsPage, section?: string) => {
     if (
-      LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.settingsDisplayMode
-      ) === "sheet"
+      LocalStorage.getItemByKey(LocalStorageKey.settingsDisplayMode) === "sheet"
     ) {
       settingsDisplay.openSheet(page, section);
       return;

@@ -1,11 +1,11 @@
 import { useLocation } from "@tanstack/react-router";
 import {
   createContext,
+  type ReactNode,
+  type RefObject,
   useContext,
   useEffect,
   useState,
-  type ReactNode,
-  type RefObject,
 } from "react";
 
 export type ArticleDisplayMode = "scroll" | "pagination";

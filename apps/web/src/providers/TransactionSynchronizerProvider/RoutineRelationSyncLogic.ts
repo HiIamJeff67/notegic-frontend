@@ -8,10 +8,10 @@ import {
   type LinkRoutineTagsByIdsRequest,
   LinkRoutineTagsByIdsRequestSchema,
 } from "@shared/api/interfaces/routine.interface";
+import type { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import type { InferSelectModel } from "drizzle-orm";
 import type {
   MergedTransaction,
   MergedTransactionsResult,

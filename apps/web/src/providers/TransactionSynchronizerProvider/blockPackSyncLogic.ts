@@ -16,10 +16,10 @@ import {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsRequestSchema,
 } from "@shared/api/interfaces/blockPack.interface";
+import { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { InferSelectModel } from "drizzle-orm";
 import {
   dropEntityPendingOperations,
   EntityState,

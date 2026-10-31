@@ -29,6 +29,8 @@ typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 | `npm run codegen:check` | Regenerate GraphQL artifacts and fail on tracked drift |
 | `npm run codegen:watch` | Watch and regenerate GraphQL artifacts |
 | `npm run generate:website-guide` | Compile the English Website guide Markdown into TSX and refresh its navigation; see [Website guide](website-guide.md) |
+| `npm run generate:document` | Regenerate Website, Versions, Privacy and API content from page-owned sources; see [Document source workflow](website-guide.md) |
+| `npm run generate:public-api` | Generate API documentation from six local `@`-prefixed inputs in `pages/document/api/sources/`; see [Snapshot workflow](../designs/routes/frontend-contracts-and-codegen.md#public-api-documentation-snapshot) |
 | `npm run devlog` | Generate today's change snapshot and refresh the README index |
 | `npm run install-hooks` | Enable the repository pre-commit checks |
 | `npm run generate-local-migrations` | Generate the incremental Drizzle migration and refresh the current-schema bootstrap |

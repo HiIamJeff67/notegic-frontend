@@ -1,5 +1,7 @@
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import {
+  SessionStorage,
+  SessionStorageKey,
+} from "@shared/lib/storage/sessionStorage";
 import {
   clearClientCSRFToken,
   getClientCSRFToken,
@@ -78,10 +80,7 @@ test("reads only the current-session CSRF token", () => {
     "notegic_user-a_CSRFToken",
     JSON.stringify("stale-user-token")
   );
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "current-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "current-token");
 
   expect(getClientRequestHeaders()).toEqual({
     userAgent: "test-agent",
@@ -90,10 +89,7 @@ test("reads only the current-session CSRF token", () => {
 });
 
 test("returns the current-session CSRF token for browser API clients", () => {
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "current-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "current-token");
 
   expect(getClientCSRFToken()).toBe("current-token");
 });
@@ -112,10 +108,7 @@ test("does not guess a token from arbitrary scoped storage", () => {
 });
 
 test("mutation headers always include the CSRF field", () => {
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "current-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "current-token");
 
   expect(getClientMutationHeaders("explicit-agent")).toEqual({
     userAgent: "explicit-agent",
@@ -141,20 +134,14 @@ test("a new tab reads the shared token without sessionStorage", () => {
 
 test("shared renewal wins over another tab's stale sessionStorage", () => {
   setClientCSRFToken("new-token");
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "old-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "old-token");
   expect(getClientRequestHeaders().csrfToken).toBe("new-token");
 });
 
 test("logout prevents another tab from restoring its legacy session token", () => {
   setClientCSRFToken("previous-session-token");
   clearClientCSRFToken();
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "stale-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "stale-token");
   expect(getClientCSRFToken()).toBeNull();
   expect(getClientRequestHeaders()).not.toHaveProperty("csrfToken");
   setClientCSRFToken("new-login-token");
@@ -175,10 +162,7 @@ test.each([
 });
 
 test("malformed shared cookie never falls back to an older tab token", () => {
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "old-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "old-token");
   cookies.set("notegic_csrf", "%not-valid");
   expect(getClientCSRFToken()).toBeNull();
 });
@@ -223,10 +207,7 @@ test("SSR never reads or writes a browser session", () => {
 });
 
 test("blocked cookies fail closed and cannot interrupt logout cleanup", () => {
-  SessionStorageManipulator.ensureItem(
-    SessionStorageKey.csrfToken,
-    "legacy-token"
-  );
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken, "legacy-token");
   Object.defineProperty(globalThis, "document", {
     configurable: true,
     value: {
@@ -241,7 +222,5 @@ test("blocked cookies fail closed and cannot interrupt logout cleanup", () => {
   expect(getClientCSRFToken()).toBeNull();
   expect(setClientCSRFToken("fixture-token")).toBe(false);
   expect(() => clearClientCSRFToken()).not.toThrow();
-  expect(
-    SessionStorageManipulator.getItemByKey(SessionStorageKey.csrfToken)
-  ).toBeNull();
+  expect(SessionStorage.getItemByKey(SessionStorageKey.csrfToken)).toBeNull();
 });

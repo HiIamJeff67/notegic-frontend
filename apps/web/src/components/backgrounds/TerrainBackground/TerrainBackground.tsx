@@ -1,7 +1,9 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { SessionStorageManipulator } from "@shared/lib/sessionStorageManipulator";
-import { SessionStorageKey } from "@shared/types/sessionStorage.type";
+import {
+  SessionStorage,
+  SessionStorageKey,
+} from "@shared/lib/storage/sessionStorage";
 import {
   type ReactNode,
   useEffect,
@@ -99,16 +101,14 @@ export const TerrainBackground = ({
     let timeoutHandle: number | undefined;
 
     const scheduleTerrain = () => {
-      let seed = SessionStorageManipulator.getItemByKey(
-        SessionStorageKey.terrainSeed
-      );
+      let seed = SessionStorage.getItemByKey(SessionStorageKey.terrainSeed);
 
       if (
         typeof seed !== "number" ||
         !(terrainSeeds as readonly number[]).includes(seed)
       ) {
         seed = terrainSeeds[Math.floor(Math.random() * terrainSeeds.length)];
-        SessionStorageManipulator.setItem(SessionStorageKey.terrainSeed, seed);
+        SessionStorage.setItem(SessionStorageKey.terrainSeed, seed);
       }
 
       const settings = {

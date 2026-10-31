@@ -9,12 +9,13 @@ import {
   convertBlocksToMarkdown,
   convertBlocksToPDF,
   convertBlocksToPlainText,
-} from "@shared/util/convertBlocksToFiles";
+  FileContentType,
+} from "@shared/lib/blockpack/conversions";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
-import { NotegicSlashMenuController } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
 import BlockPackParticipantsDropdown from "@/components/core/BlockPackEditor/BlockPackParticipantsDropdown";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
+import { SuggestionMenu } from "@/components/core/BlockPackEditor/SuggestionMenu";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -36,13 +37,12 @@ import { useBlockEditor } from "@/hooks/useBlockEditor";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
-import { ContentType } from "@shared/enums/contentType.enum";
-import toast from "@shared/lib/toast";
+import { cn } from "@shared/lib/className/cn";
+import toast from "@shared/lib/toast/toast";
 import {
   BlockPackMeta,
   BlockPackMetaAction,
 } from "@shared/reducers/blockPackMeta.reducer";
-import { cn } from "@shared/util/utils";
 import { ChevronDownIcon, Download, Import } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -128,16 +128,16 @@ const BlockPackEditorContent = ({
         const file = files[0];
         let blocks: PartialBlock<any, any, any>[] | undefined = undefined;
         switch (file.type) {
-          case ContentType.Markdown:
-          case ContentType.PlainText: // use the same way as markdown to parse the text
+          case FileContentType.Markdown:
+          case FileContentType.PlainText: // use the same way as markdown to parse the text
             const markdownText = await file.text();
             blocks = await editor.tryParseMarkdownToBlocks(markdownText);
             break;
-          case ContentType.HTML:
+          case FileContentType.HTML:
             const htmlText = await file.text();
             blocks = await editor.tryParseHTMLToBlocks(htmlText);
             break;
-          case ContentType.JSON:
+          case FileContentType.JSON:
             const jsonText = await file.text();
             blocks = JSON.parse(jsonText) as PartialBlock<any, any, any>[];
             break;
@@ -159,34 +159,34 @@ const BlockPackEditorContent = ({
     });
   };
 
-  const handleExportFiles = async (contentType: ContentType) => {
+  const handleExportFiles = async (contentType: FileContentType) => {
     startExportingTransition(async () => {
       try {
         let blob: Blob | undefined = undefined;
         const a = document.createElement("a");
 
         switch (contentType) {
-          case ContentType.Markdown:
+          case FileContentType.Markdown:
             blob = await convertBlocksToMarkdown(editor);
             a.download = `${blockPackMeta.name}.md`;
             break;
-          case ContentType.HTML:
+          case FileContentType.HTML:
             blob = await convertBlocksToHTML(editor);
             a.download = `${blockPackMeta.name}.html`;
             break;
-          case ContentType.PlainText:
+          case FileContentType.PlainText:
             blob = await convertBlocksToPlainText(editor);
             a.download = `${blockPackMeta.name}.txt`;
             break;
-          case ContentType.JSON:
+          case FileContentType.JSON:
             blob = await convertBlocksToJSON(editor);
             a.download = `${blockPackMeta.name}.json`;
             break;
-          case ContentType.PDF:
+          case FileContentType.PDF:
             blob = await convertBlocksToPDF(editor);
             a.download = `${blockPackMeta.name}.pdf`;
             break;
-          case ContentType.DOCX:
+          case FileContentType.DOCX:
             blob = await convertBlocksToDOCX(editor);
             a.download = `${blockPackMeta.name}.docx`;
             break;
@@ -390,7 +390,7 @@ const BlockPackEditorContent = ({
                 <DropdownMenuItem
                   onClick={async () => {
                     const blob = await convertBlocksToMarkdown(editor);
-                    await handleExportFiles(ContentType.Markdown);
+                    await handleExportFiles(FileContentType.Markdown);
                   }}
                 >
                   <span className="font-semibold">
@@ -400,7 +400,7 @@ const BlockPackEditorContent = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async () =>
-                    await handleExportFiles(ContentType.HTML)
+                    await handleExportFiles(FileContentType.HTML)
                   }
                 >
                   <span className="font-semibold">
@@ -410,7 +410,7 @@ const BlockPackEditorContent = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async () =>
-                    await handleExportFiles(ContentType.PlainText)
+                    await handleExportFiles(FileContentType.PlainText)
                   }
                 >
                   <span className="font-semibold">
@@ -420,7 +420,7 @@ const BlockPackEditorContent = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async () =>
-                    await handleExportFiles(ContentType.JSON)
+                    await handleExportFiles(FileContentType.JSON)
                   }
                 >
                   <span className="font-semibold">
@@ -429,7 +429,9 @@ const BlockPackEditorContent = ({
                   <span className="text-muted-foreground">(.json)</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={async () => await handleExportFiles(ContentType.PDF)}
+                  onClick={async () =>
+                    await handleExportFiles(FileContentType.PDF)
+                  }
                 >
                   <span className="font-semibold">
                     {t("workspace.viewer.pdf")}
@@ -438,7 +440,7 @@ const BlockPackEditorContent = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async () =>
-                    await handleExportFiles(ContentType.DOCX)
+                    await handleExportFiles(FileContentType.DOCX)
                   }
                 >
                   <span className="font-semibold">
@@ -496,12 +498,12 @@ const BlockPackEditorContent = ({
               spellCheck={preferences.spellcheck}
               className={cn(
                 "notegic-block-editor caret-muted-foreground z-10 [&_.bn-default-styles]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-editor]:!px-4 [&_.bn-editor]:!pb-4 [&_.bn-editor]:!text-[length:var(--notegic-editor-font-size)] [&_.bn-block-content]:py-[3px]",
-                shouldShowSideMenu && "[&_.bn-editor]:!pl-10",
+                shouldShowSideMenu && "[&_.bn-editor]:!pl-16",
                 !preferences.lineWrap &&
                   "[&_.bn-editor]:overflow-x-auto [&_.bn-inline-content]:whitespace-nowrap"
               )}
             >
-              <NotegicSlashMenuController editor={editor} />
+              <SuggestionMenu editor={editor} />
               {shouldShowSideMenu && (
                 <SideMenuController
                   floatingUIOptions={{

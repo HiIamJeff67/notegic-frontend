@@ -1,10 +1,10 @@
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
-import { cn } from "@shared/util/utils";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import { cn } from "@shared/lib/className/cn";
 import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -18,6 +18,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useStationRoutine, useUser } from "@/hooks";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import RoutineTrain from "./RoutineTrain";
 import TimeRailsStationBar from "./TimeRailsStationBar";
 
@@ -337,7 +339,7 @@ const TimeRails = () => {
       }
 
       if (!hasLoadedStationPositionsRef.current) {
-        const storedStationPositions = LocalStorageManipulator.getItemByKey(
+        const storedStationPositions = LocalStorage.getItemByKey(
           LocalStorageKey.timeRailsStationIndexes,
           publicId
         );
@@ -970,7 +972,7 @@ const TimeRails = () => {
       nextStationPositions.splice(draggedIndex, 1);
       nextStationPositions.splice(targetIndex, 0, draggedStationId);
       if (publicId) {
-        LocalStorageManipulator.setItem(
+        LocalStorage.setItem(
           LocalStorageKey.timeRailsStationIndexes,
           nextStationPositions,
           publicId

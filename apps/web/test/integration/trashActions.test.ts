@@ -21,8 +21,8 @@ import {getQueryClient} from '@shared/api/queryClient';
 import {queryKeys} from '@shared/api/queryKeys';
 import {NotegicAPIError,NotegicException} from '@shared/api/exceptions';
 import {AccessControlPermission} from '@shared/api/interfaces/enums';
-import {SessionStorageManipulator} from '@shared/lib/sessionStorageManipulator';
-import {SessionStorageKey} from '@shared/types/sessionStorage.type';
+import {SessionStorage} from '@shared/lib/storage/sessionStorage';
+import {SessionStorageKey} from '@shared/lib/storage/sessionStorage';
 import {setClientCSRFToken} from '@/api/clientHeaders';
 import {Route} from '@/routes/app.trash';
 import i18n from '@/i18n';
@@ -101,7 +101,7 @@ window.checkMaterialInvalidation=()=>[
 ].every(key=>queryClient.getQueryState(key)?.isInvalidated);
 window.checkInvalidation=()=>queryClient.getQueryState(queryKeys.station.all())?.isInvalidated;
 window.mount=async ()=>{
-  SessionStorageManipulator.ensureItem(SessionStorageKey.csrfToken,'initial-csrf');
+  SessionStorage.ensureItem(SessionStorageKey.csrfToken,'initial-csrf');
   queryClient.setQueryData(queryKeys.station.all(),{fixture:true});
   for(const key of [queryKeys.material.oneById('00000009-0000-4000-8000-000000000000',true,true),queryKeys.rootShelf.oneById(ids.rootShelf,true),queryKeys.userQuota.my()]) queryClient.setQueryData(key,{fixture:true});
   await window.load('');
@@ -124,7 +124,7 @@ describe("Trash actions in Chromium", () => {
       "@tanstack/react-router": `export const createFileRoute=id=>options=>({...options,id,useSearch:()=>({query:window.query}),useLoaderData:()=>window.data,useNavigate:()=>window.navigate});export const useRouter=()=>window.router;`,
       "@/components/ui/sidebar": `export const SidebarTrigger=()=>null;export const useSidebar=()=>({isMobile:false});`,
       "@/api/functions/material.clientFn": `export const SaveMyMaterialById=()=>{throw new Error('Unexpected save');};`,
-      "@shared/lib/toast": `export default {success:message=>window.messages.push({kind:'success',message}),error:message=>window.messages.push({kind:'error',message})};`,
+      "@shared/lib/toast/toast": `export default {success:message=>window.messages.push({kind:'success',message}),error:message=>window.messages.push({kind:'error',message})};`,
     };
     for (const domain of [
       "rootShelf",
@@ -199,7 +199,9 @@ describe("Trash actions in Chromium", () => {
       }
     );
     css = compiler.build([fixture, ...sources].join(" ").split(/[\s"'`]+/));
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
   beforeEach(async () => {
     errors = [];

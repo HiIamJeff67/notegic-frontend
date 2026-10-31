@@ -4,9 +4,11 @@ import {
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
 import React, { createContext, useEffect, useState } from "react";
 import { cleanupLocalData } from "@/api/local/cleanup";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
@@ -229,9 +231,7 @@ export const LocalPreferencesProvider = ({
   );
 
   useEffect(() => {
-    const saved = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.localPreferences
-    );
+    const saved = LocalStorage.getItemByKey(LocalStorageKey.localPreferences);
 
     if (saved && typeof saved === "object" && !Array.isArray(saved)) {
       const savedPreferences = saved as Partial<LocalPreferences>;
@@ -287,7 +287,7 @@ export const LocalPreferencesProvider = ({
 
   useEffect(() => {
     if (!isReady) return;
-    LocalStorageManipulator.setItem(
+    LocalStorage.setItem(
       LocalStorageKey.localPreferences,
       getLocalPreferenceStorageValue(preferences)
     );

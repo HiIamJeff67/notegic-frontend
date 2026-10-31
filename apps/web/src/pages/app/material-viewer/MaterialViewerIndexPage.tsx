@@ -1,6 +1,6 @@
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { Link } from "@tanstack/react-router";
 import { BookOpenIcon } from "lucide-react";
 import { useCallback, useState } from "react";

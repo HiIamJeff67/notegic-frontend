@@ -1,5 +1,5 @@
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 
 interface RoutineTaskStatusDotProps {
   className?: string;

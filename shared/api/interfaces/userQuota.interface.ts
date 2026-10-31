@@ -1,4 +1,4 @@
-import { UserQuotaSchema } from "@shared/types/userQuota.type";
+import { UserQuotaSchema } from "@shared/api/interfaces/types/userQuota.type";
 import { z } from "zod";
 import {
   NotegicRequestSchema,

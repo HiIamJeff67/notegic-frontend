@@ -199,6 +199,7 @@ describe("material file lifecycle in Chromium", () => {
       stdin: { contents: fixture, resolveDir: process.cwd(), loader: "tsx" },
       bundle: true,
       write: false,
+      loader: { ".css": "empty" },
       platform: "browser",
       jsx: "automatic",
       define: {
@@ -228,7 +229,9 @@ describe("material file lifecycle in Chromium", () => {
       ],
     });
     script = result.outputFiles[0].text;
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
 
   beforeEach(async () => {

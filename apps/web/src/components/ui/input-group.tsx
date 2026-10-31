@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { Button } from "@/components/ui/button";

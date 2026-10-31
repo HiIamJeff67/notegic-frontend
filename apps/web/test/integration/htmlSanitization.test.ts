@@ -14,7 +14,9 @@ describe("DOMPurify rendering boundaries in Chromium", () => {
   let page: Page;
 
   beforeAll(async () => {
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   });
 
   beforeEach(async () => {

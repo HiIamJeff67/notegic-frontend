@@ -6,7 +6,7 @@ using encodedStructure any more, and it also don't require encode and decode alg
  */
 
 // import { ShelfNode } from "@shared/lib/shelfMaterialNodes";
-// import { ShelfManipulator } from "@shared/lib/subShelfManipulator";
+// import { ShelfManipulator } from "@shared/lib/shelf/subShelf";
 
 // import { UUID } from "@shared/types/uuid_v4.type";
 

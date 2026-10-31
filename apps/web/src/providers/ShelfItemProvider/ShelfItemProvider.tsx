@@ -4,10 +4,10 @@ import {
   MaxSubShelvesOfRootShelf,
   MaxTriggerValue,
 } from "@shared/constants";
-import { LRUCache } from "@shared/lib/LRUCache";
-import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
 import type { UUID } from "crypto";
 import {
   createContext,

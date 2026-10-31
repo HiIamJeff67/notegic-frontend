@@ -9,7 +9,7 @@ import {
   ShieldCheckIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { localDB, type LocalDBRebuildPreflight } from "@/api/local/db";
+import { type LocalDBRebuildPreflight, localDB } from "@/api/local/db";
 import type {
   LocalDBDiagnostics,
   LocalDBResult,

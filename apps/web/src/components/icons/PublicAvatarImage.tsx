@@ -1,5 +1,5 @@
-import { AvatarImage } from "@/components/ui/avatar";
 import type { ComponentProps } from "react";
+import { AvatarImage } from "@/components/ui/avatar";
 
 interface PublicAvatarImageProps extends ComponentProps<typeof AvatarImage> {
   avatarURL?: string | null;

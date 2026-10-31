@@ -26,6 +26,7 @@ import type {
   UpdateMyStationsByIdsRequest,
   UpdateMyStationsByIdsResponse,
 } from "@shared/api/interfaces/station.interface";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Routine,
@@ -36,7 +37,6 @@ import {
   User,
   UsersToStations,
 } from "@/api/local/schemas";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class StationLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

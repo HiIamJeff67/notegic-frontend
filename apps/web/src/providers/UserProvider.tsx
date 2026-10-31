@@ -1,10 +1,15 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import {
+  User,
+  UserAccount,
+  UserData,
+  UserInfo,
+} from "@shared/api/interfaces/types/user.type";
+import type { UserQuota } from "@shared/api/interfaces/types/userQuota.type";
 import { WebURLPathDictionary } from "@shared/constants";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { User, UserAccount, UserData, UserInfo } from "@shared/types/user.type";
-import type { UserQuota } from "@shared/types/userQuota.type";
+import toast from "@shared/lib/toast/toast";
 import React, {
   createContext,
   useCallback,

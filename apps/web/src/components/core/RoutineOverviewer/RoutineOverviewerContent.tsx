@@ -3,8 +3,10 @@ import {
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
 import { CheckIcon, SquarePen } from "lucide-react";
 import React, {
   Suspense,
@@ -15,6 +17,7 @@ import React, {
 } from "react";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
+import Image from "@/components/commons/Image/Image";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -102,9 +105,7 @@ const RoutineOverviewerContent = ({
   const chartComponentIdsRef = useRef<string[]>([]);
   const [charts, setCharts] = useState<RoutineOverviewChart[]>(() => {
     const storedCharts = createChartsFromComponentIds(
-      LocalStorageManipulator.getItemByKey(
-        LocalStorageKey.routineOverviewCharts
-      ) ?? []
+      LocalStorage.getItemByKey(LocalStorageKey.routineOverviewCharts) ?? []
     );
     chartComponentIdsRef.current = getChartComponentIds(storedCharts);
     return storedCharts;
@@ -126,7 +127,7 @@ const RoutineOverviewerContent = ({
   }, []);
 
   useEffect(() => {
-    LocalStorageManipulator.setItem(
+    LocalStorage.setItem(
       LocalStorageKey.routineOverviewCharts,
       chartComponentIdsRef.current
     );
@@ -144,7 +145,7 @@ const RoutineOverviewerContent = ({
       const nextComponentIds = getChartComponentIds(nextCharts);
 
       chartComponentIdsRef.current = nextComponentIds;
-      LocalStorageManipulator.setItem(
+      LocalStorage.setItem(
         LocalStorageKey.routineOverviewCharts,
         nextComponentIds
       );
@@ -254,12 +255,13 @@ const RoutineOverviewerContent = ({
               dashboardHeaderBackgroundImageNoneId ? (
                 <GridBackground />
               ) : (
-                <img
+                <Image
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 size-full object-cover"
                   decoding="async"
                   fetchPriority="high"
+                  loading="eager"
                   src={defaultHeaderBackgroundImage}
                 />
               )}

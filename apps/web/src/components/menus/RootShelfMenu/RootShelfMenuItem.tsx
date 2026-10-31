@@ -1,10 +1,9 @@
 import { SearchRootShelfEdge } from "@shared/api/graphql/generated/graphql";
-import { DNDType } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   CheckIcon,
@@ -17,13 +16,14 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { useDrop } from "react-dnd";
+import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import EmptyShelfIcon from "@/components/icons/EmptyShelfIcon";
 import { RootShelfIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
 import SubShelfMenu from "@/components/menus/SubShelfMenu/SubShelfMenu";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,

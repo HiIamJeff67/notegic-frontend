@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const source = path.join(root, "docs/document");
+const source = path.join(root, "apps/web/src/pages/document/website/sources");
 const assets = path.join(root, "apps/web/assets/document");
 const output = path.join(root, "apps/web/src/pages/document/website");
 const legacyIds = {
@@ -30,7 +30,7 @@ const text = value => "{" + quote(value) + "}";
 const destinations = [];
 
 const file = "website.md";
-const name = "WebsiteEnglish";
+const name = "WebsiteContent";
 const tokens = marked.lexer(fs.readFileSync(path.join(source, file), "utf8"));
 assert.equal(tokens[0]?.type, "heading");
 assert.equal(tokens[0]?.text, "Website");
@@ -323,7 +323,7 @@ const imports = [...media]
   .join("\n");
 destinations.push([
   path.join(output, name + ".tsx"),
-  "// Generated from docs/document/" +
+  "// Generated from apps/web/src/pages/document/website/sources/" +
     file +
     "; run npm run generate:website-guide.\n" +
     imports +
@@ -342,8 +342,8 @@ destinations.push([
     ";\n",
 ]);
 destinations.push([
-  path.join(output, "websiteNavigation.ts"),
-  '// Generated from docs/document/website.md; run npm run generate:website-guide.\nimport type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
+  path.join(output, "generated.ts"),
+  '// Generated from apps/web/src/pages/document/website/sources/website.md; run npm run generate:website-guide.\nimport type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
     "export const websiteSections = " +
     JSON.stringify(navigation, null, 2) +
     " satisfies ArticleNavigationItem[];\n",

@@ -1,19 +1,19 @@
 import {
   RoutineRecordStatus,
-  RoutineTaskRecordStatus,
   RoutineTaskPurpose,
+  RoutineTaskRecordStatus,
   SearchRoutineRecordSortBy,
   SearchRoutineTaskRecordSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import type {
   RoutineRecordStatus as RecordStatus,
-  RoutineTaskRecordStatus as TaskStatus,
   RoutineTaskPurpose as TaskPurpose,
+  RoutineTaskRecordStatus as TaskStatus,
 } from "@shared/api/interfaces/enums";
 import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
-import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { ListFilter } from "lucide-react";
 import { useId } from "react";
@@ -26,7 +26,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 import {
   Select,
   SelectContent,
@@ -34,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 
 export interface RoutineRecordFiltersValue {
   query: string;

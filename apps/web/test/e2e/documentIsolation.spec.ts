@@ -37,12 +37,12 @@ test.beforeAll(async () => {
           name: "document-hmr-fixture",
           enforce: "pre",
           transform(code, id) {
-            if (!id.endsWith("/pages/document/website/WebsiteEnglish.tsx"))
+            if (!id.endsWith("/pages/document/website/WebsiteContent.tsx"))
               return;
             return code
               .replace(
-                "const WebsiteEnglish = () => (",
-                `import { revision } from ${JSON.stringify(`/@fs${modulePath}`)};\nconst WebsiteEnglish = () => (`
+                "const WebsiteContent = () => (",
+                `import { revision } from ${JSON.stringify(`/@fs${modulePath}`)};\nconst WebsiteContent = () => (`
               )
               .replace("  <>", "  <>\n    <p data-document-hmr>{revision}</p>");
           },

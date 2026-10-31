@@ -3,12 +3,12 @@ import { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces
 import { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LRUCache } from "@shared/lib/LRUCache";
-import { SubShelfManipulator } from "@shared/lib/subShelfManipulator";
-import toast from "@shared/lib/toast";
-import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { SubShelf } from "@shared/lib/shelf/subShelf";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -82,16 +82,16 @@ export const useSubShelfLogic = ({
             parentSubShelfId: subShelfNode.id,
           },
         })) as GetMyBlockPacksByParentSubShelfIdResponse;
-      SubShelfManipulator.initializeSubShelfNodesByResponse(
+      SubShelf.initializeSubShelfNodesByResponse(
         rootShelfNode,
         subShelfNode,
         responseOfGettingSubShelves.data
       );
-      SubShelfManipulator.initializeMaterialNodesByResponse(
+      SubShelf.initializeMaterialNodesByResponse(
         subShelfNode,
         responseOfGettingMaterials.data
       );
-      SubShelfManipulator.initializeBlockPackNodesByResponse(
+      SubShelf.initializeBlockPackNodesByResponse(
         subShelfNode,
         responseOfGettingBlockPacks.data
       );
@@ -99,7 +99,7 @@ export const useSubShelfLogic = ({
       forceUpdate();
     },
     [
-      SubShelfManipulator,
+      SubShelf,
       queryFnGetMySubShelvesByPrevSubShelfId,
       queryFnGetMyMaterialsByParentSubShelfId,
       queryFnGetMyBlockPacksByParentSubShelfId,
@@ -393,9 +393,7 @@ export const useSubShelfLogic = ({
       }
 
       const { childSubShelfNodes } =
-        SubShelfManipulator.getAllChildSubShelfNodesAndMaterialNodes(
-          sourceSubShelfNode
-        );
+        SubShelf.getAllChildSubShelfNodesAndMaterialNodes(sourceSubShelfNode);
       const childSubShelfIds = childSubShelfNodes.map(val => val.id);
 
       const userAgent = navigator.userAgent;
@@ -414,12 +412,12 @@ export const useSubShelfLogic = ({
       });
 
       const deletedSubShelfNode = sourceSubShelfNode;
-      SubShelfManipulator.deleteSubShelfNode(
+      SubShelf.deleteSubShelfNode(
         sourceSummary,
         prevSubShelfNode,
         sourceSubShelfNode
       );
-      SubShelfManipulator.insertSubShelfNode(
+      SubShelf.insertSubShelfNode(
         destinationSummary,
         destinationSubShelfNode,
         deletedSubShelfNode
@@ -430,7 +428,7 @@ export const useSubShelfLogic = ({
       deletedSubShelfNode.prevSubShelfId = destinationSubShelfNode?.id ?? null;
       forceUpdate();
     },
-    [expandedShelvesRef, SubShelfManipulator, moveSubShelfMutator]
+    [expandedShelvesRef, SubShelf, moveSubShelfMutator]
   );
 
   return {

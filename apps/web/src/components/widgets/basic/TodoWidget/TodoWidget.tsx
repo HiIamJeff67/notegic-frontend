@@ -1,6 +1,5 @@
-import { generateDynamicDNDType } from "@shared/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { generateUUID } from "@shared/types/uuidv4.type";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   getDefaultTodoData,
   TodoData,
@@ -14,6 +13,7 @@ import { WidgetProps } from "@widgets/widget";
 import type { UUID } from "crypto";
 import { CheckIcon, GripVertical, LinkIcon, Plus, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { generateDynamicDNDType } from "@/components/commons/DNDable/dnd.type";
 import { VerticalDNDable } from "@/components/commons/DNDable/VerticalDNDable";
 import DebouncedInput from "@/components/inputs/DebouncedInput";
 import { Button } from "@/components/ui/button";

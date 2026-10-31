@@ -19,6 +19,9 @@ Use local evidence before CI. Do not claim that local tests replace CI; choose t
 ## Workflow
 
 1. Inspect `git diff` and map changed files to unit, web integration, browser E2E, codegen, local persistence, or production-build coverage.
+   Follow the test-location runbook: source-adjacent tests use the exact source
+   basename plus `.test.ts(x)`; integration tests belong in integration directories
+   without a redundant category suffix. `test:unit` runs both Jest categories.
 2. Start with the cheapest applicable checks: `npm run format:check`, `npm run lint`, `npm run typecheck`, and targeted `npm test`/Jest tests.
 3. For GraphQL sources, operations, or generated client types run `npm run codegen:check`; regenerate from source, never by hand.
 4. For browser, auth, routing, persistence, or cross-boundary behavior run targeted `npm run test:e2e` (use `CI=1 npm run test:e2e` when CI-like behavior matters). Keep tests independent of live credentials.

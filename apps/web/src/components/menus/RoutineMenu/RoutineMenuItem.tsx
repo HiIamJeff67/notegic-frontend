@@ -4,9 +4,7 @@ import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
+import toast from "@shared/lib/toast/toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import {
@@ -23,7 +21,6 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -32,6 +29,7 @@ import {
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
 import RoutineTaskMenuItemSkeleton from "@/components/menus/RoutineTaskMenu/RoutineTaskMenuItemSkeleton";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -63,6 +61,8 @@ import {
   useShelfItem,
   useStationRoutine,
 } from "@/hooks";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface RoutineMenuItemProps {
   station: StationNode;

@@ -8,11 +8,11 @@ or SQLite migration is needed for this update.
 
 ## Web ownership
 
-- `shared/lib/searchPage.ts` owns portable cursor context, keyset continuation,
+- `shared/lib/search/searchPage.ts` owns portable cursor context, keyset continuation,
   bounds, and PageInfo for the existing RootShelf, Station, Routine, and
   RoutineTag offline simulators. They filter authorized cached rows, order
   before slicing, and use the same primary key plus ID as the backend.
-- `shared/lib/compareText.ts` matches PostgreSQL UTF-8 `COLLATE "C"` without
+- `shared/lib/string/compare.ts` matches PostgreSQL UTF-8 `COLLATE "C"` without
   locale-dependent ordering. The existing `compareEntityNames` UI utility
   reuses it; presentation sorting never reconstructs continuation cursors.
 - `apps/web/src/api/policies/searchPagination.policy.ts` separates all 14 Apollo search
@@ -48,7 +48,7 @@ search reissued without `after`. They must not silently append the first page.
 A page refresh resets the in-memory cache; never clear the user's local data
 to resolve a cursor validation error.
 
-Run targeted tests for `searchPage`, `compareText`, `compareEntityNames`,
+Run targeted tests for `searchPage`, `string/compare`, `compareEntityNames`,
 `routine.search`, `searchPagination.policy`, and `searchLocal.bridge`, then typecheck. Run
 `npm run test:e2e -- searchOffline.spec.ts --workers=1` for all four simulators
 against real SQLite in an isolated Chromium profile. It does not use the user's

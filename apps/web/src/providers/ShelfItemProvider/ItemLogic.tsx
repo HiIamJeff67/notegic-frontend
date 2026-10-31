@@ -1,10 +1,28 @@
-import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useApolloClient } from "@apollo/client/react";
 import {
   type SearchItemInput,
   SearchItemSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
+import { MaxSearchLimit } from "@shared/constants";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { RootShelf } from "@shared/lib/shelf/rootShelf";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import {
+  AnalysisStatus,
+  ShelfTreeSummary,
+} from "@shared/lib/shelf/summary.type";
+import type { UUID } from "crypto";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchItemsLazyQuery } from "@/api/graphql/hooks/useSearchItems";
 import {
   useCreateBlockPack,
@@ -16,22 +34,6 @@ import {
   useDeleteMyMaterialById,
   useUpdateMyMaterialById,
 } from "@/api/hooks/material.hook";
-import { MaxSearchLimit } from "@shared/constants";
-import { AnalysisStatus } from "@shared/enums";
-import { LRUCache } from "@shared/lib/LRUCache";
-import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
-import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
-import type { UUID } from "crypto";
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
 
 interface UseItemLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -284,13 +286,13 @@ export const useItemLogic = ({
       shelfTreeSummary.hasChanged = true;
       shelfTreeSummary.estimatedByteSize = Math.max(
         0,
-        RootShelfManipulator.estimateMaterialNode(materialNode)
+        RootShelf.estimateMaterialNode(materialNode)
       );
       // the maxWidth and maxDepth is unknown in this point
       shelfTreeSummary.analysisStatus = AnalysisStatus.OnlySubShelves;
       forceUpdate();
     },
-    [expandedShelvesRef, deleteMaterialMutator, RootShelfManipulator]
+    [expandedShelvesRef, deleteMaterialMutator, RootShelf]
   );
 
   /* ==================== BlockPack ==================== */

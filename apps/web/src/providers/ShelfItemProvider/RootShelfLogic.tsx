@@ -7,15 +7,17 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { MaxSearchLimit } from "@shared/constants";
-import { AnalysisStatus } from "@shared/enums";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { LRUCache } from "@shared/lib/LRUCache";
-import { RootShelfManipulator } from "@shared/lib/rootShelfManipulator";
-import toast from "@shared/lib/toast";
-import { BlockPackNode, MaterialNode } from "@shared/types/itemNodes.type";
-import { RootShelfNode, SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { RootShelf } from "@shared/lib/shelf/rootShelf";
+import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import {
+  AnalysisStatus,
+  ShelfTreeSummary,
+} from "@shared/lib/shelf/summary.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -180,11 +182,10 @@ export const useRootShelfLogic = ({
       },
     });
 
-    const newRootShelfNode =
-      RootShelfManipulator.initializeSubShelfNodeTreeByResponse(
-        shelfTreeSummary.root,
-        responseOfGettingAllSubShelves
-      );
+    const newRootShelfNode = RootShelf.initializeSubShelfNodeTreeByResponse(
+      shelfTreeSummary.root,
+      responseOfGettingAllSubShelves
+    );
     shelfTreeSummary.root = newRootShelfNode;
     shelfTreeSummary.root.isExpanded = true;
     shelfTreeSummary.analysisStatus = AnalysisStatus.Unexplored;
@@ -214,7 +215,7 @@ export const useRootShelfLogic = ({
         });
 
       const shelfTreeSummary: ShelfTreeSummary =
-        RootShelfManipulator.analysisAndGenerateSummary({
+        RootShelf.analysisAndGenerateSummary({
           id: responseOfCreatingRootShelf.data.id as UUID,
           name: name,
           subShelfCount: 0,
@@ -234,7 +235,7 @@ export const useRootShelfLogic = ({
       );
       forceUpdate();
     },
-    [createRootShelfMutator, RootShelfManipulator, expandedShelvesRef]
+    [createRootShelfMutator, RootShelf, expandedShelvesRef]
   );
 
   const isNewRootShelfName = useCallback(() => {
@@ -402,9 +403,7 @@ export const useRootShelfLogic = ({
       }
 
       const { childSubShelfNodes, materialNodes } =
-        RootShelfManipulator.getAllChildSubShelfNodesAndMaterialNodes(
-          rootShelfNode
-        );
+        RootShelf.getAllChildSubShelfNodesAndMaterialNodes(rootShelfNode);
       const subShelfIds = childSubShelfNodes.map(val => val.id);
       const materialIds = materialNodes.map(val => val.id);
 
@@ -425,7 +424,7 @@ export const useRootShelfLogic = ({
       deleteRootShelfMutator,
       expandedShelvesRef,
       removeRootShelfOptimistically,
-      RootShelfManipulator,
+      RootShelf,
     ]
   );
 

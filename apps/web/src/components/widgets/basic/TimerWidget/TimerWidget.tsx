@@ -1,5 +1,5 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { clamp } from "@shared/util/math";
+import { clamp } from "@shared/lib/math/clamp";
 import {
   getDefaultTimerData,
   TimerData,

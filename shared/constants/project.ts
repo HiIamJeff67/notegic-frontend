@@ -1,4 +1,8 @@
-import { Environment } from "@shared/types/environment.type";
+export enum Environment {
+  Development = "development",
+  Production = "production",
+  Test = "test",
+}
 
 export const ServiceName = "notegic-frontend";
 

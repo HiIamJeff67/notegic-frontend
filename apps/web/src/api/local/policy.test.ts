@@ -1,13 +1,14 @@
-jest.mock("@shared/lib/localStorageManipulator", () => ({
-  LocalStorageManipulator: {
+jest.mock("@shared/lib/storage/localStorage", () => ({
+  ...jest.requireActual("@shared/lib/storage/localStorage"),
+  LocalStorage: {
     getItemByKey: jest.fn(),
   },
 }));
 
+import { LocalStorage } from "@shared/lib/storage/localStorage";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
 
-const getItemByKey = jest.mocked(LocalStorageManipulator.getItemByKey);
+const getItemByKey = jest.mocked(LocalStorage.getItemByKey);
 
 describe("local data policy", () => {
   beforeEach(() => {

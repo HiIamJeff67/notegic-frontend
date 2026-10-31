@@ -1,0 +1,88 @@
+import {
+  Country,
+  UserGender,
+  UserPlan,
+  UserRole,
+  UserStatus,
+} from "@shared/api/interfaces/enums";
+import { z } from "zod";
+
+export const DisplayNameSchema = z
+  .string({ error: "validation.displayNameLength" })
+  .min(6, { error: "validation.displayNameLength" })
+  .max(32, { error: "validation.displayNameLength" })
+  .regex(/^(?=.*\p{L})(?=.*\p{Nd})[\p{L}\p{Nd}]+$/u, {
+    error: "validation.displayNameFormat",
+  });
+
+export const UserSchema = z.object({
+  publicId: z.string(),
+  name: z
+    .string()
+    .min(6)
+    .max(32)
+    .regex(/^[\p{L}\p{Nd}]+/u),
+  displayName: z
+    .string()
+    .min(6)
+    .max(32)
+    .regex(/^[\p{L}\p{Nd}]+/u),
+  email: z.email(),
+  role: z.enum(UserRole),
+  plan: z.enum(UserPlan),
+  status: z.enum(UserStatus),
+  updatedAt: z.coerce.date(),
+  createdAt: z.coerce.date(),
+});
+
+export type User = z.infer<typeof UserSchema>;
+
+export const UserInfoSchema = z.object({
+  avatarURL: z.url().nullable(),
+  coverBackgroundURL: z.url().nullable(),
+  header: z.string().min(0).max(64).nullable(),
+  introduction: z.string().min(0).max(256).nullable(),
+  gender: z.enum(UserGender),
+  country: z.enum(Country).nullable(),
+  birthDate: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
+
+export type UserInfo = z.infer<typeof UserInfoSchema>;
+
+export const UserAccountSchema = z.object({
+  countryCode: z.string().nullable(),
+  phoneNumber: z.string().nullable(),
+  googleCredential: z.string().nullable(),
+  discordCredential: z.string().nullable(),
+  updatedAt: z.coerce.date(),
+});
+
+export type UserAccount = z.infer<typeof UserAccountSchema>;
+
+/**
+ * This type is the same as the user data cache
+ * (or UserDataCache) in the backend redis cache
+ */
+export const UserDataSchema = z.object({
+  publicId: z.string(),
+  name: z
+    .string()
+    .min(6)
+    .max(32)
+    .regex(/^[\p{L}\p{Nd}]+/u),
+  displayName: z
+    .string()
+    .min(6)
+    .max(32)
+    .regex(/^[\p{L}\p{Nd}]+/u),
+  email: z.email(),
+  role: z.enum(UserRole),
+  plan: z.enum(UserPlan),
+  status: z.enum(UserStatus),
+  avatarURL: z.union([z.url(), z.literal("")]),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
+
+export type UserData = z.infer<typeof UserDataSchema>;

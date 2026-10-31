@@ -1,6 +1,4 @@
 import {
-  type HardDeleteMyBlockPacksByIdsRequest,
-  type HardDeleteMyBlockPacksByIdsResponse,
   CreateBlockPackRequest,
   CreateBlockPackResponse,
   CreateBlockPacksRequest,
@@ -9,9 +7,11 @@ import {
   DeleteMyBlockPackByIdResponse,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsResponse,
-  GetMyBlockPacksByRootShelfIdResponse,
   GetMyBlockPackByIdResponse,
   GetMyBlockPacksByParentSubShelfIdResponse,
+  GetMyBlockPacksByRootShelfIdResponse,
+  type HardDeleteMyBlockPacksByIdsRequest,
+  type HardDeleteMyBlockPacksByIdsResponse,
   MoveMyBlockPackByIdRequest,
   MoveMyBlockPackByIdResponse,
   MoveMyBlockPacksByParentSubShelfIdRequest,
@@ -28,16 +28,16 @@ import {
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
-  Item,
-  RoutinesToItems,
   BlockPack,
+  Item,
   RootShelf,
+  RoutinesToItems,
   SubShelf,
   UsersToShelves,
 } from "@/api/local/schemas";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class BlockPackLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

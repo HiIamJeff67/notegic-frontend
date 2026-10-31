@@ -1,4 +1,4 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import {
   CheckCircle2Icon,
   ChevronDownIcon,
@@ -15,7 +15,19 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Ring } from "@/components/ui/ring";
-import type { VersionData } from "./versions";
+export type VersionTask = {
+  title: string;
+  description: string;
+  completed: boolean;
+};
+
+export type VersionData = {
+  version: string;
+  label: "Next" | "Current" | "Legacy";
+  status: "next" | "current" | "released";
+  description: string;
+  tasks: readonly VersionTask[];
+};
 
 const getPercentage = (completed: number, total: number) =>
   total === 0 ? 0 : Math.round((completed / total) * 100);

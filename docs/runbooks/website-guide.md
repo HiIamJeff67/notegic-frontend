@@ -1,14 +1,82 @@
 # Website guide
 
+## Complete document page inputs
+
+`apps/web/src/pages/document/DocumentPage.tsx` composes the public `/document`
+page. Website, Versions, Privacy and API reference content is generated from
+page-owned sources; the complete page is rendered from local React components
+through SSR. Run `npm run generate:document` to regenerate them all.
+
+| Section | Authored inputs | Generated output or runtime owner |
+| --- | --- | --- |
+| Overview | `apps/web/src/pages/document/overview/Overview.tsx` | Same component |
+| Website | `website/sources/website.md`, local images/GIFs under `apps/web/assets/document/`, `scripts/generateWebsiteGuide.mjs` | `website/WebsiteContent.tsx` and `website/generated.ts`; owned by `website/Website.tsx` |
+| API | Six `@`-prefixed upstream files directly under `api/sources/`, `scripts/generatePublicApiData.mjs` | `api/generated.ts`; rendered by `api/API.tsx`, `EndpointTable.tsx` and `EndpointDetails.tsx` |
+| API key guidance | `api/APIKey.tsx` | Subcomponent of `api/API.tsx`, not a separate tab |
+| Versions | `versions/sources/versions.md`, `scripts/generateDocumentSections.mjs` | `versions/generated.ts` and `versions/VersionsContent.tsx`; owned by `versions/Versions.tsx` and the existing `VersionCard` UI |
+| Privacy and policy | `privacy-policy/sources/privacy-policy.md`, `scripts/generateDocumentSections.mjs` | `privacy-policy/generated.ts` and `PrivacyPolicyContent.tsx`; owned by `PrivacyPolicy.tsx`; standalone `/privacy-policy` retains its existing translations |
+| Shared layout | `apps/web/src/components/commons/Article/`, project UI primitives, `apps/web/src/global/styles/article.css` and global styles | Shared Article layout, navigation and media components |
+
+Tab-relative paths above are under `apps/web/src/pages/document/`. Keep each
+tab flat except for its `sources/` folder. Generated data uses `generated.ts`;
+generated JSX uses `<Tab>Content.tsx`, inserted by `<Tab>.tsx`. README files
+exist only inside `sources/`. Do not add another role or folder layer without
+explicit user agreement; see the [naming convention](../conventions/04-file-and-folder-naming.md#naming-boundaries).
+
+The API rule `apps/web/src/pages/document/api/sources/@versioning.md` is a backend
+reference about contract versioning. The product Versions roadmap above is
+frontend-authored; it is not a backend reference copy.
+
+All module imports and generation inputs belong to this frontend repository;
+neither generator nor page rendering requires a sibling backend checkout.
+External video URLs are embedded provider resources, not local module imports.
+Normal npm dependencies are installed through the project package manifest.
+
+For backend reference provenance and refresh instructions, see
+[Public API documentation snapshot](../designs/routes/frontend-contracts-and-codegen.md#public-api-documentation-snapshot).
+Run `npm run generate:document` after updating inputs. The Website and API
+generators also retain their narrower commands. Builds consume generated output;
+they do not automatically synchronize external sources or run these generators.
+
+## Versions and privacy generation
+
+`versions.md` uses `## 0.0.0 — Next`, `Current` or `Legacy` headings, followed by
+one description and a feature checklist. Each checkbox has a bold feature title
+and its description on the next line. Generation preserves the card, ring,
+feature expansion and existing `version-0-0-0` anchors.
+
+`privacy-policy.md` contains the existing English policy text and update date.
+Keep `{#privacy-id}` on each level-two heading so existing links remain stable.
+Blockquotes mark secondary explanatory paragraphs; unordered lists and inline
+links are supported. The contact link uses
+`[{{contactEmail}}](mailto:{{contactEmail}})` and is populated from the existing
+`VITE_CONTACT_EMAIL` at runtime, not captured by the generator. The EULA link
+uses the existing `ArticleLink` navigation component.
+
+The sections generator validates both sources before writing its outputs and
+rejects unsupported Markdown, duplicate anchors and malformed version entries.
+It escapes text rather than executing Markdown HTML. Keep document content in
+English; the standalone privacy page still owns its translated policy. When
+the policy meaning changes, review both content owners and translations rather
+than assuming generation updates the standalone policy automatically.
+
+## Website generation
+
 The documentation page's Website section is authored in
-`docs/document/website.md` and is published in English.
+`apps/web/src/pages/document/website/sources/website.md` and is published in English.
 
 Run `npm run generate:website-guide` explicitly after changes. It compiles
-the English document to `WebsiteEnglish.tsx` and navigation under
+the English document to `WebsiteContent.tsx` and `generated.ts` under
 `apps/web/src/pages/document/website/`. Unsupported Markdown, missing media,
 or invalid links stop generation before output is
 written. Review and commit the sources and generated files together; do not
 edit generated TSX or parse Markdown during page rendering.
+
+The guide currently supports English only. Keep the generated filename and
+component language-neutral; do not add locale variants or language-selection
+infrastructure. `website/Website.tsx` owns the Article section and imports the
+generated `WebsiteContent`. Keep `lang="en"` on that content regardless of the
+application UI language.
 
 Adjacent sections use Article's automatic separators. A Markdown thematic break
 at the same boundary does not produce a second line; thematic breaks within
@@ -20,7 +88,7 @@ unchanged.
 
 Vite imports the original local images and GIFs as asset URLs and emits them
 with the Web build. Keep media under `apps/web/assets/document/` and use relative
-links from `docs/document/website.md`. Generation emits `@assets/document/`
+links from `apps/web/src/pages/document/website/sources/website.md`. Generation emits `@assets/document/`
 imports and rejects media outside that asset directory. The Website guide remains
 in English regardless of the application UI language and has no language picker.
 
@@ -54,7 +122,7 @@ so ordinary third-party iframes work in browsers such as Zen/Firefox without
 experimental `credentialless` iframe support. It retains
 `Cross-Origin-Opener-Policy: same-origin`. All other pages keep COEP
 `require-corp` and COOP `same-origin` for the SQLite/SharedArrayBuffer runtime.
-Vite and Nitro share the policy in `shared/lib/crossOriginIsolation.ts`, including
+Vite and Nitro share the policy in `shared/lib/browser/crossOriginIsolation.ts`, including
 the configured application base path.
 
 This relaxes the documentation document's resource-embedding restriction; it

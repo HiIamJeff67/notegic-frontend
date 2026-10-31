@@ -1,9 +1,16 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { consumePendingOAuthState } from "@shared/lib/oauthState";
-import toast from "@shared/lib/toast";
-import type { OAuthAction } from "@shared/types/redirectState.type";
+import {
+  isPendingOAuthState,
+  type OAuthAction,
+  oauthStatePattern,
+} from "@shared/lib/auth/redirectState.type";
+import {
+  SessionStorage,
+  SessionStorageKey,
+} from "@shared/lib/storage/sessionStorage";
+import toast from "@shared/lib/toast/toast";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -84,12 +91,20 @@ function GoogleRedirectPage() {
     const error = searchParams.get("error");
     const state = searchParams.get("state");
 
-    const pending = consumePendingOAuthState(
-      state,
-      Date.now(),
-      OAUTH_STATE_TTL_MS
+    const now = Date.now();
+    const pending: unknown = SessionStorage.getItemByKey(
+      SessionStorageKey.pendingOAuthState
     );
-    if (pending === null) {
+    SessionStorage.removeItem(SessionStorageKey.pendingOAuthState);
+
+    if (
+      !isPendingOAuthState(pending) ||
+      state === null ||
+      !oauthStatePattern.test(state) ||
+      state !== pending.state ||
+      pending.createdAt > now ||
+      now - pending.createdAt > OAUTH_STATE_TTL_MS
+    ) {
       toast.error(
         t("workspace.notifications.googleAuthError", {
           error: t("error.encounterUnknownError"),

@@ -3,7 +3,7 @@ import {
   NotegicException,
   NotegicExceptionSchema,
 } from "@shared/api/exceptions";
-import { isJsonResponse } from "@shared/util/isJsonContext";
+import { isJsonResponse } from "@shared/lib/json/isJsonContext";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
 import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";

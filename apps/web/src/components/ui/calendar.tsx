@@ -1,4 +1,4 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,

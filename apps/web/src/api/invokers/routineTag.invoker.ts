@@ -1,18 +1,8 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import {
-  CreateRoutineTag,
-  CreateRoutineTags,
-  GetAllMyRoutineTags,
-  GetMyRoutineTagById,
-  HardDeleteMyRoutineTagById,
-  HardDeleteMyRoutineTagsByIds,
-  UpdateMyRoutineTagById,
-  UpdateMyRoutineTagsByIds,
-} from "@/api/functions/routineTag.serverFn";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   CreateRoutineTagRequest,
   CreateRoutineTagRequestSchema,
@@ -48,6 +38,16 @@ import {
   UpdateMyRoutineTagsByIdsResponseSchema,
 } from "@shared/api/interfaces/routineTag.interface";
 import { ZodError } from "zod";
+import {
+  CreateRoutineTag,
+  CreateRoutineTags,
+  GetAllMyRoutineTags,
+  GetMyRoutineTagById,
+  HardDeleteMyRoutineTagById,
+  HardDeleteMyRoutineTagsByIds,
+  UpdateMyRoutineTagById,
+  UpdateMyRoutineTagsByIds,
+} from "@/api/functions/routineTag.serverFn";
 
 export const queryFnGetMyRoutineTagById = async (
   request: GetMyRoutineTagByIdRequest

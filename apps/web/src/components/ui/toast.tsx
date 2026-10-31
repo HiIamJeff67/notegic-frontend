@@ -2,8 +2,8 @@
 
 // Adapted from shadcn/ui's Base UI Toast: https://ui.shadcn.com/docs/components/base/toast.
 import { Toast as ToastPrimitive } from "@base-ui/react/toast";
-import type { ToastPosition } from "@shared/lib/toast";
-import { cn } from "@shared/util/utils";
+import type { ToastPosition } from "@shared/lib/toast/toast";
+import { cn } from "@shared/lib/className/cn";
 import { XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

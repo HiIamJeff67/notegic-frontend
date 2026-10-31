@@ -4,7 +4,7 @@ import type {
 } from "@shared/api/interfaces/feedback.interface";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 import { type FormEvent, useState } from "react";
 import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
 import { Button } from "@/components/ui/button";

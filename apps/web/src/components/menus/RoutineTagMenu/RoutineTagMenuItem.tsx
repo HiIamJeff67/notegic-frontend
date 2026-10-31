@@ -1,7 +1,6 @@
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
+import toast from "@shared/lib/toast/toast";
 import {
   CheckIcon,
   ChevronDown,
@@ -13,10 +12,10 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
+import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -42,6 +41,7 @@ import {
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { useLoading, useMobile, useModal, useStationRoutine } from "@/hooks";
+import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 
 interface RoutineTagMenuItemProps {
   routineTag: RoutineTagNode;

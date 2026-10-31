@@ -1,5 +1,5 @@
 import type { SearchRoutineInput } from "@shared/api/graphql/generated/graphql";
-import { searchPage } from "@shared/lib/searchPage";
+import { searchPage } from "@shared/lib/search/searchPage";
 
 type RoutineSearchNode = {
   id: string;

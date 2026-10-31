@@ -1,5 +1,6 @@
-jest.mock("@shared/lib/indexedDBManipulator", () => ({
-  IndexedDBManipulator: {
+jest.mock("@shared/lib/storage/indexedDB", () => ({
+  ...jest.requireActual("@shared/lib/storage/indexedDB"),
+  IndexedDB: {
     getItemByKey: jest.fn(),
     updateItem: jest.fn(),
     setItem: jest.fn(),
@@ -18,14 +19,13 @@ jest.mock("@/api/local/db", () => ({
   },
 }));
 
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
-import { IndexedDBKey } from "@shared/types/indexedDB.type";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
 import { cleanupLocalData } from "@/api/local/cleanup";
 
-const getItemByKey = jest.mocked(IndexedDBManipulator.getItemByKey);
-const updateItem = jest.mocked(IndexedDBManipulator.updateItem);
-const setItem = jest.mocked(IndexedDBManipulator.setItem);
-const removeItem = jest.mocked(IndexedDBManipulator.removeItem);
+const getItemByKey = jest.mocked(IndexedDB.getItemByKey);
+const updateItem = jest.mocked(IndexedDB.updateItem);
+const setItem = jest.mocked(IndexedDB.setItem);
+const removeItem = jest.mocked(IndexedDB.removeItem);
 
 describe("local data cleanup", () => {
   beforeEach(() => {

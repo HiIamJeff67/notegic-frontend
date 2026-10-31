@@ -1,11 +1,17 @@
 # Frontend Contracts and Codegen
 
 The backend public contracts are the source of truth. The backend repository
-currently keeps those contracts under
-`/Users/jeff/Desktop/Projects/notegic-backend/contracts/`, including the public
+keeps those contracts under its own `contracts/` directory, including the public
 API gateway, client gateway, realtime gateway, and GraphQL contract areas. The
 frontend consumes those contracts and generated artifacts; it does not own
 backend resolvers, services, or database implementation.
+
+Frontend imports, generation inputs and build configuration must resolve
+project files inside this frontend repository. Do not import from a sibling
+checkout, use developer-specific absolute paths or link to external local files.
+Copy required upstream reference inputs into the repository before consuming
+them. Normal package dependencies remain declared in `package.json` and the
+lockfile. See the [document source inventory](../../runbooks/website-guide.md#complete-document-page-inputs).
 
 ## Frontend inputs and generated output
 
@@ -49,26 +55,57 @@ app-specific storage. Web Apollo and local-search adapters live under
 ## Public API documentation snapshot
 
 The documentation generator reads only the checked-in snapshot under
-`apps/web/src/pages/document/api-reference/contracts/`. It does not read a
-sibling backend checkout or fetch contracts over the network.
+`apps/web/src/pages/document/api/sources/`. It does not read a sibling backend checkout
+or fetch contracts over the network. Public page source material belongs with
+the page under `apps/web/src/pages/document/`; `docs/` holds contributor
+conventions, designs and runbooks.
 
 After the backend runs `make -C contracts public-api-gen`, use the public
 artifacts under `contracts/gateway/public/`. Manually copy its
-public `openapi/openapi.json` to `contracts/openapi.json` and these five public
-rule files to `contracts/rules/`:
+public `openapi/openapi.json` to `apps/web/src/pages/document/api/sources/@openapi.json` and
+these five public rule files to the same source folder, adding `@` to their
+basenames:
 
-- `authentication.md`
-- `http-contract.md`
-- `origins-and-security.md`
-- `rate-limits-and-retries.md`
-- `versioning.md`
+- `@authentication.md`
+- `@http-contract.md`
+- `@origins-and-security.md`
+- `@rate-limits-and-retries.md`
+- `@versioning.md`
+
+The filename prefix `@` identifies upstream reference copies, not a module
+alias. Keep their bytes identical to the reviewed backend public artifact.
+All six inputs live directly in `api/sources/`; do not recreate nested
+reference or rules folders. Do not copy private
+ClientGateway or realtime contracts into the public documentation snapshot.
+Provenance and the last verified upstream commit live in the
+[snapshot README](../../../apps/web/src/pages/document/api/sources/README.md).
+
+Refresh all six files together whenever the published public contract changes,
+before publishing related API documentation. The backend checkout or downloaded
+artifact can live anywhere. From the frontend repository, explicitly set its
+public artifact directory and copy the files:
+
+```sh
+PUBLIC_CONTRACT_SOURCE=/path/to/backend/contracts/gateway/public
+PUBLIC_CONTRACT_TARGET=apps/web/src/pages/document/api/sources
+cp "$PUBLIC_CONTRACT_SOURCE/openapi/openapi.json" "$PUBLIC_CONTRACT_TARGET/@openapi.json" || exit 1
+for rule in authentication http-contract origins-and-security rate-limits-and-retries versioning; do
+  cp "$PUBLIC_CONTRACT_SOURCE/rules/$rule.md" "$PUBLIC_CONTRACT_TARGET/@$rule.md" || exit 1
+done
+```
+
+Update the snapshot README's source revision and verification date after
+comparing all six copies with that release. This is an explicit import step;
+normal generation and builds must never read that external source directory or
+silently synchronize from the network. Without upstream access, the committed
+snapshot remains usable, but do not claim its freshness was verified.
 
 Run `npm run generate:public-api` from the frontend repository. Only that
 command checks that all six inputs are readable regular files; missing inputs
 are listed together and generation stops without changing the previous output.
 Application startup, builds, and page rendering do not perform this check.
 The generator consumes only these six files and writes
-`apps/web/src/pages/document/api-reference/generated/publicAPIData.ts`.
+`apps/web/src/pages/document/api/generated.ts`.
 The imported snapshot retains the backend's formatting and is excluded from
 Biome. Review and commit the snapshot together with its regenerated output.
 

@@ -96,7 +96,7 @@ reuse that string after the language may have changed.
 ```tsx
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import toast from "@shared/lib/toast/toast";
 
 function SaveAction({ save }: { save: () => Promise<void> }) {
   const { t } = useTranslation();

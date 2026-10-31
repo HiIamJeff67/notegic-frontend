@@ -18,10 +18,10 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
-import { BlockPackYjsCoordinator } from "@shared/blockpack";
-import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
+import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   createContext,
@@ -44,6 +44,9 @@ import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
 import { canSendDesktopNotification } from "./LocalPreferencesProvider";
+
+export const getBlockPackRoomName = (blockPackId: UUID | string) =>
+  `block-pack:${blockPackId}`;
 
 const RealtimeBlockPackChannelReleaseDelayMs =
   Number.parseInt(

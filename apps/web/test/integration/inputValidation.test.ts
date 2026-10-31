@@ -17,9 +17,10 @@ import AccountTab from '@/pages/app/setting/account/tabs/AccountTab';
 import ProfileTab from '@/pages/app/setting/account/tabs/ProfileTab';
 window.requests = 0;
 window.mutator = { mutateAsync: async () => { window.requests++; return {}; } };
+const profileImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZz8AAAAASUVORK5CYII=';
 window.userManager = {
   userData: { ...FakeUser, name: 'fixture123', displayName: 'Fixture123' },
-  userInfo: { ...FakeUserInfo, header: '', introduction: '', birthDate: new Date('2000-01-01') },
+  userInfo: { ...FakeUserInfo, header: '', introduction: '', birthDate: new Date('2000-01-01'), avatarURL: profileImage, coverBackgroundURL: profileImage },
   updateUserData: () => {}, fetchUserInfo: async () => {},
 };
 window.changeLanguage = language => i18n.changeLanguage(language);
@@ -95,6 +96,20 @@ describe("editable request fields in real settings forms", () => {
   });
   afterAll(async () => {
     await browser?.close();
+  });
+
+  it("uses the shared eager Image for profile covers and avatars without a backend", async () => {
+    const images = page.locator('#profile img[data-slot="image"]');
+    await browserExpect(images).toHaveCount(2);
+    for (const image of await images.all()) {
+      await browserExpect(image).toHaveAttribute("loading", "eager");
+      await browserExpect(image).toHaveAttribute(
+        "data-loading-status",
+        "loaded"
+      );
+    }
+    await browserExpect(images.first()).toHaveAttribute("src", /^blob:/);
+    expect(await page.evaluate("requests")).toBe(0);
   });
 
   it("shares the display-name rule and translates an existing error after a language change", async () => {

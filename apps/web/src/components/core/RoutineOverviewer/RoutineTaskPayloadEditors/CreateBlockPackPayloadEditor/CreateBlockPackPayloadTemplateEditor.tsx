@@ -1,22 +1,16 @@
 import type { BlockNoteEditor } from "@blocknote/core";
-import { SideMenuExtension } from "@blocknote/core/extensions";
-import {
-  DragHandleButton,
-  SideMenu,
-  SideMenuController,
-  useExtensionState,
-} from "@blocknote/react";
-import {
-  BlockNoteView,
-  components as blockNoteShadcnComponents,
-} from "@blocknote/shadcn";
+import { SideMenuController } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/shadcn";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { Form, XIcon } from "lucide-react";
+import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
+import {
+  type PatternBlock,
+  PatternToggleButton,
+} from "@/components/core/BlockPackEditor/PatternToggleButton";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useTheme } from "@/hooks/useTheme";
-import type { PatternBlock } from "./CreateBlockPackPayloadEditor";
 import "@/global/styles/block-editor.css";
 
 interface CreateBlockPackPayloadTemplateEditorProps {
@@ -31,71 +25,6 @@ interface CreateBlockPackPayloadTemplateEditorProps {
   onConfirm: (payload: string) => void;
   isSaveDisabled?: boolean;
 }
-
-const PatternToggleButton = ({
-  patternBlockIds,
-  onAddPatternBlock,
-  onRemovePatternBlock,
-  t,
-}: Pick<
-  CreateBlockPackPayloadTemplateEditorProps,
-  "patternBlockIds" | "onAddPatternBlock" | "onRemovePatternBlock"
-> & { t: (key: string) => string }) => {
-  const block = useExtensionState(SideMenuExtension, {
-    selector: state => state?.block,
-  });
-
-  if (!block) return null;
-
-  const isSelected = patternBlockIds.has(block.id);
-  const label = isSelected
-    ? t("workspace.payloadEditor.removeFromPatternTable")
-    : t("workspace.payloadEditor.addToPatternTable");
-  const icon = isSelected ? (
-    <XIcon className="size-3.5" />
-  ) : (
-    <Form className="size-3.5" />
-  );
-  const handleToggle = () => {
-    if (isSelected) {
-      onRemovePatternBlock(block.id);
-      return;
-    }
-
-    onAddPatternBlock({
-      id: block.id,
-      type: block.type,
-      props: block.props ?? {},
-      label: Array.isArray(block.content)
-        ? block.content
-            .map((content: any) => {
-              if (content.type === "text") return content.text;
-              if (content.type === "link" && Array.isArray(content.content)) {
-                return content.content
-                  .map((linkContent: any) => linkContent.text ?? "")
-                  .join("");
-              }
-              return "";
-            })
-            .join("")
-            .trim()
-        : "",
-    });
-  };
-
-  return (
-    <blockNoteShadcnComponents.SideMenu.Button
-      className="bn-button"
-      label={label}
-      icon={icon}
-      onClick={event => {
-        event.preventDefault();
-        event.stopPropagation();
-        handleToggle();
-      }}
-    />
-  );
-};
 
 const CreateBlockPackPayloadTemplateEditor = ({
   editor,
@@ -120,19 +49,17 @@ const CreateBlockPackPayloadTemplateEditor = ({
             theme={currentTheme.isDark ? "dark" : "light"}
             sideMenu={false}
             portalElements={{ default: portalElement }}
-            className="notegic-block-editor caret-muted-foreground [&_.bn-editor]:px-4"
+            className="notegic-block-editor caret-muted-foreground [&_.bn-editor]:px-4 [&_.bn-editor]:!pl-[88px]"
           >
             <SideMenuController
-              sideMenu={sideMenuProps => (
-                <SideMenu {...sideMenuProps}>
+              sideMenu={() => (
+                <BlockSideMenu>
                   <PatternToggleButton
                     patternBlockIds={patternBlockIds}
                     onAddPatternBlock={onAddPatternBlock}
                     onRemovePatternBlock={onRemovePatternBlock}
-                    t={t}
                   />
-                  <DragHandleButton />
-                </SideMenu>
+                </BlockSideMenu>
               )}
             />
           </BlockNoteView>

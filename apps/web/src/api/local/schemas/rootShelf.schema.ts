@@ -1,6 +1,6 @@
-import { SubShelf, UsersToShelves } from "@/api/local/schemas";
 import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { SubShelf, UsersToShelves } from "@/api/local/schemas";
 
 // the same schemas as the rootShelf in api interface
 export const RootShelf = sqliteTable("RootShelfTable", {

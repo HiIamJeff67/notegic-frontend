@@ -13,7 +13,7 @@ For application code changes, follow the repository's coding and test skills.
 
 - [Product media runbook](../../../docs/runbooks/product-media-production.md):
   capture, editing, presentation, privacy, and verification requirements.
-- [Website guide](../../../docs/document/website.md): current product
+- [Website guide](../../../apps/web/src/pages/document/website/sources/website.md): current product
   terminology and the user workflow being demonstrated. Check the running
   application and source when the guide and current behavior differ.
 - [Documentation media](../../../apps/web/assets/document/): shipped images,
@@ -44,7 +44,7 @@ For application code changes, follow the repository's coding and test skills.
    important actions, ending, frame edges, floating windows, timing, and text
    readability. Replace a reviewed asset only after the replacement passes.
 6. Keep reviewed media in `apps/web/assets/document/` and update affected
-   [Website guide](../../../docs/document/website.md) links/captions. Use the
+   [Website guide](../../../apps/web/src/pages/document/website/sources/website.md) links/captions. Use the
    owner's actual published video links recorded in that guide.
    Prepare plain, accurate titles, descriptions, and tags when requested;
    publishing or uploading requires its own explicit instruction.

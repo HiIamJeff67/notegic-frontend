@@ -405,7 +405,7 @@ test("real Routine activation rejection retains its translation without retrying
     );
     const { tError } = await load(`/@fs${repositoryRoot}/shared/i18n/error.ts`);
     const { default: toast } = await load(
-      `/@fs${repositoryRoot}/shared/lib/toast.ts`
+      `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
     );
     const { default: i18n } = await load("/src/i18n/index.ts");
     await i18n.changeLanguage("zh-TW");
@@ -473,7 +473,7 @@ for (const batch of [false, true]) {
           `/@fs${repositoryRoot}/shared/i18n/error.ts`
         );
         const { default: toast } = await load(
-          `/@fs${repositoryRoot}/shared/lib/toast.ts`
+          `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
         );
         const { default: i18n } = await load("/src/i18n/index.ts");
         await i18n.changeLanguage("zh-TW");

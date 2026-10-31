@@ -1,5 +1,5 @@
 import { Country, UserGender } from "@shared/api/interfaces/enums";
-import { UserInfoSchema } from "@shared/types/user.type";
+import { UserInfoSchema } from "@shared/api/interfaces/types/user.type";
 import { z } from "zod";
 import {
   NotegicRequestSchema,

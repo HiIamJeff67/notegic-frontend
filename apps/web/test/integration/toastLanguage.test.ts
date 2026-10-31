@@ -60,7 +60,7 @@ const mocks: Record<string, string> = {
     export const useUser = () => ({ userData });
     export const useAppRouter = () => router;
     export const useShelfItem = () => shelves;`,
-  "@shared/lib/localStorageManipulator": `export const LocalStorageManipulator = {
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = {
     getItemByKey: () => { window.state.reads++; return '[]'; }, setItem: () => {},
   };`,
   "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets = {};`,

@@ -1,5 +1,5 @@
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import * as React from "react";
 

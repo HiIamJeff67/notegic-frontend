@@ -1,4 +1,3 @@
-export * from "./useLocalPreferences";
 export * from "./useAnyTypeState";
 export * from "./useAppRouter";
 export * from "./useBackgroundImages";
@@ -6,6 +5,7 @@ export * from "./useBlockEditor";
 export * from "./useDebounce";
 export * from "./useDeferredMount";
 export * from "./useLoading";
+export * from "./useLocalPreferences";
 export * from "./useMaterialAttachmentCache";
 export * from "./useMobile";
 export * from "./useModal";

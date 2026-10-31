@@ -7,7 +7,6 @@ import {
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
-import { DNDType } from "@shared/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
@@ -23,8 +22,10 @@ import { DropTargetMonitor } from "react-dnd";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import PlaceableBackground from "@/components/backgrounds/PlaceableBackground/PlaceableBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
+import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import Draggable from "@/components/commons/Draggable/Draggable";
 import Extendable from "@/components/commons/Extendable/Extendable";
+import Image from "@/components/commons/Image/Image";
 import XYResizable from "@/components/commons/Resizable/XYResizable";
 import CreateWidgetDialog from "@/components/dialogs/WidgetDialog/CreateWidgetDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
@@ -482,18 +483,19 @@ const DashboardPage = () => {
       {backgroundImagesManager.currentBackgroundImage === null ? (
         <div
           ref={headerBackgroundImageRef}
-          className={`!w-full !h-60 shrink-0 relative z-${DashboardElementZIndexes.headerBackgroundImage}`}
+          className={`!w-full !h-60 shrink-0 relative overflow-hidden z-${DashboardElementZIndexes.headerBackgroundImage}`}
         >
           {backgroundImagesManager.defaultBackgroundImageId ===
           dashboardHeaderBackgroundImageNoneId ? (
             <GridBackground />
           ) : (
-            <img
+            <Image
               alt=""
               aria-hidden="true"
               className="absolute inset-0 size-full object-cover"
               decoding="async"
               fetchPriority="high"
+              loading="eager"
               src={defaultHeaderBackgroundImage}
             />
           )}

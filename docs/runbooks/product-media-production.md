@@ -3,7 +3,7 @@
 Create promotional videos, GIFs, screenshots, and publishing copy that show
 Notegic's actual behavior. The entry point for agents is
 [product-media-production](../../.agents/skills/product-media-production/SKILL.md).
-Use the [Website guide](../document/website.md) for product terminology,
+Use the [Website guide](../../apps/web/src/pages/document/website/sources/website.md) for product terminology,
 published video links, and numbered captions. Existing shipped images, GIFs,
 and the walkthrough recording live in [Web assets](../../apps/web/assets/document/).
 This runbook owns the reusable production procedure.
@@ -126,7 +126,7 @@ and takes that are no longer needed; do not delete an unrelated recording librar
 
 ## Repository and publication handoff
 
-Keep the guide source in `docs/document/website.md` and reviewed media under
+Keep the guide source in `apps/web/src/pages/document/website/sources/website.md` and reviewed media under
 `apps/web/assets/document/`, with `images/` and `videos/` subdirectories. The
 Walkthrough Widget and documentation share these assets without duplicate copies.
 Use descriptive filenames, with separate Image, GIF, and Video numbering in
@@ -135,7 +135,7 @@ upload packages out of Git. The current `.gitignore` excludes `promotions/` pack
 that exclusion does not replace reviewing the staged file list.
 
 The owner uploaded the current six videos publicly; their actual links live in
-the [Website guide](../document/website.md). Use those links for public guide
+the [Website guide](../../apps/web/src/pages/document/website/sources/website.md). Use those links for public guide
 embeds. The Dashboard's Walkthrough Widget uses the shipped same-origin MP4
 to preserve App cross-origin isolation. Uploading, changing
 visibility, or publishing another asset requires an explicit instruction.

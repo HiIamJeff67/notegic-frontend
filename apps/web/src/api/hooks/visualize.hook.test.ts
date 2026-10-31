@@ -17,8 +17,9 @@ jest.mock("@tanstack/react-query", () => ({ useQuery: mockUseQuery }));
 jest.mock("@shared/api/queryClient", () => ({
   getQueryClient: () => ({ fetchQuery: mockFetchQuery }),
 }));
-jest.mock("@shared/lib/sessionStorageManipulator", () => ({
-  SessionStorageManipulator: {
+jest.mock("@shared/lib/storage/sessionStorage", () => ({
+  ...jest.requireActual("@shared/lib/storage/sessionStorage"),
+  SessionStorage: {
     getItemByKey: () => mockToken,
     ensureItem: mockEnsureItem,
   },

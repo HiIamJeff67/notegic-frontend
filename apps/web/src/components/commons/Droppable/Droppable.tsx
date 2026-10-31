@@ -1,6 +1,6 @@
-import { DNDType } from "@shared/enums";
 import React from "react";
 import { DropTargetMonitor } from "react-dnd";
+import { DNDType } from "@/components/commons/DNDable/dnd.type";
 
 interface DroppableProps extends React.HTMLAttributes<HTMLDivElement> {
   type: DNDType;

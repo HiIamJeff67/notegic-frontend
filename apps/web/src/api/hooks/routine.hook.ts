@@ -53,7 +53,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { parseRequest } from "@shared/api/validation";
-import { matchesSearch } from "@shared/lib/searchPage";
+import { matchesSearch } from "@shared/lib/search/searchPage";
 import {
   type UseQueryOptions,
   useMutation,

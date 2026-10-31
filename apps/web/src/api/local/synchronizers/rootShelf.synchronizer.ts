@@ -1,7 +1,5 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
-  type HardDeleteMyRootShelvesByIdsRequest,
-  type HardDeleteMyRootShelvesByIdsResponse,
   CreateRootShelfRequest,
   CreateRootShelfResponse,
   CreateRootShelvesRequest,
@@ -11,6 +9,8 @@ import {
   DeleteMyRootShelvesByIdsRequest,
   DeleteMyRootShelvesByIdsResponse,
   GetMyRootShelfByIdResponse,
+  type HardDeleteMyRootShelvesByIdsRequest,
+  type HardDeleteMyRootShelvesByIdsResponse,
   RestoreMyRootShelfByIdRequest,
   RestoreMyRootShelfByIdResponse,
   RestoreMyRootShelvesByIdsRequest,
@@ -20,15 +20,15 @@ import {
   UpdateMyRootShelvesByIdsRequest,
   UpdateMyRootShelvesByIdsResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
+import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   Item,
-  RoutinesToItems,
   RootShelf,
+  RoutinesToItems,
   User,
   UsersToShelves,
 } from "@/api/local/schemas";
-import { and, eq, exists, inArray, sql } from "drizzle-orm";
 
 export class RootShelfLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

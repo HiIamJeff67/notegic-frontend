@@ -1,7 +1,6 @@
-import { LocalYjsDocumentStore } from "@shared/blockpack/localYjsDocumentStore";
-import { requiresCrossOriginIsolation } from "@shared/lib/crossOriginIsolation";
-import { IndexedDBManipulator } from "@shared/lib/indexedDBManipulator";
-import { IndexedDBKey } from "@shared/types/indexedDB.type";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
+import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";
@@ -16,8 +15,8 @@ import { getOrderedMigrations } from "./migrationCatalog";
 import { LocalDBMigrator } from "./migrator";
 import {
   classifyLocalDBError,
-  createLocalDBDiagnosticsExport,
   createLocalDataExport,
+  createLocalDBDiagnosticsExport,
   downloadTextFile,
   isOPFSMissingFileError,
 } from "./recovery";
@@ -782,7 +781,7 @@ const downloadLocalData = async (): Promise<void> => {
   const databaseFile = await sqlocalDrizzle.getDatabaseFile();
   const exportContents = await createLocalDataExport(
     databaseFile,
-    await IndexedDBManipulator.getAllItems()
+    await IndexedDB.getAllItems()
   );
   downloadTextFile(
     exportContents,
@@ -834,7 +833,7 @@ const getRebuildPreflight = async (options?: {
     ).length;
     const terminalFailureCount = transactions.length - pendingCount;
     const yjsCache = loggedInUser
-      ? await IndexedDBManipulator.getItemByKey(
+      ? await IndexedDB.getItemByKey(
           IndexedDBKey.blockPackYjsDocuments,
           loggedInUser.publicId
         )
@@ -965,7 +964,7 @@ const rebuild = async (options: {
         sqlocalLifecycle = "closing";
         // SQLocal must still have a live worker to delete and reopen the file.
         await sqlocalDrizzle.deleteDatabaseFile();
-        if (!(await IndexedDBManipulator.clearAllItems())) {
+        if (!(await IndexedDB.clearAllItems())) {
           throw new Error(
             "Failed to clear local document and attachment caches."
           );

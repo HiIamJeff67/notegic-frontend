@@ -1,8 +1,8 @@
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import type { CSSProperties, HTMLAttributes } from "react";
 import { createContext, useContext } from "react";
-import { ArticleDisplayContext } from "./ArticleContext";
 import { Separator } from "@/components/ui/separator";
+import { ArticleDisplayContext } from "./ArticleContext";
 
 // Visual levels control tone and indentation; separator spacing follows actual nesting.
 const ArticleSubParagraphDepthContext = createContext(0);

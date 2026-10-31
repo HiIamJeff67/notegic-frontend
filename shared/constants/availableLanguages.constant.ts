@@ -1,5 +1,10 @@
 import { Language } from "@shared/api/interfaces/enums";
-import { LanguageData } from "@shared/types/languageData.type";
+
+export interface LanguageData {
+  key: Language;
+  nativeName: string;
+  code: string;
+}
 
 // since the support languages are not large, we can just build their map here
 export const LanguageKeyMap: Record<Language, LanguageData> = {

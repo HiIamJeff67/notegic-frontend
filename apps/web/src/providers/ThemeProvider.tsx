@@ -1,6 +1,8 @@
 import { DefaultStandardTheme } from "@shared/constants";
-import { LocalStorageManipulator } from "@shared/lib/localStorageManipulator";
-import { LocalStorageKey } from "@shared/types/localStorage.type";
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
 import { ThemeData } from "@shared/types/theme.type";
 import React, { createContext, useEffect, useState } from "react";
 import { useThemeStore } from "@/hooks/useThemeStore";
@@ -28,15 +30,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // initialize the default theme
   useEffect(() => {
-    const savedTheme = LocalStorageManipulator.getItemByKey(
-      LocalStorageKey.theme
-    );
+    const savedTheme = LocalStorage.getItemByKey(LocalStorageKey.theme);
     if (!savedTheme) {
       setCurrentTheme(DefaultStandardTheme);
-      LocalStorageManipulator.setItem(
-        LocalStorageKey.theme,
-        DefaultStandardTheme
-      );
+      LocalStorage.setItem(LocalStorageKey.theme, DefaultStandardTheme);
       setIsThemeInitialized(true);
       return;
     }
@@ -47,10 +44,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!isThemeExists) {
       setCurrentTheme(DefaultStandardTheme);
-      LocalStorageManipulator.setItem(
-        LocalStorageKey.theme,
-        DefaultStandardTheme
-      );
+      LocalStorage.setItem(LocalStorageKey.theme, DefaultStandardTheme);
       setIsThemeInitialized(true);
       return;
     }
@@ -63,7 +57,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!isThemeInitialized || !currentTheme) return;
 
-    LocalStorageManipulator.setItem(LocalStorageKey.theme, currentTheme);
+    LocalStorage.setItem(LocalStorageKey.theme, currentTheme);
 
     if (prevTheme !== null) {
       const prevThemeCSSClassName = prevTheme.isDefault

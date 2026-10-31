@@ -1,5 +1,5 @@
 import localMigrationJournal from "./migrations/meta/_journal.json";
-import { splitSqlStatements, type MigrationEntry } from "./migrator";
+import { type MigrationEntry, splitSqlStatements } from "./migrator";
 
 const migrationSqlModules = import.meta.glob("./migrations/*.sql", {
   eager: true,

@@ -29,8 +29,8 @@ import type {
   UpdateMyRoutineByIdRequest,
   UpdateMyRoutinesByIdsRequest,
 } from "@shared/api/interfaces/routine.interface";
-import { matchesSearch } from "@shared/lib/searchPage";
-import { generateUUID } from "@shared/types/uuidv4.type";
+import { matchesSearch } from "@shared/lib/search/searchPage";
+import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   and,
   asc,

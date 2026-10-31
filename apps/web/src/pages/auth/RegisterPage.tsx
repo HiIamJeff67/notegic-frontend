@@ -2,9 +2,16 @@ import { NotegicError } from "@shared/api/exceptions/errors";
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { getOAuthGoogleSearchParamsString } from "@shared/lib/getURL";
-import { createPendingOAuthState } from "@shared/lib/oauthState";
-import toast from "@shared/lib/toast";
+import {
+  isPendingOAuthState,
+  type PendingOAuthState,
+} from "@shared/lib/auth/redirectState.type";
+import {
+  SessionStorage,
+  SessionStorageKey,
+} from "@shared/lib/storage/sessionStorage";
+import toast from "@shared/lib/toast/toast";
+import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useRegister } from "@/api/hooks/auth.hook";
@@ -116,8 +123,20 @@ const RegisterPage = () => {
       toast.error(t("auth.turnstileRequired"));
       return;
     }
-    const state = createPendingOAuthState("register");
-    if (state === null) {
+    const bytes = new Uint8Array(32);
+    window.crypto.getRandomValues(bytes);
+    const state = Array.from(bytes, byte =>
+      byte.toString(16).padStart(2, "0")
+    ).join("");
+    const pending = {
+      state,
+      action: "register",
+      createdAt: Date.now(),
+    } satisfies PendingOAuthState;
+    if (
+      !isPendingOAuthState(pending) ||
+      !SessionStorage.setItem(SessionStorageKey.pendingOAuthState, pending)
+    ) {
       toast.error(t("error.encounterUnknownError"));
       return;
     }

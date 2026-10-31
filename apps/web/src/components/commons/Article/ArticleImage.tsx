@@ -1,5 +1,6 @@
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { useContext, useEffect, useRef, useState } from "react";
+import Image from "@/components/commons/Image/Image";
 import { Button } from "@/components/ui/button";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { ArticleScrollContext } from "./ArticleContext";
@@ -55,15 +56,15 @@ export const ArticleImage = ({
         style={{ aspectRatio: `${width} / ${height}` }}
       >
         {showImage ? (
-          <img
+          <Image
             src={src}
             alt={alt}
             width={width}
             height={height}
-            loading="lazy"
-            decoding="async"
             className="h-full w-full object-contain"
-            onError={() => setFailed(true)}
+            onLoadingStatusChange={status => {
+              if (status === "error") setFailed(true);
+            }}
           />
         ) : (
           <div

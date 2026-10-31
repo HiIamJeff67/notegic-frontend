@@ -1,4 +1,4 @@
-import { isValidUUID } from "@shared/types/uuidv4.type";
+import { isValidUUID } from "@shared/lib/uuid/uuidv4.type";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import RoutinesPage from "@/pages/app/routines/RoutinesPage";

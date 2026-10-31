@@ -49,7 +49,7 @@ const mocks: Record<string, string> = {
     language: 'en', on: (_, fn) => listeners.add(fn), off: (_, fn) => listeners.delete(fn),
     changeLanguage: async language => { i18n.language = language; listeners.forEach(fn => fn(language)); },
   }; window.i18n = i18n; export default i18n;`,
-  "@shared/lib/localStorageManipulator": `export const LocalStorageManipulator = { getItemByKey: () => null, setItem: () => {} };`,
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = { getItemByKey: () => null, setItem: () => {} };`,
   "@/api/local/cleanup": `export const cleanupLocalData = async () => {};`,
   "@/providers/MaterialAttachmentCacheProvider": `export const clearMaterialAttachmentCache = async () => {};`,
 };
@@ -81,14 +81,20 @@ describe("user settings lifecycle in Chromium", () => {
             );
             builder.onLoad(
               { filter: /.*/, namespace: "settings-test" },
-              args => ({ contents: mocks[args.path], loader: "js" })
+              args => ({
+                contents: mocks[args.path],
+                loader: "js",
+                resolveDir: process.cwd(),
+              })
             );
           },
         },
       ],
     });
     script = result.outputFiles[0].text;
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      channel: process.env.PLAYWRIGHT_CHANNEL,
+    });
   }, 30_000);
   beforeEach(async () => {
     page = await browser.newPage();

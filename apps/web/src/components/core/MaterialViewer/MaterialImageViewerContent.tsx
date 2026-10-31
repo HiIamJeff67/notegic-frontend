@@ -2,6 +2,7 @@ import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { useEffect, useState } from "react";
+import Image from "@/components/commons/Image/Image";
 import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";
@@ -37,12 +38,15 @@ const MaterialImageViewerContent = ({
       contentClassName="p-8 overflow-auto"
     >
       {contentURL && isImageAvailable ? (
-        <img
+        <Image
           src={contentURL}
           alt={meta.name}
           className="max-h-[70vh] w-auto"
-          onLoad={() => setLoadedURL(contentURL)}
-          onError={() => setIsImageAvailable(false)}
+          loading="eager"
+          onLoadingStatusChange={status => {
+            if (status === "loaded") setLoadedURL(contentURL);
+            if (status === "error") setIsImageAvailable(false);
+          }}
         />
       ) : (
         <div className="text-muted-foreground text-sm">

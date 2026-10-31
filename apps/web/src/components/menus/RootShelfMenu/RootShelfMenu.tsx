@@ -1,4 +1,4 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { Suspense } from "react";
 import RootShelfMenuItem from "@/components/menus/RootShelfMenu/RootShelfMenuItem";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";

@@ -1,9 +1,12 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { NotegicBlockPackEditor } from "@shared/blockpack";
 import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
 import { useTranslation } from "@shared/i18n/useTranslation";
+import {
+  NotegicBlockPackEditor,
+  notegicBlockPackSchema,
+} from "@shared/lib/blockpack";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { notegicBlockPackSchema } from "@/components/core/BlockPackEditor/BlockPackEditorSchema";
+import type { PatternBlock } from "@/components/core/BlockPackEditor/PatternToggleButton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,13 +24,6 @@ import CreateBlockPackPayloadEditorSidebar from "./CreateBlockPackPayloadEditorS
 import CreateBlockPackPayloadTemplateEditor from "./CreateBlockPackPayloadTemplateEditor";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
-
-export interface PatternBlock {
-  id: string;
-  type: string;
-  label: string;
-  props: Record<string, unknown>;
-}
 
 interface CreateBlockPackPayloadEditorProps {
   isOpen: boolean;

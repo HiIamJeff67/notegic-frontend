@@ -2,7 +2,7 @@ import type { Notification } from "@shared/api/interfaces/notification.interface
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/util/utils";
+import { cn } from "@shared/lib/className/cn";
 import {
   AlertCircleIcon,
   AlertTriangleIcon,

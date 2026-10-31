@@ -12,10 +12,10 @@ import type {
 } from "@shared/api/interfaces/auth.interface";
 import { UserStatus } from "@shared/api/interfaces/enums";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import { and, eq, exists, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import { RootShelf, UsersToShelves } from "@/api/local/schemas";
 import { User } from "@/api/local/schemas/user.schema";
-import { and, eq, exists, sql } from "drizzle-orm";
 
 export class AuthLocalSynchronizer {
   static async syncRegister(

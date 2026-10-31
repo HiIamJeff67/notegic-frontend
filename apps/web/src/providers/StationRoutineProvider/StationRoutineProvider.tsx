@@ -1,13 +1,9 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { UpdateRoutineTaskGraphByRoutineIdResponse } from "@shared/api/interfaces/routineTaskDependency.interface";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
-import { LRUCache } from "@shared/lib/LRUCache";
-import type { RoutineNode } from "@shared/types/routineNode.type";
-import type { RoutineTagNode } from "@shared/types/routineTagNode.type";
-import type { RoutineTaskNode } from "@shared/types/routineTaskNode.type";
-import type { StationNode } from "@shared/types/stationNode.type";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";
 import React, {
   createContext,
@@ -18,6 +14,10 @@ import React, {
   useState,
 } from "react";
 import { useUser } from "@/hooks";
+import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
+import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
+import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
+import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import { useRoutineLogic } from "./RoutineLogic";
 import { useRoutineTagLogic } from "./RoutineTagLogic";
 import { useRoutineTaskLogic } from "./RoutineTaskLogic";

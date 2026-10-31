@@ -1,5 +1,41 @@
 import { readdirSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, dirname, join } from "node:path";
+
+test("test filenames use their location and source owner without redundant categories", () => {
+  const violations: string[] = [];
+  for (const directory of [
+    "apps/web/src",
+    "shared",
+    "apps/web/test",
+    "test",
+    "scripts",
+  ]) {
+    const files = readdirSync(join(process.cwd(), directory), {
+      recursive: true,
+      encoding: "utf8",
+    });
+    for (const file of files) {
+      if (!/\.test\.(?:tsx?|mjs)$/.test(file)) continue;
+      if (/\.(?:unit|integration)\.test\./.test(file))
+        violations.push(`${directory}/${file}`);
+      if (directory !== "apps/web/src" && directory !== "shared") continue;
+      const name = basename(file).replace(/\.test\.(?:tsx?|mjs)$/, "");
+      const neighbors = readdirSync(
+        join(process.cwd(), directory, dirname(file))
+      );
+      const owner = neighbors.find(
+        candidate =>
+          /\.(?:tsx?|mjs)$/.test(candidate) &&
+          candidate.replace(/\.(?:tsx?|mjs)$/, "").toLowerCase() ===
+            name.toLowerCase()
+      );
+      if (owner && owner.replace(/\.(?:tsx?|mjs)$/, "") !== name) {
+        violations.push(`${directory}/${file}: match ${owner}`);
+      }
+    }
+  }
+  expect(violations).toEqual([]);
+});
 
 test.each([
   "shared",

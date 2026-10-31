@@ -1,8 +1,8 @@
-import { compareEntityNames } from "@shared/util/compareEntityNames";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import { ItemType } from "@shared/types/itemNodes.type";
-import { SubShelfNode } from "@shared/types/shelfNodes.type";
-import { ShelfTreeSummary } from "@shared/types/shelfTreeSummary.type";
+import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { ItemType } from "@shared/lib/shelf/itemNodes.type";
+import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
 import type { UUID } from "crypto";
 import { ChevronRightIcon } from "lucide-react";
 import { useCallback, useState, type WheelEvent } from "react";

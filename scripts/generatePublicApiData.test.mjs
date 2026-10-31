@@ -9,12 +9,12 @@ import vm from "node:vm";
 import ts from "typescript";
 
 const requiredFiles = [
-  "openapi.json",
-  "rules/authentication.md",
-  "rules/http-contract.md",
-  "rules/origins-and-security.md",
-  "rules/rate-limits-and-retries.md",
-  "rules/versioning.md",
+  "@openapi.json",
+  "@authentication.md",
+  "@http-contract.md",
+  "@origins-and-security.md",
+  "@rate-limits-and-retries.md",
+  "@versioning.md",
 ];
 
 function fixture(t) {
@@ -31,14 +31,11 @@ function fixture(t) {
     fileURLToPath(new URL("./generatePublicApiData.mjs", import.meta.url)),
     script
   );
-  const reference = path.join(
-    root,
-    "apps/web/src/pages/document/api-reference"
-  );
-  const contracts = path.join(reference, "contracts");
-  fs.mkdirSync(path.join(contracts, "rules"), { recursive: true });
+  const reference = path.join(root, "apps/web/src/pages/document/api");
+  const contracts = path.join(reference, "sources");
+  fs.mkdirSync(contracts, { recursive: true });
   fs.writeFileSync(
-    path.join(contracts, "openapi.json"),
+    path.join(contracts, "@openapi.json"),
     JSON.stringify({
       openapi: "3.1.0",
       info: { title: "API fixture", version: "1.2.3" },
@@ -83,7 +80,7 @@ function fixture(t) {
       "# Rule\n\nSummary.\n\n- Required rule.\n"
     );
   }
-  const output = path.join(reference, "generated/publicAPIData.ts");
+  const output = path.join(reference, "generated.ts");
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, "previous generated output");
   return { script, contracts, output };
@@ -136,12 +133,12 @@ for (const file of requiredFiles) {
 
 test("a directory cannot replace a required file", t => {
   const input = fixture(t);
-  const file = path.join(input.contracts, "rules/versioning.md");
+  const file = path.join(input.contracts, "@versioning.md");
   fs.unlinkSync(file);
   fs.mkdirSync(file);
   const result = run(input);
   assert.equal(result.status, 1);
-  assert.ok(result.stderr.includes("rules/versioning.md"));
+  assert.ok(result.stderr.includes("@versioning.md"));
   assert.equal(
     fs.readFileSync(input.output, "utf8"),
     "previous generated output"
@@ -151,7 +148,7 @@ test("a directory cannot replace a required file", t => {
 test("generates solely from the local six-file snapshot, regardless of working directory", t => {
   const input = fixture(t);
   fs.writeFileSync(
-    path.join(input.contracts, "rules/unused.md"),
+    path.join(input.contracts, "unused.md"),
     "# Do not publish this\n"
   );
   const result = run(input);
@@ -165,7 +162,7 @@ test("generates solely from the local six-file snapshot, regardless of working d
 
 test("keeps backend names, identifiers, and descriptions distinct without a duplicate summary", t => {
   const input = fixture(t);
-  const file = path.join(input.contracts, "openapi.json");
+  const file = path.join(input.contracts, "@openapi.json");
   const contract = JSON.parse(fs.readFileSync(file, "utf8"));
   contract.paths["/root-shelves"].get.summary = "BrowseAccessibleShelves";
   fs.writeFileSync(file, JSON.stringify(contract));
@@ -189,7 +186,7 @@ for (const [field, value] of [
 ]) {
   test(`rejects invalid ${field} (${JSON.stringify(value)}) without replacing output`, t => {
     const input = fixture(t);
-    const file = path.join(input.contracts, "openapi.json");
+    const file = path.join(input.contracts, "@openapi.json");
     const contract = JSON.parse(fs.readFileSync(file, "utf8"));
     contract.paths["/root-shelves"].get[field] = value;
     fs.writeFileSync(file, JSON.stringify(contract));
@@ -205,7 +202,7 @@ for (const [field, value] of [
 
 test("invalid JSON does not overwrite the previous output", t => {
   const input = fixture(t);
-  fs.writeFileSync(path.join(input.contracts, "openapi.json"), "invalid JSON");
+  fs.writeFileSync(path.join(input.contracts, "@openapi.json"), "invalid JSON");
   assert.notEqual(run(input).status, 0);
   assert.equal(
     fs.readFileSync(input.output, "utf8"),
@@ -219,7 +216,7 @@ test("help does not require contract files or generate output", t => {
     fs.unlinkSync(path.join(input.contracts, file));
   const result = run(input, "--help");
   assert.equal(result.status, 0, result.stderr);
-  assert.ok(result.stdout.includes("contracts/"));
+  assert.ok(result.stdout.includes("apps/web/src/pages/document/api/sources/"));
   assert.equal(
     fs.readFileSync(input.output, "utf8"),
     "previous generated output"
@@ -239,7 +236,7 @@ test("rejects legacy external input overrides", t => {
 
 test("retains all success and error specifications, including bodyless responses", t => {
   const input = fixture(t);
-  const file = path.join(input.contracts, "openapi.json");
+  const file = path.join(input.contracts, "@openapi.json");
   const contract = JSON.parse(fs.readFileSync(file, "utf8"));
   const operation = contract.paths["/root-shelves"].get;
   operation.responses[201] = {
@@ -295,7 +292,7 @@ test("retains all success and error specifications, including bodyless responses
 
 test("uses production URLs, security headers and required query values without rewriting protocol strings", t => {
   const input = fixture(t);
-  const file = path.join(input.contracts, "openapi.json");
+  const file = path.join(input.contracts, "@openapi.json");
   const contract = JSON.parse(fs.readFileSync(file, "utf8"));
   const operation = contract.paths["/root-shelves"].get;
   operation.parameters = [
@@ -352,7 +349,7 @@ test("uses production URLs, security headers and required query values without r
 
 test("includes every published resource and retains nested array fields and validation constraints", t => {
   const input = fixture(t);
-  const file = path.join(input.contracts, "openapi.json");
+  const file = path.join(input.contracts, "@openapi.json");
   const contract = JSON.parse(fs.readFileSync(file, "utf8"));
   const operation = contract.paths["/root-shelves"].get;
   operation.requestBody = {
@@ -438,7 +435,7 @@ test("includes every published resource and retains nested array fields and vali
 test("preserves public rule blocks in source order and omits known contributor-only notes", t => {
   const input = fixture(t);
   fs.writeFileSync(
-    path.join(input.contracts, "rules/rate-limits-and-retries.md"),
+    path.join(input.contracts, "@rate-limits-and-retries.md"),
     "# Public rules\n\nFirst paragraph.\n\n- A public rule.\n\nSecond paragraph: reconcile a timed-out mutation.\n\nThe server persists only a SHA-256 digest.\n\n1. Wait.\n2. Retry safely.\n\n```http\nX-RateLimit-Limit: 10\n```\n"
   );
   const result = run(input);
@@ -466,7 +463,7 @@ for (const invalid of [
 ]) {
   test(`rejects a contract without ${invalid} before replacing output`, t => {
     const input = fixture(t);
-    const file = path.join(input.contracts, "openapi.json");
+    const file = path.join(input.contracts, "@openapi.json");
     const contract = JSON.parse(fs.readFileSync(file, "utf8"));
     if (invalid === "production server")
       contract.servers = [

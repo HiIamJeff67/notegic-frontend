@@ -1,4 +1,3 @@
-import { LocalYjsDocumentStore } from "@shared/blockpack";
 import { AllLanguageData } from "@shared/constants";
 import {
   DashboardWidthFrameCountStep,
@@ -6,8 +5,9 @@ import {
   MinDashboardWidthFrameCount,
 } from "@shared/constants/widgetLayout.constant";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { formatByteSize } from "@shared/util/formatByteSize";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack";
+import { formatByteSize } from "@shared/lib/byte/byte.type";
+import toast from "@shared/lib/toast/toast";
 import { HardDriveIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
@@ -21,6 +21,11 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useMaterialAttachmentCache, useTheme } from "@/hooks";
+import { useBackgroundImages } from "@/hooks/useBackgroundImages";
+import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useRealtime } from "@/hooks/useRealtime";
+import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
+import { useUser } from "@/hooks/useUser";
 import type {
   Density,
   EditorWidth,
@@ -29,11 +34,6 @@ import {
   MaxSidebarHoverDelay,
   SidebarHoverDelayStep,
 } from "@/providers/LocalPreferencesProvider";
-import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useBackgroundImages } from "@/hooks/useBackgroundImages";
-import { useRealtime } from "@/hooks/useRealtime";
-import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
-import { useUser } from "@/hooks/useUser";
 import { Section, SettingRow, SwitchRow } from "./tabs/PreferenceRows";
 
 type PreferenceSettingsLayout = "panel" | "article";

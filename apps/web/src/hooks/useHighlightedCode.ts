@@ -1,4 +1,4 @@
-import { loadHighlighter } from "@shared/lib/codeHighlighter";
+import { loadHighlighter } from "@shared/lib/code/codeHighlighter";
 import * as React from "react";
 import type { ThemedToken } from "shiki/core";
 

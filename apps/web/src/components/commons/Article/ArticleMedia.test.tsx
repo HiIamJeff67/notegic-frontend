@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ArticleImage } from "./ArticleImage";
 import { ArticleVideo } from "./ArticleVideo";
 
+jest.mock("@/global/styles/image.css", () => ({}));
 jest.mock("@/hooks/useLocalPreferences", () => ({
   useLocalPreferences: () => ({ preferences: { reduceMotion: false } }),
 }));
@@ -21,6 +22,8 @@ test("SSR loads video frames eagerly while deferring images and GIFs", () => {
   );
   expect(image).toContain('loading="lazy"');
   expect(image).toContain('decoding="async"');
+  expect(image).toContain('data-loading-status="loading"');
+  expect(image).toContain('data-slot="image"');
   expect(image).toContain('width="1600" height="1200"');
   const gif = renderToStaticMarkup(
     <ArticleImage {...props} src="/example.gif" animated />

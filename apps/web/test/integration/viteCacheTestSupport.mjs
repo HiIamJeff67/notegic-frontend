@@ -42,10 +42,10 @@ try {
     join(repository, "apps/web/vite.config.ts"),
     join(root, "vite.config.ts")
   );
-  await mkdir(join(temporary, "shared/lib"), { recursive: true });
+  await mkdir(join(temporary, "shared/lib/browser"), { recursive: true });
   await copyFile(
-    join(repository, "shared/lib/crossOriginIsolation.ts"),
-    join(temporary, "shared/lib/crossOriginIsolation.ts")
+    join(repository, "shared/lib/browser/crossOriginIsolation.ts"),
+    join(temporary, "shared/lib/browser/crossOriginIsolation.ts")
   );
 
   delete process.env.NOTEGIC_VITE_CACHE_DIR;

@@ -1,7 +1,7 @@
 import {
   classifyLocalDBError,
-  createLocalDBDiagnosticsExport,
   createLocalDataExport,
+  createLocalDBDiagnosticsExport,
   isOPFSMissingFileError,
 } from "./recovery";
 

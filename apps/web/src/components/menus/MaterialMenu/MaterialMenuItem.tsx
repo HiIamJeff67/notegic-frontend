@@ -1,9 +1,9 @@
 import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/i18n/useTranslation";
-import toast from "@shared/lib/toast";
-import { MaterialNode } from "@shared/types/itemNodes.type";
-import { SubShelfNode } from "@shared/types/shelfNodes.type";
+import { MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
+import toast from "@shared/lib/toast/toast";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
