@@ -1,4 +1,4 @@
-import { WebURLPathDictionary } from "@shared/constants";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { KeyRoundIcon } from "lucide-react";
 import {
   ArticleLink,

@@ -1,5 +1,5 @@
-import { formatTimezone } from "@shared/i18n/timezone";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { formatTimezone } from "@shared/lib/time/timezone";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import {
   ClockSetting,

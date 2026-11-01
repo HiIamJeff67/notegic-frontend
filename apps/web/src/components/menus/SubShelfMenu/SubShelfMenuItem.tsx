@@ -1,6 +1,6 @@
-import { MaxShelfDepth } from "@shared/constants";
+import { MaxShelfDepth } from "@shared/lib/shelf/limits";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { SubShelf } from "@shared/lib/shelf/subShelf";

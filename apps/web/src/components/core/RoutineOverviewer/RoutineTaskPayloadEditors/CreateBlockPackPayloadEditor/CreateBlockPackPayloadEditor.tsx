@@ -1,6 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import {
   NotegicBlockPackEditor,
   notegicBlockPackSchema,

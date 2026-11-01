@@ -4,9 +4,9 @@ import {
   SearchRoutineRecordSortBy,
 } from "@shared/api/graphql/generated/graphql";
 import { RoutineRecordStatus } from "@shared/api/interfaces/enums";
-import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { routineRecordStatusTKeys } from "@shared/i18n/tKeys/routineRecordStatus.tKey";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { Activity, Eye } from "lucide-react";

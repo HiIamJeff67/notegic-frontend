@@ -1,6 +1,9 @@
 import { UserPlan } from "@shared/api/interfaces/enums";
-import { type PlanLimitation, PlanLimitations } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import {
+  type PlanLimitation,
+  PlanLimitations,
+} from "@shared/api/interfaces/types/planLimitation.type";
+import { useTranslation } from "@/hooks/useTranslation";
 import { formatByteSize } from "@shared/lib/byte/byte.type";
 import {
   CheckIcon,

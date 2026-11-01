@@ -1,10 +1,10 @@
-import { WebURLPathDictionary } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useMemo } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { Button } from "@/components/ui/button";
 import { useAppRouter } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function RedirectErrorPage() {
   const location = useLocation();

@@ -1,7 +1,7 @@
-import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
-import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
+import { cn } from "@shared/lib/classname/cn";
 import { Bookmark } from "lucide-react";
 import type { PointerEvent } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";

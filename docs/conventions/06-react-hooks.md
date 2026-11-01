@@ -50,7 +50,7 @@ and [Loading feedback](01-ui.md#loading-feedback).
 ## Shared hook rule
 
 React translations must use `useTranslation` from
-`@shared/i18n/useTranslation`, not the vendor hook directly. See
+`@/hooks/useTranslation`, not the vendor hook directly. See
 [Translation entry points](10-translations.md) for current-language async
 translation, memo dependencies, and non-React boundaries.
 

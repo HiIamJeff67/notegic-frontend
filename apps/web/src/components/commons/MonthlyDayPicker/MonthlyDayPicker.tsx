@@ -1,4 +1,4 @@
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { Button } from "@/components/ui/button";
 
 interface MonthlyDayPickerProps {

@@ -2,7 +2,7 @@ import type { BlockNoteEditor } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import {
   type PatternBlock,

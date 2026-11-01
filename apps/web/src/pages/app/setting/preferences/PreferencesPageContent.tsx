@@ -1,10 +1,10 @@
-import { AllLanguageData } from "@shared/constants";
+import { AllLanguageData } from "@shared/i18n/availableLanguages";
 import {
   DashboardWidthFrameCountStep,
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
-} from "@shared/constants/widgetLayout.constant";
-import { useTranslation } from "@shared/i18n/useTranslation";
+} from "@/components/widgets/layout";
+import { useTranslation } from "@/hooks/useTranslation";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack";
 import { formatByteSize } from "@shared/lib/byte/byte.type";
 import toast from "@shared/lib/toast/toast";

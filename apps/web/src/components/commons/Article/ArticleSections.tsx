@@ -1,4 +1,4 @@
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import type { CSSProperties, HTMLAttributes } from "react";
 import { createContext, useContext } from "react";
 import { Separator } from "@/components/ui/separator";

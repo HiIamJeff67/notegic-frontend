@@ -3,7 +3,10 @@ import {
   UserSettingStartSurface,
 } from "@shared/api/interfaces/enums";
 import type { UserSetting } from "@shared/api/interfaces/userSetting.interface";
-import { AllLanguageData, LanguageKeyMap } from "@shared/constants";
+import {
+  AllLanguageData,
+  LanguageKeyMap,
+} from "@shared/i18n/availableLanguages";
 import { useEffect, useRef } from "react";
 import {
   getClientMutationHeaders,

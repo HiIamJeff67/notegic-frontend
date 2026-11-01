@@ -10,7 +10,7 @@ import {
 import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.interface";
 import { CreateStationRequestSchema } from "@shared/api/interfaces/station.interface";
 import { parseRequest } from "@shared/api/validation";
-import { MaxSearchLimit } from "@shared/constants";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";

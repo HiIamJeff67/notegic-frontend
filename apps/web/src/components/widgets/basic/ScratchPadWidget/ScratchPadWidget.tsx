@@ -1,6 +1,6 @@
 // src/components/widgets/basic/ScratchPadWidget/ScratchPadWidget.tsx
 
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { getDefaultScratchPadData } from "@widgets/basic/ScratchPadWidget/data/scratchPadData";
 import { getDefaultScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import DOMPurify from "dompurify";

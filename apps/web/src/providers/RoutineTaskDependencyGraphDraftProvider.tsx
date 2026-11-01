@@ -17,8 +17,8 @@ import type {
 import { UpdateRoutineTaskGraphByRoutineIdResponseSchema } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { replaceEqualDeep } from "@tanstack/react-query";
 import {

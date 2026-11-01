@@ -1,12 +1,12 @@
 import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
 import toast from "@shared/lib/toast/toast";
-import { cn } from "@shared/lib/className/cn";
 import {
   CheckIcon,
   ChevronDownIcon,

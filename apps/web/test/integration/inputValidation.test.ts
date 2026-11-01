@@ -11,7 +11,7 @@ import { build } from "esbuild";
 const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FakeUser, FakeUserInfo } from '@shared/constants';
+import { FakeUser, FakeUserInfo } from "@shared/constants/defaultUser.constant";
 import i18n from '@/i18n';
 import AccountTab from '@/pages/app/setting/account/tabs/AccountTab';
 import ProfileTab from '@/pages/app/setting/account/tabs/ProfileTab';

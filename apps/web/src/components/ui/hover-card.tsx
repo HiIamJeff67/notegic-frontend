@@ -1,7 +1,7 @@
 "use client";
 
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import * as React from "react";
 import { useMobile } from "@/hooks/useMobile";
 

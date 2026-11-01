@@ -1,12 +1,12 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { IntChart } from "@shared/lib/charts";
 import {
   useVisualizeMyRoutinePeriodCount,
   useVisualizeMyRoutineScheduledEndAtCount,
   useVisualizeMyRoutineScheduledStartAtCount,
   useVisualizeMyRoutineStatusCount,
 } from "@/api/hooks/routine.hook";
+import { IntChart } from "@/components/charts";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { RoutineChartType } from "./RoutineCharts";
 

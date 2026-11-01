@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { PlusIcon, SquarePen, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import SeparatableTable from "@/components/commons/SeparatableTable/SeparatableTable";

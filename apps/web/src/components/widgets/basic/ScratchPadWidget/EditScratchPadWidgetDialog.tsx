@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import { Dispatch, lazy, SetStateAction } from "react";
 import { DeferredSuspense } from "@/components/commons/DeferredSuspense/DeferredSuspense";

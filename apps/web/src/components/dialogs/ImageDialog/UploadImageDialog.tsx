@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
 import Closeable from "@/components/commons/Closeable/Closeable";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";

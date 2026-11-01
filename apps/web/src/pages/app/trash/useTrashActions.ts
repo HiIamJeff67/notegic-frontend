@@ -2,7 +2,7 @@ import type { UUID } from "node:crypto";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { useRef, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";

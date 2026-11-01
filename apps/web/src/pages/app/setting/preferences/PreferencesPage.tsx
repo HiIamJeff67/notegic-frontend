@@ -1,10 +1,9 @@
-import { WebURLPathDictionary } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import { cn } from "@shared/lib/className/cn";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 import {
@@ -21,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouterActions, useScreen, useSettingsDisplay } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   AppearanceSettings,
   DashboardSettings,

@@ -1,7 +1,7 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import toast from "@shared/lib/toast/toast";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";

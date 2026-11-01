@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { TimerSetting } from "@widgets/basic/TimerWidget/setting/timerSetting";
 import { Dispatch, SetStateAction } from "react";
 import {

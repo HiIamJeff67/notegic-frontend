@@ -7,7 +7,7 @@ import {
   useExtensionState,
 } from "@blocknote/react";
 import { components as blockNoteShadcnComponents } from "@blocknote/shadcn";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { EllipsisVerticalIcon, GripVerticalIcon } from "lucide-react";
 import type { ReactNode } from "react";
 

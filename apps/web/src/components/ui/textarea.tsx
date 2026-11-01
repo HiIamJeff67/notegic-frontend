@@ -1,4 +1,4 @@
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import * as React from "react";
 
 const Textarea = React.forwardRef<

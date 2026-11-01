@@ -1,17 +1,16 @@
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   isPendingOAuthState,
   type PendingOAuthState,
-} from "@shared/lib/auth/redirectState.type";
+} from "@shared/lib/auth/oauthState.type";
 import {
   SessionStorage,
   SessionStorageKey,
 } from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useCallback, useMemo, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
@@ -39,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface BindTabProps {
   layout?: "panel" | "page";

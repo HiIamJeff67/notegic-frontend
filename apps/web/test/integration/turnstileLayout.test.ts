@@ -57,7 +57,7 @@ window.root.render(<Fixture />);
 
 const mocks: Record<string, string> = {
   "@/hooks/useTheme": `export const useTheme = () => ({ currentTheme: { isDark: true } });`,
-  "@shared/i18n/useTranslation": `export const useTranslation = () => ({ t: key => key });`,
+  "@/hooks/useTranslation": `export const useTranslation = () => ({ t: key => key });`,
 };
 
 describe("Turnstile container sizing in Chromium", () => {

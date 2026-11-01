@@ -2,8 +2,8 @@ import {
   AllRoutinePeriods,
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
-import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";

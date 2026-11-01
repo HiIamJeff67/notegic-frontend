@@ -40,7 +40,7 @@ window.mount = surface => root.render(<React.StrictMode>
 `;
 
 const mocks: Record<string, string> = {
-  "@shared/i18n/useTranslation":
+  "@/hooks/useTranslation":
     "const t = key => key; export const useTranslation = () => ({ t });",
   "@shared/i18n/error": "export const tError = () => 'Fixture error';",
   "@shared/lib/toast/toast":

@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { UUID } from "crypto";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 

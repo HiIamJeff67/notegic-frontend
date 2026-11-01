@@ -5,8 +5,8 @@ import {
   SearchStationSortBy,
   SearchSubShelfSortBy,
 } from "@shared/api/graphql/generated/graphql";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useRef, useState } from "react";

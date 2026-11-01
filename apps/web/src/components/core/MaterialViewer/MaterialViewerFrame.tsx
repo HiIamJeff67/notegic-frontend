@@ -1,9 +1,9 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import toast from "@shared/lib/toast/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
-import { cn } from "@shared/lib/className/cn";
 import {
   ChevronDownIcon,
   Copy,

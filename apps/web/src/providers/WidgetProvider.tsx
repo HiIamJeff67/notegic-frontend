@@ -1,6 +1,6 @@
-import { MaxTriggerValue } from "@shared/constants";
+import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   LocalStorage,
   LocalStorageKey,

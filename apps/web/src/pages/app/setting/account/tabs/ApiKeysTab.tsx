@@ -2,8 +2,8 @@ import type {
   APIKeySummary,
   CreateMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";

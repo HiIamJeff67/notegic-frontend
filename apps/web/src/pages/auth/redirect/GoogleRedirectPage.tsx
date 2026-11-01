@@ -1,16 +1,15 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   isPendingOAuthState,
   type OAuthAction,
   oauthStatePattern,
-} from "@shared/lib/auth/redirectState.type";
+} from "@shared/lib/auth/oauthState.type";
 import {
   SessionStorage,
   SessionStorageKey,
 } from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -25,6 +24,7 @@ import {
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useAppRouter, useUser } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useTranslation } from "@/hooks/useTranslation";
 import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
 
 function GoogleRedirectPage() {

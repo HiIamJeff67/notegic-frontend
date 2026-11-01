@@ -1,11 +1,10 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import {
   BookOpenIcon,
   ChevronDown,
@@ -83,6 +82,7 @@ import {
   useStationRoutine,
 } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { type SettingsPage } from "@/providers/SettingsDisplayProvider";
 

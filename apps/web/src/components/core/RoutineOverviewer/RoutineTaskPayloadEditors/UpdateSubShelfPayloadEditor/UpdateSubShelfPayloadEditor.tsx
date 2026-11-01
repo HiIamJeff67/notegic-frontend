@@ -1,5 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

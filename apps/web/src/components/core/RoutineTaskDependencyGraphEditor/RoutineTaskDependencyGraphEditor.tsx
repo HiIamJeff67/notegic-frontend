@@ -1,9 +1,9 @@
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
-import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
-import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
-import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { type Edge, type ReactFlowInstance } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";

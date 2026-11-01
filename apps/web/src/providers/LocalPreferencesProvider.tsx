@@ -1,14 +1,14 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import {
   DashboardWidthFrameCountStep,
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
-} from "@shared/constants/widgetLayout.constant";
+} from "@/components/widgets/layout";
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import React, { createContext, useEffect, useState } from "react";
 import { cleanupLocalData } from "@/api/local/cleanup";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";

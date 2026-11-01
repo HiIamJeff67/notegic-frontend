@@ -11,7 +11,7 @@ import { build } from "esbuild";
 const fixture = `
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useTranslation } from '@shared/i18n/useTranslation';
+import { useTranslation } from '@/hooks/useTranslation';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
 import { Toaster } from '@/components/ui/toaster';

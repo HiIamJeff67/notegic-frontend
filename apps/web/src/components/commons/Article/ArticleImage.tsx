@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useContext, useEffect, useRef, useState } from "react";
 import Image from "@/components/commons/Image/Image";
 import { Button } from "@/components/ui/button";

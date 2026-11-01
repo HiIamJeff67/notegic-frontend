@@ -1,5 +1,5 @@
-import { DefaultThemes } from "@shared/constants";
-import { ThemeData } from "@shared/types/theme.type";
+import { DefaultThemes } from "@shared/lib/theme/defaults";
+import { ThemeData } from "@shared/lib/theme/theme.type";
 import { useCallback, useState } from "react";
 
 export const useThemeStore = () => {

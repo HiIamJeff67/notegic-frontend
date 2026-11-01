@@ -6,10 +6,12 @@ import {
   BytesOfObjectHeader,
   BytesOfPtr,
   BytesOfUUIDString,
+} from "@shared/lib/byte/byte.type";
+import { MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+import {
   MaxMaterialsOfRootShelf,
   MaxSubShelvesOfRootShelf,
-} from "@shared/constants";
-import { MaterialNode } from "@shared/lib/shelf/itemNodes.type";
+} from "@shared/lib/shelf/limits";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import {
   AnalysisStatus,

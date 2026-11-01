@@ -3,18 +3,18 @@ import {
   AccessControlPermission,
   RealtimePermission,
 } from "@shared/api/interfaces/enums";
-import { WebURLPathDictionary } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME,
   NotegicBlockPackEditor,
   notegicBlockPackSchema,
 } from "@shared/lib/blockpack";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { createContext, useCallback, useEffect, useMemo } from "react";
 import type * as Y from "yjs";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useBlockPackRealtimeChannel, useRealtime } from "@/hooks/useRealtime";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 const getBlockNoteXmlFragment = (doc: Y.Doc) =>

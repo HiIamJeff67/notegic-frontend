@@ -8,7 +8,7 @@ import {
 import { SupportedIcon } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTagByIdRequest } from "@shared/api/interfaces/routineTag.interface";
 import { CreateRoutineTagRequestSchema } from "@shared/api/interfaces/routineTag.interface";
-import { MaxSearchLimit } from "@shared/constants";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";

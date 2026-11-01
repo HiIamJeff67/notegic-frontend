@@ -1,5 +1,5 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { useEffect, useState } from "react";
 import Image from "@/components/commons/Image/Image";

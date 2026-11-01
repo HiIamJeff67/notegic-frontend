@@ -1,7 +1,5 @@
 import { GetMyAccountResponseSchema } from "./userAccount.interface";
 import { GetMyQuotaResponseSchema } from "./userQuota.interface";
-import { UserPlan } from "./enums";
-import { PlanLimitations } from "@shared/constants";
 
 describe("account and quota response contracts", () => {
   test("decodes account fields separately from quota counters", () => {
@@ -41,16 +39,4 @@ describe("account and quota response contracts", () => {
     expect(account.data).not.toHaveProperty("rootShelfCount");
     expect(quota.data.routineTaskExecutionMinutesUsed).toBe(10);
   });
-});
-
-test("execution-minute limits match every plan", () => {
-  expect(
-    [
-      UserPlan.Free,
-      UserPlan.Pro,
-      UserPlan.Premium,
-      UserPlan.Ultimate,
-      UserPlan.Enterprise,
-    ].map(plan => PlanLimitations[plan].maxRoutineTaskExecutionMinutes)
-  ).toEqual([100, 300, 500, 1000, 2000]);
 });

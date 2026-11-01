@@ -1,4 +1,4 @@
-import type { PendingOAuthState } from "@shared/lib/auth/redirectState.type";
+import type { PendingOAuthState } from "@shared/lib/auth/oauthState.type";
 
 export enum SessionStorageKey {
   csrfToken = "CSRFToken",

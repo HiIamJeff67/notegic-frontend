@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   getDefaultTodoData,

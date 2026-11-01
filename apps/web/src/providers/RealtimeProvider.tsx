@@ -18,7 +18,7 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast/toast";

@@ -92,3 +92,28 @@ test("project module imports and aliases stay inside the frontend repository", (
   expect(sources.length).toBeGreaterThan(0);
   expect(violations).toEqual([]);
 });
+
+test("shared i18n stays independent of React and Web hooks", () => {
+  const files = ts.sys.readDirectory(
+    resolve(process.cwd(), "shared/i18n"),
+    [".ts", ".tsx"],
+    ["**/*.test.ts", "**/*.test.tsx"]
+  );
+  const violations: string[] = [];
+  for (const file of files) {
+    for (const imported of ts.preProcessFile(ts.sys.readFile(file)!, true, true)
+      .importedFiles) {
+      if (
+        /^(?:react(?:-dom|-i18next)?(?:\/|$)|@\/|@shared\/hooks\/)/.test(
+          imported.fileName
+        )
+      ) {
+        violations.push(
+          `${relative(process.cwd(), file)}: ${imported.fileName}`
+        );
+      }
+    }
+  }
+  expect(files.length).toBeGreaterThan(0);
+  expect(violations).toEqual([]);
+});

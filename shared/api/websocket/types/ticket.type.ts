@@ -1,5 +1,5 @@
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
-import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import { RealtimeProtocolVersion } from "@shared/api/websocket/version";
 import type { z } from "zod";
 
 export type RealtimeConnectionTicket = {

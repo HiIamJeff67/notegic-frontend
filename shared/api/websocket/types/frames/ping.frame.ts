@@ -1,4 +1,4 @@
-import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import { RealtimeProtocolVersion } from "@shared/api/websocket/version";
 
 export type RealtimePingFrame = {
   version: typeof RealtimeProtocolVersion;

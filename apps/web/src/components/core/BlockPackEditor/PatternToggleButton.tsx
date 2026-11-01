@@ -1,7 +1,7 @@
 import { SideMenuExtension } from "@blocknote/core/extensions";
 import { useExtensionState } from "@blocknote/react";
 import { components as blockNoteShadcnComponents } from "@blocknote/shadcn";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Form, XIcon } from "lucide-react";
 
 export interface PatternBlock {

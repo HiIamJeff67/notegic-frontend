@@ -1,12 +1,12 @@
-import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
+import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
 import toast from "@shared/lib/toast/toast";
-import { cn } from "@shared/lib/className/cn";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -30,6 +30,7 @@ import {
   useSettingsDisplay,
   useUser,
 } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
 import ApiKeysTab from "./tabs/ApiKeysTab";

@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { GuideData, getDefaultGuideData } from "@widgets/guide/data/guideData";
 import { WidgetProps } from "@widgets/widget";
 import {

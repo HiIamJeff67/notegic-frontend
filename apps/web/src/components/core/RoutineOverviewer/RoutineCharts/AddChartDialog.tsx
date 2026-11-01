@@ -1,10 +1,9 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
+import { IntChart } from "@/components/charts";
 import type {
   TwoDimensionalChartType,
   TwoDimensionalData,
-} from "@shared/lib/charts";
-import { IntChart } from "@shared/lib/charts";
-import { cn } from "@shared/lib/className/cn";
+} from "@/components/charts/BaseChart/BaseChart.type";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   CHART_DEFINITIONS,
   type NewRoutineOverviewChart,

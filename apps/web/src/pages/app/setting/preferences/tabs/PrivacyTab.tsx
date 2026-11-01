@@ -1,5 +1,5 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";

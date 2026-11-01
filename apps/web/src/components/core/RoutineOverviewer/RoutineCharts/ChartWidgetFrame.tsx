@@ -1,4 +1,3 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ChartWidgetFrameProps<TValue extends string> {
   title: string;

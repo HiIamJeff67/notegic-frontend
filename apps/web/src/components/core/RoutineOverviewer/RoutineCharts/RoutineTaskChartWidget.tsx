@@ -1,7 +1,7 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { IntChart } from "@shared/lib/charts";
 import { useVisualizeMyRoutineTaskPurposeCount } from "@/api/hooks/routineTask.hook";
+import { IntChart } from "@/components/charts";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { RoutineTaskChartType } from "./RoutineCharts";
 

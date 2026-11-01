@@ -11,10 +11,10 @@ import type {
   RoutineTaskPurpose as TaskPurpose,
   RoutineTaskRecordStatus as TaskStatus,
 } from "@shared/api/interfaces/enums";
-import { routineRecordStatusTKeys } from "@shared/i18n/enums/routineRecordStatus.tKey";
-import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
-import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routineRecordStatusTKeys } from "@shared/i18n/tKeys/routineRecordStatus.tKey";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import { ListFilter } from "lucide-react";
 import { useId } from "react";
 import DatePicker from "@/components/commons/DatePicker/DatePicker";

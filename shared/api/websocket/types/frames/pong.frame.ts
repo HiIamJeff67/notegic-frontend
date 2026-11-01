@@ -1,6 +1,6 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { RealtimeError } from "@shared/api/exceptions/client/realtime.exception";
-import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import { RealtimeProtocolVersion } from "@shared/api/websocket/version";
 
 export type RealtimePongFrame = {
   version: typeof RealtimeProtocolVersion;

@@ -43,7 +43,7 @@ const mocks: Record<string, string> = {
   "@/api/hooks/userInfo.hook": `export const useGetMyInfo = () => ({ fetch: async () => ({ data: {} }) });`,
   "@/api/hooks/userAccount.hook": `export const useGetMyAccount = () => ({ fetch: async () => ({ data: {} }) });`,
   "@/api/hooks/userQuota.hook": `const querier = { fetch: async () => ({ data: {} }) }; export const useGetMyQuota = () => querier;`,
-  "@shared/i18n/useTranslation": `const t = key => key; export const useTranslation = () => ({ t });`,
+  "@/hooks/useTranslation": `const t = key => key; export const useTranslation = () => ({ t });`,
   "@shared/lib/toast/toast": `export default { error: message => window.state.messages.push(message) };`,
   "@/providers/MaterialAttachmentCacheProvider": `export const clearMaterialAttachmentCache = async () => { window.state.clears++; };`,
 };

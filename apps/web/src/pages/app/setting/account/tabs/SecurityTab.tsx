@@ -1,7 +1,7 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import { UserRole } from "@shared/api/interfaces/enums";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { useCallback, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";

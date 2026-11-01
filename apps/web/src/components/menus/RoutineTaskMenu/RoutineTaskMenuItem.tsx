@@ -1,7 +1,7 @@
-import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
-import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";

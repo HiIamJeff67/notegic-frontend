@@ -1,23 +1,4 @@
-import { compare } from "../string/compare";
-
-type Key = string | number | null;
-
-type SearchInput = {
-  query: string;
-  first?: number | null;
-  after?: string | null;
-  sortBy?: string | null;
-  sortOrder?: string | null;
-};
-
-type Position = {
-  version: number;
-  scope: string;
-  sortBy: string;
-  sortOrder: string;
-  filters: Record<string, unknown>;
-  values: Key[];
-};
+import * as string from "../string/compare";
 
 const createCursorFilters = (input: Record<string, unknown>) => {
   const filters: Record<string, unknown> = {};
@@ -36,19 +17,6 @@ const createCursorFilters = (input: Record<string, unknown>) => {
     }
   }
   return filters;
-};
-
-const compareKeys = (left: Key, right: Key): number => {
-  if (left === right) return 0;
-  if (left === null) return 1;
-  if (right === null) return -1;
-  if (typeof left === "number" && typeof right === "number") {
-    return left < right ? -1 : 1;
-  }
-  if (typeof left !== "string" || typeof right !== "string") {
-    throw new Error("Invalid search cursor key type.");
-  }
-  return compare(left, right);
 };
 
 export const searchPage = <T extends { id: string }, Input extends SearchInput>(
@@ -99,11 +67,21 @@ export const searchPage = <T extends { id: string }, Input extends SearchInput>(
   }
   const compare = (left: Key[], right: Key[]) => {
     for (let index = 0; index < left.length; index++) {
-      const result = compareKeys(left[index], right[index]);
-      if (result !== 0) {
-        if (left[index] === null || right[index] === null) return result;
-        return sortOrder === "DESC" ? -result : result;
+      const a = left[index];
+      const b = right[index];
+      if (a === b) continue;
+      if (a === null) return 1;
+      if (b === null) return -1;
+
+      let result: number;
+      if (typeof a === "number" && typeof b === "number") {
+        result = a < b ? -1 : 1;
+      } else if (typeof a === "string" && typeof b === "string") {
+        result = string.compare(a, b);
+      } else {
+        throw new Error("Invalid search cursor key type.");
       }
+      if (result !== 0) return sortOrder === "DESC" ? -result : result;
     }
     return 0;
   };
@@ -185,4 +163,23 @@ export const matchesSearch = (value: string, query: string): boolean => {
     escaped = false;
   }
   return new RegExp(`^${pattern}$`, "isu").test(value);
+};
+
+type Key = string | number | null;
+
+type SearchInput = {
+  query: string;
+  first?: number | null;
+  after?: string | null;
+  sortBy?: string | null;
+  sortOrder?: string | null;
+};
+
+type Position = {
+  version: number;
+  scope: string;
+  sortBy: string;
+  sortOrder: string;
+  filters: Record<string, unknown>;
+  values: Key[];
 };

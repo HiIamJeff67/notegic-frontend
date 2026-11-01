@@ -198,7 +198,7 @@ or write database state for another runtime.
 `shared/i18n/language.ts` owns supported-language types and checks.
 `shared/i18n/index.ts` owns shared resources and pure helpers. Each app owns
 stored-language synchronization and supplies its own storage/lifecycle adapter.
-React consumers use the explicit `shared/i18n/useTranslation.ts` adapter; it
+React consumers use the explicit `apps/web/src/hooks/useTranslation.ts` adapter; it
 does not initialize i18next or access storage. See
 [Translation entry points](../../conventions/10-translations.md).
 Portable reducers can move to `shared/reducers/`; reducers that depend on an

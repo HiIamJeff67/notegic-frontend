@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import RoutineRecordTable from "@/components/core/RoutineOverviewer/RoutineRecordTable/RoutineRecordTable";
 import RoutineTaskInspector from "@/components/inspectors/RoutineTaskInspector";
 
-jest.mock("@shared/i18n/useTranslation", () => ({
+jest.mock("@/hooks/useTranslation", () => ({
   useTranslation: () => ({
     i18n: { resolvedLanguage: "en" },
     t: (key: string) => key,

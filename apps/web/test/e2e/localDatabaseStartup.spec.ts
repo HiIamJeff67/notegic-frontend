@@ -30,6 +30,7 @@ test("@environment starts the local database without migration errors", async ({
   });
 
   const localDatabaseErrors: string[] = [];
+  const errorCauses: Promise<unknown>[] = [];
   const pages = [page, await page.context().newPage()];
 
   for (const currentPage of pages) {
@@ -41,6 +42,25 @@ test("@environment starts the local database without migration errors", async ({
         )
       ) {
         localDatabaseErrors.push(message.text());
+        errorCauses.push(
+          Promise.all(
+            message.args().map(argument =>
+              argument.evaluate(value => {
+                const chain: { name?: string; message: string }[] = [];
+                let error: unknown = value;
+                for (
+                  let depth = 0;
+                  error instanceof Error && depth < 8;
+                  depth++
+                ) {
+                  chain.push({ name: error.name, message: error.message });
+                  error = error.cause;
+                }
+                return chain.length ? chain : String(value);
+              })
+            )
+          ).catch(error => String(error))
+        );
       }
     });
 
@@ -117,6 +137,28 @@ test("@environment starts the local database without migration errors", async ({
       });
       expect(marker).toEqual([{ name: "Startup marker" }]);
     }
+  }
+  if (localDatabaseErrors.length) {
+    await test.info().attach("local-database-startup-errors", {
+      body: JSON.stringify(
+        {
+          errors: localDatabaseErrors,
+          causes: await Promise.all(errorCauses),
+          diagnostics: await Promise.all(
+            pages.map(currentPage =>
+              currentPage.evaluate(async () => {
+                const path = "/src/api/local/db.ts";
+                const { localDB } = await import(/* @vite-ignore */ path);
+                return localDB.getDiagnostics();
+              })
+            )
+          ),
+        },
+        null,
+        2
+      ),
+      contentType: "application/json",
+    });
   }
   expect(localDatabaseErrors).toEqual([]);
 

@@ -3,7 +3,7 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
-import { RealtimeProtocolVersion } from "@shared/constants/version.constants";
+import { RealtimeProtocolVersion } from "@shared/api/websocket/version";
 import { z } from "zod";
 
 export const CreateMyRealtimeConnectionTicketRequestSchema =

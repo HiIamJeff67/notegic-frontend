@@ -1,5 +1,5 @@
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import type { AnchorHTMLAttributes } from "react";
 

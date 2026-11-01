@@ -1,5 +1,5 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { UUID } from "crypto";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,6 +1,6 @@
 // Generated from apps/web/src/pages/document/versions/sources/versions.md; run npm run generate:document.
 
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import {
   ArticleSubParagraph,
   ArticleSubParagraphContent,

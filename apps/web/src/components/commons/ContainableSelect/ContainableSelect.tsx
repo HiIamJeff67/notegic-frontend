@@ -1,5 +1,5 @@
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { useRef, useState } from "react";
 

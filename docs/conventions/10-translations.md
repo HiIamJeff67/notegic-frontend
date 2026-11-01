@@ -2,26 +2,29 @@
 
 Use one project-owned React translation entry point for UI labels, validation
 messages, and notifications. This convention applies to Web components,
-providers, custom hooks, and shared React components.
+providers and custom hooks.
 
 ## Ownership and imports
 
 | Responsibility | Entry point |
 | --- | --- |
-| React translation and language subscription | `@shared/i18n/useTranslation` |
+| React translation and language subscription | `@/hooks/useTranslation` |
 | Shared resources and supported languages | `@shared/i18n` |
 | Error presentation | `@shared/i18n/error` (`tError`) |
-| Enum-to-key mappings | `@shared/i18n/enums/<enumName>.tKey` |
+| Enum-to-key mappings | `@shared/i18n/tKeys/<enumName>.tKey` |
 | Web instance initialization | `apps/web/src/i18n/index.ts` (`@/i18n`) |
 | Account language restoration and persistence | `UserSettingsProvider` |
 
 Import `useTranslation` directly from the project module, not from
 `react-i18next`. Do not import the Web singleton just to translate inside React
-code. The hook is not re-exported from the shared resource index: loading
-resources in a non-React environment must not load the React adapter.
+code. The React-specific adapter and its test live in `apps/web/src/hooks/`,
+outside the framework-neutral `shared/i18n/` package. Non-React desktop/mobile
+consumers use the i18n core without importing a Web hook. Shared code must not
+import `@/hooks/useTranslation`; React chart rendering belongs to Web's
+`components/charts/` and uses the Web hook there.
 
 ```tsx
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function SaveButton() {
   const { t } = useTranslation();
@@ -65,7 +68,7 @@ renders with an unchanged translation snapshot retain the same reference.
 
 ```tsx
 import { useMemo } from "react";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function SaveLabel() {
   const { t } = useTranslation();
@@ -95,7 +98,7 @@ reuse that string after the language may have changed.
 
 ```tsx
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import toast from "@shared/lib/toast/toast";
 
 function SaveAction({ save }: { save: () => Promise<void> }) {
@@ -204,8 +207,8 @@ Translate directly where the value is rendered:
 
 ```tsx
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
-import { routineTaskRecordStatusTKeys } from "@shared/i18n/enums/routineTaskRecordStatus.tKey";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function Status({ status }: { status: RoutineTaskRecordStatus }) {
   const { t } = useTranslation();
@@ -242,7 +245,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 
 ## Contributor and agent checklist
 
-1. Use `@shared/i18n/useTranslation` in every new React translation caller.
+1. Use `@/hooks/useTranslation` in every new React translation caller.
 2. Add or update keys in the appropriate shared resource group and all five
    locales. Preserve key/interpolation types; do not bypass them with `any`.
 3. Keep `tError` and enum-to-key mappings as the existing presentation helpers.
@@ -254,7 +257,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 6. Verify with `npm run typecheck` and:
 
    ```sh
-   npm run test:unit -- shared/i18n/useTranslation.test.tsx shared/i18n/error.test.ts shared/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
+   npm run test:unit -- apps/web/src/hooks/useTranslation.test.tsx shared/i18n/error.test.ts shared/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
    ```
 
 The Chromium integration test uses an isolated browser and mocked API/storage

@@ -1,9 +1,9 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { ItemType } from "@shared/api/interfaces/enums";
-import { routinePeriodTKeys } from "@shared/i18n/enums/routinePeriod.tKey";
-import { routinePhaseTKeys } from "@shared/i18n/enums/routinePhase.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { UUID } from "crypto";

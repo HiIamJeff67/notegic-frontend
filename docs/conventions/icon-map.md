@@ -373,7 +373,7 @@ assets or Docker services were removed. No commit or push was performed.
 [LoadingIndicator]: ../../apps/web/src/components/covers/LoadingCover/LoadingIndicator.tsx
 [Ring]: ../../apps/web/src/components/ui/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx
-[ChartFrame]: ../../shared/lib/charts/components/ChartFrame.tsx
+[ChartFrame]: ../../apps/web/src/components/charts/ChartFrame/ChartFrame.tsx
 
 [RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx
 

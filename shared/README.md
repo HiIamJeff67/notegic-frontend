@@ -5,8 +5,10 @@ Mobile. It is a boundary for code with multiple real consumers, public or
 generated contracts, or cross-platform invariants. It is not a reason to move
 every directory into a package.
 
-Reusable packages live under `lib/`, including `lib/blockpack/` and
-`lib/charts/`. Independent shared definitions without a dedicated owner use
+Reusable packages live under `lib/`, including `lib/blockpack/`.
+Web React charts belong to `apps/web/src/components/charts/`, including their
+models, conversions and defaults. Sharing a type between multiple chart kinds
+does not give it an owner outside Charts. Independent shared definitions without a dedicated owner use
 `types/<name>.type.ts`, whether
 they are enums, interfaces, structural types or aliases; there is no separate
 root `enums/` directory. Package-owned, component-owned and generated types
@@ -25,6 +27,11 @@ Shared code must not require Web CSS, the DOM, browser storage, native storage,
 or TanStack Start for every consumer. Runtime-specific behavior belongs to an
 app adapter. There is no initial `shared/assets`; each app owns and packages
 its own asset copy.
+
+React translation hooks belong to `apps/web/src/hooks/`. Translation resources
+and framework-neutral i18n utilities stay under `i18n/`, with no React adapter
+exports or imports from Web hooks. Desktop/mobile runtimes select their own UI
+integration instead of inheriting a React requirement.
 
 ## GraphQL boundary
 

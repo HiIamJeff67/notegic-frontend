@@ -1,9 +1,9 @@
-import { DefaultStandardTheme } from "@shared/constants";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import { ThemeData } from "@shared/types/theme.type";
+import { ThemeData } from "@shared/lib/theme/theme.type";
 import React, { createContext, useEffect, useState } from "react";
 import { useThemeStore } from "@/hooks/useThemeStore";
 

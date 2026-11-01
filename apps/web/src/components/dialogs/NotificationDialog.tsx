@@ -4,7 +4,7 @@ import type {
 } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CircleAlertIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";

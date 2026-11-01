@@ -1,10 +1,10 @@
 import { resources, supportedLanguages } from "@shared/i18n";
 import { createInstance } from "i18next";
-import { routinePeriodTKeys } from "./enums/routinePeriod.tKey";
-import { routinePhaseTKeys } from "./enums/routinePhase.tKey";
-import { routineRecordStatusTKeys } from "./enums/routineRecordStatus.tKey";
-import { routineTaskPurposeTKeys } from "./enums/routineTaskPurpose.tKey";
-import { routineTaskRecordStatusTKeys } from "./enums/routineTaskRecordStatus.tKey";
+import { routinePeriodTKeys } from "./tKeys/routinePeriod.tKey";
+import { routinePhaseTKeys } from "./tKeys/routinePhase.tKey";
+import { routineRecordStatusTKeys } from "./tKeys/routineRecordStatus.tKey";
+import { routineTaskPurposeTKeys } from "./tKeys/routineTaskPurpose.tKey";
+import { routineTaskRecordStatusTKeys } from "./tKeys/routineTaskRecordStatus.tKey";
 
 const getLeafKeys = (value: object, prefix = ""): string[] =>
   Object.entries(value).flatMap(([key, child]) => {

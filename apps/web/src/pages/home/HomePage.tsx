@@ -1,5 +1,4 @@
-import { WebURLPathDictionary } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BookOpenIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -10,6 +9,7 @@ import NoteIcon from "@/components/icons/NoteIcon";
 import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { Button } from "@/components/ui/button";
 import { useAppRouter, useTheme } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const DisplayTitle = {
   mainTitle: "Notegic",

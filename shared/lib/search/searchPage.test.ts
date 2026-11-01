@@ -1,5 +1,38 @@
 import { matchesSearch, searchContext, searchPage } from "./searchPage";
 
+test.each([
+  ["ASC", ["negative", "zero", "positive", "missing"]],
+  ["DESC", ["positive", "zero", "negative", "missing"]],
+])("numeric keys sort in %s with nulls last", (sortOrder, expected) => {
+  const rows = [
+    { id: "missing", value: null },
+    { id: "positive", value: 3 },
+    { id: "negative", value: -2 },
+    { id: "zero", value: 0 },
+  ];
+  const page = searchPage(
+    "numbers",
+    { query: "", sortBy: "VALUE", sortOrder },
+    rows,
+    { VALUE: row => row.value }
+  );
+  expect(page.rows.map(row => row.id)).toEqual(expected);
+});
+
+test("incompatible cursor key types are rejected instead of coerced", () => {
+  expect(() =>
+    searchPage(
+      "mixed",
+      { query: "", sortBy: "VALUE" },
+      [
+        { id: "number", value: 1 },
+        { id: "text", value: "1" },
+      ],
+      { VALUE: row => row.value }
+    )
+  ).toThrow("Invalid search cursor key type.");
+});
+
 test("cursor filters discard empty values and order IDs without mutating the request", () => {
   const ids = Object.freeze(["b", "a"]);
   const nested = Object.freeze({ ids, empty: [], missing: null });

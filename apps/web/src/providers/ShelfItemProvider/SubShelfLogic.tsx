@@ -1,8 +1,8 @@
 import { GetMyBlockPacksByParentSubShelfIdResponse } from "@shared/api/interfaces/blockPack.interface";
 import { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
 import { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";

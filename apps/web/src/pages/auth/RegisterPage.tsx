@@ -1,17 +1,16 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   isPendingOAuthState,
   type PendingOAuthState,
-} from "@shared/lib/auth/redirectState.type";
+} from "@shared/lib/auth/oauthState.type";
 import {
   SessionStorage,
   SessionStorageKey,
 } from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
 import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useRegister } from "@/api/hooks/auth.hook";
@@ -26,6 +25,7 @@ import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const RegisterPage = () => {
   const router = useAppRouter();

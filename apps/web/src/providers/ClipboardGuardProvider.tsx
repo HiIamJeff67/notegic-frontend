@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import type { ReactNode } from "react";
 import { useEffect } from "react";

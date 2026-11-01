@@ -75,7 +75,7 @@ outputs.push([
   "versions/VersionsContent.tsx",
   versionHeader +
     `
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { ArticleSubParagraph, ArticleSubParagraphContent, ArticleSubParagraphHeader } from "@/components/commons/Article/Article";
 import { VersionCard } from "@/components/commons/VersionCard/VersionCard";
 import { versionRoadmap } from "./generated";

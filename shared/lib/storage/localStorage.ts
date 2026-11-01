@@ -1,4 +1,4 @@
-import { ThemeData } from "@shared/types/theme.type";
+import { ThemeData } from "@shared/lib/theme/theme.type";
 
 export enum LocalStorageKey {
   theme = "theme",

@@ -6,7 +6,7 @@ jest.mock("@/global/styles/image.css", () => ({}));
 jest.mock("@/hooks/useLocalPreferences", () => ({
   useLocalPreferences: () => ({ preferences: { reduceMotion: false } }),
 }));
-jest.mock("@shared/i18n/useTranslation", () => ({
+jest.mock("@/hooks/useTranslation", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

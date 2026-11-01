@@ -6,9 +6,9 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { MaxSearchLimit } from "@shared/constants";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelf } from "@shared/lib/shelf/rootShelf";

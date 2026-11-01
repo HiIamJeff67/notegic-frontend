@@ -1,7 +1,7 @@
 import {
   DefaultHeightTotalFrameCount,
   DefaultWidthTotalFrameCount,
-} from "@shared/constants/widgetLayout.constant";
+} from "@/components/widgets/layout";
 import { Cord, FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { DropTargetMonitor } from "react-dnd";

@@ -1,10 +1,10 @@
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import { cn } from "@shared/lib/className/cn";
 import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

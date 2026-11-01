@@ -5,9 +5,9 @@ import {
   UserInfoSchema,
 } from "@shared/api/interfaces/types/user.type";
 import { UpdateMyInfoRequestSchema } from "@shared/api/interfaces/userInfo.interface";
-import { FakeUserInfo } from "@shared/constants";
+import { FakeUserInfo } from "@shared/constants/defaultUser.constant";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";

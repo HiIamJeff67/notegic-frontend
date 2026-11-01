@@ -3,9 +3,9 @@ import {
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
 import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
-import { routineTaskPurposeTKeys } from "@shared/i18n/enums/routineTaskPurpose.tKey";
+import { useTranslation } from "@/hooks/useTranslation";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";

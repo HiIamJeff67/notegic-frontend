@@ -1,7 +1,6 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import type { UUID } from "crypto";
 import {
   CheckIcon,
@@ -52,6 +51,7 @@ import {
   useModal,
   useStationRoutine,
 } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface StationMenuItemProps {

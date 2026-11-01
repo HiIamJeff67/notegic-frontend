@@ -1,9 +1,8 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
@@ -20,6 +19,7 @@ import {
 import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useAppRouter, useMobile, useShelfItem } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface MaterialMenuItemProps {
   parent: SubShelfNode;

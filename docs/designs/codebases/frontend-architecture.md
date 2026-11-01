@@ -20,7 +20,7 @@ shared/
   reducers/         portable metadata reducers
   blockpack/        reusable block-pack logic
   charts/           reusable chart logic
-  constants/        shared constants
+  constants/        cross-feature constants without a narrower owner
   enums/            shared enums
   lib/              shared libraries
   types/            shared types
@@ -81,9 +81,9 @@ app.
 
 `shared/i18n/language.ts` owns `supportedLanguages`, `SupportedLanguage`, and `isSupportedLanguage`. `shared/i18n/index.ts` owns shared translation resources and pure i18n setup that does not require a platform global. Each app owns its `syncStoredLanguage` flow and supplies its own persistence/lifecycle integration. The shared i18n core must not read or write browser or native storage.
 
-React consumers use `shared/i18n/useTranslation.ts`, an explicit adapter around
+React consumers use `apps/web/src/hooks/useTranslation.ts`, an explicit adapter around
 the vendor hook with current-language translators for retained async callbacks.
-It does not initialize an instance or import Web code, and is not re-exported
+It does not initialize an instance or import the Web i18n singleton, and is not re-exported
 from the resource index. See [Translation entry points](../../conventions/10-translations.md)
 for imports, presentation examples, dependencies, and verification.
 

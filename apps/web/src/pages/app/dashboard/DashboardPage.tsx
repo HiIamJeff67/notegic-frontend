@@ -6,8 +6,8 @@ import {
   DashboardWidthFrameCountStep,
   MaxDashboardWidthFrameCount,
   MinDashboardWidthFrameCount,
-} from "@shared/constants/widgetLayout.constant";
-import { useTranslation } from "@shared/i18n/useTranslation";
+} from "@/components/widgets/layout";
+import { useTranslation } from "@/hooks/useTranslation";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
 import {

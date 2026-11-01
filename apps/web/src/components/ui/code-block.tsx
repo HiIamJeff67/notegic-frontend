@@ -2,7 +2,7 @@
 
 // Adapted from https://ui.shadcn.com/docs/components/radix/code-block.
 
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, Copy } from "lucide-react";
 import * as React from "react";

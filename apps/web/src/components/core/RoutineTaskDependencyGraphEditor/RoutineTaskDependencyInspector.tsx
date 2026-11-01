@@ -1,5 +1,5 @@
 import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

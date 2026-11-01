@@ -59,7 +59,7 @@ below reflect the current repository and are the default for new files.
 | UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
 | General shared types, including enums | `domain.type.ts` in `shared/types/` | `range.type.ts` |
-| Constants | `domain.constant.ts` | `url.constant.ts`, `defaultThemes.constant.ts` |
+| Constants | `domain.constant.ts` | `triggerLimitations.constant.ts` |
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
@@ -119,6 +119,13 @@ or documentation-only update does not authorize additional renames.
 
 ## Library folders and models
 
+Web path definitions live in `shared/lib/url/web.ts` beside existing URL
+operations. Approximate allocation costs used by Shelf analysis live in
+`shared/lib/byte/byte.type.ts`, beside byte units and formatting. Preserve their
+values during ownership changes; the estimates are not guarantees of actual
+JavaScript heap usage. Import these owners
+directly instead of retaining forwarding exports in `shared/constants/`.
+
 Shared conversion operations live in `shared/lib/conversions/`; entity
 comparators and their owned input types live in `shared/lib/comparisons/`.
 Keep their tests beside the implementation, without splitting a comparator's
@@ -127,8 +134,15 @@ BlockPack import/export file types live directly in
 `shared/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
 portable package's file-format contract a Web UI type.
 
-Reusable editor and chart packages live under `shared/lib/blockpack/` and
-`shared/lib/charts/`. Independent shared type definitions without a dedicated
+Reusable editor code lives under `shared/lib/blockpack/`.
+Web chart renderers live under `apps/web/src/components/charts/`, with one
+component folder per chart kind. Keep chart-specific types/data and tests in
+that folder. Types shared by several chart kinds still belong to Charts:
+keep common models and conversions at its root, dimensional input types beside
+`BaseChart`, and chart defaults in `charts/defaults.ts`. Several components within
+one feature are callers of the same owner, not independent owners. Move a chart
+type to shared only when it has real independent non-Charts owners.
+Independent shared type definitions without a dedicated
 owner have one root home:
 `shared/types/`. Use `<name>.type.ts` there for enums, interfaces, structural
 types and aliases alike; do not recreate a root `shared/enums/` directory.
@@ -201,8 +215,26 @@ types live with `shared/lib/blockpack/localYjsDocumentStore.ts`; attachment payl
 types live in `storage/materialAttachmentCache.type.ts`. The storage catalog
 uses type-only imports for these payloads, without importing a Web Provider.
 Retain `shared/types/cord.ts` and `range.type.ts` as general concepts, and keep
-`imageInfo.type.ts` and `theme.type.ts` in place until their dependency boundaries
-are explicitly migrated.
+`imageInfo.type.ts` in place until its dependency boundary is explicitly migrated.
+Theme models live in `shared/lib/theme/theme.type.ts`; built-in theme metadata
+lives beside them in `shared/lib/theme/defaults.ts`. The ThemeProvider and theme
+store consume this runtime-neutral owner without moving React into shared.
+
+## Constant ownership
+
+Language metadata lives in `shared/i18n/availableLanguages.ts`. Auth-code
+cooldowns live in `shared/lib/auth/oauthState.type.ts`, Shelf traversal limits in
+`shared/lib/shelf/limits.ts`, and search batch limits in
+`shared/lib/search/limits.ts`. Realtime wire version belongs to
+`shared/api/websocket/version.ts`. Preserve their values when relocating them.
+
+Account placeholder data lives in `shared/constants/defaultUser.constant.ts`.
+The plan limitation model and display values live together in
+`shared/api/interfaces/types/planLimitation.type.ts`; these values do not enforce
+backend quotas. Widget frame defaults and bounds live
+in `apps/web/src/components/widgets/layout.ts`. Import these owners directly,
+without forwarding exports from `shared/constants/`. The cross-feature
+`triggerLimitations.constant.ts` remains there pending a separate counter review.
 
 ## Local types and constants
 

@@ -4,7 +4,7 @@ import { SideMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/core/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { DefaultStandardTheme } from "@shared/constants";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import {
   NotegicBlockPackEditor,
   notegicBlockPackSchema,

@@ -1,8 +1,8 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
-import { AuthCodeBlockedSecond, WebURLPathDictionary } from "@shared/constants";
+import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import {
   Suspense,
   useCallback,
@@ -19,6 +19,7 @@ import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const ForgetPasswordPage = () => {
   const router = useAppRouter();

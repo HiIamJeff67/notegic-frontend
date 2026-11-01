@@ -5,7 +5,7 @@ import {
   OAuthMetaIcon,
 } from "@/components/icons/OAuthIcon";
 import "@/global/styles/panel.css";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { type ReactNode } from "react";
 import { useTheme } from "@/hooks/useTheme";
 

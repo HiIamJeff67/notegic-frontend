@@ -4,7 +4,7 @@ import {
   SearchItemSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { MaxSearchLimit } from "@shared/constants";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelf } from "@shared/lib/shelf/rootShelf";

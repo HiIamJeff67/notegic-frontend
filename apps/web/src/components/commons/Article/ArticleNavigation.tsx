@@ -1,6 +1,6 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";

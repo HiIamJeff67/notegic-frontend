@@ -1,5 +1,5 @@
 import { SearchSortOrder } from "@shared/api/graphql/generated/graphql";
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ArrowDownUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

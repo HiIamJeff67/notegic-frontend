@@ -1,10 +1,9 @@
-import { WebURLPathDictionary } from "@shared/constants";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { ChevronRightIcon } from "lucide-react";
 import { useCallback } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
@@ -24,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppRouter, useShelfItem } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ItemPathItemProps {
   key?: any;

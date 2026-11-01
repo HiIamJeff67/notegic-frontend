@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { RootShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";

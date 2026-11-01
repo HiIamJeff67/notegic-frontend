@@ -1,5 +1,5 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
 

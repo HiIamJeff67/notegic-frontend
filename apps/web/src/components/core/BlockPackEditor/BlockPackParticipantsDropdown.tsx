@@ -12,9 +12,9 @@ import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
 } from "@shared/api/websocket";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import toast from "@shared/lib/toast/toast";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";

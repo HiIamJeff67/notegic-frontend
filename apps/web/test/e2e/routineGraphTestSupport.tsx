@@ -7,7 +7,7 @@ import {
 import { ApolloProvider } from "@apollo/client/react";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { DefaultStandardTheme } from "@shared/constants";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { ContextType } from "react";
 import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";

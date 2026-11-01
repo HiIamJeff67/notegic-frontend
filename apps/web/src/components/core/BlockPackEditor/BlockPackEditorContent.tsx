@@ -1,7 +1,7 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import {
   convertBlocksToDOCX,
   convertBlocksToHTML,
@@ -37,7 +37,7 @@ import { useBlockEditor } from "@/hooks/useBlockEditor";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import toast from "@shared/lib/toast/toast";
 import {
   BlockPackMeta,

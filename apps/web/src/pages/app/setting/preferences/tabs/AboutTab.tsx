@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { CopyIcon, RotateCcwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";

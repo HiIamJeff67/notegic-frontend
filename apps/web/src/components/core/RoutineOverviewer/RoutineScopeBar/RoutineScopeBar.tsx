@@ -1,5 +1,5 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import { ChartNoAxesCombined, Tags } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,

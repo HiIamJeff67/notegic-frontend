@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";

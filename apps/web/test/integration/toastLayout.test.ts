@@ -50,7 +50,7 @@ describe("shared Toast placement and duration in Chromium", () => {
       "@/hooks": `const userData={publicId:'fixture'};export const useUser=()=>({userData});`,
       "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage={getItemByKey:()=> '[]',setItem:()=>{}};`,
       "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets={};`,
-      "@shared/i18n/useTranslation": `export const useTranslation=()=>({t:key=>key});`,
+      "@/hooks/useTranslation": `export const useTranslation=()=>({t:key=>key});`,
     };
     const result = await build({
       stdin: { contents: fixture, resolveDir: process.cwd(), loader: "tsx" },

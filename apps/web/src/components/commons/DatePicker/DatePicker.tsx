@@ -1,6 +1,6 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { useTranslation } from "@shared/i18n/useTranslation";
-import { cn } from "@shared/lib/className/cn";
+import { useTranslation } from "@/hooks/useTranslation";
+import { cn } from "@shared/lib/classname/cn";
 import { CalendarIcon } from "lucide-react";
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";

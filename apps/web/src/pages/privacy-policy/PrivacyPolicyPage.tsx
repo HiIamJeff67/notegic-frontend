@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ExternalLinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Trans } from "react-i18next";

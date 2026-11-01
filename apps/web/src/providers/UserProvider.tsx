@@ -7,9 +7,8 @@ import {
   UserInfo,
 } from "@shared/api/interfaces/types/user.type";
 import type { UserQuota } from "@shared/api/interfaces/types/userQuota.type";
-import { WebURLPathDictionary } from "@shared/constants";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import React, {
   createContext,
   useCallback,
@@ -24,6 +23,7 @@ import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 interface UserContextType {

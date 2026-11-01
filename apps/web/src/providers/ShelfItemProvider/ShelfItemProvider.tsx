@@ -2,8 +2,8 @@ import type { RealtimeResourceEventFrame } from "@shared/api/websocket";
 import {
   MaxMaterialsOfRootShelf,
   MaxSubShelvesOfRootShelf,
-  MaxTriggerValue,
-} from "@shared/constants";
+} from "@shared/lib/shelf/limits";
+import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";

@@ -1,4 +1,4 @@
-import { cn } from "@shared/lib/className/cn";
+import { cn } from "@shared/lib/classname/cn";
 import { CSSProperties, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 

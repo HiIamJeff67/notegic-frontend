@@ -1,4 +1,4 @@
-import { useTranslation } from "@shared/i18n/useTranslation";
+import { useTranslation } from "@/hooks/useTranslation";
 import { TodoSetting } from "@widgets/basic/TodoWidget/setting/todoSetting";
 import { Dispatch, SetStateAction } from "react";
 import {

@@ -1,5 +1,5 @@
 import { getQueryClient } from "@shared/api/queryClient";
-import { DefaultStandardTheme } from "@shared/constants";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { type ContextType, useState } from "react";
 import { createRoot } from "react-dom/client";

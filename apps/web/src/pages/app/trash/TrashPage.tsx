@@ -12,8 +12,8 @@ import {
   type SearchStationsQuery,
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
+import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@shared/i18n/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { ArchiveRestoreIcon, SearchIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
