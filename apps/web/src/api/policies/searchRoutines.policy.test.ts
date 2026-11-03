@@ -2,13 +2,13 @@ import {
   SearchRoutineSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { routineSearchPage } from "./routine.search";
+import { routineSearchCursor } from "./searchRoutines.policy";
 
 test.each([
   SearchRoutineSortBy.Title,
   SearchRoutineSortBy.Period,
   SearchRoutineSortBy.LastUpdate,
-])("new Routine edges and offline search share %s cursors", sortBy => {
+])("routine search cursors keep the %s ordering", sortBy => {
   const input = {
     query: "",
     stationIds: [],
@@ -18,6 +18,7 @@ test.each([
   };
   const routine = {
     id: "a",
+    stationId: "station",
     title: "同名🌱",
     period: "RoutinePeriod_Daily",
     scheduledStartAt: "2026-10-19T01:00:00.900Z",
@@ -25,8 +26,7 @@ test.each([
     updatedAt: "2026-10-19T01:00:00.900Z",
     createdAt: "2026-10-19T01:00:00Z",
   };
-  const initial = routineSearchPage(input, [routine]);
-  const cursor = initial.cursors.get(routine.id)!;
+  const cursor = routineSearchCursor(input, routine);
   const position = JSON.parse(
     new TextDecoder().decode(
       Uint8Array.from(atob(cursor), character => character.charCodeAt(0))
@@ -47,9 +47,4 @@ test.each([
         : new Date("2026-10-19T01:00:00Z").getTime(),
     "a",
   ]);
-  const next = routineSearchPage({ ...input, after: cursor }, [
-    routine,
-    { ...routine, id: "b" },
-  ]);
-  expect(next.rows.map(row => row.id)).toEqual(["b"]);
 });

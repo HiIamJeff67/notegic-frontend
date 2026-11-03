@@ -1,10 +1,12 @@
 import { gql, InMemoryCache } from "@apollo/client";
 import { searchPaginationPolicy } from "./searchPagination.policy";
+import { searchQueryFieldPolicies } from "./searchQueryFields";
+import { searchRoutinesPolicy } from "./searchRoutines.policy";
 
 test("Routine mutation modifiers retain the existing input envelope and empty ID lists", () => {
   const cache = new InMemoryCache({
     typePolicies: {
-      Query: { fields: { searchRoutines: searchPaginationPolicy } },
+      Query: { fields: { searchRoutines: searchRoutinesPolicy } },
     },
   });
   const query = gql`query Search($input: SearchRoutineInput!) { searchRoutines(input: $input) { totalCount } }`;
@@ -82,7 +84,16 @@ test.each([
   "searchThemes",
 ])("%s caches separate filter contexts and merges retried pages once", field => {
   const cache = new InMemoryCache({
-    typePolicies: { Query: { fields: { [field]: searchPaginationPolicy } } },
+    typePolicies: {
+      Query: {
+        fields: {
+          [field]:
+            searchQueryFieldPolicies[
+              field as keyof typeof searchQueryFieldPolicies
+            ],
+        },
+      },
+    },
   });
   const query = gql(`query Search($input: SearchInput!) {
     ${field}(input: $input) {

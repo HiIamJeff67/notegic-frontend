@@ -17,6 +17,7 @@ import {
   mutationFnValidateEmail,
 } from "@/api/invokers/auth.invoker";
 import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
+import { clearSearchRootShelves } from "@/api/policies/searchRootShelves.policy";
 
 export const useRegister = () => {
   const queryClient = getQueryClient();
@@ -176,7 +177,7 @@ export const useResetMe = () => {
     mutationFn: mutationFnResetMe,
     onSuccess: async response => {
       await AuthLocalSynchronizer.syncResetMe(response);
-      apolloClient.cache.evict({ fieldName: "searchRootShelves" });
+      clearSearchRootShelves(apolloClient.cache);
       const targetKeys: QueryKey[] = [
         queryKeys.user.data(),
         queryKeys.userInfo.all(),
