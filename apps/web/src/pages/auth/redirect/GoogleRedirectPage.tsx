@@ -15,7 +15,6 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLoginViaGoogle, useRegisterViaGoogle } from "@/api/hooks/auth.hook";
 import { useBindGoogleAccount } from "@/api/hooks/userAccount.hook";
-import { OAUTH_STATE_TTL_MS } from "@/api/oauthState";
 import {
   clearTurnstileToken,
   getTurnstileToken,
@@ -26,6 +25,13 @@ import { useAppRouter, useUser } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
+
+const configuredOAuthStateTtlMs = Number.parseInt(
+  import.meta.env.VITE_OAUTH_STATE_TTL_MS ?? "",
+  10
+);
+const oauthStateTtlMs =
+  configuredOAuthStateTtlMs > 0 ? configuredOAuthStateTtlMs : 5 * 60 * 1000;
 
 function GoogleRedirectPage() {
   const location = useLocation();
@@ -103,7 +109,7 @@ function GoogleRedirectPage() {
       !oauthStatePattern.test(state) ||
       state !== pending.state ||
       pending.createdAt > now ||
-      now - pending.createdAt > OAUTH_STATE_TTL_MS
+      now - pending.createdAt > oauthStateTtlMs
     ) {
       toast.error(
         t("workspace.notifications.googleAuthError", {

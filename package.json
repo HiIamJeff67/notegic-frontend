@@ -12,6 +12,7 @@
     "generate:document": "npm run generate:website-guide && node scripts/generateDocumentSections.mjs && biome format apps/web/src/pages/document/versions apps/web/src/pages/document/privacy-policy --write && npm run generate:public-api",
     "generate:website-guide": "node scripts/generateWebsiteGuide.mjs && biome format apps/web/src/pages/document/website/WebsiteContent.tsx apps/web/src/pages/document/website/generated.ts --write",
     "dev": "turbo run dev --filter=@notegic/web",
+    "dev:virtual": "turbo run dev:virtual --filter=@notegic/web",
     "build": "turbo run build --filter=@notegic/web",
     "build:web": "turbo run build --filter=@notegic/web",
     "build:web:cloudflare": "NITRO_PRESET=cloudflare_module turbo run build --filter=@notegic/web",

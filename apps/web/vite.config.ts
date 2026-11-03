@@ -46,6 +46,9 @@ export default defineConfig(({ mode }) => {
     envDir: webRoot,
     cacheDir: env.NOTEGIC_VITE_CACHE_DIR,
     base: basePath,
+    define: {
+      "process.env.NOTEGIC_VITE_MODE": JSON.stringify(mode),
+    },
     server: {
       port: Number(env.VITE_PORT || 6776),
     },
