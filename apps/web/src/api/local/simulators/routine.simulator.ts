@@ -58,8 +58,7 @@ import {
 } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { routineSearchPage } from "@/api/routine.search";
-
+import { pageSearchRoutines } from "@/api/policies/searchRoutines.policy";
 export class RoutineLocalSimulator {
   private static getPassPermissionCheckSQL = (
     queryBuilder: Pick<typeof localDB, "select">,
@@ -166,7 +165,7 @@ export class RoutineLocalSimulator {
       return matchesSearch(routine.title, input.query);
     });
 
-    const page = routineSearchPage(input, routines);
+    const page = pageSearchRoutines(input, routines);
     const pagedRoutines = page.rows;
     const pagedRoutineIds = pagedRoutines.map(routine => routine.id);
     const linkedTags =
@@ -208,7 +207,7 @@ export class RoutineLocalSimulator {
           __typename: "SearchRoutineEdge",
           encodedSearchCursor: page.cursors.get(routine.id)!,
           node: {
-            __typename: "PrivateRoutine",
+            __typename: "PrivateSearchableRoutine",
             id: routine.id,
             stationId: routine.stationId,
             title: routine.title,

@@ -4,6 +4,11 @@ import {
   type SearchBlockPacksQuery,
   type SearchBlockPacksQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
+import { searchBlockPacksLocalAdapter } from "@/api/adapters/searchLocal.adapter";
+import {
+  useLocalSearchLazyQuery,
+  useLocalSearchQuery,
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchBlockPacksLazyQuery = (
   options?: useLazyQuery.Options<
@@ -14,12 +19,10 @@ export const useSearchBlockPacksLazyQuery = (
   SearchBlockPacksQuery,
   SearchBlockPacksQueryVariables
 > =>
-  useLazyQuery<SearchBlockPacksQuery, SearchBlockPacksQueryVariables>(
+  useLocalSearchLazyQuery(
     SearchBlockPacksDocument,
-    {
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    options,
+    searchBlockPacksLocalAdapter
   );
 
 export const useSearchBlockPacksQuery = (
@@ -29,11 +32,9 @@ export const useSearchBlockPacksQuery = (
     SearchBlockPacksQueryVariables
   >
 ) =>
-  useQuery<SearchBlockPacksQuery, SearchBlockPacksQueryVariables>(
+  useLocalSearchQuery(
     SearchBlockPacksDocument,
-    {
-      variables,
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    variables,
+    options,
+    searchBlockPacksLocalAdapter
   );

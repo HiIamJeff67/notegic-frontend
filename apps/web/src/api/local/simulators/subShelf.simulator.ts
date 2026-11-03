@@ -1,4 +1,11 @@
-import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import {
+  SearchSubShelfInput,
+  SearchSubShelvesQuery,
+} from "@shared/api/graphql/generated/graphql";
+import {
+  AccessControlPermission,
+  AllAccessControlPermissions,
+} from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import {
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelvesByRootShelfIdsRequest,
@@ -16,6 +23,7 @@ import {
   UpdateMySubShelfByIdRequest,
   UpdateMySubShelvesByIdsRequest,
 } from "@shared/api/interfaces/subShelf.interface";
+import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import type { UUID } from "crypto";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
@@ -957,5 +965,96 @@ export class SubShelfLocalSimulator {
         affected: request.affected,
       });
     });
+  };
+
+  static simulateSearchSubShelves = async (
+    input: SearchSubShelfInput
+  ): Promise<SearchSubShelvesQuery["searchSubShelves"]> => {
+    const startedAt = performance.now();
+    if (!localDB.isReady) await localDB.ensureReady();
+    const loggedInUser = await localDB.query.User.findFirst({
+      where: eq(User.isLoggedIn, true),
+    });
+    const empty = {
+      __typename: "SearchSubShelfConnection" as const,
+      searchEdges: [],
+      searchPageInfo: {
+        __typename: "SearchPageInfo" as const,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startEncodedSearchCursor: null,
+        endEncodedSearchCursor: null,
+      },
+      totalCount: 0,
+      searchTime: performance.now() - startedAt,
+    };
+    if (loggedInUser === undefined) return empty;
+
+    const rows = await localDB
+      .select({
+        id: SubShelf.id,
+        name: SubShelf.name,
+        rootShelfId: SubShelf.rootShelfId,
+        prevSubShelfId: SubShelf.prevSubShelfId,
+        path: SubShelf.path,
+        deletedAt: SubShelf.deletedAt,
+        updatedAt: SubShelf.updatedAt,
+        createdAt: SubShelf.createdAt,
+      })
+      .from(SubShelf)
+      .where(
+        SubShelfLocalSimulator.getPassPermissionCheckSQL(
+          localDB,
+          loggedInUser.publicId,
+          AllAccessControlPermissions
+        )
+      );
+
+    const matched = rows.filter(subShelf => {
+      if ((subShelf.deletedAt !== null) !== (input.isDeletedAt === true)) {
+        return false;
+      }
+      if (input.rootShelfId && subShelf.rootShelfId !== input.rootShelfId) {
+        return false;
+      }
+      if (
+        input.prevSubShelfId &&
+        subShelf.prevSubShelfId !== input.prevSubShelfId
+      ) {
+        return false;
+      }
+      return matchesSearch(subShelf.name, input.query);
+    });
+    const page = searchPage("subShelves", input, matched, {
+      RELEVANCE: row => row.name,
+      NAME: row => row.name,
+      PATH_LENGTH: row => row.path.length,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
+    });
+
+    return {
+      __typename: "SearchSubShelfConnection",
+      searchEdges: page.rows.map(subShelf => ({
+        __typename: "SearchSubShelfEdge" as const,
+        encodedSearchCursor: page.cursors.get(subShelf.id)!,
+        node: {
+          __typename: "PrivateSubShelf" as const,
+          id: subShelf.id as UUID,
+          name: subShelf.name,
+          rootShelfId: subShelf.rootShelfId as UUID,
+          prevSubShelfId: (subShelf.prevSubShelfId ?? null) as UUID | null,
+          path: subShelf.path,
+          deletedAt: subShelf.deletedAt ?? null,
+          updatedAt: subShelf.updatedAt,
+          createdAt: subShelf.createdAt,
+          nextSubShelfIds: [],
+          itemIds: [],
+        },
+      })),
+      searchPageInfo: page.pageInfo,
+      totalCount: matched.length,
+      searchTime: performance.now() - startedAt,
+    };
   };
 }

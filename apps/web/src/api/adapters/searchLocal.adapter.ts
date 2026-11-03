@@ -4,14 +4,19 @@ import {
   fromGraphQLSupportedIcon,
 } from "@shared/api/graphql/conversions";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
+import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
+import { ItemLocalSimulator } from "@/api/local/simulators/item.simulator";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
+import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
+import { SubShelfLocalSimulator } from "@/api/local/simulators/subShelf.simulator";
 import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
+import { SubShelfLocalSynchronizer } from "@/api/local/synchronizers/subShelf.synchronizer";
 
 export type SearchLocalAdapter = {
   fieldName: string;
@@ -145,6 +150,108 @@ export const searchRoutineTagsLocalAdapter = {
         createdAt: new Date(edge.node.createdAt ?? 0),
       })) ?? []
     ),
+};
+
+export const searchSubShelvesLocalAdapter = {
+  fieldName: "searchSubShelves",
+  syncErrorMessage: "failed to synchronize searched sub shelves to local db",
+  simulateErrorMessage: "failed to simulate searched sub shelves from local db",
+  simulate: SubShelfLocalSimulator.simulateSearchSubShelves,
+  signature: (data?: any): string =>
+    JSON.stringify({
+      totalCount: data?.searchSubShelves.totalCount ?? 0,
+      endCursor: data?.searchSubShelves.searchPageInfo.endEncodedSearchCursor,
+      edges:
+        data?.searchSubShelves.searchEdges.map((edge: any) => ({
+          cursor: edge.encodedSearchCursor,
+          id: edge.node.id,
+          rootShelfId: edge.node.rootShelfId,
+          prevSubShelfId: edge.node.prevSubShelfId,
+          updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
+        })) ?? [],
+    }),
+  sync: (data?: any): Promise<void> =>
+    SubShelfLocalSynchronizer.syncSearchSubShelves(
+      data?.searchSubShelves.searchEdges.map((edge: any) => ({
+        id: edge.node.id,
+        name: edge.node.name,
+        rootShelfId: edge.node.rootShelfId,
+        prevSubShelfId: edge.node.prevSubShelfId,
+        path: edge.node.path ?? [],
+        deletedAt:
+          edge.node.deletedAt === null
+            ? null
+            : new Date(edge.node.deletedAt ?? 0),
+        updatedAt: new Date(edge.node.updatedAt ?? 0),
+        createdAt: new Date(edge.node.createdAt ?? 0),
+      })) ?? []
+    ),
+};
+
+export const searchItemsLocalAdapter = {
+  fieldName: "searchItems",
+  syncErrorMessage: "failed to synchronize searched items to local db",
+  simulateErrorMessage: "failed to simulate searched items from local db",
+  simulate: ItemLocalSimulator.simulateSearchItems,
+  signature: (data?: any): string =>
+    JSON.stringify({
+      totalCount: data?.searchItems.totalCount ?? 0,
+      endCursor: data?.searchItems.searchPageInfo.endEncodedSearchCursor,
+      edges:
+        data?.searchItems.searchEdges.map((edge: any) => ({
+          cursor: edge.encodedSearchCursor,
+          id: edge.node.id,
+          type: edge.node.type,
+          parentSubShelfId: edge.node.parentSubShelfId,
+          rootShelfId: edge.node.rootShelfId,
+          updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
+        })) ?? [],
+    }),
+  sync: async () => {},
+};
+
+export const searchBlockPacksLocalAdapter = {
+  fieldName: "searchBlockPacks",
+  syncErrorMessage: "failed to synchronize searched block packs to local db",
+  simulateErrorMessage: "failed to simulate searched block packs from local db",
+  simulate: BlockPackLocalSimulator.simulateSearchBlockPacks,
+  signature: (data?: any): string =>
+    JSON.stringify({
+      totalCount: data?.searchBlockPacks.totalCount ?? 0,
+      endCursor: data?.searchBlockPacks.searchPageInfo.endEncodedSearchCursor,
+      edges:
+        data?.searchBlockPacks.searchEdges.map((edge: any) => ({
+          cursor: edge.encodedSearchCursor,
+          id: edge.node.id,
+          parentSubShelfId: edge.node.parentSubShelfId,
+          name: edge.node.name,
+          blockCount: edge.node.blockCount,
+          updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
+        })) ?? [],
+    }),
+  sync: async () => {},
+};
+
+export const searchRoutineTasksLocalAdapter = {
+  fieldName: "searchRoutineTasks",
+  syncErrorMessage: "failed to synchronize searched routine tasks to local db",
+  simulateErrorMessage:
+    "failed to simulate searched routine tasks from local db",
+  simulate: RoutineTaskLocalSimulator.simulateSearchRoutineTasks,
+  signature: (data?: any): string =>
+    JSON.stringify({
+      totalCount: data?.searchRoutineTasks.totalCount ?? 0,
+      endCursor: data?.searchRoutineTasks.searchPageInfo.endEncodedSearchCursor,
+      edges:
+        data?.searchRoutineTasks.searchEdges.map((edge: any) => ({
+          cursor: edge.encodedSearchCursor,
+          id: edge.node.id,
+          routineId: edge.node.routineId,
+          title: edge.node.title,
+          updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
+        })) ?? [],
+    }),
+  sync: async () => {},
 };
 
 export const searchRootShelvesLocalAdapter = {

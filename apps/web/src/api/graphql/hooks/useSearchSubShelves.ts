@@ -4,6 +4,11 @@ import {
   type SearchSubShelvesQuery,
   type SearchSubShelvesQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
+import { searchSubShelvesLocalAdapter } from "@/api/adapters/searchLocal.adapter";
+import {
+  useLocalSearchLazyQuery,
+  useLocalSearchQuery,
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchSubShelvesLazyQuery = (
   options?: useLazyQuery.Options<
@@ -14,12 +19,10 @@ export const useSearchSubShelvesLazyQuery = (
   SearchSubShelvesQuery,
   SearchSubShelvesQueryVariables
 > =>
-  useLazyQuery<SearchSubShelvesQuery, SearchSubShelvesQueryVariables>(
+  useLocalSearchLazyQuery(
     SearchSubShelvesDocument,
-    {
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    options,
+    searchSubShelvesLocalAdapter
   );
 
 export const useSearchSubShelvesQuery = (
@@ -29,11 +32,9 @@ export const useSearchSubShelvesQuery = (
     SearchSubShelvesQueryVariables
   >
 ) =>
-  useQuery<SearchSubShelvesQuery, SearchSubShelvesQueryVariables>(
+  useLocalSearchQuery(
     SearchSubShelvesDocument,
-    {
-      variables,
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    variables,
+    options,
+    searchSubShelvesLocalAdapter
   );

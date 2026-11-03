@@ -858,4 +858,35 @@ export class SubShelfLocalSynchronizer {
       await tx.delete(SubShelf).where(inArray(SubShelf.id, ids));
     });
   };
+
+  static syncSearchSubShelves = async (
+    subShelves: {
+      id: UUID;
+      name: string;
+      rootShelfId: UUID;
+      prevSubShelfId: UUID | null;
+      path: UUID[];
+      deletedAt: Date | null;
+      updatedAt: Date;
+      createdAt: Date;
+    }[]
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    if (subShelves.length === 0) return;
+    await localDB
+      .insert(SubShelf)
+      .values(subShelves)
+      .onConflictDoUpdate({
+        target: SubShelf.id,
+        set: {
+          name: sql`excluded.name`,
+          rootShelfId: sql`excluded.root_shelf_id`,
+          prevSubShelfId: sql`excluded.prev_sub_shelf_id`,
+          path: sql`excluded.path`,
+          deletedAt: sql`excluded.deleted_at`,
+          updatedAt: sql`excluded.updated_at`,
+          createdAt: sql`excluded.created_at`,
+        },
+      });
+  };
 }
