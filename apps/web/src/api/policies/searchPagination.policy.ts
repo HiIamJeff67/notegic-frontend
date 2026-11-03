@@ -1,19 +1,28 @@
 import type { FieldPolicy, Reference, StoreObject } from "@apollo/client";
 import { searchContext } from "@shared/lib/search/searchPage";
 
+export const readSearchFieldInput = (storeFieldName: string) =>
+  JSON.parse(storeFieldName.slice(storeFieldName.indexOf(":") + 1)).input;
+
+export const searchFieldKey = (
+  fieldName: string,
+  args: Record<string, any> | null | undefined
+): Record<string, unknown> => {
+  const input = args?.input ?? {};
+  const context = searchContext(fieldName, {
+    ...input,
+    query: typeof input.query === "string" ? input.query : "",
+  });
+  return {
+    ...context.filters,
+    sortBy: context.sortBy,
+    sortOrder: context.sortOrder,
+  };
+};
+
 export const searchPaginationPolicy: FieldPolicy = {
   keyArgs(args, { fieldName }) {
-    const context = searchContext(fieldName, args?.input ?? { query: "" });
-    const input: Record<string, unknown> = {
-      ...context.filters,
-      sortBy: context.sortBy,
-      sortOrder: context.sortOrder,
-    };
-    if (fieldName === "searchRoutines") {
-      input.stationIds ??= [];
-      input.tagIds ??= [];
-    }
-    return JSON.stringify({ input });
+    return JSON.stringify({ input: searchFieldKey(fieldName, args) });
   },
   merge(existing, incoming, { args, readField }) {
     if (!incoming) return existing;

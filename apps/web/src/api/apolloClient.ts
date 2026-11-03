@@ -8,7 +8,7 @@ import {
 import { CurrentAPIBaseURL } from "@shared/api/url";
 import { tap } from "rxjs";
 import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
-import { searchPaginationPolicy } from "./policies/searchPagination.policy";
+import { searchQueryFieldPolicies } from "./policies/searchQueryFields";
 
 export const createApolloClient = () => {
   const apiDomainURL = import.meta.env.VITE_API_DOMAIN_URL || "";
@@ -67,20 +67,7 @@ export const createApolloClient = () => {
       PrivateItem: { keyFields: ["id", "type"] },
       Query: {
         fields: {
-          searchRootShelves: searchPaginationPolicy,
-          searchSubShelves: searchPaginationPolicy,
-          searchItems: searchPaginationPolicy,
-          searchBlockPacks: searchPaginationPolicy,
-          searchBlocks: searchPaginationPolicy,
-          searchMaterials: searchPaginationPolicy,
-          searchStations: searchPaginationPolicy,
-          searchRoutines: searchPaginationPolicy,
-          searchRoutineTasks: searchPaginationPolicy,
-          searchRoutineTags: searchPaginationPolicy,
-          searchRoutineRecords: searchPaginationPolicy,
-          searchRoutineTaskRecords: searchPaginationPolicy,
-          searchUsers: searchPaginationPolicy,
-          searchThemes: searchPaginationPolicy,
+          ...searchQueryFieldPolicies,
           user: {
             keyArgs: ["id"],
           },

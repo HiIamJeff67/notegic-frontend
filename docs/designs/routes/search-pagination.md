@@ -23,10 +23,11 @@ or SQLite migration is needed for this update.
 - `apps/web/src/api/bridges/searchLocal.bridge.ts` retains base input when falling back during
   `fetchMore` and respects the caller's existing `updateQuery` merger.
   Validation/authentication errors are not treated as network failures.
-- `routine.search.ts` provides the same Routine sort-key mapping to offline
-  search and mutation-inserted edges. Mutations never substitute a raw ID for
-  an opaque cursor. Cache keys retain the input envelope consumed by existing
-  Routine modifiers; deleted-result caches are invalidated on those writes.
+- `searchPagination.policy.ts` is the default page merge. `searchRoutines.policy.ts`
+  owns Routine cache keys, including empty station and tag lists, and the sort
+  cursor shared by offline search and mutation-inserted edges. Root shelf,
+  station, routine tag, routine task, and item policies own their cache inserts
+  and evictions. Other search fields keep the default policy.
 
 Defaults match the SDL: RELEVANCE, DESC, first 10; non-positive sizes use 10
 and sizes above 100 are capped. Equal names use ID, not updatedAt. NULL sorts
@@ -49,7 +50,7 @@ A page refresh resets the in-memory cache; never clear the user's local data
 to resolve a cursor validation error.
 
 Run targeted tests for `searchPage`, `string/compare`, `compareEntityNames`,
-`routine.search`, `searchPagination.policy`, and `searchLocal.bridge`, then typecheck. Run
+`searchPagination.policy`, and `searchLocal.bridge`, then typecheck. Run
 `npm run test:e2e -- searchOffline.spec.ts --workers=1` for all four simulators
 against real SQLite in an isolated Chromium profile. It does not use the user's
 browser storage or live backend credentials and is not an `@environment` CI
