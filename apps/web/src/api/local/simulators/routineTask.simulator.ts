@@ -1,4 +1,8 @@
 import {
+  SearchRoutineTaskInput,
+  SearchRoutineTasksQuery,
+} from "@shared/api/graphql/generated/graphql";
+import {
   AccessControlPermission,
   AllAccessControlPermissions,
   type RoutineTaskPurpose,
@@ -13,6 +17,8 @@ import type {
   UpdateMyRoutineTaskByIdRequest,
 } from "@shared/api/interfaces/routineTask.interface";
 import { parseRoutineTaskDefinition } from "@shared/api/interfaces/routineTask.interface";
+import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
+import type { UUID } from "crypto";
 import { and, asc, desc, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
@@ -397,5 +403,56 @@ export class RoutineTaskLocalSimulator {
         )
       )
       .orderBy(desc(RoutineTask.priority), asc(RoutineTask.id));
+  };
+
+  static simulateSearchRoutineTasks = async (
+    input: SearchRoutineTaskInput
+  ): Promise<SearchRoutineTasksQuery["searchRoutineTasks"]> => {
+    const startedAt = performance.now();
+    const tasks =
+      await RoutineTaskLocalSimulator.simulateGetAllMyRoutineTasks();
+    const matched = tasks.filter(task => {
+      if (
+        input.routineIds.length > 0 &&
+        !input.routineIds.includes(task.routineId as UUID)
+      ) {
+        return false;
+      }
+      return matchesSearch(task.title, input.query);
+    });
+    const page = searchPage("routineTasks", input, matched, {
+      RELEVANCE: row => row.title,
+      TITLE: row => row.title,
+      PURPOSE: row => row.kind,
+      PRIORITY: row => row.priority,
+      MAX_ATTEMPTS: row => row.maxAttempts,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
+    });
+    return {
+      __typename: "SearchRoutineTaskConnection",
+      searchEdges: page.rows.map(task => ({
+        __typename: "SearchRoutineTaskEdge" as const,
+        encodedSearchCursor: page.cursors.get(task.id)!,
+        node: {
+          __typename: "PrivateRoutineTask" as const,
+          id: task.id as UUID,
+          routineId: task.routineId as UUID,
+          kind: task.kind,
+          x: task.x,
+          y: task.y,
+          title: task.title,
+          payload: task.payload,
+          priority: task.priority,
+          maxAttempts: task.maxAttempts,
+          previousRoutineTaskIds: task.previousRoutineTaskIds as UUID[],
+          updatedAt: task.updatedAt,
+          createdAt: task.createdAt,
+        },
+      })),
+      searchPageInfo: page.pageInfo,
+      totalCount: matched.length,
+      searchTime: performance.now() - startedAt,
+    };
   };
 }

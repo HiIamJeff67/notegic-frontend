@@ -1,6 +1,7 @@
 import { useLazyQuery, useQuery } from "@apollo/client/react";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { isNetworkFallbackError } from "@/api/graphql/hooks/error";
+import { isVirtualMode } from "@/api/availability";
 import { isLocalPreferenceEnabled } from "@/api/local/policy";
 import type { SearchLocalAdapter } from "../adapters/searchLocal.adapter";
 
@@ -44,6 +45,25 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
 
   const executeWithSync = useCallback(
     ((...args: any[]) => {
+      if (isVirtualMode()) {
+        const executeOptions = args[0];
+        const variables = executeOptions?.variables as TVariables | undefined;
+        const handledPromise = (async () => {
+          const fallback = await writeFallback(variables);
+          try {
+            return await execute({
+              ...executeOptions,
+              variables,
+              fetchPolicy: "cache-only",
+            });
+          } catch {
+            return fallback;
+          }
+        })() as ReturnType<typeof execute>;
+        handledPromise.retain = () => handledPromise;
+        return handledPromise;
+      }
+
       const executeOptions = args[0];
       const queryPromise = (execute as any)(...args);
       const handledPromise = queryPromise
@@ -52,11 +72,20 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
           return queryResult;
         })
         .catch(async (error: unknown) => {
-          if (!isNetworkFallbackError(error)) throw error;
-          return writeFallback(
+          if (!NetworkExceptions.isNetworkFallbackError(error)) throw error;
+          const fallbackVariables =
             (executeOptions?.variables as TVariables | undefined) ??
-              (resultRef.current.variables as TVariables | undefined)
-          );
+            (resultRef.current.variables as TVariables | undefined);
+          const fallback = await writeFallback(fallbackVariables);
+          try {
+            return await execute({
+              ...executeOptions,
+              variables: fallbackVariables,
+              fetchPolicy: "cache-only",
+            });
+          } catch {
+            return fallback;
+          }
         }) as ReturnType<typeof execute>;
 
       handledPromise.retain = () => {
@@ -70,12 +99,24 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
 
   const fetchMoreWithFallback = useCallback(
     (async fetchMoreOptions => {
+      if (isVirtualMode()) {
+        const current = resultRef.current;
+        return writeFallback({
+          ...current.variables,
+          ...fetchMoreOptions.variables,
+          input: {
+            ...(current.variables as any)?.input,
+            ...(fetchMoreOptions.variables as any)?.input,
+          },
+        } as TVariables);
+      }
+
       try {
         const fetchResult = await resultRef.current.fetchMore(fetchMoreOptions);
         await syncOnce(fetchResult.data as TData);
         return fetchResult;
       } catch (error) {
-        if (!isNetworkFallbackError(error)) throw error;
+        if (!NetworkExceptions.isNetworkFallbackError(error)) throw error;
         const current = resultRef.current;
         const variables = {
           ...current.variables,
@@ -122,6 +163,8 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
     variables,
     notifyOnNetworkStatusChange: true,
     ...options,
+    skip: options?.skip,
+    ...(isVirtualMode() ? { fetchPolicy: "cache-only" as const } : {}),
   });
   const latestSyncedSignatureRef = useRef<string>("");
   const latestFallbackKeyRef = useRef<string>("");
@@ -156,8 +199,18 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
   }, [queryResult.data]);
 
   useEffect(() => {
+    if (!isVirtualMode()) return;
+    const fallbackKey = JSON.stringify((variables as any)?.input);
+    if (fallbackKey === latestFallbackKeyRef.current) return;
+    latestFallbackKeyRef.current = fallbackKey;
+    void writeFallback(variables).catch(error =>
+      console.error(adapter.simulateErrorMessage, error)
+    );
+  }, [variables]);
+
+  useEffect(() => {
     if (queryResult.error === undefined) return;
-    if (!isNetworkFallbackError(queryResult.error)) return;
+    if (!NetworkExceptions.isNetworkFallbackError(queryResult.error)) return;
 
     const fallbackVariables =
       (queryResult.variables as TVariables | undefined) ?? variables;
@@ -177,12 +230,23 @@ export const useLocalSearchQuery = <TData, TVariables extends object>(
   }, [queryResult.client, queryResult.error, queryResult.variables, variables]);
 
   const fetchMoreWithFallback = (async fetchMoreOptions => {
+    if (isVirtualMode()) {
+      return writeFallback({
+        ...queryResult.variables,
+        ...fetchMoreOptions.variables,
+        input: {
+          ...(queryResult.variables as any)?.input,
+          ...(fetchMoreOptions.variables as any)?.input,
+        },
+      } as TVariables);
+    }
+
     try {
       const fetchResult = await queryResult.fetchMore(fetchMoreOptions);
       syncOnce(fetchResult.data as TData);
       return fetchResult;
     } catch (error) {
-      if (!isNetworkFallbackError(error)) throw error;
+      if (!NetworkExceptions.isNetworkFallbackError(error)) throw error;
       const fallbackVariables = {
         ...queryResult.variables,
         ...fetchMoreOptions.variables,

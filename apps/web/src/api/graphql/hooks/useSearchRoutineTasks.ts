@@ -4,6 +4,11 @@ import {
   type SearchRoutineTasksQuery,
   type SearchRoutineTasksQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
+import { searchRoutineTasksLocalAdapter } from "@/api/adapters/searchLocal.adapter";
+import {
+  useLocalSearchLazyQuery,
+  useLocalSearchQuery,
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchRoutineTasksLazyQuery = (
   options?: useLazyQuery.Options<
@@ -14,12 +19,10 @@ export const useSearchRoutineTasksLazyQuery = (
   SearchRoutineTasksQuery,
   SearchRoutineTasksQueryVariables
 > =>
-  useLazyQuery<SearchRoutineTasksQuery, SearchRoutineTasksQueryVariables>(
+  useLocalSearchLazyQuery(
     SearchRoutineTasksDocument,
-    {
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    options,
+    searchRoutineTasksLocalAdapter
   );
 
 export const useSearchRoutineTasksQuery = (
@@ -29,11 +32,9 @@ export const useSearchRoutineTasksQuery = (
     "variables"
   >
 ) =>
-  useQuery<SearchRoutineTasksQuery, SearchRoutineTasksQueryVariables>(
+  useLocalSearchQuery(
     SearchRoutineTasksDocument,
-    {
-      variables,
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    variables,
+    options,
+    searchRoutineTasksLocalAdapter
   );

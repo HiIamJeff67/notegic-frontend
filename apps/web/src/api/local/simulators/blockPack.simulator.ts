@@ -1,4 +1,8 @@
 import {
+  SearchBlockPackInput,
+  SearchBlockPacksQuery,
+} from "@shared/api/graphql/generated/graphql";
+import {
   CreateBlockPackRequest,
   CreateBlockPacksRequest,
   DeleteMyBlockPackByIdRequest,
@@ -15,6 +19,7 @@ import {
   UpdateMyBlockPacksByIdsRequest,
 } from "@shared/api/interfaces/blockPack.interface";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import type { UUID } from "crypto";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
@@ -780,5 +785,103 @@ export class BlockPackLocalSimulator {
         affected: request.affected,
       });
     });
+  };
+
+  static simulateSearchBlockPacks = async (
+    input: SearchBlockPackInput
+  ): Promise<SearchBlockPacksQuery["searchBlockPacks"]> => {
+    const startedAt = performance.now();
+    if (!localDB.isReady) await localDB.ensureReady();
+    const loggedInUser = await localDB.query.User.findFirst({
+      where: eq(User.isLoggedIn, true),
+    });
+    const empty = {
+      __typename: "SearchBlockPackConnection" as const,
+      searchEdges: [],
+      searchPageInfo: {
+        __typename: "SearchPageInfo" as const,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startEncodedSearchCursor: null,
+        endEncodedSearchCursor: null,
+      },
+      totalCount: 0,
+      searchTime: performance.now() - startedAt,
+    };
+    if (!loggedInUser) return empty;
+
+    const rows = await localDB
+      .select({
+        id: BlockPack.id,
+        parentSubShelfId: BlockPack.parentSubShelfId,
+        name: BlockPack.name,
+        icon: BlockPack.icon,
+        headerBackgroundURL: BlockPack.headerBackgroundURL,
+        blockCount: BlockPack.blockCount,
+        deletedAt: BlockPack.deletedAt,
+        updatedAt: BlockPack.updatedAt,
+        createdAt: BlockPack.createdAt,
+        rootShelfId: SubShelf.rootShelfId,
+      })
+      .from(BlockPack)
+      .innerJoin(SubShelf, eq(SubShelf.id, BlockPack.parentSubShelfId))
+      .where(
+        BlockPackLocalSimulator.getPassPermissionCheckSQL(
+          localDB,
+          loggedInUser.publicId,
+          [
+            AccessControlPermission.Read,
+            AccessControlPermission.Write,
+            AccessControlPermission.Admin,
+            AccessControlPermission.Owner,
+          ]
+        )
+      );
+    const matched = rows.filter(row => {
+      if ((row.deletedAt !== null) !== (input.isDeletedAt === true)) {
+        return false;
+      }
+      if (
+        input.parentSubShelfId &&
+        row.parentSubShelfId !== input.parentSubShelfId
+      ) {
+        return false;
+      }
+      if (input.rootShelfId && row.rootShelfId !== input.rootShelfId) {
+        return false;
+      }
+      return matchesSearch(row.name, input.query);
+    });
+    const page = searchPage("blockPacks", input, matched, {
+      RELEVANCE: row => row.name,
+      NAME: row => row.name,
+      BLOCK_COUNT: row => row.blockCount,
+      LAST_UPDATE: row => row.updatedAt,
+      CREATED_AT: row => row.createdAt,
+    });
+
+    return {
+      __typename: "SearchBlockPackConnection",
+      searchEdges: page.rows.map(blockPack => ({
+        __typename: "SearchBlockPackEdge" as const,
+        encodedSearchCursor: page.cursors.get(blockPack.id)!,
+        node: {
+          __typename: "PrivateBlockPack" as const,
+          id: blockPack.id as UUID,
+          parentSubShelfId: blockPack.parentSubShelfId as UUID,
+          name: blockPack.name,
+          icon: blockPack.icon,
+          headerBackgroundURL: blockPack.headerBackgroundURL,
+          blockCount: blockPack.blockCount,
+          deletedAt: blockPack.deletedAt,
+          updatedAt: blockPack.updatedAt,
+          createdAt: blockPack.createdAt,
+          blockIds: [],
+        },
+      })),
+      searchPageInfo: page.pageInfo,
+      totalCount: matched.length,
+      searchTime: performance.now() - startedAt,
+    };
   };
 }

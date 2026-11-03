@@ -131,7 +131,7 @@ export class StationLocalSimulator {
           __typename: "SearchStationEdge",
           encodedSearchCursor: page.cursors.get(station.id)!,
           node: {
-            __typename: "PrivateStation",
+            __typename: "PrivateSearchableStation",
             id: station.id,
             name: station.name,
             icon,
