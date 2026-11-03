@@ -1,5 +1,7 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import {
   User,
   UserAccount,
@@ -16,12 +18,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogout } from "@/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
 import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
+import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
@@ -103,11 +107,14 @@ export const UserProvider = ({
 
       const userAgent = navigator.userAgent;
       try {
-        if (isOnline) {
+        await UserLocalSynchronizer.clearLoggedIn();
+        if (isOnline && !isVirtualMode()) {
           await logoutMutator.mutateAsync({
             header: getClientRequestHeaders(userAgent),
           });
         }
+      } catch (error) {
+        console.error(error);
       } finally {
         await clearMaterialAttachmentCache();
       }
@@ -153,20 +160,35 @@ export const UserProvider = ({
   const fetchUserData = useCallback(
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
-        if (!isOnline) {
-          throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+        if (isVirtualMode()) {
+          const data = await UserLocalSynchronizer.ensureLoggedInUser();
+          setUserData(data);
+          return data;
         }
 
-        const userAgent = navigator.userAgent;
-        const response = await getUserDataQuerier.fetch({
-          header: getClientRequestHeaders(userAgent),
-          body: {},
-        });
+        try {
+          if (typeof navigator !== "undefined" && navigator.onLine === false) {
+            throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+          }
 
-        setUserData(response.data);
-        return response.data;
+          const userAgent = navigator.userAgent;
+          const response = await getUserDataQuerier.fetch({
+            header: getClientRequestHeaders(userAgent),
+            body: {},
+          });
+          setUserData(response.data);
+          return response.data;
+        } catch (error) {
+          if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+          const localUser = await UserLocalSynchronizer.getLoggedInUser();
+          if (!localUser) {
+            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+          }
+          setUserData(localUser);
+          return localUser;
+        }
       }),
-    [getUserDataQuerier, isOnline, loadingManager]
+    [getUserDataQuerier, loadingManager]
   );
 
   useEffect(() => {
@@ -182,15 +204,23 @@ export const UserProvider = ({
 
     void fetchUserData().catch(error => {
       console.error(error);
-
-      if (
-        !(error instanceof NotegicAPIError) ||
-        error.unWrap.reason !== FetchClientExceptions.NetworkRequired().reason
-      ) {
-        void expireSession();
+      const requiresLogin =
+        NetworkExceptions.isMissingNetworkError(error) ||
+        NetworkExceptions.isNetworkRequiredError(error);
+      if (requiresLogin) {
+        const path = router.getCurrentPath();
+        if (
+          !router.isSamePath(path, WebURLPathDictionary.home) &&
+          !router.isSamePath(path, WebURLPathDictionary.auth.login)
+        ) {
+          router.push(WebURLPathDictionary.auth.login);
+        }
+        return;
       }
+
+      void expireSession();
     });
-  }, [autoFetchUserData, expireSession, fetchUserData, userData]);
+  }, [autoFetchUserData, expireSession, fetchUserData, router, userData]);
 
   const updateUserData = (fields: Partial<UserData>): boolean => {
     if (!isOnline) return false;
@@ -203,8 +233,7 @@ export const UserProvider = ({
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
-          if (!isOnline)
-            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+          if (isVirtualMode() || !isOnline) return;
 
           const userAgent = navigator.userAgent;
           const response = await getMeQuerier.fetch({
@@ -214,13 +243,8 @@ export const UserProvider = ({
           setUser(response.data);
         } catch (error) {
           console.error(error);
-          if (
-            !(error instanceof NotegicAPIError) ||
-            error.unWrap.reason !==
-              FetchClientExceptions.NetworkRequired().reason
-          ) {
-            await expireSession();
-          }
+          if (NetworkExceptions.isMissingNetworkError(error)) return;
+          await expireSession();
           return;
         }
       }),
@@ -238,8 +262,7 @@ export const UserProvider = ({
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
-          if (!isOnline)
-            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+          if (isVirtualMode() || !isOnline) return;
 
           const userAgent = navigator.userAgent;
           const response = await getMyInfoQuerier.fetch({
@@ -249,13 +272,8 @@ export const UserProvider = ({
           setUserInfo(response.data);
         } catch (error) {
           console.error(error);
-          if (
-            !(error instanceof NotegicAPIError) ||
-            error.unWrap.reason !==
-              FetchClientExceptions.NetworkRequired().reason
-          ) {
-            await expireSession();
-          }
+          if (NetworkExceptions.isMissingNetworkError(error)) return;
+          await expireSession();
           return;
         }
       }),
@@ -273,8 +291,7 @@ export const UserProvider = ({
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
-          if (!isOnline)
-            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+          if (isVirtualMode() || !isOnline) return;
 
           const userAgent = navigator.userAgent;
           const response = await getMyAccountQuerier.fetch({
@@ -284,13 +301,8 @@ export const UserProvider = ({
           setUserAccount(response.data);
         } catch (error) {
           console.error(error);
-          if (
-            !(error instanceof NotegicAPIError) ||
-            error.unWrap.reason !==
-              FetchClientExceptions.NetworkRequired().reason
-          ) {
-            await expireSession();
-          }
+          if (NetworkExceptions.isMissingNetworkError(error)) return;
+          await expireSession();
           return;
         }
       }),
@@ -308,8 +320,7 @@ export const UserProvider = ({
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
-          if (!isOnline)
-            throw new NotegicAPIError(FetchClientExceptions.NetworkRequired());
+          if (isVirtualMode() || !isOnline) return;
 
           const userAgent = navigator.userAgent;
           const response = await getMyQuotaQuerier.fetch({
@@ -318,13 +329,8 @@ export const UserProvider = ({
           setUserQuota(response.data);
         } catch (error) {
           console.error(error);
-          if (
-            !(error instanceof NotegicAPIError) ||
-            error.unWrap.reason !==
-              FetchClientExceptions.NetworkRequired().reason
-          ) {
-            await expireSession();
-          }
+          if (NetworkExceptions.isMissingNetworkError(error)) return;
+          await expireSession();
         }
       }),
     [expireSession, getMyQuotaQuerier, isOnline, loadingManager]
@@ -349,6 +355,7 @@ export const UserProvider = ({
     if (typeof window === "undefined") return;
 
     const handleAuthenticationRequired = () => {
+      if (isVirtualMode()) return;
       void expireSession();
     };
     window.addEventListener(

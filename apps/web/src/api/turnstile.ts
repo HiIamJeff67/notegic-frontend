@@ -1,7 +1,9 @@
+import { isVirtualMode } from "@/api/availability";
+
 const turnstileTokenStorageKey = "notegic_turnstile_token";
 
 export const isTurnstileEnabled = (): boolean =>
-  Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim());
+  !isVirtualMode() && Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim());
 
 export const getTurnstileToken = (): string | null => {
   if (typeof window === "undefined") return null;

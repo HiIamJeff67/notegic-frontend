@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isTurnstileEnabled } from "@/api/turnstile";
 
 interface TurnstileRenderOptions {
   sitekey: string;
@@ -51,7 +52,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
 
   useEffect(() => {
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
-    if (!siteKey) {
+    if (!isTurnstileEnabled() || !siteKey) {
       onTokenChangeRef.current(null);
       return;
     }
@@ -113,7 +114,7 @@ const CloudflareTurnstile = ({ onTokenChange }: CloudflareTurnstileProps) => {
     };
   }, [size]);
 
-  if (!import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim()) {
+  if (!isTurnstileEnabled()) {
     return null;
   }
 
