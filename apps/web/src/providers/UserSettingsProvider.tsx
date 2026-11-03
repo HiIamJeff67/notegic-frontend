@@ -15,6 +15,7 @@ import {
 import { useUpdateMySetting } from "@/api/hooks/userSetting.hook";
 import { queryFnGetMySetting } from "@/api/invokers/userSetting.invoker";
 import { UserSettingLocalSynchronizer } from "@/api/local/synchronizers/userSetting.synchronizer";
+import { isVirtualMode } from "@/api/availability";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
@@ -153,7 +154,7 @@ export const UserSettingsProvider = ({
       ).catch(error => {
         console.error("Failed to cache user settings.", error);
       });
-      if (!isOnline) return;
+      if (!isOnline || isVirtualMode()) return;
       updateSetting({
         header: getClientMutationHeaders(),
         body: { values },
@@ -202,7 +203,7 @@ export const UserSettingsProvider = ({
       } catch (error) {
         console.error("Failed to load cached user settings.", error);
       }
-      if (cancelled || !isOnline) return;
+      if (cancelled || !isOnline || isVirtualMode()) return;
       try {
         const response = await queryFnGetMySetting(
           { header: getClientRequestHeaders() },

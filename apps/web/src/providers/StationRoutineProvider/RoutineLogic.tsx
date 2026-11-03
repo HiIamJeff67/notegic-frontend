@@ -9,13 +9,13 @@ import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/routine.interface";
 import { parseRequest } from "@shared/api/validation";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
-import { useTranslation } from "@/hooks/useTranslation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
+import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
 import {
@@ -25,6 +25,7 @@ import {
   useLinkRoutineTagById,
   useUpdateMyRoutineById,
 } from "@/api/hooks/routine.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
@@ -67,8 +68,8 @@ export const useRoutineLogic = ({
       fetchMore: fetchMoreRoutines,
     },
   ] = useSearchRoutinesLazyQuery({
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "network-only",
+    fetchPolicy: isVirtualMode() ? "cache-only" : "network-only",
+    nextFetchPolicy: isVirtualMode() ? "cache-only" : "network-only",
   });
 
   const searchRoutines = useCallback(

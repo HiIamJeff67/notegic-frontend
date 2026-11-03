@@ -1,5 +1,7 @@
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { and, asc, eq, gte, InferSelectModel, inArray, lt } from "drizzle-orm";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   useCreateBlockPacks,
@@ -590,7 +592,24 @@ export const TransactionSynchronizerProvider = ({
         //  2. it is not an offline/local fallback response (a fallback response indicate that `success === false`).
         // `fulfilled + success:false` means request handling completed,
         // but server synchronization did not actually succeed yet.
+        const value =
+          settledSyncJob.status === "fulfilled" ? settledSyncJob.value : null;
+        const keptLocally =
+          typeof value === "object" &&
+          value !== null &&
+          "success" in value &&
+          value.success === true &&
+          "embedded" in value &&
+          typeof value.embedded === "object" &&
+          value.embedded !== null &&
+          "publicId" in value.embedded &&
+          value.embedded.publicId === "";
+        const remoteUnreachable =
+          keptLocally ||
+          (settledSyncJob.status === "rejected" &&
+            NetworkExceptions.isMissingNetworkError(settledSyncJob.reason));
         if (
+          !remoteUnreachable &&
           settledSyncJob.status === "fulfilled" &&
           !(
             typeof settledSyncJob.value === "object" &&
@@ -601,6 +620,7 @@ export const TransactionSynchronizerProvider = ({
         ) {
           mergeSet(succeededSequences, sequences);
         } else if (
+          !remoteUnreachable &&
           ![...sequences].some(sequence =>
             mergedResult.deferredSequences?.has(sequence)
           )
@@ -643,6 +663,7 @@ export const TransactionSynchronizerProvider = ({
       !areLocalPreferencesReady ||
       !localVault ||
       !isOnline ||
+      isVirtualMode() ||
       !localDB.isEnabled ||
       localDB.isReadOnly
     ) {
@@ -1133,6 +1154,7 @@ export const TransactionSynchronizerProvider = ({
         !areLocalPreferencesReady ||
         !localVault ||
         !isOnline ||
+        isVirtualMode() ||
         isSynchronizingRef.current ||
         isBootstrappingRef.current
       ) {

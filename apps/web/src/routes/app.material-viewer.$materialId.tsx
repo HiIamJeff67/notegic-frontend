@@ -1,4 +1,6 @@
 import { queryKeys } from "@shared/api/queryKeys";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
 import { isValidUUID } from "@shared/lib/uuid/uuidv4.type";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -7,6 +9,7 @@ import {
   useLoaderData,
 } from "@tanstack/react-router";
 import type { UUID } from "crypto";
+import { useEffect } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
   useCreateMaterialObjectTicket,
@@ -14,6 +17,7 @@ import {
   useResolveMaterialObjectTicket,
 } from "@/api/hooks/material.hook";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import { useTranslation } from "@/hooks/useTranslation";
 import MaterialViewerNotFoundPage from "@/pages/app/material-viewer/MaterialViewerNotFoundPage";
 import MaterialViewerPage from "@/pages/app/material-viewer/MaterialViewerPage";
 
@@ -59,6 +63,7 @@ export const Route = createFileRoute("/app/material-viewer/$materialId")({
 });
 
 function MaterialViewerRoute() {
+  const { t } = useTranslation();
   const loaderData = useLoaderData({
     from: "/app/material-viewer/$materialId",
   });
@@ -95,6 +100,11 @@ function MaterialViewerRoute() {
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (!materialQuerier.isError) return;
+    toast.error(tError(materialQuerier.error, t));
+  }, [materialQuerier.error, materialQuerier.isError, t]);
 
   if (materialQuerier.isPending) return <LoadingCover />;
   if (!material)
