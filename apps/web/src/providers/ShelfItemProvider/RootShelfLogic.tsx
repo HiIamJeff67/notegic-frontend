@@ -6,10 +6,9 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelf } from "@shared/lib/shelf/rootShelf";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
@@ -37,6 +36,7 @@ import {
   useUpdateMyRootShelfById,
 } from "@/api/hooks/rootShelf.hook";
 import { useGetMySubShelvesByRootShelfId } from "@/api/hooks/subShelf.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface UseRootShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -234,8 +234,9 @@ export const useRootShelfLogic = ({
         shelfTreeSummary
       );
       forceUpdate();
+      await searchRootShelves();
     },
-    [createRootShelfMutator, RootShelf, expandedShelvesRef]
+    [createRootShelfMutator, RootShelf, expandedShelvesRef, searchRootShelves]
   );
 
   const isNewRootShelfName = useCallback(() => {

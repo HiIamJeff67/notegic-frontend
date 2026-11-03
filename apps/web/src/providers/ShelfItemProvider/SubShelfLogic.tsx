@@ -1,7 +1,5 @@
-import { GetMyBlockPacksByParentSubShelfIdResponse } from "@shared/api/interfaces/blockPack.interface";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
-import { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
@@ -12,15 +10,16 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useGetMyBlockPacksByParentSubShelfId } from "@/api/hooks/blockPack.hook";
+import { useGetMyMaterialsByParentSubShelfId } from "@/api/hooks/material.hook";
 import {
   useCreateSubShelfByRootShelfId,
   useDeleteMySubShelfById,
+  useGetMySubShelvesByPrevSubShelfId,
   useMoveMySubShelf,
   useUpdateMySubShelfById,
 } from "@/api/hooks/subShelf.hook";
-import { queryFnGetMyBlockPacksByParentSubShelfId } from "@/api/invokers/blockPack.invoker";
-import { queryFnGetMyMaterialsByParentSubShelfId } from "@/api/invokers/material.invoker";
-import { queryFnGetMySubShelvesByPrevSubShelfId } from "@/api/invokers/subShelf.invoker";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface UseSubShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -47,6 +46,9 @@ export const useSubShelfLogic = ({
   const updateSubShelfMutator = useUpdateMySubShelfById();
   const deleteSubShelfMutator = useDeleteMySubShelfById();
   const moveSubShelfMutator = useMoveMySubShelf();
+  const getSubShelves = useGetMySubShelvesByPrevSubShelfId();
+  const getMaterials = useGetMyMaterialsByParentSubShelfId();
+  const getBlockPacks = useGetMyBlockPacksByParentSubShelfId();
 
   const [editingSubShelfNode, setEditingSubShelfNode] = useState<
     SubShelfNode | undefined
@@ -61,36 +63,36 @@ export const useSubShelfLogic = ({
     ): Promise<void> => {
       // the isExpanded may be modified if the user just drag and drop something in below the `subShelfNode`
       const userAgent = navigator.userAgent;
-      const responseOfGettingSubShelves =
-        (await queryFnGetMySubShelvesByPrevSubShelfId({
-          header: getClientRequestHeaders(userAgent),
-          param: {
-            prevSubShelfId: subShelfNode.id,
-          },
-        })) as GetMySubShelvesByPrevSubShelfIdResponse;
-      const responseOfGettingMaterials =
-        (await queryFnGetMyMaterialsByParentSubShelfId({
+      const responseOfGettingSubShelves = await getSubShelves.fetch({
+        header: getClientRequestHeaders(userAgent),
+        param: {
+          prevSubShelfId: subShelfNode.id,
+        },
+      });
+      const responseOfGettingBlockPacks = await getBlockPacks.fetch({
+        header: getClientRequestHeaders(userAgent),
+        param: {
+          parentSubShelfId: subShelfNode.id,
+        },
+      });
+      let materials: GetMyMaterialsByParentSubShelfIdResponse["data"] = [];
+      try {
+        const responseOfGettingMaterials = await getMaterials.fetch({
           header: getClientRequestHeaders(userAgent),
           param: {
             parentSubShelfId: subShelfNode.id,
           },
-        })) as GetMyMaterialsByParentSubShelfIdResponse;
-      const responseOfGettingBlockPacks =
-        (await queryFnGetMyBlockPacksByParentSubShelfId({
-          header: getClientRequestHeaders(userAgent),
-          param: {
-            parentSubShelfId: subShelfNode.id,
-          },
-        })) as GetMyBlockPacksByParentSubShelfIdResponse;
+        });
+        materials = responseOfGettingMaterials.data;
+      } catch (error) {
+        if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      }
       SubShelf.initializeSubShelfNodesByResponse(
         rootShelfNode,
         subShelfNode,
         responseOfGettingSubShelves.data
       );
-      SubShelf.initializeMaterialNodesByResponse(
-        subShelfNode,
-        responseOfGettingMaterials.data
-      );
+      SubShelf.initializeMaterialNodesByResponse(subShelfNode, materials);
       SubShelf.initializeBlockPackNodesByResponse(
         subShelfNode,
         responseOfGettingBlockPacks.data
@@ -98,12 +100,7 @@ export const useSubShelfLogic = ({
       subShelfNode.isExpanded = true;
       forceUpdate();
     },
-    [
-      SubShelf,
-      queryFnGetMySubShelvesByPrevSubShelfId,
-      queryFnGetMyMaterialsByParentSubShelfId,
-      queryFnGetMyBlockPacksByParentSubShelfId,
-    ]
+    [SubShelf, getSubShelves, getMaterials, getBlockPacks]
   );
 
   const toggleSubShelf = (

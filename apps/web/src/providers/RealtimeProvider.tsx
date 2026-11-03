@@ -18,7 +18,6 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
-import { useTranslation } from "@/hooks/useTranslation";
 import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast/toast";
@@ -39,9 +38,11 @@ import {
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@/api/invokers/realtime.invoker";
 import { localDB } from "@/api/local/db";
+import { isVirtualMode } from "@/api/availability";
 import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { canSendDesktopNotification } from "./LocalPreferencesProvider";
 
@@ -309,7 +310,7 @@ export const RealtimeProvider = ({
   useEffect(() => {
     if (typeof window === "undefined") return;
     // Retained t stays current without reconnecting when the language changes.
-    if (!userPublicId || !isOnline) {
+    if (!userPublicId || !isOnline || isVirtualMode()) {
       clientRef.current?.stop();
       clientRef.current = null;
       setRootState("idle");
