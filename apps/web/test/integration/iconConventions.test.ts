@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import * as lucide from "lucide-react";
 import ts from "typescript";
+import ShelfCaseIcon from "@/components/icons/ShelfCaseIcon";
 import ShelfIcon from "@/components/icons/ShelfIcon";
 import TrainStationIcon from "@/components/icons/TrainStationIcon";
 import * as entities from "@/components/icons/WorkspaceEntityIcons";
@@ -59,14 +60,14 @@ const iconMap = readFileSync(mapPath, "utf8");
 
 describe("application icon conventions", () => {
   test("entity aliases retain the canonical base components", () => {
-    expect(entities.RootShelfIcon).toBe(ShelfIcon);
+    expect(entities.RootShelfIcon).toBe(ShelfCaseIcon);
     expect(entities.StationIcon).toBe(TrainStationIcon);
     expect(entities.RoutineIcon).toBe(lucide.ClipboardClockIcon);
     expect(entities.RoutineTaskIcon).toBe(lucide.ClipboardListIcon);
     expect(entities.RoutineTaskStartIcon).toBe(lucide.GitFork);
     expect(entities.RoutineTaskActionIcon).toBe(lucide.SquareFunction);
     expect(entities.MaterialIcon).toBe(lucide.FileTextIcon);
-    expect(entities.SubShelfIcon).toBe(lucide.FolderIcon);
+    expect(entities.SubShelfIcon).toBe(ShelfIcon);
     expect(entities.BlockPackIcon).toBe(lucide.PackageIcon);
     expect(entities.RoutineTagIcon).toBe(lucide.TagIcon);
   });
@@ -92,7 +93,10 @@ describe("application icon conventions", () => {
     ],
     ["components/menus/RoutineTaskMenu/RoutineTaskMenuItem.tsx", "SquarePen"],
     ["pages/home/HomePage.tsx", "BookOpenIcon"],
-    ["components/sidebar/AppSidebar/AppSidebar.tsx", "BookOpenIcon"],
+    [
+      "components/core/AppUtilitesWrapper/AppSidebar/AppSidebar.tsx",
+      "BookOpenIcon",
+    ],
     ["components/commons/Article/ArticleNavigation.tsx", "BookOpenIcon"],
     ["components/commons/Article/ArticleCommand.tsx", "BookOpenIcon"],
     ["pages/app/material-viewer/MaterialViewerIndexPage.tsx", "BookOpenIcon"],
@@ -144,7 +148,9 @@ describe("application icon conventions", () => {
           (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
           node.moduleSpecifier &&
           ts.isStringLiteral(node.moduleSpecifier) &&
-          /\/(ShelfIcon|TrainStationIcon)$/.test(node.moduleSpecifier.text)
+          /\/(ShelfCaseIcon|ShelfIcon|TrainStationIcon)$/.test(
+            node.moduleSpecifier.text
+          )
       );
       expect(directCustomImports.map(node => node.getText(source))).toEqual([]);
     }
@@ -206,6 +212,7 @@ describe("application icon conventions", () => {
   test("obsolete custom icons are removed rather than kept as duplicate wrappers", () => {
     for (const name of [
       "EditIcon",
+      "EmptyShelfIcon",
       "ColorPaletteIcon",
       "MenuIcon",
       "MoonIcon",

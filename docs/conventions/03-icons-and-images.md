@@ -15,8 +15,8 @@ Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity.
 
 | Entity | Canonical export | Notes |
 | --- | --- | --- |
-| Root shelf | `RootShelfIcon` | Notegic custom shelf icon. `EmptyShelfIcon` is only the collapsed/open-state variation in the sidebar. |
-| Sub shelf | `SubShelfIcon` | A folder. Use `FolderPlus` only for the create action. |
+| Root shelf | `RootShelfIcon` | Notegic bookshelf case. Sidebar rows use a disclosure chevron instead of this glyph. |
+| Sub shelf | `SubShelfIcon` | Notegic shelf icon. Use `FolderPlus` only for the create action. |
 | Material | `MaterialIcon` | A text/file document. |
 | Block pack | `BlockPackIcon` | A package. `PackagePlus` is only the add-items group/action. |
 | Station | `StationIcon` | Notegic custom station icon; a user-selected emoji may replace it in a station row. |

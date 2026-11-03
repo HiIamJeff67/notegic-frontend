@@ -1,4 +1,5 @@
 export * from "./useAnyTypeState";
+export * from "./useAppCommand";
 export * from "./useAppRouter";
 export * from "./useBackgroundImages";
 export * from "./useBlockEditor";

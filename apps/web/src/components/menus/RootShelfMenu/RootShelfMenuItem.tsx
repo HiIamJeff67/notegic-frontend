@@ -1,5 +1,4 @@
 import { SearchRootShelfEdge } from "@shared/api/graphql/generated/graphql";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
@@ -7,6 +6,8 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
   Crown,
   FolderPlus,
   LogOut,
@@ -16,14 +17,12 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { useDrop } from "react-dnd";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import EmptyShelfIcon from "@/components/icons/EmptyShelfIcon";
-import { RootShelfIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
 import SubShelfMenu from "@/components/menus/SubShelfMenu/SubShelfMenu";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface RootShelfMenuItemProps {
   rootShelfEdge: SearchRootShelfEdge;
@@ -158,9 +158,9 @@ const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
                       }}
                     >
                       {summary.root.isOpen ? (
-                        <EmptyShelfIcon size={16} />
+                        <ChevronDownIcon />
                       ) : (
-                        <RootShelfIcon size={16} />
+                        <ChevronRightIcon />
                       )}
                       <span>{summary.root.name}</span>
                     </SidebarMenuButton>

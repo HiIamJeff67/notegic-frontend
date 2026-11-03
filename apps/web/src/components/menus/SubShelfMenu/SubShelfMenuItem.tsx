@@ -1,7 +1,6 @@
-import { MaxShelfDepth } from "@shared/lib/shelf/limits";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { MaxShelfDepth } from "@shared/lib/shelf/limits";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { SubShelf } from "@shared/lib/shelf/subShelf";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
@@ -28,7 +28,6 @@ import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPac
 import MaterialMenu from "@/components/menus/MaterialMenu/MaterialMenu";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -55,6 +54,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SubShelfMenuItemProps {
   summary: ShelfTreeSummary;

@@ -1,9 +1,8 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { ItemType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { UUID } from "crypto";
@@ -20,6 +19,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { useCallback } from "react";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   BlockPackIcon,
@@ -29,7 +29,6 @@ import {
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
 import RoutineTaskMenuItemSkeleton from "@/components/menus/RoutineTaskMenu/RoutineTaskMenuItemSkeleton";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -61,6 +60,7 @@ import {
   useShelfItem,
   useStationRoutine,
 } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 

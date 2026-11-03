@@ -60,8 +60,8 @@ table below inventories raw Lucide names too; it does not override these aliases
 
 | Meaning | Use | Implementation | Scope / variation |
 | --- | --- | --- | --- |
-| Root shelf | `RootShelfIcon` | Custom `ShelfIcon` | `EmptyShelfIcon` is the existing sidebar state variation, not another entity. |
-| Sub shelf | `SubShelfIcon` | Lucide `FolderIcon` | `FolderPlus` means create, not identity. |
+| Root shelf | `RootShelfIcon` | Custom `ShelfCaseIcon` | Sidebar rows disclose with a chevron. The Shelves group label keeps this glyph. |
+| Sub shelf | `SubShelfIcon` | Custom `ShelfIcon` | `FolderPlus` means create, not identity. |
 | Material | `MaterialIcon` | Lucide `FileTextIcon` | File/document identity in workspace contexts. |
 | Block pack | `BlockPackIcon` | Lucide `PackageIcon` | `PackagePlus` is an add-items action/group. |
 | Station | `StationIcon` | Custom `TrainStationIcon` | User-selected emoji may replace the row icon; retain this fallback. |
@@ -78,7 +78,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 
 ## Lucide inventory
 
-Audit: 2026-10-24, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
+Audit: 2026-11-03, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
 imports and re-exports (excluding tests). There are **127 referenced export names / 102 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
@@ -103,7 +103,7 @@ The source column gives a representative existing consumer, not every call site.
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
 | `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable], [CodeBlock] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
-| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field; native open-state rotation for recovery Export | [Select], [GuideWidget], [LocalDBRecoveryCover] |
+| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field; native open-state rotation for recovery Export | [Select], [GuideWidget], [LocalDBRecoveryCover], [AppCommandItem] |
 | `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month / PDF page | [GuideWidget], [Calendar], [MaterialPDFViewer] |
 | `ChevronRight`, `ChevronRightIcon` | Next / submenu / breadcrumb / PDF page | [ContextMenu], [ItemPath], [MaterialPDFViewer] |
 | `ChevronUpIcon` | Collapse / previous field | [VersionCard], [CreateRoutineTaskDialog] |
@@ -127,18 +127,18 @@ The source column gives a representative existing consumer, not every call site.
 | `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [API] |
 | `FilePlus` | Import material content | [MaterialViewerFrame] |
 | `FileTextIcon` | Material base glyph; consume as `MaterialIcon` | [WorkspaceEntityIcons] |
-| `FolderIcon` | Sub shelf base glyph; use `SubShelfIcon` | [WorkspaceEntityIcons] |
 | `FolderPlus` | Create sub shelf | [RootShelfMenu], [SubShelfMenu] |
 | `Form` | Block pack template/form editing | [PatternToggleButton] |
 | `GaugeIcon` | Plan usage/limits | [UpgradeTab] |
 | `GitBranchIcon` | Versions / API-reference section | [Versions], [API] |
 | `Globe2`, `Globe2Icon` | Web / HTTP / API context | [CodeExamplePanel], [API] |
+| `GripHorizontalIcon` | App command trigger; horizontal six-dot grip, not a drag handle | [AppCommand] |
 | `GripVertical`, `GripVerticalIcon` | Drag / reorder / resize handle | [BlockSideMenu], [Resizable], [TodoWidget], [PrivacyTab] |
 | `HardDriveIcon` | Local storage preferences | [PreferencesContent] |
 | `HeartIcon` | Support / upgrade page | [UpgradeTab] |
 | `GitFork` | Routine task Start kind; consume as `RoutineTaskStartIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
 | `HighlighterIcon` | Highlight PDF content | [MaterialPDFViewer] |
-| `HistoryIcon` | Execution history | [RoutineMenu], [RoutineTaskRecordTable] |
+| `HistoryIcon` | Execution history | [RoutineMenu], [RoutineTaskRecordTable], [AppCommandItem] |
 | `Import` | Import Block pack content | [BlockPackEditorContent] |
 | `Info`, `InfoIcon` | Informational toast / notification | [Toaster], [NotificationPopover] |
 | `KeyRoundIcon` | API key documentation | [APIKey] |
@@ -150,7 +150,7 @@ The source column gives a representative existing consumer, not every call site.
 | `MailIcon` | Contact/email navigation | [ArticleNavigation] |
 | `Map` | Graph minimap control (local alias `MapIcon`) | [GraphCanvas] |
 | `Maximize2Icon` | Expand settings view | [AccountSettingsPage] |
-| `MessageSquareWarningIcon` | Feedback navigation / recovery report | [AppSidebar], [LocalDBRecoveryCover] |
+| `MessageSquareWarningIcon` | Feedback navigation / recovery report | [AppSidebar], [LocalDBRecoveryCover], [AppCommandItem] |
 | `MinusIcon` | Zoom out | [MaterialPDFViewer] |
 | `MoreHorizontal` | Collapsed breadcrumb items | [Breadcrumb] |
 | `MousePointer` | PDF selection tool | [MaterialPDFViewer] |
@@ -161,7 +161,7 @@ The source column gives a representative existing consumer, not every call site.
 | `PaletteIcon` | Color selector | [ColorSelector] |
 | `PanelLeftIcon` | Toggle sidebar | [Sidebar] |
 | `PanelRightOpenIcon` | Open settings in side panel | [AccountSettingsPage] |
-| `Pencil`, `PencilIcon` | Rename / PDF drawing tool | [RootShelfMenu], [RoutineMenu], [MaterialPDFViewer] |
+| `Pencil`, `PencilIcon` | Rename / PDF drawing tool | [RootShelfMenu], [RoutineMenu], [MaterialPDFViewer], [AppCommandItem] |
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
 | `Power` | Active Routine toggle state | [GraphToolbar] |
 | `PowerOff` | Inactive Routine toggle state | [GraphToolbar] |
@@ -176,17 +176,17 @@ The source column gives a representative existing consumer, not every call site.
 | `SmilePlusIcon` | Choose a user emoji | [SupportedIconTable] |
 | `SquareDotIcon` | Root shelf has changed indicator | [RootShelfMenu] |
 | `SquareFunction` | Routine task Action kind; consume as `RoutineTaskActionIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
-| `SquarePen` | Edit / open Inspector | [DashboardPage], [RoutineTaskGraphNode], [RoutineTable], [RoutineTaskMenu], [Editable], [TemplatePatternEditor] |
+| `SquarePen` | Edit / open Inspector | [DashboardPage], [RoutineTaskGraphNode], [RoutineTable], [RoutineTaskMenu], [Editable], [TemplatePatternEditor], [AppCommandItem] |
 | `TagIcon` | Routine tag base glyph; consume as `RoutineTagIcon` | [WorkspaceEntityIcons] |
 | `Tags` | Multi-tag Routine filter | [RoutineScopeBar] |
 | `Terminal` | Shell code format | [CodeExamplePanel] |
-| `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation | [RoutineTaskGraphNode], [TrashPage] |
+| `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation | [RoutineTaskGraphNode], [TrashPage], [AppCommandItem] |
 | `TypeIcon` | PDF text annotation | [MaterialPDFViewer] |
 | `UserPlusIcon` | Add/invite participant | [ParticipantsDropdown], [ShelfSharingDialog] |
-| `UserRoundIcon` | Account navigation | [AppSidebar] |
+| `UserRoundIcon` | Account navigation | [AppSidebar], [AppCommandItem] |
 | `UsersIcon` | Participants / collaboration | [ParticipantsDropdown] |
 | `WifiOffIcon` | Offline settings | [OfflineTab] |
-| `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar]; not Routine identity |
+| `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar], [AppCommandItem]; not Routine identity |
 | `WrenchIcon` | Dashboard configuration | [DashboardPage] |
 | `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog], [Toast] |
 
@@ -194,14 +194,13 @@ Inventory is not automatic approval to repurpose an icon or add a control.
 
 ## Custom components and wrappers
 
-All 10 files beside `WorkspaceEntityIcons.ts` in `components/icons/` are listed
-here (13 components, including the four OAuth exports). Reuse the canonical
+All 9 files beside `WorkspaceEntityIcons.ts` in `components/icons/` are listed
+here (12 components, including the four OAuth exports). Reuse the canonical
 entity alias instead of its underlying custom file.
 
 | Export / component | Meaning and current use | Source / status |
 | --- | --- | --- |
 | `AvatarIcon` | User avatar with initial fallback; sidebar/profile | [AvatarIcon]; image wrapper, not a Lucide glyph |
-| `EmptyShelfIcon` | Root shelf sidebar state variation | [EmptyShelfIcon] |
 | `LanguageIcon` | Home language menu | [LanguageIcon] |
 | `NoteIcon` | Home note/brand illustration | [NoteIcon] |
 | `OAuthGoogleIcon` | Google sign-in provider | [OAuthIcon], [AuthPanel] |
@@ -209,15 +208,15 @@ entity alias instead of its underlying custom file.
 | `OAuthAppleIcon` | Apple sign-in provider | [OAuthIcon], [AuthPanel] |
 | `OAuthGithubIcon` | GitHub sign-in provider; preserve existing export spelling | [OAuthIcon], [AuthPanel] |
 | `PublicAvatarImage` | Shared/public avatar image; sharing/participants | [PublicAvatarImage]; image wrapper, not a glyph |
-| `ShelfCaseIcon` | Sidebar shelf collection | [ShelfCaseIcon], [AppSidebar]; not individual Root shelf identity |
-| `ShelfIcon` | Root shelf custom base glyph | [ShelfIcon]; consume as `RootShelfIcon` |
+| `ShelfCaseIcon` | Root shelf custom base glyph | [ShelfCaseIcon]; consume as `RootShelfIcon` |
+| `ShelfIcon` | Sub shelf custom base glyph | [ShelfIcon]; consume as `SubShelfIcon` |
 | `ThemeIcon` (named) | Home theme menu | [ThemeIcon] |
 | `TrainStationIcon` | Station custom base glyph | [TrainStationIcon]; consume as `StationIcon` |
 
-The unused `ColorPaletteIcon`, `MenuIcon`, `MoonIcon`, `SunIcon`,
-`WideBookmarkIcon` and `NotegicIcon` components were removed after checking
-source imports/re-exports. The duplicate custom `EditIcon` was replaced by
-Lucide `SquarePen` and removed too. Brand image files remain intact; the
+The unused `ColorPaletteIcon`, `EmptyShelfIcon`, `MenuIcon`, `MoonIcon`,
+`SunIcon`, `WideBookmarkIcon` and `NotegicIcon` components were removed after
+checking source imports/re-exports. The duplicate custom `EditIcon` was replaced
+by Lucide `SquarePen` and removed too. Brand image files remain intact; the
 retained domain, state and OAuth components are not generic Lucide replacements.
 
 ## User-selectable emoji
@@ -341,7 +340,9 @@ assets or Docker services were removed. No commit or push was performed.
 [BlockPackEditorContent]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackEditorContent.tsx
 [BlockSideMenu]: ../../apps/web/src/components/core/BlockPackEditor/BlockSideMenu.tsx
 [APIKey]: ../../apps/web/src/pages/document/api/APIKey.tsx
-[AppSidebar]: ../../apps/web/src/components/sidebar/AppSidebar/AppSidebar.tsx
+[AppCommand]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppCommand/AppCommand.tsx
+[AppCommandItem]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppCommand/AppCommandItem.tsx
+[AppSidebar]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppSidebar/AppSidebar.tsx
 [Spinner]: ../../apps/web/src/components/ui/spinner.tsx
 [GraphCanvas]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas.tsx
 [AccountSettingsPage]: ../../apps/web/src/pages/app/setting/account/AccountSettingsPage.tsx
@@ -360,7 +361,6 @@ assets or Docker services were removed. No commit or push was performed.
 [Closeable]: ../../apps/web/src/components/commons/Closeable/Closeable.tsx
 [Dialog]: ../../apps/web/src/components/ui/dialog.tsx
 [AvatarIcon]: ../../apps/web/src/components/icons/AvatarIcon.tsx
-[EmptyShelfIcon]: ../../apps/web/src/components/icons/EmptyShelfIcon.tsx
 [LanguageIcon]: ../../apps/web/src/components/icons/LanguageIcon.tsx
 [NoteIcon]: ../../apps/web/src/components/icons/NoteIcon.tsx
 [OAuthIcon]: ../../apps/web/src/components/icons/OAuthIcon.tsx

@@ -21,8 +21,8 @@ import {
 import { useEffect } from "react";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import AvatarIcon from "@/components/icons/AvatarIcon";
-import ShelfCaseIcon from "@/components/icons/ShelfCaseIcon";
 import {
+  RootShelfIcon,
   RoutineIcon,
   RoutineTagIcon,
   StationIcon,
@@ -31,7 +31,6 @@ import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";
 import { NotificationPopover } from "@/components/popovers/NotificationPopover";
-import ResizableSidebar from "@/components/sidebar/ResizableSidebar/ResizableSidebar";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -85,6 +84,7 @@ import { useModal } from "@/hooks/useModal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { type SettingsPage } from "@/providers/SettingsDisplayProvider";
+import ResizableSidebar from "../ResizableSidebar/ResizableSidebar";
 
 interface AppSidebarProps {
   disabled?: boolean;
@@ -147,7 +147,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
     <ResizableSidebar
       variant="sidebar"
       collapsible="icon"
-      className="p-0 m-0 overflow-hidden"
+      className="border-sidebar-border p-0 m-0 overflow-hidden"
     >
       <SidebarHeader className="flex min-h-[calc(var(--app-navigation-height)-1px)] flex-col justify-center items-center p-0">
         <SidebarGroup>
@@ -203,7 +203,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
           <Collapsible defaultOpen className="group/collapsible">
             <CollapsibleTrigger asChild>
               <SidebarGroupLabel className="gap-2 [&[data-state=closed]:hover_.group-label-chevron-right]:block [&[data-state=open]:hover_.group-label-chevron-down]:block">
-                <ShelfCaseIcon size={16} />
+                <RootShelfIcon size={16} />
                 <span>{t("workspace.navigation.shelves")}</span>
                 <ChevronRight className="group-label-chevron-right hidden size-3" />
                 <ChevronDown className="group-label-chevron-down hidden size-3" />

@@ -13,8 +13,7 @@ const RoutineTagMenu = () => {
   if (
     stationRoutineManager.routineTags.length === 0 &&
     (stationRoutineManager.state !== "idle" ||
-      stationRoutineManager.isSearchingRoutineTags ||
-      !stationRoutineManager.searchRoutineTagsData)
+      stationRoutineManager.isSearchingRoutineTags)
   ) {
     return (
       <SidebarMenu className="overflow-hidden">

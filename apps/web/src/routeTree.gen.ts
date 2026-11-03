@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as DocumentRouteImport } from './routes/document'
 import { Route as EulaRouteImport } from './routes/eula'
+import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as AuthForgetPasswordRouteImport } from './routes/_auth.forgetPassword'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
@@ -59,6 +60,11 @@ const DocumentRoute = DocumentRouteImport.update({
 const EulaRoute = EulaRouteImport.update({
   id: '/eula',
   path: '/eula',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
+  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
+  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
+  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/_auth/forgetPassword': typeof AuthForgetPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/document'
     | '/eula'
+    | '/playground'
     | '/privacy-policy'
     | '/forgetPassword'
     | '/login'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/document'
     | '/eula'
+    | '/playground'
     | '/privacy-policy'
     | '/forgetPassword'
     | '/login'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/document'
     | '/eula'
+    | '/playground'
     | '/privacy-policy'
     | '/_auth/forgetPassword'
     | '/_auth/login'
@@ -347,6 +359,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   DocumentRoute: typeof DocumentRoute
   EulaRoute: typeof EulaRoute
+  PlaygroundRoute: typeof PlaygroundRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
 }
 
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/eula'
       fullPath: '/eula'
       preLoaderRoute: typeof EulaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy-policy': {
@@ -647,6 +667,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   DocumentRoute: DocumentRoute,
   EulaRoute: EulaRoute,
+  PlaygroundRoute: PlaygroundRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,4 +1,3 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import {
@@ -11,11 +10,11 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback } from "react";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -41,6 +40,7 @@ import {
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { useLoading, useMobile, useModal, useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 
 interface RoutineTagMenuItemProps {

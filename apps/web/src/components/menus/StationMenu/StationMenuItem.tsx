@@ -14,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback } from "react";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import {
   RoutineIcon,
@@ -22,7 +23,6 @@ import {
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   Collapsible,
   CollapsibleContent,
