@@ -3,7 +3,7 @@
 - Put a unit test beside the source file it verifies. Use `*.test.ts` or
   `*.test.tsx`, retaining the source basename and capitalization, for example
   `ScreenProvider.tsx` → `ScreenProvider.test.ts` and
-  `routine.search.ts` → `routine.search.test.ts`. Do not add a `unit` suffix.
+  `searchPage.ts` → `searchPage.test.ts`. Do not add a `unit` suffix.
 - Put Web-only integration tests in `apps/web/test/integration/`.
 - Put integration tests that span shared packages or future applications in
   `test/integration/` at the repository root.

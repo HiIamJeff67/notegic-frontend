@@ -63,7 +63,7 @@ below reflect the current repository and are the default for new files.
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
-| Unit tests beside their source | `<source basename>.test.ts(x)` | `ScreenProvider.test.ts`, `routine.search.test.ts` |
+| Unit tests beside their source | `<source basename>.test.ts(x)` | `ScreenProvider.test.ts`, `searchPage.test.ts` |
 | Integration tests in the integration directory | `name.test.ts(x)` | `userProvider.test.ts` |
 | Browser E2E tests | `name.spec.ts` | `articleNavigation.spec.ts` |
 | Performance tests | `name.performance.test.ts` | `shelfNode.performance.test.ts` |
