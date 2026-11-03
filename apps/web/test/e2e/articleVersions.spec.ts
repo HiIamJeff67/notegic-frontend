@@ -8,9 +8,11 @@ test.beforeEach(async ({ page }) => {
 
 const versions = [
   { id: "version-0-3-0", title: "v0.3.0", status: "Next" },
+  { id: "version-0-4-0", title: "v0.4.0", status: "Future" },
+  { id: "version-0-5-0", title: "v0.5.0", status: "Future" },
   { id: "version-0-2-0", title: "v0.2.0", status: "Current" },
-  { id: "version-0-1-0", title: "v0.1.0", status: "Legacy" },
-  { id: "version-0-0-1", title: "v0.0.1", status: "Legacy" },
+  { id: "version-0-1-0", title: "v0.1.0", status: "Previous" },
+  { id: "version-0-0-1", title: "v0.0.1", status: "Previous" },
 ];
 
 for (const width of [390, 900, 2560]) {
@@ -83,6 +85,29 @@ for (const width of [390, 900, 2560]) {
         card.locator('[data-slot="card-header"] [data-slot="card-description"]')
       ).not.toBeEmpty();
       await expect(card.locator("li")).toHaveCount(4);
+      if (version.status === "Future") {
+        await expect(
+          card.getByText("tasks complete", { exact: true })
+        ).toHaveCount(0);
+        await expect(card.getByRole("progressbar")).toHaveCount(0);
+      } else {
+        await expect(
+          card.getByText("tasks complete", { exact: true })
+        ).toBeVisible();
+        await expect(card.getByRole("progressbar")).toHaveAttribute(
+          "aria-valuenow",
+          "100"
+        );
+      }
+      const expand = card.getByRole("button", {
+        name: /^Show all \d+ features$/,
+      });
+      await expand.click();
+      expect(await card.locator("li").count()).toBeGreaterThan(4);
+      await card
+        .getByRole("button", { name: "Show less", exact: true })
+        .click();
+      await expect(card.locator("li")).toHaveCount(4);
       const alignment = await section.evaluate(element => {
         const prose = document
           .getElementById("overview")!
@@ -135,6 +160,85 @@ test("version deep links and command search target the version subparagraph", as
   await expect(
     page.locator('[href="#version-0-1-0"][data-sidebar]')
   ).toHaveAttribute("data-active", "true");
+});
+
+test("previous versions reveal progressively with footer links and retain card state", async ({
+  page,
+}) => {
+  await page.goto("/document#versions");
+  await page.waitForLoadState("networkidle");
+  const first = page.locator("#version-0-1-0");
+  const last = page.locator("#version-0-0-1");
+  await expect(first).toBeHidden();
+  await expect(last).toBeHidden();
+  const more = page.getByRole("button", { name: "Show more", exact: true });
+  await expect(
+    page
+      .locator("#version-0-2-0")
+      .getByRole("button", { name: "Show more", exact: true })
+  ).toBeVisible();
+  await more.hover();
+  expect(
+    await more.evaluate(node => getComputedStyle(node).textDecorationLine)
+  ).toContain("underline");
+  const bounds = await more.evaluate(node => {
+    const card = node.closest("section")!.querySelector('[data-slot="card"]')!;
+    return {
+      left:
+        node.getBoundingClientRect().left - card.getBoundingClientRect().left,
+      gap:
+        node.getBoundingClientRect().top - card.getBoundingClientRect().bottom,
+    };
+  });
+  expect(Math.abs(bounds.left)).toBeLessThanOrEqual(1);
+  expect(bounds.gap).toBeGreaterThan(0);
+  await more.click();
+  await expect(first).toBeVisible();
+  await expect(last).toBeHidden();
+  let footer = first.getByRole("group", {
+    name: "Previous versions",
+    exact: true,
+  });
+  await expect(
+    footer.getByRole("button", { name: "Show all", exact: true })
+  ).toBeEnabled();
+  await first.getByRole("button", { name: /^Show all \d+ features$/ }).click();
+  const featureCount = await first.locator("li").count();
+  expect(featureCount).toBeGreaterThan(4);
+  await footer.getByRole("button", { name: "Show less", exact: true }).click();
+  await expect(first).toBeHidden();
+  await expect(more).toBeFocused();
+  await more.press("Enter");
+  await expect(first.locator("li")).toHaveCount(featureCount);
+  footer = first.getByRole("group", { name: "Previous versions", exact: true });
+  await footer.getByRole("button", { name: "Show all", exact: true }).click();
+  await expect(last).toBeVisible();
+  const lastFooter = last.getByRole("group", {
+    name: "Previous versions",
+    exact: true,
+  });
+  await expect(
+    lastFooter.getByRole("button", { name: "Show all", exact: true })
+  ).toBeDisabled();
+  await expect(
+    lastFooter.getByRole("button", { name: "Show less", exact: true })
+  ).toBeFocused();
+  await lastFooter
+    .getByRole("button", { name: "Show less", exact: true })
+    .press("Enter");
+  await expect(first).toBeHidden();
+  await expect(last).toBeHidden();
+});
+
+test("direct previous-version hashes reveal the target on load and reload", async ({
+  page,
+}) => {
+  await page.goto("/document#version-0-0-1");
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("#version-0-0-1 > h3")).toBeInViewport();
+  await expect(page.locator("#version-0-1-0")).toBeVisible();
+  await page.reload();
+  await expect(page.locator("#version-0-0-1 > h3")).toBeInViewport();
 });
 
 test("shared article separators follow their host when no reading cap is specified", async ({
@@ -197,6 +301,11 @@ for (const width of [390, 768, 1024, 1280, 1536, 2560]) {
     await page.setViewportSize({ width, height: 700 });
     await page.goto("/document");
     await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: "Show more", exact: true }).click();
+    await page
+      .getByRole("group", { name: "Previous versions", exact: true })
+      .getByRole("button", { name: "Show all", exact: true })
+      .click();
     for (const theme of ["dark", "light"]) {
       await page.evaluate(value => {
         document.documentElement.classList.remove("dark", "light");

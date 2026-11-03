@@ -64,6 +64,37 @@ function run(input) {
   });
 }
 
+for (const label of ["Previous", "Current", "Next", "Future"]) {
+  test(`retains the ${label} state, introduction and checked work during generation`, t => {
+    const input = fixture(t);
+    const introduction =
+      "Future plans can change; checked work is already complete.";
+    fs.writeFileSync(
+      path.join(input.directory, "versions/sources/versions.md"),
+      versions
+        .replace("# Versions\n\n", `# Versions\n\n${introduction}\n\n`)
+        .replace("— Current", `— ${label}`)
+    );
+    const result = run(input);
+    assert.equal(result.status, 0, result.stderr);
+    const context = { exports: {} };
+    vm.runInNewContext(
+      ts.transpileModule(
+        fs.readFileSync(path.join(input.directory, outputs[0]), "utf8"),
+        {
+          compilerOptions: { module: ts.ModuleKind.CommonJS },
+        }
+      ).outputText,
+      context
+    );
+    assert.equal(context.exports.versionsDescription, introduction);
+    assert.equal(context.exports.versionRoadmap[0].label, label);
+    assert.equal(context.exports.versionRoadmap[0].status, label.toLowerCase());
+    assert.equal(context.exports.versionRoadmap[0].tasks[0].completed, true);
+    assert.equal(context.exports.versionRoadmap[0].tasks[1].completed, false);
+  });
+}
+
 test("generates checked tasks, stable anchors and runtime contact links from page-local Markdown", t => {
   const input = fixture(t);
   const result = run(input);
@@ -112,6 +143,11 @@ test("generates checked tasks, stable anchors and runtime contact links from pag
 });
 
 for (const [label, file, text] of [
+  ...["Legacy", "Planned", "Exploring"].map(label => [
+    `obsolete ${label} state`,
+    "versions/sources/versions.md",
+    versions.replace("— Current", `— ${label}`),
+  ]),
   [
     "unknown release state",
     "versions/sources/versions.md",

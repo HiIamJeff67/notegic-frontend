@@ -12,7 +12,8 @@ typecheck tasks are delegated to Turborepo and filtered to `@notegic/web`.
 | Command | Purpose |
 | --- | --- |
 | `npm install` | Install frontend dependencies |
-| `npm run dev` | Start the Web development server |
+| `npm run dev` | Start the Web development server against the local backend in `apps/web/.env`. Login still uses that backend. If it is unreachable and this browser already has a logged-in local user, dashboard reads and simulator-backed writes continue from the local database. Logout clears that local session |
+| `npm run dev:virtual` | Start the local server in virtual mode. It enters the dashboard without login by using the first local account, and does not require backend requests |
 | `npm run build` | Build the Web application |
 | `npm run build:web:cloudflare` | Build the Web application with Nitro's Cloudflare Workers preset |
 | `npm run deploy:web:cloudflare` | Build and deploy the Web Worker with Wrangler |

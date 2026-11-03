@@ -1,8 +1,11 @@
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BookOpenIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { TryGetUserData } from "@/api/functions/user.serverFn";
+import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import NoteIcon from "@/components/icons/NoteIcon";
@@ -32,6 +35,12 @@ export const HomePage = () => {
     setIsStarting(true);
     let destination = WebURLPathDictionary.auth.login;
 
+    if (isVirtualMode()) {
+      router.push(WebURLPathDictionary.app.dashboard._);
+      setIsStarting(false);
+      return;
+    }
+
     try {
       const hasValidSession = await TryGetUserData({
         data: {
@@ -42,8 +51,20 @@ export const HomePage = () => {
       if (hasValidSession) {
         destination = WebURLPathDictionary.app.dashboard._;
       }
-    } catch {
-      // A failed session check is an expected reason to continue to login.
+    } catch (error) {
+      if (NetworkExceptions.isNetworkFallbackError(error)) {
+        const localUser = await UserLocalSynchronizer.getLoggedInUser();
+        if (localUser) destination = WebURLPathDictionary.app.dashboard._;
+      }
+    }
+
+    if (
+      destination === WebURLPathDictionary.auth.login &&
+      typeof navigator !== "undefined" &&
+      navigator.onLine === false
+    ) {
+      const localUser = await UserLocalSynchronizer.getLoggedInUser();
+      if (localUser) destination = WebURLPathDictionary.app.dashboard._;
     }
 
     router.push(destination);

@@ -106,7 +106,8 @@ layer in this order:
 2. Add a safe local value to `apps/web/.env` for development, and add the
    production-shaped local value to `apps/web/.env.production` when a local
    production build needs it. These files are ignored by Git and must never be
-   committed.
+   committed. `apps/web/.env.virtual` is also gitignored. `npm run dev:virtual`
+   selects Vite's `virtual` mode and does not use that file for API endpoints.
 3. Add the exact variable name to the `build.env` list in the root
    `turbo.json`. Turborepo filters task environments; a variable can exist in
    Cloudflare Workers Builds and still be missing from the Vite process if it

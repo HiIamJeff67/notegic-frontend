@@ -4,6 +4,7 @@ import { cn } from "@shared/lib/classname/cn";
 import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,
@@ -93,7 +94,10 @@ const useArticleNavigation = (
       const articleTop = articleElement.getBoundingClientRect().top;
       const sections = Array.from(
         articleElement.querySelectorAll<HTMLElement>("section[id]")
-      ).filter(section => itemIds.includes(section.id));
+      ).filter(
+        section =>
+          itemIds.includes(section.id) && section.getClientRects().length > 0
+      );
       const isAtBottom =
         articleElement.scrollTop + articleElement.clientHeight >=
         articleElement.scrollHeight - 2;
@@ -126,7 +130,7 @@ const useArticleNavigation = (
   const navigate = useCallback(
     (item: ArticleNavigationItem, pageId = item.id) => {
       setActiveId(item.id);
-      onNavigate?.(item);
+      if (onNavigate) flushSync(() => onNavigate(item));
 
       if (display?.mode === "pagination") {
         display.setActiveItemId(item.id);
@@ -157,14 +161,9 @@ const useArticleNavigation = (
 export const ArticleNavigationBar = ({
   items,
   className,
-  paragraphBaseHeight = 24,
-  subParagraphBaseHeight = 12,
   onNavigate,
   scrollContainerRef,
-}: ArticleNavigationProps & {
-  paragraphBaseHeight?: number;
-  subParagraphBaseHeight?: number;
-}) => {
+}: ArticleNavigationProps) => {
   const { t } = useTranslation();
   const { preferences } = useLocalPreferences();
   const { activeId, navigate } = useArticleNavigation(
@@ -178,49 +177,25 @@ export const ArticleNavigationBar = ({
     depth: number,
     pageId = item.id
   ): ReactNode => {
-    const isRoot = depth === 0;
-    const visualHeight = Math.max(
-      1,
-      Math.round(
-        (isRoot ? paragraphBaseHeight : subParagraphBaseHeight) *
-          (isRoot
-            ? [2 / 3, 1, 1, 4 / 3, 5 / 3][(item.weight ?? 3) - 1]
-            : [1 / 6, 2 / 3, 1, 4 / 3, 7 / 3][(item.weight ?? 3) - 1])
-      )
-    );
     const isActive = hasActiveItem(item, activeId);
 
     return (
-      <div
-        key={item.id}
-        className={cn(
-          "flex flex-col items-center",
-          isRoot ? "space-y-0.5" : "space-y-0"
-        )}
-      >
+      <div key={item.id} className="flex w-full flex-col items-center gap-0.5">
         <HoverCard openDelay={150} closeDelay={100}>
           <HoverCardTrigger asChild>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className={cn(
-                "group/article-node flex w-full items-center justify-center rounded-none p-0 outline-none hover:bg-transparent",
-                isRoot ? "h-2" : "h-1.5"
-              )}
+              className="group/article-node flex h-2.5 w-full items-center justify-center overflow-visible rounded-none p-0 outline-none hover:bg-transparent"
               aria-current={isActive ? "location" : undefined}
               aria-label={item.title}
               onClick={() => navigate(item, pageId)}
             >
               <span
-                style={{ width: visualHeight }}
                 className={cn(
-                  "h-px origin-center transition-[transform,background-color] duration-200 group-hover/article-node:scale-x-150 group-focus-visible/article-node:scale-x-150",
-                  isActive
-                    ? "bg-foreground"
-                    : isRoot
-                      ? "bg-foreground/35 group-hover/article-node:bg-foreground/70 group-focus-visible/article-node:bg-foreground/70"
-                      : "bg-foreground/15 group-hover/article-node:bg-foreground/70 group-focus-visible/article-node:bg-foreground/70"
+                  "h-1 w-2.5 origin-center rounded-full transition-[transform,background-color] duration-200 group-hover/article-node:scale-150 group-hover/article-node:bg-foreground group-focus-visible/article-node:scale-150 group-focus-visible/article-node:bg-foreground",
+                  isActive ? "bg-foreground" : "bg-foreground/35"
                 )}
               />
             </Button>
@@ -236,7 +211,7 @@ export const ArticleNavigationBar = ({
           </HoverCardContent>
         </HoverCard>
         {item.children && item.children.length > 0 && (
-          <div className="flex flex-col items-center gap-0">
+          <div className="flex w-full flex-col items-center gap-0.5">
             {item.children.map(child => renderItem(child, depth + 1, pageId))}
           </div>
         )}
@@ -258,9 +233,7 @@ export const ArticleNavigationBar = ({
     >
       <nav
         aria-label={t("workspace.accessibility.articleNavigation")}
-        className={
-          items.some(item => item.children?.length) ? "space-y-7" : "space-y-3"
-        }
+        className="flex flex-col items-center gap-0.5"
       >
         {items.map(item => renderItem(item, 0))}
       </nav>
@@ -346,6 +319,15 @@ export const ArticleSidebar = ({
   };
 
   const handleCommandSelect = (id: string) => {
+    const pending = [...items];
+    while (pending.length) {
+      const item = pending.shift()!;
+      if (item.id === id) {
+        if (onNavigate) flushSync(() => onNavigate(item));
+        break;
+      }
+      if (item.children) pending.push(...item.children);
+    }
     const target =
       document.getElementById(id) ??
       articleRef?.current?.querySelector<HTMLElement>(
