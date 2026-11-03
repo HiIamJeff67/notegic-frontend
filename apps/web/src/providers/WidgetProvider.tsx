@@ -66,19 +66,37 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
             .map(widget => {
               const previewWidget = DashboardPreviewWidgets[widget.name];
               if (
-                widget.layoutMode === "full-width" &&
+                previewWidget !== undefined &&
                 (widget.name === "guide" || widget.name === "videoGuide")
               ) {
-                const { data, setting } = widget;
-                Object.assign(widget, previewWidget, {
-                  data,
-                  setting,
-                  layoutMode: undefined,
-                  position: {
-                    leftFrameCount: widget.name === "videoGuide" ? 2 : 0,
+                const sizeIsAvailable = previewWidget.availableSizes.some(
+                  size =>
+                    size.widthFrameCount === widget.size?.widthFrameCount &&
+                    size.heightFrameCount === widget.size?.heightFrameCount
+                );
+                const wasFullWidth = widget.layoutMode === "full-width";
+                widget.availableSizes = previewWidget.availableSizes;
+                widget.minSize = previewWidget.minSize;
+                widget.maxSize = previewWidget.maxSize;
+                widget.layoutMode = undefined;
+                if (wasFullWidth || !sizeIsAvailable) {
+                  widget.size = previewWidget.size;
+                }
+                if (
+                  wasFullWidth ||
+                  (widget.name === "videoGuide" &&
+                    !sizeIsAvailable &&
+                    widget.position?.leftFrameCount === 2 &&
+                    widget.position?.topFrameCount === 0)
+                ) {
+                  widget.position = {
+                    leftFrameCount:
+                      widget.name === "videoGuide"
+                        ? DashboardPreviewWidgets.guide.size.widthFrameCount
+                        : 0,
                     topFrameCount: 0,
-                  },
-                });
+                  };
+                }
               }
 
               return {
@@ -100,7 +118,7 @@ export const WidgetProvider = ({ children }: WidgetProviderProps) => {
           topFrameCount: 0,
         }),
         toWidget(DashboardPreviewWidgets.videoGuide, {
-          leftFrameCount: 2,
+          leftFrameCount: DashboardPreviewWidgets.guide.size.widthFrameCount,
           topFrameCount: 0,
         }),
       ];

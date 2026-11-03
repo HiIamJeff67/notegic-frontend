@@ -135,8 +135,6 @@ const PreferencesPage = ({
       <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
-          paragraphBaseHeight={12}
-          subParagraphBaseHeight={6}
           className={
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }

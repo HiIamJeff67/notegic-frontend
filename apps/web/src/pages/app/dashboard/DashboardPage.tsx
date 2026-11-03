@@ -2,12 +2,6 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import {
-  DashboardWidthFrameCountStep,
-  MaxDashboardWidthFrameCount,
-  MinDashboardWidthFrameCount,
-} from "@/components/widgets/layout";
-import { useTranslation } from "@/hooks/useTranslation";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
 import {
@@ -32,6 +26,11 @@ import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHo
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
+  DashboardWidthFrameCountStep,
+  MaxDashboardWidthFrameCount,
+  MinDashboardWidthFrameCount,
+} from "@/components/widgets/layout";
+import {
   getPositionValue,
   getSizeValue,
   getWidgetWidthFrameCount,
@@ -46,6 +45,7 @@ import {
   useScreen,
   useWidget,
 } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const DashboardElementZIndexes = {
   headerBackgroundImage: 50,
@@ -533,7 +533,7 @@ const DashboardPage = () => {
         </ProgressiveBackground>
       )}
       <PlaceableBackground
-        className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto relative !bg-inset mt-[-12px] border border-foreground/30 rounded-t-lg"
+        className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto relative !bg-inset mt-[-12px] border border-sidebar-border rounded-t-lg"
         zIndex={DashboardElementZIndexes.placeableBackground}
         frameSizeSource="horizontal"
         rightInset={1}
@@ -807,7 +807,7 @@ const DashboardPage = () => {
                     }}
                     className="
                     w-full h-full
-                    bg-card border border-foreground/25 rounded-lg
+                    bg-card border border-sidebar-border rounded-lg
                     transition-all duration-200 ease-in-out
                   "
                     isWidgetEditing={isEditing && editingWidgetIndex === index}

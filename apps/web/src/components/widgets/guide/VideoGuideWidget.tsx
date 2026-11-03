@@ -21,7 +21,7 @@ const VideoGuideWidget = ({ className, style, data }: WidgetProps) => {
     >
       <video
         aria-label={t("workspace.widgets.videoGuideTitle")}
-        className="h-full w-full object-contain"
+        className="block h-full w-full object-contain"
         controls
         playsInline
         preload="none"

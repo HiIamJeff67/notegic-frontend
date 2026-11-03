@@ -16,14 +16,22 @@ import { getDefaultTodoData } from "./TodoWidget/data/todoData";
 import { getDefaultTodoSetting } from "./TodoWidget/setting/todoSetting";
 
 const guideWidgetSizes = [
-  { widthFrameCount: 2, heightFrameCount: 1 },
   { widthFrameCount: 3, heightFrameCount: 2 },
   { widthFrameCount: 4, heightFrameCount: 2 },
+  { widthFrameCount: 4, heightFrameCount: 3 },
   { widthFrameCount: 5, heightFrameCount: 3 },
   { widthFrameCount: 6, heightFrameCount: 3 },
   { widthFrameCount: 6, heightFrameCount: 4 },
   { widthFrameCount: 8, heightFrameCount: 4 },
   { widthFrameCount: 8, heightFrameCount: 5 },
+];
+
+// The walkthrough video is 4:3. These sizes keep that ratio, and 4×3 is the
+// smallest so the default widget can sit in four frames.
+const videoGuideWidgetSizes = [
+  { widthFrameCount: 4, heightFrameCount: 3 },
+  { widthFrameCount: 8, heightFrameCount: 6 },
+  { widthFrameCount: 12, heightFrameCount: 9 },
 ];
 
 export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
@@ -171,7 +179,10 @@ export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
   guide: {
     name: "guide",
     component: GuideWidget,
-    size: guideWidgetSizes[0],
+    size: {
+      widthFrameCount: 4,
+      heightFrameCount: 3,
+    },
     minSize: guideWidgetSizes[0],
     maxSize: guideWidgetSizes[guideWidgetSizes.length - 1],
     availableSizes: guideWidgetSizes,
@@ -182,10 +193,10 @@ export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
   videoGuide: {
     name: "videoGuide",
     component: VideoGuideWidget,
-    size: guideWidgetSizes[0],
-    minSize: guideWidgetSizes[0],
-    maxSize: guideWidgetSizes[guideWidgetSizes.length - 1],
-    availableSizes: guideWidgetSizes,
+    size: videoGuideWidgetSizes[0],
+    minSize: videoGuideWidgetSizes[0],
+    maxSize: videoGuideWidgetSizes[videoGuideWidgetSizes.length - 1],
+    availableSizes: videoGuideWidgetSizes,
     defaultSetting: {},
     defaultData: { videoURL: "" },
     isEditable: false,
