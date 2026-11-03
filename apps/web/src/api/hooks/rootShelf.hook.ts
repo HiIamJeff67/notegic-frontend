@@ -1,13 +1,11 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateRootShelfRequest,
   CreateRootShelfResponse,
@@ -52,6 +50,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateRootShelf,
   mutationFnCreateRootShelves,
@@ -70,6 +69,12 @@ import {
 } from "@/api/invokers/rootShelf.invoker";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
+import {
+  clearSearchRootShelves,
+  prependMissingSearchRootShelves,
+  prependSearchRootShelves,
+  removeSearchRootShelves,
+} from "@/api/policies/searchRootShelves.policy";
 
 export const useGetMyRootShelfById = (
   hookRequest?: GetMyRootShelfByIdRequest,
@@ -87,7 +92,7 @@ export const useGetMyRootShelfById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -101,12 +106,21 @@ export const useGetMyRootShelfById = (
       ) {
         const existingRootShelf =
           await RootShelfLocalSimulator.simulateGetMyRootShelfById(request);
-        return {
-          success: false,
-          data: existingRootShelf ? { ...existingRootShelf } : null,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRootShelfByIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingRootShelf ? { ...existingRootShelf } : null,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingRootShelf ? { ...existingRootShelf } : null,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRootShelfByIdResponse;
       }
 
       throw error;
@@ -149,12 +163,28 @@ export const useCreateRootShelf = () => {
   const perform = async (
     request: CreateRootShelfRequest
   ): Promise<CreateRootShelfResponse> => {
-    parseRequest(CreateRootShelfRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateRootShelfRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRootShelf(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateCreateRootShelf(request);
+      if (!request.body.id) throw error;
+      const createdAt = new Date();
+      return {
+        success: true,
+        data: {
+          id: request.body.id as UUID,
+          lastAnalyzedAt: createdAt,
+          createdAt,
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-
-    return await mutationFnCreateRootShelf(request);
   };
 
   const mutation = useMutation({
@@ -163,45 +193,27 @@ export const useCreateRootShelf = () => {
       if (response.success === false) return;
       apolloClient.cache.modify({
         fields: {
-          searchRootShelves(existingSearchRootShelves, { readField }) {
-            if (!existingSearchRootShelves) return existingSearchRootShelves;
-
-            const newEdge = {
-              __typename: "SearchRootShelfEdge",
-              node: {
-                __typename: "PrivateRootShelf",
-                id: response.data.id,
-                name: request.body.name,
-                subShelfCount: 0,
-                itemCount: 0,
-                lastAnalyzedAt: response.data.lastAnalyzedAt,
-                updatedAt: response.data.createdAt,
-                createdAt: response.data.createdAt,
+          searchRootShelves(existingSearchRootShelves) {
+            return prependSearchRootShelves(existingSearchRootShelves, [
+              {
+                __typename: "SearchRootShelfEdge",
+                node: {
+                  __typename: "PrivateRootShelf",
+                  id: response.data.id,
+                  name: request.body.name,
+                  subShelfCount: 0,
+                  itemCount: 0,
+                  lastAnalyzedAt: response.data.lastAnalyzedAt,
+                  updatedAt: response.data.createdAt,
+                  createdAt: response.data.createdAt,
+                },
               },
-            };
-
-            const updatedEdges = [
-              newEdge,
-              ...existingSearchRootShelves.searchEdges,
-            ];
-
-            return {
-              ...existingSearchRootShelves,
-              searchEdges: updatedEdges,
-            };
+            ]);
           },
         },
       });
+      if (response.embedded.publicId === "") return;
       await RootShelfLocalSynchronizer.syncCreateRootShelf(request, response);
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateCreateRootShelf(request);
-            break;
-        }
-      }
     },
   });
 
@@ -214,12 +226,26 @@ export const useCreateRootShelves = () => {
   const perform = async (
     request: CreateRootShelvesRequest
   ): Promise<CreateRootShelvesResponse> => {
-    parseRequest(CreateRootShelvesRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateRootShelvesRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRootShelves(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateCreateRootShelves(request);
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdRootShelves.map(item => item.id as UUID),
+          lastAnalyzedAt: new Date(),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnCreateRootShelves>>;
     }
-
-    return await mutationFnCreateRootShelves(request);
   };
 
   const mutation = useMutation({
@@ -228,7 +254,7 @@ export const useCreateRootShelves = () => {
       if (response.success === false) return;
       apolloClient.cache.modify({
         fields: {
-          searchRootShelves(existingSearchRootShelves, { readField }) {
+          searchRootShelves(existingSearchRootShelves) {
             if (!existingSearchRootShelves) return existingSearchRootShelves;
 
             const newEdges = [];
@@ -256,28 +282,15 @@ export const useCreateRootShelves = () => {
               newEdges.push(newEdge);
             }
 
-            const updatedEdges = [
-              ...newEdges,
-              ...existingSearchRootShelves.searchEdges,
-            ];
-
-            return {
-              ...existingSearchRootShelves,
-              searchEdges: updatedEdges,
-            };
+            return prependSearchRootShelves(
+              existingSearchRootShelves,
+              newEdges
+            );
           },
         },
       });
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncCreateRootShelves(request, response);
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateCreateRootShelves(request);
-            break;
-        }
-      }
     },
   });
 
@@ -291,12 +304,22 @@ export const useUpdateMyRootShelfById = () => {
   const perform = async (
     request: UpdateMyRootShelfByIdRequest
   ): Promise<UpdateMyRootShelfByIdResponse> => {
-    parseRequest(UpdateMyRootShelfByIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyRootShelfByIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyRootShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateUpdateMyRootShelfById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyRootShelfById>>;
     }
-
-    return await mutationFnUpdateMyRootShelfById(request);
   };
 
   const mutation = useMutation({
@@ -318,21 +341,11 @@ export const useUpdateMyRootShelfById = () => {
           }),
         },
       });
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncUpdateMyRootShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateUpdateMyRootShelfById(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -346,7 +359,7 @@ export const useUpsertRootShelfPermission = () => {
   const perform = async (
     request: UpsertRootShelfPermissionRequest
   ): Promise<UpsertRootShelfPermissionResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    if (isRemoteUnavailable()) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
@@ -395,7 +408,7 @@ export const useDeleteRootShelfPermissions = () => {
   const perform = async (
     request: DeleteRootShelfPermissionsRequest
   ): Promise<DeleteRootShelfPermissionsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    if (isRemoteUnavailable()) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 
@@ -442,12 +455,22 @@ export const useUpdateMyRootShelvesByIds = () => {
   const perform = async (
     request: UpdateMyRootShelvesByIdsRequest
   ): Promise<UpdateMyRootShelvesByIdsResponse> => {
-    parseRequest(UpdateMyRootShelvesByIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyRootShelvesByIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyRootShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateUpdateMyRootShelvesByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyRootShelvesByIds>>;
     }
-
-    return await mutationFnUpdateMyRootShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -472,21 +495,11 @@ export const useUpdateMyRootShelvesByIds = () => {
           },
         });
       }
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncUpdateMyRootShelvesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateUpdateMyRootShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -500,11 +513,21 @@ export const useRestoreMyRootShelfById = () => {
   const perform = async (
     request: RestoreMyRootShelfByIdRequest
   ): Promise<RestoreMyRootShelfByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyRootShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateRestoreMyRootShelfById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyRootShelfById>>;
     }
-
-    return await mutationFnRestoreMyRootShelfById(request);
   };
 
   const mutation = useMutation({
@@ -524,22 +547,12 @@ export const useRestoreMyRootShelfById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
-      apolloClient.cache.evict({ fieldName: "searchRootShelves" });
+      clearSearchRootShelves(apolloClient.cache);
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateRestoreMyRootShelfById(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -555,11 +568,21 @@ export const useRestoreMyRootShelvesByIds = (
   const perform = async (
     request: RestoreMyRootShelvesByIdsRequest
   ): Promise<RestoreMyRootShelvesByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyRootShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(request);
+      return {
+        success: true as const,
+        data: [],
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyRootShelvesByIds>>;
     }
-
-    return await mutationFnRestoreMyRootShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -586,10 +609,10 @@ export const useRestoreMyRootShelvesByIds = (
       apolloClient.cache.modify({
         fields: {
           searchRootShelves(existingSearchRootShelves, { readField }) {
-            if (!existingSearchRootShelves) return existingSearchRootShelves;
-
-            const newEdges = response.data
-              .map(shelf => ({
+            return prependMissingSearchRootShelves(
+              existingSearchRootShelves,
+              readField,
+              response.data.map(shelf => ({
                 __typename: "SearchRootShelfEdge",
                 node: {
                   __typename: "PrivateRootShelf",
@@ -602,46 +625,17 @@ export const useRestoreMyRootShelvesByIds = (
                   createdAt: shelf.createdAt,
                 },
               }))
-              .filter(edge => {
-                const exists = existingSearchRootShelves.searchEdges.some(
-                  (existingEdge: any) =>
-                    readField("id", existingEdge.node) === edge.node.id
-                );
-                return !exists;
-              });
-
-            if (newEdges.length === 0) return existingSearchRootShelves;
-
-            return {
-              ...existingSearchRootShelves,
-              searchEdges: [
-                ...newEdges,
-                ...existingSearchRootShelves.searchEdges,
-              ],
-            };
+            );
           },
         },
       });
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncRestoreMyRootShelvesByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError
-      ) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -655,11 +649,21 @@ export const useDeleteMyRootShelfById = () => {
   const perform = async (
     request: DeleteMyRootShelfByIdRequest
   ): Promise<DeleteMyRootShelfByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyRootShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateDeleteMyRootShelfById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyRootShelfById>>;
     }
-
-    return await mutationFnDeleteMyRootShelfById(request);
   };
 
   const mutation = useMutation({
@@ -681,34 +685,19 @@ export const useDeleteMyRootShelfById = () => {
       apolloClient.cache.modify({
         fields: {
           searchRootShelves(existingSearchRootShelves, { readField }) {
-            if (!existingSearchRootShelves) return existingSearchRootShelves;
-
-            const updatedEdges = existingSearchRootShelves.searchEdges.filter(
-              (edge: any) => readField("id", edge.node) !== rootShelfId
+            return removeSearchRootShelves(
+              existingSearchRootShelves,
+              readField,
+              [rootShelfId]
             );
-
-            return {
-              ...existingSearchRootShelves,
-              searchEdges: updatedEdges,
-            };
           },
         },
       });
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncDeleteMyRootShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateDeleteMyRootShelfById(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -721,11 +710,21 @@ export const useDeleteMyRootShelvesByIds = () => {
   const perform = async (
     request: DeleteMyRootShelvesByIdsRequest
   ): Promise<DeleteMyRootShelvesByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyRootShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RootShelfLocalSimulator.simulateDeleteMyRootShelvesByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyRootShelvesByIds>>;
     }
-
-    return await mutationFnDeleteMyRootShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -748,21 +747,11 @@ export const useDeleteMyRootShelvesByIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await RootShelfLocalSynchronizer.syncDeleteMyRootShelvesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await RootShelfLocalSimulator.simulateDeleteMyRootShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 

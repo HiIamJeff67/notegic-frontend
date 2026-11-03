@@ -1,10 +1,8 @@
 import type { UUID } from "node:crypto";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateRoutineTaskDependencyByRoutineIdRequest,
   CreateRoutineTaskDependencyByRoutineIdResponse,
@@ -21,6 +19,7 @@ import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { type UseQueryOptions, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateRoutineTaskDependencyByRoutineId,
   mutationFnDeleteRoutineTaskDependencyByRoutineId,
@@ -45,21 +44,23 @@ export const useUpdateRoutineTaskGraphByRoutineId = () =>
     },
   });
 
-const getMissingNetworkError = (error: unknown) =>
-  error instanceof NotegicFetchError &&
-  error.unWrap.reason === ExceptionReasonDictionary.client.fetch.missingNetwork
-    ? error
-    : null;
-
 const createLocalGetResponse = (
   error: NotegicAPIError | NotegicFetchError,
   data: GetRoutineTaskDependenciesByRoutineIdResponse["data"]
-): GetRoutineTaskDependenciesByRoutineIdResponse => ({
-  success: false,
-  data,
-  exception: error.unWrap,
-  embedded: { publicId: "" },
-});
+): GetRoutineTaskDependenciesByRoutineIdResponse =>
+  NetworkExceptions.isMissingNetworkError(error)
+    ? {
+        success: true,
+        data: data,
+        exception: null,
+        embedded: { publicId: "" },
+      }
+    : {
+        success: false,
+        data,
+        exception: error.unWrap,
+        embedded: { publicId: "" },
+      };
 
 export const useGetRoutineTaskDependenciesByRoutineId = (
   options?: Partial<
@@ -73,7 +74,7 @@ export const useGetRoutineTaskDependenciesByRoutineId = (
       request: GetRoutineTaskDependenciesByRoutineIdRequest
     ): Promise<GetRoutineTaskDependenciesByRoutineIdResponse> => {
       try {
-        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
@@ -126,33 +127,34 @@ export const useCreateRoutineTaskDependencyByRoutineId = () => {
       request: CreateRoutineTaskDependencyByRoutineIdRequest
     ): Promise<CreateRoutineTaskDependencyByRoutineIdResponse> => {
       try {
-        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
         return await mutationFnCreateRoutineTaskDependencyByRoutineId(request);
       } catch (error) {
-        const networkError = getMissingNetworkError(error);
-        if (!networkError) throw error;
+        if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 
         const dependency =
           await RoutineTaskDependencyLocalSimulator.simulateCreateRoutineTaskDependencyByRoutineId(
             request
           );
         return {
-          success: false,
+          success: true,
           data: dependency,
-          exception: networkError.unWrap,
+          exception: null,
           embedded: { publicId: "" },
         } as CreateRoutineTaskDependencyByRoutineIdResponse;
       }
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      await RoutineTaskDependencyLocalSynchronizer.syncCreateRoutineTaskDependencyByRoutineId(
-        request,
-        response
-      );
+      if (response.embedded?.publicId !== "") {
+        await RoutineTaskDependencyLocalSynchronizer.syncCreateRoutineTaskDependencyByRoutineId(
+          request,
+          response
+        );
+      }
       await queryClient.invalidateQueries({
         queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
       });
@@ -173,35 +175,36 @@ export const useUpdateRoutineTaskDependencyByRoutineId = () => {
       request: UpdateRoutineTaskDependencyByRoutineIdRequest
     ): Promise<UpdateRoutineTaskDependencyByRoutineIdResponse> => {
       try {
-        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
         return await mutationFnUpdateRoutineTaskDependencyByRoutineId(request);
       } catch (error) {
-        const networkError = getMissingNetworkError(error);
-        if (!networkError) throw error;
+        if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 
         const dependency =
           await RoutineTaskDependencyLocalSimulator.simulateUpdateRoutineTaskDependencyByRoutineId(
             request
           );
-        if (!dependency) throw networkError;
+        if (!dependency) throw error;
 
         return {
-          success: false,
+          success: true,
           data: dependency,
-          exception: networkError.unWrap,
+          exception: null,
           embedded: { publicId: "" },
         } as UpdateRoutineTaskDependencyByRoutineIdResponse;
       }
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      await RoutineTaskDependencyLocalSynchronizer.syncUpdateRoutineTaskDependencyByRoutineId(
-        request,
-        response
-      );
+      if (response.embedded?.publicId !== "") {
+        await RoutineTaskDependencyLocalSynchronizer.syncUpdateRoutineTaskDependencyByRoutineId(
+          request,
+          response
+        );
+      }
       await queryClient.invalidateQueries({
         queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
       });
@@ -222,33 +225,34 @@ export const useDeleteRoutineTaskDependencyByRoutineId = () => {
       request: DeleteRoutineTaskDependencyByRoutineIdRequest
     ): Promise<DeleteRoutineTaskDependencyByRoutineIdResponse> => {
       try {
-        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
         return await mutationFnDeleteRoutineTaskDependencyByRoutineId(request);
       } catch (error) {
-        const networkError = getMissingNetworkError(error);
-        if (!networkError) throw error;
+        if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 
         const result =
           await RoutineTaskDependencyLocalSimulator.simulateDeleteRoutineTaskDependencyByRoutineId(
             request
           );
         return {
-          success: false,
+          success: true,
           data: result,
-          exception: networkError.unWrap,
+          exception: null,
           embedded: { publicId: "" },
         } as DeleteRoutineTaskDependencyByRoutineIdResponse;
       }
     },
     onSuccess: async (response, request) => {
       if (!response.success) return;
-      await RoutineTaskDependencyLocalSynchronizer.syncDeleteRoutineTaskDependencyByRoutineId(
-        request,
-        response
-      );
+      if (response.embedded?.publicId !== "") {
+        await RoutineTaskDependencyLocalSynchronizer.syncDeleteRoutineTaskDependencyByRoutineId(
+          request,
+          response
+        );
+      }
       await queryClient.invalidateQueries({
         queryKey: queryKeys.routine.oneById(request.param.routineId as UUID),
       });

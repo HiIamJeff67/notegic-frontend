@@ -1,12 +1,10 @@
 import type { UUID } from "node:crypto";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateBlockPackRequest,
   CreateBlockPackResponse,
@@ -53,6 +51,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateBlockPack,
   mutationFnCreateBlockPacks,
@@ -89,7 +88,7 @@ export const useGetMyBlockPackById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -103,20 +102,30 @@ export const useGetMyBlockPackById = (
       ) {
         const existingBlockPack =
           await BlockPackLocalSimulator.simulateGetMyBlockPackById(request);
-        return {
-          success: false,
-          data: existingBlockPack
+        const blockPack = existingBlockPack
+          ? {
+              ...existingBlockPack,
+              lastUpdateSequence: 0,
+              compactedUntilSequence: 0,
+              projectedUntilSequence: -1,
+              isProjectionCurrent: false,
+            }
+          : null;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
             ? {
-                ...existingBlockPack,
-                lastUpdateSequence: 0,
-                compactedUntilSequence: 0,
-                projectedUntilSequence: -1,
-                isProjectionCurrent: false,
+                success: true,
+                data: blockPack,
+                exception: null,
+                embedded: { publicId: "" },
               }
-            : null,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyBlockPackByIdResponse;
+            : {
+                success: false,
+                data: blockPack,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyBlockPackByIdResponse;
       }
 
       throw error;
@@ -171,7 +180,7 @@ export const useGetMyBlockPacksByParentSubShelfId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -189,12 +198,21 @@ export const useGetMyBlockPacksByParentSubShelfId = (
           await BlockPackLocalSimulator.simulateGetMyBlockPacksByParentSubShelfId(
             request
           );
-        return {
-          success: false,
-          data: existingBlockPacks,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyBlockPacksByParentSubShelfIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingBlockPacks,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingBlockPacks,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyBlockPacksByParentSubShelfIdResponse;
       }
 
       throw error;
@@ -249,7 +267,7 @@ export const useGetMyBlockPacksByRootShelfId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -267,12 +285,21 @@ export const useGetMyBlockPacksByRootShelfId = (
           await BlockPackLocalSimulator.simulateGetMyBlockPacksByRootShelfId(
             request
           );
-        return {
-          success: false,
-          data: existingBlockPacks,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyBlockPacksByRootShelfIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingBlockPacks,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingBlockPacks,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyBlockPacksByRootShelfIdResponse;
       }
 
       throw error;
@@ -315,12 +342,29 @@ export const useCreateBlockPack = () => {
   const perform = async (
     request: CreateBlockPackRequest
   ): Promise<CreateBlockPackResponse> => {
-    parseRequest(CreateBlockPackRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateBlockPackRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateBlockPack(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await BlockPackLocalSimulator.simulateCreateBlockPack(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true,
+        data: {
+          id: request.body.id as UUID,
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-
-    return await mutationFnCreateBlockPack(request);
   };
 
   const mutation = useMutation({
@@ -339,16 +383,8 @@ export const useCreateBlockPack = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded.publicId === "") return;
       await BlockPackLocalSynchronizer.syncCreateBlockPack(variables, response);
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateCreateBlockPack(variables);
-            break;
-        }
-      }
     },
   });
 
@@ -361,12 +397,25 @@ export const useCreateBlockPacks = () => {
   const perform = async (
     request: CreateBlockPacksRequest
   ): Promise<CreateBlockPacksResponse> => {
-    parseRequest(CreateBlockPacksRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateBlockPacksRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateBlockPacks(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateCreateBlockPacks(request);
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdBlockPacks.map(item => item.id as UUID),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnCreateBlockPacks>>;
     }
-
-    return await mutationFnCreateBlockPacks(request);
   };
 
   const mutation = useMutation({
@@ -393,19 +442,11 @@ export const useCreateBlockPacks = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncCreateBlockPacks(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateCreateBlockPacks(variables);
-            break;
-        }
-      }
     },
   });
 
@@ -418,12 +459,22 @@ export const useUpdateMyBlockPackById = () => {
   const perform = async (
     request: UpdateMyBlockPackByIdRequest
   ): Promise<UpdateMyBlockPackByIdResponse> => {
-    parseRequest(UpdateMyBlockPackByIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyBlockPackByIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyBlockPackById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateUpdateMyBlockPackById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyBlockPackById>>;
     }
-
-    return await mutationFnUpdateMyBlockPackById(request);
   };
 
   const mutation = useMutation({
@@ -442,21 +493,11 @@ export const useUpdateMyBlockPackById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncUpdateMyBlockPackById(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateUpdateMyBlockPackById(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -469,12 +510,22 @@ export const useUpdateMyBlockPacksByIds = () => {
   const perform = async (
     request: UpdateMyBlockPacksByIdsRequest
   ): Promise<UpdateMyBlockPacksByIdsResponse> => {
-    parseRequest(UpdateMyBlockPacksByIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyBlockPacksByIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyBlockPacksByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateUpdateMyBlockPacksByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyBlockPacksByIds>>;
     }
-
-    return await mutationFnUpdateMyBlockPacksByIds(request);
   };
 
   const mutation = useMutation({
@@ -505,21 +556,11 @@ export const useUpdateMyBlockPacksByIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncUpdateMyBlockPacksByIds(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateUpdateMyBlockPacksByIds(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -532,11 +573,21 @@ export const useMoveMyBlockPackById = () => {
   const perform = async (
     request: MoveMyBlockPackByIdRequest
   ): Promise<MoveMyBlockPackByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMyBlockPackById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateMoveMyBlockPackById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnMoveMyBlockPackById>>;
     }
-
-    return await mutationFnMoveMyBlockPackById(request);
   };
 
   const mutation = useMutation({
@@ -562,21 +613,11 @@ export const useMoveMyBlockPackById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncMoveMyBlockPackById(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateMoveMyBlockPackById(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -589,11 +630,25 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
   const perform = async (
     request: MoveMyBlockPacksByParentSubShelfIdRequest
   ): Promise<MoveMyBlockPacksByParentSubShelfIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMyBlockPacksByParentSubShelfId(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfId(
+        request
+      );
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<
+        ReturnType<typeof mutationFnMoveMyBlockPacksByParentSubShelfId>
+      >;
     }
-
-    return await mutationFnMoveMyBlockPacksByParentSubShelfId(request);
   };
 
   const mutation = useMutation({
@@ -626,21 +681,11 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncMoveMyBlockPacksByParentSubShelfId(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfId(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -653,11 +698,25 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
   const perform = async (
     request: MoveMyBlockPacksByParentSubShelfIdsRequest
   ): Promise<MoveMyBlockPacksByParentSubShelfIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMyBlockPacksByParentSubShelfIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfIds(
+        request
+      );
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<
+        ReturnType<typeof mutationFnMoveMyBlockPacksByParentSubShelfIds>
+      >;
     }
-
-    return await mutationFnMoveMyBlockPacksByParentSubShelfIds(request);
   };
 
   const mutation = useMutation({
@@ -701,21 +760,11 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncMoveMyBlockPacksByParentSubShelfIds(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfIds(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -728,11 +777,21 @@ export const useRestoreMyBlockPackById = () => {
   const perform = async (
     request: RestoreMyBlockPackByIdRequest
   ): Promise<RestoreMyBlockPackByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyBlockPackById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateRestoreMyBlockPackById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyBlockPackById>>;
     }
-
-    return await mutationFnRestoreMyBlockPackById(request);
   };
 
   const mutation = useMutation({
@@ -755,21 +814,11 @@ export const useRestoreMyBlockPackById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncRestoreMyBlockPackById(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateRestoreMyBlockPackById(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -784,11 +833,21 @@ export const useRestoreMyBlockPacksByIds = (
   const perform = async (
     request: RestoreMyBlockPacksByIdsRequest
   ): Promise<RestoreMyBlockPacksByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyBlockPacksByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(request);
+      return {
+        success: true as const,
+        data: [],
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyBlockPacksByIds>>;
     }
-
-    return await mutationFnRestoreMyBlockPacksByIds(request);
   };
 
   const mutation = useMutation({
@@ -822,26 +881,13 @@ export const useRestoreMyBlockPacksByIds = (
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncRestoreMyBlockPacksByIds(
         variables,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, variables) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError
-      ) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -854,11 +900,21 @@ export const useDeleteMyBlockPackById = () => {
   const perform = async (
     request: DeleteMyBlockPackByIdRequest
   ): Promise<DeleteMyBlockPackByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyBlockPackById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateDeleteMyBlockPackById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyBlockPackById>>;
     }
-
-    return await mutationFnDeleteMyBlockPackById(request);
   };
 
   const mutation = useMutation({
@@ -879,21 +935,11 @@ export const useDeleteMyBlockPackById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncDeleteMyBlockPackById(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateDeleteMyBlockPackById(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -906,11 +952,21 @@ export const useDeleteMyBlockPacksByIds = () => {
   const perform = async (
     request: DeleteMyBlockPacksByIdsRequest
   ): Promise<DeleteMyBlockPacksByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyBlockPacksByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await BlockPackLocalSimulator.simulateDeleteMyBlockPacksByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyBlockPacksByIds>>;
     }
-
-    return await mutationFnDeleteMyBlockPacksByIds(request);
   };
 
   const mutation = useMutation({
@@ -943,21 +999,11 @@ export const useDeleteMyBlockPacksByIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await BlockPackLocalSynchronizer.syncDeleteMyBlockPacksByIds(
         variables,
         response
       );
-    },
-    onError: async (error, variables) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await BlockPackLocalSimulator.simulateDeleteMyBlockPacksByIds(
-              variables
-            );
-            break;
-        }
-      }
     },
   });
 

@@ -9,6 +9,7 @@ export const JapaneseServerTranslation = {
     RescheduleRequired:
       "このルーティンを有効にする前に、未来の実行時刻を設定してください。",
     QuotaExceeded: "現在のプランの利用上限に達しました。",
+    MissingNetwork: "ネットワークに接続できません。",
     InternalServerError:
       "サーバーで問題が発生しました。しばらくしてからもう一度お試しください。",
     InvalidDto: "送信した情報の一部が正しくありません。",

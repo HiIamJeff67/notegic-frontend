@@ -9,6 +9,7 @@ import {
   type UseQueryOptions,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 
 interface VisualizeResponseEnvelope {
@@ -40,7 +41,7 @@ export function useVisualizeQuery<
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    if (isRemoteUnavailable()) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
 

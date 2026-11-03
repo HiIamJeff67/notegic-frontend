@@ -1,3 +1,4 @@
+import { NotegicAPIError } from "@shared/api/exceptions";
 import {
   GetMeRequest,
   GetMeResponse,
@@ -85,6 +86,13 @@ export const TryGetUserData = createServerFn({ method: "GET" })
       );
 
       forwardUpstreamSetCookies(response);
+      if (
+        response.status === 502 ||
+        response.status === 503 ||
+        response.status === 504
+      ) {
+        throw new TypeError("fetch failed");
+      }
       if (!response.ok || !isJsonResponse(response)) return false;
 
       const parsedResponse = GetUserDataResponseSchema.safeParse(
@@ -95,7 +103,27 @@ export const TryGetUserData = createServerFn({ method: "GET" })
         parsedResponse.data.success &&
         parsedResponse.data.exception === null
       );
-    } catch {
+    } catch (error) {
+      if (error instanceof NotegicAPIError) {
+        const status = error.unWrap.status;
+        if (
+          error.unWrap.reason === "InternalServerError" &&
+          (status === 502 || status === 503 || status === 504)
+        ) {
+          throw error;
+        }
+        return false;
+      }
+
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+      if (
+        error instanceof TypeError ||
+        message.includes("fetch failed") ||
+        message.includes("failed to fetch")
+      ) {
+        throw error;
+      }
+
       return false;
     }
   });
