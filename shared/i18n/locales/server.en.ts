@@ -10,6 +10,7 @@ export const EnglishServerTranslation = {
       "Choose a future schedule before activating this routine.",
     QuotaExceeded: "Your current plan's quota has been reached.",
     InternalServerError: "Something went wrong on our side. Please try again.",
+    MissingNetwork: "The network is unavailable.",
     InvalidDto: "Some submitted information is invalid.",
     InvalidInput: "The submitted input is invalid.",
     InvalidRequest: "The request is invalid.",

@@ -1,11 +1,13 @@
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
+import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicError } from "@shared/api/exceptions/errors";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { resources } from "@shared/i18n";
 import { createInstance } from "i18next";
-import { tError } from "./error";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { z } from "zod";
+import { tError } from "./error";
 
 describe("tError", () => {
   test.each([
@@ -66,6 +68,18 @@ describe("tError", () => {
     ).setPresentation("auth.turnstileRequired");
 
     expect(tError(error, i18n.t)).toBe(i18n.t("auth.turnstileRequired"));
+  });
+
+  test("translates a missing network fetch as the prepared message", async () => {
+    const i18n = createInstance();
+    await i18n.init({ resources, lng: "en", fallbackLng: "en" });
+
+    expect(
+      tError(
+        new NotegicFetchError(FetchClientExceptions.MissingNetwork()),
+        i18n.t
+      )
+    ).toBe("The network is unavailable.");
   });
 
   test("uses the unknown-error fallback for an unmapped reason", async () => {

@@ -1,13 +1,11 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { toGraphQLRoutinePeriod } from "@shared/api/graphql/conversions";
 import { FragmentedBasicPrivateSearchableRoutineFragmentDoc } from "@shared/api/graphql/generated/graphql";
 import type {
@@ -59,6 +57,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -86,11 +85,17 @@ import {
 } from "@/api/invokers/routine.invoker";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
-import { routineSearchPage } from "@/api/routine.search";
+import { clearSearchItems } from "@/api/policies/searchItems.policy";
+import { readSearchFieldInput } from "@/api/policies/searchPagination.policy";
+import {
+  clearSearchRoutines,
+  placeSearchRoutine,
+  removeSearchRoutines,
+  routineSearchCursor,
+} from "@/api/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
+import { clearSearchStations } from "@/api/policies/searchStations.policy";
 import { useVisualizeQuery } from "./visualize.hook";
-
-const getRoutineSearchInput = (storeFieldName: string) =>
-  JSON.parse(storeFieldName.slice(storeFieldName.indexOf(":") + 1)).input;
 
 export const useVisualizeMyRoutineStatusCount = (
   request?: VisualizeMyRoutineStatusCountRequest,
@@ -178,7 +183,7 @@ export const useGetMyRoutineById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -192,12 +197,21 @@ export const useGetMyRoutineById = (
       ) {
         const routine =
           await RoutineLocalSimulator.simulateGetMyRoutineById(request);
-        return {
-          success: false,
-          data: routine,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRoutineByIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: routine,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: routine,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRoutineByIdResponse;
       }
 
       throw error;
@@ -250,7 +264,7 @@ export const useGetMyRoutinesByStationId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -264,12 +278,21 @@ export const useGetMyRoutinesByStationId = (
       ) {
         const routines =
           await RoutineLocalSimulator.simulateGetMyRoutinesByStationId(request);
-        return {
-          success: false,
-          data: routines,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRoutinesByStationIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: routines,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: routines,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRoutinesByStationIdResponse;
       }
 
       throw error;
@@ -322,7 +345,7 @@ export const useGetMyRoutinesByTimeRange = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -336,12 +359,21 @@ export const useGetMyRoutinesByTimeRange = (
       ) {
         const routines =
           await RoutineLocalSimulator.simulateGetMyRoutinesByTimeRange(request);
-        return {
-          success: false,
-          data: routines,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRoutinesByTimeRangeResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: routines,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: routines,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRoutinesByTimeRangeResponse;
       }
 
       throw error;
@@ -435,11 +467,29 @@ export const useCreateRoutineByStationId = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutineByStationIdRequest) => {
-    parseRequest(CreateRoutineByStationIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateRoutineByStationIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRoutineByStationId(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await RoutineLocalSimulator.simulateCreateRoutineByStationId(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: {
+          id: request.body.id as UUID,
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnCreateRoutineByStationId(request);
   };
 
   const mutation = useMutation({
@@ -485,65 +535,19 @@ export const useCreateRoutineByStationId = () => {
       };
       apolloClient.cache.modify({
         fields: {
-          searchRoutines(existing, { readField, storeFieldName, DELETE }) {
-            if (!existing?.searchEdges) return existing;
-            const input = getRoutineSearchInput(storeFieldName);
-            if (input.isDeletedAt === true) return DELETE;
-            if (input.after) return existing;
-            const query = input.query;
-            if (
-              (query && !matchesSearch(routine.title, query)) ||
-              (input.stationIds.length > 0 &&
-                !input.stationIds.includes(routine.stationId)) ||
-              (input.tagIds.length > 0 &&
-                !input.tagIds.some((tagId: string) =>
-                  routine.tagIds.includes(tagId)
-                ))
-            ) {
-              return existing;
-            }
-            const existed = existing.searchEdges.some(
-              (edge: any) => readField("id", edge.node) === routine.id
-            );
-            const edges = existing.searchEdges.filter(
-              (edge: any) => readField("id", edge.node) !== routine.id
-            );
-            const searchEdges = [
-              {
-                __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineSearchPage(input, [
-                  routine,
-                ]).cursors.get(routine.id)!,
-                node: routine,
-              },
-              ...edges,
-            ];
-            return {
-              ...existing,
-              totalCount: existed
-                ? (existing.totalCount ?? searchEdges.length)
-                : Math.max(existing.totalCount ?? 0, edges.length) + 1,
-              searchEdges,
-            };
+          searchRoutines(existing, details) {
+            return placeSearchRoutine(existing, details, routine);
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await RoutineLocalSynchronizer.syncCreateRoutineByStationId(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateCreateRoutineByStationId(request);
-      }
     },
   });
 
@@ -555,11 +559,25 @@ export const useCreateRoutinesByStationIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutinesByStationIdsRequest) => {
-    parseRequest(CreateRoutinesByStationIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateRoutinesByStationIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRoutinesByStationIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateCreateRoutinesByStationIds(request);
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdRoutines.map(item => item.id as UUID),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnCreateRoutinesByStationIds>>;
     }
-    return await mutationFnCreateRoutinesByStationIds(request);
   };
 
   const mutation = useMutation({
@@ -616,66 +634,20 @@ export const useCreateRoutinesByStationIds = () => {
         };
         apolloClient.cache.modify({
           fields: {
-            searchRoutines(existing, { readField, storeFieldName, DELETE }) {
-              if (!existing?.searchEdges) return existing;
-              const input = getRoutineSearchInput(storeFieldName);
-              if (input.isDeletedAt === true) return DELETE;
-              if (input.after) return existing;
-              const query = input.query;
-              if (
-                (query && !matchesSearch(routineNode.title, query)) ||
-                (input.stationIds.length > 0 &&
-                  !input.stationIds.includes(routineNode.stationId)) ||
-                (input.tagIds.length > 0 &&
-                  !input.tagIds.some((tagId: string) =>
-                    routineNode.tagIds.includes(tagId)
-                  ))
-              ) {
-                return existing;
-              }
-              const existed = existing.searchEdges.some(
-                (edge: any) => readField("id", edge.node) === routineNode.id
-              );
-              const edges = existing.searchEdges.filter(
-                (edge: any) => readField("id", edge.node) !== routineNode.id
-              );
-              const searchEdges = [
-                {
-                  __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineSearchPage(input, [
-                    routineNode,
-                  ]).cursors.get(routineNode.id)!,
-                  node: routineNode,
-                },
-                ...edges,
-              ];
-              return {
-                ...existing,
-                totalCount: existed
-                  ? (existing.totalCount ?? searchEdges.length)
-                  : Math.max(existing.totalCount ?? 0, edges.length) + 1,
-                searchEdges,
-              };
+            searchRoutines(existing, details) {
+              return placeSearchRoutine(existing, details, routineNode);
             },
           },
         });
       }
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncCreateRoutinesByStationIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateCreateRoutinesByStationIds(request);
-      }
     },
   });
 
@@ -691,16 +663,17 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
   ): Promise<UpdateMyRoutineByIdResponse> => {
     try {
       parseRequest(UpdateMyRoutineByIdRequestSchema, request);
-      if (typeof navigator !== "undefined" && navigator.onLine === false)
+      if (isRemoteUnavailable())
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       return await mutationFnUpdateMyRoutineById(request);
     } catch (error) {
-      if (!allowOffline || !(error instanceof NotegicFetchError)) throw error;
+      if (!allowOffline || !NetworkExceptions.isMissingNetworkError(error))
+        throw error;
       await RoutineLocalSimulator.simulateUpdateMyRoutineById(request);
       return {
-        success: false,
+        success: true as const,
         data: { updatedAt: new Date() },
-        exception: error.unWrap,
+        exception: null,
         embedded: { publicId: "" },
       };
     }
@@ -764,7 +737,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
         fields: {
           searchRoutines(existing, { readField, storeFieldName, DELETE }) {
             if (!existing?.searchEdges) return existing;
-            const input = getRoutineSearchInput(storeFieldName);
+            const input = readSearchFieldInput(storeFieldName);
             if (input.isDeletedAt === true) return DELETE;
             const query = input.query;
             const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -803,7 +776,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
       await RoutineLocalSynchronizer.syncUpdateMyRoutineById(request, response);
     },
@@ -817,11 +790,22 @@ export const useUpdateMyRoutinesByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyRoutinesByIdsRequest) => {
-    parseRequest(UpdateMyRoutinesByIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyRoutinesByIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyRoutinesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateUpdateMyRoutinesByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyRoutinesByIds>>;
     }
-    return await mutationFnUpdateMyRoutinesByIds(request);
   };
 
   const mutation = useMutation({
@@ -872,7 +856,7 @@ export const useUpdateMyRoutinesByIds = () => {
           fields: {
             searchRoutines(existing, { readField, storeFieldName, DELETE }) {
               if (!existing?.searchEdges) return existing;
-              const input = getRoutineSearchInput(storeFieldName);
+              const input = readSearchFieldInput(storeFieldName);
               if (input.isDeletedAt === true) return DELETE;
               const query = input.query;
               const searchEdges = existing.searchEdges.flatMap((edge: any) => {
@@ -912,21 +896,13 @@ export const useUpdateMyRoutinesByIds = () => {
           },
         });
       }
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncUpdateMyRoutinesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateUpdateMyRoutinesByIds(request);
-      }
     },
   });
 
@@ -938,10 +914,21 @@ export const useLinkRoutineTagById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: LinkRoutineTagByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineTagById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineTagById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnLinkRoutineTagById>>;
     }
-    return await mutationFnLinkRoutineTagById(request);
   };
 
   const mutation = useMutation({
@@ -998,7 +985,7 @@ export const useLinkRoutineTagById = () => {
             { readField, storeFieldName, toReference, DELETE }
           ) {
             if (!existing?.searchEdges) return existing;
-            const input = getRoutineSearchInput(storeFieldName);
+            const input = readSearchFieldInput(storeFieldName);
             if (input.isDeletedAt === true) return DELETE;
             const query = input.query;
             let existed = false;
@@ -1047,9 +1034,7 @@ export const useLinkRoutineTagById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineSearchPage(input, [
-                  patchedRoutine,
-                ]).cursors.get(routineId)!,
+                encodedSearchCursor: routineSearchCursor(input, patchedRoutine),
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1064,18 +1049,10 @@ export const useLinkRoutineTagById = () => {
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncLinkRoutineTagById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateLinkRoutineTagById(request);
-      }
     },
   });
 
@@ -1087,10 +1064,21 @@ export const useLinkRoutineTagsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: LinkRoutineTagsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineTagsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineTagsByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnLinkRoutineTagsByIds>>;
     }
-    return await mutationFnLinkRoutineTagsByIds(request);
   };
 
   const mutation = useMutation({
@@ -1152,7 +1140,7 @@ export const useLinkRoutineTagsByIds = () => {
               { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = getRoutineSearchInput(storeFieldName);
+              const input = readSearchFieldInput(storeFieldName);
               if (input.isDeletedAt === true) return DELETE;
               const query = input.query;
               let existed = false;
@@ -1201,9 +1189,10 @@ export const useLinkRoutineTagsByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineSearchPage(input, [
-                    patchedRoutine,
-                  ]).cursors.get(routineId)!,
+                  encodedSearchCursor: routineSearchCursor(
+                    input,
+                    patchedRoutine
+                  ),
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }
@@ -1219,21 +1208,13 @@ export const useLinkRoutineTagsByIds = () => {
           },
         });
       }
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncLinkRoutineTagsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateLinkRoutineTagsByIds(request);
-      }
     },
   });
 
@@ -1297,7 +1278,7 @@ export const useLinkRoutineTaskById = () => {
             { readField, storeFieldName, toReference, DELETE }
           ) {
             if (!existing?.searchEdges) return existing;
-            const input = getRoutineSearchInput(storeFieldName);
+            const input = readSearchFieldInput(storeFieldName);
             if (input.isDeletedAt === true) return DELETE;
             const query = input.query;
             let existed = false;
@@ -1346,9 +1327,7 @@ export const useLinkRoutineTaskById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineSearchPage(input, [
-                  patchedRoutine,
-                ]).cursors.get(routineId)!,
+                encodedSearchCursor: routineSearchCursor(input, patchedRoutine),
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1454,7 +1433,7 @@ export const useLinkRoutineTasksByIds = () => {
               { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = getRoutineSearchInput(storeFieldName);
+              const input = readSearchFieldInput(storeFieldName);
               if (input.isDeletedAt === true) return DELETE;
               const query = input.query;
               let existed = false;
@@ -1503,9 +1482,10 @@ export const useLinkRoutineTasksByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineSearchPage(input, [
-                    patchedRoutine,
-                  ]).cursors.get(routineId)!,
+                  encodedSearchCursor: routineSearchCursor(
+                    input,
+                    patchedRoutine
+                  ),
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }
@@ -1555,10 +1535,21 @@ export const useLinkRoutineItemById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: LinkRoutineItemByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineItemById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineItemById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnLinkRoutineItemById>>;
     }
-    return await mutationFnLinkRoutineItemById(request);
   };
 
   const mutation = useMutation({
@@ -1615,7 +1606,7 @@ export const useLinkRoutineItemById = () => {
             { readField, storeFieldName, toReference, DELETE }
           ) {
             if (!existing?.searchEdges) return existing;
-            const input = getRoutineSearchInput(storeFieldName);
+            const input = readSearchFieldInput(storeFieldName);
             if (input.isDeletedAt === true) return DELETE;
             const query = input.query;
             let existed = false;
@@ -1664,9 +1655,7 @@ export const useLinkRoutineItemById = () => {
             ) {
               searchEdges.unshift({
                 __typename: "SearchRoutineEdge",
-                encodedSearchCursor: routineSearchPage(input, [
-                  patchedRoutine,
-                ]).cursors.get(routineId)!,
+                encodedSearchCursor: routineSearchCursor(input, patchedRoutine),
                 node: toReference(patchedRoutine, true) ?? patchedRoutine,
               });
             }
@@ -1681,18 +1670,10 @@ export const useLinkRoutineItemById = () => {
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchItems" });
+      clearSearchItems(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncLinkRoutineItemById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateLinkRoutineItemById(request);
-      }
     },
   });
 
@@ -1704,10 +1685,21 @@ export const useLinkRoutineItemsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: LinkRoutineItemsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineItemsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineItemsByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnLinkRoutineItemsByIds>>;
     }
-    return await mutationFnLinkRoutineItemsByIds(request);
   };
 
   const mutation = useMutation({
@@ -1766,7 +1758,7 @@ export const useLinkRoutineItemsByIds = () => {
               { readField, storeFieldName, toReference, DELETE }
             ) {
               if (!existing?.searchEdges) return existing;
-              const input = getRoutineSearchInput(storeFieldName);
+              const input = readSearchFieldInput(storeFieldName);
               if (input.isDeletedAt === true) return DELETE;
               const query = input.query;
               let existed = false;
@@ -1815,9 +1807,10 @@ export const useLinkRoutineItemsByIds = () => {
               ) {
                 searchEdges.unshift({
                   __typename: "SearchRoutineEdge",
-                  encodedSearchCursor: routineSearchPage(input, [
-                    patchedRoutine,
-                  ]).cursors.get(routineId)!,
+                  encodedSearchCursor: routineSearchCursor(
+                    input,
+                    patchedRoutine
+                  ),
                   node: toReference(patchedRoutine, true) ?? patchedRoutine,
                 });
               }
@@ -1833,21 +1826,13 @@ export const useLinkRoutineItemsByIds = () => {
           },
         });
       }
-      apolloClient.cache.evict({ fieldName: "searchItems" });
+      clearSearchItems(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncLinkRoutineItemsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateLinkRoutineItemsByIds(request);
-      }
     },
   });
 
@@ -1859,10 +1844,21 @@ export const useRestoreMyRoutineById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: RestoreMyRoutineByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyRoutineById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateRestoreMyRoutineById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyRoutineById>>;
     }
-    return await mutationFnRestoreMyRoutineById(request);
   };
 
   const mutation = useMutation({
@@ -1877,23 +1873,15 @@ export const useRestoreMyRoutineById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncRestoreMyRoutineById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateRestoreMyRoutineById(request);
-      }
     },
   });
 
@@ -1907,10 +1895,21 @@ export const useRestoreMyRoutinesByIds = (
   const apolloClient = useApolloClient();
 
   const perform = async (request: RestoreMyRoutinesByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyRoutinesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateRestoreMyRoutinesByIds(request);
+      return {
+        success: true as const,
+        data: [],
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyRoutinesByIds>>;
     }
-    return await mutationFnRestoreMyRoutinesByIds(request);
   };
 
   const mutation = useMutation({
@@ -1928,26 +1927,17 @@ export const useRestoreMyRoutinesByIds = (
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncRestoreMyRoutinesByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateRestoreMyRoutinesByIds(request);
-      }
     },
   });
 
@@ -1959,10 +1949,21 @@ export const useDeleteMyRoutineById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: DeleteMyRoutineByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyRoutineById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateDeleteMyRoutineById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyRoutineById>>;
     }
-    return await mutationFnDeleteMyRoutineById(request);
   };
 
   const mutation = useMutation({
@@ -1980,36 +1981,17 @@ export const useDeleteMyRoutineById = () => {
       apolloClient.cache.modify({
         fields: {
           searchRoutines(existing, { readField }) {
-            if (!existing?.searchEdges) return existing;
-            const searchEdges = existing.searchEdges.filter(
-              (edge: any) =>
-                readField("id", edge.node) !== request.body.routineId
-            );
-            return {
-              ...existing,
-              totalCount: Math.max(
-                0,
-                (existing.totalCount ?? searchEdges.length) -
-                  (existing.searchEdges.length - searchEdges.length)
-              ),
-              searchEdges,
-            };
+            return removeSearchRoutines(existing, readField, [
+              request.body.routineId,
+            ]);
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncDeleteMyRoutineById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateDeleteMyRoutineById(request);
-      }
     },
   });
 
@@ -2021,10 +2003,21 @@ export const useDeleteMyRoutinesByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: DeleteMyRoutinesByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyRoutinesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateDeleteMyRoutinesByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMyRoutinesByIds>>;
     }
-    return await mutationFnDeleteMyRoutinesByIds(request);
   };
 
   const mutation = useMutation({
@@ -2044,41 +2037,22 @@ export const useDeleteMyRoutinesByIds = () => {
       apolloClient.cache.modify({
         fields: {
           searchRoutines(existing, { readField }) {
-            if (!existing?.searchEdges) return existing;
-            const searchEdges = existing.searchEdges.filter(
-              (edge: any) =>
-                !request.body.routineIds.includes(
-                  readField("id", edge.node) as string
-                )
+            return removeSearchRoutines(
+              existing,
+              readField,
+              request.body.routineIds
             );
-            return {
-              ...existing,
-              totalCount: Math.max(
-                0,
-                (existing.totalCount ?? searchEdges.length) -
-                  (existing.searchEdges.length - searchEdges.length)
-              ),
-              searchEdges,
-            };
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncDeleteMyRoutinesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateDeleteMyRoutinesByIds(request);
-      }
     },
   });
 
@@ -2090,10 +2064,21 @@ export const useHardDeleteMyRoutineById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyRoutineByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyRoutineById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateHardDeleteMyRoutineById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyRoutineById>>;
     }
-    return await mutationFnHardDeleteMyRoutineById(request);
   };
 
   const mutation = useMutation({
@@ -2115,26 +2100,16 @@ export const useHardDeleteMyRoutineById = () => {
       apolloClient.cache.modify({
         fields: {
           searchRoutines(existing, { readField }) {
-            if (!existing?.searchEdges) return existing;
-            const searchEdges = existing.searchEdges.filter(
-              (edge: any) =>
-                readField("id", edge.node) !== request.body.routineId
-            );
-            return {
-              ...existing,
-              totalCount: Math.max(
-                0,
-                (existing.totalCount ?? searchEdges.length) -
-                  (existing.searchEdges.length - searchEdges.length)
-              ),
-              searchEdges,
-            };
+            return removeSearchRoutines(existing, readField, [
+              request.body.routineId,
+            ]);
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncHardDeleteMyRoutineById(
         request,
         response
@@ -2152,10 +2127,21 @@ export const useHardDeleteMyRoutinesByIds = (
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyRoutinesByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyRoutinesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineLocalSimulator.simulateHardDeleteMyRoutinesByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyRoutinesByIds>>;
     }
-    return await mutationFnHardDeleteMyRoutinesByIds(request);
   };
 
   const mutation = useMutation({
@@ -2176,44 +2162,24 @@ export const useHardDeleteMyRoutinesByIds = (
       apolloClient.cache.modify({
         fields: {
           searchRoutines(existing, { readField }) {
-            if (!existing?.searchEdges) return existing;
-            const searchEdges = existing.searchEdges.filter(
-              (edge: any) =>
-                !request.body.routineIds.includes(
-                  readField("id", edge.node) as string
-                )
+            return removeSearchRoutines(
+              existing,
+              readField,
+              request.body.routineIds
             );
-            return {
-              ...existing,
-              totalCount: Math.max(
-                0,
-                (existing.totalCount ?? searchEdges.length) -
-                  (existing.searchEdges.length - searchEdges.length)
-              ),
-              searchEdges,
-            };
           },
         },
       });
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncHardDeleteMyRoutinesByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineLocalSimulator.simulateHardDeleteMyRoutinesByIds(request);
-      }
     },
   });
 

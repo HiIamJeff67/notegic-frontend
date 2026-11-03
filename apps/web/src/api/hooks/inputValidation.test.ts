@@ -1,14 +1,10 @@
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { mutationFnCreateBlockPack } from "@/api/invokers/blockPack.invoker";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { useCreateBlockPack } from "./blockPack.hook";
 
 const mockUseMutation = jest.fn(
-  (options: {
-    mutationFn: (request: unknown) => Promise<unknown>;
-    onError: (error: unknown, request: unknown) => Promise<void>;
-  }) => options
+  (options: { mutationFn: (request: unknown) => Promise<unknown> }) => options
 );
 jest.mock("@tanstack/react-query", () => ({
   useMutation: (options: never) => mockUseMutation(options),
@@ -65,7 +61,6 @@ test("invalid offline input is translated and never reaches the queue or transpo
   expect((caught as NotegicValidationError).getPresentation).toBe(
     "validation.nameRequired"
   );
-  await options.onError(caught, invalid);
   expect(
     BlockPackLocalSimulator.simulateCreateBlockPack
   ).not.toHaveBeenCalled();
@@ -73,17 +68,11 @@ test("invalid offline input is translated and never reaches the queue or transpo
   expect(invalid.body.name).toBe(" ");
 });
 
-test("valid offline input retains the existing local queue flow", async () => {
+test("valid offline input writes through the local simulator", async () => {
   useCreateBlockPack();
   const options = mockUseMutation.mock.calls[0][0];
-  let caught: unknown;
-  try {
-    await options.mutationFn(request);
-  } catch (error) {
-    caught = error;
-  }
-  expect(caught).toBeInstanceOf(NotegicFetchError);
-  await options.onError(caught, request);
+  const response = (await options.mutationFn(request)) as { success: boolean };
+  expect(response.success).toBe(true);
   expect(BlockPackLocalSimulator.simulateCreateBlockPack).toHaveBeenCalledWith(
     request
   );

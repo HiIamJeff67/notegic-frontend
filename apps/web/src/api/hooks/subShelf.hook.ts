@@ -1,12 +1,10 @@
 import type { UUID } from "node:crypto";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateSubShelfByRootShelfIdRequest,
   CreateSubShelfByRootShelfIdResponse,
@@ -55,6 +53,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateSubShelfByRootShelfId,
   mutationFnCreateSubShelvesByRootShelfIds,
@@ -92,7 +91,7 @@ export const useGetMySubShelfById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -106,12 +105,21 @@ export const useGetMySubShelfById = (
       ) {
         const existingSubShelf =
           await SubShelfLocalSimulator.simulateGetMySubShelfById(request);
-        return {
-          success: false,
-          data: existingSubShelf,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMySubShelfByIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingSubShelf,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingSubShelf,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMySubShelfByIdResponse;
       }
 
       throw error;
@@ -166,7 +174,7 @@ export const useGetMySubShelvesByPrevSubShelfId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -184,12 +192,21 @@ export const useGetMySubShelvesByPrevSubShelfId = (
           await SubShelfLocalSimulator.simulateGetMySubShelvesByPrevSubShelfId(
             request
           );
-        return {
-          success: false,
-          data: existingSubShelves,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMySubShelvesByPrevSubShelfIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingSubShelves,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingSubShelves,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMySubShelvesByPrevSubShelfIdResponse;
       }
 
       throw error;
@@ -244,7 +261,7 @@ export const useGetMySubShelvesByRootShelfId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -262,12 +279,21 @@ export const useGetMySubShelvesByRootShelfId = (
           await SubShelfLocalSimulator.simulateGetMySubShelvesByRootShelfId(
             request
           );
-        return {
-          success: false,
-          data: existingSubShelves,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMySubShelvesByRootShelfIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existingSubShelves,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existingSubShelves,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMySubShelvesByRootShelfIdResponse;
       }
 
       throw error;
@@ -322,7 +348,7 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -341,12 +367,21 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
           await SubShelfLocalSimulator.simulateGetMySubShelvesAndItemsByPrevSubShelfId(
             request
           );
-        return {
-          success: false,
-          data: existing,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: existing,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: existing,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
       }
 
       throw error;
@@ -392,12 +427,31 @@ export const useCreateSubShelfByRootShelfId = () => {
   const perform = async (
     request: CreateSubShelfByRootShelfIdRequest
   ): Promise<CreateSubShelfByRootShelfIdResponse> => {
-    parseRequest(CreateSubShelfByRootShelfIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateSubShelfByRootShelfIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateSubShelfByRootShelfId(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await SubShelfLocalSimulator.simulateCreateSubShelfByRootShelfId(
+          request
+        );
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true,
+        data: {
+          id: request.body.id as UUID,
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-
-    return await mutationFnCreateSubShelfByRootShelfId(request);
   };
 
   const mutation = useMutation({
@@ -416,21 +470,11 @@ export const useCreateSubShelfByRootShelfId = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded.publicId === "") return;
       await SubShelfLocalSynchronizer.syncCreateSubShelfByRootShelfId(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateCreateSubShelfByRootShelfId(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -443,12 +487,27 @@ export const useCreateSubShelvesByRootShelfIds = () => {
   const perform = async (
     request: CreateSubShelvesByRootShelfIdsRequest
   ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
-    parseRequest(CreateSubShelvesByRootShelfIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateSubShelvesByRootShelfIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateSubShelvesByRootShelfIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateCreateSubShelvesByRootShelfIds(
+        request
+      );
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdSubShelves.map(item => item.id as UUID),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnCreateSubShelvesByRootShelfIds>>;
     }
-
-    return await mutationFnCreateSubShelvesByRootShelfIds(request);
   };
 
   const mutation = useMutation({
@@ -472,21 +531,11 @@ export const useCreateSubShelvesByRootShelfIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncCreateSubShelvesByRootShelfIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateCreateSubShelvesByRootShelfIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -499,12 +548,22 @@ export const useUpdateMySubShelfById = () => {
   const perform = async (
     request: UpdateMySubShelfByIdRequest
   ): Promise<UpdateMySubShelfByIdResponse> => {
-    parseRequest(UpdateMySubShelfByIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMySubShelfByIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMySubShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateUpdateMySubShelfById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMySubShelfById>>;
     }
-
-    return await mutationFnUpdateMySubShelfById(request);
   };
 
   const mutation = useMutation({
@@ -523,19 +582,11 @@ export const useUpdateMySubShelfById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncUpdateMySubShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateUpdateMySubShelfById(request);
-            break;
-        }
-      }
     },
   });
 
@@ -547,12 +598,22 @@ export const useUpdateMySubShelvesByIds = () => {
   const perform = async (
     request: UpdateMySubShelvesByIdsRequest
   ): Promise<UpdateMySubShelvesByIdsResponse> => {
-    parseRequest(UpdateMySubShelvesByIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMySubShelvesByIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMySubShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateUpdateMySubShelvesByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMySubShelvesByIds>>;
     }
-
-    return await mutationFnUpdateMySubShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -576,21 +637,11 @@ export const useUpdateMySubShelvesByIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncUpdateMySubShelvesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateUpdateMySubShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -602,11 +653,21 @@ export const useMoveMySubShelf = () => {
   const perform = async (
     request: MoveMySubShelfRequest
   ): Promise<MoveMySubShelfResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMySubShelf(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateMoveMySubShelf(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnMoveMySubShelf>>;
     }
-
-    return await mutationFnMoveMySubShelf(request);
   };
 
   const mutation = useMutation({
@@ -634,16 +695,8 @@ export const useMoveMySubShelf = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncMoveMySubShelf(request, response);
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateMoveMySubShelf(request);
-            break;
-        }
-      }
     },
   });
 
@@ -656,11 +709,23 @@ export const useMoveMySubShelvesByRootShelfId = () => {
   const perform = async (
     request: MoveMySubShelvesByRootShelfIdRequest
   ): Promise<MoveMySubShelvesByRootShelfIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMySubShelvesByRootShelfId(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
+        request
+      );
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnMoveMySubShelvesByRootShelfId>>;
     }
-
-    return await mutationFnMoveMySubShelvesByRootShelfId(request);
   };
 
   const mutation = useMutation({
@@ -695,21 +760,11 @@ export const useMoveMySubShelvesByRootShelfId = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfId(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -722,11 +777,23 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
   const perform = async (
     request: MoveMySubShelvesByRootShelfIdsRequest
   ): Promise<MoveMySubShelvesByRootShelfIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMySubShelvesByRootShelfIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
+        request
+      );
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnMoveMySubShelvesByRootShelfIds>>;
     }
-
-    return await mutationFnMoveMySubShelvesByRootShelfIds(request);
   };
 
   const mutation = useMutation({
@@ -767,21 +834,11 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncMoveMySubShelvesByRootShelfIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -794,11 +851,21 @@ export const useRestoreMySubShelfById = () => {
   const perform = async (
     request: RestoreMySubShelfByIdRequest
   ): Promise<RestoreMySubShelfByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMySubShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateRestoreMySubShelfById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMySubShelfById>>;
     }
-
-    return await mutationFnRestoreMySubShelfById(request);
   };
 
   const mutation = useMutation({
@@ -821,19 +888,11 @@ export const useRestoreMySubShelfById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncRestoreMySubShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateRestoreMySubShelfById(request);
-            break;
-        }
-      }
     },
   });
 
@@ -847,11 +906,21 @@ export const useRestoreMySubShelvesByIds = (
   const perform = async (
     request: RestoreMySubShelvesByIdsRequest
   ): Promise<RestoreMySubShelvesByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMySubShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(request);
+      return {
+        success: true as const,
+        data: [],
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMySubShelvesByIds>>;
     }
-
-    return await mutationFnRestoreMySubShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -886,26 +955,13 @@ export const useRestoreMySubShelvesByIds = (
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncRestoreMySubShelvesByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError
-      ) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 
@@ -918,11 +974,21 @@ export const useDeleteMySubShelfById = () => {
   const perform = async (
     request: DeleteMySubShelfByIdRequest
   ): Promise<DeleteMySubShelfByIdResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMySubShelfById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateDeleteMySubShelfById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMySubShelfById>>;
     }
-
-    return await mutationFnDeleteMySubShelfById(request);
   };
 
   const mutation = useMutation({
@@ -944,19 +1010,11 @@ export const useDeleteMySubShelfById = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncDeleteMySubShelfById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateDeleteMySubShelfById(request);
-            break;
-        }
-      }
     },
   });
 
@@ -969,11 +1027,21 @@ export const useDeleteMySubShelvesByIds = () => {
   const perform = async (
     request: DeleteMySubShelvesByIdsRequest
   ): Promise<DeleteMySubShelvesByIdsResponse> => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMySubShelvesByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await SubShelfLocalSimulator.simulateDeleteMySubShelvesByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnDeleteMySubShelvesByIds>>;
     }
-
-    return await mutationFnDeleteMySubShelvesByIds(request);
   };
 
   const mutation = useMutation({
@@ -1007,21 +1075,11 @@ export const useDeleteMySubShelvesByIds = () => {
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
       );
+      if (response.embedded?.publicId === "") return;
       await SubShelfLocalSynchronizer.syncDeleteMySubShelvesByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (error instanceof NotegicFetchError) {
-        switch (error.unWrap.reason) {
-          case ExceptionReasonDictionary.client.fetch.missingNetwork:
-            await SubShelfLocalSimulator.simulateDeleteMySubShelvesByIds(
-              request
-            );
-            break;
-        }
-      }
     },
   });
 

@@ -3,6 +3,7 @@ import {
   NotegicExceptionSchema,
 } from "@shared/api/exceptions";
 import { NotegicError } from "@shared/api/exceptions/errors";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import type { TFunction } from "i18next";
 
@@ -34,7 +35,9 @@ export const tError = (error: unknown, t: TFunction): string => {
   }
 
   const exception = NotegicExceptionSchema.safeParse(
-    error instanceof NotegicAPIError || error instanceof NotegicValidationError
+    error instanceof NotegicAPIError ||
+      error instanceof NotegicValidationError ||
+      error instanceof NotegicFetchError
       ? error.unWrap
       : error
   );

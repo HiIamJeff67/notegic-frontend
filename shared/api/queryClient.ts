@@ -1,10 +1,7 @@
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { isAuthenticationFailure } from "@shared/api/exceptions/auth.exception";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { QueryClient } from "@tanstack/react-query";
 
 let queryClient: QueryClient | undefined;
@@ -36,14 +33,11 @@ export const createQueryClient = (): QueryClient => {
       return false;
     }
 
-    if (error instanceof NotegicFetchError) {
-      const reason = error.unWrap.reason;
-      if (
-        reason === ExceptionReasonDictionary.client.fetch.missingNetwork ||
-        reason === ExceptionReasonDictionary.client.fetch.networkRequired
-      ) {
-        return false;
-      }
+    if (
+      NetworkExceptions.isMissingNetworkError(error) ||
+      NetworkExceptions.isNetworkRequiredError(error)
+    ) {
+      return false;
     }
 
     return failureCount < MAX_QUERY_RETRY_COUNT;

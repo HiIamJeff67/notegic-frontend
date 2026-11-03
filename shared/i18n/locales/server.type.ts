@@ -2,6 +2,7 @@ export interface ServerTranslation {
   error: {
     ZodParsingFailed: string;
     InternalServerError: string;
+    MissingNetwork: string;
     InvalidDto: string;
     InvalidInput: string;
     DefinitionConflict: string;

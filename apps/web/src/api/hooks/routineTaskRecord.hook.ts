@@ -4,6 +4,7 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   GetMyRoutineTaskRecordsByRoutineTaskIdRequest,
   GetMyRoutineTaskRecordsByRoutineTaskIdResponse,
@@ -22,6 +23,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   queryFnGetMyRoutineTaskRecordsByRoutineTaskId,
   queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
@@ -150,7 +152,7 @@ export const useGetMyRoutineTaskRecordsByRoutineTaskId = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -162,12 +164,21 @@ export const useGetMyRoutineTaskRecordsByRoutineTaskId = (
         error instanceof NotegicAPIError ||
         error instanceof NotegicFetchError
       ) {
-        return {
-          success: false,
-          data: [],
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: [],
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: [],
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRoutineTaskRecordsByRoutineTaskIdResponse;
       }
 
       throw error;

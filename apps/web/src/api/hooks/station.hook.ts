@@ -1,13 +1,11 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateStationRequest,
   CreateStationsRequest,
@@ -45,6 +43,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateStation,
   mutationFnCreateStations,
@@ -64,6 +63,9 @@ import {
 } from "@/api/invokers/station.invoker";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
+import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
+import { clearSearchRoutineTasks } from "@/api/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/policies/searchStations.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyTotalCount = (
@@ -94,7 +96,7 @@ export const useGetMyStationById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -108,12 +110,21 @@ export const useGetMyStationById = (
       ) {
         const station =
           await StationLocalSimulator.simulateGetMyStationById(request);
-        return {
-          success: false,
-          data: station,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyStationByIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: station,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: station,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyStationByIdResponse;
       }
 
       throw error;
@@ -166,7 +177,7 @@ export const useGetAllMyStations = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -180,12 +191,21 @@ export const useGetAllMyStations = (
       ) {
         const stations =
           await StationLocalSimulator.simulateGetAllMyStations(request);
-        return {
-          success: false,
-          data: stations,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetAllMyStationsResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: stations,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: stations,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetAllMyStationsResponse;
       }
 
       throw error;
@@ -223,11 +243,29 @@ export const useCreateStation = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateStationRequest) => {
-    parseRequest(CreateStationRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateStationRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateStation(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateCreateStation(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: {
+          id: request.body.id as UUID,
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnCreateStation(request);
   };
 
   const mutation = useMutation({
@@ -241,18 +279,10 @@ export const useCreateStation = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
+      clearSearchStations(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncCreateStation(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateCreateStation(request);
-      }
     },
   });
 
@@ -264,11 +294,29 @@ export const useCreateStations = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateStationsRequest) => {
-    parseRequest(CreateStationsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(CreateStationsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateStations(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateCreateStations(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdStations.map(station => station.id as UUID),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnCreateStations(request);
   };
 
   const mutation = useMutation({
@@ -282,18 +330,10 @@ export const useCreateStations = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
+      clearSearchStations(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncCreateStations(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateCreateStations(request);
-      }
     },
   });
 
@@ -305,11 +345,26 @@ export const useUpdateMyStationById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyStationByIdRequest) => {
-    parseRequest(UpdateMyStationByIdRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyStationByIdRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyStationById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateUpdateMyStationById(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnUpdateMyStationById(request);
   };
 
   const mutation = useMutation({
@@ -323,20 +378,12 @@ export const useUpdateMyStationById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncUpdateMyStationById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateUpdateMyStationById(request);
-      }
     },
   });
 
@@ -348,11 +395,26 @@ export const useUpdateMyStationsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyStationsByIdsRequest) => {
-    parseRequest(UpdateMyStationsByIdsRequestSchema, request);
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      parseRequest(UpdateMyStationsByIdsRequestSchema, request);
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyStationsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateUpdateMyStationsByIds(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnUpdateMyStationsByIds(request);
   };
 
   const mutation = useMutation({
@@ -368,23 +430,15 @@ export const useUpdateMyStationsByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncUpdateMyStationsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateUpdateMyStationsByIds(request);
-      }
     },
   });
 
@@ -396,10 +450,21 @@ export const useRestoreMyStationById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: RestoreMyStationByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyStationById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await StationLocalSimulator.simulateRestoreMyStationById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyStationById>>;
     }
-    return await mutationFnRestoreMyStationById(request);
   };
 
   const mutation = useMutation({
@@ -414,23 +479,15 @@ export const useRestoreMyStationById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await StationLocalSynchronizer.syncRestoreMyStationById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateRestoreMyStationById(request);
-      }
     },
   });
 
@@ -444,10 +501,21 @@ export const useRestoreMyStationsByIds = (
   const apolloClient = useApolloClient();
 
   const perform = async (request: RestoreMyStationsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyStationsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await StationLocalSimulator.simulateRestoreMyStationsByIds(request);
+      return {
+        success: true as const,
+        data: [],
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnRestoreMyStationsByIds>>;
     }
-    return await mutationFnRestoreMyStationsByIds(request);
   };
 
   const mutation = useMutation({
@@ -464,26 +532,17 @@ export const useRestoreMyStationsByIds = (
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await StationLocalSynchronizer.syncRestoreMyStationsByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateRestoreMyStationsByIds(request);
-      }
     },
   });
 
@@ -495,10 +554,25 @@ export const useDeleteMyStationById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: DeleteMyStationByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyStationById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateDeleteMyStationById(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnDeleteMyStationById(request);
   };
 
   const mutation = useMutation({
@@ -512,20 +586,12 @@ export const useDeleteMyStationById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncDeleteMyStationById(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateDeleteMyStationById(request);
-      }
     },
   });
 
@@ -537,10 +603,25 @@ export const useDeleteMyStationsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: DeleteMyStationsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyStationsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await StationLocalSimulator.simulateDeleteMyStationsByIds(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnDeleteMyStationsByIds(request);
   };
 
   const mutation = useMutation({
@@ -556,23 +637,15 @@ export const useDeleteMyStationsByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded.publicId === "") return;
       await StationLocalSynchronizer.syncDeleteMyStationsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateDeleteMyStationsByIds(request);
-      }
     },
   });
 
@@ -584,10 +657,21 @@ export const useHardDeleteMyStationById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyStationByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyStationById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await StationLocalSimulator.simulateHardDeleteMyStationById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyStationById>>;
     }
-    return await mutationFnHardDeleteMyStationById(request);
   };
 
   const mutation = useMutation({
@@ -607,10 +691,11 @@ export const useHardDeleteMyStationById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await StationLocalSynchronizer.syncHardDeleteMyStationById(
         request,
         response
@@ -628,10 +713,21 @@ export const useHardDeleteMyStationsByIds = (
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyStationsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyStationsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await StationLocalSimulator.simulateHardDeleteMyStationsByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyStationsByIds>>;
     }
-    return await mutationFnHardDeleteMyStationsByIds(request);
   };
 
   const mutation = useMutation({
@@ -648,26 +744,17 @@ export const useHardDeleteMyStationsByIds = (
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchStations" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
-      apolloClient.cache.evict({ fieldName: "searchRoutineTasks" });
+      clearSearchStations(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await StationLocalSynchronizer.syncHardDeleteMyStationsByIds(
         request,
         response
       ).catch(error =>
         console.error("Failed to refresh confirmed Trash action", error)
       );
-    },
-    onError: async (error, request) => {
-      if (
-        options.offlineFallback !== false &&
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await StationLocalSimulator.simulateHardDeleteMyStationsByIds(request);
-      }
     },
   });
 

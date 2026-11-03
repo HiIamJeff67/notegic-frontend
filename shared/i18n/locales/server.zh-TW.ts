@@ -6,6 +6,7 @@ export const TraditionalChineseServerTranslation = {
     DefinitionConflict: "流程已被變更，請先比對最新版本再儲存。",
     RescheduleRequired: "請先設定未來的排程時間，再啟用此流程。",
     QuotaExceeded: "已達到目前方案的使用額度。",
+    MissingNetwork: "目前沒有網路連線。",
     InternalServerError: "伺服器發生問題，請稍後再試。",
     InvalidDto: "提交的資料有部分格式不正確。",
     InvalidInput: "輸入的資料格式不正確。",

@@ -1,13 +1,11 @@
 import type { UUID } from "node:crypto";
 import { useApolloClient } from "@apollo/client/react";
-import {
-  ExceptionReasonDictionary,
-  NotegicAPIError,
-} from "@shared/api/exceptions";
+import { NotegicAPIError } from "@shared/api/exceptions";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import type {
   CreateRoutineTagRequest,
   CreateRoutineTagsRequest,
@@ -28,6 +26,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/availability";
 import {
   mutationFnCreateRoutineTag,
   mutationFnCreateRoutineTags,
@@ -40,6 +39,8 @@ import {
 } from "@/api/invokers/routineTag.invoker";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
+import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
 
 export const useGetMyRoutineTagById = (
   hookRequest?: GetMyRoutineTagByIdRequest,
@@ -57,7 +58,7 @@ export const useGetMyRoutineTagById = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -71,12 +72,21 @@ export const useGetMyRoutineTagById = (
       ) {
         const routineTag =
           await RoutineTagLocalSimulator.simulateGetMyRoutineTagById(request);
-        return {
-          success: false,
-          data: routineTag,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetMyRoutineTagByIdResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: routineTag,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: routineTag,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyRoutineTagByIdResponse;
       }
 
       throw error;
@@ -129,7 +139,7 @@ export const useGetAllMyRoutineTags = (
     }
 
     try {
-      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
@@ -143,12 +153,21 @@ export const useGetAllMyRoutineTags = (
       ) {
         const routineTags =
           await RoutineTagLocalSimulator.simulateGetAllMyRoutineTags(request);
-        return {
-          success: false,
-          data: routineTags,
-          exception: error.unWrap,
-          embedded: { publicId: "" },
-        } as GetAllMyRoutineTagsResponse;
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: routineTags,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: routineTags,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetAllMyRoutineTagsResponse;
       }
 
       throw error;
@@ -188,10 +207,28 @@ export const useCreateRoutineTag = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutineTagRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRoutineTag(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      try {
+        await RoutineTagLocalSimulator.simulateCreateRoutineTag(request);
+      } catch (simulateError) {
+        console.error(simulateError);
+      }
+      return {
+        success: true as const,
+        data: {
+          id: request.body.id as UUID,
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      };
     }
-    return await mutationFnCreateRoutineTag(request);
   };
 
   const mutation = useMutation({
@@ -205,19 +242,11 @@ export const useCreateRoutineTag = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncCreateRoutineTag(request, response);
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateCreateRoutineTag(request);
-      }
     },
   });
 
@@ -229,10 +258,24 @@ export const useCreateRoutineTags = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: CreateRoutineTagsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateRoutineTags(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineTagLocalSimulator.simulateCreateRoutineTags(request);
+      return {
+        success: true as const,
+        data: {
+          ids: request.body.createdRoutineTags.map(item => item.id as UUID),
+          createdAt: new Date(),
+        },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnCreateRoutineTags>>;
     }
-    return await mutationFnCreateRoutineTags(request);
   };
 
   const mutation = useMutation({
@@ -248,22 +291,14 @@ export const useCreateRoutineTags = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncCreateRoutineTags(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateCreateRoutineTags(request);
-      }
     },
   });
 
@@ -275,10 +310,21 @@ export const useUpdateMyRoutineTagById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyRoutineTagByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyRoutineTagById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyRoutineTagById>>;
     }
-    return await mutationFnUpdateMyRoutineTagById(request);
   };
 
   const mutation = useMutation({
@@ -292,22 +338,14 @@ export const useUpdateMyRoutineTagById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncUpdateMyRoutineTagById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagById(request);
-      }
     },
   });
 
@@ -319,10 +357,21 @@ export const useUpdateMyRoutineTagsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: UpdateMyRoutineTagsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyRoutineTagsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagsByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnUpdateMyRoutineTagsByIds>>;
     }
-    return await mutationFnUpdateMyRoutineTagsByIds(request);
   };
 
   const mutation = useMutation({
@@ -338,24 +387,14 @@ export const useUpdateMyRoutineTagsByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncUpdateMyRoutineTagsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagsByIds(
-          request
-        );
-      }
     },
   });
 
@@ -367,10 +406,23 @@ export const useHardDeleteMyRoutineTagById = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyRoutineTagByIdRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyRoutineTagById(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagById(
+        request
+      );
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyRoutineTagById>>;
     }
-    return await mutationFnHardDeleteMyRoutineTagById(request);
   };
 
   const mutation = useMutation({
@@ -384,24 +436,14 @@ export const useHardDeleteMyRoutineTagById = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncHardDeleteMyRoutineTagById(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagById(
-          request
-        );
-      }
     },
   });
 
@@ -413,10 +455,23 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
   const apolloClient = useApolloClient();
 
   const perform = async (request: HardDeleteMyRoutineTagsByIdsRequest) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyRoutineTagsByIds(request);
+    } catch (error) {
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagsByIds(
+        request
+      );
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      } as Awaited<ReturnType<typeof mutationFnHardDeleteMyRoutineTagsByIds>>;
     }
-    return await mutationFnHardDeleteMyRoutineTagsByIds(request);
   };
 
   const mutation = useMutation({
@@ -435,24 +490,14 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
       await Promise.all(
         targetKeys.map(queryKey => queryClient.invalidateQueries({ queryKey }))
       );
-      apolloClient.cache.evict({ fieldName: "searchRoutineTags" });
-      apolloClient.cache.evict({ fieldName: "searchRoutines" });
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineTagLocalSynchronizer.syncHardDeleteMyRoutineTagsByIds(
         request,
         response
       );
-    },
-    onError: async (error, request) => {
-      if (
-        error instanceof NotegicFetchError &&
-        error.unWrap.reason ===
-          ExceptionReasonDictionary.client.fetch.missingNetwork
-      ) {
-        await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagsByIds(
-          request
-        );
-      }
     },
   });
 
