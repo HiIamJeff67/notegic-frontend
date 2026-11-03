@@ -68,11 +68,19 @@ Run the application from the repository root:
 npm run dev
 ```
 
+`npm run dev:virtual` starts the same local server in Vite's `virtual` mode.
+That mode does not call the backend. It signs in a local database user and
+serves shelves, stations, routines, and their related records from SQLite.
+The local port and `/development/v1` base path remain the values in `.env`.
+Return to backend-backed development by stopping that process and running
+`npm run dev`.
+
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the Web development server. |
+| `npm run dev` | Start the Web development server against the local backend. |
+| `npm run dev:virtual` | Start the local server against the local database, without backend requests. |
 | `npm run build:web` | Build the Node SSR application. |
 | `npm run start` | Run the built Node SSR output. |
 | `npm run typecheck` | Typecheck the Web app and imported shared code. |

@@ -1,47 +1,145 @@
 // Generated from apps/web/src/pages/document/versions/sources/versions.md; run npm run generate:document.
 import type { VersionData } from "@/components/commons/VersionCard/VersionCard";
+export const versionsDescription =
+  "Previous records past work. Current identifies work in progress today. Next is the upcoming release. Future outlines tentative plans that may change.";
 export const versionRoadmap: readonly VersionData[] = [
   {
     version: "0.3.0",
     label: "Next",
     status: "next",
     description:
-      "The next release focuses on AI integration and a more advanced, human-centered conversational interface that connects dialogue with Notegic's existing note structure.",
+      "The next release brings together improvements to editing, routines, file viewing, recovery, and documentation. The completed work below is being prepared for this release; 0.3.0 remains upcoming until it is announced.",
+    tasks: [
+      {
+        title: "More capable note editing",
+        description:
+          "Improve code blocks, syntax highlighting, keyboard shortcuts, and editing controls across different screen sizes.",
+        completed: true,
+      },
+      {
+        title: "More dependable routine graph editing",
+        description:
+          "Preserve graph drafts, make saving explicit, and improve activation and schedule configuration feedback.",
+        completed: true,
+      },
+      {
+        title: "Clearer routine execution history",
+        description:
+          "Improve record ordering, filtering, pagination, and the presentation of task inputs, results, and failures.",
+        completed: true,
+      },
+      {
+        title: "Recoverable editing connections",
+        description:
+          "Improve reconnection and recovery so temporary connection interruptions are less disruptive to ongoing editing.",
+        completed: true,
+      },
+      {
+        title: "Improved material viewing",
+        description:
+          "Refresh uploaded files without resetting the viewer, streamline zoom and page controls, and improve loading and file access.",
+        completed: true,
+      },
+      {
+        title: "Clearer settings and feedback",
+        description:
+          "Refine profile images, sidebar behavior, responsive layouts, notifications, and translated input-validation messages.",
+        completed: true,
+      },
+      {
+        title: "Explicit local data recovery",
+        description:
+          "Provide local data exports, recovery checks, and a user-confirmed rebuild flow with clearer guidance.",
+        completed: true,
+      },
+      {
+        title: "Published guides and learning materials",
+        description:
+          "Expand the public documentation with complete website guidance, tutorial videos, screenshots, and public API explanations.",
+        completed: true,
+      },
+    ],
+  },
+  {
+    version: "0.4.0",
+    label: "Future",
+    status: "future",
+    description:
+      "This planned version focuses on finding information faster and making everyday work more convenient. The scope and order of delivery may change, with smaller fixes included as needed.",
     tasks: [
       {
         title: "Unified workspace search",
         description:
-          "Search across root shelves, sub-shelves, Block Packs, materials, routines, and tags from one entry point.",
+          "Bring existing searches together so people can find notes, reference files, and routine-related items from one entry point.",
         completed: false,
       },
       {
-        title: "Search filters and keyboard access",
+        title: "Search filters and fuzzy matching",
         description:
-          "Narrow results by resource type and update time, with a keyboard-first quick search flow.",
+          "Narrow results by useful conditions and make searches more tolerant of incomplete or approximate queries.",
         completed: false,
       },
       {
-        title: "Improve routine scheduling",
+        title: "A global quick-search launcher",
         description:
-          "Make schedule previews, execution feedback, retries, overdue tasks, and routine task lifecycle states clearer.",
+          "Open search from anywhere in the app using a keyboard shortcut, then navigate directly to a result. The default shortcut will be chosen after compatibility checks.",
         completed: false,
       },
       {
-        title: "AI-integrated document blocks",
+        title: "More account sign-in options",
         description:
-          "Bring AI-generated content into structured notes, with support for richer content such as math and diagrams.",
+          "Plan additional sign-in providers, including Meta, Apple, X, and GitHub, with availability confirmed as each integration is completed.",
         completed: false,
       },
       {
-        title: "Structured AI conversations",
+        title: "More practical dashboard widgets",
         description:
-          "Build a more capable and human-centered conversation experience that can reference existing notes, organize responses into reusable blocks, and turn dialogue into structured knowledge.",
+          "Add useful everyday widgets and improve the existing dashboard experience as their scope is defined.",
+        completed: false,
+      },
+    ],
+  },
+  {
+    version: "0.5.0",
+    label: "Future",
+    status: "future",
+    description:
+      "This is the planned first milestone for AI integration. Notegic would provide note context, tools, and workflow integration, while inference comes from providers connected by the user. The exact experience will be decided through this milestone. Work toward 1.0.0 will depend on what it establishes rather than a fixed list of later releases.",
+    tasks: [
+      {
+        title: "Connect supported AI providers",
+        description:
+          "Explore user-provided API keys and supported provider-account authorization, including subscription access where available. Connecting a model provider is separate from signing in to Notegic.",
         completed: false,
       },
       {
-        title: "Provide more videos for tutorial and document",
+        title: "A first note-focused AI workflow",
         description:
-          "Add more guided videos for tutorials and documentation so users can understand core workflows and discover more of Notegic's capabilities.",
+          "Validate a small, usable flow for working with selected notes and saving useful results before expanding the AI experience.",
+        completed: false,
+      },
+      {
+        title: "MCP and tool calling",
+        description:
+          "Explore controlled access to note and workflow actions, making it clear which content an AI interaction may read or change.",
+        completed: false,
+      },
+      {
+        title: "A direction for knowledge retrieval",
+        description:
+          "Define how RAG and retrieval could use existing notes and references, without committing this milestone to a complete retrieval system.",
+        completed: false,
+      },
+      {
+        title: "Decide how conversations and notes work together",
+        description:
+          "Evaluate chat, editable notes, and graph-based relationships, then describe the next concrete capabilities based on the results.",
+        completed: false,
+      },
+      {
+        title: "Evaluate desktop and local agent work",
+        description:
+          "Consider a desktop application for local files, task execution, and note management. Its timing and the path toward 1.0.0 depend on the AI integration decisions.",
         completed: false,
       },
     ],
@@ -51,7 +149,7 @@ export const versionRoadmap: readonly VersionData[] = [
     label: "Current",
     status: "current",
     description:
-      "The current release improves collaboration, offline change recovery, API key management, notifications, and workspace settings.",
+      "Work on the current 0.2 series continues while we prepare 0.3.0. Its completed capabilities include collaboration, offline change recovery, API key management, notifications, and workspace settings.",
     tasks: [
       {
         title: "Richer document blocks",
@@ -104,8 +202,8 @@ export const versionRoadmap: readonly VersionData[] = [
   },
   {
     version: "0.1.0",
-    label: "Legacy",
-    status: "released",
+    label: "Previous",
+    status: "previous",
     description:
       "The previous release brought the core knowledge workspace together with structured editing, materials, routines, and integration controls.",
     tasks: [
@@ -179,8 +277,8 @@ export const versionRoadmap: readonly VersionData[] = [
   },
   {
     version: "0.0.1",
-    label: "Legacy",
-    status: "released",
+    label: "Previous",
+    status: "previous",
     description:
       "The first usable Notegic workspace: an account, a place to organize knowledge, and a dependable local-first editing base.",
     tasks: [

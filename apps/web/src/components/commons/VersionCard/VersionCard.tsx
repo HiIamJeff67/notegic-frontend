@@ -23,8 +23,8 @@ export type VersionTask = {
 
 export type VersionData = {
   version: string;
-  label: "Next" | "Current" | "Legacy";
-  status: "next" | "current" | "released";
+  label: "Previous" | "Current" | "Next" | "Future";
+  status: "previous" | "current" | "next" | "future";
   description: string;
   tasks: readonly VersionTask[];
 };
@@ -101,7 +101,12 @@ export const VersionCard = ({ version }: { version: VersionData }) => {
           <CardDescription className="max-w-xl leading-7">
             {version.description}
           </CardDescription>
-          <VersionCardRing completed={completed} total={version.tasks.length} />
+          {version.status !== "future" && (
+            <VersionCardRing
+              completed={completed}
+              total={version.tasks.length}
+            />
+          )}
         </CardHeader>
         <CardContent className="@container/version-features min-w-0 pt-5 @2xl/version-card:flex-1 @2xl/version-card:pt-6">
           <ul className="grid min-w-0 gap-3 @lg/version-features:grid-cols-2">

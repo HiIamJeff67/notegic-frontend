@@ -13,11 +13,15 @@ import Overview, { overviewNavigation } from "./overview/Overview";
 import PrivacyPolicy, {
   privacyPolicyNavigation,
 } from "./privacy-policy/PrivacyPolicy";
-import Versions, { versionsNavigation } from "./versions/Versions";
+import Versions, {
+  type VersionsHandle,
+  versionsNavigation,
+} from "./versions/Versions";
 import Website, { websiteNavigation } from "./website/Website";
 
 const DocumentPage = () => {
   const articleRef = useRef<HTMLElement>(null);
+  const versionsRef = useRef<VersionsHandle>(null);
   const navigationItems = [
     overviewNavigation,
     websiteNavigation,
@@ -33,6 +37,7 @@ const DocumentPage = () => {
             <ArticleSidebar
               items={navigationItems}
               scrollContainerRef={articleRef}
+              onNavigate={item => versionsRef.current?.reveal(item.id)}
             />
             <div className="flex min-h-0 min-w-0 flex-1 flex-col">
               <div className="flex h-10 shrink-0 items-center px-3">
@@ -46,7 +51,7 @@ const DocumentPage = () => {
                   <ArticleParagraphSeparator fullWidth />
                   <API />
                   <ArticleParagraphSeparator fullWidth />
-                  <Versions />
+                  <Versions ref={versionsRef} />
                   <ArticleParagraphSeparator fullWidth />
                   <PrivacyPolicy />
                 </ArticleContent>

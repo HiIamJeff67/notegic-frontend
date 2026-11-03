@@ -40,10 +40,19 @@ they do not automatically synchronize external sources or run these generators.
 
 ## Versions and privacy generation
 
-`versions.md` uses `## 0.0.0 — Next`, `Current` or `Legacy` headings, followed by
-one description and a feature checklist. Each checkbox has a bold feature title
-and its description on the next line. Generation preserves the card, ring,
-feature expansion and existing `version-0-0-0` anchors.
+`versions.md` supports an introductory paragraph after `# Versions`, then
+`## 0.0.0 — Previous`, `Current`, `Next` or `Future` headings with one description
+and a feature checklist. Previous means past work, Current means work in
+progress today, Next means the upcoming release, and Future means tentative
+planning. Do not add more public states. Each checkbox has a bold feature title
+and its description on the next line. Completed work can be checked while its
+version remains Next; completion and release state are independent.
+
+Generation preserves the existing cards, feature expansion and `version-0-0-0`
+anchors. Future cards omit completion rings, percentages and counts, while the
+other states keep the existing progress UI. Publish only user-facing outcomes;
+internal operations, deployment details and unverified release claims do not
+belong in the public roadmap. Keep source and generated output together.
 
 `privacy-policy.md` contains the existing English policy text and update date.
 Keep `{#privacy-id}` on each level-two heading so existing links remain stable.
