@@ -9,6 +9,8 @@ boundaries or runtime concerns.
 - [API architecture design](../routes/api-architecture-design.drawio)
 - [API, query, storage, and platform boundaries](api-query-storage-platform-boundaries.md)
 - [Routine graph drafts and atomic saves](routine-graph-drafts.md)
+- [App command chain](app-command.md)
+- [Desktop application preparation](desktop-application-preparation.md)
 
 ## Topics for this repository
 

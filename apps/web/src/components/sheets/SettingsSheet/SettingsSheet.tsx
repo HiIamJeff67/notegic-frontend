@@ -1,4 +1,3 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   Sheet,
   SheetContent,
@@ -7,6 +6,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useSettingsDisplay } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import AccountSettingsPage from "@/pages/app/setting/account/AccountSettingsPage";
 import PreferencesPage from "@/pages/app/setting/preferences/PreferencesPage";
 
@@ -39,7 +39,10 @@ const SettingsSheet = () => {
         </SheetHeader>
         <div className="min-h-0 flex-1 overflow-hidden">
           {sheetPage === "account" && (
-            <AccountSettingsPage displayMode="sheet" />
+            <AccountSettingsPage
+              displayMode="sheet"
+              initialSection={sheetSection ?? undefined}
+            />
           )}
           {sheetPage === "preferences" && (
             <PreferencesPage

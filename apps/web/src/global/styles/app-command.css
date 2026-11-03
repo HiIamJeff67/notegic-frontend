@@ -1,0 +1,94 @@
+@keyframes app-command-pull {
+  0% {
+    top: 0;
+    clip-path: inset(
+      0 calc(50% - 1.15rem) calc(100% - 0.95rem) calc(50% - 1.15rem) round
+        0.45rem
+    );
+  }
+
+  100% {
+    top: 14%;
+    clip-path: inset(0 round var(--radius-md));
+  }
+}
+
+@keyframes app-command-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+.app-command-trigger,
+.app-sidebar-trigger {
+  border-color: color-mix(in oklch, white 18%, transparent);
+  background-color: color-mix(in oklch, black 22%, transparent);
+  color: white;
+  backdrop-filter: blur(18px);
+}
+
+.app-command-trigger:hover,
+.app-sidebar-trigger:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.app-command-panel {
+  top: 14%;
+  left: 50%;
+  width: min(52rem, calc(100% - 2rem));
+  height: auto;
+  translate: -50% 0;
+  border-radius: var(--radius-md);
+  background-color: color-mix(in oklch, black 22%, transparent);
+  backdrop-filter: blur(18px);
+  box-shadow: none;
+  animation: app-command-pull 300ms cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.app-command-path {
+  min-width: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid color-mix(in oklch, white 18%, transparent);
+  padding: 0.625rem 0.75rem;
+}
+
+.app-command-panel [data-slot="command-input-wrapper"] {
+  height: 3.5rem;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklch, white 18%, transparent);
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.app-command-panel [data-slot="command-input"] {
+  height: 2.25rem;
+  font-size: 1rem;
+}
+
+.app-command-panel [data-slot="command-input-wrapper"] svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.app-command-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid color-mix(in oklch, white 18%, transparent);
+  pointer-events: none;
+}
+
+.app-command-panel > [data-slot="command"] {
+  background-color: transparent;
+  opacity: 0;
+  animation: app-command-reveal 160ms linear 60ms forwards;
+}
+
+html[data-reduce-motion="true"] .app-command-panel,
+html[data-reduce-motion="true"] .app-command-panel::before,
+html[data-reduce-motion="true"] .app-command-panel > [data-slot="command"] {
+  animation-delay: 0s !important;
+}

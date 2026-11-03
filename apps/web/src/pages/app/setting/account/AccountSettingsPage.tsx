@@ -1,5 +1,5 @@
-import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { tError } from "@shared/i18n/error";
+import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
@@ -43,9 +43,11 @@ import UpgradeTab from "./tabs/UpgradeTab";
 const AccountSettingsPage = ({
   displayMode = "page",
   previewMode = false,
+  initialSection,
 }: {
   displayMode?: "page" | "sheet";
   previewMode?: boolean;
+  initialSection?: string;
 }) => {
   const router = useAppRouter();
   const { t } = useTranslation();
@@ -101,6 +103,24 @@ const AccountSettingsPage = ({
       weight: 4,
     },
   ] satisfies ArticleNavigationItem[];
+
+  useEffect(() => {
+    const section =
+      initialSection ??
+      (typeof window === "undefined"
+        ? ""
+        : decodeURIComponent(window.location.hash.slice(1)));
+    if (!section) return;
+
+    const animationFrame = requestAnimationFrame(() => {
+      document.getElementById(section)?.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [initialSection]);
 
   useEffect(() => {
     if (sendAuthCodeTimeCounter === 0) return;
@@ -221,8 +241,6 @@ const AccountSettingsPage = ({
       <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
-          paragraphBaseHeight={12}
-          subParagraphBaseHeight={6}
           className={
             displayMode === "sheet" ? "hidden lg:block lg:w-8" : "lg:w-8"
           }

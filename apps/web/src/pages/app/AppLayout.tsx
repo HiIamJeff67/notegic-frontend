@@ -1,16 +1,14 @@
 import { Outlet } from "@tanstack/react-router";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import AppUtilitesWrapper from "@/components/core/AppUtilitesWrapper/AppUtilitesWrapper";
 import StationRoutineInspectorHost from "@/components/inspectors/StationRoutineInspectorHost";
 import SettingsSheet from "@/components/sheets/SettingsSheet/SettingsSheet";
-import { AppSidebar } from "@/components/sidebar/AppSidebar/AppSidebar";
-import AppSidebarInset from "@/components/sidebar/AppSidebar/AppSidebarInset";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { BackgroundImagesProvider } from "@/providers/BackgroundImagesProvider";
 import { MaterialAttachmentCacheProvider } from "@/providers/MaterialAttachmentCacheProvider";
 import { ModalProvider } from "@/providers/ModalProvider";
 import { RealtimeProvider } from "@/providers/RealtimeProvider";
-import { ResizeSidebarProvider } from "@/providers/ResizeSidebarProvider";
 import { SettingsDisplayProvider } from "@/providers/SettingsDisplayProvider";
 import { ShelfItemProvider } from "@/providers/ShelfItemProvider/ShelfItemProvider";
 import { StationRoutineProvider } from "@/providers/StationRoutineProvider/StationRoutineProvider";
@@ -28,22 +26,19 @@ export default function AppLayout() {
               <BackgroundImagesProvider>
                 <DndProvider backend={HTML5Backend}>
                   <SidebarProvider>
-                    <ResizeSidebarProvider>
-                      <ShelfItemProvider>
-                        <StationRoutineProvider>
-                          <ModalProvider>
-                            <SettingsDisplayProvider>
-                              <AppSidebar />
-                              <AppSidebarInset>
-                                <Outlet />
-                              </AppSidebarInset>
-                              <SettingsSheet />
-                              <StationRoutineInspectorHost />
-                            </SettingsDisplayProvider>
-                          </ModalProvider>
-                        </StationRoutineProvider>
-                      </ShelfItemProvider>
-                    </ResizeSidebarProvider>
+                    <ShelfItemProvider>
+                      <StationRoutineProvider>
+                        <ModalProvider>
+                          <SettingsDisplayProvider>
+                            <AppUtilitesWrapper>
+                              <Outlet />
+                            </AppUtilitesWrapper>
+                            <SettingsSheet />
+                            <StationRoutineInspectorHost />
+                          </SettingsDisplayProvider>
+                        </ModalProvider>
+                      </StationRoutineProvider>
+                    </ShelfItemProvider>
                   </SidebarProvider>
                 </DndProvider>
               </BackgroundImagesProvider>

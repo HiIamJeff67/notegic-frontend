@@ -1,12 +1,11 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
+import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import SidebarHoverCard from "@/components/sidebar/SidebarHoverCard";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -22,6 +21,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useMobile, useModal, useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 
 interface RoutineTaskMenuItemProps {
