@@ -4,8 +4,8 @@ import {
   SearchItemSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelf } from "@shared/lib/shelf/rootShelf";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
@@ -13,6 +13,7 @@ import {
   AnalysisStatus,
   ShelfTreeSummary,
 } from "@shared/lib/shelf/summary.type";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -34,6 +35,7 @@ import {
   useDeleteMyMaterialById,
   useUpdateMyMaterialById,
 } from "@/api/hooks/material.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface UseItemLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -53,6 +55,7 @@ export const useItemLogic = ({
   forceUpdate,
 }: UseItemLogicProps) => {
   const apolloClient = useApolloClient();
+  const { t } = useTranslation();
   const createMaterialMutator = useCreateMyMaterial();
   const updateMaterialMutator = useUpdateMyMaterialById();
   const deleteMaterialMutator = useDeleteMyMaterialById();
@@ -233,6 +236,9 @@ export const useItemLogic = ({
           parentSubShelfId: editingItemNode.parentSubShelfId,
         },
       });
+      toast.success(
+        t("workspace.notifications.renamed", { name: editItemName })
+      );
 
       editingItemNode.name = editItemName;
       setEditingItemNode(prev =>
@@ -253,8 +259,39 @@ export const useItemLogic = ({
     setEditingItemNode,
     setEditItemName,
     setOriginalItemName,
+    t,
     updateMaterialMutator,
   ]);
+
+  const renameMaterial = useCallback(
+    async (material: MaterialNode, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") throw new Error("invalid material name");
+      if (material.name === nextName) return;
+      const previousName = material.name;
+      material.name = nextName;
+      forceUpdate();
+      try {
+        await updateMaterialMutator.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            materialId: material.id,
+            values: {
+              name: nextName,
+            },
+          },
+          affected: {
+            parentSubShelfId: material.parentSubShelfId,
+          },
+        });
+      } catch (error) {
+        material.name = previousName;
+        forceUpdate();
+        throw error;
+      }
+    },
+    [forceUpdate, updateMaterialMutator]
+  );
 
   const deleteMaterial = useCallback(
     async (
@@ -391,6 +428,9 @@ export const useItemLogic = ({
           parentSubShelfId: editingItemNode.parentSubShelfId,
         },
       });
+      toast.success(
+        t("workspace.notifications.renamed", { name: editItemName })
+      );
 
       editingItemNode.name = editItemName;
       setEditingItemNode(prev =>
@@ -410,8 +450,39 @@ export const useItemLogic = ({
     setEditingItemNode,
     setEditItemName,
     setOriginalItemName,
+    t,
     updateBlockPackMutator,
   ]);
+
+  const renameBlockPack = useCallback(
+    async (blockPack: BlockPackNode, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") throw new Error("invalid block pack name");
+      if (blockPack.name === nextName) return;
+      const previousName = blockPack.name;
+      blockPack.name = nextName;
+      forceUpdate();
+      try {
+        await updateBlockPackMutator.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            blockPackId: blockPack.id,
+            values: {
+              name: nextName,
+            },
+          },
+          affected: {
+            parentSubShelfId: blockPack.parentSubShelfId,
+          },
+        });
+      } catch (error) {
+        blockPack.name = previousName;
+        forceUpdate();
+        throw error;
+      }
+    },
+    [forceUpdate, updateBlockPackMutator]
+  );
 
   const removeBlockPackOptimistically = useCallback(
     (blockPackId: UUID) => {
@@ -561,10 +632,12 @@ export const useItemLogic = ({
     toggleMaterial: toggleMaterial,
     createMaterial: createMaterial,
     renameEditingMaterial: renameEditingMaterial,
+    renameMaterial: renameMaterial,
     deleteMaterial: deleteMaterial,
     toggleBlockPack: toggleBlockPack,
     createBlockPack: createBlockPack,
     renameEditingBlockPack: renameEditingBlockPack,
+    renameBlockPack: renameBlockPack,
     deleteBlockPack: deleteBlockPack,
     removeBlockPackOptimistically: removeBlockPackOptimistically,
   };

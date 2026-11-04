@@ -1,8 +1,7 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { tError } from "@shared/i18n/error";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
@@ -33,6 +32,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineDialogSkeleton from "./CreateRoutineDialogSkeleton";
 
@@ -210,7 +210,9 @@ const CreateRoutineDialog = ({
                 }
               );
               await onCreated?.(routineNode.id);
-              toast.success(t("workspace.routine.created"));
+              toast.success(
+                t("workspace.notifications.created", { name: title.trim() })
+              );
               onClose();
             } catch (error) {
               toast.error(tError(error, t));

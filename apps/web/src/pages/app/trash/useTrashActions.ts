@@ -1,8 +1,5 @@
 import type { UUID } from "node:crypto";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
-import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
-import { useTranslation } from "@/hooks/useTranslation";
 import toast from "@shared/lib/toast/toast";
 import { useRef, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
@@ -32,6 +29,7 @@ import {
   useHardDeleteMySubShelvesByIds,
   useRestoreMySubShelvesByIds,
 } from "@/api/hooks/subShelf.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export type TrashEntry = {
   id: UUID;
@@ -102,8 +100,6 @@ export const useTrashActions = (onChanged: () => Promise<void>) => {
     let changed = false;
     let failure: unknown;
     try {
-      if (!navigator.onLine)
-        throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
       const rootShelfIds = new Map<UUID, UUID>();
       for (const entry of remaining)
         if (entry.type === "subShelf")
@@ -148,7 +144,7 @@ export const useTrashActions = (onChanged: () => Promise<void>) => {
                         header: getClientMutationHeaders(),
                         param: { blockPackId: entry.id, isDeleted: true },
                       });
-                if (!detail.success)
+                if (!detail.success || !detail.data)
                   throw detail.exception
                     ? new NotegicAPIError(
                         new NotegicException(detail.exception)

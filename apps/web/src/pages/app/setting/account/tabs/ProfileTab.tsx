@@ -15,6 +15,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
+import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
 import Image from "@/components/commons/Image/Image";
 import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
@@ -280,26 +281,32 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
               : ""
           }`}
         >
-          <div className="relative min-h-[180px] w-full bg-foreground group">
-            {coverBackgroundBlobURL && (
-              <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <Image
-                  src={coverBackgroundBlobURL}
-                  alt=""
-                  aria-hidden="true"
-                  loading="eager"
-                  className="size-full object-cover"
-                />
-              </div>
-            )}
-            <ModifyImageHover
-              className="absolute inset-0 bg-black/30"
-              onClick={() => {
-                setEditingImageField("coverBackgroundURL");
-                setUploadImageDialogOpen(true);
-              }}
-              hoverText={t("settingsPage.account.personal.changeCover")}
-            />
+          <div className="group relative min-h-[180px] w-full">
+            <div className="absolute inset-0 overflow-hidden rounded-[2px] border border-sidebar-border">
+              {coverBackgroundBlobURL ? (
+                <div className="pointer-events-none absolute inset-0">
+                  <Image
+                    src={coverBackgroundBlobURL}
+                    alt=""
+                    aria-hidden="true"
+                    loading="eager"
+                    className="size-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="pointer-events-none absolute inset-0">
+                  <GridBackground />
+                </div>
+              )}
+              <ModifyImageHover
+                className="absolute inset-0 bg-black/30"
+                onClick={() => {
+                  setEditingImageField("coverBackgroundURL");
+                  setUploadImageDialogOpen(true);
+                }}
+                hoverText={t("settingsPage.account.personal.changeCover")}
+              />
+            </div>
             <div className="absolute right-8 bottom-[-64px] z-10 group/avatar">
               <div
                 className="w-32 h-32 rounded-full border-4 border-border shadow-lg bg-background flex items-center justify-center overflow-hidden relative cursor-pointer"

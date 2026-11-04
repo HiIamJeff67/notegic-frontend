@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { useDrop } from "react-dnd";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
 import SubShelfMenu from "@/components/menus/SubShelfMenu/SubShelfMenu";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
@@ -206,13 +206,21 @@ const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
             <ContextMenuLabel>{t("workspace.menu.add")}</ContextMenuLabel>
             <ContextMenuGroup>
               <ContextMenuItem
-                onClick={async () =>
-                  await shelfItemManager.createSubShelf(
-                    summary.root.id,
-                    null,
-                    t("workspace.menu.newSubShelf")
-                  )
-                }
+                onClick={async () => {
+                  const name = t("workspace.menu.newSubShelf");
+                  try {
+                    await shelfItemManager.createSubShelf(
+                      summary.root.id,
+                      null,
+                      name
+                    );
+                    toast.success(
+                      t("workspace.notifications.created", { name })
+                    );
+                  } catch (error) {
+                    toast.error(tError(error, t));
+                  }
+                }}
               >
                 <FolderPlus className="mr-2 size-4" />
                 {t("workspace.menu.subShelf")}
@@ -241,14 +249,21 @@ const RootShelfMenuItem = ({ rootShelfEdge }: RootShelfMenuItemProps) => {
                         name: summary.root.name,
                       }
                     ),
-                    confirmKeyword: "DELETE",
-                    inputPlaceholder: t("workspace.menu.typeDelete"),
                     onDelete: async () =>
                       await loadingManager.startAsyncTransactionLoading(
                         async () => {
-                          await shelfItemManager
-                            .deleteRootShelf(summary.root)
-                            .catch(error => toast.error(tError(error, t)));
+                          try {
+                            await shelfItemManager.deleteRootShelf(
+                              summary.root
+                            );
+                            toast.success(
+                              t("workspace.notifications.deleted", {
+                                name: summary.root.name,
+                              })
+                            );
+                          } catch (error) {
+                            toast.error(tError(error, t));
+                          }
                         }
                       ),
                     onCancel: modalManager.close,

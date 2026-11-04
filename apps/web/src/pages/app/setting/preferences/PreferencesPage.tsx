@@ -4,7 +4,19 @@ import {
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
+import {
+  AppWindowIcon,
+  BellIcon,
+  HardDriveIcon,
+  InfoIcon,
+  LayoutDashboardIcon,
+  Maximize2Icon,
+  MessageSquareWarningIcon,
+  PaletteIcon,
+  PanelRightOpenIcon,
+  PenLineIcon,
+  ShieldIcon,
+} from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 import {
   Article,
@@ -66,23 +78,39 @@ const PreferencesPage = ({
   }, [initialSection]);
 
   const navigationConfig = [
-    ["appearance", "settingsPage.preferences.appearance", 5],
-    ["dashboard", "settingsPage.preferences.dashboard", 3],
-    ["editor", "settingsPage.preferences.editor", 4],
-    ["offline", "settingsPage.preferences.offline", 3],
-    ["privacy", "settingsPage.preferences.privacy", 2],
-    ["browser-permissions", "settingsPage.preferences.browserPermissions", 3],
-    ["feedback", "settingsPage.preferences.feedback", 3],
-    ["notifications", "settingsPage.preferences.notifications", 3],
-    ["about", "settingsPage.preferences.about", 2],
+    ["appearance", "settingsPage.preferences.appearance", 5, PaletteIcon],
+    ["dashboard", "settingsPage.preferences.dashboard", 3, LayoutDashboardIcon],
+    ["editor", "settingsPage.preferences.editor", 4, PenLineIcon],
+    ["offline", "settingsPage.preferences.offline", 3, HardDriveIcon],
+    ["privacy", "settingsPage.preferences.privacy", 2, ShieldIcon],
+    [
+      "browser-permissions",
+      "settingsPage.preferences.browserPermissions",
+      3,
+      AppWindowIcon,
+    ],
+    [
+      "feedback",
+      "settingsPage.preferences.feedback",
+      3,
+      MessageSquareWarningIcon,
+    ],
+    ["notifications", "settingsPage.preferences.notifications", 3, BellIcon],
+    ["about", "settingsPage.preferences.about", 2, InfoIcon],
   ] as const satisfies ReadonlyArray<
-    readonly [string, string, NonNullable<ArticleNavigationItem["weight"]>]
+    readonly [
+      string,
+      string,
+      NonNullable<ArticleNavigationItem["weight"]>,
+      NonNullable<ArticleNavigationItem["icon"]>,
+    ]
   >;
-  const navigationItems = navigationConfig.map(([id, key, weight]) => ({
+  const navigationItems = navigationConfig.map(([id, key, weight, icon]) => ({
     id,
     title: String(t(`${key}.title` as never)),
     description: String(t(`${key}.description` as never)),
     weight,
+    icon,
   })) satisfies ArticleNavigationItem[];
 
   return (
@@ -132,7 +160,7 @@ const PreferencesPage = ({
           {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
         </Button>
       )}
-      <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
+      <Article className="gap-0 overflow-x-hidden lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
           className={
@@ -142,6 +170,7 @@ const PreferencesPage = ({
         <ArticleContent className="m-0 flex flex-col gap-0 !pb-[var(--density-content-padding)]">
           <PreferenceTab
             id="appearance"
+            icon={PaletteIcon}
             title={t("settingsPage.preferences.appearance.title")}
             description={t("settingsPage.preferences.appearance.description")}
             eyebrow={t("settingsPage.preferences.eyebrow")}
@@ -154,6 +183,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="dashboard"
+            icon={LayoutDashboardIcon}
             title={t("settingsPage.preferences.dashboard.title")}
             description={t("settingsPage.preferences.dashboard.description")}
           >
@@ -164,6 +194,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="editor"
+            icon={PenLineIcon}
             title={t("settingsPage.preferences.editor.title")}
             description={t("settingsPage.preferences.editor.description")}
           >
@@ -174,6 +205,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="offline"
+            icon={HardDriveIcon}
             title={t("settingsPage.preferences.offline.title")}
             description={t("settingsPage.preferences.offline.description")}
           >
@@ -184,6 +216,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="privacy"
+            icon={ShieldIcon}
             title={t("settingsPage.preferences.privacy.title")}
             description={t("settingsPage.preferences.privacy.description")}
           >
@@ -194,6 +227,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="browser-permissions"
+            icon={AppWindowIcon}
             title={t("settingsPage.preferences.browserPermissions.title")}
             description={t(
               "settingsPage.preferences.browserPermissions.description"
@@ -206,6 +240,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="feedback"
+            icon={MessageSquareWarningIcon}
             title={t("settingsPage.preferences.feedback.title")}
             description={t("settingsPage.preferences.feedback.description")}
           >
@@ -216,6 +251,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="notifications"
+            icon={BellIcon}
             title={t("settingsPage.preferences.notifications.title")}
             description={t(
               "settingsPage.preferences.notifications.description"
@@ -228,6 +264,7 @@ const PreferencesPage = ({
 
           <PreferenceTab
             id="about"
+            icon={InfoIcon}
             title={t("settingsPage.preferences.about.title")}
             description={t("settingsPage.preferences.about.description")}
           >
@@ -241,6 +278,7 @@ const PreferencesPage = ({
 
 const PreferenceTab = ({
   id,
+  icon: Icon,
   title,
   description,
   eyebrow,
@@ -248,6 +286,7 @@ const PreferenceTab = ({
   primary = false,
 }: {
   id: string;
+  icon: NonNullable<ArticleNavigationItem["icon"]>;
   title: string;
   description: string;
   eyebrow?: string;
@@ -261,11 +300,14 @@ const PreferenceTab = ({
           {eyebrow}
         </p>
       )}
-      {primary ? (
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">{title}</h1>
-      ) : (
-        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-      )}
+      <div className={cn("flex items-center gap-3", primary && "mt-3")}>
+        <Icon className="size-6 shrink-0" size={24} />
+        {primary ? (
+          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        ) : (
+          <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+        )}
+      </div>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">
         {description}
       </p>

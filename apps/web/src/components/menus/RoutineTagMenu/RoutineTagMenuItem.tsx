@@ -10,8 +10,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback } from "react";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
@@ -39,7 +39,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useLoading, useMobile, useModal, useStationRoutine } from "@/hooks";
+import { useLoading, useMobile, useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 
@@ -51,7 +51,6 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
   const { i18n, t } = useTranslation();
   const loadingManager = useLoading();
   const isMobile = useMobile();
-  const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
   const availableRoutines = stationRoutineManager.routines;
   const visibleRoutineCount = routineTag.isExpanded
@@ -274,12 +273,18 @@ const RoutineTagMenuItem = ({ routineTag }: RoutineTagMenuItemProps) => {
               </ContextMenuItem>
               <ContextMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() =>
-                  modalManager.open("DeleteRoutineTagDialog", {
-                    routineTagId: routineTag.id,
-                    routineTagName: routineTag.name,
-                  })
-                }
+                onClick={() => {
+                  void stationRoutineManager
+                    .hardDeleteRoutineTag(routineTag.id)
+                    .then(() =>
+                      toast.success(
+                        t("workspace.notifications.deleted", {
+                          name: routineTag.name,
+                        })
+                      )
+                    )
+                    .catch(error => toast.error(tError(error, t)));
+                }}
               >
                 <Trash2 className="mr-2 size-4" />
                 {t("workspace.menu.delete")}

@@ -3,9 +3,11 @@ import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.t
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import toast from "@shared/lib/toast/toast";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -33,6 +35,7 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
   const isMobile = useMobile();
   const modalManager = useModal();
   const stationRoutineManager = useStationRoutine();
+  const deleteRoutineTask = useHardDeleteMyRoutineTaskById();
   const executionStatus = routineTask.executionStatus;
   const displayedStatus = executionStatus
     ? t(routineTaskRecordStatusTKeys[executionStatus])
@@ -137,13 +140,26 @@ const RoutineTaskMenuItem = ({ routineTask }: RoutineTaskMenuItemProps) => {
           <ContextMenuGroup>
             <ContextMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() =>
-                modalManager.open("DeleteRoutineTaskDialog", {
-                  routineTaskId: routineTask.id,
-                  routineTaskTitle: routineTask.title,
-                  onDeleted: stationRoutineManager.refresh,
-                })
-              }
+              onClick={() => {
+                void deleteRoutineTask
+                  .mutateAsync({
+                    header: getClientRequestHeaders(navigator.userAgent),
+                    body: { routineTaskId: routineTask.id },
+                  })
+                  .then(async response => {
+                    if (response.success === false) {
+                      toast.error(tError(response.exception, t));
+                      return;
+                    }
+                    toast.success(
+                      t("workspace.notifications.deleted", {
+                        name: routineTask.title,
+                      })
+                    );
+                    await stationRoutineManager.refresh();
+                  })
+                  .catch(error => toast.error(tError(error, t)));
+              }}
             >
               <Trash2 className="mr-2 size-4" />
               {t("workspace.menu.delete")}

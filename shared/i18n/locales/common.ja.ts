@@ -57,7 +57,8 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     commandNavigatePreferenceSettings: "環境設定ページへ移動",
     commandNavigateAccountSettings: "アカウント設定ページへ移動",
     commandQuickSettings: "クイック設定",
-    commandStatusRequiresNetwork: "ステータスはオンラインのときだけ変更できます。",
+    commandStatusRequiresNetwork:
+      "ステータスはオンラインのときだけ変更できます。",
     breadcrumb: "パンくずリスト",
   },
   navigation: {

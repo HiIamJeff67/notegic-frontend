@@ -3,9 +3,8 @@ import {
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
 import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { tError } from "@shared/i18n/error";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -33,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine, useUser } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTaskDialogSkeleton from "./CreateRoutineTaskDialogSkeleton";
 
@@ -173,7 +173,7 @@ const CreateRoutineTaskDialog = ({
       setIsCreatingDraft(false);
     }
 
-    toast.success(t("workspace.routineTask.created"));
+    toast.success(t("workspace.notifications.created", { name: title.trim() }));
     onClose();
     try {
       await onCreated?.(routineTaskId);

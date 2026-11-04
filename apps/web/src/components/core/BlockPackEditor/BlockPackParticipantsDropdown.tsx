@@ -12,7 +12,6 @@ import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
 } from "@shared/api/websocket";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
@@ -26,10 +25,10 @@ import {
 } from "@/api/hooks/rootShelf.hook";
 import AddShelfCollaboratorDialog, {
   type ShelfCollaboratorPermission,
-} from "@/components/dialogs/ShelfSharingDialog/AddShelfCollaboratorDialog";
+} from "@/components/dialogs/ShelfItemDialogs/AddShelfCollaboratorDialog/AddShelfCollaboratorDialog";
 import ShelfSharingOverviewDialog, {
   type ShelfSharingOverviewRow,
-} from "@/components/dialogs/ShelfSharingDialog/ShelfSharingOverviewDialog";
+} from "@/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import {
   Avatar,
@@ -46,6 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRealtime } from "@/hooks/useRealtime";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 interface BlockPackParticipantsDropdownProps {

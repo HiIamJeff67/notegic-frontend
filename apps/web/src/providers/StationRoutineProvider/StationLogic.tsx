@@ -10,8 +10,9 @@ import {
 import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.interface";
 import { CreateStationRequestSchema } from "@shared/api/interfaces/station.interface";
 import { parseRequest } from "@shared/api/validation";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -23,6 +24,7 @@ import {
   useTransferMyStationOwnership,
   useUpdateMyStationById,
 } from "@/api/hooks/station.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
@@ -47,6 +49,7 @@ export const useStationLogic = ({
   selectedRoutineId,
   selectRoutine,
 }: UseStationLogicProps) => {
+  const { t } = useTranslation();
   const createStationMutator = useCreateStation();
   const deleteStationMutator = useDeleteMyStationById();
   const updateStationMutator = useUpdateMyStationById();
@@ -200,6 +203,28 @@ export const useStationLogic = ({
     [forceUpdate, stationsRef, updateStationMutator]
   );
 
+  const renameStation = useCallback(
+    async (stationId: UUID, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") throw new Error("invalid station name");
+      if (stationsRef.current.get(stationId)) {
+        await updateStation(stationId, { name: nextName });
+        return;
+      }
+      const response = await updateStationMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: {
+          stationId,
+          values: {
+            name: nextName,
+          },
+        },
+      });
+      if (response.success === false) throw response.exception;
+    },
+    [stationsRef, updateStation, updateStationMutator]
+  );
+
   const removeStationOptimistically = useCallback(
     (stationId: UUID) => {
       const stationNode = stationsRef.current.get(stationId);
@@ -329,12 +354,13 @@ export const useStationLogic = ({
 
       const name = editStationName.trim();
       await updateStation(editingStationNode.id, { name });
+      toast.success(t("workspace.notifications.renamed", { name }));
     } finally {
       setEditingStationNode(null);
       setOriginalStationName("");
       setEditStationName("");
     }
-  }, [editStationName, editingStationNode, isNewStationName, updateStation]);
+  }, [editStationName, editingStationNode, isNewStationName, t, updateStation]);
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
@@ -505,6 +531,7 @@ export const useStationLogic = ({
     startRenamingStation,
     cancelRenamingStation,
     renameEditingStation,
+    renameStation,
     searchStationsInput,
     setSearchStationsInput,
     executeSearchStations: executeSearch,

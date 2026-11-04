@@ -13,6 +13,7 @@ export const JapaneseWorkspaceTranslation = {
   navigation: {
     dashboard: "ダッシュボード",
     routines: "ルーティン",
+    routinesOverview: "ルーティン概要",
     shelves: "シェルフ",
     stations: "ステーション",
     routineTags: "ルーティンタグ",
@@ -352,6 +353,23 @@ export const JapaneseWorkspaceTranslation = {
     deleteSubShelf: "サブシェルフを削除",
     open: "開く",
     rename: "名前を変更",
+    renameRootShelfDialog: "ルートシェルフの名前を変更",
+    renameRootShelfDescription: "このルートシェルフの新しい名前を入力します。",
+    renameSubShelfDialog: "サブシェルフの名前を変更",
+    renameSubShelfDescription: "このサブシェルフの新しい名前を入力します。",
+    renameMaterialDialog: "素材の名前を変更",
+    renameMaterialDescription: "この素材の新しい名前を入力します。",
+    renameBlockPackDialog: "ブロックパックの名前を変更",
+    renameBlockPackDescription: "このブロックパックの新しい名前を入力します。",
+    renameStationDialog: "ステーションの名前を変更",
+    renameStationDescription: "このステーションの新しい名前を入力します。",
+    renameRoutineDialog: "ルーティンの名前を変更",
+    renameRoutineDescription: "このルーティンの新しい名前を入力します。",
+    renameRoutineTaskDialog: "ルーティンタスクの名前を変更",
+    renameRoutineTaskDescription:
+      "このルーティンタスクの新しい名前を入力します。",
+    renameRoutineTagDialog: "ルーティンタグの名前を変更",
+    renameRoutineTagDescription: "このルーティンタグの新しい名前を入力します。",
     delete: "削除",
     items: "項目",
     subShelf: "サブシェルフ",
@@ -365,9 +383,9 @@ export const JapaneseWorkspaceTranslation = {
       "既存のルートシェルフメンバーの公開 UUID を入力します。",
     enterStationMember: "既存のステーションメンバーの公開 UUID を入力します。",
     deleteRootDescription:
-      "「{{name}}」を削除しますか？確認のため下に「DELETE」と入力してください。",
+      "「{{name}}」と、その中のサブシェルフ、素材、ブロックパックを削除します。ゴミ箱から復元できます。",
     deleteSubDescription:
-      "「{{name}}」を削除しますか？確認のため下に「DELETE」と入力してください。",
+      "「{{name}}」と、その中の入れ子のサブシェルフ、素材、ブロックパックを削除します。ゴミ箱から復元できます。",
     typeDelete: "ここに「DELETE」と入力",
     newSubShelf: "新しいサブシェルフ",
     newMaterial: "新しい素材",
@@ -379,7 +397,7 @@ export const JapaneseWorkspaceTranslation = {
     viewAllRecords: "すべての記録を表示",
     openInspector: "インスペクターで開く",
     duplicate: "複製",
-    overviewDetail: "概要の詳細",
+    viewInOverview: "概要で表示",
     pause: "一時停止",
     resume: "再開",
     totalRoutines_one: "合計 {{count}} 件のルーティン",
@@ -554,8 +572,7 @@ export const JapaneseWorkspaceTranslation = {
     backgroundUrl: "背景 URL",
     deleteTitle: "ステーションを削除",
     deleteDescription:
-      "ステーションとそのルーティンがアクティブなビューから取り除かれます。確認のためステーション名を入力してください。",
-    deletePlaceholder: "確認のため「{{name}}」と入力",
+      "このステーションと、その中のルーティンを削除します。ゴミ箱から復元できます。",
   },
   routine: {
     created: "ルーティンを作成しました。",
@@ -563,7 +580,7 @@ export const JapaneseWorkspaceTranslation = {
     deleted: "ルーティンを削除しました。",
     deleteTitle: "ルーティンを削除",
     deleteDescription:
-      "「{{title}}」を削除しますか？ルーティンはアクティブなスケジュールから取り除かれます。",
+      "「{{title}}」と、その中のルーティンタスクを削除します。ルーティンはゴミ箱から復元できます。",
     createTitle: "ルーティンを作成",
     createDescription:
       "ルーティンを追加します。カスタムスケジュールがない場合は既定の 1 時間枠を使用します。",
@@ -964,6 +981,9 @@ export const JapaneseWorkspaceTranslation = {
     googleAuthError: "Google ログインエラー: {{error}}",
     invalidRootShelfName: "ルートシェルフ名が無効です。",
     shelfRenamed: "シェルフの名前を変更しました。",
+    created: "{{name}} を作成しました。",
+    renamed: "{{name}} の名前を変更しました。",
+    deleted: "{{name}} を削除しました。",
     invalidSubShelfName: "サブシェルフ名が無効です。",
     sensitiveClipboard:
       "機密情報の可能性がある内容をコピーしました。貼り付け先を確認してください。",

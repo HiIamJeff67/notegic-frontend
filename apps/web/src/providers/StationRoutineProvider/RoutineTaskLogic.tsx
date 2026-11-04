@@ -10,10 +10,9 @@ import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/rout
 import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
 import { parseRequest } from "@shared/api/validation";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
-import { useTranslation } from "@/hooks/useTranslation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
@@ -21,11 +20,10 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
 import {
   useCreateRoutineTaskByRoutineId,
-  useGetAllMyRoutineTasks,
-  useGetMyRoutineTasksByRoutineId,
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
 import { useGetMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
@@ -40,9 +38,6 @@ export const useRoutineTaskLogic = ({
 }: UseRoutineTaskLogicProps) => {
   const { t } = useTranslation();
   const createRoutineTaskMutator = useCreateRoutineTaskByRoutineId();
-  const { fetch: fetchAllRoutineTasks } = useGetAllMyRoutineTasks();
-  const { fetch: fetchMyRoutineTasksByRoutineId } =
-    useGetMyRoutineTasksByRoutineId();
   const updateRoutineTaskMutator = useUpdateMyRoutineTaskById();
   const routineTaskRecordsQuerier = useGetMyRoutineTaskRecordsByRoutineTaskId();
 
@@ -58,10 +53,7 @@ export const useRoutineTaskLogic = ({
       variables: searchRoutineTasksVariables,
       fetchMore: fetchMoreRoutineTasks,
     },
-  ] = useSearchRoutineTasksLazyQuery({
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "network-only",
-  });
+  ] = useSearchRoutineTasksLazyQuery();
 
   const getMyRoutineTasksByRoutineIds = useCallback(
     async (routineIds: UUID[]): Promise<RoutineTaskNode[]> => {
@@ -75,27 +67,41 @@ export const useRoutineTaskLogic = ({
         return [];
       });
       if (routines.length === 0) return [];
-      const response =
-        routineIds.length === 1
-          ? await fetchMyRoutineTasksByRoutineId({
-              header: getClientRequestHeaders(navigator.userAgent),
-              param: {
-                routineId: routineIds[0],
-                areDeleted: false,
-              },
-            })
-          : await fetchAllRoutineTasks({
-              header: getClientRequestHeaders(navigator.userAgent),
-              param: {
-                areDeleted: false,
-              },
-            });
-      if (response.success === false) throw response.exception;
-
-      const routineIdSet = new Set(routineIds);
-      const routineTasks = response.data.filter(routineTask =>
-        routineIdSet.has(routineTask.routineId as UUID)
-      );
+      const routineTasks: {
+        id: UUID;
+        routineId: UUID;
+        kind: string;
+        title: string;
+        payload: RoutineTaskNode["payload"];
+        priority: number;
+        maxAttempts: number;
+        previousRoutineTaskIds: UUID[];
+        updatedAt: Date;
+        createdAt: Date;
+      }[] = [];
+      let after: string | null | undefined;
+      do {
+        const result = await executeSearch({
+          variables: {
+            input: {
+              query: "",
+              routineIds,
+              first: MaxSearchLimit,
+              after,
+              sortBy: SearchRoutineTaskSortBy.Title,
+              sortOrder: SearchSortOrder.Asc,
+            },
+          },
+        });
+        const connection = result.data?.searchRoutineTasks;
+        routineTasks.push(
+          ...((connection?.searchEdges.map(edge => edge.node) ??
+            []) as unknown as typeof routineTasks)
+        );
+        after = connection?.searchPageInfo.hasNextPage
+          ? connection.searchPageInfo.endEncodedSearchCursor
+          : undefined;
+      } while (after);
 
       const routineById = new Map(
         routines.map(routine => [routine.id, routine])
@@ -148,12 +154,7 @@ export const useRoutineTaskLogic = ({
       forceUpdate();
       return routineTaskNodes;
     },
-    [
-      fetchAllRoutineTasks,
-      fetchMyRoutineTasksByRoutineId,
-      forceUpdate,
-      stationsRef,
-    ]
+    [executeSearch, forceUpdate, stationsRef]
   );
 
   const handleRealtimeRoutineTaskLifecycle = useCallback(
@@ -637,6 +638,49 @@ export const useRoutineTaskLogic = ({
     [forceUpdate, stationsRef, updateRoutineTaskMutator]
   );
 
+  const renameRoutineTask = useCallback(
+    async (routineTaskId: UUID, title: string): Promise<void> => {
+      const nextTitle = title.trim();
+      if (nextTitle === "") throw new Error("invalid routine task title");
+      let found = false;
+      for (const stationNode of stationsRef.current.values()) {
+        if (
+          stationNode.routineTasks.some(
+            routineTask => routineTask.id === routineTaskId
+          )
+        ) {
+          found = true;
+          break;
+        }
+        if (
+          stationNode.routines.some(routine =>
+            routine.routineTasks.some(
+              routineTask => routineTask.id === routineTaskId
+            )
+          )
+        ) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        await updateRoutineTask(routineTaskId, { title: nextTitle });
+        return;
+      }
+      const response = await updateRoutineTaskMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: {
+          routineTaskId,
+          values: {
+            title: nextTitle,
+          },
+        },
+      });
+      if (response.success === false) throw response.exception;
+    },
+    [stationsRef, updateRoutineTask, updateRoutineTaskMutator]
+  );
+
   return {
     selectedRoutineTaskId,
     selectRoutineTask,
@@ -654,6 +698,7 @@ export const useRoutineTaskLogic = ({
     upsertRoutineTaskNode,
     isCreatingRoutineTask: createRoutineTaskMutator.isPending,
     updateRoutineTask,
+    renameRoutineTask,
     isUpdatingRoutineTask: updateRoutineTaskMutator.isPending,
   };
 };

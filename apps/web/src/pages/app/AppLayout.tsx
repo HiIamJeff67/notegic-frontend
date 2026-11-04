@@ -1,7 +1,7 @@
 import { Outlet } from "@tanstack/react-router";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import AppUtilitesWrapper from "@/components/core/AppUtilitesWrapper/AppUtilitesWrapper";
+import AppUtilitiesWrapper from "@/components/core/AppUtilitiesWrapper/AppUtilitiesWrapper";
 import StationRoutineInspectorHost from "@/components/inspectors/StationRoutineInspectorHost";
 import SettingsSheet from "@/components/sheets/SettingsSheet/SettingsSheet";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -30,9 +30,9 @@ export default function AppLayout() {
                       <StationRoutineProvider>
                         <ModalProvider>
                           <SettingsDisplayProvider>
-                            <AppUtilitesWrapper>
+                            <AppUtilitiesWrapper>
                               <Outlet />
-                            </AppUtilitesWrapper>
+                            </AppUtilitiesWrapper>
                             <SettingsSheet />
                             <StationRoutineInspectorHost />
                           </SettingsDisplayProvider>

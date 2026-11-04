@@ -1,14 +1,27 @@
 import {
+  AppWindowIcon,
+  BellIcon,
   BookOpenIcon,
-  ChevronDownIcon,
+  ExternalLink,
+  HardDriveIcon,
+  HeartIcon,
   HistoryIcon,
+  IdCardIcon,
+  InfoIcon,
+  KeyRoundIcon,
   LayoutDashboardIcon,
+  Link2Icon,
   MessageSquareWarningIcon,
+  PaletteIcon,
   Pencil,
+  PenLineIcon,
   PlusIcon,
+  ShieldCheckIcon,
+  ShieldIcon,
   SlidersHorizontalIcon,
   SquarePen,
   Trash2Icon,
+  UserPenIcon,
   UserRoundIcon,
   Workflow,
 } from "lucide-react";
@@ -48,13 +61,26 @@ const AppCommandGlyph = ({ name }: { name: AppCommandIcon }) => {
     routine: <RoutineIcon className={className} />,
     routineTask: <RoutineTaskIcon className={className} />,
     orchestrate: <Workflow className={className} />,
+    overview: <ExternalLink className={className} />,
     records: <HistoryIcon className={className} />,
-    more: <ChevronDownIcon className={className} />,
     report: <MessageSquareWarningIcon className={className} />,
     create: <PlusIcon className={className} />,
     rename: <Pencil className={className} />,
     inspector: <SquarePen className={className} />,
     account: <UserRoundIcon className={className} />,
+    appearance: <PaletteIcon className={className} />,
+    editor: <PenLineIcon className={className} />,
+    offline: <HardDriveIcon className={className} />,
+    privacy: <ShieldIcon className={className} />,
+    browser: <AppWindowIcon className={className} />,
+    notifications: <BellIcon className={className} />,
+    about: <InfoIcon className={className} />,
+    identity: <IdCardIcon className={className} />,
+    keys: <KeyRoundIcon className={className} />,
+    upgrade: <HeartIcon className={className} />,
+    security: <ShieldCheckIcon className={className} />,
+    binding: <Link2Icon className={className} />,
+    accountChanges: <UserPenIcon className={className} />,
   };
   return glyph[name];
 };
@@ -69,7 +95,7 @@ const AppCommandItem = ({
   id: string;
   label: string;
   hint: AppCommandHint;
-  icon: AppCommandIcon;
+  icon?: AppCommandIcon;
   onSelect: () => void;
 }) => {
   const { t } = useTranslation();
@@ -99,12 +125,12 @@ const AppCommandItem = ({
                           : t("common.commandKindOperation");
   return (
     <CommandItem
-      className="px-3 py-2.5 text-base"
+      className="px-3 py-2.5 text-base data-[selected=true]:[&_svg]:text-accent-foreground"
       value={id}
       keywords={[label]}
       onSelect={onSelect}
     >
-      <AppCommandGlyph name={icon} />
+      {icon ? <AppCommandGlyph name={icon} /> : null}
       <span className="min-w-0 truncate">{label}</span>
       <span className="ml-auto shrink-0 pl-4 text-right text-sm text-muted-foreground">
         {hintLabel}

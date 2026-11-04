@@ -1,5 +1,5 @@
-import AppCommand from "@/components/core/AppUtilitesWrapper/AppCommand/AppCommand";
-import AppSidebarInset from "@/components/core/AppUtilitesWrapper/AppSidebar/AppSidebarInset";
+import AppCommand from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommand";
+import AppSidebarInset from "@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppCommandProvider } from "@/providers/AppCommandProvider";
 import { ResizeSidebarProvider } from "@/providers/ResizeSidebarProvider";

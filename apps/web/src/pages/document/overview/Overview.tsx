@@ -1,4 +1,4 @@
-import { BookOpenIcon } from "lucide-react";
+import { LibraryIcon } from "lucide-react";
 import {
   ArticleParagraph,
   ArticleParagraphContent,
@@ -10,7 +10,7 @@ export const overviewNavigation = {
   title: "Overview",
   description: "Website guides and the published API contract.",
   weight: 5 as const,
-  icon: BookOpenIcon,
+  icon: LibraryIcon,
 } as const;
 
 const Overview = () => {

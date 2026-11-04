@@ -633,6 +633,45 @@ export const useRoutineLogic = ({
     [forceUpdate, routineTagsRef, stationsRef, updateRoutineMutator, t]
   );
 
+  const renameRoutine = useCallback(
+    async (routineId: UUID, title: string): Promise<void> => {
+      const nextTitle = title.trim();
+      if (nextTitle === "") throw new Error("invalid routine title");
+      let found = false;
+      for (const stationNode of stationsRef.current.values()) {
+        if (stationNode.routines.some(routine => routine.id === routineId)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        for (const routineTagNode of routineTagsRef.current.values()) {
+          if (
+            routineTagNode.routines.some(routine => routine.id === routineId)
+          ) {
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) {
+        await updateRoutine(routineId, { title: nextTitle });
+        return;
+      }
+      const response = await updateRoutineMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: {
+          routineId,
+          values: {
+            title: nextTitle,
+          },
+        },
+      });
+      if (response.success === false) throw response.exception;
+    },
+    [routineTagsRef, stationsRef, updateRoutine, updateRoutineMutator]
+  );
+
   const isRoutineEditing = useCallback(
     (routineId: UUID) => editingRoutineNode?.id === routineId,
     [editingRoutineNode]
@@ -665,12 +704,19 @@ export const useRoutineLogic = ({
 
       const title = editRoutineTitle.trim();
       await updateRoutine(editingRoutineNode.id, { title });
+      toast.success(t("workspace.notifications.renamed", { name: title }));
     } finally {
       setEditingRoutineNode(null);
       setOriginalRoutineTitle("");
       setEditRoutineTitle("");
     }
-  }, [editRoutineTitle, editingRoutineNode, isNewRoutineTitle, updateRoutine]);
+  }, [
+    editRoutineTitle,
+    editingRoutineNode,
+    isNewRoutineTitle,
+    t,
+    updateRoutine,
+  ]);
 
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
@@ -870,6 +916,7 @@ export const useRoutineLogic = ({
     startRenamingRoutine,
     cancelRenamingRoutine,
     renameEditingRoutine,
+    renameRoutine,
     executeSearchRoutines: executeSearch,
     searchRoutinesData,
     isSearchingRoutines,

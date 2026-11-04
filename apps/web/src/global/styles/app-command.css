@@ -8,7 +8,7 @@
   }
 
   100% {
-    top: 14%;
+    top: 18%;
     clip-path: inset(0 round var(--radius-md));
   }
 }
@@ -30,11 +30,16 @@
 .app-command-trigger:hover,
 .app-sidebar-trigger:hover {
   background-color: var(--accent);
-  color: white;
+}
+
+.light .app-command-trigger {
+  border-color: color-mix(in oklch, black 10%, transparent);
+  background-color: color-mix(in oklch, oklch(0.93 0 0) 32%, transparent);
+  color: var(--foreground);
 }
 
 .app-command-panel {
-  top: 14%;
+  top: 18%;
   left: 50%;
   width: min(52rem, calc(100% - 2rem));
   height: auto;
@@ -79,6 +84,27 @@
   border-radius: inherit;
   border: 1px solid color-mix(in oklch, white 18%, transparent);
   pointer-events: none;
+}
+
+.light .app-command-panel {
+  background-color: color-mix(in oklch, oklch(0.93 0 0) 32%, transparent);
+  color: var(--foreground);
+}
+
+.light .app-command-panel::before,
+.light .app-command-path,
+.light .app-command-panel [data-slot="command-input-wrapper"] {
+  border-color: color-mix(in oklch, black 10%, transparent);
+}
+
+.dark
+  .app-command-panel
+  [data-slot="command-item"]:not([data-selected="true"]) {
+  color: var(--muted-foreground);
+}
+
+.app-command-panel [data-slot="command-item"][data-selected="true"] svg {
+  color: var(--accent-foreground);
 }
 
 .app-command-panel > [data-slot="command"] {

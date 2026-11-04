@@ -14,8 +14,8 @@ const fixture = `
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/core/AppUtilitesWrapper/AppSidebar/AppSidebar';
-import AppSidebarInset from '@/components/core/AppUtilitesWrapper/AppSidebar/AppSidebarInset';
+import { AppSidebar } from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar';
+import AppSidebarInset from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset';
 import BlockPackEditorContent from '@/components/core/BlockPackEditor/BlockPackEditorContent';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
 import MaterialViewer from '@/components/core/MaterialViewer/MaterialViewer';

@@ -1,7 +1,16 @@
-import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
-import { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
+import {
+  ItemType as GraphQLItemType,
+  SearchItemSortBy,
+  SearchSortOrder,
+  SearchSubShelfSortBy,
+} from "@shared/api/graphql/generated/graphql";
+import type { GetMyBlockPacksByParentSubShelfIdResponse } from "@shared/api/interfaces/blockPack.interface";
+import { MaterialContentType } from "@shared/api/interfaces/enums";
+import type { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
+import type { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { SubShelf } from "@shared/lib/shelf/subShelf";
@@ -10,12 +19,11 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useGetMyBlockPacksByParentSubShelfId } from "@/api/hooks/blockPack.hook";
-import { useGetMyMaterialsByParentSubShelfId } from "@/api/hooks/material.hook";
+import { useSearchItemsLazyQuery } from "@/api/graphql/hooks/useSearchItems";
+import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
 import {
   useCreateSubShelfByRootShelfId,
   useDeleteMySubShelfById,
-  useGetMySubShelvesByPrevSubShelfId,
   useMoveMySubShelf,
   useUpdateMySubShelfById,
 } from "@/api/hooks/subShelf.hook";
@@ -46,9 +54,8 @@ export const useSubShelfLogic = ({
   const updateSubShelfMutator = useUpdateMySubShelfById();
   const deleteSubShelfMutator = useDeleteMySubShelfById();
   const moveSubShelfMutator = useMoveMySubShelf();
-  const getSubShelves = useGetMySubShelvesByPrevSubShelfId();
-  const getMaterials = useGetMyMaterialsByParentSubShelfId();
-  const getBlockPacks = useGetMyBlockPacksByParentSubShelfId();
+  const [searchSubShelves] = useSearchSubShelvesLazyQuery();
+  const [searchItems] = useSearchItemsLazyQuery();
 
   const [editingSubShelfNode, setEditingSubShelfNode] = useState<
     SubShelfNode | undefined
@@ -62,45 +69,109 @@ export const useSubShelfLogic = ({
       subShelfNode: SubShelfNode
     ): Promise<void> => {
       // the isExpanded may be modified if the user just drag and drop something in below the `subShelfNode`
-      const userAgent = navigator.userAgent;
-      const responseOfGettingSubShelves = await getSubShelves.fetch({
-        header: getClientRequestHeaders(userAgent),
-        param: {
-          prevSubShelfId: subShelfNode.id,
-        },
-      });
-      const responseOfGettingBlockPacks = await getBlockPacks.fetch({
-        header: getClientRequestHeaders(userAgent),
-        param: {
-          parentSubShelfId: subShelfNode.id,
-        },
-      });
-      let materials: GetMyMaterialsByParentSubShelfIdResponse["data"] = [];
-      try {
-        const responseOfGettingMaterials = await getMaterials.fetch({
-          header: getClientRequestHeaders(userAgent),
-          param: {
-            parentSubShelfId: subShelfNode.id,
+      const childShelves: GetMySubShelvesByPrevSubShelfIdResponse["data"] = [];
+      let shelfAfter: string | null | undefined;
+      do {
+        const result = await searchSubShelves({
+          variables: {
+            input: {
+              query: "",
+              rootShelfId: rootShelfNode.id,
+              prevSubShelfId: subShelfNode.id,
+              first: MaxSearchLimit,
+              after: shelfAfter,
+              sortBy: SearchSubShelfSortBy.Name,
+              sortOrder: SearchSortOrder.Asc,
+            },
           },
         });
-        materials = responseOfGettingMaterials.data;
-      } catch (error) {
-        if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+        const connection = result.data?.searchSubShelves;
+        childShelves.push(
+          ...((connection?.searchEdges ?? []).map(
+            edge => edge.node
+          ) as unknown as typeof childShelves)
+        );
+        shelfAfter = connection?.searchPageInfo.hasNextPage
+          ? connection.searchPageInfo.endEncodedSearchCursor
+          : undefined;
+      } while (shelfAfter);
+
+      const items = [];
+      let itemAfter: string | null | undefined;
+      do {
+        const result = await searchItems({
+          variables: {
+            input: {
+              query: "",
+              rootShelfId: rootShelfNode.id,
+              parentSubShelfId: subShelfNode.id,
+              first: MaxSearchLimit,
+              after: itemAfter,
+              sortBy: SearchItemSortBy.Relevance,
+              sortOrder: SearchSortOrder.Asc,
+            },
+          },
+        });
+        const connection = result.data?.searchItems;
+        items.push(
+          ...((connection?.searchEdges ?? []).map(
+            edge => edge.node
+          ) as unknown as {
+            id: UUID;
+            name?: string;
+            type: GraphQLItemType;
+            parentSubShelfId: UUID;
+            deletedAt?: Date | null;
+            updatedAt: Date;
+            createdAt: Date;
+          }[])
+        );
+        itemAfter = connection?.searchPageInfo.hasNextPage
+          ? connection.searchPageInfo.endEncodedSearchCursor
+          : undefined;
+      } while (itemAfter);
+
+      const materials: GetMyMaterialsByParentSubShelfIdResponse["data"] = [];
+      const blockPacks: GetMyBlockPacksByParentSubShelfIdResponse["data"] = [];
+      for (const node of items) {
+        if (node.type === GraphQLItemType.ItemTypeMaterial) {
+          materials.push({
+            id: node.id,
+            parentSubShelfId: node.parentSubShelfId,
+            name: node.name ?? "",
+            size: 0,
+            contentType: MaterialContentType.PlainText,
+            parseMediaType: "",
+            objectKey: "",
+            deletedAt: node.deletedAt ?? null,
+            updatedAt: node.updatedAt,
+            createdAt: node.createdAt,
+          });
+        } else {
+          blockPacks.push({
+            id: node.id,
+            parentSubShelfId: node.parentSubShelfId,
+            name: node.name ?? "",
+            icon: null,
+            headerBackgroundURL: null,
+            blockCount: 0,
+            deletedAt: null,
+            updatedAt: node.updatedAt,
+            createdAt: node.createdAt,
+          });
+        }
       }
       SubShelf.initializeSubShelfNodesByResponse(
         rootShelfNode,
         subShelfNode,
-        responseOfGettingSubShelves.data
+        childShelves
       );
       SubShelf.initializeMaterialNodesByResponse(subShelfNode, materials);
-      SubShelf.initializeBlockPackNodesByResponse(
-        subShelfNode,
-        responseOfGettingBlockPacks.data
-      );
+      SubShelf.initializeBlockPackNodesByResponse(subShelfNode, blockPacks);
       subShelfNode.isExpanded = true;
       forceUpdate();
     },
-    [SubShelf, getSubShelves, getMaterials, getBlockPacks]
+    [SubShelf, searchItems, searchSubShelves]
   );
 
   const toggleSubShelf = (
@@ -263,7 +334,9 @@ export const useSubShelfLogic = ({
         },
       });
       if (response.success === false) throw response.exception;
-      toast.success(t("workspace.notifications.shelfRenamed"));
+      toast.success(
+        t("workspace.notifications.renamed", { name: editSubShelfName })
+      );
     } catch (error) {
       editingNode.name = previousName;
       forceUpdate();
@@ -280,6 +353,38 @@ export const useSubShelfLogic = ({
     setEditingSubShelfNode,
     updateSubShelfMutator,
   ]);
+
+  const renameSubShelf = useCallback(
+    async (subShelf: SubShelfNode, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") throw new Error("invalid sub shelf name");
+      if (subShelf.name === nextName) return;
+      const previousName = subShelf.name;
+      subShelf.name = nextName;
+      forceUpdate();
+      try {
+        const response = await updateSubShelfMutator.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            subShelfId: subShelf.id,
+            values: {
+              name: nextName,
+            },
+          },
+          affected: {
+            rootShelfId: subShelf.rootShelfId,
+            prevSubShelfId: subShelf.prevSubShelfId,
+          },
+        });
+        if (response.success === false) throw response.exception;
+      } catch (error) {
+        subShelf.name = previousName;
+        forceUpdate();
+        throw error;
+      }
+    },
+    [forceUpdate, updateSubShelfMutator]
+  );
 
   // trigger for listen and auto focus the input with ref of inputRef declared in the top
   useEffect(() => {
@@ -440,6 +545,7 @@ export const useSubShelfLogic = ({
     startRenamingSubShelfNode: startRenamingSubShelfNode,
     cancelRenamingSubShelfNode: cancelRenamingSubShelfNode,
     renameEditingSubShelf: renameEditingSubShelf,
+    renameSubShelf: renameSubShelf,
     deleteSubShelf: deleteSubShelf,
     moveSubShelf: moveSubShelf,
   };

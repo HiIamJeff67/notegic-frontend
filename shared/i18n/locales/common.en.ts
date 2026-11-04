@@ -30,7 +30,7 @@ export const EnglishCommonTranslation: CommonTranslation = {
     sidebarHint: "App Sidebar (Ctrl or Cmd + B)",
     searchCommands: "Search for a command to run...",
     commandEmpty: "No matching commands.",
-    commandNavigation: "Navigation",
+    commandNavigation: "Navigations",
     commandObjects: "Objects",
     commandSettings: "Settings",
     commandActions: "Actions",

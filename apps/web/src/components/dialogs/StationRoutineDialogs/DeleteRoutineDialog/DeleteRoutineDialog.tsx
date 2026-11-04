@@ -1,4 +1,3 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
@@ -13,29 +12,32 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 
-interface DeleteRoutineTagDialogProps extends ModalProps {
-  routineTagId: UUID;
-  routineTagName: string;
+interface DeleteRoutineDialogProps extends ModalProps {
+  routineId: UUID;
+  routineTitle: string;
   onDeleted?: () => void | Promise<void>;
 }
 
-const DeleteRoutineTagDialog = ({
+const DeleteRoutineDialog = ({
   isOpen,
   onClose,
-  routineTagId,
-  routineTagName,
+  routineId,
+  routineTitle,
   onDeleted,
-}: DeleteRoutineTagDialogProps) => {
+}: DeleteRoutineDialogProps) => {
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
 
-  const deleteRoutineTag = async () => {
+  const deleteRoutine = async () => {
     try {
-      await stationRoutineManager.hardDeleteRoutineTag(routineTagId);
+      await stationRoutineManager.deleteRoutine(routineId);
       await onDeleted?.();
-      toast.success(t("workspace.routineTag.deleted"));
+      toast.success(
+        t("workspace.notifications.deleted", { name: routineTitle })
+      );
       onClose();
     } catch (error) {
       toast.error(tError(error, t));
@@ -46,24 +48,21 @@ const DeleteRoutineTagDialog = ({
     <Dialog
       open={isOpen}
       onOpenChange={open => {
-        if (!open && !stationRoutineManager.isHardDeletingRoutineTag) onClose();
+        if (!open && !stationRoutineManager.isDeletingRoutine) onClose();
       }}
     >
-      <DialogContent className="rounded-sm sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("workspace.routineTag.deleteTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("workspace.routineTag.deleteDescription", {
-              name: routineTagName,
-            })}
-          </DialogDescription>
+      <DialogContent className="w-4/5">
+        <DialogHeader className="w-full">
+          <DialogTitle>{t("workspace.routine.deleteTitle")}</DialogTitle>
         </DialogHeader>
-
+        <DialogDescription>
+          {t("workspace.routine.deleteDescription", { title: routineTitle })}
+        </DialogDescription>
         <DialogFooter>
           <Button
             type="button"
             variant="outline"
-            disabled={stationRoutineManager.isHardDeletingRoutineTag}
+            disabled={stationRoutineManager.isDeletingRoutine}
             onClick={onClose}
           >
             {t("common.cancel")}
@@ -71,10 +70,10 @@ const DeleteRoutineTagDialog = ({
           <Button
             type="button"
             variant="destructive"
-            disabled={stationRoutineManager.isHardDeletingRoutineTag}
-            onClick={deleteRoutineTag}
+            disabled={stationRoutineManager.isDeletingRoutine}
+            onClick={deleteRoutine}
           >
-            {stationRoutineManager.isHardDeletingRoutineTag && <Spinner />}
+            {stationRoutineManager.isDeletingRoutine && <Spinner />}
             {t("common.delete")}
           </Button>
         </DialogFooter>
@@ -83,4 +82,4 @@ const DeleteRoutineTagDialog = ({
   );
 };
 
-export default DeleteRoutineTagDialog;
+export default DeleteRoutineDialog;

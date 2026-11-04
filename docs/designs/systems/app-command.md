@@ -77,8 +77,8 @@ after a domain is locked.
 
 A parameter is the command input of the current domain. For an object domain
 it is the text sent to that domain's existing search. An empty parameter is
-legal: the search runs with an empty query and keeps the default first page.
-The palette does not walk `after` unless the operator asks for more.
+legal: the search runs with an empty query and returns at most 10 rows. Typing
+replaces that page. The palette does not request another page.
 
 Selecting a row locks that object for the next sub domain or operation. The
 row's identity is its id. The visible label and the text being searched stay
@@ -169,7 +169,7 @@ or block pack, stations for a routine, and a root shelf then a sub shelf for
 a new sub shelf. Choosing that parent runs the existing create owner. A sub
 shelf can also be created directly under the selected root shelf. The
 drill-down path, where the parent is already locked, still creates
-immediately. A locked root shelf lists its sub shelves in Sub domains, at most 8, and the input searches that root. A locked sub shelf lists the materials and block packs returned by `searchItems` for that shelf, at most 8, and the input searches those items. Create, rename, and delete are offered on that shelf whether it was opened from Sub shelves or by drilling down from a root shelf. Those actions use the existing owners, expanding the cached root shelf when the sub shelf is not in the sidebar tree yet. A locked station lists its routines from `searchRoutines` with that station, at most 8. A locked routine lists its tasks from `searchRoutineTasks`, at most 8. Typing replaces each of those lists.
+immediately. A locked root shelf lists its sub shelves in Sub domains, at most 10, and the input replaces that page. A locked sub shelf lists the materials and block packs returned by `searchItems` for that shelf, at most 10, and the input replaces that page. Actions are listed above Sub domains. Create, rename, and delete are offered on that shelf whether it was opened from Sub shelves or by drilling down from a root shelf. Those actions use the existing owners, expanding the cached root shelf when the sub shelf is not in the sidebar tree yet. A locked station lists its routines from `searchRoutines` with that station, at most 10. A locked routine lists its tasks from `searchRoutineTasks`, at most 10. Typing replaces each of those lists.
 
 Preferences and account are root domains. Entering either one splits the
 step into two sections. Navigation lists the operation that opens the page
@@ -190,7 +190,9 @@ not finish the chain. The command input becomes that operation's parameter,
 and confirming the current text applies the value and finishes. The chain
 does not change secrets, API keys, sessions, or passwords.
 
-A locked routine lists its tasks directly and offers Orchestrate tasks, which opens that routine's dependency graph editor, and View all task records, which opens the existing routine task record dialog. A locked task offers View all records, which opens the same dialog for that task.
+Actions on a locked object follow that object's sidebar context menu from top to bottom, continuing across the menu's sections. The root navigation row is Routines overview. The Routines domain stays the searchable routine list.
+
+A locked station offers View in overview, Open in inspector, Routine, Rename, and Delete. View in overview opens that station's routines overview. Routine opens the existing create dialog. A locked routine lists its tasks directly and offers, in menu order, View in overview, View all task records, Open in inspector, Orchestrate tasks, Task, Rename, and Delete. View in overview opens that routine's station overview and is the same row in the routine context menu. Orchestrate tasks opens that routine's dependency graph editor. View all task records opens the existing routine task record dialog. Task opens the existing create-task dialog. A locked task offers View all records, Open in inspector, and Rename. View all records opens the same dialog for that task. Rename from the command opens a rename dialog and runs the existing rename hook. Rename in the sidebar still edits the row in place.
 
 ## Presentation
 
@@ -217,7 +219,7 @@ domains, and the operations of the current domain. Do not add another fuzzy
 library for this surface. A custom ranker is justified only if that page
 scores badly, and it still scores the page rather than the account.
 
-`ArticleCommand` remains the document-page finder. It does not share this chain.
+`ArticleCommand` uses the same panel and path. The first page is Domains. Entering a paragraph shows Navigations and, when it contains further paragraphs, Sub domains. The navigation row is the finisher: it jumps to that paragraph or API operation. A sub domain continues the chain and offers the same Navigations row for its own position.
 
 ## Later
 

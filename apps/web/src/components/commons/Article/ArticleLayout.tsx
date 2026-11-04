@@ -38,12 +38,12 @@ export const Article = ({
       <article
         ref={articleRef}
         className={cn(
-          "flex h-full min-h-0 w-full flex-col gap-8 overflow-y-auto lg:flex-row",
+          "flex h-full min-h-0 w-full flex-col gap-8 overflow-y-auto px-[var(--article-inline-padding)] lg:flex-row",
           preferences.density === "compact"
-            ? "lg:gap-4"
+            ? "[--article-inline-padding:0.75rem] lg:gap-4"
             : preferences.density === "comfortable"
-              ? "lg:gap-8"
-              : "lg:gap-6",
+              ? "[--article-inline-padding:1rem] sm:[--article-inline-padding:1.25rem] lg:[--article-inline-padding:1.5rem] lg:gap-8"
+              : "[--article-inline-padding:0.75rem] sm:[--article-inline-padding:1rem] lg:gap-6",
           className
         )}
         {...props}
@@ -69,7 +69,6 @@ export const ArticleContent = ({
   children,
   ...props
 }: HTMLAttributes<HTMLElement>) => {
-  const { preferences } = useLocalPreferences();
   const { height: screenHeight } = useScreen();
   const display = useContext(ArticleDisplayContext);
   const articleRef = useContext(ArticleScrollContext);
@@ -150,12 +149,7 @@ export const ArticleContent = ({
     <main
       ref={contentRef}
       className={cn(
-        "article-content mx-auto w-full min-w-0 max-w-none flex-1 self-start px-4 pt-4 pb-8 sm:px-6 lg:px-8 lg:pt-7",
-        preferences.density === "compact"
-          ? "lg:px-4"
-          : preferences.density === "comfortable"
-            ? "lg:px-8"
-            : "lg:px-6",
+        "article-content mx-auto w-full min-w-0 max-w-none flex-1 self-start px-[var(--article-inline-padding,1rem)] pt-4 pb-8 lg:pt-7",
         className
       )}
       {...props}

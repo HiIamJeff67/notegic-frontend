@@ -5,7 +5,7 @@ import AppCommand from "./AppCommand/AppCommand";
 import { AppSidebar } from "./AppSidebar/AppSidebar";
 import AppSidebarInset from "./AppSidebar/AppSidebarInset";
 
-const AppUtilitesWrapper = ({ children }: { children: ReactNode }) => {
+const AppUtilitiesWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <ResizeSidebarProvider>
       <AppCommandProvider>
@@ -19,4 +19,4 @@ const AppUtilitesWrapper = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default AppUtilitesWrapper;
+export default AppUtilitiesWrapper;
