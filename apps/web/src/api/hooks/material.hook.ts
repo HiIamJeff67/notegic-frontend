@@ -1,8 +1,19 @@
 import type { UUID } from "node:crypto";
 import { NotegicAPIError } from "@shared/api/exceptions";
+import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import {
+  CreateMyMaterialRequestSchema,
+  UpdateMyMaterialByIdRequestSchema,
+  MoveMyMaterialByIdRequestSchema,
+  RestoreMyMaterialByIdRequestSchema,
+  RestoreMyMaterialsByIdsRequestSchema,
+  DeleteMyMaterialByIdRequestSchema,
+  DeleteMyMaterialsByIdsRequestSchema,
+  HardDeleteMyMaterialsByIdsRequestSchema,
   type CreateMaterialObjectTicketRequest,
   type CreateMaterialObjectTicketResponse,
   type GetMyMaterialAndItsParentByIdRequest,
@@ -19,6 +30,7 @@ import {
   SaveMyMaterialByIdRequestSchema,
   SaveMyMaterialByIdResponseSchema,
 } from "@shared/api/interfaces/material.interface";
+import { parseRequest } from "@shared/api/validation";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -29,6 +41,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
+import { isRemoteUnavailable } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
 import {
@@ -47,6 +60,7 @@ import {
   queryFnGetMyMaterialsByRootShelfId,
   queryFnResolveMaterialObjectTicket,
 } from "@/api/invokers/material.invoker";
+import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
 
 const materialObjectTicketStaleTime = 60 * 1000;
@@ -115,8 +129,38 @@ export const useGetMyMaterialById = (
       );
     }
 
-    const response = await queryFnGetMyMaterialById(request);
-    return response;
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response = await queryFnGetMyMaterialById(request);
+      await MaterialLocalSynchronizer.syncGetMyMaterialById(response);
+      return response;
+    } catch (error) {
+      if (
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
+      ) {
+        const material =
+          await MaterialLocalSimulator.simulateGetMyMaterialById(request);
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: material,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: material,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyMaterialByIdResponse;
+      }
+      throw error;
+    }
   };
 
   const query = useQuery<GetMyMaterialByIdResponse, Error>({
@@ -168,8 +212,42 @@ export const useGetMyMaterialAndItsParentById = (
       );
     }
 
-    const response = await queryFnGetMyMaterialAndItsParentById(request);
-    return response;
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response = await queryFnGetMyMaterialAndItsParentById(request);
+      await MaterialLocalSynchronizer.syncGetMyMaterialAndItsParentById(
+        response
+      );
+      return response;
+    } catch (error) {
+      if (
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
+      ) {
+        const material =
+          await MaterialLocalSimulator.simulateGetMyMaterialAndItsParentById(
+            request
+          );
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: material,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: material,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyMaterialAndItsParentByIdResponse;
+      }
+      throw error;
+    }
   };
 
   const query = useQuery<GetMyMaterialAndItsParentByIdResponse, Error>({
@@ -221,8 +299,42 @@ export const useGetMyMaterialsByParentSubShelfId = (
       );
     }
 
-    const response = await queryFnGetMyMaterialsByParentSubShelfId(request);
-    return response;
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response = await queryFnGetMyMaterialsByParentSubShelfId(request);
+      await MaterialLocalSynchronizer.syncGetMyMaterialsByParentSubShelfId(
+        response
+      );
+      return response;
+    } catch (error) {
+      if (
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
+      ) {
+        const materials =
+          await MaterialLocalSimulator.simulateGetMyMaterialsByParentSubShelfId(
+            request
+          );
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: materials,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: materials,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyMaterialsByParentSubShelfIdResponse;
+      }
+      throw error;
+    }
   };
 
   const query = useQuery<GetMyMaterialsByParentSubShelfIdResponse, Error>({
@@ -270,8 +382,43 @@ export const useGetMyMaterialsByRootShelfId = (
       );
     }
 
-    const response = await queryFnGetMyMaterialsByRootShelfId(request);
-    return response;
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response = await queryFnGetMyMaterialsByRootShelfId(request);
+      await MaterialLocalSynchronizer.syncGetMyMaterialsByRootShelfId(
+        response,
+        request.param.rootShelfId
+      );
+      return response;
+    } catch (error) {
+      if (
+        error instanceof NotegicAPIError ||
+        error instanceof NotegicFetchError
+      ) {
+        const materials =
+          await MaterialLocalSimulator.simulateGetMyMaterialsByRootShelfId(
+            request
+          );
+        return (
+          NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: materials,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: materials,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              }
+        ) as GetMyMaterialsByRootShelfIdResponse;
+      }
+      throw error;
+    }
   };
 
   const query = useQuery<GetMyMaterialsByRootShelfIdResponse, Error>({
@@ -304,12 +451,44 @@ export const useGetMyMaterialsByRootShelfId = (
   return { ...query, fetch };
 };
 
-export const useCreateMyMaterial = () => {
+export const useCreateMyMaterial = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnCreateMyMaterial>[0]
+  ) => {
+    parseRequest(CreateMyMaterialRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnCreateMyMaterial(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const created =
+        await MaterialLocalSimulator.simulateCreateMyMaterial(request);
+      if (!created) throw error;
+      return {
+        success: true as const,
+        data: created,
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnCreateMyMaterial,
-    onSuccess: (response, request) => {
+    mutationFn: perform,
+    onSuccess: async (response, request) => {
+      if (response.embedded?.publicId !== "") {
+        await MaterialLocalSynchronizer.syncCreateMyMaterial(request, response);
+      }
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
@@ -329,11 +508,38 @@ export const useCreateMyMaterial = () => {
   return mutation;
 };
 
-export const useUpdateMyMaterialById = () => {
+export const useUpdateMyMaterialById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnUpdateMyMaterialById>[0]
+  ) => {
+    parseRequest(UpdateMyMaterialByIdRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpdateMyMaterialById(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await MaterialLocalSimulator.simulateUpdateMyMaterialById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnUpdateMyMaterialById,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -400,11 +606,38 @@ export const useSaveMyMaterialById = () => {
   return mutation;
 };
 
-export const useMoveMyMaterialById = () => {
+export const useMoveMyMaterialById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnMoveMyMaterialById>[0]
+  ) => {
+    parseRequest(MoveMyMaterialByIdRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnMoveMyMaterialById(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await MaterialLocalSimulator.simulateMoveMyMaterialById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnMoveMyMaterialById,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       const materialId = request.body.materialId as UUID;
       const destinationParentSubShelfId = request.body
@@ -431,12 +664,41 @@ export const useMoveMyMaterialById = () => {
 
   return mutation;
 };
-export const useRestoreMyMaterialById = () => {
+export const useRestoreMyMaterialById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
+
+  const perform = async (
+    request: Parameters<typeof mutationFnRestoreMyMaterialById>[0]
+  ) => {
+    parseRequest(RestoreMyMaterialByIdRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyMaterialById(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await MaterialLocalSimulator.simulateRestoreMyMaterialById(request);
+      if (!restored) throw error;
+      return {
+        success: true as const,
+        data: restored,
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
 
   const mutation = useMutation({
     retry: false,
-    mutationFn: mutationFnRestoreMyMaterialById,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       if (response.success === false) return;
       const materialId = request.body.materialId as UUID;
@@ -460,12 +722,40 @@ export const useRestoreMyMaterialById = () => {
   return mutation;
 };
 
-export const useRestoreMyMaterialsByIds = () => {
+export const useRestoreMyMaterialsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
+
+  const perform = async (
+    request: Parameters<typeof mutationFnRestoreMyMaterialsByIds>[0]
+  ) => {
+    parseRequest(RestoreMyMaterialsByIdsRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnRestoreMyMaterialsByIds(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await MaterialLocalSimulator.simulateRestoreMyMaterialsByIds(request);
+      return {
+        success: true as const,
+        data: restored,
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
 
   const mutation = useMutation({
     retry: false,
-    mutationFn: mutationFnRestoreMyMaterialsByIds,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       if (!response.success) return;
       const materialIds = (request.body.materialIds || []).filter(
@@ -501,11 +791,38 @@ export const useRestoreMyMaterialsByIds = () => {
   return mutation;
 };
 
-export const useDeleteMyMaterialById = () => {
+export const useDeleteMyMaterialById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnDeleteMyMaterialById>[0]
+  ) => {
+    parseRequest(DeleteMyMaterialByIdRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyMaterialById(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await MaterialLocalSimulator.simulateDeleteMyMaterialById(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnDeleteMyMaterialById,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
@@ -528,11 +845,38 @@ export const useDeleteMyMaterialById = () => {
   return mutation;
 };
 
-export const useDeleteMyMaterialsByIds = () => {
+export const useDeleteMyMaterialsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnDeleteMyMaterialsByIds>[0]
+  ) => {
+    parseRequest(DeleteMyMaterialsByIdsRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteMyMaterialsByIds(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await MaterialLocalSimulator.simulateDeleteMyMaterialsByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnDeleteMyMaterialsByIds,
+    mutationFn: perform,
     onSuccess: (response, request) => {
       const materialIds = (request.body.materialIds || []).filter(
         Boolean
@@ -567,11 +911,38 @@ export const useDeleteMyMaterialsByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMyMaterialsByIds = () => {
+export const useHardDeleteMyMaterialsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnHardDeleteMyMaterialsByIds>[0]
+  ) => {
+    parseRequest(HardDeleteMyMaterialsByIdsRequestSchema, request);
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnHardDeleteMyMaterialsByIds(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await MaterialLocalSimulator.simulateHardDeleteMyMaterialsByIds(request);
+      return {
+        success: true as const,
+        data: { deletedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   return useMutation({
-    mutationFn: mutationFnHardDeleteMyMaterialsByIds,
+    mutationFn: perform,
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;

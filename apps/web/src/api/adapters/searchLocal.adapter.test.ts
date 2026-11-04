@@ -26,6 +26,26 @@ jest.mock("@/api/local/simulators/station.simulator", () => ({
   StationLocalSimulator: {},
 }));
 
+// New search domains own their simulator boundaries independently.
+jest.mock("@/api/local/simulators/blockPack.simulator", () => ({
+  BlockPackLocalSimulator: {},
+}));
+jest.mock("@/api/local/simulators/subShelf.simulator", () => ({
+  SubShelfLocalSimulator: {},
+}));
+jest.mock("@/api/local/simulators/item.simulator", () => ({
+  ItemLocalSimulator: {},
+}));
+jest.mock("@/api/local/simulators/routineTask.simulator", () => ({
+  RoutineTaskLocalSimulator: {},
+}));
+jest.mock("@/api/local/simulators/material.simulator", () => ({
+  MaterialLocalSimulator: {},
+}));
+jest.mock("@/api/local/synchronizers/subShelf.synchronizer", () => ({
+  SubShelfLocalSynchronizer: {},
+}));
+
 test("Routine search preserves canonical activation and definition version in the local projection", async () => {
   const node = {
     id: "routine",

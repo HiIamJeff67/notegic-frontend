@@ -15,6 +15,7 @@ import {
   GetMySubShelvesAndItemsByPrevSubShelfIdRequest,
   GetMySubShelvesByPrevSubShelfIdRequest,
   GetMySubShelvesByRootShelfIdRequest,
+  HardDeleteMySubShelvesByIdsRequest,
   MoveMySubShelfRequest,
   MoveMySubShelvesByRootShelfIdRequest,
   MoveMySubShelvesByRootShelfIdsRequest,
@@ -30,7 +31,10 @@ import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   BlockPack,
+  Item,
+  Material,
   RootShelf,
+  RoutinesToItems,
   SubShelf,
   Transaction,
   User,
@@ -807,16 +811,16 @@ export class SubShelfLocalSimulator {
 
   static simulateRestoreMySubShelvesByIds = async (
     request: RestoreMySubShelvesByIdsRequest
-  ): Promise<void> => {
+  ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 
-    await localDB.transaction(async tx => {
+    return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (!loggedInUser) return;
+      if (!loggedInUser) return [];
 
-      await tx
+      const restored = await tx
         .update(SubShelf)
         .set({
           deletedAt: null,
@@ -835,7 +839,8 @@ export class SubShelfLocalSimulator {
               ]
             )
           )
-        );
+        )
+        .returning();
 
       const rootShelfIdToCountMap = new Map<string, number>();
       for (const rootShelfId of request.affected.rootShelfIds) {
@@ -862,6 +867,7 @@ export class SubShelfLocalSimulator {
         body: request.body,
         affected: request.affected,
       });
+      return restored;
     });
   };
 
@@ -1056,5 +1062,54 @@ export class SubShelfLocalSimulator {
       totalCount: matched.length,
       searchTime: performance.now() - startedAt,
     };
+  };
+
+  static simulateHardDeleteMySubShelvesByIds = async (
+    request: HardDeleteMySubShelvesByIdsRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (!loggedInUser || request.body.subShelfIds.length === 0) return;
+      const shelves = await tx
+        .select({ id: SubShelf.id })
+        .from(SubShelf)
+        .where(sql`
+        ${SubShelf.id} IN (${sql.join(
+          request.body.subShelfIds.map(id => sql`${id}`),
+          sql`, `
+        )})
+        OR EXISTS (SELECT 1 FROM json_each(${SubShelf.path}) AS ancestor
+          WHERE ancestor.value IN (${sql.join(
+            request.body.subShelfIds.map(id => sql`${id}`),
+            sql`, `
+          )}))
+      `);
+      const ids = shelves.map(shelf => shelf.id);
+      if (ids.length === 0) return;
+      const items = tx
+        .select({ id: Item.id })
+        .from(Item)
+        .where(inArray(Item.parentSubShelfId, ids));
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, items));
+      await tx.delete(Item).where(inArray(Item.parentSubShelfId, ids));
+      await tx.delete(Material).where(inArray(Material.parentSubShelfId, ids));
+      await tx
+        .delete(BlockPack)
+        .where(inArray(BlockPack.parentSubShelfId, ids));
+      await tx.delete(SubShelf).where(inArray(SubShelf.id, ids));
+      request.body.subShelfIds = ids as typeof request.body.subShelfIds;
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.SubShelf,
+        actionType: TransactionActionType.HARD_DELETE,
+        body: request.body,
+        affected: null,
+      });
+    });
   };
 }

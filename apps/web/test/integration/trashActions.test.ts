@@ -160,7 +160,10 @@ describe("Trash actions in Chromium", () => {
       platform: "browser",
       jsx: "automatic",
       loader: { ".css": "empty" },
-      define: { "process.env.NODE_ENV": '"development"' },
+      define: {
+        "process.env.NODE_ENV": '"development"',
+        "process.env.NOTEGIC_VITE_MODE": '"development"',
+      },
       tsconfig: path.resolve("apps/web/tsconfig.json"),
       plugins: [
         {

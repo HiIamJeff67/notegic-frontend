@@ -238,7 +238,9 @@ export const useGetAllMyStations = (
   return { ...query, fetch };
 };
 
-export const useCreateStation = () => {
+export const useCreateStation = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -250,7 +252,11 @@ export const useCreateStation = () => {
       }
       return await mutationFnCreateStation(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateCreateStation(request);
       } catch (simulateError) {
@@ -289,7 +295,9 @@ export const useCreateStation = () => {
   return mutation;
 };
 
-export const useCreateStations = () => {
+export const useCreateStations = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -301,7 +309,11 @@ export const useCreateStations = () => {
       }
       return await mutationFnCreateStations(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateCreateStations(request);
       } catch (simulateError) {
@@ -340,7 +352,9 @@ export const useCreateStations = () => {
   return mutation;
 };
 
-export const useUpdateMyStationById = () => {
+export const useUpdateMyStationById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -352,7 +366,11 @@ export const useUpdateMyStationById = () => {
       }
       return await mutationFnUpdateMyStationById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateUpdateMyStationById(request);
       } catch (simulateError) {
@@ -390,7 +408,9 @@ export const useUpdateMyStationById = () => {
   return mutation;
 };
 
-export const useUpdateMyStationsByIds = () => {
+export const useUpdateMyStationsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -402,7 +422,11 @@ export const useUpdateMyStationsByIds = () => {
       }
       return await mutationFnUpdateMyStationsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateUpdateMyStationsByIds(request);
       } catch (simulateError) {
@@ -445,7 +469,9 @@ export const useUpdateMyStationsByIds = () => {
   return mutation;
 };
 
-export const useRestoreMyStationById = () => {
+export const useRestoreMyStationById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -456,7 +482,11 @@ export const useRestoreMyStationById = () => {
       }
       return await mutationFnRestoreMyStationById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await StationLocalSimulator.simulateRestoreMyStationById(request);
       return {
         success: true as const,
@@ -507,11 +537,16 @@ export const useRestoreMyStationsByIds = (
       }
       return await mutationFnRestoreMyStationsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      await StationLocalSimulator.simulateRestoreMyStationsByIds(request);
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await StationLocalSimulator.simulateRestoreMyStationsByIds(request);
       return {
         success: true as const,
-        data: [],
+        data: restored,
         exception: null,
         embedded: { publicId: "" },
       } as Awaited<ReturnType<typeof mutationFnRestoreMyStationsByIds>>;
@@ -549,7 +584,9 @@ export const useRestoreMyStationsByIds = (
   return mutation;
 };
 
-export const useDeleteMyStationById = () => {
+export const useDeleteMyStationById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -560,7 +597,11 @@ export const useDeleteMyStationById = () => {
       }
       return await mutationFnDeleteMyStationById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateDeleteMyStationById(request);
       } catch (simulateError) {
@@ -598,7 +639,9 @@ export const useDeleteMyStationById = () => {
   return mutation;
 };
 
-export const useDeleteMyStationsByIds = () => {
+export const useDeleteMyStationsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -609,7 +652,11 @@ export const useDeleteMyStationsByIds = () => {
       }
       return await mutationFnDeleteMyStationsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await StationLocalSimulator.simulateDeleteMyStationsByIds(request);
       } catch (simulateError) {
@@ -652,7 +699,9 @@ export const useDeleteMyStationsByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMyStationById = () => {
+export const useHardDeleteMyStationById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -663,7 +712,11 @@ export const useHardDeleteMyStationById = () => {
       }
       return await mutationFnHardDeleteMyStationById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await StationLocalSimulator.simulateHardDeleteMyStationById(request);
       return {
         success: true as const,
@@ -719,7 +772,11 @@ export const useHardDeleteMyStationsByIds = (
       }
       return await mutationFnHardDeleteMyStationsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await StationLocalSimulator.simulateHardDeleteMyStationsByIds(request);
       return {
         success: true as const,
@@ -761,13 +818,37 @@ export const useHardDeleteMyStationsByIds = (
   return mutation;
 };
 
-export const useTransferMyStationOwnership = () => {
+export const useTransferMyStationOwnership = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       request: TransferMyStationOwnershipRequest
-    ): Promise<TransferMyStationOwnershipResponse> =>
-      mutationFnTransferMyStationOwnership(request),
+    ): Promise<TransferMyStationOwnershipResponse> => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnTransferMyStationOwnership(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        const transferred =
+          await StationLocalSimulator.simulateTransferMyStationOwnership(
+            request
+          );
+        if (!transferred) throw error;
+        return {
+          success: true,
+          data: transferred,
+          exception: null,
+        } as TransferMyStationOwnershipResponse;
+      }
+    },
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.station.permission(request.param.stationId as UUID),
@@ -779,12 +860,33 @@ export const useTransferMyStationOwnership = () => {
   });
 };
 
-export const useLeaveMyStation = () => {
+export const useLeaveMyStation = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       request: LeaveMyStationRequest
-    ): Promise<LeaveMyStationResponse> => mutationFnLeaveMyStation(request),
+    ): Promise<LeaveMyStationResponse> => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnLeaveMyStation(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        await StationLocalSimulator.simulateLeaveMyStation(request);
+        return {
+          success: true,
+          data: null,
+          exception: null,
+        } as LeaveMyStationResponse;
+      }
+    },
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.station.permission(request.param.stationId as UUID),

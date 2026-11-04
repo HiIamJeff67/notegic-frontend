@@ -4,6 +4,11 @@ import {
   type SearchMaterialsQuery,
   type SearchMaterialsQueryVariables,
 } from "@shared/api/graphql/generated/graphql";
+import { searchMaterialsLocalAdapter } from "@/api/adapters/searchLocal.adapter";
+import {
+  useLocalSearchLazyQuery,
+  useLocalSearchQuery,
+} from "@/api/bridges/searchLocal.bridge";
 
 export const useSearchMaterialsLazyQuery = (
   options?: useLazyQuery.Options<
@@ -14,12 +19,10 @@ export const useSearchMaterialsLazyQuery = (
   SearchMaterialsQuery,
   SearchMaterialsQueryVariables
 > =>
-  useLazyQuery<SearchMaterialsQuery, SearchMaterialsQueryVariables>(
+  useLocalSearchLazyQuery(
     SearchMaterialsDocument,
-    {
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    options,
+    searchMaterialsLocalAdapter
   );
 
 export const useSearchMaterialsQuery = (
@@ -29,11 +32,9 @@ export const useSearchMaterialsQuery = (
     SearchMaterialsQueryVariables
   >
 ) =>
-  useQuery<SearchMaterialsQuery, SearchMaterialsQueryVariables>(
+  useLocalSearchQuery(
     SearchMaterialsDocument,
-    {
-      variables,
-      notifyOnNetworkStatusChange: true,
-      ...options,
-    }
+    variables,
+    options,
+    searchMaterialsLocalAdapter
   );

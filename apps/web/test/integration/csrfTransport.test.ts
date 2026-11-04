@@ -69,8 +69,8 @@ test("every protected server-function upstream takes the current RPC CSRF header
 });
 
 test("RPCs and the settings custom fetch share the session boundary", () => {
-  expect(readFileSync(path.join(root, "src/start.ts"), "utf8")).toContain(
-    "functionMiddleware: [sessionMiddleware]"
+  expect(readFileSync(path.join(root, "src/start.ts"), "utf8")).toMatch(
+    /functionMiddleware:\s*\[[^\]]*\bsessionMiddleware\b/
   );
   expect(
     readFileSync(

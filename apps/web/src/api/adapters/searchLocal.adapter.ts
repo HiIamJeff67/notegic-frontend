@@ -6,6 +6,7 @@ import {
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { ItemLocalSimulator } from "@/api/local/simulators/item.simulator";
+import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
@@ -204,6 +205,27 @@ export const searchItemsLocalAdapter = {
           type: edge.node.type,
           parentSubShelfId: edge.node.parentSubShelfId,
           rootShelfId: edge.node.rootShelfId,
+          updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
+        })) ?? [],
+    }),
+  sync: async () => {},
+};
+
+export const searchMaterialsLocalAdapter = {
+  fieldName: "searchMaterials",
+  syncErrorMessage: "failed to synchronize searched materials to local db",
+  simulateErrorMessage: "failed to simulate searched materials from local db",
+  simulate: MaterialLocalSimulator.simulateSearchMaterials,
+  signature: (data?: any): string =>
+    JSON.stringify({
+      totalCount: data?.searchMaterials.totalCount ?? 0,
+      endCursor: data?.searchMaterials.searchPageInfo.endEncodedSearchCursor,
+      edges:
+        data?.searchMaterials.searchEdges.map((edge: any) => ({
+          cursor: edge.encodedSearchCursor,
+          id: edge.node.id,
+          parentSubShelfId: edge.node.parentSubShelfId,
+          name: edge.node.name,
           updatedAt: new Date(edge.node.updatedAt ?? 0).getTime(),
         })) ?? [],
     }),

@@ -1,3 +1,4 @@
+import { parseRequest } from "@shared/api/validation";
 import {
   type LinkRoutineItemByIdRequest,
   LinkRoutineItemByIdRequestSchema,
@@ -7,6 +8,10 @@ import {
   LinkRoutineTagByIdRequestSchema,
   type LinkRoutineTagsByIdsRequest,
   LinkRoutineTagsByIdsRequestSchema,
+  type LinkRoutineTaskByIdRequest,
+  LinkRoutineTaskByIdRequestSchema,
+  type LinkRoutineTasksByIdsRequest,
+  LinkRoutineTasksByIdsRequestSchema,
 } from "@shared/api/interfaces/routine.interface";
 import type { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
@@ -36,6 +41,12 @@ interface RoutineRelationMutators {
   };
   linkRoutineItemsMutator: {
     mutateAsync: (request: LinkRoutineItemsByIdsRequest) => Promise<unknown>;
+  };
+  linkRoutineTaskMutator: {
+    mutateAsync: (request: LinkRoutineTaskByIdRequest) => Promise<unknown>;
+  };
+  linkRoutineTasksMutator: {
+    mutateAsync: (request: LinkRoutineTasksByIdsRequest) => Promise<unknown>;
   };
 }
 
@@ -116,7 +127,10 @@ export const prepareRoutineRelationSyncJobs = ({
         operations.push(() =>
           mutators.linkRoutineItemMutator.mutateAsync({
             header,
-            body: one.data.body,
+            body: parseRequest(LinkRoutineItemByIdRequestSchema, {
+              ...transaction,
+              affected: transaction.affected ?? undefined,
+            }).body,
           })
         );
         mergeSet(sequences, getTransactionSequences(transaction));
@@ -134,6 +148,49 @@ export const prepareRoutineRelationSyncJobs = ({
         }
         operations.push(() =>
           mutators.linkRoutineItemsMutator.mutateAsync({
+            header,
+            body: parseRequest(LinkRoutineItemsByIdsRequestSchema, {
+              ...transaction,
+              affected: transaction.affected ?? undefined,
+            }).body,
+          })
+        );
+        mergeSet(sequences, getTransactionSequences(transaction));
+        continue;
+      }
+    }
+
+    if (transaction.entityType === TransactionEntityType.RoutinesToTasks) {
+      const one = LinkRoutineTaskByIdRequestSchema.safeParse(request);
+      if (one.success) {
+        const expectedAction = one.data.body.isUnlink
+          ? TransactionActionType.DELETE
+          : TransactionActionType.CREATE;
+        if (transaction.actionType !== expectedAction) {
+          mergeSet(parseFailedSequences, getTransactionSequences(transaction));
+          continue;
+        }
+        operations.push(() =>
+          mutators.linkRoutineTaskMutator.mutateAsync({
+            header,
+            body: one.data.body,
+          })
+        );
+        mergeSet(sequences, getTransactionSequences(transaction));
+        continue;
+      }
+
+      const many = LinkRoutineTasksByIdsRequestSchema.safeParse(request);
+      if (many.success) {
+        const expectedAction = many.data.body.isUnlink
+          ? TransactionActionType.DELETE
+          : TransactionActionType.CREATE;
+        if (transaction.actionType !== expectedAction) {
+          mergeSet(parseFailedSequences, getTransactionSequences(transaction));
+          continue;
+        }
+        operations.push(() =>
+          mutators.linkRoutineTasksMutator.mutateAsync({
             header,
             body: many.data.body,
           })

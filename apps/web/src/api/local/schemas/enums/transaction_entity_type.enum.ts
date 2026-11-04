@@ -2,6 +2,7 @@ export enum TransactionEntityType {
   RootShelf = "RootShelf",
   SubShelf = "SubShelf",
   BlockPack = "BlockPack",
+  Material = "Material",
   Block = "Block",
   Station = "Station",
   Routine = "Routine",
@@ -9,6 +10,9 @@ export enum TransactionEntityType {
   RoutineTag = "RoutineTag",
   RoutinesToItems = "RoutinesToItems",
   RoutinesToTags = "RoutinesToTags",
+  RoutinesToTasks = "RoutinesToTasks",
+  RootShelfPermission = "RootShelfPermission",
+  StationMembership = "StationMembership",
 }
 
 export const AllTransactionEntityTypes = Object.values(TransactionEntityType);

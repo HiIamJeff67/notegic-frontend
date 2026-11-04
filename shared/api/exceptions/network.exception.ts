@@ -1,3 +1,4 @@
+import { ServerError } from "@apollo/client/errors";
 import {
   ExceptionReasonDictionary,
   NotegicAPIError,
@@ -21,6 +22,9 @@ export class NetworkExceptions {
       error instanceof TypeError
     )
       return true;
+    if (ServerError.is(error)) {
+      return [502, 503, 504].includes(error.statusCode);
+    }
     if (typeof error !== "object" || error === null) return false;
 
     const target = error as {
@@ -28,7 +32,9 @@ export class NetworkExceptions {
       cause?: unknown;
       message?: unknown;
     };
-    if (target.networkError !== undefined) return true;
+    if (target.networkError !== undefined && target.networkError !== error) {
+      return NetworkExceptions.isNetworkFallbackError(target.networkError);
+    }
     if (target.cause instanceof TypeError) return true;
     if (typeof target.message !== "string") return false;
     const message = target.message.toLowerCase();

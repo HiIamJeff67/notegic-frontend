@@ -4,17 +4,37 @@ import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import {
+  MaterialLocalSynchronizer,
+  replaceMaterialId,
+} from "@/api/local/synchronizers/material.synchronizer";
+import {
   useCreateBlockPacks,
   useDeleteMyBlockPacksByIds,
+  useHardDeleteMyBlockPacksByIds,
   useMoveMyBlockPacksByParentSubShelfIds,
   useRestoreMyBlockPacksByIds,
   useUpdateMyBlockPacksByIds,
 } from "@/api/hooks/blockPack.hook";
 import {
+  useCreateMyMaterial,
+  useDeleteMyMaterialById,
+  useDeleteMyMaterialsByIds,
+  useHardDeleteMyMaterialsByIds,
+  useMoveMyMaterialById,
+  useRestoreMyMaterialById,
+  useRestoreMyMaterialsByIds,
+  useUpdateMyMaterialById,
+} from "@/api/hooks/material.hook";
+import {
   useCreateRootShelf,
   useDeleteMyRootShelvesByIds,
+  useDeleteRootShelfPermissions,
+  useHardDeleteMyRootShelvesByIds,
+  useLeaveMyRootShelf,
   useRestoreMyRootShelvesByIds,
+  useTransferMyRootShelfOwnership,
   useUpdateMyRootShelvesByIds,
+  useUpsertRootShelfPermission,
 } from "@/api/hooks/rootShelf.hook";
 import {
   useCreateRoutineByStationId,
@@ -27,6 +47,8 @@ import {
   useLinkRoutineItemsByIds,
   useLinkRoutineTagById,
   useLinkRoutineTagsByIds,
+  useLinkRoutineTaskById,
+  useLinkRoutineTasksByIds,
   useRestoreMyRoutineById,
   useRestoreMyRoutinesByIds,
   useUpdateMyRoutineById,
@@ -52,14 +74,17 @@ import {
   useDeleteMyStationsByIds,
   useHardDeleteMyStationById,
   useHardDeleteMyStationsByIds,
+  useLeaveMyStation,
   useRestoreMyStationById,
   useRestoreMyStationsByIds,
+  useTransferMyStationOwnership,
   useUpdateMyStationById,
   useUpdateMyStationsByIds,
 } from "@/api/hooks/station.hook";
 import {
   useCreateSubShelvesByRootShelfIds,
   useDeleteMySubShelvesByIds,
+  useHardDeleteMySubShelvesByIds,
   useMoveMySubShelvesByRootShelfIds,
   useRestoreMySubShelvesByIds,
   useUpdateMySubShelvesByIds,
@@ -76,6 +101,10 @@ import {
   prepareBlockPackSyncJobs,
 } from "./blockPackSyncLogic";
 import {
+  mergeMaterialTransactions,
+  prepareMaterialSyncJobs,
+} from "./materialSyncLogic";
+import {
   mergeRoutineRelationTransactions,
   prepareRoutineRelationSyncJobs,
 } from "./RoutineRelationSyncLogic";
@@ -90,10 +119,12 @@ import {
 import { prepareRoutineTaskSyncJobs } from "./RoutineTaskSyncLogic";
 import {
   mergeRootShelfTransactions,
+  prepareRootShelfPermissionSyncJobs,
   prepareRootShelfSyncJobs,
 } from "./rootShelfSyncLogic";
 import {
   mergeStationTransactions,
+  prepareStationMembershipSyncJobs,
   prepareStationSyncJobs,
 } from "./StationSyncLogic";
 import {
@@ -405,58 +436,187 @@ export const TransactionSynchronizerProvider = ({
     preferences: { localVault, offlineQueue },
   } = useLocalPreferences();
 
-  const createRootShelfMutator = useCreateRootShelf();
-  const updateRootShelvesMutator = useUpdateMyRootShelvesByIds();
-  const restoreRootShelvesMutator = useRestoreMyRootShelvesByIds();
-  const deleteRootShelvesMutator = useDeleteMyRootShelvesByIds();
+  const createRootShelfMutator = useCreateRootShelf({ offlineFallback: false });
+  const updateRootShelvesMutator = useUpdateMyRootShelvesByIds({
+    offlineFallback: false,
+  });
+  const restoreRootShelvesMutator = useRestoreMyRootShelvesByIds({
+    offlineFallback: false,
+  });
+  const deleteRootShelvesMutator = useDeleteMyRootShelvesByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteRootShelvesMutator = useHardDeleteMyRootShelvesByIds({
+    offlineFallback: false,
+  });
+  const upsertRootShelfPermissionMutator = useUpsertRootShelfPermission({
+    offlineFallback: false,
+  });
+  const deleteRootShelfPermissionsMutator = useDeleteRootShelfPermissions({
+    offlineFallback: false,
+  });
+  const transferRootShelfMutator = useTransferMyRootShelfOwnership({
+    offlineFallback: false,
+  });
+  const leaveRootShelfMutator = useLeaveMyRootShelf({ offlineFallback: false });
 
-  const createStationMutator = useCreateStation();
-  const createStationsMutator = useCreateStations();
-  const updateStationMutator = useUpdateMyStationById();
-  const updateStationsMutator = useUpdateMyStationsByIds();
-  const restoreStationMutator = useRestoreMyStationById();
-  const restoreStationsMutator = useRestoreMyStationsByIds();
-  const deleteStationMutator = useDeleteMyStationById();
-  const deleteStationsMutator = useDeleteMyStationsByIds();
-  const hardDeleteStationMutator = useHardDeleteMyStationById();
-  const hardDeleteStationsMutator = useHardDeleteMyStationsByIds();
+  const createStationMutator = useCreateStation({ offlineFallback: false });
+  const createStationsMutator = useCreateStations({ offlineFallback: false });
+  const updateStationMutator = useUpdateMyStationById({
+    offlineFallback: false,
+  });
+  const updateStationsMutator = useUpdateMyStationsByIds({
+    offlineFallback: false,
+  });
+  const restoreStationMutator = useRestoreMyStationById({
+    offlineFallback: false,
+  });
+  const restoreStationsMutator = useRestoreMyStationsByIds({
+    offlineFallback: false,
+  });
+  const deleteStationMutator = useDeleteMyStationById({
+    offlineFallback: false,
+  });
+  const deleteStationsMutator = useDeleteMyStationsByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteStationMutator = useHardDeleteMyStationById({
+    offlineFallback: false,
+  });
+  const hardDeleteStationsMutator = useHardDeleteMyStationsByIds({
+    offlineFallback: false,
+  });
+  const transferStationMutator = useTransferMyStationOwnership({
+    offlineFallback: false,
+  });
+  const leaveStationMutator = useLeaveMyStation({ offlineFallback: false });
 
   const createRoutineTaskMutator = useCreateRoutineTaskByRoutineId(false);
   const updateRoutineTaskMutator = useUpdateMyRoutineTaskById(false);
   const hardDeleteRoutineTaskMutator = useHardDeleteMyRoutineTaskById(false);
-  const createRoutineMutator = useCreateRoutineByStationId();
-  const createRoutinesMutator = useCreateRoutinesByStationIds();
+  const createRoutineMutator = useCreateRoutineByStationId({
+    offlineFallback: false,
+  });
+  const createRoutinesMutator = useCreateRoutinesByStationIds({
+    offlineFallback: false,
+  });
   const updateRoutineMutator = useUpdateMyRoutineById(false);
-  const updateRoutinesMutator = useUpdateMyRoutinesByIds();
-  const restoreRoutineMutator = useRestoreMyRoutineById();
-  const restoreRoutinesMutator = useRestoreMyRoutinesByIds();
-  const deleteRoutineMutator = useDeleteMyRoutineById();
-  const deleteRoutinesMutator = useDeleteMyRoutinesByIds();
-  const hardDeleteRoutineMutator = useHardDeleteMyRoutineById();
-  const hardDeleteRoutinesMutator = useHardDeleteMyRoutinesByIds();
-  const linkRoutineTagMutator = useLinkRoutineTagById();
-  const linkRoutineTagsMutator = useLinkRoutineTagsByIds();
-  const linkRoutineItemMutator = useLinkRoutineItemById();
-  const linkRoutineItemsMutator = useLinkRoutineItemsByIds();
+  const updateRoutinesMutator = useUpdateMyRoutinesByIds({
+    offlineFallback: false,
+  });
+  const restoreRoutineMutator = useRestoreMyRoutineById({
+    offlineFallback: false,
+  });
+  const restoreRoutinesMutator = useRestoreMyRoutinesByIds({
+    offlineFallback: false,
+  });
+  const deleteRoutineMutator = useDeleteMyRoutineById({
+    offlineFallback: false,
+  });
+  const deleteRoutinesMutator = useDeleteMyRoutinesByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteRoutineMutator = useHardDeleteMyRoutineById({
+    offlineFallback: false,
+  });
+  const hardDeleteRoutinesMutator = useHardDeleteMyRoutinesByIds({
+    offlineFallback: false,
+  });
+  const linkRoutineTagMutator = useLinkRoutineTagById({
+    offlineFallback: false,
+  });
+  const linkRoutineTagsMutator = useLinkRoutineTagsByIds({
+    offlineFallback: false,
+  });
+  const linkRoutineItemMutator = useLinkRoutineItemById({
+    offlineFallback: false,
+  });
+  const linkRoutineItemsMutator = useLinkRoutineItemsByIds({
+    offlineFallback: false,
+  });
+  const linkRoutineTaskMutator = useLinkRoutineTaskById({
+    offlineFallback: false,
+  });
+  const linkRoutineTasksMutator = useLinkRoutineTasksByIds({
+    offlineFallback: false,
+  });
 
-  const createRoutineTagMutator = useCreateRoutineTag();
-  const createRoutineTagsMutator = useCreateRoutineTags();
-  const updateRoutineTagMutator = useUpdateMyRoutineTagById();
-  const updateRoutineTagsMutator = useUpdateMyRoutineTagsByIds();
-  const hardDeleteRoutineTagMutator = useHardDeleteMyRoutineTagById();
-  const hardDeleteRoutineTagsMutator = useHardDeleteMyRoutineTagsByIds();
+  const createRoutineTagMutator = useCreateRoutineTag({
+    offlineFallback: false,
+  });
+  const createRoutineTagsMutator = useCreateRoutineTags({
+    offlineFallback: false,
+  });
+  const updateRoutineTagMutator = useUpdateMyRoutineTagById({
+    offlineFallback: false,
+  });
+  const updateRoutineTagsMutator = useUpdateMyRoutineTagsByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteRoutineTagMutator = useHardDeleteMyRoutineTagById({
+    offlineFallback: false,
+  });
+  const hardDeleteRoutineTagsMutator = useHardDeleteMyRoutineTagsByIds({
+    offlineFallback: false,
+  });
 
-  const createSubShelvesMutator = useCreateSubShelvesByRootShelfIds();
-  const updateSubShelvesMutator = useUpdateMySubShelvesByIds();
-  const moveSubShelvesMutator = useMoveMySubShelvesByRootShelfIds();
-  const restoreSubShelvesMutator = useRestoreMySubShelvesByIds();
-  const deleteSubShelvesMutator = useDeleteMySubShelvesByIds();
+  const createSubShelvesMutator = useCreateSubShelvesByRootShelfIds({
+    offlineFallback: false,
+  });
+  const updateSubShelvesMutator = useUpdateMySubShelvesByIds({
+    offlineFallback: false,
+  });
+  const moveSubShelvesMutator = useMoveMySubShelvesByRootShelfIds({
+    offlineFallback: false,
+  });
+  const restoreSubShelvesMutator = useRestoreMySubShelvesByIds({
+    offlineFallback: false,
+  });
+  const deleteSubShelvesMutator = useDeleteMySubShelvesByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteSubShelvesMutator = useHardDeleteMySubShelvesByIds({
+    offlineFallback: false,
+  });
 
-  const createBlockPacksMutator = useCreateBlockPacks();
-  const updateBlockPacksMutator = useUpdateMyBlockPacksByIds();
-  const moveBlockPacksMutator = useMoveMyBlockPacksByParentSubShelfIds();
-  const restoreBlockPacksMutator = useRestoreMyBlockPacksByIds();
-  const deleteBlockPacksMutator = useDeleteMyBlockPacksByIds();
+  const createBlockPacksMutator = useCreateBlockPacks({
+    offlineFallback: false,
+  });
+  const updateBlockPacksMutator = useUpdateMyBlockPacksByIds({
+    offlineFallback: false,
+  });
+  const moveBlockPacksMutator = useMoveMyBlockPacksByParentSubShelfIds({
+    offlineFallback: false,
+  });
+  const restoreBlockPacksMutator = useRestoreMyBlockPacksByIds({
+    offlineFallback: false,
+  });
+  const deleteBlockPacksMutator = useDeleteMyBlockPacksByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteBlockPacksMutator = useHardDeleteMyBlockPacksByIds({
+    offlineFallback: false,
+  });
+  const createMaterialMutator = useCreateMyMaterial({ offlineFallback: false });
+  const updateMaterialMutator = useUpdateMyMaterialById({
+    offlineFallback: false,
+  });
+  const moveMaterialMutator = useMoveMyMaterialById({ offlineFallback: false });
+  const restoreMaterialMutator = useRestoreMyMaterialById({
+    offlineFallback: false,
+  });
+  const restoreMaterialsMutator = useRestoreMyMaterialsByIds({
+    offlineFallback: false,
+  });
+  const deleteMaterialMutator = useDeleteMyMaterialById({
+    offlineFallback: false,
+  });
+  const deleteMaterialsMutator = useDeleteMyMaterialsByIds({
+    offlineFallback: false,
+  });
+  const hardDeleteMaterialsMutator = useHardDeleteMyMaterialsByIds({
+    offlineFallback: false,
+  });
 
   const [synchronizationRevision, setSynchronizationRevision] = useState(0);
   const activeSynchronizationRef = useRef<Promise<void> | null>(null);
@@ -708,7 +868,14 @@ export const TransactionSynchronizerProvider = ({
     const rootShelfTransactions: InferSelectModel<typeof Transaction>[] = [];
     const subShelfTransactions: InferSelectModel<typeof Transaction>[] = [];
     const blockPackTransactions: InferSelectModel<typeof Transaction>[] = [];
+    const materialTransactions: InferSelectModel<typeof Transaction>[] = [];
     const blockTransactions: InferSelectModel<typeof Transaction>[] = [];
+    const rootShelfPermissionTransactions: InferSelectModel<
+      typeof Transaction
+    >[] = [];
+    const stationMembershipTransactions: InferSelectModel<
+      typeof Transaction
+    >[] = [];
     const stationTransactions: InferSelectModel<typeof Transaction>[] = [];
     const routineTransactions: InferSelectModel<typeof Transaction>[] = [];
     const routineTaskTransactions: InferSelectModel<typeof Transaction>[] = [];
@@ -725,6 +892,15 @@ export const TransactionSynchronizerProvider = ({
           break;
         case TransactionEntityType.BlockPack:
           blockPackTransactions.push(transaction);
+          break;
+        case TransactionEntityType.Material:
+          materialTransactions.push(transaction);
+          break;
+        case TransactionEntityType.RootShelfPermission:
+          rootShelfPermissionTransactions.push(transaction);
+          break;
+        case TransactionEntityType.StationMembership:
+          stationMembershipTransactions.push(transaction);
           break;
         case TransactionEntityType.Block:
           blockTransactions.push(transaction);
@@ -743,6 +919,7 @@ export const TransactionSynchronizerProvider = ({
           break;
         case TransactionEntityType.RoutinesToTags:
         case TransactionEntityType.RoutinesToItems:
+        case TransactionEntityType.RoutinesToTasks:
           routineRelationTransactions.push(transaction);
           break;
         default:
@@ -786,6 +963,10 @@ export const TransactionSynchronizerProvider = ({
       transactions: blockPackTransactions,
       onParsed: handleOnParsed,
     });
+    const mergedMaterials = mergeMaterialTransactions({
+      transactions: materialTransactions,
+      onParsed: handleOnParsed,
+    });
     const mergedStations = mergeStationTransactions({
       transactions: stationTransactions,
       onParsed: handleOnParsed,
@@ -816,9 +997,23 @@ export const TransactionSynchronizerProvider = ({
               updateRootShelvesMutator,
               restoreRootShelvesMutator,
               deleteRootShelvesMutator,
+              hardDeleteRootShelvesMutator,
             },
           })
         ),
+      },
+      {
+        transactions: rootShelfPermissionTransactions,
+        mergedResult: prepareRootShelfPermissionSyncJobs({
+          transactions: rootShelfPermissionTransactions,
+          header,
+          mutators: {
+            upsertRootShelfPermissionMutator,
+            deleteRootShelfPermissionsMutator,
+            transferRootShelfMutator,
+            leaveRootShelfMutator,
+          },
+        }),
       },
       {
         transactions: subShelfTransactions,
@@ -833,6 +1028,7 @@ export const TransactionSynchronizerProvider = ({
               moveSubShelvesMutator,
               restoreSubShelvesMutator,
               deleteSubShelvesMutator,
+              hardDeleteSubShelvesMutator,
             },
           })
         ),
@@ -850,6 +1046,50 @@ export const TransactionSynchronizerProvider = ({
               moveBlockPacksMutator,
               restoreBlockPacksMutator,
               deleteBlockPacksMutator,
+              hardDeleteBlockPacksMutator,
+            },
+          })
+        ),
+      },
+      {
+        transactions: materialTransactions,
+        mergedResult: combineMergedTransactionsWithPreparedJobs(
+          mergedMaterials,
+          prepareMaterialSyncJobs({
+            transactions: mergedMaterials.transactions,
+            header,
+            acknowledgeCreate: async (offlineId, remoteId, sequences) => {
+              await MaterialLocalSynchronizer.acknowledgeCreate(
+                offlineId,
+                remoteId,
+                sequences
+              );
+              for (const pending of [
+                ...transactions,
+                ...mergedMaterials.transactions,
+                ...mergedRoutineRelations.transactions,
+              ]) {
+                pending.body = replaceMaterialId(
+                  pending.body,
+                  offlineId,
+                  remoteId
+                );
+                pending.affected = replaceMaterialId(
+                  pending.affected,
+                  offlineId,
+                  remoteId
+                );
+              }
+            },
+            mutators: {
+              createMaterialMutator,
+              updateMaterialMutator,
+              moveMaterialMutator,
+              restoreMaterialMutator,
+              restoreMaterialsMutator,
+              deleteMaterialMutator,
+              deleteMaterialsMutator,
+              hardDeleteMaterialsMutator,
             },
           })
         ),
@@ -885,6 +1125,17 @@ export const TransactionSynchronizerProvider = ({
             },
           })
         ),
+      },
+      {
+        transactions: stationMembershipTransactions,
+        mergedResult: prepareStationMembershipSyncJobs({
+          transactions: stationMembershipTransactions,
+          header,
+          mutators: {
+            transferStationMutator,
+            leaveStationMutator,
+          },
+        }),
       },
       {
         transactions: routineTransactions,
@@ -938,6 +1189,8 @@ export const TransactionSynchronizerProvider = ({
               linkRoutineTagsMutator,
               linkRoutineItemMutator,
               linkRoutineItemsMutator,
+              linkRoutineTaskMutator,
+              linkRoutineTasksMutator,
             },
           })
         ),
@@ -1000,16 +1253,31 @@ export const TransactionSynchronizerProvider = ({
     updateRootShelvesMutator,
     restoreRootShelvesMutator,
     deleteRootShelvesMutator,
+    hardDeleteRootShelvesMutator,
+    upsertRootShelfPermissionMutator,
+    deleteRootShelfPermissionsMutator,
+    transferRootShelfMutator,
+    leaveRootShelfMutator,
     createSubShelvesMutator,
     updateSubShelvesMutator,
     moveSubShelvesMutator,
     restoreSubShelvesMutator,
     deleteSubShelvesMutator,
+    hardDeleteSubShelvesMutator,
     createBlockPacksMutator,
     updateBlockPacksMutator,
     moveBlockPacksMutator,
     restoreBlockPacksMutator,
     deleteBlockPacksMutator,
+    hardDeleteBlockPacksMutator,
+    createMaterialMutator,
+    updateMaterialMutator,
+    moveMaterialMutator,
+    restoreMaterialMutator,
+    restoreMaterialsMutator,
+    deleteMaterialMutator,
+    deleteMaterialsMutator,
+    hardDeleteMaterialsMutator,
     createStationMutator,
     createStationsMutator,
     updateStationMutator,
@@ -1020,6 +1288,8 @@ export const TransactionSynchronizerProvider = ({
     deleteStationsMutator,
     hardDeleteStationMutator,
     hardDeleteStationsMutator,
+    transferStationMutator,
+    leaveStationMutator,
     createRoutineTaskMutator,
     updateRoutineTaskMutator,
     hardDeleteRoutineTaskMutator,
@@ -1037,6 +1307,8 @@ export const TransactionSynchronizerProvider = ({
     linkRoutineTagsMutator,
     linkRoutineItemMutator,
     linkRoutineItemsMutator,
+    linkRoutineTaskMutator,
+    linkRoutineTasksMutator,
     createRoutineTagMutator,
     createRoutineTagsMutator,
     updateRoutineTagMutator,

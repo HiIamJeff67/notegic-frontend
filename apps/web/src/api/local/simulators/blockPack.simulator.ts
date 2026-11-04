@@ -10,6 +10,7 @@ import {
   GetMyBlockPackByIdRequest,
   GetMyBlockPacksByParentSubShelfIdRequest,
   GetMyBlockPacksByRootShelfIdRequest,
+  HardDeleteMyBlockPacksByIdsRequest,
   MoveMyBlockPackByIdRequest,
   MoveMyBlockPacksByParentSubShelfIdRequest,
   MoveMyBlockPacksByParentSubShelfIdsRequest,
@@ -26,7 +27,9 @@ import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
   BlockPack,
+  Item,
   RootShelf,
+  RoutinesToItems,
   SubShelf,
   Transaction,
   User,
@@ -51,7 +54,10 @@ export class BlockPackLocalSimulator {
             eq(UsersToShelves.userPublicId, userPublicId),
             rootShelfId
               ? eq(UsersToShelves.rootShelfId, rootShelfId)
-              : eq(UsersToShelves.rootShelfId, SubShelf.rootShelfId),
+              : sql`${UsersToShelves.rootShelfId} = (
+                  SELECT ${SubShelf.rootShelfId} FROM ${SubShelf}
+                  WHERE ${SubShelf.id} = ${BlockPack.parentSubShelfId}
+                )`,
             inArray(UsersToShelves.permission, permissions)
           )
         )
@@ -629,16 +635,16 @@ export class BlockPackLocalSimulator {
 
   static simulateRestoreMyBlockPacksByIds = async (
     request: RestoreMyBlockPacksByIdsRequest
-  ): Promise<void> => {
+  ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 
-    await localDB.transaction(async tx => {
+    return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (!loggedInUser) return;
+      if (!loggedInUser) return [];
 
-      await tx
+      const restored = await tx
         .update(BlockPack)
         .set({
           deletedAt: null,
@@ -657,7 +663,8 @@ export class BlockPackLocalSimulator {
               ]
             )
           )
-        );
+        )
+        .returning();
 
       const rootShelfIdToCountMap = new Map<string, number>();
       for (const rootShelfId of request.affected.rootShelfIds) {
@@ -683,6 +690,7 @@ export class BlockPackLocalSimulator {
         body: request.body,
         affected: request.affected,
       });
+      return restored;
     });
   };
 
@@ -883,5 +891,31 @@ export class BlockPackLocalSimulator {
       totalCount: matched.length,
       searchTime: performance.now() - startedAt,
     };
+  };
+
+  static simulateHardDeleteMyBlockPacksByIds = async (
+    request: HardDeleteMyBlockPacksByIdsRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (!loggedInUser || request.body.blockPackIds.length === 0) return;
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, request.body.blockPackIds));
+      await tx.delete(Item).where(inArray(Item.id, request.body.blockPackIds));
+      await tx
+        .delete(BlockPack)
+        .where(inArray(BlockPack.id, request.body.blockPackIds));
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.BlockPack,
+        actionType: TransactionActionType.HARD_DELETE,
+        body: request.body,
+        affected: null,
+      });
+    });
   };
 }

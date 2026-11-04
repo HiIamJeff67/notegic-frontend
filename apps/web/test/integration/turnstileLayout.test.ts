@@ -92,6 +92,7 @@ describe("Turnstile container sizing in Chromium", () => {
         loader: { ".css": "empty" },
         define: {
           "process.env.NODE_ENV": '"development"',
+          "process.env.NOTEGIC_VITE_MODE": '"development"',
           "import.meta.env.VITE_TURNSTILE_SITE_KEY": JSON.stringify(siteKey),
         },
         tsconfig: path.resolve("apps/web/tsconfig.json"),

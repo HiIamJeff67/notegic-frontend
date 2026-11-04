@@ -439,19 +439,27 @@ test("upgrades a freshly created database after a local down migration", async (
       timeoutSeconds: 600,
     });
 
-    const latest = getOrderedMigrations().at(-1);
-    if (
-      latest?.tag !== "0004_routine_activation_schedule" ||
-      !latest.downStatements
-    ) {
-      throw new Error("Routine local down migration is unavailable");
-    }
+    const migrations = getOrderedMigrations();
+    const routineIndex = migrations.findIndex(
+      (migration: { tag: string }) =>
+        migration.tag === "0004_routine_activation_schedule"
+    );
+    if (routineIndex < 0) throw new Error("Routine migration is unavailable");
     await localDB.transaction(
       async (transaction: { run: (query: unknown) => Promise<unknown> }) => {
-        for (const statement of latest.downStatements) {
-          await transaction.run(sql.raw(statement));
+        for (
+          let index = migrations.length - 1;
+          index >= routineIndex;
+          index--
+        ) {
+          const migration = migrations[index];
+          if (!migration.downStatements)
+            throw new Error(`Down migration is unavailable: ${migration.tag}`);
+          for (const statement of migration.downStatements) {
+            await transaction.run(sql.raw(statement));
+          }
         }
-        await transaction.run(sql.raw("PRAGMA user_version = 4"));
+        await transaction.run(sql.raw(`PRAGMA user_version = ${routineIndex}`));
       }
     );
   });
@@ -461,6 +469,9 @@ test("upgrades a freshly created database after a local down migration", async (
   const result = await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
+    const { getOrderedMigrations } = await importModule(
+      "/src/api/local/migrationCatalog.ts"
+    );
     const { eq } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine } = await importModule("/src/api/local/schemas/index.ts");
     await localDB.ensureReady();
@@ -469,8 +480,10 @@ test("upgrades a freshly created database after a local down migration", async (
     });
     return {
       version: await localDB.getVersion(),
+      target: getOrderedMigrations().length,
       timeoutSeconds: routine?.timeoutSeconds,
     };
   });
-  expect(result).toEqual({ version: 5, timeoutSeconds: 600 });
+  expect(result.version).toBe(result.target);
+  expect(result.timeoutSeconds).toBe(600);
 });

@@ -67,6 +67,7 @@ describe("user settings lifecycle in Chromium", () => {
       platform: "browser",
       define: {
         "process.env.NODE_ENV": '"development"',
+        "process.env.NOTEGIC_VITE_MODE": '"development"',
         "import.meta.env.BASE_URL": '"/"',
       },
       tsconfig: path.resolve("apps/web/tsconfig.json"),

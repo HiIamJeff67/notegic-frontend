@@ -5,12 +5,22 @@ import {
   DeleteMyRootShelfByIdRequestSchema,
   DeleteMyRootShelvesByIdsRequest,
   DeleteMyRootShelvesByIdsRequestSchema,
+  DeleteRootShelfPermissionsRequest,
+  DeleteRootShelfPermissionsRequestSchema,
+  HardDeleteMyRootShelvesByIdsRequest,
+  HardDeleteMyRootShelvesByIdsRequestSchema,
+  LeaveMyRootShelfRequest,
+  LeaveMyRootShelfRequestSchema,
   RestoreMyRootShelfByIdRequestSchema,
   RestoreMyRootShelvesByIdsRequest,
   RestoreMyRootShelvesByIdsRequestSchema,
+  TransferMyRootShelfOwnershipRequest,
+  TransferMyRootShelfOwnershipRequestSchema,
   UpdateMyRootShelfByIdRequestSchema,
   UpdateMyRootShelvesByIdsRequest,
   UpdateMyRootShelvesByIdsRequestSchema,
+  UpsertRootShelfPermissionRequest,
+  UpsertRootShelfPermissionRequestSchema,
 } from "@shared/api/interfaces/rootShelf.interface";
 import { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
@@ -44,6 +54,11 @@ interface RootShelfMutators {
   };
   deleteRootShelvesMutator: {
     mutateAsync: (request: DeleteMyRootShelvesByIdsRequest) => Promise<unknown>;
+  };
+  hardDeleteRootShelvesMutator: {
+    mutateAsync: (
+      request: HardDeleteMyRootShelvesByIdsRequest
+    ) => Promise<unknown>;
   };
 }
 
@@ -81,6 +96,10 @@ export const prepareRootShelfSyncJobs = ({
   const restoreRootShelvesMap = new Map<
     string,
     EntityState<{ rootShelfId: string }>
+  >();
+  const hardDeleteRootShelvesMap = new Map<
+    string,
+    { sequences: Set<number> }
   >();
   const deleteRootShelvesMap = new Map<
     string,
@@ -396,6 +415,40 @@ export const prepareRootShelfSyncJobs = ({
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
       }
+      case TransactionActionType.HARD_DELETE: {
+        const parsed =
+          HardDeleteMyRootShelvesByIdsRequestSchema.safeParse(request);
+        if (!parsed.success) {
+          mergeSet(parseFailedSequences, getTransactionSequences(transaction));
+          break;
+        }
+        for (const id of parsed.data.body.rootShelfIds) {
+          if (createRootShelvesMap.has(id)) {
+            mergeSet(noopSequences, createRootShelvesMap.get(id)!.sequences);
+            mergeSet(noopSequences, getTransactionSequences(transaction));
+            createRootShelvesMap.delete(id);
+            updateRootShelvesMap.delete(id);
+            restoreRootShelvesMap.delete(id);
+            deleteRootShelvesMap.delete(id);
+            hardDeleteRootShelvesMap.delete(id);
+            continue;
+          }
+          dropEntityPendingOperations(
+            id,
+            [updateRootShelvesMap, restoreRootShelvesMap, deleteRootShelvesMap],
+            noopSequences
+          );
+          const existing = hardDeleteRootShelvesMap.get(id);
+          if (existing) {
+            mergeSet(existing.sequences, getTransactionSequences(transaction));
+          } else {
+            hardDeleteRootShelvesMap.set(id, {
+              sequences: getTransactionSequences(transaction),
+            });
+          }
+        }
+        break;
+      }
       default: {
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
@@ -488,9 +541,136 @@ export const prepareRootShelfSyncJobs = ({
     });
   }
 
+  if (hardDeleteRootShelvesMap.size > 0) {
+    const request: HardDeleteMyRootShelvesByIdsRequest = {
+      header,
+      body: {
+        rootShelfIds: Array.from(hardDeleteRootShelvesMap.keys()),
+      },
+    };
+    const sequences = getMergedSequences(
+      ...Array.from(hardDeleteRootShelvesMap.values()).map(
+        state => state.sequences
+      )
+    );
+    syncJobs.push({
+      sequences,
+      run: () => mutators.hardDeleteRootShelvesMutator.mutateAsync(request),
+    });
+  }
+
   return {
     syncJobs,
     noopSequences,
+    parseFailedSequences,
+  };
+};
+
+export const prepareRootShelfPermissionSyncJobs = ({
+  transactions,
+  header,
+  mutators,
+}: {
+  transactions: InferSelectModel<typeof Transaction>[];
+  header: SyncHeader;
+  mutators: {
+    upsertRootShelfPermissionMutator: {
+      mutateAsync: (
+        request: UpsertRootShelfPermissionRequest
+      ) => Promise<unknown>;
+    };
+    deleteRootShelfPermissionsMutator: {
+      mutateAsync: (
+        request: DeleteRootShelfPermissionsRequest
+      ) => Promise<unknown>;
+    };
+    transferRootShelfMutator: {
+      mutateAsync: (
+        request: TransferMyRootShelfOwnershipRequest
+      ) => Promise<unknown>;
+    };
+    leaveRootShelfMutator: {
+      mutateAsync: (request: LeaveMyRootShelfRequest) => Promise<unknown>;
+    };
+  };
+}): PreparedSyncJobsResult => {
+  const operations: Array<() => Promise<unknown>> = [];
+  const sequences = new Set<number>();
+  const parseFailedSequences = new Set<number>();
+  for (const transaction of transactions) {
+    const stored =
+      typeof transaction.body === "object" && transaction.body !== null
+        ? transaction.body
+        : {};
+    const request = { header, ...(stored as object) };
+    if (transaction.actionType === TransactionActionType.UPDATE) {
+      const transfer =
+        TransferMyRootShelfOwnershipRequestSchema.safeParse(request);
+      if (transfer.success) {
+        operations.push(() =>
+          mutators.transferRootShelfMutator.mutateAsync({
+            header,
+            param: transfer.data.param,
+            body: transfer.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+      const upsert = UpsertRootShelfPermissionRequestSchema.safeParse(request);
+      if (upsert.success) {
+        operations.push(() =>
+          mutators.upsertRootShelfPermissionMutator.mutateAsync({
+            header,
+            param: upsert.data.param,
+            body: upsert.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+    }
+    if (transaction.actionType === TransactionActionType.DELETE) {
+      const removed =
+        DeleteRootShelfPermissionsRequestSchema.safeParse(request);
+      if (removed.success) {
+        operations.push(() =>
+          mutators.deleteRootShelfPermissionsMutator.mutateAsync({
+            header,
+            param: removed.data.param,
+            body: removed.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+      const leave = LeaveMyRootShelfRequestSchema.safeParse(request);
+      if (leave.success) {
+        operations.push(() =>
+          mutators.leaveRootShelfMutator.mutateAsync({
+            header,
+            param: leave.data.param,
+            body: leave.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+    }
+    parseFailedSequences.add(transaction.sequence);
+  }
+  const operationSequences = Array.from(sequences);
+  let previousOperation = Promise.resolve<unknown>(undefined);
+  return {
+    syncJobs: operations.map((operation, index) => ({
+      sequences: new Set([operationSequences[index]]),
+      run: () => {
+        const currentOperation = previousOperation.then(operation);
+        previousOperation = currentOperation;
+        return currentOperation;
+      },
+    })),
+    noopSequences: new Set<number>(),
     parseFailedSequences,
   };
 };

@@ -5,6 +5,8 @@ import {
   DeleteMySubShelfByIdRequestSchema,
   DeleteMySubShelvesByIdsRequest,
   DeleteMySubShelvesByIdsRequestSchema,
+  HardDeleteMySubShelvesByIdsRequest,
+  HardDeleteMySubShelvesByIdsRequestSchema,
   MoveMySubShelfRequestSchema,
   MoveMySubShelvesByRootShelfIdRequestSchema,
   MoveMySubShelvesByRootShelfIdsRequest,
@@ -53,6 +55,11 @@ interface SubShelfMutators {
   };
   deleteSubShelvesMutator: {
     mutateAsync: (request: DeleteMySubShelvesByIdsRequest) => Promise<unknown>;
+  };
+  hardDeleteSubShelvesMutator: {
+    mutateAsync: (
+      request: HardDeleteMySubShelvesByIdsRequest
+    ) => Promise<unknown>;
   };
 }
 
@@ -113,6 +120,7 @@ export const prepareSubShelfSyncJobs = ({
       sequences: Set<number>;
     }
   >();
+  const hardDeleteSubShelvesMap = new Map<string, { sequences: Set<number> }>();
   const deleteSubShelvesMap = new Map<
     string,
     {
@@ -525,6 +533,25 @@ export const prepareSubShelfSyncJobs = ({
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
       }
+      case TransactionActionType.HARD_DELETE: {
+        const parsed =
+          HardDeleteMySubShelvesByIdsRequestSchema.safeParse(request);
+        if (!parsed.success) {
+          mergeSet(parseFailedSequences, getTransactionSequences(transaction));
+          break;
+        }
+        for (const id of parsed.data.body.subShelfIds) {
+          const existing = hardDeleteSubShelvesMap.get(id);
+          if (existing) {
+            mergeSet(existing.sequences, getTransactionSequences(transaction));
+          } else {
+            hardDeleteSubShelvesMap.set(id, {
+              sequences: getTransactionSequences(transaction),
+            });
+          }
+        }
+        break;
+      }
       default: {
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
@@ -654,6 +681,21 @@ export const prepareSubShelfSyncJobs = ({
     syncJobs.push({
       sequences,
       run: () => mutators.deleteSubShelvesMutator.mutateAsync(request),
+    });
+  }
+
+  if (hardDeleteSubShelvesMap.size > 0) {
+    const request: HardDeleteMySubShelvesByIdsRequest = {
+      header,
+      body: { subShelfIds: Array.from(hardDeleteSubShelvesMap.keys()) },
+    };
+    syncJobs.push({
+      sequences: getMergedSequences(
+        ...Array.from(hardDeleteSubShelvesMap.values()).map(
+          state => state.sequences
+        )
+      ),
+      run: () => mutators.hardDeleteSubShelvesMutator.mutateAsync(request),
     });
   }
 
