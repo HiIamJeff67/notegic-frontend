@@ -42,6 +42,10 @@ Commands are documented from the current `package.json`; update this page when
 the root scripts change. Do not add backend Docker or microservice commands
 here; link to the backend runbook instead.
 
+For command, editor/viewer and local-data delivery checks, use
+[Workspace release verification](workspace-release-verification.md). It separates
+passing local checks, failed browser assertions and unproven live-backend gates.
+
 ## Local database migration workflow
 
 The local SQLite schema uses two generated artifacts:

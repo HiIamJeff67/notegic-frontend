@@ -187,3 +187,22 @@ Do not exercise Rebuild on a user's existing profile during development or
 verification without their separate explicit instruction. Tests must use an
 isolated disposable browser context. Never clear site storage or reset local
 migrations merely to make a test pass.
+
+
+## Current-version test assertions
+
+Startup and explicit rebuild assertions must use the migrator's current target,
+not a historical constant. On 2026-11-04 the latest Material migration made the
+local target 6. The recovery browser test reached ready/version/target 6 but
+failed its older expected value of 5; startup/reload/down-up tests passed.
+Keep the export, confirmation, error-retention and data-preservation checks
+when updating that fixture. Never alter migration history or a real user's
+database to satisfy the old number. See the
+[workspace verification record](workspace-release-verification.md#recorded-candidate-2026-11-04)
+for the complete result and remaining release gates.
+
+The 2026-11-05 fixture correction reads the migration journal independently and
+asserts both the rebuilt version and target against its entry count. This
+checks the migrator's current target without comparing two potentially wrong
+runtime values or freezing an obsolete version. Migration sources and existing
+user databases are unchanged; rebuild testing uses only disposable contexts.
