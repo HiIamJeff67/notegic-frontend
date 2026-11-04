@@ -8,7 +8,7 @@ import {
 import { CurrentAPIBaseURL } from "@shared/api/url";
 import { tap } from "rxjs";
 import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
-import { searchQueryFieldPolicies } from "./policies/searchQueryFields";
+import { searchQueryFieldPolicies } from "./policies/searchQueryFields.policy";
 
 export const createApolloClient = () => {
   const apiDomainURL = import.meta.env.VITE_API_DOMAIN_URL || "";
