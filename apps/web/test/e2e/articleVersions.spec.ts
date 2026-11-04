@@ -143,6 +143,15 @@ for (const width of [390, 900, 2560]) {
 test("version deep links and command search target the version subparagraph", async ({
   page,
 }) => {
+  const hydrationErrors: string[] = [];
+  page.on("pageerror", error => {
+    if (
+      /hydration|server rendered HTML|Minified React error #418/i.test(
+        error.message
+      )
+    )
+      hydrationErrors.push(error.message);
+  });
   await page.goto("/document#version-0-2-0");
   await page.waitForLoadState("networkidle");
   await expect(page.locator("#version-0-2-0 > h3")).toBeInViewport();
@@ -150,16 +159,20 @@ test("version deep links and command search target the version subparagraph", as
     page.locator('[href="#version-0-2-0"][data-sidebar]')
   ).toHaveAttribute("data-active", "true");
   await page.keyboard.press("Control+k");
-  const search = page.getByRole("dialog", { name: "Search article" });
+  const search = page.getByRole("dialog", { name: "Command palette" });
+  await search.getByRole("option").filter({ hasText: "Versions" }).click();
   await search
-    .getByPlaceholder("Search sections or API operations...")
+    .getByPlaceholder("Search for a command to run...")
     .fill("v0.1.0");
+  await search.getByRole("option").filter({ hasText: "v0.1.0" }).click();
+  await expect(search).toBeVisible();
   await search.getByRole("option").filter({ hasText: "v0.1.0" }).click();
   await expect(search).toBeHidden();
   await expect(page.locator("#version-0-1-0 > h3")).toBeInViewport();
   await expect(
     page.locator('[href="#version-0-1-0"][data-sidebar]')
   ).toHaveAttribute("data-active", "true");
+  expect(hydrationErrors).toEqual([]);
 });
 
 test("previous versions reveal progressively with footer links and retain card state", async ({

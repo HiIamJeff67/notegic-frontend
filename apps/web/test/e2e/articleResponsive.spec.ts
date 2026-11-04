@@ -1,3 +1,4 @@
+import { versionRoadmap } from "@/pages/document/versions/generated";
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
@@ -222,9 +223,18 @@ for (const width of [390, 900, 1280, 2560]) {
     await page.setViewportSize({ width, height: 700 });
     await page.goto("/document#versions");
     await page.waitForLoadState("networkidle");
-    for (const card of await page
-      .locator('#versions [data-slot="card"]')
-      .all()) {
+    for (const version of versionRoadmap.filter(
+      version => version.status !== "previous"
+    )) {
+      const card = page.locator(
+        `#version-${version.version.replaceAll(".", "-")} [data-slot="card"]`
+      );
+      await expect(card).toBeVisible();
+      if (version.status === "future") {
+        await expect(card.locator('[data-slot="ring"]')).toHaveCount(0);
+        continue;
+      }
+      await expect(card.locator('[data-slot="ring"]')).toHaveCount(1);
       const header = card.locator('[data-slot="card-header"]');
       const readProgressPosition = () =>
         header.evaluate(element => {
@@ -268,8 +278,12 @@ test("version cards respond to their own width and keep all expanded features re
   await page.setViewportSize({ width: 2560, height: 700 });
   await page.goto("/document#versions");
   await page.waitForLoadState("networkidle");
-  const cards = page.locator('#versions [data-slot="card"]');
-  await expect(cards).toHaveCount(4);
+  const cards = page
+    .locator('#versions [data-slot="card"]')
+    .filter({ visible: true });
+  await expect(cards).toHaveCount(
+    versionRoadmap.filter(version => version.status !== "previous").length
+  );
   for (const card of await cards.all()) {
     await expect(card.locator("li")).toHaveCount(4);
     const expand = card.getByRole("button", {

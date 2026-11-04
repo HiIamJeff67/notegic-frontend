@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
 import AppCommandContent from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandContent";
 import AppCommandPath from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandPath";
 import {
@@ -244,9 +243,7 @@ const ArticleCommand = ({
     setQuery("");
   };
 
-  if (typeof document === "undefined") return null;
-
-  return createPortal(
+  return (
     <div ref={rootRef} className="pointer-events-none fixed inset-0 z-[60]">
       {!open && (
         <div className="absolute inset-x-0 top-0 flex justify-center">
@@ -341,8 +338,7 @@ const ArticleCommand = ({
           </Command>
         </div>
       )}
-    </div>,
-    document.body
+    </div>
   );
 };
 
