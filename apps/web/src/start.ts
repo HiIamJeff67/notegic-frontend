@@ -23,16 +23,7 @@ const unreachableRemoteMiddleware = createMiddleware({
     return await next();
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") throw error;
-    if (error instanceof NotegicAPIError) {
-      const status = error.unWrap.status;
-      if (
-        error.unWrap.reason === "InternalServerError" &&
-        (status === 502 || status === 503 || status === 504)
-      ) {
-        throw new NotegicAPIError(FetchClientExceptions.MissingNetwork());
-      }
-      throw error;
-    }
+    if (error instanceof NotegicAPIError) throw error;
 
     const cause =
       error instanceof Error &&

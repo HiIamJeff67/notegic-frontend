@@ -101,6 +101,7 @@ for (const password of ["Badpass1!", "NotCorrect123!"]) {
   }) => {
     loginReason = "WrongPassword";
     await page.goto("/login");
+    await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     writes = 0;
     let rpcs = 0;
@@ -126,6 +127,7 @@ test("login does not automatically replay credentials after an upstream failure"
 }) => {
   loginReason = "InternalServerError";
   await page.goto("/login");
+  await page.waitForLoadState("networkidle");
   await page.locator("html[data-density]").waitFor();
   writes = 0;
   await page.locator("#input-0").fill("fixture@example.invalid");
@@ -145,6 +147,7 @@ test("login validation and malformed responses have safe messages and no retry",
   page,
 }) => {
   await page.goto("/login");
+  await page.waitForLoadState("networkidle");
   await page.locator("html[data-density]").waitFor();
   writes = 0;
   await page.locator("#input-0").fill("fixture@example.invalid");
@@ -173,6 +176,7 @@ for (const language of supportedLanguages) {
     page,
   }) => {
     await page.goto("/forgetPassword");
+    await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
       const path = "/src/i18n/index.ts";
@@ -223,6 +227,7 @@ for (const language of supportedLanguages) {
     page,
   }) => {
     await page.goto("/login");
+    await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
       const path = "/src/i18n/index.ts";
@@ -258,6 +263,7 @@ for (const language of supportedLanguages) {
     page,
   }) => {
     await page.goto("/register");
+    await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
       const path = "/src/i18n/index.ts";
@@ -332,6 +338,7 @@ test("real server-function conflicts retain their API type, translation and no-r
     "Imports development RPC modules"
   );
   await page.goto("/login");
+  await page.waitForLoadState("networkidle");
   await page.locator("html[data-density]").waitFor();
   writes = 0;
   const result = await page.evaluate(async repositoryRoot => {
@@ -390,6 +397,7 @@ test("real Routine activation rejection retains its translation without retrying
   page,
 }) => {
   await page.goto("/login");
+  await page.waitForLoadState("networkidle");
   await page.locator("html[data-density]").waitFor();
   writes = 0;
   const result = await page.evaluate(async repositoryRoot => {
@@ -456,6 +464,7 @@ for (const batch of [false, true]) {
     page,
   }) => {
     await page.goto("/login");
+    await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     writes = 0;
     const result = await page.evaluate(
