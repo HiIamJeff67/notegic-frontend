@@ -202,7 +202,9 @@ export const useGetAllMyRoutineTags = (
   return { ...query, fetch };
 };
 
-export const useCreateRoutineTag = () => {
+export const useCreateRoutineTag = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -213,7 +215,11 @@ export const useCreateRoutineTag = () => {
       }
       return await mutationFnCreateRoutineTag(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await RoutineTagLocalSimulator.simulateCreateRoutineTag(request);
       } catch (simulateError) {
@@ -253,7 +259,9 @@ export const useCreateRoutineTag = () => {
   return mutation;
 };
 
-export const useCreateRoutineTags = () => {
+export const useCreateRoutineTags = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -264,7 +272,11 @@ export const useCreateRoutineTags = () => {
       }
       return await mutationFnCreateRoutineTags(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineTagLocalSimulator.simulateCreateRoutineTags(request);
       return {
         success: true as const,
@@ -305,7 +317,9 @@ export const useCreateRoutineTags = () => {
   return mutation;
 };
 
-export const useUpdateMyRoutineTagById = () => {
+export const useUpdateMyRoutineTagById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -316,7 +330,11 @@ export const useUpdateMyRoutineTagById = () => {
       }
       return await mutationFnUpdateMyRoutineTagById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagById(request);
       return {
         success: true as const,
@@ -352,7 +370,9 @@ export const useUpdateMyRoutineTagById = () => {
   return mutation;
 };
 
-export const useUpdateMyRoutineTagsByIds = () => {
+export const useUpdateMyRoutineTagsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -363,7 +383,11 @@ export const useUpdateMyRoutineTagsByIds = () => {
       }
       return await mutationFnUpdateMyRoutineTagsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineTagLocalSimulator.simulateUpdateMyRoutineTagsByIds(request);
       return {
         success: true as const,
@@ -401,7 +425,9 @@ export const useUpdateMyRoutineTagsByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMyRoutineTagById = () => {
+export const useHardDeleteMyRoutineTagById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -412,7 +438,11 @@ export const useHardDeleteMyRoutineTagById = () => {
       }
       return await mutationFnHardDeleteMyRoutineTagById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagById(
         request
       );
@@ -450,7 +480,9 @@ export const useHardDeleteMyRoutineTagById = () => {
   return mutation;
 };
 
-export const useHardDeleteMyRoutineTagsByIds = () => {
+export const useHardDeleteMyRoutineTagsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -461,7 +493,11 @@ export const useHardDeleteMyRoutineTagsByIds = () => {
       }
       return await mutationFnHardDeleteMyRoutineTagsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineTagLocalSimulator.simulateHardDeleteMyRoutineTagsByIds(
         request
       );

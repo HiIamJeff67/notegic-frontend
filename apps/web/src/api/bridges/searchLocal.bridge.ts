@@ -51,14 +51,15 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
         const handledPromise = (async () => {
           const fallback = await writeFallback(variables);
           try {
-            return await execute({
+            await execute({
               ...executeOptions,
               variables,
               fetchPolicy: "cache-only",
             });
           } catch {
-            return fallback;
+            // The simulator payload remains the result when the cache read drops fields.
           }
+          return fallback;
         })() as ReturnType<typeof execute>;
         handledPromise.retain = () => handledPromise;
         return handledPromise;
@@ -78,14 +79,15 @@ export const useLocalSearchLazyQuery = <TData, TVariables extends object>(
             (resultRef.current.variables as TVariables | undefined);
           const fallback = await writeFallback(fallbackVariables);
           try {
-            return await execute({
+            await execute({
               ...executeOptions,
               variables: fallbackVariables,
               fetchPolicy: "cache-only",
             });
           } catch {
-            return fallback;
+            // The simulator payload remains the result when the cache read drops fields.
           }
+          return fallback;
         }) as ReturnType<typeof execute>;
 
       handledPromise.retain = () => {

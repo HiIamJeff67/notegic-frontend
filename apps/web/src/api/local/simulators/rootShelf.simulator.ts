@@ -14,11 +14,16 @@ import {
   CreateRootShelvesRequest,
   DeleteMyRootShelfByIdRequest,
   DeleteMyRootShelvesByIdsRequest,
+  DeleteRootShelfPermissionsRequest,
   GetMyRootShelfByIdRequest,
+  HardDeleteMyRootShelvesByIdsRequest,
+  LeaveMyRootShelfRequest,
   RestoreMyRootShelfByIdRequest,
   RestoreMyRootShelvesByIdsRequest,
+  TransferMyRootShelfOwnershipRequest,
   UpdateMyRootShelfByIdRequest,
   UpdateMyRootShelvesByIdsRequest,
+  UpsertRootShelfPermissionRequest,
 } from "@shared/api/interfaces/rootShelf.interface";
 import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
@@ -26,7 +31,9 @@ import type { UUID } from "crypto";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
 import {
+  Item,
   RootShelf,
+  RoutinesToItems,
   Transaction,
   User,
   UsersToShelves,
@@ -455,17 +462,18 @@ export class RootShelfLocalSimulator {
 
   static simulateRestoreMyRootShelvesByIds = async (
     request: RestoreMyRootShelvesByIdsRequest
-  ): Promise<void> => {
+  ) => {
     if (!localDB.isReady) await localDB.ensureReady();
-    await localDB.transaction(async tx => {
+    return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (loggedInUser === undefined) return;
-      await tx
+      if (loggedInUser === undefined) return [];
+      const restored = await tx
         .update(RootShelf)
         .set({
           deletedAt: null,
+          updatedAt: new Date(),
         })
         .where(
           and(
@@ -480,13 +488,225 @@ export class RootShelfLocalSimulator {
               ]
             )
           )
-        );
+        )
+        .returning();
       await tx.insert(Transaction).values({
         ownerPublicId: loggedInUser.publicId,
         entityType: TransactionEntityType.RootShelf,
         actionType: TransactionActionType.RESTORE,
         body: request.body,
         affected: request.affected,
+      });
+      return restored;
+    });
+  };
+
+  static simulateHardDeleteMyRootShelvesByIds = async (
+    request: HardDeleteMyRootShelvesByIdsRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (
+        loggedInUser === undefined ||
+        request.body.rootShelfIds.length === 0
+      ) {
+        return;
+      }
+      const permitted = await tx
+        .select({ id: RootShelf.id })
+        .from(RootShelf)
+        .where(
+          and(
+            inArray(RootShelf.id, request.body.rootShelfIds),
+            RootShelfLocalSimulator.getPassPermissionCheckSQL(
+              tx,
+              loggedInUser.publicId,
+              [AccessControlPermission.Owner, AccessControlPermission.Admin]
+            )
+          )
+        );
+      const rootShelfIds = permitted.map(shelf => shelf.id);
+      if (rootShelfIds.length === 0) return;
+      const items = tx
+        .select({ id: Item.id })
+        .from(Item)
+        .where(inArray(Item.rootShelfId, rootShelfIds));
+      await tx
+        .delete(RoutinesToItems)
+        .where(inArray(RoutinesToItems.itemId, items));
+      await tx.delete(Item).where(inArray(Item.rootShelfId, rootShelfIds));
+      await tx
+        .delete(UsersToShelves)
+        .where(inArray(UsersToShelves.rootShelfId, rootShelfIds));
+      await tx.delete(RootShelf).where(inArray(RootShelf.id, rootShelfIds));
+      request.body.rootShelfIds =
+        rootShelfIds as typeof request.body.rootShelfIds;
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RootShelf,
+        actionType: TransactionActionType.HARD_DELETE,
+        body: request.body,
+        affected: null,
+      });
+    });
+  };
+
+  static simulateUpsertRootShelfPermission = async (
+    request: UpsertRootShelfPermissionRequest
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    return await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return null;
+      const now = new Date();
+      const target = await tx.query.User.findFirst({
+        where: eq(User.publicId, request.param.userPublicId),
+      });
+      if (target) {
+        await tx
+          .insert(UsersToShelves)
+          .values({
+            userPublicId: request.param.userPublicId,
+            rootShelfId: request.param.rootShelfId,
+            permission: request.body.permission,
+            updatedAt: now,
+            createdAt: now,
+          })
+          .onConflictDoUpdate({
+            target: [UsersToShelves.userPublicId, UsersToShelves.rootShelfId],
+            set: { permission: request.body.permission, updatedAt: now },
+          });
+      }
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RootShelfPermission,
+        actionType: TransactionActionType.UPDATE,
+        body: { param: request.param, body: request.body },
+        affected: null,
+      });
+      return {
+        userPublicId: request.param.userPublicId,
+        permission: request.body.permission,
+        updatedAt: now,
+        createdAt: now,
+      };
+    });
+  };
+
+  static simulateDeleteRootShelfPermissions = async (
+    request: DeleteRootShelfPermissionsRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return;
+      await tx
+        .delete(UsersToShelves)
+        .where(
+          and(
+            eq(UsersToShelves.rootShelfId, request.param.rootShelfId),
+            inArray(UsersToShelves.userPublicId, request.body.userPublicIds)
+          )
+        );
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RootShelfPermission,
+        actionType: TransactionActionType.DELETE,
+        body: { param: request.param, body: request.body },
+        affected: null,
+      });
+    });
+  };
+
+  static simulateTransferMyRootShelfOwnership = async (
+    request: TransferMyRootShelfOwnershipRequest
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    return await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return null;
+      const now = new Date();
+      const target = await tx.query.User.findFirst({
+        where: eq(User.publicId, request.body.targetUserPublicId),
+      });
+      if (target) {
+        await tx
+          .update(UsersToShelves)
+          .set({ permission: AccessControlPermission.Admin, updatedAt: now })
+          .where(
+            and(
+              eq(UsersToShelves.rootShelfId, request.param.rootShelfId),
+              eq(UsersToShelves.userPublicId, loggedInUser.publicId),
+              eq(UsersToShelves.permission, AccessControlPermission.Owner)
+            )
+          );
+        await tx
+          .insert(UsersToShelves)
+          .values({
+            userPublicId: request.body.targetUserPublicId,
+            rootShelfId: request.param.rootShelfId,
+            permission: AccessControlPermission.Owner,
+            updatedAt: now,
+            createdAt: now,
+          })
+          .onConflictDoUpdate({
+            target: [UsersToShelves.userPublicId, UsersToShelves.rootShelfId],
+            set: {
+              permission: AccessControlPermission.Owner,
+              updatedAt: now,
+            },
+          });
+      }
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RootShelfPermission,
+        actionType: TransactionActionType.UPDATE,
+        body: { param: request.param, body: request.body },
+        affected: null,
+      });
+      return {
+        rootShelfId: request.param.rootShelfId,
+        previousOwnerUserPublicId: loggedInUser.publicId,
+        newOwnerUserPublicId: request.body.targetUserPublicId,
+        updatedAt: now,
+      };
+    });
+  };
+
+  static simulateLeaveMyRootShelf = async (
+    request: LeaveMyRootShelfRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return;
+      const userPublicId =
+        request.body?.targetUserPublicId ?? loggedInUser.publicId;
+      await tx
+        .delete(UsersToShelves)
+        .where(
+          and(
+            eq(UsersToShelves.rootShelfId, request.param.rootShelfId),
+            eq(UsersToShelves.userPublicId, userPublicId)
+          )
+        );
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RootShelfPermission,
+        actionType: TransactionActionType.DELETE,
+        body: { param: request.param, body: request.body ?? {} },
+        affected: null,
       });
     });
   };

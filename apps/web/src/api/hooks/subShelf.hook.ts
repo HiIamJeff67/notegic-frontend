@@ -481,7 +481,9 @@ export const useCreateSubShelfByRootShelfId = () => {
   return mutation;
 };
 
-export const useCreateSubShelvesByRootShelfIds = () => {
+export const useCreateSubShelvesByRootShelfIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -494,7 +496,11 @@ export const useCreateSubShelvesByRootShelfIds = () => {
       }
       return await mutationFnCreateSubShelvesByRootShelfIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await SubShelfLocalSimulator.simulateCreateSubShelvesByRootShelfIds(
         request
       );
@@ -592,7 +598,9 @@ export const useUpdateMySubShelfById = () => {
 
   return mutation;
 };
-export const useUpdateMySubShelvesByIds = () => {
+export const useUpdateMySubShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -605,7 +613,11 @@ export const useUpdateMySubShelvesByIds = () => {
       }
       return await mutationFnUpdateMySubShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await SubShelfLocalSimulator.simulateUpdateMySubShelvesByIds(request);
       return {
         success: true as const,
@@ -771,7 +783,9 @@ export const useMoveMySubShelvesByRootShelfId = () => {
   return mutation;
 };
 
-export const useMoveMySubShelvesByRootShelfIds = () => {
+export const useMoveMySubShelvesByRootShelfIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -783,7 +797,11 @@ export const useMoveMySubShelvesByRootShelfIds = () => {
       }
       return await mutationFnMoveMySubShelvesByRootShelfIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfIds(
         request
       );
@@ -912,11 +930,16 @@ export const useRestoreMySubShelvesByIds = (
       }
       return await mutationFnRestoreMySubShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(request);
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await SubShelfLocalSimulator.simulateRestoreMySubShelvesByIds(request);
       return {
         success: true as const,
-        data: [],
+        data: restored,
         exception: null,
         embedded: { publicId: "" },
       } as Awaited<ReturnType<typeof mutationFnRestoreMySubShelvesByIds>>;
@@ -1021,7 +1044,9 @@ export const useDeleteMySubShelfById = () => {
   return mutation;
 };
 
-export const useDeleteMySubShelvesByIds = () => {
+export const useDeleteMySubShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -1033,7 +1058,11 @@ export const useDeleteMySubShelvesByIds = () => {
       }
       return await mutationFnDeleteMySubShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await SubShelfLocalSimulator.simulateDeleteMySubShelvesByIds(request);
       return {
         success: true as const,
@@ -1086,10 +1115,36 @@ export const useDeleteMySubShelvesByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMySubShelvesByIds = () => {
+export const useHardDeleteMySubShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: mutationFnHardDeleteMySubShelvesByIds,
+    mutationFn: async (
+      request: Parameters<typeof mutationFnHardDeleteMySubShelvesByIds>[0]
+    ) => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnHardDeleteMySubShelvesByIds(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        await SubShelfLocalSimulator.simulateHardDeleteMySubShelvesByIds(
+          request
+        );
+        return {
+          success: true as const,
+          data: { deletedAt: new Date() },
+          exception: null,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;

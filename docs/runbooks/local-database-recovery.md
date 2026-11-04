@@ -43,6 +43,21 @@ not a replacement for the existing cross-tab SQLite and migration locks.
 
 No schema up/down or local data reset is required for this adapter change.
 
+## Transaction replay and Material identities
+
+Replay calls use the existing mutation hooks with `offlineFallback: false`
+(or their existing `allowOffline = false` parameter). A remote outage must leave
+the original transaction pending without simulating it again or adding another
+queue entry. Each prepared job acknowledges its complete merged sequence set.
+
+Material creation receives its ID from the server. After confirmation,
+`MaterialLocalSynchronizer.acknowledgeCreate` moves the cached metadata, Item
+row, Routine links and pending request references in one local transaction, and
+removes the acknowledged CREATE from that queue. Prepared Material and linked-item
+jobs read the remapped body when they run. A failed local write rolls back the
+remap and retains the pending work; no database reset or schema migration is
+required for this acknowledgement change.
+
 ## Diagnostic state
 
 The persisted local diagnostic record contains the current and previous phase,

@@ -350,11 +350,7 @@ export const useCreateBlockPack = () => {
       return await mutationFnCreateBlockPack(request);
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      try {
-        await BlockPackLocalSimulator.simulateCreateBlockPack(request);
-      } catch (simulateError) {
-        console.error(simulateError);
-      }
+      await BlockPackLocalSimulator.simulateCreateBlockPack(request);
       return {
         success: true,
         data: {
@@ -391,7 +387,9 @@ export const useCreateBlockPack = () => {
   return mutation;
 };
 
-export const useCreateBlockPacks = () => {
+export const useCreateBlockPacks = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -404,7 +402,11 @@ export const useCreateBlockPacks = () => {
       }
       return await mutationFnCreateBlockPacks(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await BlockPackLocalSimulator.simulateCreateBlockPacks(request);
       return {
         success: true as const,
@@ -504,7 +506,9 @@ export const useUpdateMyBlockPackById = () => {
   return mutation;
 };
 
-export const useUpdateMyBlockPacksByIds = () => {
+export const useUpdateMyBlockPacksByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -517,7 +521,11 @@ export const useUpdateMyBlockPacksByIds = () => {
       }
       return await mutationFnUpdateMyBlockPacksByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await BlockPackLocalSimulator.simulateUpdateMyBlockPacksByIds(request);
       return {
         success: true as const,
@@ -692,7 +700,9 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
   return mutation;
 };
 
-export const useMoveMyBlockPacksByParentSubShelfIds = () => {
+export const useMoveMyBlockPacksByParentSubShelfIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -704,7 +714,11 @@ export const useMoveMyBlockPacksByParentSubShelfIds = () => {
       }
       return await mutationFnMoveMyBlockPacksByParentSubShelfIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfIds(
         request
       );
@@ -839,11 +853,16 @@ export const useRestoreMyBlockPacksByIds = (
       }
       return await mutationFnRestoreMyBlockPacksByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(request);
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await BlockPackLocalSimulator.simulateRestoreMyBlockPacksByIds(request);
       return {
         success: true as const,
-        data: [],
+        data: restored,
         exception: null,
         embedded: { publicId: "" },
       } as Awaited<ReturnType<typeof mutationFnRestoreMyBlockPacksByIds>>;
@@ -946,7 +965,9 @@ export const useDeleteMyBlockPackById = () => {
   return mutation;
 };
 
-export const useDeleteMyBlockPacksByIds = () => {
+export const useDeleteMyBlockPacksByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -958,7 +979,11 @@ export const useDeleteMyBlockPacksByIds = () => {
       }
       return await mutationFnDeleteMyBlockPacksByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await BlockPackLocalSimulator.simulateDeleteMyBlockPacksByIds(request);
       return {
         success: true as const,
@@ -1010,10 +1035,36 @@ export const useDeleteMyBlockPacksByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMyBlockPacksByIds = () => {
+export const useHardDeleteMyBlockPacksByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: mutationFnHardDeleteMyBlockPacksByIds,
+    mutationFn: async (
+      request: Parameters<typeof mutationFnHardDeleteMyBlockPacksByIds>[0]
+    ) => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnHardDeleteMyBlockPacksByIds(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        await BlockPackLocalSimulator.simulateHardDeleteMyBlockPacksByIds(
+          request
+        );
+        return {
+          success: true as const,
+          data: { deletedAt: new Date() },
+          exception: null,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;

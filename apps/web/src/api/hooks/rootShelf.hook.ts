@@ -157,7 +157,9 @@ export const useGetMyRootShelfById = (
   return { ...query, fetch };
 };
 
-export const useCreateRootShelf = () => {
+export const useCreateRootShelf = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const apolloClient = useApolloClient();
 
   const perform = async (
@@ -170,7 +172,11 @@ export const useCreateRootShelf = () => {
       }
       return await mutationFnCreateRootShelf(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RootShelfLocalSimulator.simulateCreateRootShelf(request);
       if (!request.body.id) throw error;
       const createdAt = new Date();
@@ -352,18 +358,37 @@ export const useUpdateMyRootShelfById = () => {
   return mutation;
 };
 
-export const useUpsertRootShelfPermission = () => {
+export const useUpsertRootShelfPermission = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
   const perform = async (
     request: UpsertRootShelfPermissionRequest
   ): Promise<UpsertRootShelfPermissionResponse> => {
-    if (isRemoteUnavailable()) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnUpsertRootShelfPermission(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const permission =
+        await RootShelfLocalSimulator.simulateUpsertRootShelfPermission(
+          request
+        );
+      if (!permission) throw error;
+      return {
+        success: true,
+        data: permission,
+        exception: null,
+      } as UpsertRootShelfPermissionResponse;
     }
-
-    return await mutationFnUpsertRootShelfPermission(request);
   };
 
   const mutation = useMutation({
@@ -401,18 +426,33 @@ export const useUpsertRootShelfPermission = () => {
   return mutation;
 };
 
-export const useDeleteRootShelfPermissions = () => {
+export const useDeleteRootShelfPermissions = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
   const perform = async (
     request: DeleteRootShelfPermissionsRequest
   ): Promise<DeleteRootShelfPermissionsResponse> => {
-    if (isRemoteUnavailable()) {
-      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnDeleteRootShelfPermissions(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await RootShelfLocalSimulator.simulateDeleteRootShelfPermissions(request);
+      return {
+        success: true,
+        data: null,
+        exception: null,
+      } as DeleteRootShelfPermissionsResponse;
     }
-
-    return await mutationFnDeleteRootShelfPermissions(request);
   };
 
   const mutation = useMutation({
@@ -448,7 +488,9 @@ export const useDeleteRootShelfPermissions = () => {
   return mutation;
 };
 
-export const useUpdateMyRootShelvesByIds = () => {
+export const useUpdateMyRootShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -462,7 +504,11 @@ export const useUpdateMyRootShelvesByIds = () => {
       }
       return await mutationFnUpdateMyRootShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RootShelfLocalSimulator.simulateUpdateMyRootShelvesByIds(request);
       return {
         success: true as const,
@@ -574,11 +620,18 @@ export const useRestoreMyRootShelvesByIds = (
       }
       return await mutationFnRestoreMyRootShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(request);
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await RootShelfLocalSimulator.simulateRestoreMyRootShelvesByIds(
+          request
+        );
       return {
         success: true as const,
-        data: [],
+        data: restored,
         exception: null,
         embedded: { publicId: "" },
       } as Awaited<ReturnType<typeof mutationFnRestoreMyRootShelvesByIds>>;
@@ -704,7 +757,9 @@ export const useDeleteMyRootShelfById = () => {
   return mutation;
 };
 
-export const useDeleteMyRootShelvesByIds = () => {
+export const useDeleteMyRootShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
 
   const perform = async (
@@ -716,7 +771,11 @@ export const useDeleteMyRootShelvesByIds = () => {
       }
       return await mutationFnDeleteMyRootShelvesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RootShelfLocalSimulator.simulateDeleteMyRootShelvesByIds(request);
       return {
         success: true as const,
@@ -758,13 +817,37 @@ export const useDeleteMyRootShelvesByIds = () => {
   return mutation;
 };
 
-export const useTransferMyRootShelfOwnership = () => {
+export const useTransferMyRootShelfOwnership = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       request: TransferMyRootShelfOwnershipRequest
-    ): Promise<TransferMyRootShelfOwnershipResponse> =>
-      mutationFnTransferMyRootShelfOwnership(request),
+    ): Promise<TransferMyRootShelfOwnershipResponse> => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnTransferMyRootShelfOwnership(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        const transferred =
+          await RootShelfLocalSimulator.simulateTransferMyRootShelfOwnership(
+            request
+          );
+        if (!transferred) throw error;
+        return {
+          success: true,
+          data: transferred,
+          exception: null,
+        } as TransferMyRootShelfOwnershipResponse;
+      }
+    },
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.permission(
@@ -780,12 +863,33 @@ export const useTransferMyRootShelfOwnership = () => {
   });
 };
 
-export const useLeaveMyRootShelf = () => {
+export const useLeaveMyRootShelf = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       request: LeaveMyRootShelfRequest
-    ): Promise<LeaveMyRootShelfResponse> => mutationFnLeaveMyRootShelf(request),
+    ): Promise<LeaveMyRootShelfResponse> => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnLeaveMyRootShelf(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        await RootShelfLocalSimulator.simulateLeaveMyRootShelf(request);
+        return {
+          success: true,
+          data: null,
+          exception: null,
+        } as LeaveMyRootShelfResponse;
+      }
+    },
     onSuccess: async (_response, request) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.rootShelf.permission(
@@ -801,10 +905,36 @@ export const useLeaveMyRootShelf = () => {
   });
 };
 
-export const useHardDeleteMyRootShelvesByIds = () => {
+export const useHardDeleteMyRootShelvesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   return useMutation({
-    mutationFn: mutationFnHardDeleteMyRootShelvesByIds,
+    mutationFn: async (
+      request: Parameters<typeof mutationFnHardDeleteMyRootShelvesByIds>[0]
+    ) => {
+      try {
+        if (isRemoteUnavailable()) {
+          throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+        }
+        return await mutationFnHardDeleteMyRootShelvesByIds(request);
+      } catch (error) {
+        if (
+          options.offlineFallback === false ||
+          !NetworkExceptions.isMissingNetworkError(error)
+        )
+          throw error;
+        await RootShelfLocalSimulator.simulateHardDeleteMyRootShelvesByIds(
+          request
+        );
+        return {
+          success: true as const,
+          data: { deletedAt: new Date() },
+          exception: null,
+          embedded: { publicId: "" },
+        };
+      }
+    },
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;

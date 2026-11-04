@@ -11,10 +11,14 @@ import {
   HardDeleteMyStationByIdRequestSchema,
   type HardDeleteMyStationsByIdsRequest,
   HardDeleteMyStationsByIdsRequestSchema,
+  type LeaveMyStationRequest,
+  LeaveMyStationRequestSchema,
   type RestoreMyStationByIdRequest,
   RestoreMyStationByIdRequestSchema,
   type RestoreMyStationsByIdsRequest,
   RestoreMyStationsByIdsRequestSchema,
+  type TransferMyStationOwnershipRequest,
+  TransferMyStationOwnershipRequestSchema,
   type UpdateMyStationByIdRequest,
   UpdateMyStationByIdRequestSchema,
   type UpdateMyStationsByIdsRequest,
@@ -256,6 +260,80 @@ export const prepareStationSyncJobs = ({
           }
           return result;
         });
+        previousOperation = currentOperation;
+        return currentOperation;
+      },
+    })),
+    noopSequences: new Set<number>(),
+    parseFailedSequences,
+  };
+};
+
+export const prepareStationMembershipSyncJobs = ({
+  transactions,
+  header,
+  mutators,
+}: {
+  transactions: InferSelectModel<typeof Transaction>[];
+  header: SyncHeader;
+  mutators: {
+    transferStationMutator: {
+      mutateAsync: (
+        request: TransferMyStationOwnershipRequest
+      ) => Promise<unknown>;
+    };
+    leaveStationMutator: {
+      mutateAsync: (request: LeaveMyStationRequest) => Promise<unknown>;
+    };
+  };
+}): PreparedSyncJobsResult => {
+  const operations: Array<() => Promise<unknown>> = [];
+  const sequences = new Set<number>();
+  const parseFailedSequences = new Set<number>();
+  for (const transaction of transactions) {
+    const stored =
+      typeof transaction.body === "object" && transaction.body !== null
+        ? transaction.body
+        : {};
+    const request = { header, ...(stored as object) };
+    if (transaction.actionType === TransactionActionType.UPDATE) {
+      const transfer =
+        TransferMyStationOwnershipRequestSchema.safeParse(request);
+      if (transfer.success) {
+        operations.push(() =>
+          mutators.transferStationMutator.mutateAsync({
+            header,
+            param: transfer.data.param,
+            body: transfer.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+    }
+    if (transaction.actionType === TransactionActionType.DELETE) {
+      const leave = LeaveMyStationRequestSchema.safeParse(request);
+      if (leave.success) {
+        operations.push(() =>
+          mutators.leaveStationMutator.mutateAsync({
+            header,
+            param: leave.data.param,
+            body: leave.data.body,
+          })
+        );
+        sequences.add(transaction.sequence);
+        continue;
+      }
+    }
+    parseFailedSequences.add(transaction.sequence);
+  }
+  const operationSequences = Array.from(sequences);
+  let previousOperation = Promise.resolve<unknown>(undefined);
+  return {
+    syncJobs: operations.map((operation, index) => ({
+      sequences: new Set([operationSequences[index]]),
+      run: () => {
+        const currentOperation = previousOperation.then(operation);
         previousOperation = currentOperation;
         return currentOperation;
       },

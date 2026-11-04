@@ -8,7 +8,13 @@ import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
 import type { UUID } from "crypto";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { BlockPack, SubShelf, User, UsersToShelves } from "@/api/local/schemas";
+import {
+  BlockPack,
+  Material,
+  SubShelf,
+  User,
+  UsersToShelves,
+} from "@/api/local/schemas";
 
 type SearchedItem = {
   id: string;
@@ -70,8 +76,39 @@ export class ItemLocalSimulator {
             )
         )
       );
+    const materialRows = await localDB
+      .select({
+        id: Material.id,
+        name: Material.name,
+        parentSubShelfId: Material.parentSubShelfId,
+        rootShelfId: Material.rootShelfId,
+        deletedAt: Material.deletedAt,
+        updatedAt: Material.updatedAt,
+        createdAt: Material.createdAt,
+      })
+      .from(Material)
+      .where(
+        exists(
+          localDB
+            .select({ one: sql`1` })
+            .from(UsersToShelves)
+            .where(
+              and(
+                eq(UsersToShelves.userPublicId, loggedInUser.publicId),
+                eq(UsersToShelves.rootShelfId, Material.rootShelfId),
+                inArray(UsersToShelves.permission, AllAccessControlPermissions)
+              )
+            )
+        )
+      );
 
-    const matched: SearchedItem[] = rows.flatMap(row => {
+    const matched: SearchedItem[] = [
+      ...rows.map(row => ({ ...row, type: GraphQLItemType.ItemTypeBlockPack })),
+      ...materialRows.map(row => ({
+        ...row,
+        type: GraphQLItemType.ItemTypeMaterial,
+      })),
+    ].flatMap(row => {
       if ((row.deletedAt !== null) !== (input.isDeletedAt === true)) return [];
       if (
         input.parentSubShelfId &&
@@ -87,7 +124,7 @@ export class ItemLocalSimulator {
           name: row.name,
           parentSubShelfId: row.parentSubShelfId,
           rootShelfId: row.rootShelfId,
-          type: GraphQLItemType.ItemTypeBlockPack,
+          type: row.type,
           updatedAt: row.updatedAt,
           createdAt: row.createdAt,
         },

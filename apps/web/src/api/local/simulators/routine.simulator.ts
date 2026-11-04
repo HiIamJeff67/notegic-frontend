@@ -24,6 +24,8 @@ import type {
   LinkRoutineItemsByIdsRequest,
   LinkRoutineTagByIdRequest,
   LinkRoutineTagsByIdsRequest,
+  LinkRoutineTaskByIdRequest,
+  LinkRoutineTasksByIdsRequest,
   RestoreMyRoutineByIdRequest,
   RestoreMyRoutinesByIdsRequest,
   UpdateMyRoutineByIdRequest,
@@ -50,6 +52,7 @@ import {
   RoutinesToTags,
   RoutinesToTasks,
   RoutineTag,
+  RoutineTask,
   Station,
   Transaction,
   User,
@@ -1254,6 +1257,128 @@ export class RoutineLocalSimulator {
     });
   };
 
+  static simulateLinkRoutineTaskById = async (
+    request: LinkRoutineTaskByIdRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return;
+      const routines = await tx
+        .select({ id: Routine.id })
+        .from(Routine)
+        .where(
+          and(
+            eq(Routine.id, request.body.routineId),
+            isNull(Routine.deletedAt),
+            RoutineLocalSimulator.getPassPermissionCheckSQL(
+              tx,
+              loggedInUser.publicId,
+              [
+                AccessControlPermission.Owner,
+                AccessControlPermission.Admin,
+                AccessControlPermission.Write,
+              ]
+            )
+          )
+        );
+      const tasks = await tx
+        .select({ id: RoutineTask.id })
+        .from(RoutineTask)
+        .where(eq(RoutineTask.id, request.body.routineTaskId));
+      if (routines.length === 0 || tasks.length === 0) return;
+      await tx
+        .delete(RoutinesToTasks)
+        .where(
+          and(
+            eq(RoutinesToTasks.routineId, request.body.routineId),
+            eq(RoutinesToTasks.taskId, request.body.routineTaskId)
+          )
+        );
+      if (!request.body.isUnlink) {
+        await tx.insert(RoutinesToTasks).values({
+          routineId: request.body.routineId,
+          taskId: request.body.routineTaskId,
+        });
+      }
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RoutinesToTasks,
+        actionType: request.body.isUnlink
+          ? TransactionActionType.DELETE
+          : TransactionActionType.CREATE,
+        body: request.body,
+        affected: null,
+      });
+    });
+  };
+
+  static simulateLinkRoutineTasksByIds = async (
+    request: LinkRoutineTasksByIdsRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return;
+      const validRelations = [];
+      for (const relation of request.body.linkedRoutinesAndTasks) {
+        const routines = await tx
+          .select({ id: Routine.id })
+          .from(Routine)
+          .where(
+            and(
+              eq(Routine.id, relation.routineId),
+              isNull(Routine.deletedAt),
+              RoutineLocalSimulator.getPassPermissionCheckSQL(
+                tx,
+                loggedInUser.publicId,
+                [
+                  AccessControlPermission.Owner,
+                  AccessControlPermission.Admin,
+                  AccessControlPermission.Write,
+                ]
+              )
+            )
+          );
+        const tasks = await tx
+          .select({ id: RoutineTask.id })
+          .from(RoutineTask)
+          .where(eq(RoutineTask.id, relation.routineTaskId));
+        if (routines.length === 0 || tasks.length === 0) continue;
+        await tx
+          .delete(RoutinesToTasks)
+          .where(
+            and(
+              eq(RoutinesToTasks.routineId, relation.routineId),
+              eq(RoutinesToTasks.taskId, relation.routineTaskId)
+            )
+          );
+        if (!request.body.isUnlink) {
+          await tx.insert(RoutinesToTasks).values({
+            routineId: relation.routineId,
+            taskId: relation.routineTaskId,
+          });
+        }
+        validRelations.push(relation);
+      }
+      if (validRelations.length === 0) return;
+      request.body.linkedRoutinesAndTasks = validRelations;
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.RoutinesToTasks,
+        actionType: request.body.isUnlink
+          ? TransactionActionType.DELETE
+          : TransactionActionType.CREATE,
+        body: request.body,
+        affected: null,
+      });
+    });
+  };
+
   static simulateRestoreMyRoutineById = async (
     request: RestoreMyRoutineByIdRequest
   ): Promise<void> => {
@@ -1294,16 +1419,16 @@ export class RoutineLocalSimulator {
 
   static simulateRestoreMyRoutinesByIds = async (
     request: RestoreMyRoutinesByIdsRequest
-  ): Promise<void> => {
+  ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 
-    await localDB.transaction(async tx => {
+    return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (loggedInUser === undefined) return;
+      if (loggedInUser === undefined) return [];
 
-      await tx
+      const restored = await tx
         .update(Routine)
         .set({ deletedAt: null, updatedAt: new Date() })
         .where(
@@ -1319,7 +1444,8 @@ export class RoutineLocalSimulator {
               ]
             )
           )
-        );
+        )
+        .returning();
       await tx.insert(Transaction).values({
         ownerPublicId: loggedInUser.publicId,
         entityType: TransactionEntityType.Routine,
@@ -1327,6 +1453,10 @@ export class RoutineLocalSimulator {
         body: request.body,
         affected: request.affected,
       });
+      return restored.map(routine => ({
+        ...routine,
+        admissionState: "Unknown" as const,
+      }));
     });
   };
 

@@ -142,7 +142,15 @@ window.mount = async overrides => {
 `;
 
 const mocks: Record<string, string> = {
+  "@/api/local/simulators/material.simulator": `export class MaterialLocalSimulator {
+    static async simulateGetMyMaterialById() { return null; }
+    static async simulateGetMyMaterialAndItsParentById() { return null; }
+  }`,
   "@/api/local/synchronizers/material.synchronizer": `export class MaterialLocalSynchronizer {
+    static async syncGetMyMaterialById() {}
+    static async syncGetMyMaterialAndItsParentById() {}
+    static async syncGetMyMaterialsByParentSubShelfId() {}
+    static async syncGetMyMaterialsByRootShelfId() {}
     static syncHardDeleteMyMaterialsByIds() { throw new Error('Unexpected local deletion'); }
   }`,
   "@tanstack/react-router": `
@@ -204,6 +212,7 @@ describe("material file lifecycle in Chromium", () => {
       jsx: "automatic",
       define: {
         "process.env.NODE_ENV": '"development"',
+        "process.env.NOTEGIC_VITE_MODE": '"development"',
         "import.meta.url": '"https://material.test/editor.js"',
       },
       tsconfig: path.resolve("apps/web/tsconfig.json"),

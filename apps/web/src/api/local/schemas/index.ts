@@ -1,5 +1,6 @@
 export * from "./blockPack.schema";
 export * from "./item.schema";
+export * from "./material.schema";
 export * from "./rootShelf.schema";
 export * from "./routine.schema";
 export * from "./routinesToItems.schema";

@@ -78,3 +78,15 @@ test("valid offline input writes through the local simulator", async () => {
   );
   expect(mutationFnCreateBlockPack).not.toHaveBeenCalled();
 });
+
+test("failed local persistence rejects instead of reporting a created block pack", async () => {
+  const error = new Error("SQLite write failed");
+  jest
+    .mocked(BlockPackLocalSimulator.simulateCreateBlockPack)
+    .mockRejectedValueOnce(error);
+  useCreateBlockPack();
+  await expect(
+    mockUseMutation.mock.calls[0][0].mutationFn(request)
+  ).rejects.toBe(error);
+  expect(mutationFnCreateBlockPack).not.toHaveBeenCalled();
+});

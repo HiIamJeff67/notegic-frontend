@@ -5,6 +5,8 @@ import {
   DeleteMyBlockPackByIdRequestSchema,
   DeleteMyBlockPacksByIdsRequest,
   DeleteMyBlockPacksByIdsRequestSchema,
+  HardDeleteMyBlockPacksByIdsRequest,
+  HardDeleteMyBlockPacksByIdsRequestSchema,
   MoveMyBlockPackByIdRequestSchema,
   MoveMyBlockPacksByParentSubShelfIdRequestSchema,
   MoveMyBlockPacksByParentSubShelfIdsRequest,
@@ -51,6 +53,11 @@ interface BlockPackMutators {
   };
   deleteBlockPacksMutator: {
     mutateAsync: (request: DeleteMyBlockPacksByIdsRequest) => Promise<unknown>;
+  };
+  hardDeleteBlockPacksMutator: {
+    mutateAsync: (
+      request: HardDeleteMyBlockPacksByIdsRequest
+    ) => Promise<unknown>;
   };
 }
 
@@ -127,6 +134,7 @@ export const prepareBlockPackSyncJobs = ({
       sequences: Set<number>;
     }
   >();
+  const hardDeleteBlockPacksMap = new Map<string, { sequences: Set<number> }>();
   const deleteBlockPacksMap = new Map<
     string,
     {
@@ -575,6 +583,25 @@ export const prepareBlockPackSyncJobs = ({
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
       }
+      case TransactionActionType.HARD_DELETE: {
+        const parsed =
+          HardDeleteMyBlockPacksByIdsRequestSchema.safeParse(request);
+        if (!parsed.success) {
+          mergeSet(parseFailedSequences, getTransactionSequences(transaction));
+          break;
+        }
+        for (const id of parsed.data.body.blockPackIds) {
+          const existing = hardDeleteBlockPacksMap.get(id);
+          if (existing) {
+            mergeSet(existing.sequences, getTransactionSequences(transaction));
+          } else {
+            hardDeleteBlockPacksMap.set(id, {
+              sequences: getTransactionSequences(transaction),
+            });
+          }
+        }
+        break;
+      }
       default: {
         mergeSet(parseFailedSequences, getTransactionSequences(transaction));
         break;
@@ -701,6 +728,21 @@ export const prepareBlockPackSyncJobs = ({
     syncJobs.push({
       sequences,
       run: () => mutators.deleteBlockPacksMutator.mutateAsync(request),
+    });
+  }
+
+  if (hardDeleteBlockPacksMap.size > 0) {
+    const request: HardDeleteMyBlockPacksByIdsRequest = {
+      header,
+      body: { blockPackIds: Array.from(hardDeleteBlockPacksMap.keys()) },
+    };
+    syncJobs.push({
+      sequences: getMergedSequences(
+        ...Array.from(hardDeleteBlockPacksMap.values()).map(
+          state => state.sequences
+        )
+      ),
+      run: () => mutators.hardDeleteBlockPacksMutator.mutateAsync(request),
     });
   }
 

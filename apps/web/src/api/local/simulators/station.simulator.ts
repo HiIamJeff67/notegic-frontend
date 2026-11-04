@@ -19,8 +19,10 @@ import type {
   GetMyStationByIdRequest,
   HardDeleteMyStationByIdRequest,
   HardDeleteMyStationsByIdsRequest,
+  LeaveMyStationRequest,
   RestoreMyStationByIdRequest,
   RestoreMyStationsByIdsRequest,
+  TransferMyStationOwnershipRequest,
   UpdateMyStationByIdRequest,
   UpdateMyStationsByIdsRequest,
 } from "@shared/api/interfaces/station.interface";
@@ -484,16 +486,16 @@ export class StationLocalSimulator {
 
   static simulateRestoreMyStationsByIds = async (
     request: RestoreMyStationsByIdsRequest
-  ): Promise<void> => {
+  ) => {
     if (!localDB.isReady) await localDB.ensureReady();
 
-    await localDB.transaction(async tx => {
+    return await localDB.transaction(async tx => {
       const loggedInUser = await tx.query.User.findFirst({
         where: eq(User.isLoggedIn, true),
       });
-      if (loggedInUser === undefined) return;
+      if (loggedInUser === undefined) return [];
 
-      await tx
+      const restored = await tx
         .update(Station)
         .set({ deletedAt: null, updatedAt: new Date() })
         .where(
@@ -509,7 +511,29 @@ export class StationLocalSimulator {
               ]
             )
           )
+        )
+        .returning();
+      const memberships = await tx
+        .select({
+          stationId: UsersToStations.stationId,
+          permission: UsersToStations.permission,
+        })
+        .from(UsersToStations)
+        .where(
+          and(
+            eq(UsersToStations.userPublicId, loggedInUser.publicId),
+            inArray(
+              UsersToStations.stationId,
+              restored.map(station => station.id)
+            )
+          )
         );
+      const permissionByStation = new Map(
+        memberships.map(membership => [
+          membership.stationId,
+          membership.permission,
+        ])
+      );
       await tx.insert(Transaction).values({
         ownerPublicId: loggedInUser.publicId,
         entityType: TransactionEntityType.Station,
@@ -517,6 +541,11 @@ export class StationLocalSimulator {
         body: request.body,
         affected: request.affected,
       });
+      return restored.map(station => ({
+        ...station,
+        permission:
+          permissionByStation.get(station.id) ?? AccessControlPermission.Read,
+      }));
     });
   };
 
@@ -704,6 +733,92 @@ export class StationLocalSimulator {
           stationIds,
         },
         affected: request.affected,
+      });
+    });
+  };
+
+  static simulateTransferMyStationOwnership = async (
+    request: TransferMyStationOwnershipRequest
+  ) => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    return await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return null;
+      const now = new Date();
+      const target = await tx.query.User.findFirst({
+        where: eq(User.publicId, request.body.targetUserPublicId),
+      });
+      if (target) {
+        await tx
+          .update(UsersToStations)
+          .set({ permission: AccessControlPermission.Admin, updatedAt: now })
+          .where(
+            and(
+              eq(UsersToStations.stationId, request.param.stationId),
+              eq(UsersToStations.userPublicId, loggedInUser.publicId),
+              eq(UsersToStations.permission, AccessControlPermission.Owner)
+            )
+          );
+        await tx
+          .insert(UsersToStations)
+          .values({
+            userPublicId: request.body.targetUserPublicId,
+            stationId: request.param.stationId,
+            permission: AccessControlPermission.Owner,
+            updatedAt: now,
+            createdAt: now,
+          })
+          .onConflictDoUpdate({
+            target: [UsersToStations.userPublicId, UsersToStations.stationId],
+            set: {
+              permission: AccessControlPermission.Owner,
+              updatedAt: now,
+            },
+          });
+      }
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.StationMembership,
+        actionType: TransactionActionType.UPDATE,
+        body: { param: request.param, body: request.body },
+        affected: null,
+      });
+      return {
+        stationId: request.param.stationId,
+        previousOwnerUserPublicId: loggedInUser.publicId,
+        newOwnerUserPublicId: request.body.targetUserPublicId,
+        updatedAt: now,
+      };
+    });
+  };
+
+  static simulateLeaveMyStation = async (
+    request: LeaveMyStationRequest
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      const loggedInUser = await tx.query.User.findFirst({
+        where: eq(User.isLoggedIn, true),
+      });
+      if (loggedInUser === undefined) return;
+      const userPublicId =
+        request.body?.targetUserPublicId ?? loggedInUser.publicId;
+      await tx
+        .delete(UsersToStations)
+        .where(
+          and(
+            eq(UsersToStations.stationId, request.param.stationId),
+            eq(UsersToStations.userPublicId, userPublicId)
+          )
+        );
+      await tx.insert(Transaction).values({
+        ownerPublicId: loggedInUser.publicId,
+        entityType: TransactionEntityType.StationMembership,
+        actionType: TransactionActionType.DELETE,
+        body: { param: request.param, body: request.body ?? {} },
+        affected: null,
       });
     });
   };

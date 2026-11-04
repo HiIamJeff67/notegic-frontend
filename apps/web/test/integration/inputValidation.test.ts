@@ -31,6 +31,8 @@ createRoot(document.getElementById('root')).render(<>
 `;
 
 const mocks: Record<string, string> = {
+  "@/hooks/useTheme":
+    "export const useTheme = () => ({ currentTheme: { isDark: true } });",
   "@/components/commons/Article/Article":
     "export { default as ArticleSettingItem } from '@/components/commons/Article/ArticleSettingItem';",
   "@/hooks/useUser": "export const useUser = () => window.userManager;",
@@ -59,7 +61,10 @@ describe("editable request fields in real settings forms", () => {
       platform: "browser",
       jsx: "automatic",
       loader: { ".css": "empty" },
-      define: { "process.env.NODE_ENV": '"development"' },
+      define: {
+        "process.env.NODE_ENV": '"development"',
+        "process.env.NOTEGIC_VITE_MODE": '"development"',
+      },
       tsconfig: path.resolve("apps/web/tsconfig.json"),
       plugins: [
         {

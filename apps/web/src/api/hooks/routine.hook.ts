@@ -462,7 +462,9 @@ export const useGetMyRoutinesByTimeRange = (
   return { ...query, fetch };
 };
 
-export const useCreateRoutineByStationId = () => {
+export const useCreateRoutineByStationId = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -474,7 +476,11 @@ export const useCreateRoutineByStationId = () => {
       }
       return await mutationFnCreateRoutineByStationId(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       try {
         await RoutineLocalSimulator.simulateCreateRoutineByStationId(request);
       } catch (simulateError) {
@@ -554,7 +560,9 @@ export const useCreateRoutineByStationId = () => {
   return mutation;
 };
 
-export const useCreateRoutinesByStationIds = () => {
+export const useCreateRoutinesByStationIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -566,7 +574,11 @@ export const useCreateRoutinesByStationIds = () => {
       }
       return await mutationFnCreateRoutinesByStationIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateCreateRoutinesByStationIds(request);
       return {
         success: true as const,
@@ -778,6 +790,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
       });
       clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
+      if (response.embedded?.publicId === "") return;
       await RoutineLocalSynchronizer.syncUpdateMyRoutineById(request, response);
     },
   });
@@ -785,7 +798,9 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
   return mutation;
 };
 
-export const useUpdateMyRoutinesByIds = () => {
+export const useUpdateMyRoutinesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -797,7 +812,11 @@ export const useUpdateMyRoutinesByIds = () => {
       }
       return await mutationFnUpdateMyRoutinesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateUpdateMyRoutinesByIds(request);
       return {
         success: true as const,
@@ -909,7 +928,9 @@ export const useUpdateMyRoutinesByIds = () => {
   return mutation;
 };
 
-export const useLinkRoutineTagById = () => {
+export const useLinkRoutineTagById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -920,7 +941,11 @@ export const useLinkRoutineTagById = () => {
       }
       return await mutationFnLinkRoutineTagById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateLinkRoutineTagById(request);
       return {
         success: true as const,
@@ -1059,7 +1084,9 @@ export const useLinkRoutineTagById = () => {
   return mutation;
 };
 
-export const useLinkRoutineTagsByIds = () => {
+export const useLinkRoutineTagsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1070,7 +1097,11 @@ export const useLinkRoutineTagsByIds = () => {
       }
       return await mutationFnLinkRoutineTagsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateLinkRoutineTagsByIds(request);
       return {
         success: true as const,
@@ -1221,12 +1252,38 @@ export const useLinkRoutineTagsByIds = () => {
   return mutation;
 };
 
-export const useLinkRoutineTaskById = () => {
+export const useLinkRoutineTaskById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnLinkRoutineTaskById>[0]
+  ) => {
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineTaskById(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineTaskById(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnLinkRoutineTaskById,
+    mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineTaskByIdRequest) => {
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1371,12 +1428,38 @@ export const useLinkRoutineTaskById = () => {
   return mutation;
 };
 
-export const useLinkRoutineTasksByIds = () => {
+export const useLinkRoutineTasksByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
+  const perform = async (
+    request: Parameters<typeof mutationFnLinkRoutineTasksByIds>[0]
+  ) => {
+    try {
+      if (isRemoteUnavailable()) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      return await mutationFnLinkRoutineTasksByIds(request);
+    } catch (error) {
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      await RoutineLocalSimulator.simulateLinkRoutineTasksByIds(request);
+      return {
+        success: true as const,
+        data: { updatedAt: new Date() },
+        exception: null,
+        embedded: { publicId: "" },
+      };
+    }
+  };
+
   const mutation = useMutation({
-    mutationFn: mutationFnLinkRoutineTasksByIds,
+    mutationFn: perform,
     onSuccess: async (response, request: LinkRoutineTasksByIdsRequest) => {
       const targetKeys = [
         queryKeys.routine.all(),
@@ -1530,7 +1613,9 @@ export const useLinkRoutineTasksByIds = () => {
   return mutation;
 };
 
-export const useLinkRoutineItemById = () => {
+export const useLinkRoutineItemById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1541,7 +1626,11 @@ export const useLinkRoutineItemById = () => {
       }
       return await mutationFnLinkRoutineItemById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateLinkRoutineItemById(request);
       return {
         success: true as const,
@@ -1680,7 +1769,9 @@ export const useLinkRoutineItemById = () => {
   return mutation;
 };
 
-export const useLinkRoutineItemsByIds = () => {
+export const useLinkRoutineItemsByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1691,7 +1782,11 @@ export const useLinkRoutineItemsByIds = () => {
       }
       return await mutationFnLinkRoutineItemsByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateLinkRoutineItemsByIds(request);
       return {
         success: true as const,
@@ -1839,7 +1934,9 @@ export const useLinkRoutineItemsByIds = () => {
   return mutation;
 };
 
-export const useRestoreMyRoutineById = () => {
+export const useRestoreMyRoutineById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1850,7 +1947,11 @@ export const useRestoreMyRoutineById = () => {
       }
       return await mutationFnRestoreMyRoutineById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateRestoreMyRoutineById(request);
       return {
         success: true as const,
@@ -1901,11 +2002,16 @@ export const useRestoreMyRoutinesByIds = (
       }
       return await mutationFnRestoreMyRoutinesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
-      await RoutineLocalSimulator.simulateRestoreMyRoutinesByIds(request);
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
+      const restored =
+        await RoutineLocalSimulator.simulateRestoreMyRoutinesByIds(request);
       return {
         success: true as const,
-        data: [],
+        data: restored,
         exception: null,
         embedded: { publicId: "" },
       } as Awaited<ReturnType<typeof mutationFnRestoreMyRoutinesByIds>>;
@@ -1944,7 +2050,9 @@ export const useRestoreMyRoutinesByIds = (
   return mutation;
 };
 
-export const useDeleteMyRoutineById = () => {
+export const useDeleteMyRoutineById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -1955,7 +2063,11 @@ export const useDeleteMyRoutineById = () => {
       }
       return await mutationFnDeleteMyRoutineById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateDeleteMyRoutineById(request);
       return {
         success: true as const,
@@ -1998,7 +2110,9 @@ export const useDeleteMyRoutineById = () => {
   return mutation;
 };
 
-export const useDeleteMyRoutinesByIds = () => {
+export const useDeleteMyRoutinesByIds = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -2009,7 +2123,11 @@ export const useDeleteMyRoutinesByIds = () => {
       }
       return await mutationFnDeleteMyRoutinesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateDeleteMyRoutinesByIds(request);
       return {
         success: true as const,
@@ -2059,7 +2177,9 @@ export const useDeleteMyRoutinesByIds = () => {
   return mutation;
 };
 
-export const useHardDeleteMyRoutineById = () => {
+export const useHardDeleteMyRoutineById = (
+  options: { offlineFallback?: boolean } = {}
+) => {
   const queryClient = getQueryClient();
   const apolloClient = useApolloClient();
 
@@ -2070,7 +2190,11 @@ export const useHardDeleteMyRoutineById = () => {
       }
       return await mutationFnHardDeleteMyRoutineById(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateHardDeleteMyRoutineById(request);
       return {
         success: true as const,
@@ -2133,7 +2257,11 @@ export const useHardDeleteMyRoutinesByIds = (
       }
       return await mutationFnHardDeleteMyRoutinesByIds(request);
     } catch (error) {
-      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      if (
+        options.offlineFallback === false ||
+        !NetworkExceptions.isMissingNetworkError(error)
+      )
+        throw error;
       await RoutineLocalSimulator.simulateHardDeleteMyRoutinesByIds(request);
       return {
         success: true as const,
