@@ -8,8 +8,11 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 export class NetworkExceptions {
   static isMissingNetworkError = (error: unknown): boolean =>
     (error instanceof NotegicFetchError || error instanceof NotegicAPIError) &&
-    error.unWrap.reason ===
-      ExceptionReasonDictionary.client.fetch.missingNetwork;
+    (error.unWrap.reason ===
+      ExceptionReasonDictionary.client.fetch.missingNetwork ||
+      (error instanceof NotegicAPIError &&
+        error.unWrap.reason === "InternalServerError" &&
+        [502, 503, 504].includes(error.unWrap.status)));
 
   static isNetworkRequiredError = (error: unknown): boolean =>
     (error instanceof NotegicFetchError || error instanceof NotegicAPIError) &&

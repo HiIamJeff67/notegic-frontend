@@ -1,3 +1,4 @@
+import { NotegicAPIError, NotegicException } from "./index";
 import { ServerError } from "@apollo/client/errors";
 import { NetworkExceptions } from "./network.exception";
 
@@ -37,4 +38,37 @@ test("a failed fetch permits fallback while cancellation does not", () => {
       new DOMException("Cancelled", "AbortError")
     )
   ).toBe(false);
+});
+
+test.each([
+  502, 503, 504,
+])("typed HTTP %i keeps its presentation reason while permitting offline reads", status => {
+  const exception = new NotegicException({
+    code: status,
+    prefix: "Gateway",
+    reason: "InternalServerError",
+    message: "Service unavailable",
+    status,
+  });
+  const error = new NotegicAPIError(exception);
+  expect(NetworkExceptions.isMissingNetworkError(error)).toBe(true);
+  expect(NetworkExceptions.isNetworkFallbackError(error)).toBe(true);
+  expect(error.unWrap).toBe(exception);
+  expect(error.unWrap.reason).toBe("InternalServerError");
+});
+
+test.each([
+  400, 401, 403, 404, 409, 422, 500,
+])("typed HTTP %i remains an error", status => {
+  const error = new NotegicAPIError(
+    new NotegicException({
+      code: status,
+      prefix: "Gateway",
+      reason: "InternalServerError",
+      message: "Rejected",
+      status,
+    })
+  );
+  expect(NetworkExceptions.isMissingNetworkError(error)).toBe(false);
+  expect(NetworkExceptions.isNetworkFallbackError(error)).toBe(false);
 });
