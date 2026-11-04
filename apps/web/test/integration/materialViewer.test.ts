@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { getQueryClient } from '@shared/api/queryClient';
 import { queryKeys } from '@shared/api/queryKeys';
+import { invalidateDeletedResources } from '@/api/policies/availablity.policy';
 import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
 import { clearClientCSRFToken, setClientCSRFToken } from '@/api/clientHeaders';
 import { useResolveMaterialObjectTicket } from '@/api/hooks/material.hook';
@@ -40,6 +41,7 @@ const pause = stage => window.deferStage === stage
   ? new Promise(resolve => window.pending.push(resolve)) : Promise.resolve();
 const queryClient = getQueryClient();
 window.refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.material.oneById(window.ids.materialId, true) });
+window.markDeleted = () => invalidateDeletedResources(queryClient, [queryKeys.material.byId(window.ids.materialId)]);
 window.cacheState = () => queryClient.getQueryState(queryKeys.material.oneById(window.ids.materialId));
 window.api = {
   metadata: async () => {
@@ -287,6 +289,18 @@ describe("material file lifecycle in Chromium", () => {
   });
   afterAll(async () => {
     await browser?.close();
+  });
+
+  it("a confirmed deletion replaces the mounted viewer and stops renewing file tickets", async () => {
+    await page.evaluate("void mount({ contentType: 'application/pdf' });");
+    await page.waitForFunction(
+      "document.querySelector('canvas')?.width === 300"
+    );
+    const tickets = await page.evaluate("window.state.tickets.length");
+    await page.evaluate("window.markDeleted()");
+    await page.getByText(/Material.*not found/i).waitFor();
+    expect(await page.locator("canvas").count()).toBe(0);
+    expect(await page.evaluate("window.state.tickets.length")).toBe(tickets);
   });
 
   it("exposes page navigation and refresh without resetting the PDF view", async () => {

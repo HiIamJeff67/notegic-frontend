@@ -631,6 +631,8 @@ export interface RoutineTaskDependencyGraphDraftContextType {
   definitionVersion: number;
   isDirty: boolean;
   isLoading: boolean;
+  isUnavailable: boolean;
+  loadError: Error | null;
   isRetryingSync: boolean;
   isRealigning: boolean;
   isSaving: boolean;
@@ -697,10 +699,17 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const { startAsyncTransactionLoading } = useLoading();
-  const routineQuery = useGetMyRoutineById(undefined, {
-    staleTime: 0,
-    retry: false,
-  });
+  const routineQuery = useGetMyRoutineById(
+    {
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { routineId },
+    },
+    {
+      staleTime: 0,
+      retry: false,
+      refetchOnWindowFocus: true,
+    }
+  );
   const stationQuery = useGetMyStationById();
   const routineTasksQuery = useGetMyRoutineTasksByRoutineId(undefined, {
     staleTime: 0,
@@ -711,7 +720,12 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
     retry: false,
   });
   const updateGraph = useUpdateRoutineTaskGraphByRoutineId();
-  const routine = stationRoutineManager.getRoutineById(routineId);
+  const isUnavailable =
+    routineQuery.data !== undefined &&
+    (!routineQuery.data?.data || !!routineQuery.data.data.deletedAt);
+  const routine = isUnavailable
+    ? undefined
+    : stationRoutineManager.getRoutineById(routineId);
   const [draft, setDraft] =
     useState<RoutineTaskDependencyGraphDraftData | null>();
   const draftRef = useRef<RoutineTaskDependencyGraphDraftData | null>(null);
@@ -991,7 +1005,7 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
           param: { routineId },
         };
         const parent = await routineQuery.fetch(request);
-        if (cancelled) return;
+        if (cancelled || !parent.data || parent.data.deletedAt) return;
         const stationId = parent.data.stationId as UUID;
         if (!stationRoutineManager.getStationById(stationId)) {
           const station = await stationQuery.fetch({
@@ -1264,7 +1278,13 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
 
   const saveGraph = async (): Promise<boolean> => {
     const current = draftRef.current;
-    if (!current?.snapshot || saving.current || hasConflict || recovery)
+    if (
+      isUnavailable ||
+      !current?.snapshot ||
+      saving.current ||
+      hasConflict ||
+      recovery
+    )
       return false;
     saving.current = true;
     setIsSaving(true);
@@ -1570,11 +1590,14 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
         resolveConflicts,
         closeRecovery: () => setRecovery(null),
         isDirty,
-        isLoading,
+        isLoading: isLoading || routineQuery.isPending,
+        isUnavailable,
+        loadError: routineQuery.error,
         isRetryingSync: false,
         isRealigning,
         isSaving,
         canEdit:
+          !isUnavailable &&
           !!draft?.snapshot &&
           !isSaving &&
           !isReviewing &&

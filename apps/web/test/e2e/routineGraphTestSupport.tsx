@@ -1,3 +1,4 @@
+import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
 import {
   ApolloClient,
   ApolloLink,
@@ -545,3 +546,10 @@ export const mountRoutineEditor = async (
     </ScreenProvider>
   );
 };
+
+export const markGraphResourceDeleted = (task: boolean) =>
+  invalidateDeletedResources(getQueryClient(), [
+    task
+      ? queryKeys.routineTask.oneById("42345678-1234-4234-8234-123456789abc")
+      : queryKeys.routine.oneById(editorRoutineId),
+  ]);

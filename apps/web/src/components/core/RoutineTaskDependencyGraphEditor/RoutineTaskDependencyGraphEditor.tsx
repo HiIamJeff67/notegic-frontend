@@ -57,6 +57,9 @@ const RoutineTaskDependencyGraphEditor = () => {
     definitionVersion,
     isDirty,
     isLoading,
+    isUnavailable,
+    loadError,
+    draft,
     isRealigning,
     isSaving,
     canEdit,
@@ -199,11 +202,12 @@ const RoutineTaskDependencyGraphEditor = () => {
 
   if (isLoading) return <LoadingCover />;
 
-  if (!routine) {
+  if (loadError && !routine && !isUnavailable) throw loadError;
+  if (!routine || isUnavailable) {
     return (
       <main className="flex h-full min-h-0 flex-1 items-center justify-center p-6">
         <p className="text-sm text-muted-foreground">
-          {t("workspace.scope.noRoutines")}
+          {t("workspace.pages.routineNotFound")}
         </p>
       </main>
     );
@@ -215,6 +219,11 @@ const RoutineTaskDependencyGraphEditor = () => {
         <RoutineTaskInspector
           routineTaskId={editingTask.id as UUID}
           draft={editingTask}
+          isPersisted={
+            !!draft?.snapshot?.baselineTasks.some(
+              task => task.id === editingTask.id
+            )
+          }
           isOpen
           onClose={() => setEditingTaskId(null)}
           onUpdate={values => updateTask(editingTask.id, values)}

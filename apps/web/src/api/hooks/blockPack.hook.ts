@@ -52,6 +52,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { isRemoteUnavailable } from "@/api/availability";
+import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
 import {
   mutationFnCreateBlockPack,
   mutationFnCreateBlockPacks,
@@ -79,7 +80,8 @@ export const useGetMyBlockPackById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyBlockPackByIdRequest
+    request?: GetMyBlockPackByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyBlockPackByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -93,42 +95,36 @@ export const useGetMyBlockPackById = (
       }
 
       const response = await queryFnGetMyBlockPackById(request);
+      signal?.throwIfAborted();
       await BlockPackLocalSynchronizer.syncGetMyBlockPackById(response);
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const existingBlockPack =
-          await BlockPackLocalSimulator.simulateGetMyBlockPackById(request);
-        const blockPack = existingBlockPack
-          ? {
-              ...existingBlockPack,
-              lastUpdateSequence: 0,
-              compactedUntilSequence: 0,
-              projectedUntilSequence: -1,
-              isProjectionCurrent: false,
-            }
-          : null;
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: blockPack,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: blockPack,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyBlockPackByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyBlockPackByIdResponse;
       }
-
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const existingBlockPack =
+        await BlockPackLocalSimulator.simulateGetMyBlockPackById(request);
+      const blockPack = existingBlockPack
+        ? {
+            ...existingBlockPack,
+            lastUpdateSequence: 0,
+            compactedUntilSequence: 0,
+            projectedUntilSequence: -1,
+            isProjectionCurrent: false,
+          }
+        : null;
+      return {
+        success: true,
+        data: blockPack,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyBlockPackByIdResponse;
     }
   };
 
@@ -137,7 +133,7 @@ export const useGetMyBlockPackById = (
       hookRequest?.param.blockPackId as UUID | undefined,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -153,7 +149,7 @@ export const useGetMyBlockPackById = (
         callbackRequest.param.blockPackId as UUID | undefined,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });
@@ -939,6 +935,15 @@ export const useDeleteMyBlockPackById = () => {
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
+      if (!response.success) return;
+      await invalidateDeletedResources(queryClient, [
+        queryKeys.blockPack.oneById(variables.body.blockPackId as UUID),
+      ]);
+      if (response.embedded?.publicId !== "")
+        await BlockPackLocalSynchronizer.syncDeleteMyBlockPackById(
+          variables,
+          response
+        );
       const blockPackId = variables.body.blockPackId as UUID;
       const parentSubShelfId = variables.affected.parentSubShelfId as UUID;
       const rootShelfId = variables.affected.rootShelfId as UUID;
@@ -949,15 +954,10 @@ export const useDeleteMyBlockPackById = () => {
         queryKeys.blockPack.manyByParentSubShelfId(parentSubShelfId),
         queryKeys.blockPack.manyByRootShelfId(rootShelfId),
       ];
-      Promise.all(
+      await Promise.all(
         targetKeys.map(targetKey =>
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
-      );
-      if (response.embedded?.publicId === "") return;
-      await BlockPackLocalSynchronizer.syncDeleteMyBlockPackById(
-        variables,
-        response
       );
     },
   });
@@ -997,6 +997,19 @@ export const useDeleteMyBlockPacksByIds = (
   const mutation = useMutation({
     mutationFn: perform,
     onSuccess: async (response, variables) => {
+      if (!response.success) return;
+      await invalidateDeletedResources(
+        queryClient,
+        variables.body.blockPackIds.map(id =>
+          queryKeys.blockPack.oneById(id as UUID)
+        )
+      );
+      if (response.embedded?.publicId !== "")
+        await BlockPackLocalSynchronizer.syncDeleteMyBlockPacksByIds(
+          variables,
+          response
+        );
+
       const blockPackIds = (variables.body.blockPackIds || []).filter(
         Boolean
       ) as UUID[];
@@ -1019,15 +1032,10 @@ export const useDeleteMyBlockPacksByIds = (
           queryKeys.blockPack.oneById(blockPackId),
         ]),
       ];
-      Promise.all(
+      await Promise.all(
         targetKeys.map(targetKey =>
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
-      );
-      if (response.embedded?.publicId === "") return;
-      await BlockPackLocalSynchronizer.syncDeleteMyBlockPacksByIds(
-        variables,
-        response
       );
     },
   });
@@ -1068,11 +1076,18 @@ export const useHardDeleteMyBlockPacksByIds = (
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.blockPackIds.map(id =>
+          queryKeys.blockPack.oneById(id as UUID)
+        )
+      );
+      await BlockPackLocalSynchronizer.syncHardDeleteMyBlockPacksByIds(
+        request,
+        response
+      );
+
       const updates = await Promise.allSettled([
-        BlockPackLocalSynchronizer.syncHardDeleteMyBlockPacksByIds(
-          request,
-          response
-        ),
         queryClient.invalidateQueries({ queryKey: queryKeys.rootShelf.all() }),
         queryClient.invalidateQueries({ queryKey: queryKeys.subShelf.all() }),
         queryClient.invalidateQueries({ queryKey: queryKeys.blockPack.all() }),

@@ -2022,3 +2022,115 @@ test("Realign confirms the entire overlapping graph and preserves its queued lay
     })
   ).toEqual(snapshot.rows);
 });
+
+test("deleted Routine shows Not Found while retaining the local graph draft", async ({
+  page,
+}) => {
+  const editor = await mountLayoutEditor(page);
+  const node = editor.locator(
+    '.react-flow__node[data-id="42345678-1234-4234-8234-123456789abc"]'
+  );
+  await dragNode(page, node, 60, 30);
+  const preserved = await page.evaluate(async () => {
+    const load = (path: string) => import(/* @vite-ignore */ path);
+    const { localDB } = await load("/src/api/local/db.ts");
+    const { RoutineTaskDependencyGraphDraft } = await load(
+      "/src/api/local/schemas/index.ts"
+    );
+    return JSON.stringify(
+      await localDB.select().from(RoutineTaskDependencyGraphDraft)
+    );
+  });
+  await page.evaluate(async () => {
+    const load = (path: string) => import(/* @vite-ignore */ path);
+    const { markGraphResourceDeleted } = await load(
+      "/test/e2e/routineGraphTestSupport.tsx"
+    );
+    await markGraphResourceDeleted(false);
+  });
+  await expect(
+    editor.getByText("Routine not found.", { exact: true })
+  ).toBeVisible();
+  await expect(editor.locator(".react-flow")).toHaveCount(0);
+  expect(
+    await page.evaluate(async () => {
+      const load = (path: string) => import(/* @vite-ignore */ path);
+      const { localDB } = await load("/src/api/local/db.ts");
+      const { RoutineTaskDependencyGraphDraft } = await load(
+        "/src/api/local/schemas/index.ts"
+      );
+      return JSON.stringify(
+        await localDB.select().from(RoutineTaskDependencyGraphDraft)
+      );
+    })
+  ).toBe(preserved);
+});
+
+test("deleted persisted task stops editing without hiding its Routine or destroying form values", async ({
+  page,
+}) => {
+  const editor = await mountLayoutEditor(page);
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      get: () => false,
+    })
+  );
+  const node = editor.locator(
+    '.react-flow__node[data-id="42345678-1234-4234-8234-123456789abc"]'
+  );
+  await node.click({ button: "right", position: { x: 20, y: 20 } });
+  await page.getByRole("menuitem", { name: "Edit", exact: true }).click();
+  const title = page.locator("#routine-task-inspector-title");
+  await title.fill("Unsubmitted task title");
+  await page.evaluate(async () => {
+    const load = (path: string) => import(/* @vite-ignore */ path);
+    const { markGraphResourceDeleted } = await load(
+      "/test/e2e/routineGraphTestSupport.tsx"
+    );
+    await markGraphResourceDeleted(true);
+  });
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByText("Routine task not found.", { exact: true })
+  ).toBeVisible();
+  await expect(title).toBeHidden();
+  await expect(title).toHaveValue("Unsubmitted task title");
+  await expect(editor.locator(".react-flow")).toBeVisible();
+});
+
+test("a new draft task stays editable before it has a remote record", async ({
+  page,
+}) => {
+  const editor = await mountLayoutEditor(page);
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      get: () => false,
+    })
+  );
+  await editor.getByRole("button", { name: "Create", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Start", exact: true }).click();
+  await expect(editor.locator(".react-flow__node")).toHaveCount(3);
+  const task = editor.locator(
+    '.react-flow__node:not([data-id="22345678-1234-4234-8234-123456789abc"]):not([data-id="42345678-1234-4234-8234-123456789abc"])'
+  );
+  await task.click({ button: "right", position: { x: 20, y: 20 } });
+  await page.getByRole("menuitem", { name: "Edit", exact: true }).click();
+  const title = page.locator("#routine-task-inspector-title");
+  await title.fill("Only in my draft");
+  await expect(title).toBeVisible();
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByText("Routine task not found.", { exact: true })
+  ).toHaveCount(0);
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Save", exact: true })
+    .click();
+  await expect(
+    task.getByText("Only in my draft", { exact: true })
+  ).toBeVisible();
+});

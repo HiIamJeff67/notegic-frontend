@@ -42,6 +42,7 @@ import {
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
 import { isRemoteUnavailable } from "@/api/availability";
+import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
 import {
@@ -121,7 +122,8 @@ export const useGetMyMaterialById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyMaterialByIdRequest
+    request?: GetMyMaterialByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyMaterialByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -134,32 +136,27 @@ export const useGetMyMaterialById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
       const response = await queryFnGetMyMaterialById(request);
+      signal?.throwIfAborted();
       await MaterialLocalSynchronizer.syncGetMyMaterialById(response);
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const material =
-          await MaterialLocalSimulator.simulateGetMyMaterialById(request);
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: material,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: material,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyMaterialByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyMaterialByIdResponse;
       }
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const material =
+        await MaterialLocalSimulator.simulateGetMyMaterialById(request);
+      return {
+        success: true,
+        data: material,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyMaterialByIdResponse;
     }
   };
 
@@ -169,7 +166,7 @@ export const useGetMyMaterialById = (
       false,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -186,7 +183,7 @@ export const useGetMyMaterialById = (
         false,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });
@@ -204,7 +201,8 @@ export const useGetMyMaterialAndItsParentById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyMaterialAndItsParentByIdRequest
+    request?: GetMyMaterialAndItsParentByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyMaterialAndItsParentByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -217,36 +215,31 @@ export const useGetMyMaterialAndItsParentById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
       const response = await queryFnGetMyMaterialAndItsParentById(request);
+      signal?.throwIfAborted();
       await MaterialLocalSynchronizer.syncGetMyMaterialAndItsParentById(
         response
       );
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const material =
-          await MaterialLocalSimulator.simulateGetMyMaterialAndItsParentById(
-            request
-          );
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: material,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: material,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyMaterialAndItsParentByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyMaterialAndItsParentByIdResponse;
       }
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const material =
+        await MaterialLocalSimulator.simulateGetMyMaterialAndItsParentById(
+          request
+        );
+      return {
+        success: true,
+        data: material,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyMaterialAndItsParentByIdResponse;
     }
   };
 
@@ -256,7 +249,7 @@ export const useGetMyMaterialAndItsParentById = (
       true,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -273,7 +266,7 @@ export const useGetMyMaterialAndItsParentById = (
         true,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });
@@ -823,17 +816,27 @@ export const useDeleteMyMaterialById = (
 
   const mutation = useMutation({
     mutationFn: perform,
-    onSuccess: (response, request) => {
+    onSuccess: async (response, request) => {
+      if (!response.success) return;
+      await invalidateDeletedResources(queryClient, [
+        queryKeys.material.byId(request.body.materialId as UUID),
+      ]);
+      if (response.embedded?.publicId !== "")
+        await MaterialLocalSynchronizer.syncDeletedMaterials(
+          [request.body.materialId],
+          response.data.deletedAt
+        );
+
       const materialId = request.body.materialId as UUID;
       const parentSubShelfId = request.affected.parentSubShelfId as UUID;
       const rootShelfId = request.affected.rootShelfId as UUID;
       const targetKeys: QueryKey[] = [
         queryKeys.rootShelf.oneById(rootShelfId),
-        queryKeys.material.oneById(materialId),
+        queryKeys.material.byId(materialId),
         queryKeys.material.manyByParentSubShelfId(parentSubShelfId),
         queryKeys.material.manyByRootShelfId(rootShelfId),
       ];
-      Promise.all(
+      await Promise.all(
         targetKeys.map(targetKey =>
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
@@ -877,7 +880,18 @@ export const useDeleteMyMaterialsByIds = (
 
   const mutation = useMutation({
     mutationFn: perform,
-    onSuccess: (response, request) => {
+    onSuccess: async (response, request) => {
+      if (!response.success) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.materialIds.map(id => queryKeys.material.byId(id as UUID))
+      );
+      if (response.embedded?.publicId !== "")
+        await MaterialLocalSynchronizer.syncDeletedMaterials(
+          request.body.materialIds,
+          response.data.deletedAt
+        );
+
       const materialIds = (request.body.materialIds || []).filter(
         Boolean
       ) as UUID[];
@@ -895,11 +909,9 @@ export const useDeleteMyMaterialsByIds = (
         ...parentSubShelfIds.map(parentSubShelfId =>
           queryKeys.material.manyByParentSubShelfId(parentSubShelfId)
         ),
-        ...materialIds.map(materialId =>
-          queryKeys.material.oneById(materialId)
-        ),
+        ...materialIds.map(materialId => queryKeys.material.byId(materialId)),
       ];
-      Promise.all(
+      await Promise.all(
         targetKeys.map(targetKey =>
           queryClient.invalidateQueries({ queryKey: targetKey })
         )
@@ -946,11 +958,16 @@ export const useHardDeleteMyMaterialsByIds = (
     retry: false,
     onSuccess: async (response, request) => {
       if (!response.success) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.materialIds.map(id => queryKeys.material.byId(id as UUID))
+      );
+      await MaterialLocalSynchronizer.syncHardDeleteMyMaterialsByIds(
+        request,
+        response
+      );
+
       const updates = await Promise.allSettled([
-        MaterialLocalSynchronizer.syncHardDeleteMyMaterialsByIds(
-          request,
-          response
-        ),
         queryClient.invalidateQueries({ queryKey: queryKeys.material.all() }),
         queryClient.invalidateQueries({ queryKey: queryKeys.rootShelf.all() }),
         queryClient.invalidateQueries({ queryKey: queryKeys.userQuota.all() }),

@@ -177,6 +177,13 @@ export class NotegicAPIError extends NotegicError {
   get unWrap(): NotegicException {
     return this.exception;
   }
+
+  get isResourceUnavailable(): boolean {
+    return (
+      [403, 404, 410].includes(this.exception.status) ||
+      this.exception.reason === "NotFound"
+    );
+  }
 }
 
 const authenticationFailureReasons = new Set([
