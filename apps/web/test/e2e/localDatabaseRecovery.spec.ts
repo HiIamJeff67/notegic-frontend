@@ -9,6 +9,17 @@ test("manual recovery keeps failed data until an exported, confirmed rebuild", a
     "Uses isolated development SQLocal fixtures"
   );
   test.setTimeout(90_000);
+  const journal = JSON.parse(
+    await readFile(
+      new URL(
+        "../../src/api/local/migrations/meta/_journal.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+  const expectedVersion = journal.entries.length;
+  expect(expectedVersion).toBeGreaterThan(0);
   const hydrationErrors: string[] = [];
   page.on("console", message => {
     if (
@@ -270,8 +281,8 @@ test("manual recovery keeps failed data until an exported, confirmed rebuild", a
   });
   expect(fresh).toEqual({
     ready: true,
-    version: 5,
-    target: 5,
+    version: expectedVersion,
+    target: expectedVersion,
     legacy: [],
     users: [0],
     pending: [0],
