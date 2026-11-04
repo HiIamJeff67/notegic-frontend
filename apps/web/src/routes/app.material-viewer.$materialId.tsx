@@ -67,14 +67,19 @@ function MaterialViewerRoute() {
   const loaderData = useLoaderData({
     from: "/app/material-viewer/$materialId",
   });
-  const materialQuerier = useGetMyMaterialAndItsParentById({
-    header: getClientRequestHeaders(navigator.userAgent),
-    param: { materialId: loaderData.materialId },
-  });
+  const materialQuerier = useGetMyMaterialAndItsParentById(
+    {
+      header: getClientRequestHeaders(navigator.userAgent),
+      param: { materialId: loaderData.materialId },
+    },
+    { staleTime: 0, refetchOnWindowFocus: true }
+  );
   const { mutateAsync: createMaterialObjectTicket } =
     useCreateMaterialObjectTicket();
   const objectURLResolver = useResolveMaterialObjectTicket();
-  const material = materialQuerier.data?.data;
+  const material = materialQuerier.data?.data?.deletedAt
+    ? null
+    : materialQuerier.data?.data;
   const objectURLQuery = useQuery({
     // A metadata refetch also renews the ticket after replacing the same object.
     queryKey: queryKeys.material.objectURL(
@@ -107,8 +112,8 @@ function MaterialViewerRoute() {
   }, [materialQuerier.error, materialQuerier.isError, t]);
 
   if (materialQuerier.isPending) return <LoadingCover />;
-  if (!material)
-    return <MaterialViewerNotFoundPage id={loaderData.materialId} />;
+  if (materialQuerier.isError && !material) throw materialQuerier.error;
+  if (!material) return <MaterialViewerNotFoundPage />;
 
   return (
     <MaterialViewerPage

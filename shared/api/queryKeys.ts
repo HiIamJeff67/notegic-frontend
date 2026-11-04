@@ -48,6 +48,7 @@ export const queryKeys = {
       ["subShelf", "manyByRootShelfId", rootShelfId, areDeleted] as const,
   },
   material: {
+    byId: (id: UUID) => ["material", "oneById", id] as const,
     all: () => ["material"] as const,
     objectTicket: (objectTicket?: string | null) =>
       ["material", "objectTicket", objectTicket] as const,

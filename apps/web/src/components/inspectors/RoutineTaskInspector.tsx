@@ -52,6 +52,7 @@ interface RoutineTaskInspectorProps {
   onClose: () => void;
   onUpdated?: () => void;
   draft?: GetMyRoutineTaskByIdResponse["data"];
+  isPersisted?: boolean;
   onUpdate?: (
     values: Partial<
       Pick<
@@ -68,12 +69,26 @@ const RoutineTaskInspector = ({
   onClose,
   onUpdated,
   draft,
+  isPersisted = true,
   onUpdate,
 }: RoutineTaskInspectorProps) => {
   const { t } = useTranslation();
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
-  const getRoutineTaskQuerier = useGetMyRoutineTaskById();
+  const getRoutineTaskQuerier = useGetMyRoutineTaskById(
+    isPersisted && isOpen
+      ? {
+          header: getClientRequestHeaders(navigator.userAgent),
+          param: { routineTaskId },
+        }
+      : undefined,
+    { staleTime: 0, refetchOnWindowFocus: true }
+  );
+  const isUnavailable =
+    isPersisted &&
+    getRoutineTaskQuerier.data !== undefined &&
+    !getRoutineTaskQuerier.data?.data;
+
   const getRoutineQuerier = useGetMyRoutineById();
   const updateNode = useUpdateMyRoutineTaskById();
   const [isUpdatingDraft, setIsUpdatingDraft] = useState(false);
@@ -192,6 +207,7 @@ const RoutineTaskInspector = ({
   }, [isOpen, routineTaskId, draft]);
 
   const updateRoutineTask = async () => {
+    if (isUnavailable) return;
     const title = values.title.trim();
     if (title.length === 0) return;
     if (startingPayload) {
@@ -290,10 +306,20 @@ const RoutineTaskInspector = ({
               {t("workspace.inspector.routineTaskDescription")}
             </SheetDescription>
           </SheetHeader>
+          {isUnavailable && (
+            <p
+              className="flex flex-1 items-center justify-center p-6"
+              role="status"
+            >
+              {t("workspace.pages.routineTaskNotFound")}
+            </p>
+          )}
           <form
             noValidate
             autoComplete="off"
-            className="flex min-h-0 flex-1 flex-col"
+            className={
+              isUnavailable ? "hidden" : "flex min-h-0 flex-1 flex-col"
+            }
             onSubmit={async event => {
               event.preventDefault();
               await updateRoutineTask();
@@ -466,7 +492,7 @@ const RoutineTaskInspector = ({
               </Button>
             </SheetFooter>
           </form>
-          {isPayloadEditorOpen && (
+          {isPayloadEditorOpen && !isUnavailable && (
             <Suspense fallback={null}>
               <RoutineTaskPayloadEditor
                 isOpen={isPayloadEditorOpen}

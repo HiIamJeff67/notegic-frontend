@@ -34,6 +34,7 @@ import {
 } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { isRemoteUnavailable } from "@/api/availability";
+import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
 import {
   mutationFnCreateRoutineTaskByRoutineId,
   mutationFnHardDeleteMyRoutineTaskById,
@@ -76,7 +77,8 @@ export const useGetMyRoutineTaskById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyRoutineTaskByIdRequest
+    request?: GetMyRoutineTaskByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyRoutineTaskByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -90,33 +92,27 @@ export const useGetMyRoutineTaskById = (
       }
 
       const response = await queryFnGetMyRoutineTaskById(request);
+      signal?.throwIfAborted();
       await RoutineTaskLocalSynchronizer.syncGetMyRoutineTaskById(response);
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const routineTask =
-          await RoutineTaskLocalSimulator.simulateGetMyRoutineTaskById(request);
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: routineTask,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: routineTask,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyRoutineTaskByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyRoutineTaskByIdResponse;
       }
-
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const routineTask =
+        await RoutineTaskLocalSimulator.simulateGetMyRoutineTaskById(request);
+      return {
+        success: true,
+        data: routineTask,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyRoutineTaskByIdResponse;
     }
   };
 
@@ -125,7 +121,7 @@ export const useGetMyRoutineTaskById = (
       hookRequest?.param.routineTaskId as UUID | undefined,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -141,7 +137,7 @@ export const useGetMyRoutineTaskById = (
         callbackRequest.param.routineTaskId as UUID | undefined,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });
@@ -477,7 +473,11 @@ export const useHardDeleteMyRoutineTaskById = (allowOffline = true) => {
       response,
       request: HardDeleteMyRoutineTaskByIdRequest
     ) => {
-      if (response.success)
+      if (!response.success) return;
+      await invalidateDeletedResources(queryClient, [
+        queryKeys.routineTask.oneById(request.body.routineTaskId as UUID),
+      ]);
+      if (response.embedded?.publicId !== "")
         await RoutineTaskLocalSynchronizer.syncHardDeleteMyRoutineTaskById(
           request
         );
@@ -517,6 +517,21 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
       response,
       request: HardDeleteMyRoutineTasksByIdsRequest
     ) => {
+      if (!response.success) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.routineTaskIds.map(id =>
+          queryKeys.routineTask.oneById(id as UUID)
+        )
+      );
+      await Promise.all(
+        request.body.routineTaskIds.map(routineTaskId =>
+          RoutineTaskLocalSynchronizer.syncHardDeleteMyRoutineTaskById({
+            ...request,
+            body: { routineTaskId },
+          })
+        )
+      );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.routineTask.all(),

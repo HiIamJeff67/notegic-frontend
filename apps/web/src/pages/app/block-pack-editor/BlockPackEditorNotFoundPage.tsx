@@ -1,13 +1,9 @@
 import { useTranslation } from "@/hooks/useTranslation";
-import type { UUID } from "crypto";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
-const BlockPackEditorNotFoundPage = ({ id }: { id?: UUID }) => {
+const BlockPackEditorNotFoundPage = () => {
   const { t } = useTranslation();
   const sidebarManager = useSidebar();
-  const notFoundMessage = id
-    ? t("workspace.pages.blockPackIdNotFound", { id })
-    : t("workspace.pages.blockPackNotFound");
   return (
     <div
       className={
@@ -19,7 +15,7 @@ const BlockPackEditorNotFoundPage = ({ id }: { id?: UUID }) => {
       {sidebarManager.isMobile && (
         <SidebarTrigger className="fixed top-2 left-2 z-40 border-none bg-transparent" />
       )}
-      {notFoundMessage}
+      {t("workspace.pages.blockPackNotFound")}
     </div>
   );
 };

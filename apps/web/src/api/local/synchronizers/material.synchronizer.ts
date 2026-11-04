@@ -45,6 +45,23 @@ export const replaceMaterialId = <T>(
 };
 
 export class MaterialLocalSynchronizer {
+  static syncDeletedMaterials = async (
+    ids: string[],
+    deletedAt: Date
+  ): Promise<void> => {
+    if (!localDB.isReady) await localDB.ensureReady();
+    await localDB.transaction(async tx => {
+      await tx
+        .update(Material)
+        .set({ deletedAt, updatedAt: deletedAt })
+        .where(inArray(Material.id, ids));
+      await tx
+        .update(Item)
+        .set({ deletedAt, updatedAt: deletedAt })
+        .where(inArray(Item.id, ids));
+    });
+  };
+
   static syncGetMyMaterialById = async (
     response: GetMyMaterialByIdResponse
   ): Promise<void> => {

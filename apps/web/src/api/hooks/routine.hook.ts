@@ -58,6 +58,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { isRemoteUnavailable } from "@/api/availability";
+import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -174,7 +175,8 @@ export const useGetMyRoutineById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyRoutineByIdRequest
+    request?: GetMyRoutineByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyRoutineByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -188,33 +190,27 @@ export const useGetMyRoutineById = (
       }
 
       const response = await queryFnGetMyRoutineById(request);
+      signal?.throwIfAborted();
       await RoutineLocalSynchronizer.syncGetMyRoutineById(response);
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const routine =
-          await RoutineLocalSimulator.simulateGetMyRoutineById(request);
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: routine,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: routine,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyRoutineByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyRoutineByIdResponse;
       }
-
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const routine =
+        await RoutineLocalSimulator.simulateGetMyRoutineById(request);
+      return {
+        success: true,
+        data: routine,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyRoutineByIdResponse;
     }
   };
 
@@ -223,7 +219,7 @@ export const useGetMyRoutineById = (
       hookRequest?.param.routineId as UUID | undefined,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -239,7 +235,7 @@ export const useGetMyRoutineById = (
         callbackRequest.param.routineId as UUID | undefined,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });
@@ -2082,6 +2078,14 @@ export const useDeleteMyRoutineById = (
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyRoutineByIdRequest) => {
       if (response.success === false) return;
+      await invalidateDeletedResources(queryClient, [
+        queryKeys.routine.oneById(request.body.routineId as UUID),
+      ]);
+      if (response.embedded?.publicId !== "")
+        await RoutineLocalSynchronizer.syncDeleteMyRoutineById(
+          request,
+          response
+        );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2102,8 +2106,6 @@ export const useDeleteMyRoutineById = (
       clearSearchStations(apolloClient.cache);
       clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
-      if (response.embedded?.publicId === "") return;
-      await RoutineLocalSynchronizer.syncDeleteMyRoutineById(request, response);
     },
   });
 
@@ -2142,6 +2144,15 @@ export const useDeleteMyRoutinesByIds = (
     mutationFn: perform,
     onSuccess: async (response, request: DeleteMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.routineIds.map(id => queryKeys.routine.oneById(id as UUID))
+      );
+      if (response.embedded?.publicId !== "")
+        await RoutineLocalSynchronizer.syncDeleteMyRoutinesByIds(
+          request,
+          response
+        );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2166,11 +2177,6 @@ export const useDeleteMyRoutinesByIds = (
       clearSearchStations(apolloClient.cache);
       clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
-      if (response.embedded?.publicId === "") return;
-      await RoutineLocalSynchronizer.syncDeleteMyRoutinesByIds(
-        request,
-        response
-      );
     },
   });
 
@@ -2210,6 +2216,14 @@ export const useHardDeleteMyRoutineById = (
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutineByIdRequest) => {
       if (response.success === false) return;
+      await invalidateDeletedResources(queryClient, [
+        queryKeys.routine.oneById(request.body.routineId as UUID),
+      ]);
+      if (response.embedded?.publicId !== "")
+        await RoutineLocalSynchronizer.syncHardDeleteMyRoutineById(
+          request,
+          response
+        );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2233,11 +2247,6 @@ export const useHardDeleteMyRoutineById = (
       clearSearchStations(apolloClient.cache);
       clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
-      if (response.embedded?.publicId === "") return;
-      await RoutineLocalSynchronizer.syncHardDeleteMyRoutineById(
-        request,
-        response
-      );
     },
   });
 
@@ -2277,6 +2286,15 @@ export const useHardDeleteMyRoutinesByIds = (
     mutationFn: perform,
     onSuccess: async (response, request: HardDeleteMyRoutinesByIdsRequest) => {
       if (response.success === false) return;
+      await invalidateDeletedResources(
+        queryClient,
+        request.body.routineIds.map(id => queryKeys.routine.oneById(id as UUID))
+      );
+      if (response.embedded?.publicId !== "")
+        await RoutineLocalSynchronizer.syncHardDeleteMyRoutinesByIds(
+          request,
+          response
+        );
       const targetKeys = [
         queryKeys.routine.all(),
         queryKeys.station.all(),
@@ -2301,13 +2319,6 @@ export const useHardDeleteMyRoutinesByIds = (
       clearSearchStations(apolloClient.cache);
       clearSearchRoutineTags(apolloClient.cache);
       apolloClient.cache.gc();
-      if (response.embedded?.publicId === "") return;
-      await RoutineLocalSynchronizer.syncHardDeleteMyRoutinesByIds(
-        request,
-        response
-      ).catch(error =>
-        console.error("Failed to refresh confirmed Trash action", error)
-      );
     },
   });
 

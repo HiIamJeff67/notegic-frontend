@@ -71,3 +71,24 @@ shared concept is proven.
 - Are types and constants colocated with their only consumer?
 - Are effects, subscriptions, and cleanup owned by the correct hook?
 - Does the hook have a real shared consumer, or is it speculative?
+
+## Open resource availability
+
+An open viewer/editor observes its actual resource-ID query. An imperative
+`.fetch()` followed by copied React state cannot track cache invalidation.
+Keep availability in that query and editing values in their existing owner;
+background refetches must not remount the editor or reset its draft.
+
+Confirmed single/bulk deletion updates matching detail queries through
+`api/policies/availablity.policy.ts`, including in-flight first reads.
+Synchronize local deletion before refetching related lists. Material detail
+invalidation includes both plain and `withParent` keys. Failed deletion must
+leave the resource available. Restore uses the existing query observer.
+
+Read hooks retain local fallback for missing-network errors. Authoritative
+missing/denied responses must not fall back to stale editable data; unrelated
+server failures remain errors. Render the existing resource's Not Found view
+without IDs. Deleting a Routine disables its graph, while deleting one persisted
+task disables only its inspector. New tasks absent from the draft baseline
+have no remote existence requirement. Keep graph drafts and unsaved form values;
+never clear storage, reset migrations or force a remount to handle deletion.

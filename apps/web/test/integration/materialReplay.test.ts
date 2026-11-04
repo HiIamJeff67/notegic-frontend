@@ -298,3 +298,27 @@ test("reference replacement preserves user content and handles nested batch refe
   });
   expect(body.linkedRoutinesAndItems[0].itemId).toBe(offlineId);
 });
+
+test("confirmed soft deletion keeps Material metadata and links without creating replay work", async () => {
+  const db = fixture();
+  try {
+    await MaterialLocalSynchronizer.syncDeletedMaterials(
+      [offlineId],
+      new Date(5000)
+    );
+    expect(
+      db.prepare("SELECT id,name,deleted_at FROM MaterialTable").all()
+    ).toEqual([{ id: offlineId, name: "Renamed locally", deleted_at: 5 }]);
+    expect(db.prepare("SELECT deleted_at FROM ItemTable").all()).toEqual([
+      { deleted_at: 5 },
+    ]);
+    expect(
+      db.prepare("SELECT item_id FROM RoutinesToItemsTable").all()
+    ).toEqual([{ item_id: offlineId }]);
+    expect(db.prepare("SELECT sequence FROM TransactionTable").all()).toEqual(
+      []
+    );
+  } finally {
+    db.close();
+  }
+});
