@@ -129,36 +129,26 @@ that hook accepts. While that domain's parameter is the current step, the
 palette sends the current text as that hook's query. Debounce the request.
 Do not mount every search hook at once; run the hook for the active domain.
 
-These hooks already fall back through the local search adapters:
+The existing hooks use `api/bridges/searchLocal.bridge.ts` and the adapters
+in `api/adapters/searchLocal.adapter.ts`. Missing-network reads fall back to
+cached local rows within the current user's permissions and scope:
 
-- Root shelves
-- Stations
-- Routines
-- Routine tags
+- Root shelves, stations, routines and routine tags keep their existing local adapters.
+- `searchSubShelves` accepts optional `rootShelfId` and `prevSubShelfId`.
+- `searchMaterials` and `searchBlockPacks` accept optional `rootShelfId` and
+  `parentSubShelfId`. Both have local adapters; Material metadata now has its
+  own local table. A metadata hit does not establish offline file availability.
+- `searchRoutines` accepts required `stationIds` and `tagIds` lists, which may
+  be empty for a root-domain search.
+- `searchRoutineTasks` accepts a required `routineIds` list; a locked routine
+  passes that routine and can read its cached tasks offline.
+- `searchItems` accepts optional `rootShelfId` and `parentSubShelfId`. A locked
+  sub shelf passes both and reads its local Material and BlockPack rows.
 
-The client already has these GraphQL queries and lazy hooks. `AppCommand`
-calls the active one. Materials and block packs have no offline adapter:
-
-- `searchSubShelves` (`useSearchSubShelvesLazyQuery`) falls back to the
-  local sub shelf rows when the network request fails. `rootShelfId` and
-  `prevSubShelfId` are optional.
-- `searchMaterials` (`useSearchMaterialsLazyQuery`). `rootShelfId` and
-  `parentSubShelfId` are optional.
-- `searchBlockPacks` (`useSearchBlockPacksLazyQuery`). `rootShelfId` and
-  `parentSubShelfId` are optional. It falls back to the local block pack rows.
-- `searchMaterials` (`useSearchMaterialsLazyQuery`). `rootShelfId` and
-  `parentSubShelfId` are optional. Materials are not stored in the local
-  database, so this search stays on the network.
-- `searchRoutines` (`useSearchRoutinesLazyQuery`). `stationIds` and `tagIds`
-  are required lists and may be empty. Trash already calls it that way.
-- `searchRoutineTasks` (`useSearchRoutineTasksLazyQuery`). `routineIds` is a
-  required list. A locked routine passes that routine. It falls back to the
-  local routine task rows.
-- `searchItems` (`useSearchItemsLazyQuery`). `rootShelfId` and
-  `parentSubShelfId` are optional. A locked sub shelf passes both, so one
-  search returns that shelf's materials and block packs. The local simulator
-  reads block packs stored for that shelf when the network search is unavailable.
-  Materials and block packs already loaded on that shelf are included as well.
+The palette calls only its active domain's hook. Local fallback cannot invent
+rows or permissions that were never cached. Opening a Material resolves its
+root shelf from the known context or its parent sub shelf through the existing
+owner; it does not require the operator to lock a root shelf first.
 
 Do not add another search field for these domains. A root entry omits the
 parent field, or passes an empty id list. A parent entry sets that field
@@ -192,7 +182,7 @@ does not change secrets, API keys, sessions, or passwords.
 
 Actions on a locked object follow that object's sidebar context menu from top to bottom, continuing across the menu's sections. The root navigation row is Routines overview. The Routines domain stays the searchable routine list.
 
-A locked station offers View in overview, Open in inspector, Routine, Rename, and Delete. View in overview opens that station's routines overview. Routine opens the existing create dialog. A locked routine lists its tasks directly and offers, in menu order, View in overview, View all task records, Open in inspector, Orchestrate tasks, Task, Rename, and Delete. View in overview opens that routine's station overview and is the same row in the routine context menu. Orchestrate tasks opens that routine's dependency graph editor. View all task records opens the existing routine task record dialog. Task opens the existing create-task dialog. A locked task offers View all records, Open in inspector, and Rename. View all records opens the same dialog for that task. Rename from the command opens a rename dialog and runs the existing rename hook. Rename in the sidebar still edits the row in place.
+A locked station offers View in overview, Open in inspector, Routine, Rename, and Delete. View in overview opens that station's routines overview. Routine opens the existing create dialog. A locked routine lists its tasks directly and offers, in menu order, View in overview, View all task records, Open in inspector, Orchestrate tasks, Task, Rename, and Delete. View in overview opens that routine's station overview and is the same row in the routine context menu. Orchestrate tasks opens that routine's dependency graph editor. View all task records opens the existing routine task record dialog. Task opens the existing create-task dialog. A locked task offers View all records, Open in inspector, and Rename. View all records opens the same dialog for that task. Rename from the command reuses `dialogs/RenameDialog/RenameDialog.tsx` with the task mutation and completion callback. Rename in the sidebar still edits the row in place.
 
 ## Presentation
 
@@ -225,3 +215,19 @@ scores badly, and it still scores the page rather than the account.
 
 An AI retrieval step is another domain or terminal operation on the chain. It
 is not part of the first grammar and must not widen the search hooks.
+
+
+## Verification status
+
+The 2026-11-04 [workspace verification](../../runbooks/workspace-release-verification.md)
+found document-entry hydration and version hash-navigation failures. The
+2026-11-05 correction renders `ArticleCommand` directly, like `AppCommand`,
+instead of returning `null` on the server and creating a body portal on the
+initial client render. The fixed overlay keeps the same SSR/client tree.
+
+The deep-link regression now checks entry at `#version-0-2-0`, navigation through
+the command domains to the hidden previous version, sidebar selection and no
+hydration errors. It passes in development and against a fresh built Node SSR
+server. Preserve those assertions when changing the command layout; no extra
+scroll workaround was needed. Production rollout and live-backend acceptance
+remain separate decisions.
