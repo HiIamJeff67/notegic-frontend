@@ -144,9 +144,20 @@ export const mountRoutineGraph = () => {
   });
   document.body.append(container);
   createRoot(container).render(
-    <ScreenProvider>
-      <RoutineGraphFixture />
-    </ScreenProvider>
+    <ApolloProvider
+      client={
+        new ApolloClient({
+          cache: new InMemoryCache(),
+          link: ApolloLink.empty(),
+        })
+      }
+    >
+      <QueryClientProvider client={getQueryClient()}>
+        <ScreenProvider>
+          <RoutineGraphFixture />
+        </ScreenProvider>
+      </QueryClientProvider>
+    </ApolloProvider>
   );
 };
 
@@ -388,7 +399,7 @@ const ActiveProbe = () => {
         const response = await mutation.mutateAsync({
           body: { routineId: editorRoutineId, values: { isActive: false } },
         });
-        setPending(!response.success);
+        setPending(response.embedded?.publicId === "");
       }}
     >
       {pending ? "Active queued" : "Pause fixture"}

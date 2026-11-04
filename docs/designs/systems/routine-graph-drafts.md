@@ -68,6 +68,11 @@ Routine updates return the committed definition version. A restored draft checks
 a differing workspace version against fresh online reads. Recovery reads the
 Routine version, tasks and edges, then verifies the version again; mixed reads,
 offline fallbacks and pending legacy writes cannot become a new baseline.
+The read hooks can return a successful local fallback with an empty
+`embedded.publicId`. Conflict review rejects that response at each of the four
+read boundaries, even when its data and version look valid. Ordinary offline
+editing can use the cache; verifying a new remote baseline cannot. A rejected
+read leaves Review available and the original draft intact.
 Every read builds fresh authentication headers. The subsequent backend write
 still locks and compares the expected version, covering changes after that read.
 
