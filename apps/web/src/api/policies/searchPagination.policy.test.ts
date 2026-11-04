@@ -1,6 +1,6 @@
 import { gql, InMemoryCache } from "@apollo/client";
 import { searchPaginationPolicy } from "./searchPagination.policy";
-import { searchQueryFieldPolicies } from "./searchQueryFields";
+import { searchQueryFieldPolicies } from "./searchQueryFields.policy";
 import { searchRoutinesPolicy } from "./searchRoutines.policy";
 
 test("Routine mutation modifiers retain the existing input envelope and empty ID lists", () => {
