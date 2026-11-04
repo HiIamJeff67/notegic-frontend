@@ -79,7 +79,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-11-03, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **127 referenced export names / 102 distinct
+imports and re-exports (excluding tests). There are **133 referenced export names / 108 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -91,10 +91,11 @@ The source column gives a representative existing consumer, not every call site.
 | `AlertCircleIcon`, `CircleAlertIcon` | Important notification / alert | [NotificationPopover], [NotificationDialog] |
 | `AlertTriangleIcon`, `TriangleAlert` | Warning notification / toast | [NotificationPopover], [Toaster] |
 | `ArrowDownUp` | Routine and record sorting field / direction | [RoutineSearchOrder] |
+| `AppWindowIcon` | Browser permission settings | [PreferencesPage], [AppCommandItem] |
 | `ArchiveRestoreIcon` | Restore deleted workspace data | [TrashPage] |
-| `BellIcon` | Notifications | [NotificationPopover] |
+| `BellIcon` | Notifications, including preference reminders | [NotificationPopover], [PreferencesPage], [AppCommandItem] |
 | `BlocksIcon` | Block content-unit identity in API reference | [API]; not a Block pack identity substitute |
-| `BookOpenIcon` | Document navigation, documentation/website guides | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand] |
+| `BookOpenIcon` | Document navigation and the Website guide tab | [HomePage], [AppSidebar], [ArticleNavigation], [ArticleCommand], [Website] |
 | `Bookmark` | Pin/unpin Routine presentation | [RoutineTable], [RoutineMenu] |
 | `Braces` | JSON code format | [CodeExamplePanel] |
 | `CalendarClock` | Routine time-rail schedule | [TimeRails] |
@@ -103,7 +104,7 @@ The source column gives a representative existing consumer, not every call site.
 | `ChartNoAxesCombined` | Routine analytics / chart view | [RoutineCharts], [RoutineScopeBar] |
 | `Check`, `CheckIcon` | Selected, completed, copied or confirmed | [Checkbox], [DropdownMenu], [SupportedIconTable], [CodeBlock] |
 | `CheckCircle2`, `CheckCircle2Icon`, `CircleCheck` | Success / completed guide step | [GuideWidget], [VersionCard], [Toaster] |
-| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field; native open-state rotation for recovery Export | [Select], [GuideWidget], [LocalDBRecoveryCover], [AppCommandItem] |
+| `ChevronDown`, `ChevronDownIcon` | Expand / dropdown / next field; native open-state rotation for recovery Export | [Select], [GuideWidget], [LocalDBRecoveryCover] |
 | `ChevronLeft`, `ChevronLeftIcon` | Previous / previous month / PDF page | [GuideWidget], [Calendar], [MaterialPDFViewer] |
 | `ChevronRight`, `ChevronRightIcon` | Next / submenu / breadcrumb / PDF page | [ContextMenu], [ItemPath], [MaterialPDFViewer] |
 | `ChevronUpIcon` | Collapse / previous field | [VersionCard], [CreateRoutineTaskDialog] |
@@ -122,7 +123,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer], [LocalDBRecoveryCover] |
 | `EllipsisVerticalIcon` | Overflow / more actions | [BlockSideMenu], [Extendable]; graph nodes use their context menu instead |
 | `EraserIcon` | Erase PDF annotation | [MaterialPDFViewer] |
-| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item | [MaterialMenu], [PrivacyPolicyPage], [DocumentPrivacyPolicy] |
+| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item / view in overview | [MaterialMenu], [PrivacyPolicyPage], [DocumentPrivacyPolicy], [StationMenu], [RoutineMenu], [AppCommandItem] |
 | `Eye` | View execution details | [RoutineRecordTable] |
 | `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [API] |
 | `FilePlus` | Import material content | [MaterialViewerFrame] |
@@ -132,17 +133,20 @@ The source column gives a representative existing consumer, not every call site.
 | `GaugeIcon` | Plan usage/limits | [UpgradeTab] |
 | `GitBranchIcon` | Versions / API-reference section | [Versions], [API] |
 | `Globe2`, `Globe2Icon` | Web / HTTP / API context | [CodeExamplePanel], [API] |
-| `GripHorizontalIcon` | App command trigger; horizontal six-dot grip, not a drag handle | [AppCommand] |
+| `GripHorizontalIcon` | App command trigger; horizontal six-dot grip, not a drag handle | [AppCommand], [ArticleCommand] |
 | `GripVertical`, `GripVerticalIcon` | Drag / reorder / resize handle | [BlockSideMenu], [Resizable], [TodoWidget], [PrivacyTab] |
-| `HardDriveIcon` | Local storage preferences | [PreferencesContent] |
-| `HeartIcon` | Support / upgrade page | [UpgradeTab] |
+| `HardDriveIcon` | Local storage preferences | [PreferencesContent], [PreferencesPage], [AppCommandItem] |
+| `HeartIcon` | Support / upgrade page | [UpgradeTab], [AccountSettingsPage], [AppCommandItem] |
 | `GitFork` | Routine task Start kind; consume as `RoutineTaskStartIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
 | `HighlighterIcon` | Highlight PDF content | [MaterialPDFViewer] |
 | `HistoryIcon` | Execution history | [RoutineMenu], [RoutineTaskRecordTable], [AppCommandItem] |
+| `IdCardIcon` | Account identity, plan, and status | [AccountSettingsPage], [AppCommandItem] |
 | `Import` | Import Block pack content | [BlockPackEditorContent] |
-| `Info`, `InfoIcon` | Informational toast / notification | [Toaster], [NotificationPopover] |
-| `KeyRoundIcon` | API key documentation | [APIKey] |
-| `LayoutDashboardIcon` | Dashboard navigation | [AppSidebar] |
+| `Info`, `InfoIcon` | Informational toast and About settings | [Toaster], [NotificationPopover], [PreferencesPage], [AppCommandItem] |
+| `KeyRoundIcon` | API key documentation and key management | [APIKey], [AccountSettingsPage], [AppCommandItem] |
+| `LayoutDashboardIcon` | Dashboard navigation and dashboard preferences | [AppSidebar], [PreferencesPage], [AppCommandItem] |
+| `LibraryIcon` | Document Overview tab | [Overview] |
+| `Link2Icon` | Account bindings for backup contacts and external accounts | [AccountSettingsPage], [AppCommandItem] |
 | `LinkIcon` | Todo linked item | [TodoWidget] |
 | `ListFilter` | Routine and record filter controls | [RecordFilters], [RoutineTable], [RoutineTaskTable] |
 | `Loader2Icon`, `LoaderCircle`, `LoaderCircleIcon` | Loading / pending work | [Spinner], [RoutineMenu], [HomePage] |
@@ -150,7 +154,7 @@ The source column gives a representative existing consumer, not every call site.
 | `MailIcon` | Contact/email navigation | [ArticleNavigation] |
 | `Map` | Graph minimap control (local alias `MapIcon`) | [GraphCanvas] |
 | `Maximize2Icon` | Expand settings view | [AccountSettingsPage] |
-| `MessageSquareWarningIcon` | Feedback navigation / recovery report | [AppSidebar], [LocalDBRecoveryCover], [AppCommandItem] |
+| `MessageSquareWarningIcon` | Feedback navigation / recovery report | [AppSidebar], [LocalDBRecoveryCover], [AppCommandItem], [PreferencesPage] |
 | `MinusIcon` | Zoom out | [MaterialPDFViewer] |
 | `MoreHorizontal` | Collapsed breadcrumb items | [Breadcrumb] |
 | `MousePointer` | PDF selection tool | [MaterialPDFViewer] |
@@ -158,10 +162,11 @@ The source column gives a representative existing consumer, not every call site.
 | `OctagonX` | Error toast | [Toaster] |
 | `PackageIcon` | Block pack base glyph; use `BlockPackIcon` | [WorkspaceEntityIcons] |
 | `PackagePlus` | Add-items menu group | [RoutineMenu], [SubShelfMenu] |
-| `PaletteIcon` | Color selector | [ColorSelector] |
+| `PaletteIcon` | Appearance settings and color selection | [PreferencesPage], [ColorSelector], [AppCommandItem] |
 | `PanelLeftIcon` | Toggle sidebar | [Sidebar] |
 | `PanelRightOpenIcon` | Open settings in side panel | [AccountSettingsPage] |
 | `Pencil`, `PencilIcon` | Rename / PDF drawing tool | [RootShelfMenu], [RoutineMenu], [MaterialPDFViewer], [AppCommandItem] |
+| `PenLineIcon` | Editor preferences | [PreferencesPage], [AppCommandItem] |
 | `Plus`, `PlusIcon` | Add / create / PDF zoom in | [GraphToolbar], [MaterialPDFViewer] |
 | `Power` | Active Routine toggle state | [GraphToolbar] |
 | `PowerOff` | Inactive Routine toggle state | [GraphToolbar] |
@@ -170,9 +175,9 @@ The source column gives a representative existing consumer, not every call site.
 | `SaveIcon` | Save changes / submit graph layout | [MaterialPDFViewer], [GraphToolbar] |
 | `SearchIcon` | Search / command / filter | [SupportedIconTable], [Command] |
 | `SettingsIcon` | Settings navigation | [AppSidebar] |
-| `ShieldCheckIcon` | Security / authenticated API context / local rebuild eligibility check | [UpgradeTab], [API], [LocalDBRecoveryCover] |
-| `ShieldIcon` | Privacy documentation | [PrivacyPolicy] |
-| `SlidersHorizontalIcon` | Preferences navigation | [AppSidebar] |
+| `ShieldCheckIcon` | Security / authenticated API context / local rebuild eligibility check | [UpgradeTab], [API], [LocalDBRecoveryCover], [AccountSettingsPage], [AppCommandItem] |
+| `ShieldIcon` | Privacy documentation and privacy settings | [PrivacyPolicy], [PreferencesPage], [AppCommandItem] |
+| `SlidersHorizontalIcon` | Preferences navigation | [AppSidebar], [AppCommandItem] |
 | `SmilePlusIcon` | Choose a user emoji | [SupportedIconTable] |
 | `SquareDotIcon` | Root shelf has changed indicator | [RootShelfMenu] |
 | `SquareFunction` | Routine task Action kind; consume as `RoutineTaskActionIcon`, reserved scope above | [WorkspaceEntityIcons], [GraphToolbar] |
@@ -182,8 +187,9 @@ The source column gives a representative existing consumer, not every call site.
 | `Terminal` | Shell code format | [CodeExamplePanel] |
 | `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation | [RoutineTaskGraphNode], [TrashPage], [AppCommandItem] |
 | `TypeIcon` | PDF text annotation | [MaterialPDFViewer] |
+| `UserPenIcon` | Account changes | [AccountSettingsPage], [AppCommandItem] |
 | `UserPlusIcon` | Add/invite participant | [ParticipantsDropdown], [ShelfSharingDialog] |
-| `UserRoundIcon` | Account navigation | [AppSidebar], [AppCommandItem] |
+| `UserRoundIcon` | Account navigation and personal profile | [AppSidebar], [AppCommandItem], [AccountSettingsPage] |
 | `UsersIcon` | Participants / collaboration | [ParticipantsDropdown] |
 | `WifiOffIcon` | Offline settings | [OfflineTab] |
 | `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar], [AppCommandItem]; not Routine identity |
@@ -290,6 +296,8 @@ assets or Docker services were removed. No commit or push was performed.
 [Toaster]: ../../apps/web/src/components/ui/toaster.tsx
 [Toast]: ../../apps/web/src/components/ui/toast.tsx
 [API]: ../../apps/web/src/pages/document/api/API.tsx
+[Overview]: ../../apps/web/src/pages/document/overview/Overview.tsx
+[Website]: ../../apps/web/src/pages/document/website/Website.tsx
 [ArticleNavigation]: ../../apps/web/src/components/commons/Article/ArticleNavigation.tsx
 [HomePage]: ../../apps/web/src/pages/home/HomePage.tsx
 [RoutineTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTable/RoutineTable.tsx
@@ -311,7 +319,7 @@ assets or Docker services were removed. No commit or push was performed.
 [Calendar]: ../../apps/web/src/components/ui/calendar.tsx
 [ContextMenu]: ../../apps/web/src/components/ui/context-menu.tsx
 [ItemPath]: ../../apps/web/src/components/paths/ItemPath/ItemPath.tsx
-[CreateRoutineTaskDialog]: ../../apps/web/src/components/dialogs/StationRoutineDialog/CreateRoutineTaskDialog.tsx
+[CreateRoutineTaskDialog]: ../../apps/web/src/components/dialogs/StationRoutineDialogs/CreateRoutineTaskDialog/CreateRoutineTaskDialog.tsx
 [DashboardPage]: ../../apps/web/src/pages/app/dashboard/DashboardPage.tsx
 [TimezoneSelector]: ../../apps/web/src/components/commons/TimezoneSelector/TimezoneSelector.tsx
 [DropdownMenu]: ../../apps/web/src/components/ui/dropdown-menu.tsx
@@ -340,12 +348,13 @@ assets or Docker services were removed. No commit or push was performed.
 [BlockPackEditorContent]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackEditorContent.tsx
 [BlockSideMenu]: ../../apps/web/src/components/core/BlockPackEditor/BlockSideMenu.tsx
 [APIKey]: ../../apps/web/src/pages/document/api/APIKey.tsx
-[AppCommand]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppCommand/AppCommand.tsx
-[AppCommandItem]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppCommand/AppCommandItem.tsx
-[AppSidebar]: ../../apps/web/src/components/core/AppUtilitesWrapper/AppSidebar/AppSidebar.tsx
+[AppCommand]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppCommand/AppCommand.tsx
+[AppCommandItem]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppCommand/AppCommandItem.tsx
+[AppSidebar]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx
 [Spinner]: ../../apps/web/src/components/ui/spinner.tsx
 [GraphCanvas]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas.tsx
 [AccountSettingsPage]: ../../apps/web/src/pages/app/setting/account/AccountSettingsPage.tsx
+[PreferencesPage]: ../../apps/web/src/pages/app/setting/preferences/PreferencesPage.tsx
 [Breadcrumb]: ../../apps/web/src/components/ui/breadcrumb.tsx
 [ColorSelector]: ../../apps/web/src/components/commons/ColorSelector/ColorSelector.tsx
 [Sidebar]: ../../apps/web/src/components/ui/sidebar.tsx
@@ -356,7 +365,7 @@ assets or Docker services were removed. No commit or push was performed.
 [PrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicy.tsx
 [TrashPage]: ../../apps/web/src/pages/app/trash/TrashPage.tsx
 [ParticipantsDropdown]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackParticipantsDropdown.tsx
-[ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfSharingDialog/ShelfSharingOverviewDialog.tsx
+[ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog.tsx
 [OfflineTab]: ../../apps/web/src/pages/app/setting/account/tabs/OfflineTab.tsx
 [Closeable]: ../../apps/web/src/components/commons/Closeable/Closeable.tsx
 [Dialog]: ../../apps/web/src/components/ui/dialog.tsx

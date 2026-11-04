@@ -4,8 +4,10 @@ import {
   SearchRootShelfEdge,
   SearchRootShelfSortBy,
   SearchSortOrder,
+  SearchSubShelfSortBy,
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
+import type { GetMySubShelvesByRootShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
@@ -28,6 +30,7 @@ import {
 } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
+import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
 import {
   useCreateRootShelf,
   useDeleteMyRootShelfById,
@@ -35,7 +38,6 @@ import {
   useTransferMyRootShelfOwnership,
   useUpdateMyRootShelfById,
 } from "@/api/hooks/rootShelf.hook";
-import { useGetMySubShelvesByRootShelfId } from "@/api/hooks/subShelf.hook";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface UseRootShelfLogicProps {
@@ -57,7 +59,7 @@ export const useRootShelfLogic = ({
 }: UseRootShelfLogicProps) => {
   const { t } = useTranslation();
   const apolloClient = useApolloClient();
-  const getAllSubShelvesQuerier = useGetMySubShelvesByRootShelfId();
+  const [searchSubShelves] = useSearchSubShelvesLazyQuery();
   const createRootShelfMutator = useCreateRootShelf();
   const updateRootShelfMutator = useUpdateMyRootShelfById();
   const deleteRootShelfMutator = useDeleteMyRootShelfById();
@@ -174,17 +176,40 @@ export const useRootShelfLogic = ({
       throw new Error(`root shelf does not exist`);
     }
 
-    const userAgent = navigator.userAgent;
-    const responseOfGettingAllSubShelves = await getAllSubShelvesQuerier.fetch({
-      header: getClientRequestHeaders(userAgent),
-      param: {
-        rootShelfId: rootShelf.id,
-      },
-    });
+    const subShelves: GetMySubShelvesByRootShelfIdResponse["data"] = [];
+    let after: string | null | undefined;
+    do {
+      const result = await searchSubShelves({
+        variables: {
+          input: {
+            query: "",
+            rootShelfId: rootShelf.id,
+            first: MaxSearchLimit,
+            after,
+            sortBy: SearchSubShelfSortBy.PathLength,
+            sortOrder: SearchSortOrder.Asc,
+          },
+        },
+      });
+      const connection = result.data?.searchSubShelves;
+      subShelves.push(
+        ...((connection?.searchEdges ?? []).map(
+          edge => edge.node
+        ) as unknown as typeof subShelves)
+      );
+      after = connection?.searchPageInfo.hasNextPage
+        ? connection.searchPageInfo.endEncodedSearchCursor
+        : undefined;
+    } while (after);
 
     const newRootShelfNode = RootShelf.initializeSubShelfNodeTreeByResponse(
       shelfTreeSummary.root,
-      responseOfGettingAllSubShelves
+      {
+        success: true,
+        data: subShelves,
+        exception: null,
+        embedded: { publicId: "" },
+      }
     );
     shelfTreeSummary.root = newRootShelfNode;
     shelfTreeSummary.root.isExpanded = true;
@@ -316,7 +341,9 @@ export const useRootShelfLogic = ({
         },
       });
       if (response.success === false) throw response.exception;
-      toast.success(t("workspace.notifications.shelfRenamed"));
+      toast.success(
+        t("workspace.notifications.renamed", { name: editRootShelfName })
+      );
     } catch (error) {
       shelfTreeSummary.root.name = previousName;
       editingNode.name = previousName;
@@ -335,6 +362,41 @@ export const useRootShelfLogic = ({
     setEditingRootShelfNode,
     updateRootShelfMutator,
   ]);
+
+  const renameRootShelf = useCallback(
+    async (rootShelfId: UUID, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") {
+        throw new Error("invalid root shelf name");
+      }
+      const summary = expandedShelvesRef.current.get(rootShelfId);
+      const previousName = summary?.root.name;
+      if (previousName === nextName) return;
+      if (summary) {
+        summary.root.name = nextName;
+        forceUpdate();
+      }
+      try {
+        const response = await updateRootShelfMutator.mutateAsync({
+          header: getClientRequestHeaders(navigator.userAgent),
+          body: {
+            rootShelfId,
+            values: {
+              name: nextName,
+            },
+          },
+        });
+        if (response.success === false) throw response.exception;
+      } catch (error) {
+        if (summary && previousName !== undefined) {
+          summary.root.name = previousName;
+          forceUpdate();
+        }
+        throw error;
+      }
+    },
+    [expandedShelvesRef, forceUpdate, updateRootShelfMutator]
+  );
 
   // trigger for listen and auto focus the input with ref of inputRef declared in the top
   useEffect(() => {
@@ -497,6 +559,7 @@ export const useRootShelfLogic = ({
     startRenamingRootShelfNode: startRenamingRootShelfNode,
     cancelRenamingRootShelfNode: cancelRenamingRootShelfNode,
     renameEditingRootShelf: renameEditingRootShelf,
+    renameRootShelf: renameRootShelf,
     deleteRootShelf: deleteRootShelf,
     removeRootShelfOptimistically: removeRootShelfOptimistically,
     getRootShelfPermission,

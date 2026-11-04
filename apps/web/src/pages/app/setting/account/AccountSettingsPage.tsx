@@ -7,7 +7,17 @@ import {
 } from "@shared/lib/storage/localStorage";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import { Maximize2Icon, PanelRightOpenIcon } from "lucide-react";
+import {
+  HeartIcon,
+  IdCardIcon,
+  KeyRoundIcon,
+  Link2Icon,
+  Maximize2Icon,
+  PanelRightOpenIcon,
+  ShieldCheckIcon,
+  UserPenIcon,
+  UserRoundIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useSendAuthCode } from "@/api/hooks/auth.hook";
@@ -65,42 +75,49 @@ const AccountSettingsPage = ({
       title: t("settingsPage.account.personal.title"),
       description: t("settingsPage.account.personal.description"),
       weight: 5,
+      icon: UserRoundIcon,
     },
     {
       id: "account",
       title: t("settingsPage.account.account.title"),
       description: t("settingsPage.account.account.description"),
       weight: 3,
+      icon: IdCardIcon,
     },
     {
       id: "api-keys",
       title: t("settingsPage.account.apiKeys.title"),
       description: t("settingsPage.account.apiKeys.description"),
       weight: 3,
+      icon: KeyRoundIcon,
     },
     {
       id: "upgrade",
       title: t("settingsPage.account.upgrade.title"),
       description: t("settingsPage.account.upgrade.description"),
       weight: 4,
+      icon: HeartIcon,
     },
     {
       id: "security",
       title: t("settingsPage.account.security.title"),
       description: t("settingsPage.account.security.description"),
       weight: 2,
+      icon: ShieldCheckIcon,
     },
     {
       id: "binding",
       title: t("settingsPage.account.binding.title"),
       description: t("settingsPage.account.binding.description"),
       weight: 3,
+      icon: Link2Icon,
     },
     {
       id: "account-modification",
       title: t("settingsPage.account.modification.title"),
       description: t("settingsPage.account.modification.description"),
       weight: 4,
+      icon: UserPenIcon,
     },
   ] satisfies ArticleNavigationItem[];
 
@@ -238,7 +255,7 @@ const AccountSettingsPage = ({
           {displayMode === "sheet" ? <Maximize2Icon /> : <PanelRightOpenIcon />}
         </Button>
       )}
-      <Article className="gap-0 overflow-x-hidden p-0 lg:gap-0">
+      <Article className="gap-0 overflow-x-hidden lg:gap-0">
         <ArticleNavigationBar
           items={navigationItems}
           className={
@@ -251,9 +268,12 @@ const AccountSettingsPage = ({
               <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground">
                 {t("settingsPage.account.eyebrow")}
               </p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-                {t("settingsPage.account.personal.title")}
-              </h1>
+              <div className="mt-3 flex items-center gap-3">
+                <UserRoundIcon className="size-7 shrink-0" />
+                <h1 className="text-3xl font-semibold tracking-tight">
+                  {t("settingsPage.account.personal.title")}
+                </h1>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.personal.description")}
               </p>
@@ -267,9 +287,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="account">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.account.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <IdCardIcon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.account.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.account.description")}
               </p>
@@ -283,9 +306,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="api-keys">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.apiKeys.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <KeyRoundIcon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.apiKeys.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.apiKeys.description")}
               </p>
@@ -303,9 +329,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="upgrade">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.upgrade.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <HeartIcon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.upgrade.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.upgrade.description")}
               </p>
@@ -319,9 +348,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="security">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.security.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <ShieldCheckIcon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.security.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.security.description")}
               </p>
@@ -339,9 +371,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="binding">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.binding.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <Link2Icon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.binding.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.binding.description")}
               </p>
@@ -363,9 +398,12 @@ const AccountSettingsPage = ({
 
           <ArticleParagraph id="account-modification">
             <ArticleParagraphHeader>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {t("settingsPage.account.modification.title")}
-              </h2>
+              <div className="flex items-center gap-3">
+                <UserPenIcon className="size-6 shrink-0" />
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {t("settingsPage.account.modification.title")}
+                </h2>
+              </div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {t("settingsPage.account.modification.description")}
               </p>

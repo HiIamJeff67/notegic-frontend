@@ -8,8 +8,9 @@ import {
 import { SupportedIcon } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTagByIdRequest } from "@shared/api/interfaces/routineTag.interface";
 import { CreateRoutineTagRequestSchema } from "@shared/api/interfaces/routineTag.interface";
-import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { MaxSearchLimit } from "@shared/lib/search/limits";
+import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -19,6 +20,7 @@ import {
   useHardDeleteMyRoutineTagById,
   useUpdateMyRoutineTagById,
 } from "@/api/hooks/routineTag.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
@@ -37,6 +39,7 @@ export const useRoutineTagLogic = ({
   forceUpdate,
   expandRoutinesByTagId,
 }: UseRoutineTagLogicProps) => {
+  const { t } = useTranslation();
   const createRoutineTagMutator = useCreateRoutineTag();
   const hardDeleteRoutineTagMutator = useHardDeleteMyRoutineTagById();
   const updateRoutineTagMutator = useUpdateMyRoutineTagById();
@@ -189,6 +192,28 @@ export const useRoutineTagLogic = ({
     [forceUpdate, routineTagsRef, updateRoutineTagMutator]
   );
 
+  const renameRoutineTag = useCallback(
+    async (routineTagId: UUID, name: string): Promise<void> => {
+      const nextName = name.trim();
+      if (nextName === "") throw new Error("invalid routine tag name");
+      if (routineTagsRef.current.get(routineTagId)) {
+        await updateRoutineTag(routineTagId, { name: nextName });
+        return;
+      }
+      const response = await updateRoutineTagMutator.mutateAsync({
+        header: getClientRequestHeaders(navigator.userAgent),
+        body: {
+          routineTagId,
+          values: {
+            name: nextName,
+          },
+        },
+      });
+      if (response.success === false) throw response.exception;
+    },
+    [routineTagsRef, updateRoutineTag, updateRoutineTagMutator]
+  );
+
   const hardDeleteRoutineTag = useCallback(
     async (routineTagId: UUID) => {
       const response = await hardDeleteRoutineTagMutator.mutateAsync({
@@ -262,6 +287,7 @@ export const useRoutineTagLogic = ({
 
       const name = editRoutineTagName.trim();
       await updateRoutineTag(editingRoutineTagNode.id, { name });
+      toast.success(t("workspace.notifications.renamed", { name }));
     } finally {
       setEditingRoutineTagNode(null);
       setOriginalRoutineTagName("");
@@ -271,6 +297,7 @@ export const useRoutineTagLogic = ({
     editRoutineTagName,
     editingRoutineTagNode,
     isNewRoutineTagName,
+    t,
     updateRoutineTag,
   ]);
 
@@ -432,6 +459,7 @@ export const useRoutineTagLogic = ({
     startRenamingRoutineTag,
     cancelRenamingRoutineTag,
     renameEditingRoutineTag,
+    renameRoutineTag,
     searchRoutineTagsInput,
     setSearchRoutineTagsInput,
     executeSearchRoutineTags: executeSearch,

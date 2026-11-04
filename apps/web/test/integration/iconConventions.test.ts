@@ -94,7 +94,7 @@ describe("application icon conventions", () => {
     ["components/menus/RoutineTaskMenu/RoutineTaskMenuItem.tsx", "SquarePen"],
     ["pages/home/HomePage.tsx", "BookOpenIcon"],
     [
-      "components/core/AppUtilitesWrapper/AppSidebar/AppSidebar.tsx",
+      "components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx",
       "BookOpenIcon",
     ],
     ["components/commons/Article/ArticleNavigation.tsx", "BookOpenIcon"],

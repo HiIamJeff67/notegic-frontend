@@ -10,7 +10,7 @@ Read the relevant `docs/conventions/01-ui.md`, `04-file-and-folder-naming.md`, `
 Inspect:
 
 - route/page/component ownership and dependency direction;
-- `docs/designs/systems/app-command.md` when the change touches AppCommand: settings stay split into Navigation and Quick settings, each section lists at most 8 rows until the operator types, and a future single-value setting is an operation whose parameter is the command input;
+- `docs/designs/systems/app-command.md` when the change touches AppCommand: Actions render above Sub domains; every domain and sub-domain search requests one page of at most 10 and typing replaces that page; settings stay split into Navigation and Quick settings, each section lists at most 8 rows until the operator types, and a future single-value setting is an operation whose parameter is the command input;
 - query/mutation variables, generated types, cache invalidation, pagination, nullability, and error handling;
 - local database/bootstrap/migration ownership, persistence versioning, reset/recovery behavior, and stale-state risks;
 - loading, cancellation, retry, duplicate submission, optimistic update, reconnect, and unmount paths;

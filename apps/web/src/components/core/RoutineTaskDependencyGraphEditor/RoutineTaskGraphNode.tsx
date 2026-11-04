@@ -3,15 +3,16 @@ import {
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { tError } from "@shared/i18n/error";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { SquarePen, Trash2 } from "lucide-react";
+import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {
   ContextMenu,
@@ -21,7 +22,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useModal } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 
 const RoutineTaskGraphNode = ({
@@ -30,7 +31,7 @@ const RoutineTaskGraphNode = ({
   selected,
 }: NodeProps<RoutineTaskGraphNodeType>) => {
   const { t } = useTranslation();
-  const modalManager = useModal();
+  const deleteRoutineTask = useHardDeleteMyRoutineTaskById();
   const isStart = data.kind === "Start";
   const isActive = data.payload.isActive !== false;
   const purpose = data.payload.purpose as RoutineTaskPurpose | undefined;
@@ -132,15 +133,33 @@ const RoutineTaskGraphNode = ({
         <ContextMenuItem
           disabled={data.isSaving}
           className="text-destructive focus:text-destructive"
-          onSelect={() =>
-            modalManager.open("DeleteRoutineTaskDialog", {
-              routineTaskId: id as UUID,
-              routineTaskTitle: data.title,
-              onDeleted: data.onDeleted,
-              onDelete: data.onDelete,
-              expectedDefinitionVersion: data.expectedDefinitionVersion,
-            })
-          }
+          onSelect={() => {
+            void (async () => {
+              try {
+                if (data.onDelete) {
+                  await data.onDelete();
+                  await data.onDeleted?.();
+                  return;
+                }
+                const response = await deleteRoutineTask.mutateAsync({
+                  header: getClientRequestHeaders(navigator.userAgent),
+                  body: {
+                    routineTaskId: id as UUID,
+                    expectedDefinitionVersion: data.expectedDefinitionVersion,
+                  },
+                });
+                if (response.success === false) {
+                  toast.error(tError(response.exception, t));
+                  await data.onDeleted?.();
+                  return;
+                }
+                await data.onDeleted?.();
+                toast.success(t("workspace.routineTask.deleted"));
+              } catch (error) {
+                toast.error(tError(error, t));
+              }
+            })();
+          }}
         >
           <Trash2 className="mr-2 size-4" />
           {t("common.delete")}

@@ -1,5 +1,4 @@
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTagDialogSkeleton from "./CreateRoutineTagDialogSkeleton";
 
@@ -64,7 +64,9 @@ const CreateRoutineTagDialog = ({
         icon
       );
       await onCreated?.(routineTagNode.id);
-      toast.success(t("workspace.routineTag.created"));
+      toast.success(
+        t("workspace.notifications.created", { name: trimmedName })
+      );
       onClose();
     } catch (error) {
       toast.error(tError(error, t));

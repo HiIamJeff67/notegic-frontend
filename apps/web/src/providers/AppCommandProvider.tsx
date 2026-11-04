@@ -1,5 +1,6 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { AllUserStatus, UserStatus } from "@shared/api/interfaces/enums";
+import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { AllLanguageData } from "@shared/i18n/availableLanguages";
 import { tError } from "@shared/i18n/error";
 import { matchesSearch } from "@shared/lib/search/searchPage";
@@ -8,7 +9,10 @@ import type {
   MaterialNode,
 } from "@shared/lib/shelf/itemNodes.type";
 import type { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
-import type { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
+import {
+  AnalysisStatus,
+  type ShelfTreeSummary,
+} from "@shared/lib/shelf/summary.type";
 import {
   LocalStorage,
   LocalStorageKey,
@@ -24,7 +28,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -39,10 +42,10 @@ import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStation
 import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
 import { useUpdateMe } from "@/api/hooks/user.hook";
 import { localDB } from "@/api/local/db";
-import { SubShelf } from "@/api/local/schemas";
+import { RootShelf, SubShelf, UsersToShelves } from "@/api/local/schemas";
 import { ItemLocalSimulator } from "@/api/local/simulators/item.simulator";
-import { useDebounceValue } from "@/hooks/useDebounce";
 import { useAppRouter } from "@/hooks/useAppRouter";
+import { useDebounceValue } from "@/hooks/useDebounce";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -168,13 +171,26 @@ export type AppCommandIcon =
   | "routine"
   | "routineTask"
   | "orchestrate"
+  | "overview"
   | "records"
   | "create"
-  | "more"
   | "report"
   | "rename"
   | "inspector"
-  | "account";
+  | "account"
+  | "appearance"
+  | "editor"
+  | "offline"
+  | "privacy"
+  | "browser"
+  | "notifications"
+  | "about"
+  | "identity"
+  | "keys"
+  | "upgrade"
+  | "security"
+  | "binding"
+  | "accountChanges";
 
 export type AppCommandHint =
   | "command"
@@ -194,7 +210,7 @@ export type AppCommandCandidate = {
   id: string;
   label: string;
   hint: AppCommandHint;
-  icon: AppCommandIcon;
+  icon?: AppCommandIcon;
   group: "navigation" | "domain" | "settings" | "operation" | "instance";
 };
 
@@ -271,18 +287,71 @@ const loadedSubShelf = (
 
 const ensureSubShelf = async <Root,>(
   shelf: {
-    expandedShelves: Parameters<typeof loadedSubShelf>[0];
+    expandedShelves: Parameters<typeof loadedSubShelf>[0] & {
+      set: (id: string, summary: ShelfTreeSummary) => void;
+    };
     expandRootShelf: (root: Root) => Promise<unknown>;
   },
   id: UUID,
   rootShelfId?: UUID
 ) => {
-  const existing = loadedSubShelf(shelf.expandedShelves, id, rootShelfId);
-  if (existing || !rootShelfId) return existing;
-  const summary = shelf.expandedShelves.get(rootShelfId);
+  const rootId = rootShelfId ?? (await rootShelfIdForSubShelf(id));
+  const existing = loadedSubShelf(shelf.expandedShelves, id, rootId);
+  if (existing) return existing;
+  if (!rootId) return undefined;
+  const summary =
+    shelf.expandedShelves.get(rootId) ??
+    (await seedRootShelf(shelf.expandedShelves, rootId));
   if (!summary) return undefined;
   await shelf.expandRootShelf(summary.root as unknown as Root);
-  return loadedSubShelf(shelf.expandedShelves, id, rootShelfId);
+  return loadedSubShelf(shelf.expandedShelves, id, rootId);
+};
+
+const seedRootShelf = async (
+  shelves: {
+    get: (key: string) => ShelfTreeSummary | undefined;
+    set: (id: string, summary: ShelfTreeSummary) => void;
+  },
+  rootShelfId: UUID
+) => {
+  const existing = shelves.get(rootShelfId);
+  if (existing) return existing;
+  if (!localDB.isReady) await localDB.ensureReady();
+  const rows = await localDB
+    .select()
+    .from(RootShelf)
+    .where(eq(RootShelf.id, rootShelfId))
+    .limit(1);
+  const root = rows[0];
+  if (!root) return undefined;
+  const permissions = await localDB
+    .select({ permission: UsersToShelves.permission })
+    .from(UsersToShelves)
+    .where(eq(UsersToShelves.rootShelfId, rootShelfId))
+    .limit(1);
+  const summary: ShelfTreeSummary = {
+    root: {
+      id: rootShelfId,
+      name: root.name,
+      subShelfCount: root.subShelfCount,
+      itemCount: root.itemCount,
+      lastAnalyzedAt: root.lastAnalyzedAt,
+      updatedAt: root.updatedAt,
+      createdAt: root.createdAt,
+      permission: permissions[0]?.permission ?? AccessControlPermission.Read,
+      isExpanded: false,
+      children: {},
+      isOpen: false,
+      nodeType: "RootShelf",
+    },
+    estimatedByteSize: 0,
+    hasChanged: false,
+    analysisStatus: AnalysisStatus.Unexplored,
+    maxWidth: 0,
+    maxDepth: 0,
+  };
+  shelves.set(rootShelfId, summary);
+  return summary;
 };
 
 const rootShelfIdForSubShelf = async (subShelfId: UUID) => {
@@ -306,14 +375,14 @@ const resultHint = (target: ObjectDomain): AppCommandHint => {
   return "routineTag";
 };
 
-const childPageSize = 8;
+const searchPageSize = 10;
 
 const childCandidates = (
   hits: SearchHit[],
   hint: AppCommandHint,
   icon: AppCommandIcon
 ): AppCommandCandidate[] =>
-  hits.slice(0, childPageSize).map(hit => ({
+  hits.slice(0, searchPageSize).map(hit => ({
     id: `instance:${hit.id}`,
     label: hit.name,
     hint: hit.domain ?? hint,
@@ -346,9 +415,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
   const [steps, setSteps] = useState<CommandStep[]>([]);
   const [instances, setInstances] = useState<SearchHit[]>([]);
   const [listedKey, setListedKey] = useState("");
-  const [hasNextPage, setHasNextPage] = useState(false);
   const deferredQuery = useDebounceValue(query, 200);
-  const endCursor = useRef<string | null>(null);
   const [searchRootShelves] = useSearchRootShelvesLazyQuery();
   const [searchSubShelves] = useSearchSubShelvesLazyQuery();
   const [searchMaterials] = useSearchMaterialsLazyQuery();
@@ -446,19 +513,10 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     };
   };
 
-  const listingChildren =
-    !placement &&
-    last?.kind === "instance" &&
-    (last.domain === "rootShelf" ||
-      last.domain === "subShelf" ||
-      last.domain === "station" ||
-      last.domain === "routine");
-
-  const runSearch = (after?: string) => {
+  const runSearch = () => {
     const queryInput = {
       query: deferredQuery,
-      first: listingChildren ? childPageSize : 10,
-      after,
+      first: searchPageSize,
     };
     if (searchTarget === "rootShelf") {
       return searchRootShelves({ variables: { input: queryInput } }).then(
@@ -596,6 +654,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           const node = edge.node as unknown as {
             id?: string;
             name?: string;
+            type?: string;
             parentSubShelfId?: UUID;
             rootShelfId?: UUID;
           };
@@ -603,7 +662,10 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           add({
             id: node.id as UUID,
             name: node.name,
-            domain: "blockPack",
+            domain:
+              node.type === GraphQLItemType.ItemTypeMaterial
+                ? "material"
+                : "blockPack",
             parentSubShelfId: node.parentSubShelfId,
             rootShelfId: node.rootShelfId,
           });
@@ -660,9 +722,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           });
         }
         return {
-          hits: [...hits.values()].slice(0, childPageSize),
-          hasNextPage: false,
-          endCursor: null,
+          hits: [...hits.values()].slice(0, searchPageSize),
         };
       });
     }
@@ -675,17 +735,14 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     if (!searchTarget) {
       setInstances([]);
       setListedKey("");
-      setHasNextPage(false);
       return;
     }
     let cancelled = false;
     void runSearch()
       ?.then(page => {
         if (cancelled || !page) return;
-        endCursor.current = page.endCursor;
-        setHasNextPage(page.hasNextPage);
         setListedKey(listKey);
-        setInstances(page.hits);
+        setInstances(page.hits.slice(0, searchPageSize));
       })
       .catch(() => undefined);
     return () => {
@@ -694,7 +751,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
   }, [
     deferredQuery,
     listKey,
-    listingChildren,
     scopeKey,
     searchBlockPacks,
     searchItems,
@@ -708,23 +764,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     searchTarget,
   ]);
 
-  const askMore = useCallback(() => {
-    if (!hasNextPage || !endCursor.current) return;
-    void runSearch(endCursor.current)
-      ?.then(page => {
-        if (!page) return;
-        endCursor.current = page.endCursor;
-        setHasNextPage(page.hasNextPage);
-        setInstances(current => {
-          const seen = new Set(current.map(item => item.id));
-          return [...current, ...page.hits.filter(item => !seen.has(item.id))];
-        });
-      })
-      .catch(() => undefined);
-  }, [hasNextPage, searchTarget, deferredQuery, scopeKey]);
-
   const shownInstances = listedKey === listKey ? instances : [];
-  const shownHasNextPage = listedKey === listKey && hasNextPage;
 
   const candidates = useMemo<AppCommandCandidate[]>(() => {
     if (!last) {
@@ -738,7 +778,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         },
         {
           id: "navigate:routines",
-          label: t("workspace.navigation.routines"),
+          label: t("workspace.navigation.routinesOverview"),
           hint: "operation",
           icon: "routines",
           group: "navigation",
@@ -824,18 +864,31 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     }
     if (last.kind === "domain" && last.domain === "preferences") {
       const sections = [
-        ["appearance", t("settingsPage.preferences.appearance.title")],
-        ["dashboard", t("settingsPage.preferences.dashboard.title")],
-        ["editor", t("settingsPage.preferences.editor.title")],
-        ["offline", t("settingsPage.preferences.offline.title")],
-        ["privacy", t("settingsPage.preferences.privacy.title")],
+        [
+          "appearance",
+          t("settingsPage.preferences.appearance.title"),
+          "appearance",
+        ],
+        [
+          "dashboard",
+          t("settingsPage.preferences.dashboard.title"),
+          "dashboard",
+        ],
+        ["editor", t("settingsPage.preferences.editor.title"), "editor"],
+        ["offline", t("settingsPage.preferences.offline.title"), "offline"],
+        ["privacy", t("settingsPage.preferences.privacy.title"), "privacy"],
         [
           "browser-permissions",
           t("settingsPage.preferences.browserPermissions.title"),
+          "browser",
         ],
-        ["feedback", t("settingsPage.preferences.feedback.title")],
-        ["notifications", t("settingsPage.preferences.notifications.title")],
-        ["about", t("settingsPage.preferences.about.title")],
+        ["feedback", t("settingsPage.preferences.feedback.title"), "report"],
+        [
+          "notifications",
+          t("settingsPage.preferences.notifications.title"),
+          "notifications",
+        ],
+        ["about", t("settingsPage.preferences.about.title"), "about"],
       ] as const;
       return [
         {
@@ -845,11 +898,11 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           icon: "preferences" as const,
           group: "navigation" as const,
         },
-        ...sections.map(([section, label]) => ({
+        ...sections.map(([section, label, icon]) => ({
           id: `section:preferences:${section}`,
           label,
           hint: "operation" as const,
-          icon: "preferences" as const,
+          icon,
           group: "navigation" as const,
         })),
         {
@@ -863,167 +916,149 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           id: "preference:density",
           label: t("settingsPage.preferences.appearance.density"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:theme",
           label: t("settingsPage.preferences.appearance.theme"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:language",
           label: t("settingsPage.preferences.appearance.language"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:reduceMotion",
           label: t("settingsPage.preferences.appearance.reduceMotion"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:startSurface",
           label: t("settingsPage.preferences.privacy.startSurface"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:editorWidth",
           label: t("settingsPage.preferences.editor.pageWidth"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:lineWrap",
           label: t("settingsPage.preferences.editor.lineWrap"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:spellcheck",
           label: t("settingsPage.preferences.editor.spellcheck"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:quickInsert",
           label: t("settingsPage.preferences.editor.quickInsert"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:blockDragHandle",
           label: t("settingsPage.preferences.editor.dragHandle"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:tactileFeedback",
           label: t("settingsPage.preferences.appearance.tactileFeedback"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:manualDashboardWidth",
           label: t("settingsPage.preferences.dashboard.manualWidth"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:localVault",
           label: t("settingsPage.preferences.offline.localDatabase"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:offlineQueue",
           label: t("settingsPage.preferences.offline.offlineQueue"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:cacheAttachments",
           label: t("settingsPage.preferences.offline.attachmentCache"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:cleanupAfterDays",
           label: t("settingsPage.preferences.offline.cleanupPeriod"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:privatePreviews",
           label: t("settingsPage.preferences.privacy.privatePreviews"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:clipboardGuard",
           label: t("settingsPage.preferences.privacy.clipboardGuard"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:desktopNotifications",
           label: t("settingsPage.preferences.notifications.desktop"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:routineNudges",
           label: t("settingsPage.preferences.notifications.routine"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:syncNotifications",
           label: t("settingsPage.preferences.notifications.sync"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
         {
           id: "preference:quietMode",
           label: t("settingsPage.preferences.notifications.quietMode"),
           hint: "setting" as const,
-          icon: "preferences" as const,
           group: "settings" as const,
         },
       ];
     }
     if (last.kind === "domain" && last.domain === "account") {
       const sections = [
-        ["personal", t("settingsPage.account.personal.title")],
-        ["account", t("settingsPage.account.account.title")],
-        ["api-keys", t("settingsPage.account.apiKeys.title")],
-        ["upgrade", t("settingsPage.account.upgrade.title")],
-        ["security", t("settingsPage.account.security.title")],
-        ["binding", t("settingsPage.account.binding.title")],
-        ["account-modification", t("settingsPage.account.modification.title")],
+        ["personal", t("settingsPage.account.personal.title"), "account"],
+        ["account", t("settingsPage.account.account.title"), "identity"],
+        ["api-keys", t("settingsPage.account.apiKeys.title"), "keys"],
+        ["upgrade", t("settingsPage.account.upgrade.title"), "upgrade"],
+        ["security", t("settingsPage.account.security.title"), "security"],
+        ["binding", t("settingsPage.account.binding.title"), "binding"],
+        [
+          "account-modification",
+          t("settingsPage.account.modification.title"),
+          "accountChanges",
+        ],
       ] as const;
       return [
         {
@@ -1033,18 +1068,17 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           icon: "account" as const,
           group: "navigation" as const,
         },
-        ...sections.map(([section, label]) => ({
+        ...sections.map(([section, label, icon]) => ({
           id: `section:account:${section}`,
           label,
           hint: "operation" as const,
-          icon: "account" as const,
+          icon,
           group: "navigation" as const,
         })),
         {
           id: "preference:status",
           label: t("settingsPage.account.fields.status"),
           hint: "setting" as const,
-          icon: "account" as const,
           group: "settings" as const,
         },
       ];
@@ -1055,7 +1089,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           id: `operation:status:${status}`,
           label: t(`settingsPage.account.statuses.${status}`),
           hint: "operation" as const,
-          icon: "account" as const,
           group: "operation" as const,
         }));
       }
@@ -1066,21 +1099,18 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             id: "operation:density:comfortable",
             label: t("settingsPage.preferences.appearance.comfortable"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
           {
             id: "operation:density:balanced",
             label: t("settingsPage.preferences.appearance.balanced"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
           {
             id: "operation:density:compact",
             label: t("settingsPage.preferences.appearance.compact"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
         ];
@@ -1091,14 +1121,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             id: "operation:startSurface:dashboard",
             label: t("settingsPage.preferences.privacy.dashboard"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
           {
             id: "operation:startSurface:routines",
             label: t("settingsPage.preferences.privacy.routines"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
         ];
@@ -1109,21 +1137,18 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             id: "operation:editorWidth:narrow",
             label: t("settingsPage.preferences.editor.narrow"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
           {
             id: "operation:editorWidth:standard",
             label: t("settingsPage.preferences.editor.standard"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
           {
             id: "operation:editorWidth:wide",
             label: t("settingsPage.preferences.editor.wide"),
             hint: "operation" as const,
-            icon: "preferences" as const,
             group: "operation" as const,
           },
         ];
@@ -1135,7 +1160,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             count: days,
           }),
           hint: "operation" as const,
-          icon: "preferences" as const,
           group: "operation" as const,
         }));
       }
@@ -1144,7 +1168,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           id: `operation:theme:${item.id}`,
           label: t(item.translationKey),
           hint: "operation" as const,
-          icon: "preferences" as const,
           group: "operation" as const,
         }));
       }
@@ -1153,7 +1176,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           id: `operation:language:${language.code}`,
           label: language.nativeName,
           hint: "operation" as const,
-          icon: "preferences" as const,
           group: "operation" as const,
         }));
       }
@@ -1166,7 +1188,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             ? t("common.commandTurnOff")
             : t("common.commandTurnOn"),
           hint: "operation" as const,
-          icon: "preferences" as const,
           group: "operation" as const,
         },
       ];
@@ -1184,15 +1205,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
               : "subShelf",
         group: "instance",
       }));
-      if (shownHasNextPage) {
-        rows.push({
-          id: "operation:more",
-          label: t("common.more"),
-          hint: "operation",
-          icon: "more",
-          group: "instance",
-        });
-      }
       if (placingSubShelf && shelf?.expandedShelves.get(last.id)) {
         rows.push({
           id: "operation:createUnderRoot",
@@ -1321,15 +1333,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           hint: "operation",
           icon: "create",
           group: "operation",
-        });
-      }
-      if (shownHasNextPage) {
-        rows.push({
-          id: "operation:more",
-          label: t("common.more"),
-          hint: "operation",
-          icon: "more",
-          group: "instance",
         });
       }
       return [...rows, ...creates];
@@ -1464,33 +1467,23 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     }
     if (last.kind === "instance" && last.domain === "station") {
       const rows = childCandidates(shownInstances, "routine", "routine");
-      const operations: AppCommandCandidate[] = [];
+      const operations: AppCommandCandidate[] = [
+        {
+          id: "operation:overview",
+          label: t("workspace.menu.viewInOverview"),
+          hint: "operation",
+          icon: "overview",
+          group: "operation",
+        },
+      ];
       if (stationRoutine) {
-        operations.push(
-          {
-            id: "operation:inspector",
-            label: t("workspace.menu.openInspector"),
-            hint: "operation",
-            icon: "inspector",
-            group: "operation",
-          },
-          {
-            id: "operation:rename",
-            label: t("workspace.menu.rename"),
-            hint: "operation",
-            icon: "rename",
-            group: "operation",
-          }
-        );
-        if (modal) {
-          operations.push({
-            id: "operation:delete",
-            label: t("workspace.menu.delete"),
-            hint: "operation",
-            icon: "trash",
-            group: "operation",
-          });
-        }
+        operations.push({
+          id: "operation:inspector",
+          label: t("workspace.menu.openInspector"),
+          hint: "operation",
+          icon: "inspector",
+          group: "operation",
+        });
       }
       if (modal) {
         operations.push({
@@ -1501,6 +1494,24 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           group: "operation",
         });
       }
+      if (stationRoutine) {
+        operations.push({
+          id: "operation:rename",
+          label: t("workspace.menu.rename"),
+          hint: "operation",
+          icon: "rename",
+          group: "operation",
+        });
+        if (modal) {
+          operations.push({
+            id: "operation:delete",
+            label: t("workspace.menu.delete"),
+            hint: "operation",
+            icon: "trash",
+            group: "operation",
+          });
+        }
+      }
       return [...rows, ...operations];
     }
     if (last.kind === "instance" && last.domain === "routine") {
@@ -1509,7 +1520,22 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         "routineTask",
         "routineTask"
       );
-      const operations: AppCommandCandidate[] = [];
+      const operations: AppCommandCandidate[] = [
+        {
+          id: "operation:open",
+          label: t("workspace.menu.viewInOverview"),
+          hint: "operation",
+          icon: "overview",
+          group: "operation",
+        },
+        {
+          id: "operation:viewTaskRecords",
+          label: t("workspace.menu.viewAllTaskRecords"),
+          hint: "operation",
+          icon: "records",
+          group: "operation",
+        },
+      ];
       if (stationRoutine) {
         operations.push({
           id: "operation:inspector",
@@ -1520,35 +1546,28 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         });
       }
       operations.push({
-        id: "operation:open",
-        label: t("workspace.navigation.routines"),
+        id: "operation:orchestrate",
+        label: t("workspace.menu.orchestrateRoutineTasks"),
         hint: "operation",
-        icon: "routines",
+        icon: "orchestrate",
         group: "operation",
       });
-      operations.push(
-        {
-          id: "operation:orchestrate",
-          label: t("workspace.menu.orchestrateRoutineTasks"),
+      if (modal) {
+        operations.push({
+          id: "operation:createRoutineTask",
+          label: t("workspace.table.task"),
           hint: "operation",
-          icon: "orchestrate",
+          icon: "create",
           group: "operation",
-        },
-        {
-          id: "operation:viewTaskRecords",
-          label: t("workspace.menu.viewAllTaskRecords"),
-          hint: "operation",
-          icon: "records",
-          group: "operation",
-        },
-        {
-          id: "operation:renameRoutine",
-          label: t("workspace.menu.rename"),
-          hint: "operation",
-          icon: "rename",
-          group: "operation",
-        }
-      );
+        });
+      }
+      operations.push({
+        id: "operation:renameRoutine",
+        label: t("workspace.menu.rename"),
+        hint: "operation",
+        icon: "rename",
+        group: "operation",
+      });
       if (modal) {
         operations.push({
           id: "operation:deleteRoutine",
@@ -1579,6 +1598,13 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           group: "operation",
         });
       }
+      operations.push({
+        id: "operation:renameRoutineTask",
+        label: t("workspace.menu.rename"),
+        hint: "operation",
+        icon: "rename",
+        group: "operation",
+      });
       return operations;
     }
     if (last.kind === "instance" && last.domain === "routineTag") {
@@ -1614,12 +1640,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     }
     return [];
   }, [
-    hasNextPage,
-    instances,
-    listKey,
-    listedKey,
-    shownHasNextPage,
-    shownInstances,
     last,
     loading,
     lockedStation,
@@ -1627,6 +1647,7 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
     preferences,
     searchTarget,
     shelf,
+    shownInstances,
     stationRoutine,
     t,
   ]);
@@ -1643,10 +1664,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
 
   const choose = useCallback(
     async (id: string) => {
-      if (id === "operation:more") {
-        askMore();
-        return false;
-      }
       setQuery("");
       const openSettings = (
         page: "preferences" | "account",
@@ -1665,6 +1682,37 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
               : WebURLPathDictionary.app.setting.account;
           router.push(section ? `${path}#${section}` : path);
         }
+        setSteps([]);
+        return true;
+      };
+      const openRename = (
+        dialogHeader: string,
+        dialogDescription: string,
+        currentName: string,
+        rename: (name: string) => Promise<void>
+      ) => {
+        if (!modal) return false;
+        modal.open("RenameDialog", {
+          dialogHeader,
+          dialogDescription,
+          currentName,
+          inputPlaceholder: t("workspace.navigation.typeNewName"),
+          onRename: async name => {
+            try {
+              const nextName = name.trim();
+              await rename(nextName);
+              if (nextName !== currentName.trim()) {
+                toast.success(
+                  t("workspace.notifications.renamed", { name: nextName })
+                );
+              }
+            } catch (error) {
+              toast.error(tError(error, t));
+              throw error;
+            }
+          },
+          onCancel: modal.close,
+        });
         setSteps([]);
         return true;
       };
@@ -1778,11 +1826,11 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
       }
       if (id === "operation:createUnderRoot" && shelf && lockedRootShelf) {
         if (!shelf.expandedShelves.get(lockedRootShelf.id)) return false;
+        const name = t("workspace.menu.newSubShelf");
         void shelf
-          .createSubShelf(
-            lockedRootShelf.id,
-            null,
-            t("workspace.menu.newSubShelf")
+          .createSubShelf(lockedRootShelf.id, null, name)
+          .then(() =>
+            toast.success(t("workspace.notifications.created", { name }))
           )
           .catch(error => toast.error(tError(error, t)));
         setSteps([]);
@@ -1807,19 +1855,19 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             return undefined;
           });
           if (!parent) return false;
+          const name =
+            placement.create === "material"
+              ? t("workspace.menu.newMaterial")
+              : t("workspace.menu.newBlockPack");
           const create =
             placement.create === "material"
-              ? shelf.createMaterial(
-                  parent.rootShelfId,
-                  parent,
-                  t("workspace.menu.newMaterial")
-                )
-              : shelf.createBlockPack(
-                  parent.rootShelfId,
-                  parent,
-                  t("workspace.menu.newBlockPack")
-                );
-          void create.catch(error => toast.error(tError(error, t)));
+              ? shelf.createMaterial(parent.rootShelfId, parent, name)
+              : shelf.createBlockPack(parent.rootShelfId, parent, name);
+          void create
+            .then(() =>
+              toast.success(t("workspace.notifications.created", { name }))
+            )
+            .catch(error => toast.error(tError(error, t)));
           setSteps([]);
           return true;
         }
@@ -1850,11 +1898,11 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             return undefined;
           });
           if (!parent) return false;
+          const name = t("workspace.menu.newSubShelf");
           void shelf
-            .createSubShelf(
-              parent.rootShelfId,
-              parent,
-              t("workspace.menu.newSubShelf")
+            .createSubShelf(parent.rootShelfId, parent, name)
+            .then(() =>
+              toast.success(t("workspace.notifications.created", { name }))
             )
             .catch(error => toast.error(tError(error, t)));
           setSteps([]);
@@ -1897,9 +1945,14 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           disableInput: false,
           inputPlaceholder: t("workspace.navigation.typeNewName"),
           onCreate: async (name: string) => {
-            await shelf
-              .createRootShelf(name)
-              .catch(error => toast.error(tError(error, t)));
+            try {
+              await shelf.createRootShelf(name);
+              toast.success(
+                t("workspace.notifications.created", { name: name.trim() })
+              );
+            } catch (error) {
+              toast.error(tError(error, t));
+            }
           },
           onCancel: modal.close,
         });
@@ -1922,8 +1975,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             ? last.id
             : lockedRootShelf?.id;
         if (!rootId || !shelf.expandedShelves.get(rootId)) return false;
+        const name = t("workspace.menu.newSubShelf");
         void shelf
-          .createSubShelf(rootId, null, t("workspace.menu.newSubShelf"))
+          .createSubShelf(rootId, null, name)
+          .then(() =>
+            toast.success(t("workspace.notifications.created", { name }))
+          )
           .catch(error => toast.error(tError(error, t)));
         setSteps([]);
         return true;
@@ -1942,11 +1999,11 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           return undefined;
         });
         if (!parent) return false;
+        const name = t("workspace.menu.newSubShelf");
         void shelf
-          .createSubShelf(
-            parent.rootShelfId,
-            parent,
-            t("workspace.menu.newSubShelf")
+          .createSubShelf(parent.rootShelfId, parent, name)
+          .then(() =>
+            toast.success(t("workspace.notifications.created", { name }))
           )
           .catch(error => toast.error(tError(error, t)));
         setSteps([]);
@@ -1973,19 +2030,19 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           }
         );
         if (!parent) return false;
+        const name =
+          id === "operation:createMaterial"
+            ? t("workspace.menu.newMaterial")
+            : t("workspace.menu.newBlockPack");
         const create =
           id === "operation:createMaterial"
-            ? shelf.createMaterial(
-                parent.rootShelfId,
-                parent,
-                t("workspace.menu.newMaterial")
-              )
-            : shelf.createBlockPack(
-                parent.rootShelfId,
-                parent,
-                t("workspace.menu.newBlockPack")
-              );
-        void create.catch(error => toast.error(tError(error, t)));
+            ? shelf.createMaterial(parent.rootShelfId, parent, name)
+            : shelf.createBlockPack(parent.rootShelfId, parent, name);
+        void create
+          .then(() =>
+            toast.success(t("workspace.notifications.created", { name }))
+          )
+          .catch(error => toast.error(tError(error, t)));
         setSteps([]);
         return true;
       }
@@ -2003,9 +2060,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           return undefined;
         });
         if (!parent) return false;
-        shelf.startRenamingSubShelfNode(parent);
-        setSteps([]);
-        return true;
+        return openRename(
+          t("workspace.menu.renameSubShelfDialog"),
+          t("workspace.menu.renameSubShelfDescription"),
+          parent.name,
+          name => shelf.renameSubShelf(parent, name)
+        );
       }
       if (
         id === "operation:deleteSubShelf" &&
@@ -2014,34 +2074,43 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         loading &&
         last?.kind === "instance"
       ) {
-        const current = await ensureSubShelf(
-          shelf,
-          last.id,
-          last.rootShelfId
-        ).catch(error => {
-          toast.error(tError(error, t));
-          return undefined;
-        });
-        if (!current) return false;
-        const previous = current.prevSubShelfId
-          ? (loadedSubShelf(
-              shelf.expandedShelves,
-              current.prevSubShelfId,
-              current.rootShelfId
-            ) ?? null)
-          : null;
+        const subShelfId = last.id;
+        const subShelfName = last.name;
+        const knownRootShelfId = last.rootShelfId;
         modal.open("DeleteShelfItemDialog", {
           dialogHeader: t("workspace.menu.deleteSubShelf"),
           dialogDescription: t("workspace.menu.deleteSubDescription", {
-            name: current.name,
+            name: subShelfName,
           }),
-          confirmKeyword: "DELETE",
-          inputPlaceholder: t("workspace.menu.typeDelete"),
           onDelete: async () => {
             await loading.startAsyncTransactionLoading(async () => {
-              await shelf
-                .deleteSubShelf(previous, current)
-                .catch(error => toast.error(tError(error, t)));
+              const current = await ensureSubShelf(
+                shelf,
+                subShelfId,
+                knownRootShelfId
+              ).catch(error => {
+                toast.error(tError(error, t));
+                return undefined;
+              });
+              if (!current) {
+                toast.error(tError(new Error("sub shelf does not exist"), t));
+                return;
+              }
+              const previous = current.prevSubShelfId
+                ? (loadedSubShelf(
+                    shelf.expandedShelves,
+                    current.prevSubShelfId,
+                    current.rootShelfId
+                  ) ?? null)
+                : null;
+              try {
+                await shelf.deleteSubShelf(previous, current);
+                toast.success(
+                  t("workspace.notifications.deleted", { name: current.name })
+                );
+              } catch (error) {
+                toast.error(tError(error, t));
+              }
             });
           },
           onCancel: modal.close,
@@ -2096,9 +2165,20 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
             ? parent.materialNodes[last.id]
             : parent.blockPackNodes[last.id];
         if (!node) return false;
-        shelf.startRenamingItemNode(node);
-        setSteps([]);
-        return true;
+        if (node.nodeType === "Material") {
+          return openRename(
+            t("workspace.menu.renameMaterialDialog"),
+            t("workspace.menu.renameMaterialDescription"),
+            node.name,
+            name => shelf.renameMaterial(node, name)
+          );
+        }
+        return openRename(
+          t("workspace.menu.renameBlockPackDialog"),
+          t("workspace.menu.renameBlockPackDescription"),
+          node.name,
+          name => shelf.renameBlockPack(node, name)
+        );
       }
       if (
         (id === "operation:deleteMaterial" ||
@@ -2164,7 +2244,13 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
               ? shelf.deleteBlockPack(parent, parent.blockPackNodes[last.id])
               : undefined;
         if (!remove) return false;
-        void remove.catch(error => toast.error(tError(error, t)));
+        void remove
+          .then(() =>
+            toast.success(
+              t("workspace.notifications.deleted", { name: last.name })
+            )
+          )
+          .catch(error => toast.error(tError(error, t)));
         setSteps([]);
         return true;
       }
@@ -2173,11 +2259,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         stationRoutine &&
         last?.kind === "instance"
       ) {
-        const routine = stationRoutine.getRoutineById(last.id);
-        if (!routine) return false;
-        stationRoutine.startRenamingRoutine(routine);
-        setSteps([]);
-        return true;
+        return openRename(
+          t("workspace.menu.renameRoutineDialog"),
+          t("workspace.menu.renameRoutineDescription"),
+          last.name,
+          name => stationRoutine.renameRoutine(last.id, name)
+        );
       }
       if (
         id === "operation:deleteRoutine" &&
@@ -2197,11 +2284,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         last.domain === "rootShelf" &&
         shelf
       ) {
-        const node = shelf.expandedShelves.get(last.id)?.root;
-        if (!node) return false;
-        shelf.startRenamingRootShelfNode(node);
-        setSteps([]);
-        return true;
+        return openRename(
+          t("workspace.menu.renameRootShelfDialog"),
+          t("workspace.menu.renameRootShelfDescription"),
+          last.name,
+          name => shelf.renameRootShelf(last.id, name)
+        );
       }
       if (
         id === "operation:delete" &&
@@ -2218,13 +2306,16 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
           dialogDescription: t("workspace.menu.deleteRootDescription", {
             name: node.name,
           }),
-          confirmKeyword: "DELETE",
-          inputPlaceholder: t("workspace.menu.typeDelete"),
           onDelete: async () => {
             await loading.startAsyncTransactionLoading(async () => {
-              await shelf
-                .deleteRootShelf(node)
-                .catch(error => toast.error(tError(error, t)));
+              try {
+                await shelf.deleteRootShelf(node);
+                toast.success(
+                  t("workspace.notifications.deleted", { name: node.name })
+                );
+              } catch (error) {
+                toast.error(tError(error, t));
+              }
             });
           },
           onCancel: modal.close,
@@ -2251,11 +2342,12 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         last.domain === "station" &&
         stationRoutine
       ) {
-        const node = stationRoutine.getStationById(last.id);
-        if (!node) return false;
-        stationRoutine.startRenamingStation(node);
-        setSteps([]);
-        return true;
+        return openRename(
+          t("workspace.menu.renameStationDialog"),
+          t("workspace.menu.renameStationDescription"),
+          last.name,
+          name => stationRoutine.renameStation(last.id, name)
+        );
       }
       if (
         id === "operation:delete" &&
@@ -2271,6 +2363,15 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         return true;
       }
       if (
+        id === "operation:overview" &&
+        last?.kind === "instance" &&
+        last.domain === "station"
+      ) {
+        return finishNavigation(
+          WebURLPathDictionary.app.routines.byStationId(last.id)
+        );
+      }
+      if (
         id === "operation:createRoutine" &&
         last?.kind === "instance" &&
         last.domain === "station" &&
@@ -2279,6 +2380,31 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         modal.open("CreateRoutineDialog", {
           stationId: last.id,
           stationName: last.name,
+        });
+        setSteps([]);
+        return true;
+      }
+      if (
+        id === "operation:createRoutineTask" &&
+        last?.kind === "instance" &&
+        last.domain === "routine" &&
+        modal
+      ) {
+        const routine = stationRoutine?.getRoutineById(last.id);
+        const stationId = last.stationId ?? routine?.stationId;
+        const station = stationId
+          ? stationRoutine?.getStationById(stationId)
+          : undefined;
+        modal.open("CreateRoutineTaskDialog", {
+          routineId: last.id,
+          stationName: station?.name,
+          routineTitle: routine?.title ?? last.name,
+          onCreated: async () => {
+            if (!routine || !stationId || routine.isOpen || !stationRoutine) {
+              return;
+            }
+            await stationRoutine.toggleRoutine(stationId, routine.id);
+          },
         });
         setSteps([]);
         return true;
@@ -2315,22 +2441,39 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
         last.domain === "routineTag" &&
         stationRoutine
       ) {
-        const node = stationRoutine.getRoutineTagById(last.id);
-        if (!node) return false;
-        stationRoutine.startRenamingRoutineTag(node);
-        setSteps([]);
-        return true;
+        return openRename(
+          t("workspace.menu.renameRoutineTagDialog"),
+          t("workspace.menu.renameRoutineTagDescription"),
+          last.name,
+          name => stationRoutine.renameRoutineTag(last.id, name)
+        );
+      }
+      if (
+        id === "operation:renameRoutineTask" &&
+        last?.kind === "instance" &&
+        stationRoutine
+      ) {
+        return openRename(
+          t("workspace.menu.renameRoutineTaskDialog"),
+          t("workspace.menu.renameRoutineTaskDescription"),
+          last.name,
+          name => stationRoutine.renameRoutineTask(last.id, name)
+        );
       }
       if (
         id === "operation:delete" &&
         last?.kind === "instance" &&
         last.domain === "routineTag" &&
-        modal
+        stationRoutine
       ) {
-        modal.open("DeleteRoutineTagDialog", {
-          routineTagId: last.id,
-          routineTagName: last.name,
-        });
+        void stationRoutine
+          .hardDeleteRoutineTag(last.id)
+          .then(() =>
+            toast.success(
+              t("workspace.notifications.deleted", { name: last.name })
+            )
+          )
+          .catch(error => toast.error(tError(error, t)));
         setSteps([]);
         return true;
       }
@@ -2420,7 +2563,6 @@ export const AppCommandProvider = ({ children }: { children: ReactNode }) => {
       return false;
     },
     [
-      askMore,
       finishNavigation,
       i18n,
       instances,

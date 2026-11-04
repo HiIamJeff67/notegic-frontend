@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -138,11 +138,9 @@ const SubShelfMenuItem = ({
 
   const handleCreateMaterial = useCallback(async () => {
     try {
-      await shelfItemManager.createMaterial(
-        root.id,
-        current,
-        t("workspace.menu.newMaterial")
-      );
+      const name = t("workspace.menu.newMaterial");
+      await shelfItemManager.createMaterial(root.id, current, name);
+      toast.success(t("workspace.notifications.created", { name }));
       if (!current.isExpanded) {
         await shelfItemManager.expandSubShelf(root, current);
       }
@@ -153,11 +151,9 @@ const SubShelfMenuItem = ({
 
   const handleCreateBlockPack = useCallback(async () => {
     try {
-      await shelfItemManager.createBlockPack(
-        root.id,
-        current,
-        t("workspace.menu.newBlockPack")
-      );
+      const name = t("workspace.menu.newBlockPack");
+      await shelfItemManager.createBlockPack(root.id, current, name);
+      toast.success(t("workspace.notifications.created", { name }));
       if (!current.isExpanded) {
         await shelfItemManager.expandSubShelf(root, current);
       }
@@ -168,11 +164,9 @@ const SubShelfMenuItem = ({
 
   const handleCreateSubShelf = useCallback(async () => {
     try {
-      await shelfItemManager.createSubShelf(
-        summary.root.id,
-        current,
-        t("workspace.menu.newSubShelf")
-      );
+      const name = t("workspace.menu.newSubShelf");
+      await shelfItemManager.createSubShelf(summary.root.id, current, name);
+      toast.success(t("workspace.notifications.created", { name }));
       if (!current.isExpanded) {
         await shelfItemManager.expandSubShelf(root, current);
       }
@@ -319,16 +313,26 @@ const SubShelfMenuItem = ({
                     dialogHeader: t("workspace.menu.deleteSubShelf"),
                     dialogDescription: t(
                       "workspace.menu.deleteSubDescription",
-                      { name: current.name }
+                      {
+                        name: current.name,
+                      }
                     ),
-                    confirmKeyword: "DELETE",
-                    inputPlaceholder: t("workspace.menu.typeDelete"),
                     onDelete: async () =>
                       await loadingManager.startAsyncTransactionLoading(
                         async () => {
-                          await shelfItemManager
-                            .deleteSubShelf(prev, current)
-                            .catch(error => toast.error(tError(error, t)));
+                          try {
+                            await shelfItemManager.deleteSubShelf(
+                              prev,
+                              current
+                            );
+                            toast.success(
+                              t("workspace.notifications.deleted", {
+                                name: current.name,
+                              })
+                            );
+                          } catch (error) {
+                            toast.error(tError(error, t));
+                          }
                         }
                       ),
                     onCancel: modalManager.close,

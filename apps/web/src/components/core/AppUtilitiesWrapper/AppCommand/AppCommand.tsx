@@ -62,7 +62,7 @@ const AppCommand = () => {
         <div className="absolute inset-x-0 top-0 flex justify-center">
           <button
             type="button"
-            className="app-command-trigger pointer-events-auto rounded-b-sm border-x border-b px-2 pt-px pb-1 text-white outline-none transition-colors hover:bg-accent hover:text-white focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            className="app-command-trigger pointer-events-auto rounded-b-sm border-x border-b px-2 pt-px pb-1 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
             aria-label={t("common.commandPaletteHint")}
             title={t("common.commandPaletteHint")}
             aria-expanded={false}
@@ -110,8 +110,8 @@ const AppCommand = () => {
                     "navigation",
                     "domain",
                     "settings",
-                    "instance",
                     "operation",
+                    "instance",
                   ] as const
                 ).map(group => {
                   const title =

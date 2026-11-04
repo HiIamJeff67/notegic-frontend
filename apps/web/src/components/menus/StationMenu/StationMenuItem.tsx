@@ -14,8 +14,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback } from "react";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
   RoutineIcon,
   RoutineTaskIcon,
@@ -197,7 +197,7 @@ const StationMenuItem = ({ station }: StationMenuItemProps) => {
                 }
               >
                 <ExternalLink className="mr-2 size-4" />
-                {t("workspace.menu.overviewDetail")}
+                {t("workspace.menu.viewInOverview")}
               </ContextMenuItem>
               <ContextMenuItem
                 onClick={() =>

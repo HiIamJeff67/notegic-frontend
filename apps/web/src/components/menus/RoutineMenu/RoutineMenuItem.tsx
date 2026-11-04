@@ -10,6 +10,7 @@ import {
   Bookmark,
   CheckIcon,
   Copy,
+  ExternalLink,
   HistoryIcon,
   LoaderCircle,
   PackagePlus,
@@ -19,8 +20,8 @@ import {
   Workflow,
 } from "lucide-react";
 import { useCallback } from "react";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -246,6 +247,17 @@ const RoutineMenuItem = ({ station, routine }: RoutineMenuItemProps) => {
           <ContextMenuContent className="min-w-44">
             <ContextMenuLabel>{t("workspace.menu.view")}</ContextMenuLabel>
             <ContextMenuGroup>
+              <ContextMenuItem
+                onClick={() =>
+                  navigate({
+                    to: "/app/routines/$stationId",
+                    params: { stationId: station.id },
+                  })
+                }
+              >
+                <ExternalLink className="mr-2 size-4" />
+                {t("workspace.menu.viewInOverview")}
+              </ContextMenuItem>
               <ContextMenuItem
                 onClick={() =>
                   modalManager.open("RoutineTaskRecordDialog", {

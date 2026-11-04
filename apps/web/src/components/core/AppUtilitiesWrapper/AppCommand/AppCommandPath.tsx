@@ -69,7 +69,7 @@ const AppCommandPath = ({
           <>
             <BreadcrumbSeparator className="[&>svg]:size-3" />
             <BreadcrumbItem className="shrink-0">
-              <BreadcrumbPage className="font-bold text-white">
+              <BreadcrumbPage className="font-bold text-foreground">
                 {prompt}
               </BreadcrumbPage>
             </BreadcrumbItem>

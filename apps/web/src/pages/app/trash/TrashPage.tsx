@@ -12,12 +12,11 @@ import {
   type SearchStationsQuery,
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { ArchiveRestoreIcon, SearchIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import DeleteShelfItemDialog from "@/components/dialogs/ShelfItemDialog/DeleteShelfItemDialog";
+import DeleteShelfItemDialog from "@/components/dialogs/ShelfItemDialogs/DeleteShelfItemDialog/DeleteShelfItemDialog";
 import {
   BlockPackIcon,
   MaterialIcon,
@@ -33,6 +32,7 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDebounceValue } from "@/hooks/useDebounce";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   getTrashEntryKey,
   type TrashEntry,

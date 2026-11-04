@@ -183,18 +183,30 @@ test("page width caps grow at breakpoints and stay centered with either sidebar 
         .locator(".article-content")
         .evaluate(element => {
           const bounds = element.getBoundingClientRect();
-          const parent = element.parentElement!.getBoundingClientRect();
+          const parent = element.parentElement!;
+          const parentBounds = parent.getBoundingClientRect();
+          const parentStyle = getComputedStyle(parent);
           return {
             width: bounds.width,
             limit: getComputedStyle(element).maxWidth,
+            parentPadding:
+              Number.parseFloat(parentStyle.paddingLeft) +
+              Number.parseFloat(parentStyle.paddingRight),
             offset:
-              (bounds.left + bounds.right - parent.left - parent.right) / 2,
+              (bounds.left +
+                bounds.right -
+                parentBounds.left -
+                parentBounds.right) /
+              2,
           };
         });
       const limit = width >= 1536 ? 1280 : width >= 1280 ? 1152 : 896;
       expect(layout.limit).toBe(`${limit}px`);
       expect(layout.width).toBeCloseTo(
-        Math.min(limit, width - (state === "expanded" ? 256 : 0)),
+        Math.min(
+          limit,
+          width - (state === "expanded" ? 256 : 0) - layout.parentPadding
+        ),
         0
       );
       expect(Math.abs(layout.offset)).toBeLessThanOrEqual(1);

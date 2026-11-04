@@ -5,8 +5,8 @@ import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";
-import SidebarHoverCard from "@/components/core/AppUtilitesWrapper/SidebarHoverCard/SidebarHoverCard";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
+import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -100,9 +100,16 @@ const BlockPackMenuItem = ({ parent, current }: BlockPackMenuItemProps) => {
           <ContextMenuItem
             className="text-destructive focus:text-destructive"
             onClick={async () => {
-              await shelfItemManager.deleteBlockPack(parent, current);
-              if (current.id === (router.params.blockPackId as string)) {
-                router.push(WebURLPathDictionary.app.materialViewer._);
+              try {
+                await shelfItemManager.deleteBlockPack(parent, current);
+                toast.success(
+                  t("workspace.notifications.deleted", { name: current.name })
+                );
+                if (current.id === (router.params.blockPackId as string)) {
+                  router.push(WebURLPathDictionary.app.materialViewer._);
+                }
+              } catch (error) {
+                toast.error(tError(error, t));
               }
             }}
           >

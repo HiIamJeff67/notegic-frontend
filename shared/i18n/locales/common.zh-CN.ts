@@ -30,7 +30,7 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     sidebarHint: "App Sidebar（Ctrl 或 Cmd + B）",
     searchCommands: "搜索要执行的命令...",
     commandEmpty: "没有符合的命令。",
-    commandNavigation: "导航",
+    commandNavigation: "导览",
     commandObjects: "对象",
     commandSettings: "设置",
     commandActions: "操作",

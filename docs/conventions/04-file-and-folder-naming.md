@@ -48,7 +48,7 @@ below reflect the current repository and are the default for new files.
 | Area | New file pattern | Examples from the repository |
 | --- | --- | --- |
 | React components | `BigCamelCase.tsx` | `BlockPackEditor.tsx`, `NotificationDialog.tsx` |
-| Component folders | `BigCamelCase/` | `BlockPackEditor/`, `StationRoutineDialog/` |
+| Component folders | `BigCamelCase/` | `BlockPackEditor/`, `StationRoutineDialogs/CreateRoutineDialog/` |
 | UI primitives | `some-thing.tsx` | `button.tsx`, `dropdown-menu.tsx` |
 | Pages | `BigCamelCasePage.tsx` | `DashboardPage.tsx`, `PrivacyPolicyPage.tsx` |
 | Page folders | `some-thing/` | `material-viewer/`, `privacy-policy/` |

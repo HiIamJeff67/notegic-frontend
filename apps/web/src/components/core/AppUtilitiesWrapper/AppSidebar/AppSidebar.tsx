@@ -188,7 +188,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   <RoutineIcon />
                   {isSidebarExpanded && (
                     <span className="truncate">
-                      {t("workspace.navigation.routines")}
+                      {t("workspace.navigation.routinesOverview")}
                     </span>
                   )}
                 </SidebarMenuButton>
@@ -222,9 +222,16 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
                   disableInput: false,
                   inputPlaceholder: t("workspace.navigation.typeNewName"),
                   onCreate: async (newRootShelfName: string) => {
-                    await shelfItemManager
-                      .createRootShelf(newRootShelfName)
-                      .catch(error => toast.error(tError(error, t)));
+                    try {
+                      await shelfItemManager.createRootShelf(newRootShelfName);
+                      toast.success(
+                        t("workspace.notifications.created", {
+                          name: newRootShelfName.trim(),
+                        })
+                      );
+                    } catch (error) {
+                      toast.error(tError(error, t));
+                    }
                   },
                   onCancel: modalManager.close,
                 })

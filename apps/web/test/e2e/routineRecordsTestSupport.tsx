@@ -11,7 +11,7 @@ import RoutineRecordTable from "@/components/core/RoutineOverviewer/RoutineRecor
 import RoutineTable from "@/components/core/RoutineOverviewer/RoutineTable/RoutineTable";
 import RoutineTaskRecordTable from "@/components/core/RoutineOverviewer/RoutineTaskRecordTable/RoutineTaskRecordTable";
 import RoutineTaskTable from "@/components/core/RoutineOverviewer/RoutineTaskTable/RoutineTaskTable";
-import RoutineTaskRecordDialog from "@/components/dialogs/StationRoutineDialog/RoutineTaskRecordDialog";
+import RoutineTaskRecordDialog from "@/components/dialogs/StationRoutineDialogs/RoutineTaskRecordDialog/RoutineTaskRecordDialog";
 import { ModalProvider } from "@/providers/ModalProvider";
 import { StationRoutineContext } from "@/providers/StationRoutineProvider/StationRoutineProvider";
 import { TransactionSynchronizerContext } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";

@@ -8,49 +8,69 @@ import React, {
   useRef,
   useState,
 } from "react";
-import RoutineTaskRecordDialogSkeleton from "@/components/dialogs/StationRoutineDialog/RoutineTaskRecordDialogSkeleton";
+import RoutineTaskRecordDialogSkeleton from "@/components/dialogs/StationRoutineDialogs/RoutineTaskRecordDialog/RoutineTaskRecordDialogSkeleton";
 
 const SelectBackgroundImageDialog = lazy(
   () => import("@/components/dialogs/ImageDialog/SelectBackgroundImageDialog")
 );
 const CreateShelfItemDialog = lazy(
-  () => import("@/components/dialogs/ShelfItemDialog/CreateShelfItemDialog")
+  () =>
+    import(
+      "@/components/dialogs/ShelfItemDialogs/CreateShelfItemDialog/CreateShelfItemDialog"
+    )
 );
 const DeleteShelfItemDialog = lazy(
-  () => import("@/components/dialogs/ShelfItemDialog/DeleteShelfItemDialog")
+  () =>
+    import(
+      "@/components/dialogs/ShelfItemDialogs/DeleteShelfItemDialog/DeleteShelfItemDialog"
+    )
+);
+const RenameDialog = lazy(
+  () => import("@/components/dialogs/RenameDialog/RenameDialog")
 );
 const CreateRoutineDialog = lazy(
-  () => import("@/components/dialogs/StationRoutineDialog/CreateRoutineDialog")
+  () =>
+    import(
+      "@/components/dialogs/StationRoutineDialogs/CreateRoutineDialog/CreateRoutineDialog"
+    )
 );
 const CreateRoutineTagDialog = lazy(
   () =>
-    import("@/components/dialogs/StationRoutineDialog/CreateRoutineTagDialog")
+    import(
+      "@/components/dialogs/StationRoutineDialogs/CreateRoutineTagDialog/CreateRoutineTagDialog"
+    )
 );
 const CreateRoutineTaskDialog = lazy(
   () =>
-    import("@/components/dialogs/StationRoutineDialog/CreateRoutineTaskDialog")
+    import(
+      "@/components/dialogs/StationRoutineDialogs/CreateRoutineTaskDialog/CreateRoutineTaskDialog"
+    )
 );
 const CreateStationDialog = lazy(
-  () => import("@/components/dialogs/StationRoutineDialog/CreateStationDialog")
+  () =>
+    import(
+      "@/components/dialogs/StationRoutineDialogs/CreateStationDialog/CreateStationDialog"
+    )
 );
 const DeleteRoutineDialog = lazy(
-  () => import("@/components/dialogs/StationRoutineDialog/DeleteRoutineDialog")
-);
-const DeleteRoutineTagDialog = lazy(
   () =>
-    import("@/components/dialogs/StationRoutineDialog/DeleteRoutineTagDialog")
-);
-const DeleteRoutineTaskDialog = lazy(
-  () =>
-    import("@/components/dialogs/StationRoutineDialog/DeleteRoutineTaskDialog")
+    import(
+      "@/components/dialogs/StationRoutineDialogs/DeleteRoutineDialog/DeleteRoutineDialog"
+    )
 );
 const DeleteStationDialog = lazy(
-  () => import("@/components/dialogs/StationRoutineDialog/DeleteStationDialog")
+  () =>
+    import(
+      "@/components/dialogs/StationRoutineDialogs/DeleteStationDialog/DeleteStationDialog"
+    )
 );
 const RoutineTaskRecordDialog = lazy(
   () =>
-    import("@/components/dialogs/StationRoutineDialog/RoutineTaskRecordDialog")
+    import(
+      "@/components/dialogs/StationRoutineDialogs/RoutineTaskRecordDialog/RoutineTaskRecordDialog"
+    )
 );
+
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -75,6 +95,16 @@ export type ModalPropsMap = {
     onDelete: () => void | Promise<void>;
     onCancel: () => void;
   };
+  RenameDialog: {
+    dialogHeader: React.ReactNode;
+    dialogDescription: React.ReactNode;
+    currentName: string;
+    inputPlaceholder?: string;
+    submitLabel?: string;
+    onRename: (name: string) => void | Promise<void>;
+    onCancel: () => void;
+  };
+
   CreateStationDialog: {
     onCreated?: (stationId: UUID) => void | Promise<void>;
   };
@@ -96,11 +126,6 @@ export type ModalPropsMap = {
   CreateRoutineTagDialog: {
     onCreated?: (routineTagId: UUID) => void | Promise<void>;
   };
-  DeleteRoutineTagDialog: {
-    routineTagId: UUID;
-    routineTagName: string;
-    onDeleted?: () => void | Promise<void>;
-  };
   CreateRoutineTaskDialog: {
     onCreate?: (
       body: CreateRoutineTaskByRoutineIdRequest["body"]
@@ -110,13 +135,6 @@ export type ModalPropsMap = {
     stationName?: string;
     routineTitle?: string;
     onCreated?: (routineTaskId: UUID) => void | Promise<void>;
-  };
-  DeleteRoutineTaskDialog: {
-    onDelete?: () => Promise<void>;
-    routineTaskId: UUID;
-    routineTaskTitle: string;
-    expectedDefinitionVersion?: number;
-    onDeleted?: () => void | Promise<void>;
   };
   RoutineTaskRecordDialog: {
     routineTitle: string;
@@ -221,6 +239,16 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
             {...props}
           />
         );
+      case "RenameDialog":
+        return (
+          <RenameDialog
+            isOpen={true}
+            key={modalKey}
+            onClose={close}
+            {...props}
+          />
+        );
+
       case "CreateStationDialog":
         return (
           <CreateStationDialog
@@ -266,27 +294,9 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
             {...props}
           />
         );
-      case "DeleteRoutineTagDialog":
-        return (
-          <DeleteRoutineTagDialog
-            isOpen={true}
-            key={modalKey}
-            onClose={close}
-            {...props}
-          />
-        );
       case "CreateRoutineTaskDialog":
         return (
           <CreateRoutineTaskDialog
-            isOpen={true}
-            key={modalKey}
-            onClose={close}
-            {...props}
-          />
-        );
-      case "DeleteRoutineTaskDialog":
-        return (
-          <DeleteRoutineTaskDialog
             isOpen={true}
             key={modalKey}
             onClose={close}
