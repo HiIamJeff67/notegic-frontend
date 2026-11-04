@@ -1,3 +1,4 @@
+import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import {
   RoutinePhase,
@@ -770,24 +771,32 @@ export const RoutineTaskDependencyGraphDraftProvider = ({
     });
     if (!parent.success)
       throw new NotegicAPIError(new NotegicException(parent.exception));
+    if (parent.embedded?.publicId === "")
+      throw new NotegicAPIError(FetchClientExceptions.MissingNetwork());
     const tasks = await routineTasksQuery.fetch({
       header: getClientRequestHeaders(navigator.userAgent),
       param: { routineId },
     });
     if (!tasks.success)
       throw new NotegicAPIError(new NotegicException(tasks.exception));
+    if (tasks.embedded?.publicId === "")
+      throw new NotegicAPIError(FetchClientExceptions.MissingNetwork());
     const dependencies = await dependenciesQuery.fetch({
       header: getClientRequestHeaders(navigator.userAgent),
       param: { routineId },
     });
     if (!dependencies.success)
       throw new NotegicAPIError(new NotegicException(dependencies.exception));
+    if (dependencies.embedded?.publicId === "")
+      throw new NotegicAPIError(FetchClientExceptions.MissingNetwork());
     const verified = await routineQuery.fetch({
       header: getClientRequestHeaders(navigator.userAgent),
       param: { routineId },
     });
     if (!verified.success)
       throw new NotegicAPIError(new NotegicException(verified.exception));
+    if (verified.embedded?.publicId === "")
+      throw new NotegicAPIError(FetchClientExceptions.MissingNetwork());
     // A mixed read is not a graph baseline; the next Save still performs backend CAS.
     if (parent.data.definitionVersion !== verified.data.definitionVersion)
       throw new NotegicAPIError(

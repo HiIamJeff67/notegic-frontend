@@ -339,10 +339,6 @@ test("real workspace Provider preserves the current Routine, sibling data and ex
   expect(writes[0].expectedDefinitionVersion).toBe(7);
   await action.click({ button: "right", position: { x: 20, y: 20 } });
   await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Delete", exact: true })
-    .click();
   await editor.getByRole("button", { name: "Save", exact: true }).click();
   await expect
     .poll(async () => JSON.parse((await state.textContent())!).routine?.version)
@@ -986,7 +982,21 @@ test("version conflicts preserve drafts and require review plus a separate atomi
     const { RoutineLocalSimulator } = await load(
       "/src/api/local/simulators/routine.simulator.ts"
     );
+    const { GetMyRoutineById } = await load(
+      "/src/api/functions/routine.serverFn.ts"
+    );
+    const { GetMyRoutineTasksByRoutineId } = await load(
+      "/src/api/functions/routineTask.serverFn.ts"
+    );
+    const { GetRoutineTaskDependenciesByRoutineId } = await load(
+      "/src/api/functions/routineTaskDependency.serverFn.ts"
+    );
     return {
+      urls: {
+        parent: GetMyRoutineById.url,
+        tasks: GetMyRoutineTasksByRoutineId.url,
+        dependencies: GetRoutineTaskDependenciesByRoutineId.url,
+      },
       parent: {
         ...(await RoutineLocalSimulator.simulateGetMyRoutineById({
           param: { routineId: "12345678-1234-4234-8234-123456789abc" },
@@ -999,7 +1009,7 @@ test("version conflicts preserve drafts and require review plus a separate atomi
     };
   });
   let writes = 0,
-    reads = 0;
+    parentReads = 0;
   let readFailure: "network" | "version" | null = null;
   const conflict = JSON.stringify(
     await toCrossJSONAsync(
@@ -1045,19 +1055,28 @@ test("version conflicts preserve drafts and require review plus a separate atomi
       readFailure = null;
       return route.abort("failed");
     }
-    const step = reads++ % 4;
-    const parent =
-      step === 3 && readFailure === "version"
-        ? { ...fixture.parent, definitionVersion: 9 }
-        : fixture.parent;
-    if (step === 3) readFailure = null;
+    const path = new URL(request.url()).pathname;
+    const parentRead =
+      path === new URL(fixture.urls.parent, request.url()).pathname;
+    const taskRead =
+      path === new URL(fixture.urls.tasks, request.url()).pathname;
+    const dependencyRead =
+      path === new URL(fixture.urls.dependencies, request.url()).pathname;
+    expect(parentRead || taskRead || dependencyRead).toBe(true);
+    if (parentRead) parentReads++;
+    const changedVersion =
+      parentRead && parentReads % 2 === 0 && readFailure === "version";
+    const parent = changedVersion
+      ? { ...fixture.parent, definitionVersion: 9 }
+      : fixture.parent;
+    if (changedVersion) readFailure = null;
     return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
         result: {
           success: true,
           exception: null,
-          data: step === 1 ? fixture.tasks : step === 2 ? [] : parent,
+          data: taskRead ? fixture.tasks : dependencyRead ? [] : parent,
           embedded: { publicId: "editor-user" },
         },
       }),
@@ -1090,6 +1109,7 @@ test("version conflicts preserve drafts and require review plus a separate atomi
   ).toBeVisible();
   for (const failure of ["network", "version"] as const) {
     readFailure = failure;
+    parentReads = 0;
     await editor
       .getByRole("button", { name: "Review latest changes", exact: true })
       .click();
@@ -1585,10 +1605,6 @@ test("node dialogs stage final definitions and deletion removes stale layout ope
   ).toBeVisible();
   await action.click({ button: "right", position: { x: 20, y: 20 } });
   await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Delete", exact: true })
-    .click();
   await expect(action).toHaveCount(0);
   expect(writes).toHaveLength(0);
   await editor.getByRole("button", { name: "Save", exact: true }).click();
@@ -1620,10 +1636,6 @@ test("creating then deleting a node cancels the draft operation without any requ
     .filter({ has: page.getByRole("group", { name: "Start", exact: true }) });
   await created.click({ button: "right", position: { x: 20, y: 40 } });
   await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Delete", exact: true })
-    .click();
   await expect(editor.locator(".react-flow__node")).toHaveCount(2);
   await expect(
     editor.getByRole("button", { name: "Save", exact: true })
