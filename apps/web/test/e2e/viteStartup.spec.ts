@@ -15,6 +15,7 @@ let server: ViteDevServer | undefined;
 let temporary: string | undefined;
 let baseURL: string;
 let modulePath: string;
+let sharedModulePath: string;
 const moduleSource = `export const revision = 1;
 if (import.meta.hot) {
   import.meta.hot.accept(next => { window.notegicHmrRevision = next.revision; });
@@ -26,7 +27,9 @@ test.beforeAll(async () => {
     await mkdtemp(join(tmpdir(), "notegic-vite-startup-"))
   );
   modulePath = join(temporary, "hmrProbe.js");
+  sharedModulePath = join(temporary, "sharedRevision.js");
   await writeFile(modulePath, moduleSource);
+  await writeFile(sharedModulePath, "export const revision = 0;");
   const repository = process.cwd();
   const previousBase = process.env.VITE_APP_BASE_PATH;
   process.env.VITE_APP_BASE_PATH = "/";
@@ -36,6 +39,20 @@ test.beforeAll(async () => {
       cacheDir: join(temporary, "cache"),
       nitro: { buildDir: join(temporary, "nitro") },
       logLevel: "warn",
+      plugins: [
+        {
+          name: "shared-provider-hmr-fixture",
+          enforce: "pre",
+          transform(code, id) {
+            if (
+              !id.endsWith("/providers/Providers.tsx") &&
+              !id.endsWith("/hooks/useLocalPreferences.ts")
+            )
+              return;
+            return `import ${JSON.stringify(`/@fs${sharedModulePath}`)};\n${code}`;
+          },
+        },
+      ],
       server: {
         host: "127.0.0.1",
         port: 0,
@@ -47,6 +64,46 @@ test.beforeAll(async () => {
   } finally {
     if (previousBase === undefined) delete process.env.VITE_APP_BASE_PATH;
     else process.env.VITE_APP_BASE_PATH = previousBase;
+  }
+});
+
+test("concurrent SSR requests keep complete routes and provider contexts across shared-module invalidation", async ({
+  request,
+}) => {
+  test.setTimeout(60_000);
+  const paths = [
+    "/",
+    "/login",
+    "/register",
+    "/document",
+    "/login",
+    "/document",
+  ];
+  for (let revision = 0; revision < 4; revision++) {
+    if (revision > 0) {
+      const changed = new Promise<void>(resolve =>
+        server!.watcher.once("change", () => resolve())
+      );
+      await writeFile(sharedModulePath, `export const revision = ${revision};`);
+      await changed;
+    }
+    const responses = await Promise.all(
+      paths.map(async path => {
+        const response = await request.get(`${baseURL}${path}`);
+        const body = await response.text();
+        return {
+          path,
+          status: response.status(),
+          hasRuntimeError:
+            /trimPathRight|must be used within LocalPreferencesProvider|Cannot read properties of undefined/.test(
+              body
+            ),
+        };
+      })
+    );
+    expect(responses).toEqual(
+      paths.map(path => ({ path, status: 200, hasRuntimeError: false }))
+    );
   }
 });
 

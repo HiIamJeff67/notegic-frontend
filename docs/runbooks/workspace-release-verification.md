@@ -183,3 +183,263 @@ error corrections in `e48150d0`. The recovery fixture and this verification
 record are packaged together in a separate test commit. Each commit includes
 its generated devlog. This packaging does not change the tested product code,
 authorize a push, or satisfy the remaining live-backend acceptance gate.
+
+## Live Core/Gateway verification: 2026-11-05
+
+The user subsequently authorized starting a local backend and running the
+remaining authenticated session/login/resource-deletion checks. Product code
+remains at `92f70b6c`; the follow-up changes only browser tests and this record.
+No new commit, push, tag or deployment is part of this verification.
+The sibling backend source revision is `99a21bfb`; its working tree is unchanged.
+
+### Isolated environment
+
+- Started the existing PostgreSQL and Redis containers without recreating them
+  or their volumes. The original Core/Gateway/DurableJob services remain stopped.
+- Created `notegic_routine_acceptance_20261105` as a copy of the retained
+  `notegic_routine_acceptance_20261020` test database. No original database was
+  migrated, cleared or repointed. Fixture accounts use unique names and are
+  retained; deletion operations target only objects created by this run.
+- Built current-source Core and ClientGateway into `/private/tmp`, then started
+  separate loopback processes on 38080 and 38081. Both point to the new database,
+  Redis DB 14 and the existing independent integration Kafka on 19094.
+- Used fixture-only session, CSRF and delegation keys. No production signing key
+  or OAuth credential is used. Turnstile is disabled for this local environment.
+- Created the required Core topics in the isolated broker. No Email consumer or
+  external delivery service was started. Core uses its in-memory storage adapter;
+  the Material deletion case verifies metadata/viewer state, not uploaded-file
+  delivery or production object storage. RealtimeGateway/Yjs, Notification,
+  Feedback and DurableJob are outside this runtime.
+- Playwright uses installed Chrome, disposable browser storage and its own 4173
+  frontend. The developer's 6776 service and original browser profiles stay
+  untouched. A temporary config sets `sidebarHoverDelay: 3000` through the existing
+  local preference storage format; this is the supported disabled value, not a
+  DOM/style override. This affects only test contexts.
+
+### Commands and assertions
+
+Use the isolated runtime above, never a populated personal database, for:
+
+```sh
+E2E_RUN_ROUTINE_BACKEND=true \
+E2E_RUN_PAGE_BACKEND=true \
+E2E_ROUTINE_API_URL=http://127.0.0.1:38081 \
+E2E_ROUTINE_DATABASE=notegic_routine_acceptance_20261105 \
+E2E_ROUTINE_ACCESS_TOKEN_SECRET=routine-refresh-fixture-access-only \
+npm run test:e2e -- --config=/private/tmp/notegic-live.config.mjs sessionTabs.spec.ts authenticatedPages.spec.ts routineBackend.spec.ts resourceAvailabilityBackend.spec.ts --grep 'new tabs|local authenticated pages|expired access|editing a new Routine|real deletion|live login' --workers=1
+```
+
+The temporary Chrome config extends the repository configuration and changes no
+product route, API acknowledgement or network response. Logs are retained under
+`/private/tmp/notegic-live-*.log`; screenshots and failures use
+`/private/tmp/notegic-live-results`.
+
+`resourceAvailabilityBackend.spec.ts` creates real Material, BlockPack, Routine
+and RoutineTask records and issues their actual deletion APIs. It then explicitly
+refetches the active detail query through QueryClient, without replacing cached
+data. Material/BlockPack remain on their original route with the exact Not Found
+message. The persisted task's inspector hides editing while retaining its
+unsubmitted title; deleting its Routine hides the graph without removing its
+stored draft. This is evidence of handling a confirmed refetch, not an automatic
+cross-client deletion notification or a sidebar-delete navigation assertion.
+The inspector can render its draft while its initial detail query is pending.
+Refetching at that point can join the older request. The test first settles that
+read and asserts a successful active subscription, then checks the real 404
+after deletion, the refetched query's empty data, and the UI. A diagnostic run
+confirmed the pending-read state; the test does not treat a coalesced request
+as a new post-deletion read or replace cached data to bypass it.
+
+The live login case checks that a short password is translated before any login
+RPC, and that a correctly formatted wrong password reaches Core once, displays
+the exact translated rejection and clears the password. Existing session tests
+exercise missing-tab CSRF, rejected CSRF, expired access renewal, session-cache
+loss and a real two-tab definition conflict with retained/reloaded drafts.
+
+The older Routine creation case assumed immediate node writes. Its updated
+assertions require local staging, an explicit toolbar Save, verified safe draft
+refresh after parent edits, and a second explicit Save. Database counts and
+versions are checked before and after submission. A stale external edit must
+still reject one write, retain the local node through reload and leave the
+remote task count unchanged. Inspector input is edited only after its initial
+value agrees with the database; asynchronous loading must not overwrite the
+test's edit.
+
+### Final result and retained services
+
+The final six-case run passed all six cases in 1.8 minutes with no skips:
+authenticated page sessions, real resource deletion/draft retention, login
+validation/wrong password, access renewal after session-cache loss, graph
+creation/version conflicts, and two-tab session/conflict recovery. Exact log:
+`/private/tmp/notegic-live-complete.log`.
+
+`npm run format:check`, `npm run lint`, `npm run typecheck` and `git diff --check`
+passed on the final test sources. Static logs are
+`/private/tmp/notegic-live-{format,lint,types}-end.log`. No product, dependency,
+generated-contract or migration source changed, so the earlier unit/build
+results remain historical rather than being claimed as newly rerun checks.
+
+Initial failures and diagnostics remain in `notegic-live-initial.log`,
+`notegic-live-final.log`, `notegic-live-verified.log`,
+`notegic-live-deletion-diagnosis.log` and
+`notegic-live-deletion-confirmation.log`. They distinguish the hovercard defect,
+obsolete staging assumptions, incomplete inspector initialization, test-route
+parameters and the pending-read/refetch race from backend contract failures.
+The final case adds successful active-query, real 404 and empty-query-data
+assertions; it does not waive the earlier failure or force a remount/reset.
+
+Runner-owned browser/frontend processes exit after testing. The isolated
+Core/Gateway, PostgreSQL/Redis and integration Kafka are left running for local
+review; no acceptance database, account, volume or original browser profile is
+removed. The fixture-only startup/configuration and PID records remain under
+`/private/tmp/notegic-live-*` for inspection. The backend repository is unchanged;
+frontend test/document changes remain uncommitted. No push was performed.
+
+The previously unprovisioned session/login/refetch-deletion checks now have real
+Core/Gateway evidence. This does not close the separate issues below or establish
+production storage, realtime/Yjs, automatic cross-client deletion delivery,
+DurableJob execution, staging or deployment acceptance.
+
+### Additional observed issues
+
+- With the default sidebar hover delay, a routine hovercard can intercept clicks
+  on the context menu's Open in inspector item. The first live run captured that
+  pointer interception. Disabling sidebar previews through the existing setting
+  permits the scoped data-flow checks; it does not fix this interaction defect.
+- Authenticated page navigation preserves the session, but full-page entry to
+  Account and Preferences reports hydration mismatches. `ScreenProvider` starts
+  at width 0 during SSR and the actual browser width on the client; both pages
+  conditionally render their sheet-toggle button at width 1024. The logged
+  mismatch points at that button. This is separate from the corrected Document
+  command hydration issue. The session-only page test does not assert hydration
+  cleanliness, so its pass cannot waive these errors.
+- Intermediate development runs also logged TanStack route initialization
+  (`trimPathRight`) and LocalPreferences context errors. These are retained in
+  the logs and are not attributed to a Core API contract without further evidence.
+  No runtime workaround or assertion suppression was introduced.
+
+## Sidebar overlays and settings hydration follow-up: 2026-11-05
+
+The subsequent UI fix keeps all earlier working-tree tests and evidence. No
+commit, push, backend change, dependency update, migration edit or user-data
+reset is part of this follow-up.
+
+### Changes
+
+- `AppUtilitiesWrapper` provides one `ContextMenuProvider` for its existing
+  menus and sidebar. The ContextMenu wrapper reports native Radix open/close
+  events, retains caller callbacks and releases only its own active menu on
+  unmount. SidebarHoverCard closes and rejects delayed opens while any menu in
+  that scope is open. Scoping only one item was insufficient: a Station preview
+  could cover a Routine's menu. There is no z-index override, forced click,
+  hidden trigger, feature-specific timer or permanently disabled preference.
+- ScreenProvider starts at the same width/height 0 on server and client, then
+  its existing resize subscription updates the real dimensions. This removes
+  the initial conditional sheet-button mismatch without changing the layout
+  breakpoint or remounting settings content.
+- useNetwork starts with a consistent online snapshot, then observes actual
+  browser connectivity through its existing effect/events. Node's navigator
+  may exist without onLine; treating that undefined value as offline rendered
+  OfflineTab on the server and ProfileTab on the client.
+- Profile and Account date labels display a stable dash until real user data
+  exists. Their FakeUser defaults contain independently constructed dates,
+  which otherwise produced different Last updated text during hydration.
+  Real dates retain the existing locale formatting; form/draft state is not
+  replaced to fix the mismatch.
+
+### Verification
+
+All browser contexts in this follow-up use the normal enabled hovercard
+preference. The prior temporary disabled setting is not carried into the new
+Chrome config (`/private/tmp/notegic-ui-followup.config.mjs`).
+
+- The real ContextMenu/SidebarHoverCard integration tests pass 3 cases: an
+  already-open preview closes; pending opens remain suppressed; a sibling menu
+  suppresses even a caller-controlled open preview. Dismissal restores normal
+  behavior, the original trigger remains mounted, menu selection works and
+  the disabled-preview preference remains effective.
+- Targeted Jest passed 3 suites / 19 tests (overlay integration, screen
+  breakpoints and Node network snapshots). Nitro's installed worker readiness
+  tests also passed in the earlier targeted run.
+- Complete Jest passed 107 suites / 1,507 tests on the final product/test
+  sources in 226.11 seconds. Its log is
+  `/private/tmp/notegic-ui-followup-all-unit.log`.
+- The combined development selection in
+  `/private/tmp/notegic-ui-followup-browser-complete.log` passed 8 cases. Its one
+  failure was the newly added mobile assertion demanding a visible user menu
+  inside a correctly closed sidebar drawer. The corrected test checks the
+  mobile trigger, route and session, while retaining the desktop user-menu
+  assertion and an empty page-error list.
+- That final authenticated-pages rerun passed in
+  `/private/tmp/notegic-ui-followup-settings-final.log`: Account and Preferences
+  full-page entries at desktop and 390px produce no hydration/page errors or
+  lost session. All earlier route, no-CSRF-failure and no-error-toast checks
+  remain. No hydration-warning suppression or relaxed error assertion was used.
+- The other 8 selected cases passed with the final product fixes: real graph
+  creation/Save and version rejection, expired session renewal, two-tab conflict
+  recovery, real deletion/refetch/draft preservation, exact login validation,
+  concurrent SSR invalidation, cold startup and HMR/SQLite row retention.
+- Format/lint/typecheck passed. Node SSR and a fresh Cloudflare build passed;
+  built Node SSR public-navigation/login/registration/document smoke passed
+  both cases. Logs use `/private/tmp/notegic-ui-followup-*.log`.
+
+Commands used for this scope (with the isolated live variables from the previous
+section when running authenticated cases):
+
+```sh
+PLAYWRIGHT_CHANNEL=chrome npm run test:unit -- apps/web/test/integration/sidebarHoverCard.test.ts apps/web/src/providers/ScreenProvider.test.ts apps/web/src/hooks/useNetwork.test.tsx
+PLAYWRIGHT_CHANNEL=chrome npm run test:unit
+npm run test:e2e -- --config=/private/tmp/notegic-ui-followup.config.mjs authenticatedPages.spec.ts routineBackend.spec.ts sessionTabs.spec.ts resourceAvailabilityBackend.spec.ts viteStartup.spec.ts --grep 'new tabs|local authenticated pages|expired access|editing a new Routine|real deletion|live login|cold startup|HMR accepts|concurrent SSR' --workers=1
+npm run test:e2e -- --config=/private/tmp/notegic-ui-followup.config.mjs authenticatedPages.spec.ts --workers=1
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build:web
+E2E_PRODUCTION=true npm run test:e2e -- --config=/private/tmp/notegic-ui-followup-production.config.mjs publicNavigation.spec.ts --workers=1
+npm run build:web:cloudflare
+git diff --check
+```
+
+The built Node SSR smoke uses its own 4183 endpoint and no live credentials.
+Backend source is unchanged, so backend Go unit/race targets and contract
+generation were not rerun. The live Core/Gateway browser checks are the relevant
+cross-repository verification for these frontend-only changes.
+
+### Vite initialization diagnosis and limit
+
+The original stack locations are route initialization at trimPathRight and a
+consumer seeing no LocalPreferences context despite the declared provider
+composition. They identify SSR module/route/context evaluation boundaries,
+not a database migration or an API error contract. The exact transient cause
+is not established from those stacks alone.
+
+The Vite startup fixture now invalidates a temporary shared dependency of the
+real Providers/useLocalPreferences modules and performs 4 batches of 6 concurrent
+SSR requests across 3 edits. All 24 responses retained HTTP 200 and no matching
+route/context failure text. Original cold-optimizer, no-automatic-reload and
+actual HMR/full-reload SQLite retention assertions still pass. It uses native
+Vite/Nitro and independent temporary optimizer/build directories, without
+editing live source or restarting the server to turn a request green.
+
+Upstream [Vite #22999](https://github.com/vitejs/vite/issues/22999) describes a
+similar partial-export race; its [fix #23009](https://github.com/vitejs/vite/pull/23009)
+is already present in the installed 8.2.4 module runner's in-flight cycle guard.
+That similarity is context, not proof that the same bug caused these failures.
+No package upgrade, node_modules patch, worker replacement, added startup retry
+or relaxed timeout is justified by the current evidence.
+
+Neither transient was reproduced in the final unchanged-source runs. Retain
+the original logs and new regression coverage; do not label the exact Vite
+root cause confirmed or claim a production-runtime fix. If it recurs, capture
+the first failed URL/status/body and module invalidation timeline before
+changing caches or data. Existing backend services and the developer's 6776
+server remain intact; runner-owned browser/frontend processes have exited.
+
+### Local packaging after review
+
+The user subsequently authorized local packaging of this follow-up. Sidebar
+overlay coordination is committed in `4d7e6605`, settings hydration in
+`1f8573e0`, and live session/resource-deletion test updates in a separate
+workspace test commit. Vite regression coverage and this complete record are
+packaged together in their own test commit. Each includes a generated devlog.
+This preserves the failed-run history and the unconfirmed Vite root cause;
+local packaging does not authorize a push or deployment.
