@@ -333,6 +333,14 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
     await page
       .getByRole("menuitem", { name: "Open in inspector", exact: true })
       .click();
+    await page.waitForLoadState("networkidle");
+    await expect(
+      page.locator("#routine-inspector-timeout-minutes")
+    ).toHaveValue(
+      queryDatabase(
+        `SELECT timeout_seconds / 60 FROM "RoutineTable" WHERE id='${routineId}'`
+      )
+    );
     await page.locator("#routine-inspector-timeout-minutes").fill(minutes);
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(
@@ -374,6 +382,30 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
         .click();
       await expect(createAction).toHaveCount(0);
     }
+    // Creating a graph node stages it locally; only toolbar Save submits it.
+    expect(
+      queryDatabase(
+        `SELECT count(*) FROM "RoutineTaskTable" WHERE routine_id='${routineId}' AND kind='${kind}'`
+      )
+    ).toBe("0");
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(
+      page.getByText(
+        "Latest changes are in your draft. Review them, then press Save; nothing has been submitted.",
+        { exact: true }
+      )
+    ).toBeVisible();
+    expect(
+      queryDatabase(
+        `SELECT count(*) FROM "RoutineTaskTable" WHERE routine_id='${routineId}' AND kind='${kind}'`
+      )
+    ).toBe("0");
+    expect(
+      queryDatabase(
+        `SELECT definition_version FROM "RoutineTable" WHERE id='${routineId}'`
+      )
+    ).toBe(String(version));
+    await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect
       .poll(() =>
         queryDatabase(
@@ -440,6 +472,9 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
   await staleAction
     .getByRole("button", { name: "Create", exact: true })
     .click();
+  await expect(staleAction).toHaveCount(0);
+  expect(conflictingWrites).toBe(0);
+  await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(
     page.getByText(
       "This routine changed. Review the latest version before saving.",
@@ -449,9 +484,14 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
     )
   ).toBeVisible();
   expect(conflictingWrites).toBe(1);
-  await expect(staleAction.getByLabel("Title", { exact: true })).toHaveValue(
-    "Conflicting action"
-  );
+  await expect(
+    page
+      .locator(".react-flow__node")
+      .getByText("Conflicting action", { exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Review latest changes", exact: true })
+  ).toBeVisible();
   expect(
     queryDatabase(
       `SELECT count(*) FROM "RoutineTaskTable" WHERE routine_id='${routineId}'`
@@ -462,15 +502,17 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
       `SELECT definition_version FROM "RoutineTable" WHERE id='${routineId}'`
     )
   ).toBe("6");
-  await staleAction
-    .getByRole("button", { name: "Cancel", exact: true })
-    .click();
   await page.reload();
-  await expect(page.locator(".react-flow__node")).toHaveCount(2, {
+  await expect(page.locator(".react-flow__node")).toHaveCount(3, {
     timeout: 30_000,
   });
   await expect(
     page.getByText("Read edited routine", { exact: true }).last()
+  ).toBeVisible();
+  await expect(
+    page
+      .locator(".react-flow__node")
+      .getByText("Conflicting action", { exact: true })
   ).toBeVisible();
 });
 
