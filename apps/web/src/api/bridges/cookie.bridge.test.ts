@@ -1,8 +1,12 @@
 const setResponseHeader = jest.fn();
 
-jest.mock("@tanstack/react-start/server", () => ({ setResponseHeader }), {
-  virtual: true,
-});
+jest.mock(
+  "@tanstack/start-server-core/request-response",
+  () => ({ setResponseHeader }),
+  {
+    virtual: true,
+  }
+);
 
 import {
   forwardUpstreamSetCookies,

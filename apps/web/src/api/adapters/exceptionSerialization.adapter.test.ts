@@ -17,7 +17,7 @@ jest.mock(
   { virtual: true }
 );
 jest.mock(
-  "@tanstack/react-start/server",
+  "@tanstack/start-server-core/request-response",
   () => ({ setResponseHeader: jest.fn() }),
   { virtual: true }
 );

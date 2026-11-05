@@ -2,9 +2,13 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { createQueryClient } from "@shared/api/queryClient";
 
 const setResponseHeader = jest.fn();
-jest.mock("@tanstack/react-start/server", () => ({ setResponseHeader }), {
-  virtual: true,
-});
+jest.mock(
+  "@tanstack/start-server-core/request-response",
+  () => ({ setResponseHeader }),
+  {
+    virtual: true,
+  }
+);
 jest.mock(
   "@tanstack/react-start",
   () => ({
