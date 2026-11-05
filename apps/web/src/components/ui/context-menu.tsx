@@ -3,9 +3,45 @@ import { cn } from "@shared/lib/classname/cn";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import * as React from "react";
 
-const ContextMenu = (
-  props: React.ComponentProps<typeof ContextMenuPrimitive.Root>
-) => <ContextMenuPrimitive.Root {...props} />;
+const ContextMenuOpenContext = React.createContext<{
+  openMenu: string | null;
+  setOpenMenu: React.Dispatch<React.SetStateAction<string | null>>;
+} | null>(null);
+
+const ContextMenuProvider = ({ children }: { children: React.ReactNode }) => {
+  const [openMenu, setOpenMenu] = React.useState<string | null>(null);
+  const value = React.useMemo(() => ({ openMenu, setOpenMenu }), [openMenu]);
+  return (
+    <ContextMenuOpenContext.Provider value={value}>
+      {children}
+    </ContextMenuOpenContext.Provider>
+  );
+};
+
+const ContextMenu = ({
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Root>) => {
+  const id = React.useId();
+  const setOpenMenu = React.useContext(ContextMenuOpenContext)?.setOpenMenu;
+  React.useEffect(
+    () => () => {
+      setOpenMenu?.(current => (current === id ? null : current));
+    },
+    [id, setOpenMenu]
+  );
+  return (
+    <ContextMenuPrimitive.Root
+      {...props}
+      onOpenChange={nextOpen => {
+        setOpenMenu?.(current =>
+          nextOpen ? id : current === id ? null : current
+        );
+        onOpenChange?.(nextOpen);
+      }}
+    />
+  );
+};
 
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 
@@ -186,6 +222,8 @@ export {
   ContextMenuContent,
   ContextMenuGroup,
   ContextMenuItem,
+  ContextMenuOpenContext,
+  ContextMenuProvider,
   ContextMenuLabel,
   ContextMenuPortal,
   ContextMenuRadioGroup,
