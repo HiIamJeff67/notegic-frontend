@@ -1,6 +1,7 @@
 fragment FragmentedBasicPrivateItem on PrivateItem {
   id
   parentSubShelfId
+  name
   rootShelfId
   type
   deletedAt

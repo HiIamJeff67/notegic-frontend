@@ -271,6 +271,7 @@ export class MaterialLocalSimulator {
         id,
         parentSubShelfId: request.body.parentSubShelfId,
         rootShelfId: request.affected.rootShelfId,
+        name: request.body.name,
         type: ItemType.Material,
         createdAt,
         updatedAt: createdAt,
@@ -306,13 +307,14 @@ export class MaterialLocalSimulator {
       });
       if (!loggedInUser) return;
 
+      const updatedAt = new Date();
       await tx
         .update(Material)
         .set({
           ...(request.body.values.name !== undefined && {
             name: request.body.values.name,
           }),
-          updatedAt: new Date(),
+          updatedAt,
         })
         .where(
           and(
@@ -328,6 +330,12 @@ export class MaterialLocalSimulator {
             )
           )
         );
+      if (request.body.values.name !== undefined) {
+        await tx
+          .update(Item)
+          .set({ name: request.body.values.name, updatedAt })
+          .where(eq(Item.id, request.body.materialId));
+      }
       await tx.insert(Transaction).values({
         ownerPublicId: loggedInUser.publicId,
         entityType: TransactionEntityType.Material,

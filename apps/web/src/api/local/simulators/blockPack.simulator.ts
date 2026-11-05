@@ -19,6 +19,7 @@ import {
   UpdateMyBlockPackByIdRequest,
   UpdateMyBlockPacksByIdsRequest,
 } from "@shared/api/interfaces/blockPack.interface";
+import { ItemType } from "@shared/api/interfaces/enums";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { matchesSearch, searchPage } from "@shared/lib/search/searchPage";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
@@ -266,12 +267,24 @@ export class BlockPackLocalSimulator {
       const id = request.body.id ?? generateUUID();
       request.body.id = id;
 
+      const createdAt = new Date();
       await tx.insert(BlockPack).values({
         id,
         parentSubShelfId: request.body.parentSubShelfId,
         name: request.body.name,
         icon: request.body.icon,
         headerBackgroundURL: request.body.headerBackgroundURL,
+        createdAt,
+        updatedAt: createdAt,
+      });
+      await tx.insert(Item).values({
+        id,
+        parentSubShelfId: request.body.parentSubShelfId,
+        rootShelfId: request.affected.rootShelfId,
+        name: request.body.name,
+        type: ItemType.BlockPack,
+        createdAt,
+        updatedAt: createdAt,
       });
 
       await tx
@@ -395,6 +408,15 @@ export class BlockPackLocalSimulator {
             )
           )
         );
+      if (request.body.values.name !== undefined) {
+        await tx
+          .update(Item)
+          .set({
+            name: request.body.values.name,
+            updatedAt: setValues.updatedAt,
+          })
+          .where(eq(Item.id, request.body.blockPackId));
+      }
 
       await tx.insert(Transaction).values({
         ownerPublicId: loggedInUser.publicId,

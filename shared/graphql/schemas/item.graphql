@@ -2,6 +2,7 @@ type PrivateItem {
   id: UUID!
   parentSubShelfId: UUID!
   rootShelfId: UUID!
+  name: String!
   type: ItemType!
   deletedAt: Time
   updatedAt: Time!
