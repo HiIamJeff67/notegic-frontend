@@ -72,6 +72,20 @@ shared concept is proven.
 - Are effects, subscriptions, and cleanup owned by the correct hook?
 - Does the hook have a real shared consumer, or is it speculative?
 
+## Browser state during hydration
+
+Keep SSR and the first client snapshot identical. `ScreenProvider` starts at
+width/height 0 and updates through its existing mounted resize subscription.
+`useNetwork` starts online on both sides, then synchronizes the actual browser
+status and online/offline events. The presence of `navigator` alone does not
+identify a browser: Node can expose it without an `onLine` property.
+
+Do not render volatile fallback timestamps as account metadata. Until the
+actual user/profile data is available, show a stable placeholder instead of a
+date created independently during server and client module evaluation. Keep
+forms mounted and preserve their existing editing state; do not suppress
+hydration warnings or force remounts to hide mismatches.
+
 ## Open resource availability
 
 An open viewer/editor observes its actual resource-ID query. An imperative
