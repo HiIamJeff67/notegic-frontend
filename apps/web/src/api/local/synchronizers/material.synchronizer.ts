@@ -264,6 +264,7 @@ export class MaterialLocalSynchronizer {
             id: material.id,
             parentSubShelfId: material.parentSubShelfId,
             rootShelfId: material.rootShelfId,
+            name: material.name,
             type: ItemType.Material,
             deletedAt: material.deletedAt,
             updatedAt: material.updatedAt,
@@ -275,6 +276,7 @@ export class MaterialLocalSynchronizer {
           set: {
             parentSubShelfId: sql`excluded.parent_sub_shelf_id`,
             rootShelfId: sql`excluded.root_shelf_id`,
+            name: sql`excluded.name`,
             type: sql`excluded.type`,
             deletedAt: sql`excluded.deleted_at`,
             updatedAt: sql`excluded.updated_at`,

@@ -15,6 +15,7 @@ export const Item = sqliteTable(
     rootShelfId: text("root_shelf_id")
       .notNull()
       .references(() => RootShelf.id),
+    name: text("name").notNull().default(""),
     type: text("type").$type<ItemType>().notNull(),
     deletedAt: integer("deleted_at", { mode: "timestamp" }),
     updatedAt: integer("updated_at", { mode: "timestamp" })

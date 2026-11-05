@@ -27,6 +27,7 @@ import {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
+import { ItemType } from "@shared/api/interfaces/enums";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
@@ -255,6 +256,27 @@ export class BlockPackLocalSynchronizer {
           createdAt: response.data.createdAt,
         })
         .onConflictDoNothing();
+      await tx
+        .insert(Item)
+        .values({
+          id: response.data.id,
+          parentSubShelfId: request.body.parentSubShelfId,
+          rootShelfId: request.affected.rootShelfId,
+          name: request.body.name,
+          type: ItemType.BlockPack,
+          createdAt: response.data.createdAt,
+          updatedAt: response.data.createdAt,
+        })
+        .onConflictDoUpdate({
+          target: Item.id,
+          set: {
+            parentSubShelfId: request.body.parentSubShelfId,
+            rootShelfId: request.affected.rootShelfId,
+            name: request.body.name,
+            type: ItemType.BlockPack,
+            updatedAt: response.data.createdAt,
+          },
+        });
 
       await tx
         .update(RootShelf)
@@ -357,6 +379,15 @@ export class BlockPackLocalSynchronizer {
           )
         )
       );
+    if (request.body.values.name !== undefined) {
+      await localDB
+        .update(Item)
+        .set({
+          name: request.body.values.name,
+          updatedAt: response.data.updatedAt,
+        })
+        .where(eq(Item.id, request.body.blockPackId));
+    }
   };
 
   static syncUpdateMyBlockPacksByIds = async (
