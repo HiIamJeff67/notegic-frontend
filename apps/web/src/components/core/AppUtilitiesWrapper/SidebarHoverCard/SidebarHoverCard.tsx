@@ -1,4 +1,5 @@
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, useContext, useState } from "react";
+import { ContextMenuOpenContext } from "@/components/ui/context-menu";
 import { HoverCard } from "@/components/ui/hover-card";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { MaxSidebarHoverDelay } from "@/providers/LocalPreferencesProvider";
@@ -10,8 +11,10 @@ const SidebarHoverCard = ({
   ...props
 }: Omit<ComponentProps<typeof HoverCard>, "openDelay">) => {
   const { preferences } = useLocalPreferences();
+  const contextMenuOpen = !!useContext(ContextMenuOpenContext)?.openMenu;
   const delay = preferences.sidebarHoverDelay;
-  const enabled = delay < MaxSidebarHoverDelay && open !== false;
+  const enabled =
+    delay < MaxSidebarHoverDelay && open !== false && !contextMenuOpen;
   const [card, setCard] = useState({ delay, enabled, open: defaultOpen });
 
   // Reset a pending/open preview when its policy changes, without remounting its trigger.
