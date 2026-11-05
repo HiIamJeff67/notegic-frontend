@@ -25,6 +25,8 @@ test("local authenticated pages retain the session without CSRF failures", async
     "Fixture creation imports Vite source modules"
   );
   test.setTimeout(240_000);
+  const pageErrors: string[] = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
   page.setDefaultNavigationTimeout(60_000);
   await page.addInitScript(() => {
     window.pageAuthenticationFailures = 0;
@@ -167,10 +169,32 @@ test("local authenticated pages retain the session without CSRF failures", async
           )
         ).toHaveCount(0);
         expect(failures).toEqual([]);
+        expect(pageErrors).toEqual([]);
         expect(
           await page.evaluate(() => window.pageAuthenticationFailures)
         ).toBe(0);
       }
     );
+  }
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const path of ["/app/setting/account", "/app/setting/preferences"]) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      if (width === 390) {
+        await expect(
+          page.getByRole("button", { name: "Toggle sidebar", exact: true })
+        ).toBeVisible();
+      } else {
+        await expect(
+          page.getByRole("menuitem").filter({ hasText: name })
+        ).toBeVisible();
+      }
+      expect(new URL(page.url()).pathname).toBe(path);
+      expect(await page.evaluate(() => window.pageAuthenticationFailures)).toBe(
+        0
+      );
+      expect(pageErrors).toEqual([]);
+    }
   }
 });

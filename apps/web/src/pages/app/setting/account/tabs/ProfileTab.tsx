@@ -580,9 +580,11 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                     layout={layout}
                     title={t("settingsPage.account.personal.lastUpdated")}
                     description={
-                      field.value instanceof Date
-                        ? field.value.toLocaleString(i18n.resolvedLanguage)
-                        : field.value
+                      !userManager.userInfo
+                        ? "—"
+                        : field.value instanceof Date
+                          ? field.value.toLocaleString(i18n.resolvedLanguage)
+                          : field.value
                     }
                     hideSeparator
                   >

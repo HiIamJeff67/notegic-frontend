@@ -287,9 +287,11 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
                   layout={layout}
                   title={t("settingsPage.account.fields.joinedAt")}
                   description={
-                    field.value instanceof Date
-                      ? field.value.toLocaleDateString(i18n.resolvedLanguage)
-                      : field.value
+                    !userManager.userData
+                      ? "—"
+                      : field.value instanceof Date
+                        ? field.value.toLocaleDateString(i18n.resolvedLanguage)
+                        : field.value
                   }
                   hideSeparator
                 >

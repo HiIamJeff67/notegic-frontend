@@ -35,12 +35,9 @@ interface ScreenProviderProps {
 }
 
 export const ScreenProvider = ({ children }: ScreenProviderProps) => {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 0
-  );
-  const [height, setHeight] = useState(
-    typeof window !== "undefined" ? window.innerHeight : 0
-  );
+  // The first client snapshot must match SSR; resize initializes it after mount.
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
   const [breakpoint, setBreakpoint] = useState<ScreenBreakpoint>(
     getBreakpoint(width)
   );
