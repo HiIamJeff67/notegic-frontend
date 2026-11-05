@@ -443,3 +443,110 @@ workspace test commit. Vite regression coverage and this complete record are
 packaged together in their own test commit. Each includes a generated devlog.
 This preserves the failed-run history and the unconfirmed Vite root cause;
 local packaging does not authorize a push or deployment.
+
+### Server-function HMR repair follow-up
+
+A focused real-browser RPC regression reproduced
+`getRequestHeader is not a function` on the first route hot update before the
+repair. Runtime tracing in the preceding diagnosis observed the public Start
+server barrel returning empty exports while a split server function imported
+it through a cycle involving the Start handler and application router. This is
+a demonstrated development module-boundary failure, not an upstream API or
+local database failure.
+
+Request/response APIs now come from the published
+`@tanstack/start-server-core/request-response` subpath across server functions,
+the response adapter and cookie bridge. The already-installed 1.169.39 runtime
+is declared directly; no package upgrade, private dist import, library patch or
+new wrapper is involved. LocalPreferences and User contexts remain with their owning Providers;
+Vite module-local hot data retains only context identity across hot updates. Intermediate
+coverage exposed both context mismatches; the final body check rejects any
+`must be used within` message, not just the original LocalPreferences error.
+
+The development-only client define plugin uses Vite's public transform API to
+replace Start's existing TSS compile-time constants in unbundled client modules.
+The blank-document test proves client RPC initialization with no global process.
+An attempted whole-entry optimization was removed because it bypassed Start's
+isomorphic transform and loaded Node AsyncLocalStorage in the browser.
+
+The final startup suite passed all 6 cases in 41.4 seconds: concurrent SSR,
+cold startup, accepted HMR/full-reload SQLite row retention, client RPC bootstrap
+without globals, and route/SSR-preferences HMR with 96 real browser RPCs plus
+216 page/module responses. The browser is unauthenticated and the real
+TryGetUserData returns false without contacting a backend. Every RPC batch must
+succeed; there are no retries, timing sleeps or worker replacements. Fixture
+revision files, optimizer output and Nitro output are temporary and separate
+from the developer's server and data.
+
+Other verification:
+
+- Formatting, lint and typecheck pass.
+- Affected API, cookie, CSRF, User and preferences tests: 9 suites / 305 tests.
+- Installed Nitro worker integration: 8 tests pass with loopback permission.
+- Development Apollo, same-origin server functions and public navigation: 5 pass.
+- Node SSR build passes (10.0 seconds), production navigation smoke: 2 pass.
+- Cloudflare Worker build passes (11.6 seconds). No deployment was performed.
+
+Exact local commands and retained logs:
+
+```sh
+npm run test:e2e -- --config=/private/tmp/notegic-vite-regression.config.mjs viteStartup.spec.ts --workers=1
+PLAYWRIGHT_CHANNEL=chrome npm run test:unit -- apps/web/test/integration/userProvider.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts apps/web/test/integration/sidebarHoverPreferences.test.ts apps/web/test/integration/sidebarHoverCard.test.ts apps/web/src/providers/LocalPreferencesProvider.test.ts apps/web/src/api/adapters/apiResponse.adapter.test.ts apps/web/src/api/adapters/exceptionSerialization.adapter.test.ts apps/web/src/api/bridges/cookie.bridge.test.ts apps/web/test/integration/csrfTransport.test.ts
+npm run test:unit -- apps/web/test/integration/nitroWorker.test.ts
+npm run test:e2e -- --config=/private/tmp/notegic-ui-followup.config.mjs csrf.spec.ts apolloSession.spec.ts publicNavigation.spec.ts --grep 'server functions enforce|Apollo|@environment' --workers=1
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build:web
+E2E_PRODUCTION=true npm run test:e2e -- --config=/private/tmp/notegic-ui-followup-production.config.mjs publicNavigation.spec.ts --workers=1
+npm run build:web:cloudflare
+git diff --check
+```
+
+The temporary startup config omits Playwright's redundant outer webServer; the
+suite owns its Vite fixture. Chrome is used because bundled Playwright Chromium
+is not installed. An initial sandbox worker run failed with EPERM and was rerun
+with permission. No browser installation or user database cleanup was performed.
+The final evidence is retained as `/private/tmp/notegic-vite-fix-startup-contexts.log`,
+`notegic-vite-fix-unit-final.log`, `notegic-vite-fix-nitro.log`,
+`notegic-vite-fix-transport-e2e.log` and the format/lint/typecheck/build logs with
+the same prefix. The original failing regression is retained in
+`/private/tmp/notegic-vite-regression-before.log`.
+
+An intermediate run also emitted trimPathRight while other development/build
+work was occurring. Its exact parent-route identity/invalidation cause remains
+unconfirmed; final passing coverage does not justify claiming that original
+route failure fixed. Earlier failed logs remain intact. No real-backend session
+or deletion tests were repeated for this module-boundary repair, and no
+production deployment is implied. Local data and drafts are preserved; this
+follow-up is left uncommitted for review.
+
+
+### Provider ownership review correction
+
+The initial HMR repair extracted LocalPreferencesContext and UserContext into
+separate files. User review rejected that ownership boundary. Both context
+objects and their value types are now back in their Providers; hooks and fixtures
+import those owners directly. Only the context objects are retained through
+Vite's native module-local hot data, not account values, preferences, database
+connections or drafts. No standalone context helper or global registry remains.
+The prior six-case pass describes the earlier split-module implementation;
+verification of this ownership correction is recorded separately below.
+
+Ownership correction verification passed: the same 6 startup/RPC/HMR cases
+(29.0 seconds), 5 affected Provider/preferences suites / 35 tests, format, lint,
+typecheck, Node SSR build (13.5 seconds), production public-navigation smoke
+(2 cases), and Cloudflare Worker build (12.3 seconds). Retained logs use the
+`/private/tmp/notegic-context-owner-` prefix. No context files or imports to them
+remain, and no retry, delay, user storage reset, commit or push was introduced.
+
+### Frontend delivery gate — 2026-11-05
+
+The owner authorized frontend-only GitHub delivery after the Provider ownership
+correction. The complete Jest suite passed 107 suites / 1,507 tests, and the
+pre-commit format, lint and typecheck checks passed. The targeted HMR, Provider,
+production SSR and Cloudflare results above remain the applicable browser and
+build evidence for these unchanged product sources. No generated GraphQL source
+changed, no backend commit/push is included, and no data reset, tag or deployment
+is authorized by this delivery. Full Jest output is retained in
+`/private/tmp/notegic-delivery-unit.log`.

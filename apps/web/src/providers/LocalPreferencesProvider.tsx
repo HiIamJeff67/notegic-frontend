@@ -1,8 +1,3 @@
-import {
-  DashboardWidthFrameCountStep,
-  MaxDashboardWidthFrameCount,
-  MinDashboardWidthFrameCount,
-} from "@/components/widgets/layout";
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
 import {
   LocalStorage,
@@ -11,6 +6,11 @@ import {
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import React, { createContext, useEffect, useState } from "react";
 import { cleanupLocalData } from "@/api/local/cleanup";
+import {
+  DashboardWidthFrameCountStep,
+  MaxDashboardWidthFrameCount,
+  MinDashboardWidthFrameCount,
+} from "@/components/widgets/layout";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 export type PreferencePage =
@@ -206,9 +206,13 @@ export type LocalPreferencesContextValue = {
   isReady: boolean;
 };
 
-export const LocalPreferencesContext = createContext<
+// Vite retains this module-local value across HMR without retaining user state.
+export const LocalPreferencesContext: React.Context<
   LocalPreferencesContextValue | undefined
->(undefined);
+> =
+  import.meta.hot?.data.context ??
+  createContext<LocalPreferencesContextValue | undefined>(undefined);
+if (import.meta.hot) import.meta.hot.data.context = LocalPreferencesContext;
 
 export const LocalPreferencesProvider = ({
   children,

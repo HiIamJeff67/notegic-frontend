@@ -6,7 +6,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import sqlocal from "sqlocal/vite";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, transformWithOxc } from "vite";
 import { getCrossOriginIsolationHeaders } from "../../shared/lib/browser/crossOriginIsolation";
 
 export default defineConfig(({ mode }) => {
@@ -82,6 +82,25 @@ export default defineConfig(({ mode }) => {
       noExternal: ["@blocknote/math-block"],
     },
     plugins: [
+      {
+        name: "start-client-defines",
+        apply: "serve",
+        applyToEnvironment: environment =>
+          environment.config.consumer === "client",
+        transform(code, id) {
+          if (!code.includes("process.env.TSS_")) return;
+          // Start's unbundled RPC modules need their compile-time constants even
+          // when HMR loads them before Vite's global define initialization.
+          return transformWithOxc(code, id, {
+            define: Object.fromEntries(
+              Object.entries(this.environment.config.define ?? {}).filter(
+                ([key]) => key.startsWith("process.env.TSS_")
+              )
+            ),
+            sourcemap: true,
+          });
+        },
+      },
       {
         name: "document-isolation-headers",
         configureServer(server) {

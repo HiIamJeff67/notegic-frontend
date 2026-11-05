@@ -1,6 +1,6 @@
 import type { NotegicException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
-import { getRequestHeader } from "@tanstack/react-start/server";
+import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 

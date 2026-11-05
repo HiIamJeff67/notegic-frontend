@@ -57,9 +57,11 @@ interface UserContextType {
   logout: () => void;
 }
 
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined
-);
+// Vite retains this module-local value across HMR without retaining user state.
+export const UserContext: React.Context<UserContextType | undefined> =
+  import.meta.hot?.data.context ??
+  createContext<UserContextType | undefined>(undefined);
+if (import.meta.hot) import.meta.hot.data.context = UserContext;
 
 export const UserProvider = ({
   children,

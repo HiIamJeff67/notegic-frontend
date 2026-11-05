@@ -16,6 +16,8 @@ let temporary: string | undefined;
 let baseURL: string;
 let modulePath: string;
 let sharedModulePath: string;
+let routeModulePath: string;
+let preferencesModulePath: string;
 const moduleSource = `export const revision = 1;
 if (import.meta.hot) {
   import.meta.hot.accept(next => { window.notegicHmrRevision = next.revision; });
@@ -28,8 +30,12 @@ test.beforeAll(async () => {
   );
   modulePath = join(temporary, "hmrProbe.js");
   sharedModulePath = join(temporary, "sharedRevision.js");
+  routeModulePath = join(temporary, "routeRevision.js");
+  preferencesModulePath = join(temporary, "preferencesRevision.js");
   await writeFile(modulePath, moduleSource);
   await writeFile(sharedModulePath, "export const revision = 0;");
+  await writeFile(routeModulePath, "export const revision = 0;");
+  await writeFile(preferencesModulePath, "export const revision = 0;");
   const repository = process.cwd();
   const previousBase = process.env.VITE_APP_BASE_PATH;
   process.env.VITE_APP_BASE_PATH = "/";
@@ -44,6 +50,15 @@ test.beforeAll(async () => {
           name: "shared-provider-hmr-fixture",
           enforce: "pre",
           transform(code, id) {
+            if (
+              this.environment.config.consumer === "server" &&
+              id.endsWith("/providers/LocalPreferencesProvider.tsx")
+            ) {
+              return `import ${JSON.stringify(`/@fs${preferencesModulePath}`)};\n${code}`;
+            }
+            if (/\/routes\/(?:__root|_auth)\.tsx$/.test(id)) {
+              return `import ${JSON.stringify(`/@fs${routeModulePath}`)};\n${code}`;
+            }
             if (
               !id.endsWith("/providers/Providers.tsx") &&
               !id.endsWith("/hooks/useLocalPreferences.ts")
@@ -95,7 +110,7 @@ test("concurrent SSR requests keep complete routes and provider contexts across 
           path,
           status: response.status(),
           hasRuntimeError:
-            /trimPathRight|must be used within LocalPreferencesProvider|Cannot read properties of undefined/.test(
+            /trimPathRight|must be used within|Cannot read properties of undefined/.test(
               body
             ),
         };
@@ -229,3 +244,117 @@ test("HMR accepts updates and a full reload reconnects SQLite without losing row
   expect(reloads).toHaveLength(1);
   expect(failures).toEqual([]);
 });
+
+test("unbundled client RPC initializes without Vite globals", async ({
+  page,
+}) => {
+  await page.route(`${baseURL}/rpc-bootstrap`, route =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><html><body>RPC bootstrap fixture</body></html>",
+    })
+  );
+  await page.goto(`${baseURL}/rpc-bootstrap`);
+  const entry = await server!.environments.client.pluginContainer.resolveId(
+    "@tanstack/react-start/client-rpc"
+  );
+  expect(entry).toBeTruthy();
+  const result = await page.evaluate(async path => {
+    const { createClientRpc } = await import(/* @vite-ignore */ path);
+    return {
+      url: createClientRpc("bootstrap-probe").url,
+      processPresent: "process" in window,
+    };
+  }, `/@fs${entry!.id}`);
+  expect(result).toEqual({
+    url: "/_serverFn/bootstrap-probe",
+    processPresent: false,
+  });
+});
+
+for (const target of ["route", "preferences"] as const) {
+  test(`server functions retain request APIs and client defines during ${target} HMR`, async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(60_000);
+    const errors: string[] = [];
+    const marker = target === "route" ? routeModulePath : preferencesModulePath;
+    page.on("pageerror", error => errors.push(error.message));
+    await page.goto(`${baseURL}/login`);
+    await page.locator("html[data-density]").waitFor();
+    await page.evaluate(async () => {
+      const path = "/src/api/local/db.ts";
+      const { localDB } = await import(/* @vite-ignore */ path);
+      await localDB.ensureReady();
+    });
+
+    const paths = [
+      "/",
+      "/login",
+      "/register",
+      "/document",
+      ...["user", "routine", "routineTask", "blockPack", "material"].map(
+        name => `/src/api/functions/${name}.serverFn.ts`
+      ),
+    ];
+    const results = [];
+    for (let revision = 0; revision < 12; revision++) {
+      const changed =
+        revision === 0
+          ? Promise.resolve()
+          : new Promise<void>(resolve => {
+              const listener = (file: string) => {
+                if (file !== marker) return;
+                server!.watcher.off("change", listener);
+                resolve();
+              };
+              server!.watcher.on("change", listener);
+            });
+      // Start real RPC/SSR work before invalidation; no retries or timing sleeps.
+      const rpc = page.evaluate(async () => {
+        const path = "/src/api/functions/user.serverFn.ts";
+        const { TryGetUserData } = await import(/* @vite-ignore */ path);
+        // Empty isolated browser cookies must return false without any backend.
+        return Promise.all(
+          Array.from({ length: 4 }, () =>
+            TryGetUserData({ data: { header: {} } })
+          )
+        );
+      });
+      const responses = Promise.all(
+        paths.map(async path => {
+          const response = await request.get(`${baseURL}${path}`);
+          const body = await response.text();
+          return {
+            path,
+            status: response.status(),
+            runtimeError:
+              /trimPathRight|must be used within|Cannot read properties of undefined/.test(
+                body
+              ),
+          };
+        })
+      );
+      if (revision > 0)
+        await writeFile(marker, `export const revision = ${revision};`);
+      const [rpcResult, responseResult] = await Promise.allSettled([
+        rpc,
+        responses,
+      ]);
+      await changed;
+      results.push({ revision, rpcResult, responseResult });
+    }
+    for (const { revision, rpcResult, responseResult } of results) {
+      expect(rpcResult, `RPC during HMR revision ${revision}`).toEqual({
+        status: "fulfilled",
+        value: [false, false, false, false],
+      });
+      expect(responseResult, `SSR during HMR revision ${revision}`).toEqual({
+        status: "fulfilled",
+        value: paths.map(path => ({ path, status: 200, runtimeError: false })),
+      });
+    }
+    expect(errors).toEqual([]);
+  });
+}

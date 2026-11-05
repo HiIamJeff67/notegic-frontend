@@ -1,4 +1,4 @@
-import { setResponseHeader } from "@tanstack/react-start/server";
+import { setResponseHeader } from "@tanstack/start-server-core/request-response";
 
 export function getSetCookieValues(headers: Headers): string[] {
   const headersWithGetSetCookie = headers as Headers & {

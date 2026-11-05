@@ -417,3 +417,41 @@ both with and without the RPC header. Status and content type must match the
 legitimate baseline, with no attacker-supplied header or script reflected.
 The ordinary RPC must still succeed with JSON. Run this regression in
 development and built Node SSR when upgrading Start; it is not a CI smoke test.
+
+## Server-function hot updates
+
+Use the public `@tanstack/start-server-core/request-response` entry for request
+and response APIs in Web server functions and their transport adapters. The
+full `@tanstack/react-start/server` barrel also loads the Start handler/router;
+importing it back from a split server function can expose incomplete exports
+during development SSR hot updates. Keep the direct dependency aligned with
+the installed Start runtime; do not import private `dist/` paths.
+
+`viteStartup.spec.ts` overlaps real browser RPC calls with concurrent SSR and
+route/preferences dependency invalidation. It asserts the RPC results as well
+as rendered responses and browser errors: HTTP 200 alone can conceal a failed
+RPC or a streamed render error. Its revision modules and optimizer/Nitro output
+are temporary, and it never edits application source or uses a real account.
+Use native watcher events, not sleeps, retries or worker replacements.
+
+Keep contexts and their value types with their owning Providers. Do not create
+standalone context modules only to address HMR. Where hot updates have proven
+to recreate a context used by mounted or in-flight consumers, retain that context
+object through Vite's native, module-local `import.meta.hot.data` in the Provider.
+Do not retain user values there or introduce a shared registry/helper. Production
+continues to create a normal React context. Update consumers and fixtures to
+import from the Provider, and verify the existing RPC/SSR HMR regression.
+
+The development-only `start-client-defines` plugin applies Start's existing
+`process.env.TSS_*` defines to unbundled client modules using Vite's public
+`transformWithOxc` API. It does not inject a global `process`, apply to SSR or
+production builds, or prebundle Start's isomorphic code. The blank-document RPC
+bootstrap test resolves the package's public client-rpc entry and asserts both
+the endpoint and the absence of a browser `process` global. Do not optimize the
+whole Start client-rpc entry: doing so can bypass Start's environment splitting
+and bring server-side AsyncLocalStorage into the browser.
+
+Provider invalidation is scoped to the SSR module graph in the RPC fixture;
+client route HMR is covered separately. A full browser navigation legitimately
+cancels an in-flight `page.evaluate`; do not confuse that cancellation with a
+failed server function or drop the actual RPC-result assertions.

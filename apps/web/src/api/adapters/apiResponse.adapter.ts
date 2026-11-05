@@ -5,7 +5,7 @@ import {
 } from "@shared/api/exceptions";
 import { isJsonResponse } from "@shared/lib/json/isJsonContext";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { setResponseHeader } from "@tanstack/react-start/server";
+import { setResponseHeader } from "@tanstack/start-server-core/request-response";
 import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
 
 const retainCSRFToken = createIsomorphicFn()
