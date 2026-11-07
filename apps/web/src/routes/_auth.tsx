@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { OAuthProvider } from "@/providers/OAuthProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import { UserProvider } from "@/providers/UserProvider";
 
@@ -10,7 +11,9 @@ function AuthRouteLayout() {
   return (
     <TransactionSynchronizerProvider>
       <UserProvider autoFetchUserData={false}>
-        <Outlet />
+        <OAuthProvider>
+          <Outlet />
+        </OAuthProvider>
       </UserProvider>
     </TransactionSynchronizerProvider>
   );

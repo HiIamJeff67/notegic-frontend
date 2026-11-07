@@ -1,19 +1,12 @@
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
-import {
-  isPendingOAuthState,
-  type PendingOAuthState,
-} from "@shared/lib/auth/oauthState.type";
-import {
-  SessionStorage,
-  SessionStorageKey,
-} from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
-import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
-import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useCallback, useMemo, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
-import { useUpdateMyAccount } from "@/api/hooks/userAccount.hook";
+import {
+  useUpdateMyAccount,
+  useGetMyAccount,
+} from "@/api/hooks/userAccount.hook";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -39,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useOAuth } from "@/hooks/useOAuth";
 
 interface BindTabProps {
   layout?: "panel" | "page";
@@ -67,6 +61,19 @@ const BindingTab = ({
   const userManager = useUser();
 
   const updateUserAccountMutator = useUpdateMyAccount();
+  const accountQuery = useGetMyAccount({ header: getClientMutationHeaders() });
+  const {
+    beginOAuth,
+    unbindOAuth,
+    isUnbinding,
+    githubAvailable,
+    metaAvailable,
+  } = useOAuth();
+  const githubBound = Boolean(accountQuery.data?.data.githubCredential);
+  const metaBound = Boolean(accountQuery.data?.data.metaCredential);
+  const [unbindProvider, setUnbindProvider] = useState<
+    "github" | "meta" | null
+  >(null);
 
   const [bindBackupEmailDialogOpen, setBindBackupEmailDialogOpen] =
     useState<boolean>(false);
@@ -156,6 +163,82 @@ const BindingTab = ({
     <SettingMenu
       layout={layout}
       dialogs={[
+        <Dialog
+          key={unbindProvider ?? "oauth-unbind"}
+          open={unbindProvider !== null}
+          onOpenChange={open => {
+            if (!open) setUnbindProvider(null);
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {unbindProvider === "meta"
+                  ? t("settingsPage.account.binding.metaUnbind")
+                  : t("settingsPage.account.binding.githubUnbind")}
+              </DialogTitle>
+              <DialogDescription>
+                {unbindProvider === "meta"
+                  ? t("settingsPage.account.binding.metaDescription")
+                  : t("settingsPage.account.binding.githubDescription")}
+              </DialogDescription>
+            </DialogHeader>
+            <form
+              onSubmit={async event => {
+                event.preventDefault();
+                if (unbindProvider === null) return;
+                const authCode = new FormData(event.currentTarget).get(
+                  "authCode"
+                ) as string;
+                await loadingManager.startAsyncTransactionLoading(async () => {
+                  try {
+                    await unbindOAuth(unbindProvider, authCode);
+                    setUnbindProvider(null);
+                    toast.success(
+                      unbindProvider === "meta"
+                        ? t("settingsPage.account.binding.metaUnbound")
+                        : t("settingsPage.account.binding.githubUnbound")
+                    );
+                  } catch (error) {
+                    toast.error(tError(error, t));
+                  }
+                });
+              }}
+            >
+              <Input
+                name="authCode"
+                aria-label={t("settingsPage.account.security.enterCode")}
+                placeholder={t("settingsPage.account.security.enterCode")}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                pattern="[0-9]{6}"
+                maxLength={6}
+              />
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={
+                    isSendAuthCodePending || sendAuthCodeTimeCounter > 0
+                  }
+                  onClick={() => handleSendAuthCode()}
+                >
+                  {t("settingsPage.account.security.resendCode")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={isUnbinding}
+                >
+                  {unbindProvider === "meta"
+                    ? t("settingsPage.account.binding.metaUnbind")
+                    : t("settingsPage.account.binding.githubUnbind")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>,
         <Dialog
           open={bindBackupEmailDialogOpen}
           onOpenChange={setBindBackupEmailDialogOpen}
@@ -371,44 +454,55 @@ const BindingTab = ({
       >
         <SettingMenuButton
           variant="outline"
-          onClick={() => {
-            const bytes = new Uint8Array(32);
-            window.crypto.getRandomValues(bytes);
-            const state = Array.from(bytes, byte =>
-              byte.toString(16).padStart(2, "0")
-            ).join("");
-            const pending = {
-              state,
-              action: "binding",
-              createdAt: Date.now(),
-            } satisfies PendingOAuthState;
-            if (
-              !isPendingOAuthState(pending) ||
-              !SessionStorage.setItem(
-                SessionStorageKey.pendingOAuthState,
-                pending
-              )
-            ) {
-              toast.error(t("error.encounterUnknownError"));
-              return;
-            }
-
-            router.forceNavigate(
-              WebURLPathDictionary.oauth.google(
-                getOAuthGoogleSearchParamsString(state)
-              )
-            );
-          }}
+          onClick={() => beginOAuth("google", "binding")}
         >
           {t("settingsPage.account.binding.bind")}
+        </SettingMenuButton>
+      </SettingMenuItem>
+      <SettingMenuItem
+        title={t("settingsPage.account.binding.github")}
+        description={t("settingsPage.account.binding.githubDescription")}
+      >
+        <SettingMenuButton
+          variant="outline"
+          disable={!githubAvailable || accountQuery.isPending || isUnbinding}
+          onClick={async () => {
+            if (githubBound) {
+              setUnbindProvider("github");
+              handleSendAuthCode();
+              return;
+            }
+            await beginOAuth("github", "binding");
+          }}
+        >
+          {githubBound
+            ? t("settingsPage.account.binding.githubUnbind")
+            : t("settingsPage.account.binding.bind")}
         </SettingMenuButton>
       </SettingMenuItem>
       <SettingMenuItem
         title={t("settingsPage.account.binding.meta")}
         description={t("settingsPage.account.binding.metaDescription")}
       >
-        <SettingMenuButton variant="outline" onClick={() => {}}>
-          {t("settingsPage.account.binding.bind")}
+        <SettingMenuButton
+          variant="outline"
+          disable={
+            (!metaBound && !metaAvailable) ||
+            accountQuery.isPending ||
+            isUnbinding
+          }
+          onClick={async () => {
+            if (metaBound) {
+              setUnbindProvider("meta");
+              handleSendAuthCode();
+              return;
+            }
+            await beginOAuth("meta", "binding");
+          }}
+        >
+          {metaBound
+            ? t("settingsPage.account.binding.metaUnbind")
+            : t("settingsPage.account.binding.bind")}
         </SettingMenuButton>
       </SettingMenuItem>
       <SettingMenuItem

@@ -364,7 +364,7 @@ This data is stored in the current browser. Do not expect the full Dashboard to 
 
 Before removal, check for notes or tasks you want to keep. Delete in the Widget menu removes the whole tool, rather than closing settings or removing one task row.
 
-Save anything you may still need elsewhere first. Do not assume that a removed Dashboard Widget can always be recovered from Trash.
+See [Move content to Trash or restore it](/data-deletion#data-deletion-trash) for the limits of recovery.
 
 ##### Customized
 
@@ -418,7 +418,7 @@ On the Routines page, you can choose which Stations to display. If work seems mi
 - Trash: view listed deleted items and find resources by name or type.
 - Report: open feedback to report a problem or suggest a feature.
 
-Trash currently focuses on viewing and searching. A listed item does not guarantee that the website can restore it. Save important content before deleting it.
+For recovery and permanent removal, see [Move content to Trash or restore it](/data-deletion#data-deletion-trash) and [Permanently delete content](/data-deletion#data-deletion-permanent).
 
 #### User information
 
@@ -976,7 +976,7 @@ This area covers linked sign-in methods and account contact or recovery informat
 
 Complete verification where a code is required; a filled field does not mean linking has succeeded. Linking a sign-in provider may open that service for confirmation. Check the selected identity before proceeding.
 
-Before changing sign-in methods, confirm that you can still access the same account afterward. Do not assume linking changes transfer projects, merge accounts, or revoke all existing access.
+See [Remove linked sign-in data](/data-deletion#data-deletion-linked-sign-in) before disconnecting a provider. Linking does not transfer projects or merge accounts.
 
 #### Account modification
 
@@ -985,9 +985,9 @@ These actions can substantially change an account. Consider each separately:
 - Change email: affects account information or sign-in flows, rather than only the display name.
 - Change password: start from a trusted page and complete the required verification.
 - Reset account: may affect data and settings; read the scope of the specific action.
-- Delete account: first confirm that you no longer need the account and its content, then address shared resources, important documents, and integrations.
+- Delete account: see [Delete your Notegic account](/data-deletion#data-deletion-account) for the steps and what to consider before confirming.
 
-Account reset and deletion are not routine fixes for display or loading issues. Save important work and consider effects on shared resources, collaborators, and integrations before proceeding. Do not assume recovery will be available afterward.
+Account reset and deletion are separate actions. Read the scope of the action you choose before confirming.
 
 ### Preference settings
 

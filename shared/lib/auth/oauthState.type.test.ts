@@ -36,3 +36,22 @@ test("validates the complete pending state shape without browser storage", () =>
     expect(isPendingOAuthState(invalid)).toBe(false);
   }
 });
+
+test("GitHub requires its own provider marker and valid PKCE verifier", () => {
+  const pending = {
+    state: "a".repeat(64),
+    action: "binding",
+    createdAt: 1000,
+    provider: "github",
+    codeVerifier: "b".repeat(64),
+  };
+  expect(isPendingOAuthState(pending)).toBe(true);
+  for (const invalid of [
+    { ...pending, codeVerifier: undefined },
+    { ...pending, codeVerifier: "b".repeat(42) },
+    { ...pending, codeVerifier: "b".repeat(129) },
+    { ...pending, codeVerifier: "!".repeat(64) },
+    { ...pending, provider: "meta" },
+  ])
+    expect(isPendingOAuthState(invalid)).toBe(false);
+});

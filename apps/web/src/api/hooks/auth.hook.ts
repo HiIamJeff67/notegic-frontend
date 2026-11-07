@@ -8,9 +8,13 @@ import {
   mutationFnForgetPassword,
   mutationFnLogin,
   mutationFnLoginViaGoogle,
+  mutationFnLoginViaGithub,
+  mutationFnLoginViaMeta,
   mutationFnLogout,
   mutationFnRegister,
   mutationFnRegisterViaGoogle,
+  mutationFnRegisterViaGithub,
+  mutationFnRegisterViaMeta,
   mutationFnResetEmail,
   mutationFnResetMe,
   mutationFnSendAuthCode,
@@ -43,11 +47,52 @@ export const useRegisterViaGoogle = () => {
 
   const mutation = useMutation({
     mutationFn: mutationFnRegisterViaGoogle,
+    retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
-      await AuthLocalSynchronizer.syncRegisterViaGoogle(response);
+      await AuthLocalSynchronizer.syncRegisterViaOAuth(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useRegisterViaGithub = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnRegisterViaGithub,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncRegisterViaOAuth(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useRegisterViaMeta = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnRegisterViaMeta,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncRegisterViaOAuth(response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
@@ -88,7 +133,47 @@ export const useLoginViaGoogle = () => {
       setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
       );
-      await AuthLocalSynchronizer.syncLoginViaGoogle(response);
+      await AuthLocalSynchronizer.syncLogin(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useLoginViaGithub = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnLoginViaGithub,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncLogin(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useLoginViaMeta = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnLoginViaMeta,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncLogin(response);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },

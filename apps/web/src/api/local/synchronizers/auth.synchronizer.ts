@@ -1,11 +1,9 @@
 import type {
   DeleteMeResponse,
   LoginResponse,
-  LoginViaGoogleResponse,
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  RegisterViaGoogleResponse,
   ResetEmailRequest,
   ResetEmailResponse,
   ResetMeResponse,
@@ -52,9 +50,7 @@ export class AuthLocalSynchronizer {
     });
   }
 
-  static async syncRegisterViaGoogle(
-    response: RegisterViaGoogleResponse
-  ): Promise<void> {
+  static async syncRegisterViaOAuth(response: RegisterResponse): Promise<void> {
     if (!localDB.isReady) await localDB.ensureReady();
     await localDB.transaction(async tx => {
       await tx.update(User).set({ isLoggedIn: false });
@@ -86,39 +82,6 @@ export class AuthLocalSynchronizer {
   }
 
   static async syncLogin(response: LoginResponse): Promise<void> {
-    if (!localDB.isReady) await localDB.ensureReady();
-    await localDB.transaction(async tx => {
-      await tx.update(User).set({ isLoggedIn: false });
-      await tx
-        .insert(User)
-        .values({
-          publicId: response.data.publicId,
-          name: response.data.name,
-          displayName: response.data.displayName,
-          email: response.data.email,
-          status: UserStatus.Online,
-          isLoggedIn: true,
-          updatedAt: response.data.updatedAt,
-          createdAt: response.data.createdAt,
-        })
-        .onConflictDoUpdate({
-          target: User.publicId,
-          set: {
-            name: response.data.name,
-            displayName: response.data.displayName,
-            email: response.data.email,
-            status: UserStatus.Online,
-            isLoggedIn: true,
-            updatedAt: response.data.updatedAt,
-            createdAt: response.data.createdAt,
-          },
-        });
-    });
-  }
-
-  static async syncLoginViaGoogle(
-    response: LoginViaGoogleResponse
-  ): Promise<void> {
     if (!localDB.isReady) await localDB.ensureReady();
     await localDB.transaction(async tx => {
       await tx.update(User).set({ isLoggedIn: false });

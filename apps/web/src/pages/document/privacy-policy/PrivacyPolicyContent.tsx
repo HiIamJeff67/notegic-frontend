@@ -74,14 +74,14 @@ const PrivacyPolicyContent = () => {
         </ArticleSubParagraphHeader>
         <ArticleSubParagraphContent>
           <p>
-            {
-              "We retain your data while your account is active. You may request deletion at any time by contacting us."
-            }
-          </p>
-          <p className="text-sm leading-6 text-muted-foreground">
-            {
-              "When you delete content or close your account, we will remove it from active systems within a reasonable period, subject to backups, fraud prevention, dispute resolution, and other legal obligations. Backups may remain for a limited time before they are safely overwritten."
-            }
+            {"We retain data while your account is active. See "}
+            <ArticleLink
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+              href="/data-deletion#data-deletion-retention"
+            >
+              {"Copies and retention"}
+            </ArticleLink>
+            {" for what happens after deletion and which copies may remain."}
           </p>
         </ArticleSubParagraphContent>
       </ArticleSubParagraph>
@@ -91,9 +91,14 @@ const PrivacyPolicyContent = () => {
         </ArticleSubParagraphHeader>
         <ArticleSubParagraphContent>
           <p>
-            {
-              "You may access, correct, or delete your personal data. Contact us at "
-            }
+            {"You may access, correct, or delete your personal data. See "}
+            <ArticleLink
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+              href="/data-deletion"
+            >
+              {"Data deletion"}
+            </ArticleLink>
+            {" for account and provider data removal, or contact us at "}
             <a href={"mailto:" + contactEmail} className="underline">
               {contactEmail}
             </a>
@@ -101,8 +106,15 @@ const PrivacyPolicyContent = () => {
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
             {
-              "Depending on applicable law, you may also ask us to explain how your data is used, object to certain processing, request a portable copy, or withdraw consent where consent is the basis. We may ask you to verify your identity before fulfilling a request, and some requests may be limited by legal or security obligations. Contact us with the account email and a clear description of what you want changed."
+              "Depending on applicable law, you may also ask us to explain how your data is used, object to certain processing, request a portable copy, or withdraw consent where consent is the basis. Some requests may be limited by legal or security obligations. See "
             }
+            <ArticleLink
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+              href="/data-deletion#data-deletion-request"
+            >
+              {"How to request deletion"}
+            </ArticleLink>
+            {" for the information we need to verify your request."}
           </p>
         </ArticleSubParagraphContent>
       </ArticleSubParagraph>

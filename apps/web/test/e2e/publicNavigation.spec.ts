@@ -49,3 +49,24 @@ test("@environment visitors can open the published API documentation", async ({
     page.getByRole("heading", { name: "Website", exact: true })
   ).toBeVisible();
 });
+
+test("Playground is available only in development", async ({ page }) => {
+  const production = process.env.E2E_PRODUCTION === "true";
+  const response = await page.goto("/playground");
+  expect(response?.status()).toBe(production ? 404 : 200);
+  if (!production) {
+    await expect(
+      page.getByRole("button", { name: /App Command/ })
+    ).toBeVisible();
+  }
+});
+
+for (const provider of ["google", "github", "meta", "x", "apple"]) {
+  test(`the ${provider} OAuth callback has a public route`, async ({
+    page,
+  }) => {
+    const response = await page.goto(`/redirect/${provider}`);
+    expect(response?.status()).toBe(200);
+    await expect(page).toHaveURL(/\/redirect\/error(?:\?|$)/);
+  });
+}

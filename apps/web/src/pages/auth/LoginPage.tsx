@@ -1,14 +1,5 @@
 import { tError } from "@shared/i18n/error";
-import {
-  isPendingOAuthState,
-  type PendingOAuthState,
-} from "@shared/lib/auth/oauthState.type";
-import {
-  SessionStorage,
-  SessionStorageKey,
-} from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
-import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -27,9 +18,11 @@ import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
+import { useOAuth } from "@/hooks/useOAuth";
 
 const LoginPage = () => {
   const router = useAppRouter();
+  const { beginOAuth, githubAvailable, metaAvailable } = useOAuth();
   const { t } = useTranslation();
   const { preferences } = useLocalPreferences();
   const userManager = useUser();
@@ -106,34 +99,6 @@ const LoginPage = () => {
     ]
   );
 
-  const handleGoogleLogin = useCallback(() => {
-    if (turnstileRequired && !turnstileToken) {
-      toast.error(t("auth.turnstileRequired"));
-      return;
-    }
-    const bytes = new Uint8Array(32);
-    window.crypto.getRandomValues(bytes);
-    const state = Array.from(bytes, byte =>
-      byte.toString(16).padStart(2, "0")
-    ).join("");
-    const pending = {
-      state,
-      action: "login",
-      createdAt: Date.now(),
-    } satisfies PendingOAuthState;
-    if (
-      !isPendingOAuthState(pending) ||
-      !SessionStorage.setItem(SessionStorageKey.pendingOAuthState, pending)
-    ) {
-      toast.error(t("error.encounterUnknownError"));
-      return;
-    }
-
-    router.forceNavigate(
-      WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
-    );
-  }, [router, turnstileRequired, turnstileToken]);
-
   return (
     <GridBackground>
       <Suspense fallback={<LoadingCover />}>
@@ -193,9 +158,26 @@ const LoginPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleLogin"),
-              onClick: handleGoogleLogin,
+              onClick: () => beginOAuth("google", "login"),
               disabled: turnstileRequired && !turnstileToken,
             },
+            {
+              provider: "github",
+              label: t("workspace.pages.githubLogin"),
+              onClick: () => beginOAuth("github", "login"),
+              disabled:
+                !githubAvailable || (turnstileRequired && !turnstileToken),
+            },
+            ...(metaAvailable
+              ? [
+                  {
+                    provider: "meta" as const,
+                    label: t("workspace.pages.metaLogin"),
+                    onClick: () => beginOAuth("meta", "login"),
+                    disabled: turnstileRequired && !turnstileToken,
+                  },
+                ]
+              : []),
           ]}
           statusDetail={t("workspace.pages.systemReady")}
           isLoading={isLoginPending}

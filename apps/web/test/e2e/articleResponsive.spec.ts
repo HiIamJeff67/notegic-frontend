@@ -135,7 +135,7 @@ for (const width of [320, 768, 900, 1280, 2560]) {
       await expect(page.locator(`section[id="${id}"]`)).toBeVisible();
       await expect(
         page.locator(".article-content > section:visible")
-      ).toHaveCount(5);
+      ).toHaveCount(6);
       const content = page.locator("#website");
       expect(
         await content.evaluate(element => element.getBoundingClientRect().width)

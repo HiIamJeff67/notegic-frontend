@@ -9,6 +9,9 @@ import {
 } from "@/components/commons/Article/Article";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import API, { apiNavigation } from "./api/API";
+import DataDeletion, {
+  dataDeletionNavigation,
+} from "./data-deletion/DataDeletion";
 import Overview, { overviewNavigation } from "./overview/Overview";
 import PrivacyPolicy, {
   privacyPolicyNavigation,
@@ -27,6 +30,7 @@ const DocumentPage = () => {
     websiteNavigation,
     apiNavigation,
     versionsNavigation,
+    dataDeletionNavigation,
     privacyPolicyNavigation,
   ] satisfies ArticleNavigationItem[];
   return (
@@ -52,6 +56,8 @@ const DocumentPage = () => {
                   <API />
                   <ArticleParagraphSeparator fullWidth />
                   <Versions ref={versionsRef} />
+                  <ArticleParagraphSeparator fullWidth />
+                  <DataDeletion />
                   <ArticleParagraphSeparator fullWidth />
                   <PrivacyPolicy />
                 </ArticleContent>

@@ -14,7 +14,11 @@ import {
 } from "@tanstack/react-query";
 import {
   mutationFnBindGoogleAccount,
+  mutationFnBindGithubAccount,
+  mutationFnBindMetaAccount,
   mutationFnUnbindGoogleAccount,
+  mutationFnUnbindGithubAccount,
+  mutationFnUnbindMetaAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
@@ -94,11 +98,71 @@ export const useBindGoogleAccount = () => {
   return mutation;
 };
 
+export const useBindGithubAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnBindGithubAccount,
+    retry: false,
+    onSuccess: (response, request) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useBindMetaAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnBindMetaAccount,
+    retry: false,
+    onSuccess: (response, request) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
 export const useUnbindGoogleAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
     mutationFn: mutationFnUnbindGoogleAccount,
+    onSuccess: (response, request) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useUnbindGithubAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnUnbindGithubAccount,
+    retry: false,
+    onSuccess: (response, request) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    },
+    onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useUnbindMetaAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnUnbindMetaAccount,
+    retry: false,
     onSuccess: (response, request) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
     },

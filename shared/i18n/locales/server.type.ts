@@ -15,6 +15,9 @@ export interface ServerTranslation {
     ResponseReadFailed: string;
     InvalidResponse: string;
     WrongPassword: string;
+    MetaAccountNotLinked: string;
+    MetaCredentialAlreadyBound: string;
+    MetaEmailRequired: string;
     WrongAuthCode: string;
     LoginBlockedDueToTryingTooManyTimes: string;
     AuthCodeBlockedDueToTryingTooManyTimes: string;

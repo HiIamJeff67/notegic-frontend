@@ -298,6 +298,12 @@ Use lowercase kebab-case for route-oriented folders, such as
 PascalCase for page modules and add a role suffix such as `Page`, `Layout`, or
 `Tab` when the module has that role.
 
+Wrap top-level development-only page folders in parentheses, such as
+`(playground)/`. Use a parenthesized group under `src/routes/` for their routes,
+such as `src/routes/(playground)/playground.tsx`. Vite excludes every
+parenthesized route folder and its children from builds. In development,
+TanStack resolves those files normally and omits the group name from URLs.
+
 ### `apps/web/src/routes/`
 
 TanStack Router owns the route-file grammar. Use dot-delimited route segments,

@@ -3,7 +3,14 @@ import { join } from "node:path";
 
 test("Document tabs keep sources, data and components in the approved flat layout", () => {
   const root = join(process.cwd(), "apps/web/src/pages/document");
-  const tabs = ["api", "overview", "privacy-policy", "versions", "website"];
+  const tabs = [
+    "api",
+    "data-deletion",
+    "overview",
+    "privacy-policy",
+    "versions",
+    "website",
+  ];
   expect(readdirSync(root).sort()).toEqual(
     ["DocumentPage.tsx", ...tabs].sort()
   );

@@ -1,15 +1,6 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { tError } from "@shared/i18n/error";
-import {
-  isPendingOAuthState,
-  type PendingOAuthState,
-} from "@shared/lib/auth/oauthState.type";
-import {
-  SessionStorage,
-  SessionStorageKey,
-} from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
-import { getOAuthGoogleSearchParamsString } from "@shared/lib/url/getURL";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
@@ -26,9 +17,11 @@ import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useOAuth } from "@/hooks/useOAuth";
 
 const RegisterPage = () => {
   const router = useAppRouter();
+  const { beginOAuth, githubAvailable, metaAvailable } = useOAuth();
   const { t } = useTranslation();
   const userManager = useUser();
 
@@ -118,34 +111,6 @@ const RegisterPage = () => {
     turnstileToken,
   ]);
 
-  const handleGoogleRegister = useCallback(() => {
-    if (turnstileRequired && !turnstileToken) {
-      toast.error(t("auth.turnstileRequired"));
-      return;
-    }
-    const bytes = new Uint8Array(32);
-    window.crypto.getRandomValues(bytes);
-    const state = Array.from(bytes, byte =>
-      byte.toString(16).padStart(2, "0")
-    ).join("");
-    const pending = {
-      state,
-      action: "register",
-      createdAt: Date.now(),
-    } satisfies PendingOAuthState;
-    if (
-      !isPendingOAuthState(pending) ||
-      !SessionStorage.setItem(SessionStorageKey.pendingOAuthState, pending)
-    ) {
-      toast.error(t("error.encounterUnknownError"));
-      return;
-    }
-
-    router.forceNavigate(
-      WebURLPathDictionary.oauth.google(getOAuthGoogleSearchParamsString(state))
-    );
-  }, [router, turnstileRequired, turnstileToken]);
-
   return (
     <GridBackground>
       <Suspense fallback={<LoadingCover />}>
@@ -214,9 +179,26 @@ const RegisterPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleRegister"),
-              onClick: handleGoogleRegister,
+              onClick: () => beginOAuth("google", "register"),
               disabled: turnstileRequired && !turnstileToken,
             },
+            {
+              provider: "github",
+              label: t("workspace.pages.githubRegister"),
+              onClick: () => beginOAuth("github", "register"),
+              disabled:
+                !githubAvailable || (turnstileRequired && !turnstileToken),
+            },
+            ...(metaAvailable
+              ? [
+                  {
+                    provider: "meta" as const,
+                    label: t("workspace.pages.metaRegister"),
+                    onClick: () => beginOAuth("meta", "register"),
+                    disabled: turnstileRequired && !turnstileToken,
+                  },
+                ]
+              : []),
           ]}
           statusDetail={t("workspace.pages.systemReady")}
           isLoading={isRegisterPending}

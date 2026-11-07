@@ -64,6 +64,30 @@ test("document HTML renders its quick start without relying on client-side recov
   expect(html).not.toContain("ReferenceError: Prism is not defined");
 });
 
+test("public data deletion instructions render without a session and accept document links", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("/data-deletion");
+  expect(response.status()).toBe(200);
+  const html = await response.text();
+  expect(html).toContain('id="data-deletion-linked-sign-in"');
+  expect(html).toContain('id="data-deletion-account"');
+  expect(html).toContain('id="data-deletion-request"');
+
+  await page.goto("/document#website-document-trash-and-report-area");
+  await page
+    .locator("#website-document-trash-and-report-area")
+    .getByRole("link", { name: "Permanently delete content", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/data-deletion#data-deletion-permanent$/);
+  await expect(
+    page.getByRole("heading", { name: "Data deletion", level: 1 })
+  ).toBeVisible();
+  await expect(page.locator("#data-deletion-permanent")).toBeInViewport();
+  await expect(page.getByRole("main")).toHaveCount(1);
+});
+
 test("the document API key settings link targets the registered app route", async ({
   page,
   request,
@@ -103,7 +127,7 @@ test("document sections keep their DOM boundaries and API operations remain sear
   const sections = page.locator(
     '.article-content > section[data-article-level="0"]'
   );
-  await expect(sections).toHaveCount(5);
+  await expect(sections).toHaveCount(6);
   await expect(
     page.getByRole("button", { name: "Implementation", exact: true })
   ).toHaveCount(0);
@@ -139,7 +163,14 @@ test("document sections keep their DOM boundaries and API operations remain sear
   await expect(page.locator("#versions [data-slot=progress]")).toHaveCount(0);
   expect(
     await sections.evaluateAll(nodes => nodes.map(node => node.id))
-  ).toEqual(["overview", "website", "gateway", "versions", "privacy-policy"]);
+  ).toEqual([
+    "overview",
+    "website",
+    "gateway",
+    "versions",
+    "data-deletion",
+    "privacy-policy",
+  ]);
   await expect(page.locator("#website > header h2")).toHaveText("Website");
   await expect(page.locator("#gateway > header h2")).toHaveText("API");
   await expect(
@@ -196,19 +227,22 @@ test("document sections keep their DOM boundaries and API operations remain sear
 
   await page.getByRole("button", { name: "Versions", exact: true }).click();
   await expect(page.locator("#versions")).toBeInViewport();
-  for (const query of [operationId!, operationName!, description!]) {
-    await page.keyboard.press("Control+k");
-    const search = page.getByRole("dialog", { name: "Search article" });
-    await search
-      .getByPlaceholder("Search sections or API operations...")
-      .fill(query);
-    await search
-      .getByRole("option")
-      .filter({ hasText: operationName! })
-      .click();
-    await expect(search).not.toBeVisible();
-    await expect(operation).toBeInViewport();
-  }
+  await page.keyboard.press("Control+k");
+  const command = page.getByRole("dialog", { name: "Command palette" });
+  await expect(
+    command.getByRole("option", { name: "Data deletion Domain" })
+  ).toBeVisible();
+  await command
+    .getByRole("option", { name: "API Domain", exact: true })
+    .click();
+  await command.getByRole("combobox").fill("Root Shelves");
+  await command
+    .getByRole("option", { name: "Root Shelves Domain", exact: true })
+    .click();
+  await command.getByRole("combobox").fill(operationName!);
+  await command.getByRole("option").filter({ hasText: operationName! }).click();
+  await expect(command).not.toBeVisible();
+  await expect(operation).toBeInViewport();
 });
 
 test("Website deep links and API resource guide links remain usable", async ({

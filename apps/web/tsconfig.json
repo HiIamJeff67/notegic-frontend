@@ -15,5 +15,5 @@
     "../../shared/**/*.ts",
     "../../shared/**/*.tsx"
   ],
-  "exclude": ["node_modules", ".output"]
+  "exclude": ["node_modules", ".output", "src/routes/**/(*)"]
 }

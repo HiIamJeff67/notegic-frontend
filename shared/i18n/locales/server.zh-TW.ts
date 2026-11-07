@@ -17,6 +17,11 @@ export const TraditionalChineseServerTranslation = {
     ResponseReadFailed: "無法讀取登入服務的回應。",
     InvalidResponse: "登入服務回傳了無效的回應。",
     WrongPassword: "密碼不正確。",
+    MetaAccountNotLinked:
+      "請先使用其他方式登入 Notegic，再到帳號設定綁定 Facebook。",
+    MetaCredentialAlreadyBound: "這個帳號已綁定 Facebook。",
+    MetaEmailRequired:
+      "請允許 Facebook 分享有效的電子郵件地址，以建立 Notegic 帳號。",
     WrongAuthCode: "驗證碼不正確。",
     LoginBlockedDueToTryingTooManyTimes: "登入嘗試次數過多，請稍後再試。",
     AuthCodeBlockedDueToTryingTooManyTimes: "驗證碼請求次數過多，請稍後再試。",

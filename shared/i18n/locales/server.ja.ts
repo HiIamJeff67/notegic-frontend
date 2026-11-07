@@ -22,6 +22,11 @@ export const JapaneseServerTranslation = {
     ResponseReadFailed: "サインインサービスの応答を読み取れませんでした。",
     InvalidResponse: "サインインサービスから無効な応答が返されました。",
     WrongPassword: "パスワードが正しくありません。",
+    MetaAccountNotLinked:
+      "別の方法で Notegic にログインしてから、アカウント設定で Facebook を連携してください。",
+    MetaCredentialAlreadyBound: "Facebook アカウントはすでに連携されています。",
+    MetaEmailRequired:
+      "Notegic アカウントを作成するには、Facebook に有効なメールアドレスの共有を許可してください。",
     WrongAuthCode: "認証コードが正しくありません。",
     LoginBlockedDueToTryingTooManyTimes:
       "サインインの試行回数が多すぎます。しばらくしてからお試しください。",

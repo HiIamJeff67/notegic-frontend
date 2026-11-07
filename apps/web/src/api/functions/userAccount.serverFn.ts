@@ -1,10 +1,18 @@
 import {
   BindGoogleAccountRequest,
+  BindGithubAccountRequest,
+  BindMetaAccountRequest,
   BindGoogleAccountResponse,
+  BindGithubAccountResponse,
+  BindMetaAccountResponse,
   GetMyAccountRequest,
   GetMyAccountResponse,
   UnbindGoogleAccountRequest,
+  UnbindGithubAccountRequest,
+  UnbindMetaAccountRequest,
   UnbindGoogleAccountResponse,
+  UnbindGithubAccountResponse,
+  UnbindMetaAccountResponse,
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
@@ -103,6 +111,66 @@ export const BindGoogleAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const BindGithubAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: BindGithubAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<BindGithubAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindGithubAccount}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as BindGithubAccountResponse;
+
+    return formattedResponse;
+  });
+
+export const BindMetaAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: BindMetaAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<BindMetaAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindMetaAccount}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as BindMetaAccountResponse;
+
+    return formattedResponse;
+  });
+
 export const UnbindGoogleAccount = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindGoogleAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindGoogleAccountResponse> => {
@@ -129,6 +197,66 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     const formattedResponse = (await readAPIResponse(
       response
     )) as UnbindGoogleAccountResponse;
+
+    return formattedResponse;
+  });
+
+export const UnbindGithubAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: UnbindGithubAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<UnbindGithubAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindGithubAccount}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UnbindGithubAccountResponse;
+
+    return formattedResponse;
+  });
+
+export const UnbindMetaAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: UnbindMetaAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<UnbindMetaAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindMetaAccount}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as UnbindMetaAccountResponse;
 
     return formattedResponse;
   });
