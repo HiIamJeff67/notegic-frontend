@@ -390,3 +390,46 @@ export const DeleteMeResponseSchema = NotegicResponseSchema.extend({
 });
 
 export type DeleteMeResponse = z.infer<typeof DeleteMeResponseSchema>;
+
+export const GithubCodeVerifierSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9._~\-]{43,128}$/, {
+    error: "auth.validation.oauthCodeInvalid",
+  });
+export const RegisterViaGithubRequestSchema =
+  RegisterViaGoogleRequestSchema.extend({
+    body: RegisterViaGoogleRequestSchema.shape.body.extend({
+      codeVerifier: GithubCodeVerifierSchema,
+    }),
+  });
+export type RegisterViaGithubRequest = z.infer<
+  typeof RegisterViaGithubRequestSchema
+>;
+export const RegisterViaGithubResponseSchema = RegisterViaGoogleResponseSchema;
+export type RegisterViaGithubResponse = z.infer<
+  typeof RegisterViaGithubResponseSchema
+>;
+export const LoginViaGithubRequestSchema = LoginViaGoogleRequestSchema.extend({
+  body: LoginViaGoogleRequestSchema.shape.body.extend({
+    codeVerifier: GithubCodeVerifierSchema,
+  }),
+});
+export type LoginViaGithubRequest = z.infer<typeof LoginViaGithubRequestSchema>;
+export const LoginViaGithubResponseSchema = LoginViaGoogleResponseSchema;
+export type LoginViaGithubResponse = z.infer<
+  typeof LoginViaGithubResponseSchema
+>;
+
+export const LoginViaMetaRequestSchema = LoginViaGoogleRequestSchema;
+export type LoginViaMetaRequest = z.infer<typeof LoginViaMetaRequestSchema>;
+export const LoginViaMetaResponseSchema = LoginViaGoogleResponseSchema;
+export type LoginViaMetaResponse = z.infer<typeof LoginViaMetaResponseSchema>;
+
+export const RegisterViaMetaRequestSchema = RegisterViaGoogleRequestSchema;
+export type RegisterViaMetaRequest = z.infer<
+  typeof RegisterViaMetaRequestSchema
+>;
+export const RegisterViaMetaResponseSchema = RegisterViaGoogleResponseSchema;
+export type RegisterViaMetaResponse = z.infer<
+  typeof RegisterViaMetaResponseSchema
+>;

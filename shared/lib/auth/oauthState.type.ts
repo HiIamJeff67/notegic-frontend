@@ -6,6 +6,8 @@ export type OAuthAction = (typeof OAuthActions)[number];
 
 export interface PendingOAuthState {
   state: string;
+  provider?: "google" | "github" | "meta";
+  codeVerifier?: string;
   action: OAuthAction;
   createdAt: number;
 }
@@ -22,6 +24,14 @@ export const isPendingOAuthState = (
 
   const pending = value as Partial<PendingOAuthState>;
   return (
+    (pending.provider === undefined ||
+      pending.provider === "google" ||
+      pending.provider === "github" ||
+      pending.provider === "meta") &&
+    (pending.provider !== "meta" || pending.codeVerifier === undefined) &&
+    (pending.provider !== "github" ||
+      (typeof pending.codeVerifier === "string" &&
+        /^[A-Za-z0-9._~\-]{43,128}$/.test(pending.codeVerifier))) &&
     typeof pending.state === "string" &&
     oauthStatePattern.test(pending.state) &&
     isOAuthAction(pending.action) &&

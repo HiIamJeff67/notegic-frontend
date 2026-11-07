@@ -134,175 +134,221 @@ export default VersionsContent;
 `,
 ]);
 
-const privacy = marked
-  .lexer(
-    fs.readFileSync(
-      path.join(directory, "privacy-policy/sources/privacy-policy.md"),
-      "utf8"
-    )
-  )
-  .filter(token => token.type !== "space");
-const title = privacy.shift();
-assert.equal(title?.type, "heading");
-assert.equal(title.text, "Privacy and policy");
-const updated = privacy.shift();
-assert.equal(
-  updated?.type,
-  "paragraph",
-  "Privacy policy needs its existing update date"
-);
-const sections = [];
-const inline = tokens =>
-  tokens
-    .map(token => {
-      if (token.type === "text" || token.type === "escape") {
-        if (token.text === "{{contactEmail}}") return "{contactEmail}";
-        return token.tokens
-          ? inline(token.tokens)
-          : "{" + quote(token.text) + "}";
-      }
-      if (token.type === "strong" || token.type === "em") {
-        return (
-          "<" +
-          token.type +
-          ">" +
-          inline(token.tokens) +
-          "</" +
-          token.type +
-          ">"
-        );
-      }
-      if (token.type === "link") {
-        if (token.href === "mailto:{{contactEmail}}")
+const generateArticleSections = ({
+  slug,
+  expectedTitle,
+  anchorPrefix,
+  sectionsName,
+  componentName,
+}) => {
+  const source = slug + "/sources/" + slug + ".md";
+  const markdown = fs.readFileSync(path.join(directory, source), "utf8");
+  const header =
+    "// Generated from apps/web/src/pages/document/" +
+    source +
+    "; run npm run generate:document.\n";
+  const tokens = marked.lexer(markdown).filter(token => token.type !== "space");
+  const title = tokens.shift();
+  assert.equal(title?.type, "heading");
+  assert.equal(title.text, expectedTitle);
+  const updated = tokens.shift();
+  assert.equal(
+    updated?.type,
+    "paragraph",
+    expectedTitle + " needs an update date"
+  );
+  const sections = [];
+  let usesContactEmail = false;
+  let usesExternalLinkIcon = false;
+  const inline = tokens =>
+    tokens
+      .map(token => {
+        if (token.type === "text" || token.type === "escape") {
+          if (token.text === "{{contactEmail}}") {
+            usesContactEmail = true;
+            return "{contactEmail}";
+          }
+          return token.tokens
+            ? inline(token.tokens)
+            : "{" + quote(token.text) + "}";
+        }
+        if (token.type === "strong" || token.type === "em") {
           return (
-            '<a href={"mailto:" + contactEmail} className="underline">' +
+            "<" +
+            token.type +
+            ">" +
             inline(token.tokens) +
-            "</a>"
+            "</" +
+            token.type +
+            ">"
           );
-        const local =
-          token.href.startsWith("/") && !token.href.startsWith("//");
-        assert(
-          local || ["https:", "mailto:"].includes(new URL(token.href).protocol),
-          "Unsupported privacy link: " + token.href
-        );
-        return local
-          ? '<ArticleLink className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80" href=' +
-              quote(token.href) +
-              ">" +
+        }
+        if (token.type === "link") {
+          if (token.href === "mailto:{{contactEmail}}") {
+            usesContactEmail = true;
+            return (
+              '<a href={"mailto:" + contactEmail} className="underline">' +
               inline(token.tokens) +
-              (token.href === "/eula"
-                ? '<ExternalLinkIcon className="size-3.5" />'
-                : "") +
-              "</ArticleLink>"
-          : '<a className="underline" href=' +
-              quote(token.href) +
-              ">" +
+              "</a>"
+            );
+          }
+          if (token.href === "/eula") usesExternalLinkIcon = true;
+          const local =
+            token.href.startsWith("/") && !token.href.startsWith("//");
+          assert(
+            local ||
+              ["https:", "mailto:"].includes(new URL(token.href).protocol),
+            "Unsupported article link: " + token.href
+          );
+          return local
+            ? '<ArticleLink className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80" href=' +
+                quote(token.href) +
+                ">" +
+                inline(token.tokens) +
+                (token.href === "/eula"
+                  ? '<ExternalLinkIcon className="size-3.5" />'
+                  : "") +
+                "</ArticleLink>"
+            : '<a className="underline" href=' +
+                quote(token.href) +
+                ">" +
+                inline(token.tokens) +
+                "</a>";
+        }
+        throw new Error("Unsupported article inline token: " + token.type);
+      })
+      .join("");
+  for (const token of tokens) {
+    if (token.type === "heading") {
+      assert.equal(token.depth, 2);
+      const match = token.text.match(/^(.+) \{#([a-z-]+)\}$/);
+      assert(
+        match?.[2].startsWith(anchorPrefix),
+        "Invalid section anchor: " + token.text
+      );
+      assert(
+        !sections.some(section => section.id === match[2]),
+        "Duplicate article section: " + match[2]
+      );
+      sections.push({ id: match[2], title: match[1], content: [] });
+      continue;
+    }
+    const section = sections.at(-1);
+    assert(section, "Article content must belong to a section");
+    if (token.type === "paragraph")
+      section.content.push("<p>" + inline(token.tokens) + "</p>");
+    else if (token.type === "blockquote") {
+      const paragraphs = token.tokens.filter(token => token.type !== "space");
+      assert(
+        paragraphs.every(token => token.type === "paragraph"),
+        "Article notes must contain paragraphs only"
+      );
+      section.content.push(
+        paragraphs
+          .map(
+            token =>
+              '<p className="text-sm leading-6 text-muted-foreground">' +
               inline(token.tokens) +
-              "</a>";
-      }
-      throw new Error("Unsupported privacy inline token: " + token.type);
-    })
-    .join("");
-for (const token of privacy) {
-  if (token.type === "heading") {
-    assert.equal(token.depth, 2);
-    const match = token.text.match(/^(.+) \{#(privacy-[a-z-]+)\}$/);
-    assert(match, "Privacy headings must include their existing {#privacy-id}");
-    assert(
-      !sections.some(section => section.id === match[2]),
-      "Duplicate privacy section: " + match[2]
-    );
-    sections.push({ id: match[2], title: match[1], content: [] });
-    continue;
+              "</p>"
+          )
+          .join("")
+      );
+    } else if (token.type === "list") {
+      assert(
+        !token.ordered && token.items.every(item => !item.task),
+        "Article lists must be unordered prose"
+      );
+      section.content.push(
+        '<ul className="list-disc ml-6 mt-2 space-y-1">' +
+          token.items
+            .map(item => {
+              const paragraphs = item.tokens.filter(
+                token => token.type !== "space"
+              );
+              assert(
+                paragraphs.length === 1 &&
+                  ["text", "paragraph"].includes(paragraphs[0].type),
+                "Nested article lists are unsupported"
+              );
+              return "<li>" + inline(paragraphs[0].tokens) + "</li>";
+            })
+            .join("") +
+          "</ul>"
+      );
+    } else throw new Error("Unsupported article block: " + token.type);
   }
-  const section = sections.at(-1);
-  assert(section, "Privacy content must belong to a section");
-  if (token.type === "paragraph")
-    section.content.push("<p>" + inline(token.tokens) + "</p>");
-  else if (token.type === "blockquote") {
-    const paragraphs = token.tokens.filter(token => token.type !== "space");
-    assert(
-      paragraphs.every(token => token.type === "paragraph"),
-      "Privacy notes must contain paragraphs only"
-    );
-    section.content.push(
-      paragraphs
+  assert(
+    sections.length > 0 && sections.every(section => section.content.length),
+    "Article sections must not be empty"
+  );
+  outputs.push([
+    slug + "/generated.ts",
+    header +
+      'import type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
+      "export const " +
+      sectionsName +
+      " = " +
+      quote(
+        sections.map(({ id, title }) => ({
+          id,
+          title: title.replace(/^\d+\. /, ""),
+          description: title.replace(/^\d+\. /, ""),
+          weight: 3,
+        })),
+        null,
+        2
+      ) +
+      " satisfies ArticleNavigationItem[];\n",
+  ]);
+  outputs.push([
+    slug + "/" + componentName + ".tsx",
+    header +
+      (usesExternalLinkIcon
+        ? 'import { ExternalLinkIcon } from "lucide-react";\n'
+        : "") +
+      'import { ArticleLink, ArticleSubParagraph, ArticleSubParagraphContent, ArticleSubParagraphHeader } from "@/components/commons/Article/Article";\n' +
+      "const " +
+      componentName +
+      " = () => { " +
+      (usesContactEmail
+        ? 'const contactEmail = import.meta.env.VITE_CONTACT_EMAIL ?? ""; '
+        : "") +
+      "return <>\n" +
+      '<p className="mb-8 text-sm text-muted-foreground">{' +
+      quote(updated.text) +
+      "}</p>" +
+      sections
         .map(
-          token =>
-            '<p className="text-sm leading-6 text-muted-foreground">' +
-            inline(token.tokens) +
-            "</p>"
+          section =>
+            "<ArticleSubParagraph id=" +
+            quote(section.id) +
+            " separatorFullWidth><ArticleSubParagraphHeader>{" +
+            quote(section.title) +
+            "}</ArticleSubParagraphHeader><ArticleSubParagraphContent>" +
+            section.content.join("\n") +
+            "</ArticleSubParagraphContent></ArticleSubParagraph>"
         )
-        .join("")
-    );
-  } else if (token.type === "list") {
-    assert(
-      !token.ordered && token.items.every(item => !item.task),
-      "Privacy lists must be unordered prose"
-    );
-    section.content.push(
-      '<ul className="list-disc ml-6 mt-2 space-y-1">' +
-        token.items
-          .map(item => {
-            const paragraphs = item.tokens.filter(
-              token => token.type !== "space"
-            );
-            assert(
-              paragraphs.length === 1 &&
-                ["text", "paragraph"].includes(paragraphs[0].type),
-              "Nested privacy lists are unsupported"
-            );
-            return "<li>" + inline(paragraphs[0].tokens) + "</li>";
-          })
-          .join("") +
-        "</ul>"
-    );
-  } else throw new Error("Unsupported privacy block: " + token.type);
-}
-assert(
-  sections.length > 0 && sections.every(section => section.content.length),
-  "Privacy sections must not be empty"
-);
-outputs.push([
-  "privacy-policy/generated.ts",
-  "// Generated from apps/web/src/pages/document/privacy-policy/sources/privacy-policy.md; run npm run generate:document.\n" +
-    'import type { ArticleNavigationItem } from "@/components/commons/Article/Article";\n' +
-    "export const privacySections = " +
-    quote(
-      sections.map(({ id, title }) => ({
-        id,
-        title: title.replace(/^\d+\. /, ""),
-        description: title.replace(/^\d+\. /, ""),
-        weight: 3,
-      })),
-      null,
-      2
-    ) +
-    " satisfies ArticleNavigationItem[];\n",
-]);
-outputs.push([
-  "privacy-policy/PrivacyPolicyContent.tsx",
-  "// Generated from apps/web/src/pages/document/privacy-policy/sources/privacy-policy.md; run npm run generate:document.\n" +
-    'import { ExternalLinkIcon } from "lucide-react";\n' +
-    'import { ArticleLink, ArticleSubParagraph, ArticleSubParagraphContent, ArticleSubParagraphHeader } from "@/components/commons/Article/Article";\n' +
-    'const PrivacyPolicyContent = () => { const contactEmail = import.meta.env.VITE_CONTACT_EMAIL ?? ""; return <>\n' +
-    '<p className="mb-8 text-sm text-muted-foreground">{' +
-    quote(updated.text) +
-    "}</p>" +
-    sections
-      .map(
-        section =>
-          "<ArticleSubParagraph id=" +
-          quote(section.id) +
-          " separatorFullWidth><ArticleSubParagraphHeader>{" +
-          quote(section.title) +
-          "}</ArticleSubParagraphHeader><ArticleSubParagraphContent>" +
-          section.content.join("\n") +
-          "</ArticleSubParagraphContent></ArticleSubParagraph>"
-      )
-      .join("\n") +
-    "</>; }; export default PrivacyPolicyContent;\n",
-]);
+        .join("\n") +
+      "</>; }; export default " +
+      componentName +
+      ";\n",
+  ]);
+};
+
+generateArticleSections({
+  slug: "privacy-policy",
+  expectedTitle: "Privacy and policy",
+  anchorPrefix: "privacy-",
+  sectionsName: "privacySections",
+  componentName: "PrivacyPolicyContent",
+});
+generateArticleSections({
+  slug: "data-deletion",
+  expectedTitle: "Data deletion",
+  anchorPrefix: "data-deletion-",
+  sectionsName: "dataDeletionSections",
+  componentName: "DataDeletionContent",
+});
 
 // Validate every source before replacing any generated file.
 for (const [file, content] of outputs) {
@@ -310,4 +356,6 @@ for (const [file, content] of outputs) {
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, content);
 }
-console.log("Generated Versions and Privacy from local Markdown sources.");
+console.log(
+  "Generated Versions, Privacy, and Data deletion from local Markdown sources."
+);

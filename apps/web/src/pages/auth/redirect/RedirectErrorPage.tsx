@@ -1,14 +1,13 @@
-import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useLocation } from "@tanstack/react-router";
 import { Suspense, useMemo } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { Button } from "@/components/ui/button";
-import { useAppRouter } from "@/hooks";
+import { useOAuth } from "@/hooks/useOAuth";
 import { useTranslation } from "@/hooks/useTranslation";
 
 function RedirectErrorPage() {
   const location = useLocation();
-  const router = useAppRouter();
+  const { returnToHome } = useOAuth();
   const { t } = useTranslation();
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -27,10 +26,7 @@ function RedirectErrorPage() {
           <Button variant="outline" onClick={() => {}}>
             {t("workspace.pages.contactUs")}
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push(WebURLPathDictionary.home)}
-          >
+          <Button variant="outline" onClick={returnToHome}>
             {t("workspace.pages.goBack")}
           </Button>
         </div>

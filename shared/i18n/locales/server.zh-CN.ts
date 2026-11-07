@@ -17,6 +17,11 @@ export const SimpleChineseServerTranslation = {
     ResponseReadFailed: "无法读取登录服务的响应。",
     InvalidResponse: "登录服务返回了无效的响应。",
     WrongPassword: "密码不正确。",
+    MetaAccountNotLinked:
+      "请先使用其他方式登录 Notegic，再到账户设置绑定 Facebook。",
+    MetaCredentialAlreadyBound: "此账户已绑定 Facebook。",
+    MetaEmailRequired:
+      "请允许 Facebook 分享有效的电子邮件地址，以创建 Notegic 账户。",
     WrongAuthCode: "验证码不正确。",
     LoginBlockedDueToTryingTooManyTimes: "登录尝试次数过多，请稍后再试。",
     AuthCodeBlockedDueToTryingTooManyTimes: "验证码请求次数过多，请稍后再试。",

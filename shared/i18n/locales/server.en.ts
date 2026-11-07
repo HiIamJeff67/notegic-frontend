@@ -21,6 +21,11 @@ export const EnglishServerTranslation = {
     ResponseReadFailed: "The sign-in provider returned an unreadable response.",
     InvalidResponse: "The sign-in provider returned an invalid response.",
     WrongPassword: "The password is incorrect.",
+    MetaAccountNotLinked:
+      "Sign in to Notegic using another method, then link Facebook in account settings.",
+    MetaCredentialAlreadyBound: "A Facebook account is already linked.",
+    MetaEmailRequired:
+      "Allow Facebook to share a valid email address to create your Notegic account.",
     WrongAuthCode: "The verification code is incorrect.",
     LoginBlockedDueToTryingTooManyTimes:
       "Too many sign-in attempts. Please try again later.",

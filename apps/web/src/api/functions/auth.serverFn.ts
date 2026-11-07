@@ -6,13 +6,21 @@ import {
   LoginRequest,
   LoginResponse,
   LoginViaGoogleRequest,
+  LoginViaGithubRequest,
+  LoginViaMetaRequest,
   LoginViaGoogleResponse,
+  LoginViaGithubResponse,
+  LoginViaMetaResponse,
   LogoutRequest,
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
   RegisterViaGoogleRequest,
+  RegisterViaGithubRequest,
+  RegisterViaMetaRequest,
   RegisterViaGoogleResponse,
+  RegisterViaGithubResponse,
+  RegisterViaMetaResponse,
   ResetEmailRequest,
   ResetEmailResponse,
   ResetMeRequest,
@@ -106,6 +114,68 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const RegisterViaGithub = createServerFn({ method: "POST" })
+  .inputValidator((data: RegisterViaGithubRequest) => data)
+  .handler(async ({ data: request }): Promise<RegisterViaGithubResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.registerViaGithub}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RegisterViaGithubResponse;
+
+    return formattedResponse;
+  });
+
+export const RegisterViaMeta = createServerFn({ method: "POST" })
+  .inputValidator((data: RegisterViaMetaRequest) => data)
+  .handler(async ({ data: request }): Promise<RegisterViaMetaResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.registerViaMeta}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as RegisterViaMetaResponse;
+
+    return formattedResponse;
+  });
+
 export const Login = createServerFn({ method: "POST" })
   .inputValidator((data: LoginRequest) => data)
   .handler(async ({ data: request }): Promise<LoginResponse> => {
@@ -164,6 +234,68 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
     const formattedResponse = (await readAPIResponse(
       response
     )) as LoginViaGoogleResponse;
+
+    return formattedResponse;
+  });
+
+export const LoginViaGithub = createServerFn({ method: "POST" })
+  .inputValidator((data: LoginViaGithubRequest) => data)
+  .handler(async ({ data: request }): Promise<LoginViaGithubResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.loginViaGithub}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LoginViaGithubResponse;
+
+    return formattedResponse;
+  });
+
+export const LoginViaMeta = createServerFn({ method: "POST" })
+  .inputValidator((data: LoginViaMetaRequest) => data)
+  .handler(async ({ data: request }): Promise<LoginViaMetaResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.loginViaMeta}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await readAPIResponse(
+      response
+    )) as LoginViaMetaResponse;
 
     return formattedResponse;
   });

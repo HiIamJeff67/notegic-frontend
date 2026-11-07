@@ -14,11 +14,18 @@ jest.mock("@/api/local/synchronizers/auth.synchronizer", () => ({
   AuthLocalSynchronizer: {},
 }));
 
-import { useLogin, useLoginViaGoogle } from "./auth.hook";
+import {
+  useLogin,
+  useLoginViaGoogle,
+  useLoginViaGithub,
+  useRegisterViaGithub,
+} from "./auth.hook";
 
 test.each([
   useLogin,
   useLoginViaGoogle,
+  useLoginViaGithub,
+  useRegisterViaGithub,
 ])("login requires an explicit retry after any failure", useLoginMutation => {
   mockUseMutation.mockClear();
   useLoginMutation();

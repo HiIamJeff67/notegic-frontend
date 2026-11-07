@@ -185,7 +185,7 @@ The source column gives a representative existing consumer, not every call site.
 | `TagIcon` | Routine tag base glyph; consume as `RoutineTagIcon` | [WorkspaceEntityIcons] |
 | `Tags` | Multi-tag Routine filter | [RoutineScopeBar] |
 | `Terminal` | Shell code format | [CodeExamplePanel] |
-| `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation | [RoutineTaskGraphNode], [TrashPage], [AppCommandItem] |
+| `Trash2`, `Trash2Icon` | Delete / remove / Trash navigation and data deletion documentation | [RoutineTaskGraphNode], [TrashPage], [AppCommandItem], [DataDeletion] |
 | `TypeIcon` | PDF text annotation | [MaterialPDFViewer] |
 | `UserPenIcon` | Account changes | [AccountSettingsPage], [AppCommandItem] |
 | `UserPlusIcon` | Add/invite participant | [ParticipantsDropdown], [ShelfSharingDialog] |
@@ -362,6 +362,7 @@ assets or Docker services were removed. No commit or push was performed.
 [TemplatePatternEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/TemplatePatternEditor.tsx
 [BrowserPermissionsTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/BrowserPermissionsTab.tsx
 [Command]: ../../apps/web/src/components/ui/command.tsx
+[DataDeletion]: ../../apps/web/src/pages/document/data-deletion/DataDeletion.tsx
 [PrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicy.tsx
 [TrashPage]: ../../apps/web/src/pages/app/trash/TrashPage.tsx
 [ParticipantsDropdown]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackParticipantsDropdown.tsx

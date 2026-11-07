@@ -20,9 +20,17 @@ import {
   type LoginResponse,
   LoginResponseSchema,
   type LoginViaGoogleRequest,
+  type LoginViaGithubRequest,
+  type LoginViaMetaRequest,
   LoginViaGoogleRequestSchema,
+  LoginViaGithubRequestSchema,
+  LoginViaMetaRequestSchema,
   type LoginViaGoogleResponse,
+  type LoginViaGithubResponse,
+  type LoginViaMetaResponse,
   LoginViaGoogleResponseSchema,
+  LoginViaGithubResponseSchema,
+  LoginViaMetaResponseSchema,
   type LogoutRequest,
   LogoutRequestSchema,
   type LogoutResponse,
@@ -32,9 +40,17 @@ import {
   type RegisterResponse,
   RegisterResponseSchema,
   type RegisterViaGoogleRequest,
+  type RegisterViaGithubRequest,
+  type RegisterViaMetaRequest,
   RegisterViaGoogleRequestSchema,
+  RegisterViaGithubRequestSchema,
+  RegisterViaMetaRequestSchema,
   type RegisterViaGoogleResponse,
+  type RegisterViaGithubResponse,
+  type RegisterViaMetaResponse,
   RegisterViaGoogleResponseSchema,
+  RegisterViaGithubResponseSchema,
+  RegisterViaMetaResponseSchema,
   type ResetEmailRequest,
   ResetEmailRequestSchema,
   type ResetEmailResponse,
@@ -59,9 +75,13 @@ import {
   ForgetPassword,
   Login,
   LoginViaGoogle,
+  LoginViaGithub,
+  LoginViaMeta,
   Logout,
   Register,
   RegisterViaGoogle,
+  RegisterViaGithub,
+  RegisterViaMeta,
   ResetEmail,
   ResetMe,
   SendAuthCode,
@@ -144,6 +164,75 @@ export const mutationFnRegisterViaGoogle = async (
   }
 };
 
+export const mutationFnRegisterViaGithub = async (
+  request: RegisterViaGithubRequest
+): Promise<RegisterViaGithubResponse> => {
+  const validatedRequest = parseRequest(
+    RegisterViaGithubRequestSchema,
+    request
+  );
+  try {
+    const response = await RegisterViaGithub({
+      data: validatedRequest,
+    });
+    return RegisterViaGithubResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
+export const mutationFnRegisterViaMeta = async (
+  request: RegisterViaMetaRequest
+): Promise<RegisterViaMetaResponse> => {
+  const validatedRequest = parseRequest(RegisterViaMetaRequestSchema, request);
+  try {
+    const response = await RegisterViaMeta({
+      data: validatedRequest,
+    });
+    return RegisterViaMetaResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
 export const mutationFnLogin = async (
   request: LoginRequest
 ): Promise<LoginResponse> => {
@@ -187,6 +276,68 @@ export const mutationFnLoginViaGoogle = async (
   } catch (error) {
     console.error("error happening in mutationFnLoginViaGoogle", error);
     console.error(error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
+export const mutationFnLoginViaGithub = async (
+  request: LoginViaGithubRequest
+): Promise<LoginViaGithubResponse> => {
+  const validatedRequest = parseRequest(LoginViaGithubRequestSchema, request);
+  try {
+    const response = await LoginViaGithub({ data: validatedRequest });
+    return LoginViaGithubResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
+export const mutationFnLoginViaMeta = async (
+  request: LoginViaMetaRequest
+): Promise<LoginViaMetaResponse> => {
+  const validatedRequest = parseRequest(LoginViaMetaRequestSchema, request);
+  try {
+    const response = await LoginViaMeta({ data: validatedRequest });
+    return LoginViaMetaResponseSchema.parse(response);
+  } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)

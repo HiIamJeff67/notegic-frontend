@@ -5,17 +5,33 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import {
   type BindGoogleAccountRequest,
+  type BindGithubAccountRequest,
+  type BindMetaAccountRequest,
   BindGoogleAccountRequestSchema,
+  BindGithubAccountRequestSchema,
+  BindMetaAccountRequestSchema,
   type BindGoogleAccountResponse,
+  type BindGithubAccountResponse,
+  type BindMetaAccountResponse,
   BindGoogleAccountResponseSchema,
+  BindGithubAccountResponseSchema,
+  BindMetaAccountResponseSchema,
   type GetMyAccountRequest,
   GetMyAccountRequestSchema,
   type GetMyAccountResponse,
   GetMyAccountResponseSchema,
   type UnbindGoogleAccountRequest,
+  type UnbindGithubAccountRequest,
+  type UnbindMetaAccountRequest,
   UnbindGoogleAccountRequestSchema,
+  UnbindGithubAccountRequestSchema,
+  UnbindMetaAccountRequestSchema,
   type UnbindGoogleAccountResponse,
+  type UnbindGithubAccountResponse,
+  type UnbindMetaAccountResponse,
   UnbindGoogleAccountResponseSchema,
+  UnbindGithubAccountResponseSchema,
+  UnbindMetaAccountResponseSchema,
   type UpdateMyAccountRequest,
   UpdateMyAccountRequestSchema,
   type UpdateMyAccountResponse,
@@ -25,8 +41,12 @@ import { parseRequest } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   BindGoogleAccount,
+  BindGithubAccount,
+  BindMetaAccount,
   GetMyAccount,
   UnbindGoogleAccount,
+  UnbindGithubAccount,
+  UnbindMetaAccount,
   UpdateMyAccount,
 } from "@/api/functions/userAccount.serverFn";
 
@@ -107,6 +127,58 @@ export const mutationFnBindGoogleAccount = async (
   }
 };
 
+export const mutationFnBindGithubAccount = async (
+  request: BindGithubAccountRequest
+): Promise<BindGithubAccountResponse> => {
+  try {
+    const validatedRequest = BindGithubAccountRequestSchema.parse(request);
+    const response = await BindGithubAccount({
+      data: validatedRequest,
+    });
+    return BindGithubAccountResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnBindMetaAccount = async (
+  request: BindMetaAccountRequest
+): Promise<BindMetaAccountResponse> => {
+  try {
+    const validatedRequest = BindMetaAccountRequestSchema.parse(request);
+    const response = await BindMetaAccount({
+      data: validatedRequest,
+    });
+    return BindMetaAccountResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
 export const mutationFnUnbindGoogleAccount = async (
   request: UnbindGoogleAccountRequest
 ): Promise<UnbindGoogleAccountResponse> => {
@@ -118,6 +190,58 @@ export const mutationFnUnbindGoogleAccount = async (
     return UnbindGoogleAccountResponseSchema.parse(response);
   } catch (error) {
     console.error("error happening in mutationFnUnbindGoogleAccount", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnUnbindGithubAccount = async (
+  request: UnbindGithubAccountRequest
+): Promise<UnbindGithubAccountResponse> => {
+  try {
+    const validatedRequest = UnbindGithubAccountRequestSchema.parse(request);
+    const response = await UnbindGithubAccount({
+      data: validatedRequest,
+    });
+    return UnbindGithubAccountResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnUnbindMetaAccount = async (
+  request: UnbindMetaAccountRequest
+): Promise<UnbindMetaAccountResponse> => {
+  try {
+    const validatedRequest = UnbindMetaAccountRequestSchema.parse(request);
+    const response = await UnbindMetaAccount({
+      data: validatedRequest,
+    });
+    return UnbindMetaAccountResponseSchema.parse(response);
+  } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)

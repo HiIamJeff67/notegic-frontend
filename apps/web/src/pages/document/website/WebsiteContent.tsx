@@ -1287,9 +1287,11 @@ const WebsiteContent = () => (
                           }
                         </p>
                         <p>
-                          {
-                            "Save anything you may still need elsewhere first. Do not assume that a removed Dashboard Widget can always be recovered from Trash."
-                          }
+                          {"See "}
+                          <ArticleLink href="/data-deletion#data-deletion-trash">
+                            {"Move content to Trash or restore it"}
+                          </ArticleLink>
+                          {" for the limits of recovery."}
                         </p>
                       </ArticleSubParagraphContent>
                     </ArticleSubParagraph>
@@ -1489,9 +1491,15 @@ const WebsiteContent = () => (
                   </li>
                 </ul>
                 <p>
-                  {
-                    "Trash currently focuses on viewing and searching. A listed item does not guarantee that the website can restore it. Save important content before deleting it."
-                  }
+                  {"For recovery and permanent removal, see "}
+                  <ArticleLink href="/data-deletion#data-deletion-trash">
+                    {"Move content to Trash or restore it"}
+                  </ArticleLink>
+                  {" and "}
+                  <ArticleLink href="/data-deletion#data-deletion-permanent">
+                    {"Permanently delete content"}
+                  </ArticleLink>
+                  {"."}
                 </p>
               </ArticleSubParagraphContent>
             </ArticleSubParagraph>
@@ -3618,8 +3626,12 @@ const WebsiteContent = () => (
                   }
                 </p>
                 <p>
+                  {"See "}
+                  <ArticleLink href="/data-deletion#data-deletion-linked-sign-in">
+                    {"Remove linked sign-in data"}
+                  </ArticleLink>
                   {
-                    "Before changing sign-in methods, confirm that you can still access the same account afterward. Do not assume linking changes transfer projects, merge accounts, or revoke all existing access."
+                    " before disconnecting a provider. Linking does not transfer projects or merge accounts."
                   }
                 </p>
               </ArticleSubParagraphContent>
@@ -3659,14 +3671,16 @@ const WebsiteContent = () => (
                     }
                   </li>
                   <li>
-                    {
-                      "Delete account: first confirm that you no longer need the account and its content, then address shared resources, important documents, and integrations."
-                    }
+                    {"Delete account: see "}
+                    <ArticleLink href="/data-deletion#data-deletion-account">
+                      {"Delete your Notegic account"}
+                    </ArticleLink>
+                    {" for the steps and what to consider before confirming."}
                   </li>
                 </ul>
                 <p>
                   {
-                    "Account reset and deletion are not routine fixes for display or loading issues. Save important work and consider effects on shared resources, collaborators, and integrations before proceeding. Do not assume recovery will be available afterward."
+                    "Account reset and deletion are separate actions. Read the scope of the action you choose before confirming."
                   }
                 </p>
               </ArticleSubParagraphContent>

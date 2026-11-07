@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import GoogleRedirectPage from "@/pages/auth/redirect/GoogleRedirectPage";
+import OAuthRedirectPage from "@/pages/auth/redirect/OAuthRedirectPage";
 
 export const Route = createFileRoute("/_auth/redirect/google")({
-  component: GoogleRedirectPage,
+  component: () => <OAuthRedirectPage provider="google" />,
 });

@@ -12,10 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as DocumentRouteImport } from './routes/document'
 import { Route as EulaRouteImport } from './routes/eula'
-import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as playgroundPlaygroundRouteImport } from './routes/(playground)/playground'
 import { Route as AuthForgetPasswordRouteImport } from './routes/_auth.forgetPassword'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
@@ -24,8 +25,11 @@ import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
 import { Route as AppRoutinesRouteImport } from './routes/app.routines'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
+import { Route as AuthRedirectAppleRouteImport } from './routes/_auth.redirect.apple'
 import { Route as AuthRedirectErrorRouteImport } from './routes/_auth.redirect.error'
+import { Route as AuthRedirectGithubRouteImport } from './routes/_auth.redirect.github'
 import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
+import { Route as AuthRedirectMetaRouteImport } from './routes/_auth.redirect.meta'
 import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
 import { Route as AppBlockPackEditorIndexRouteImport } from './routes/app.block-pack-editor.index'
 import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.block-pack-editor.$blockPackId'
@@ -52,6 +56,11 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocumentRoute = DocumentRouteImport.update({
   id: '/document',
   path: '/document',
@@ -62,14 +71,14 @@ const EulaRoute = EulaRouteImport.update({
   path: '/eula',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const playgroundPlaygroundRoute = playgroundPlaygroundRouteImport.update({
+  id: '/(playground)/playground',
+  path: '/playground',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthForgetPasswordRoute = AuthForgetPasswordRouteImport.update({
@@ -112,14 +121,29 @@ const AppTrashRoute = AppTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => AppRoute,
 } as any)
+const AuthRedirectAppleRoute = AuthRedirectAppleRouteImport.update({
+  id: '/redirect/apple',
+  path: '/redirect/apple',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
   id: '/redirect/error',
   path: '/redirect/error',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthRedirectGithubRoute = AuthRedirectGithubRouteImport.update({
+  id: '/redirect/github',
+  path: '/redirect/github',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRedirectGoogleRoute = AuthRedirectGoogleRouteImport.update({
   id: '/redirect/google',
   path: '/redirect/google',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthRedirectMetaRoute = AuthRedirectMetaRouteImport.update({
+  id: '/redirect/meta',
+  path: '/redirect/meta',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthRedirectXRoute = AuthRedirectXRouteImport.update({
@@ -184,10 +208,11 @@ const AppRoutinesRoutineIdDependencyGraphEditorRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/data-deletion': typeof DataDeletionRoute
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
-  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/playground': typeof playgroundPlaygroundRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
@@ -196,8 +221,11 @@ export interface FileRoutesByFullPath {
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
+  '/redirect/apple': typeof AuthRedirectAppleRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
+  '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
+  '/redirect/meta': typeof AuthRedirectMetaRoute
   '/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -213,16 +241,20 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/data-deletion': typeof DataDeletionRoute
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
-  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/playground': typeof playgroundPlaygroundRoute
   '/forgetPassword': typeof AuthForgetPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/app/trash': typeof AppTrashRoute
+  '/redirect/apple': typeof AuthRedirectAppleRoute
   '/redirect/error': typeof AuthRedirectErrorRoute
+  '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
+  '/redirect/meta': typeof AuthRedirectMetaRoute
   '/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -240,10 +272,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/data-deletion': typeof DataDeletionRoute
   '/document': typeof DocumentRoute
   '/eula': typeof EulaRoute
-  '/playground': typeof PlaygroundRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/(playground)/playground': typeof playgroundPlaygroundRoute
   '/_auth/forgetPassword': typeof AuthForgetPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
@@ -252,8 +285,11 @@ export interface FileRoutesById {
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
+  '/_auth/redirect/apple': typeof AuthRedirectAppleRoute
   '/_auth/redirect/error': typeof AuthRedirectErrorRoute
+  '/_auth/redirect/github': typeof AuthRedirectGithubRoute
   '/_auth/redirect/google': typeof AuthRedirectGoogleRoute
+  '/_auth/redirect/meta': typeof AuthRedirectMetaRoute
   '/_auth/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -271,10 +307,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/data-deletion'
     | '/document'
     | '/eula'
-    | '/playground'
     | '/privacy-policy'
+    | '/playground'
     | '/forgetPassword'
     | '/login'
     | '/register'
@@ -283,8 +320,11 @@ export interface FileRouteTypes {
     | '/app/material-viewer'
     | '/app/routines'
     | '/app/trash'
+    | '/redirect/apple'
     | '/redirect/error'
+    | '/redirect/github'
     | '/redirect/google'
+    | '/redirect/meta'
     | '/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -300,16 +340,20 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app'
+    | '/data-deletion'
     | '/document'
     | '/eula'
-    | '/playground'
     | '/privacy-policy'
+    | '/playground'
     | '/forgetPassword'
     | '/login'
     | '/register'
     | '/app/trash'
+    | '/redirect/apple'
     | '/redirect/error'
+    | '/redirect/github'
     | '/redirect/google'
+    | '/redirect/meta'
     | '/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -326,10 +370,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/app'
+    | '/data-deletion'
     | '/document'
     | '/eula'
-    | '/playground'
     | '/privacy-policy'
+    | '/(playground)/playground'
     | '/_auth/forgetPassword'
     | '/_auth/login'
     | '/_auth/register'
@@ -338,8 +383,11 @@ export interface FileRouteTypes {
     | '/app/material-viewer'
     | '/app/routines'
     | '/app/trash'
+    | '/_auth/redirect/apple'
     | '/_auth/redirect/error'
+    | '/_auth/redirect/github'
     | '/_auth/redirect/google'
+    | '/_auth/redirect/meta'
     | '/_auth/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -357,10 +405,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
+  DataDeletionRoute: typeof DataDeletionRoute
   DocumentRoute: typeof DocumentRoute
   EulaRoute: typeof EulaRoute
-  PlaygroundRoute: typeof PlaygroundRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  playgroundPlaygroundRoute: typeof playgroundPlaygroundRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -386,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/document': {
       id: '/document'
       path: '/document'
@@ -400,18 +456,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EulaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/playground': {
-      id: '/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(playground)/playground': {
+      id: '/(playground)/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof playgroundPlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/forgetPassword': {
@@ -470,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTrashRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_auth/redirect/apple': {
+      id: '/_auth/redirect/apple'
+      path: '/redirect/apple'
+      fullPath: '/redirect/apple'
+      preLoaderRoute: typeof AuthRedirectAppleRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/redirect/error': {
       id: '/_auth/redirect/error'
       path: '/redirect/error'
@@ -477,11 +540,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRedirectErrorRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/redirect/github': {
+      id: '/_auth/redirect/github'
+      path: '/redirect/github'
+      fullPath: '/redirect/github'
+      preLoaderRoute: typeof AuthRedirectGithubRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/redirect/google': {
       id: '/_auth/redirect/google'
       path: '/redirect/google'
       fullPath: '/redirect/google'
       preLoaderRoute: typeof AuthRedirectGoogleRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/redirect/meta': {
+      id: '/_auth/redirect/meta'
+      path: '/redirect/meta'
+      fullPath: '/redirect/meta'
+      preLoaderRoute: typeof AuthRedirectMetaRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/redirect/x': {
@@ -568,8 +645,11 @@ interface AuthRouteChildren {
   AuthForgetPasswordRoute: typeof AuthForgetPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthRedirectAppleRoute: typeof AuthRedirectAppleRoute
   AuthRedirectErrorRoute: typeof AuthRedirectErrorRoute
+  AuthRedirectGithubRoute: typeof AuthRedirectGithubRoute
   AuthRedirectGoogleRoute: typeof AuthRedirectGoogleRoute
+  AuthRedirectMetaRoute: typeof AuthRedirectMetaRoute
   AuthRedirectXRoute: typeof AuthRedirectXRoute
 }
 
@@ -577,8 +657,11 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthForgetPasswordRoute: AuthForgetPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthRedirectAppleRoute: AuthRedirectAppleRoute,
   AuthRedirectErrorRoute: AuthRedirectErrorRoute,
+  AuthRedirectGithubRoute: AuthRedirectGithubRoute,
   AuthRedirectGoogleRoute: AuthRedirectGoogleRoute,
+  AuthRedirectMetaRoute: AuthRedirectMetaRoute,
   AuthRedirectXRoute: AuthRedirectXRoute,
 }
 
@@ -665,10 +748,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   AppRoute: AppRouteWithChildren,
+  DataDeletionRoute: DataDeletionRoute,
   DocumentRoute: DocumentRoute,
   EulaRoute: EulaRoute,
-  PlaygroundRoute: PlaygroundRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  playgroundPlaygroundRoute: playgroundPlaygroundRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

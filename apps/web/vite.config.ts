@@ -9,7 +9,7 @@ import sqlocal from "sqlocal/vite";
 import { defineConfig, loadEnv, transformWithOxc } from "vite";
 import { getCrossOriginIsolationHeaders } from "../../shared/lib/browser/crossOriginIsolation";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const webRoot = dirname(fileURLToPath(import.meta.url));
   const repositoryRoot = resolve(webRoot, "../..");
   const env = loadEnv(mode, webRoot, "");
@@ -160,6 +160,10 @@ export default defineConfig(({ mode }) => {
         srcDirectory: "src",
         router: {
           routesDirectory: "routes",
+          routeFileIgnorePattern:
+            command === "build" || mode === "production"
+              ? "^\\(.+\\)$"
+              : undefined,
         },
       }),
       viteReact(),

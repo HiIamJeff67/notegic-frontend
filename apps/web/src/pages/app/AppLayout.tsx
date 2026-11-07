@@ -12,6 +12,7 @@ import { RealtimeProvider } from "@/providers/RealtimeProvider";
 import { SettingsDisplayProvider } from "@/providers/SettingsDisplayProvider";
 import { ShelfItemProvider } from "@/providers/ShelfItemProvider/ShelfItemProvider";
 import { StationRoutineProvider } from "@/providers/StationRoutineProvider/StationRoutineProvider";
+import { OAuthProvider } from "@/providers/OAuthProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import { UserProvider } from "@/providers/UserProvider";
 import { UserSettingsProvider } from "@/providers/UserSettingsProvider";
@@ -21,29 +22,31 @@ export default function AppLayout() {
     <MaterialAttachmentCacheProvider>
       <TransactionSynchronizerProvider>
         <UserProvider autoFetchUserData>
-          <UserSettingsProvider>
-            <RealtimeProvider>
-              <BackgroundImagesProvider>
-                <DndProvider backend={HTML5Backend}>
-                  <SidebarProvider>
-                    <ShelfItemProvider>
-                      <StationRoutineProvider>
-                        <ModalProvider>
-                          <SettingsDisplayProvider>
-                            <AppUtilitiesWrapper>
-                              <Outlet />
-                            </AppUtilitiesWrapper>
-                            <SettingsSheet />
-                            <StationRoutineInspectorHost />
-                          </SettingsDisplayProvider>
-                        </ModalProvider>
-                      </StationRoutineProvider>
-                    </ShelfItemProvider>
-                  </SidebarProvider>
-                </DndProvider>
-              </BackgroundImagesProvider>
-            </RealtimeProvider>
-          </UserSettingsProvider>
+          <OAuthProvider>
+            <UserSettingsProvider>
+              <RealtimeProvider>
+                <BackgroundImagesProvider>
+                  <DndProvider backend={HTML5Backend}>
+                    <SidebarProvider>
+                      <ShelfItemProvider>
+                        <StationRoutineProvider>
+                          <ModalProvider>
+                            <SettingsDisplayProvider>
+                              <AppUtilitiesWrapper>
+                                <Outlet />
+                              </AppUtilitiesWrapper>
+                              <SettingsSheet />
+                              <StationRoutineInspectorHost />
+                            </SettingsDisplayProvider>
+                          </ModalProvider>
+                        </StationRoutineProvider>
+                      </ShelfItemProvider>
+                    </SidebarProvider>
+                  </DndProvider>
+                </BackgroundImagesProvider>
+              </RealtimeProvider>
+            </UserSettingsProvider>
+          </OAuthProvider>
         </UserProvider>
       </TransactionSynchronizerProvider>
     </MaterialAttachmentCacheProvider>

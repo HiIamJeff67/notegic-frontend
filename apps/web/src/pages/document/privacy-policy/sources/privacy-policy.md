@@ -31,15 +31,13 @@ We do not sell your personal data. We may share data with third-party services, 
 
 ## 4. Data retention {#privacy-retention}
 
-We retain your data while your account is active. You may request deletion at any time by contacting us.
-
-> When you delete content or close your account, we will remove it from active systems within a reasonable period, subject to backups, fraud prevention, dispute resolution, and other legal obligations. Backups may remain for a limited time before they are safely overwritten.
+We retain data while your account is active. See [Copies and retention](/data-deletion#data-deletion-retention) for what happens after deletion and which copies may remain.
 
 ## 5. Your rights {#privacy-rights}
 
-You may access, correct, or delete your personal data. Contact us at [{{contactEmail}}](mailto:{{contactEmail}}).
+You may access, correct, or delete your personal data. See [Data deletion](/data-deletion) for account and provider data removal, or contact us at [{{contactEmail}}](mailto:{{contactEmail}}).
 
-> Depending on applicable law, you may also ask us to explain how your data is used, object to certain processing, request a portable copy, or withdraw consent where consent is the basis. We may ask you to verify your identity before fulfilling a request, and some requests may be limited by legal or security obligations. Contact us with the account email and a clear description of what you want changed.
+> Depending on applicable law, you may also ask us to explain how your data is used, object to certain processing, request a portable copy, or withdraw consent where consent is the basis. Some requests may be limited by legal or security obligations. See [How to request deletion](/data-deletion#data-deletion-request) for the information we need to verify your request.
 
 ## 6. Cookies {#privacy-cookies}
 
