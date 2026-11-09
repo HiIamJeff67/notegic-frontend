@@ -52,7 +52,7 @@ createRoot(document.getElementById('root')).render(
 `;
 
 const mocks: Record<string, string> = {
-  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle'});`,
+  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle', location:{pathname:'/'}});`,
   "@/hooks": `
     const userData = { publicId: 'user-1' };
     const router = { refresh: () => window.state.refreshes++ };

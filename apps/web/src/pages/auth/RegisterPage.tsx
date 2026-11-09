@@ -21,7 +21,7 @@ import { useOAuth } from "@/hooks/useOAuth";
 
 const RegisterPage = () => {
   const router = useAppRouter();
-  const { beginOAuth, githubAvailable, metaAvailable } = useOAuth();
+  const { beginOAuth, githubAvailable, xAvailable } = useOAuth();
   const { t } = useTranslation();
   const userManager = useUser();
 
@@ -189,16 +189,12 @@ const RegisterPage = () => {
               disabled:
                 !githubAvailable || (turnstileRequired && !turnstileToken),
             },
-            ...(metaAvailable
-              ? [
-                  {
-                    provider: "meta" as const,
-                    label: t("workspace.pages.metaRegister"),
-                    onClick: () => beginOAuth("meta", "register"),
-                    disabled: turnstileRequired && !turnstileToken,
-                  },
-                ]
-              : []),
+            {
+              provider: "x",
+              label: t("workspace.pages.xRegister"),
+              onClick: () => beginOAuth("x", "register"),
+              disabled: !xAvailable || (turnstileRequired && !turnstileToken),
+            },
           ]}
           statusDetail={t("workspace.pages.systemReady")}
           isLoading={isRegisterPending}

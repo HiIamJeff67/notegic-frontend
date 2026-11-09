@@ -43,7 +43,6 @@ const mocks: Record<string, string> = {
   "@/api/hooks/user.hook": `const querier = { fetch: async () => ({ data: { publicId: 'new-session' } }) };
     export const useGetUserData = () => querier; export const useGetMe = () => querier;`,
   "@/api/hooks/userInfo.hook": `export const useGetMyInfo = () => ({ fetch: async () => ({ data: {} }) });`,
-  "@/api/hooks/userAccount.hook": `export const useGetMyAccount = () => ({ fetch: async () => ({ data: {} }) });`,
   "@/api/hooks/userQuota.hook": `const querier = { fetch: async () => ({ data: {} }) }; export const useGetMyQuota = () => querier;`,
   "@/hooks/useTranslation": `const t = key => key; export const useTranslation = () => ({ t });`,
   "@shared/lib/toast/toast": `export default { error: message => window.state.messages.push(message) };`,

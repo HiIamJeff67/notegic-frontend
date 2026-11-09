@@ -21,11 +21,16 @@ export const EnglishServerTranslation = {
     ResponseReadFailed: "The sign-in provider returned an unreadable response.",
     InvalidResponse: "The sign-in provider returned an invalid response.",
     WrongPassword: "The password is incorrect.",
-    MetaAccountNotLinked:
-      "Sign in to Notegic using another method, then link Facebook in account settings.",
-    MetaCredentialAlreadyBound: "A Facebook account is already linked.",
-    MetaEmailRequired:
-      "Allow Facebook to share a valid email address to create your Notegic account.",
+    XAccountNotLinked:
+      "An existing Notegic account uses the email address from X. Sign in with your usual method, then link X in Account settings.",
+    XEmailRequired:
+      "To create a Notegic account with X, confirm your email address on X, then allow Notegic to access it when you try again.",
+    GoogleCredentialAlreadyBound:
+      "Your Notegic account already has a Google account linked.",
+    GithubCredentialAlreadyBound:
+      "Your Notegic account already has a GitHub account linked.",
+    XCredentialAlreadyBound:
+      "Your Notegic account already has a X account linked.",
     WrongAuthCode: "The verification code is incorrect.",
     LoginBlockedDueToTryingTooManyTimes:
       "Too many sign-in attempts. Please try again later.",

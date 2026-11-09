@@ -3,9 +3,10 @@ import LoadingIndicator from "./LoadingIndicator";
 
 interface AppLoadingCoverProps {
   isLoading: boolean;
+  label?: string;
 }
 
-const AppLoadingCover = ({ isLoading }: AppLoadingCoverProps) => {
+const AppLoadingCover = ({ isLoading, label }: AppLoadingCoverProps) => {
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = "hidden";
@@ -28,7 +29,7 @@ const AppLoadingCover = ({ isLoading }: AppLoadingCoverProps) => {
       className="fixed inset-0 z-9999 flex cursor-wait items-center justify-center bg-overlay backdrop-blur-sm"
       style={{ pointerEvents: "auto" }}
     >
-      <LoadingIndicator />
+      <LoadingIndicator label={label} />
     </div>
   );
 };

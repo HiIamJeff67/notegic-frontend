@@ -21,13 +21,13 @@ jest.mock(
   { virtual: true }
 );
 
-import { readAPIResponse } from "./apiResponse.adapter";
+import { formatAPIResponse } from "./apiResponse.adapter";
 
 beforeEach(() => setResponseHeader.mockReset());
 
 test("retains renewal headers on an empty successful response", async () => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       new Response(null, {
         status: 204,
         headers: { "X-CSRF-Token": "fixture-renewed" },
@@ -43,7 +43,7 @@ test("retains renewal headers on an empty successful response", async () => {
 
 test("retains a non-JSON rate-limit renewal without swallowing the error", async () => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       new Response("Limited", {
         status: 429,
         headers: { "X-CSRF-Token": "fixture-renewed" },
@@ -60,7 +60,7 @@ test.each([
   401, 403, 500,
 ])("does not accept renewal headers on HTTP %s", async status => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       new Response("Rejected", {
         status,
         headers: { "X-CSRF-Token": "fixture-rejected" },
@@ -89,14 +89,14 @@ test("preserves cancellation while reading the response body", async () => {
     { headers: { "Content-Type": "application/json" } }
   );
 
-  await expect(readAPIResponse(response)).rejects.toBe(aborted);
+  await expect(formatAPIResponse(response)).rejects.toBe(aborted);
 });
 
 test.each(
   Array.from({ length: 200 }, (_, index) => index + 400)
 )("retains upstream HTTP %s on public errors", async status => {
   await expect(
-    readAPIResponse(Response.json({ exception: publicException }, { status }))
+    formatAPIResponse(Response.json({ exception: publicException }, { status }))
   ).rejects.toMatchObject({
     unWrap: {
       reason: publicException.reason,
@@ -126,7 +126,7 @@ test.each([
       status,
       headers: { "Content-Type": contentType },
     });
-    const error = await readAPIResponse(response).catch(error => error);
+    const error = await formatAPIResponse(response).catch(error => error);
 
     expect(error).toBeInstanceOf(NotegicAPIError);
     if (!(error instanceof NotegicAPIError)) throw error;
@@ -138,7 +138,7 @@ test.each([
 
 test("uses the HTTP status instead of a conflicting legacy body status without replacing its domain code", async () => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       Response.json(
         {
           exception: {
@@ -157,7 +157,7 @@ test("uses the HTTP status instead of a conflicting legacy body status without r
 
 test("retains a legacy application error carried by HTTP 200", async () => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       Response.json({
         exception: {
           code: 99000001,
@@ -181,19 +181,23 @@ test.each([
     refreshableTokens: { newCSRFToken: "fixture" },
   };
   await expect(
-    readAPIResponse(Response.json(body, { status }))
+    formatAPIResponse(Response.json(body, { status }))
   ).resolves.toEqual(body);
 });
 
 test("rejects a malformed successful response with a safe protocol error", async () => {
   await expect(
-    readAPIResponse(
+    formatAPIResponse(
       new Response("private malformed JSON", {
         headers: { "Content-Type": "application/json" },
       })
     )
   ).rejects.toMatchObject({
-    unWrap: { status: 500, reason: "InternalServerError" },
+    unWrap: {
+      status: 500,
+      reason: "InternalServerError",
+      message: "Unable to format the API response.",
+    },
   });
 });
 
@@ -207,7 +211,7 @@ test.each([
   retryable,
   retry,
 }) => {
-  const error = await readAPIResponse(
+  const error = await formatAPIResponse(
     Response.json({ exception: { ...publicException, retryable } }, { status })
   ).catch(error => error);
   const client = createQueryClient();
@@ -236,7 +240,7 @@ test.each([
     },
     { status }
   );
-  await readAPIResponse(response).catch(() => undefined);
+  await formatAPIResponse(response).catch(() => undefined);
   expect(setResponseHeader).toHaveBeenCalledWith(
     "X-CSRF-Token",
     "fixture-renewal"
@@ -246,7 +250,7 @@ test.each([
 test.each([
   401, 403, 500, 502, 503,
 ])("never forwards refresh metadata on HTTP %s", async status => {
-  await readAPIResponse(
+  await formatAPIResponse(
     Response.json(
       {
         exception: publicException,
@@ -266,7 +270,7 @@ test.each([
   { newCSRFToken: " " },
   { newCSRFToken: 7 },
 ])("ignores malformed refresh metadata: %j", async refreshableTokens => {
-  await readAPIResponse(
+  await formatAPIResponse(
     Response.json({
       success: true,
       data: {},

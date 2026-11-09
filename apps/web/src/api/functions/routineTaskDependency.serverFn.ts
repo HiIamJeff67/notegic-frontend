@@ -13,7 +13,7 @@ import type {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
@@ -49,7 +49,7 @@ export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
         credentials: "include",
       });
       forwardUpstreamSetCookies(response);
-      return (await readAPIResponse(
+      return (await formatAPIResponse(
         response
       )) as UpdateRoutineTaskGraphByRoutineIdResponse;
     }
@@ -88,7 +88,7 @@ export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetRoutineTaskDependenciesByRoutineIdResponse;
 
@@ -130,7 +130,7 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as CreateRoutineTaskDependencyByRoutineIdResponse;
 
@@ -172,7 +172,7 @@ export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpdateRoutineTaskDependencyByRoutineIdResponse;
 
@@ -214,7 +214,7 @@ export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteRoutineTaskDependencyByRoutineIdResponse;
 

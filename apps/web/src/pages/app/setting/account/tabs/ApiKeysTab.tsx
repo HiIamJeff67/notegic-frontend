@@ -1,3 +1,4 @@
+import { useNetwork } from "@/hooks/useNetwork";
 import type {
   APIKeySummary,
   CreateMyAPIKeyResponse,
@@ -53,12 +54,14 @@ const APIKeyRow = ({
   apiKey,
   onRevoke,
   isRevoking,
+  offlineHint,
   neverLabel,
   labels,
 }: {
   apiKey: APIKeySummary;
   onRevoke: (apiKey: APIKeySummary) => void;
   isRevoking: boolean;
+  offlineHint?: string;
   neverLabel: string;
   labels: {
     created: string;
@@ -93,14 +96,14 @@ const APIKeyRow = ({
         </div>
       </AccordionTrigger>
       <AccordionContent>
-        <div className="flex justify-end">
+        <div className="flex justify-end" title={offlineHint}>
           {!isRevoked && (
             <Button
               type="button"
               size="sm"
               variant="outline"
               className="text-destructive hover:text-destructive"
-              disabled={isRevoking}
+              disabled={isRevoking || Boolean(offlineHint)}
               onClick={() => onRevoke(apiKey)}
             >
               {isRevoking ? (
@@ -144,6 +147,10 @@ const APIKeyRow = ({
 
 const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
   const { t } = useTranslation();
+  const { isOnline } = useNetwork();
+  const offlineHint = isOnline
+    ? undefined
+    : t("workspace.pages.accountOffline");
   const listQuery = useMyAPIKeys(enabled);
   const createMutation = useCreateMyAPIKey();
   const revokeMutation = useRevokeMyAPIKey();
@@ -165,6 +172,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isOnline) return;
     try {
       const response = await createMutation.mutateAsync({
         body: {
@@ -193,7 +201,10 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
   };
 
   const handleRevoke = async (apiKey: APIKeySummary) => {
-    if (!window.confirm(t("settingsPage.account.apiKeys.revokeConfirm"))) {
+    if (
+      !isOnline ||
+      !window.confirm(t("settingsPage.account.apiKeys.revokeConfirm"))
+    ) {
       return;
     }
     try {
@@ -223,9 +234,15 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
         title={t("settingsPage.account.apiKeys.createTitle")}
         description={t("settingsPage.account.apiKeys.createDescription")}
       >
-        <Button type="button" onClick={() => setCreateOpen(true)}>
-          {t("settingsPage.account.apiKeys.create")}
-        </Button>
+        <span className="inline-flex" title={offlineHint}>
+          <Button
+            type="button"
+            disabled={!isOnline}
+            onClick={() => setCreateOpen(true)}
+          >
+            {t("settingsPage.account.apiKeys.create")}
+          </Button>
+        </span>
       </SettingMenuItem>
 
       <div className="space-y-3">
@@ -237,12 +254,14 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
             <Loader2Icon className="size-4 animate-spin" />
           )}
         </div>
-        {listQuery.isLoading ? (
+        {!isOnline && !listQuery.data ? (
+          <p className="text-sm text-muted-foreground">{offlineHint}</p>
+        ) : listQuery.isLoading ? (
           <div className="space-y-3">
             <Skeleton className="h-32 w-full" />
             <Skeleton className="h-32 w-full" />
           </div>
-        ) : listQuery.isError ? (
+        ) : listQuery.isError && !listQuery.data ? (
           <div className="rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
             {tError(listQuery.error, t)}
           </div>
@@ -262,6 +281,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
                 key={apiKey.publicId}
                 apiKey={apiKey}
                 onRevoke={handleRevoke}
+                offlineHint={offlineHint}
                 isRevoking={
                   revokeMutation.isPending &&
                   revokeMutation.variables?.param.publicId === apiKey.publicId
@@ -296,13 +316,19 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
               {t("settingsPage.account.apiKeys.createDescription")}
             </DialogDescription>
           </DialogHeader>
-          <form noValidate className="space-y-4" onSubmit={handleCreate}>
+          <form
+            noValidate
+            className="space-y-4"
+            onSubmit={handleCreate}
+            title={offlineHint}
+          >
             <div className="space-y-2">
               <Label htmlFor="api-key-name">
                 {t("settingsPage.account.apiKeys.nameLabel")}
               </Label>
               <Input
                 id="api-key-name"
+                disabled={!isOnline}
                 value={name}
                 onChange={event => setName(event.target.value)}
                 placeholder={t("settingsPage.account.apiKeys.namePlaceholder")}
@@ -317,6 +343,7 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
               </Label>
               <DatePicker
                 id="api-key-expires"
+                isDisabled={!isOnline}
                 value={expiresAt}
                 onValueChange={setExpiresAt}
                 placeholder={neverLabel}
@@ -335,7 +362,10 @@ const ApiKeysTab = ({ layout = "panel", enabled = true }: ApiKeysTabProps) => {
               >
                 {t("common.cancel")}
               </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={!isOnline || createMutation.isPending}
+              >
                 {createMutation.isPending && (
                   <Loader2Icon className="animate-spin" />
                 )}

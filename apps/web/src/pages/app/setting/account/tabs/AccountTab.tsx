@@ -1,3 +1,4 @@
+import { useNetwork } from "@/hooks/useNetwork";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
 import { User, UserSchema } from "@shared/api/interfaces/types/user.type";
@@ -40,6 +41,7 @@ interface AccountTabProps {
 const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
   const loadingManager = useLoading();
   const { i18n, t } = useTranslation();
+  const { isOnline } = useNetwork();
   const userManager = useUser();
   const updateMeMutator = useUpdateMe();
 
@@ -253,7 +255,11 @@ const AccountTab = memo(({ layout = "panel" }: AccountTabProps) => {
                   title={t("settingsPage.account.fields.status")}
                 >
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      disabled={!isOnline}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue
                           placeholder={t(

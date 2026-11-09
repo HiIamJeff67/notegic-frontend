@@ -17,7 +17,7 @@ export interface AppRouterActionsContextType {
   getPrevPaths: () => string[];
   push: (path: string) => void;
   forceNavigate: (path: string) => void;
-  replace: (path: string) => void;
+  replace: (path: string) => Promise<void>;
   back: (steps?: number) => void;
   forward: (steps?: number) => void;
   refresh: () => void;
@@ -57,12 +57,10 @@ export const AppRouterProvider = ({
     return b[0] === "/" ? "/" + a === b : a === b;
   }, []);
 
-  const getCurrentPath = useCallback((): string => {
-    const searchParamsString = Object.keys(location.search).length
-      ? "?" + new URLSearchParams(location.search).toString()
-      : "";
-    return location.pathname + searchParamsString;
-  }, [location.pathname, location.search]);
+  const getCurrentPath = useCallback(
+    (): string => location.pathname + location.searchStr,
+    [location.pathname, location.searchStr]
+  );
 
   const getPrevPaths = useCallback((): string[] => {
     return [...prevPathsRef.current];
@@ -96,9 +94,9 @@ export const AppRouterProvider = ({
   );
 
   const replace = useCallback(
-    (path: string) => {
+    async (path: string) => {
       if (!isSamePath(getCurrentPath(), path)) {
-        void navigate({
+        await navigate({
           to: path.startsWith("/") ? path : `/${path}`,
           replace: true,
         });

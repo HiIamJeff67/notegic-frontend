@@ -26,10 +26,8 @@ import { Route as AppMaterialViewerRouteImport } from './routes/app.material-vie
 import { Route as AppRoutinesRouteImport } from './routes/app.routines'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AuthRedirectAppleRouteImport } from './routes/_auth.redirect.apple'
-import { Route as AuthRedirectErrorRouteImport } from './routes/_auth.redirect.error'
 import { Route as AuthRedirectGithubRouteImport } from './routes/_auth.redirect.github'
 import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
-import { Route as AuthRedirectMetaRouteImport } from './routes/_auth.redirect.meta'
 import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
 import { Route as AppBlockPackEditorIndexRouteImport } from './routes/app.block-pack-editor.index'
 import { Route as AppBlockPackEditorBlockPackIdRouteImport } from './routes/app.block-pack-editor.$blockPackId'
@@ -126,11 +124,6 @@ const AuthRedirectAppleRoute = AuthRedirectAppleRouteImport.update({
   path: '/redirect/apple',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthRedirectErrorRoute = AuthRedirectErrorRouteImport.update({
-  id: '/redirect/error',
-  path: '/redirect/error',
-  getParentRoute: () => AuthRoute,
-} as any)
 const AuthRedirectGithubRoute = AuthRedirectGithubRouteImport.update({
   id: '/redirect/github',
   path: '/redirect/github',
@@ -139,11 +132,6 @@ const AuthRedirectGithubRoute = AuthRedirectGithubRouteImport.update({
 const AuthRedirectGoogleRoute = AuthRedirectGoogleRouteImport.update({
   id: '/redirect/google',
   path: '/redirect/google',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthRedirectMetaRoute = AuthRedirectMetaRouteImport.update({
-  id: '/redirect/meta',
-  path: '/redirect/meta',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthRedirectXRoute = AuthRedirectXRouteImport.update({
@@ -222,10 +210,8 @@ export interface FileRoutesByFullPath {
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
-  '/redirect/error': typeof AuthRedirectErrorRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
-  '/redirect/meta': typeof AuthRedirectMetaRoute
   '/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -251,10 +237,8 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/app/trash': typeof AppTrashRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
-  '/redirect/error': typeof AuthRedirectErrorRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
-  '/redirect/meta': typeof AuthRedirectMetaRoute
   '/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -286,10 +270,8 @@ export interface FileRoutesById {
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/_auth/redirect/apple': typeof AuthRedirectAppleRoute
-  '/_auth/redirect/error': typeof AuthRedirectErrorRoute
   '/_auth/redirect/github': typeof AuthRedirectGithubRoute
   '/_auth/redirect/google': typeof AuthRedirectGoogleRoute
-  '/_auth/redirect/meta': typeof AuthRedirectMetaRoute
   '/_auth/redirect/x': typeof AuthRedirectXRoute
   '/app/block-pack-editor/$blockPackId': typeof AppBlockPackEditorBlockPackIdRoute
   '/app/material-viewer/$materialId': typeof AppMaterialViewerMaterialIdRoute
@@ -321,10 +303,8 @@ export interface FileRouteTypes {
     | '/app/routines'
     | '/app/trash'
     | '/redirect/apple'
-    | '/redirect/error'
     | '/redirect/github'
     | '/redirect/google'
-    | '/redirect/meta'
     | '/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -350,10 +330,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/app/trash'
     | '/redirect/apple'
-    | '/redirect/error'
     | '/redirect/github'
     | '/redirect/google'
-    | '/redirect/meta'
     | '/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -384,10 +362,8 @@ export interface FileRouteTypes {
     | '/app/routines'
     | '/app/trash'
     | '/_auth/redirect/apple'
-    | '/_auth/redirect/error'
     | '/_auth/redirect/github'
     | '/_auth/redirect/google'
-    | '/_auth/redirect/meta'
     | '/_auth/redirect/x'
     | '/app/block-pack-editor/$blockPackId'
     | '/app/material-viewer/$materialId'
@@ -533,13 +509,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRedirectAppleRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/redirect/error': {
-      id: '/_auth/redirect/error'
-      path: '/redirect/error'
-      fullPath: '/redirect/error'
-      preLoaderRoute: typeof AuthRedirectErrorRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/redirect/github': {
       id: '/_auth/redirect/github'
       path: '/redirect/github'
@@ -552,13 +521,6 @@ declare module '@tanstack/react-router' {
       path: '/redirect/google'
       fullPath: '/redirect/google'
       preLoaderRoute: typeof AuthRedirectGoogleRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/redirect/meta': {
-      id: '/_auth/redirect/meta'
-      path: '/redirect/meta'
-      fullPath: '/redirect/meta'
-      preLoaderRoute: typeof AuthRedirectMetaRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/redirect/x': {
@@ -646,10 +608,8 @@ interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthRedirectAppleRoute: typeof AuthRedirectAppleRoute
-  AuthRedirectErrorRoute: typeof AuthRedirectErrorRoute
   AuthRedirectGithubRoute: typeof AuthRedirectGithubRoute
   AuthRedirectGoogleRoute: typeof AuthRedirectGoogleRoute
-  AuthRedirectMetaRoute: typeof AuthRedirectMetaRoute
   AuthRedirectXRoute: typeof AuthRedirectXRoute
 }
 
@@ -658,10 +618,8 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthRedirectAppleRoute: AuthRedirectAppleRoute,
-  AuthRedirectErrorRoute: AuthRedirectErrorRoute,
   AuthRedirectGithubRoute: AuthRedirectGithubRoute,
   AuthRedirectGoogleRoute: AuthRedirectGoogleRoute,
-  AuthRedirectMetaRoute: AuthRedirectMetaRoute,
   AuthRedirectXRoute: AuthRedirectXRoute,
 }
 

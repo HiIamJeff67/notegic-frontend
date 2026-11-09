@@ -2,25 +2,17 @@ import {
   OAuthAppleIcon,
   OAuthGithubIcon,
   OAuthGoogleIcon,
-  OAuthMetaIcon,
+  OAuthXIcon,
 } from "@/components/icons/OAuthIcon";
 import "@/global/styles/panel.css";
 import { useTranslation } from "@/hooks/useTranslation";
 import { type ReactNode } from "react";
 import { useTheme } from "@/hooks/useTheme";
 
-function toCamelCase(str: string): string {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    })
-    .replace(/\s+/g, "");
-}
-
 const OAuthIcons = {
   google: (className: string) => <OAuthGoogleIcon className={className} />,
-  meta: (className: string) => <OAuthMetaIcon className={className} />,
   github: (className: string) => <OAuthGithubIcon className={className} />,
+  x: (className: string) => <OAuthXIcon className={className} />,
   apple: (className: string) => <OAuthAppleIcon className={className} />,
 };
 
@@ -137,9 +129,7 @@ const AuthPanel = ({
                 : "text-gray-700"
             } text-center mb-8 tracking-wider`}
           >
-            {subtitle
-              ? subtitle
-              : `Authentication panel for ${toCamelCase(title)}`}
+            {subtitle ?? `Authentication panel for ${title}`}
           </div>
 
           <form
@@ -267,8 +257,8 @@ const AuthPanel = ({
                     onClick={button.onClick}
                     disabled={button.disabled || isLoading}
                     className={`
-                            group relative w-full flex items-center justify-center gap-4
-                            px-4 py-3 rounded border
+                            group flex w-full items-center justify-center
+                            px-4 py-3 rounded border text-left
                             font-mono text-sm leading-normal tracking-wider font-bold
                             transition-all duration-300
                             ${
@@ -280,18 +270,17 @@ const AuthPanel = ({
                             disabled:opacity-50 disabled:cursor-not-allowed
                         `}
                   >
-                    {/* Icon Render */}
-                    <div className="w-5 h-5 transition-transform duration-300 group-hover:scale-110">
-                      {OAuthIcons[button.provider]
-                        ? OAuthIcons[button.provider]("w-full h-full")
-                        : null}
-                    </div>
-
-                    <span>{button.label}</span>
-
-                    {/* Hover Corner Accents (Mini styling detail) */}
-                    <div className="absolute top-0 right-0 w-1 h-1 bg-green-400/0 group-hover:bg-green-400/50 transition-colors"></div>
-                    <div className="absolute bottom-0 left-0 w-1 h-1 bg-green-400/0 group-hover:bg-green-400/50 transition-colors"></div>
+                    <span className="flex w-full max-w-56 min-w-0 items-center gap-4">
+                      <span
+                        aria-hidden="true"
+                        className="size-5 shrink-0 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-110"
+                      >
+                        {OAuthIcons[button.provider]("size-full")}
+                      </span>
+                      <span className="min-w-0 wrap-break-word">
+                        {button.label}
+                      </span>
+                    </span>
                   </button>
                 ))}
               </div>

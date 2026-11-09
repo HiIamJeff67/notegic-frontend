@@ -1,3 +1,14 @@
+import { NotegicAPIError } from "@shared/api/exceptions";
+import { NotegicError } from "@shared/api/exceptions/errors";
+import type {
+  GetMyAccountResponse,
+  PrepareOAuthOperationRequest,
+  PrepareOAuthOperationResponse,
+  UnbindGoogleAccountRequest,
+  UnbindGoogleAccountResponse,
+} from "@shared/api/interfaces/userAccount.interface";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
 import { tError } from "@shared/i18n/error";
 import {
   isPendingOAuthState,
@@ -11,7 +22,7 @@ import {
 } from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import { createContext, useCallback, useState, type ReactNode } from "react";
+import { createContext, useCallback, useRef, type ReactNode } from "react";
 import {
   getClientMutationHeaders,
   getClientRequestHeaders,
@@ -20,16 +31,18 @@ import {
   useLoginViaGoogle,
   useRegisterViaGoogle,
   useLoginViaGithub,
-  useLoginViaMeta,
-  useRegisterViaMeta,
+  useLoginViaX,
   useRegisterViaGithub,
+  useRegisterViaX,
 } from "@/api/hooks/auth.hook";
 import {
   useBindGoogleAccount,
   useBindGithubAccount,
-  useBindMetaAccount,
+  useBindXAccount,
+  usePrepareOAuthOperation,
   useUnbindGithubAccount,
-  useUnbindMetaAccount,
+  useUnbindGoogleAccount,
+  useUnbindXAccount,
 } from "@/api/hooks/userAccount.hook";
 import {
   clearTurnstileToken,
@@ -37,9 +50,12 @@ import {
   isTurnstileEnabled,
 } from "@/api/turnstile";
 import { useAppRouter, useUser } from "@/hooks";
+import { useLoading } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
+
+const localXStatePrefix = "localhost.";
 
 const configuredOAuthStateTtlMs = Number.parseInt(
   import.meta.env.VITE_OAUTH_STATE_TTL_MS ?? "",
@@ -48,20 +64,31 @@ const configuredOAuthStateTtlMs = Number.parseInt(
 const oauthStateTtlMs =
   configuredOAuthStateTtlMs > 0 ? configuredOAuthStateTtlMs : 5 * 60 * 1000;
 
-export type OAuthProviderName = "google" | "github" | "meta";
+export type OAuthProviderName = "google" | "github" | "x";
+
+type VerifiedOAuthOperation = {
+  state: string;
+  codeChallenge: string;
+};
 
 type OAuthContextValue = {
+  prepareOAuthOperation: (
+    body: PrepareOAuthOperationRequest["body"]
+  ) => Promise<PrepareOAuthOperationResponse>;
+  isPreparingOAuthOperation: boolean;
   beginOAuth: (
     provider: OAuthProviderName,
-    action: OAuthAction
+    action: OAuthAction,
+    operation?: VerifiedOAuthOperation
   ) => Promise<void>;
   completeOAuth: (provider: string, search: string) => Promise<void>;
-  unbindOAuth: (provider: "github" | "meta", authCode: string) => Promise<void>;
+  unbindOAuth: (
+    provider: OAuthProviderName,
+    body: UnbindGoogleAccountRequest["body"]
+  ) => Promise<UnbindGoogleAccountResponse>;
   githubAvailable: boolean;
-  metaAvailable: boolean;
+  xAvailable: boolean;
   isUnbinding: boolean;
-  loadingPhase: "validating" | "redirecting";
-  returnToHome: () => void;
 };
 
 export const OAuthContext = createContext<OAuthContextValue | undefined>(
@@ -73,6 +100,7 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
   const { preferences } = useLocalPreferences();
   const userManager = useUser();
+  const { startAsyncTransactionLoading } = useLoading();
 
   const registerViaGoogleMutator = useRegisterViaGoogle();
   const loginViaGoogleMutator = useLoginViaGoogle();
@@ -80,18 +108,61 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const registerViaGithubMutator = useRegisterViaGithub();
   const loginViaGithubMutator = useLoginViaGithub();
   const bindGithubAccountMutator = useBindGithubAccount();
-  const loginViaMetaMutator = useLoginViaMeta();
-  const registerViaMetaMutator = useRegisterViaMeta();
-  const bindMetaAccountMutator = useBindMetaAccount();
-  const [loadingPhase, setLoadingPhase] = useState<
-    "validating" | "redirecting"
-  >("validating");
+  const registerViaXMutator = useRegisterViaX();
+  const loginViaXMutator = useLoginViaX();
+  const bindXAccountMutator = useBindXAccount();
 
+  const lastCallback = useRef<{
+    provider: string;
+    state: string | null;
+  } | null>(null);
+
+  const prepareOAuthOperationMutator = usePrepareOAuthOperation();
+  const unbindGoogleMutator = useUnbindGoogleAccount();
   const unbindGithubMutator = useUnbindGithubAccount();
-  const unbindMetaMutator = useUnbindMetaAccount();
-  const metaAvailable = Boolean(
-    import.meta.env.VITE_OAUTH_META_CLIENT_ID &&
-      import.meta.env.VITE_OAUTH_META_REDIRECT_URL
+  const unbindXMutator = useUnbindXAccount();
+
+  const unbindOAuth = useCallback(
+    async (
+      provider: OAuthProviderName,
+      body: UnbindGoogleAccountRequest["body"]
+    ) => {
+      const mutator =
+        provider === "google"
+          ? unbindGoogleMutator
+          : provider === "github"
+            ? unbindGithubMutator
+            : unbindXMutator;
+      const response = await mutator.mutateAsync({
+        header: getClientMutationHeaders(navigator.userAgent),
+        body,
+      });
+      if (response.data.verificationRequired) return response;
+
+      const queryClient = getQueryClient();
+      const queryKey = queryKeys.userAccount.my();
+      queryClient.setQueryData<GetMyAccountResponse>(queryKey, current =>
+        current
+          ? {
+              ...current,
+              data: {
+                ...current.data,
+                [`${provider}Bound`]: false,
+                registeredAuthProviderType:
+                  response.data.fallbackProvider ??
+                  current.data.registeredAuthProviderType,
+                oauthFallbackProviders:
+                  current.data.oauthFallbackProviders?.filter(
+                    candidate => candidate.toLowerCase() !== provider
+                  ),
+              },
+            }
+          : undefined
+      );
+      void queryClient.invalidateQueries({ queryKey });
+      return response;
+    },
+    [unbindGoogleMutator, unbindGithubMutator, unbindXMutator]
   );
 
   const performOAuthAction = useCallback(
@@ -99,6 +170,7 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
       provider: OAuthProviderName,
       action: OAuthAction,
       code: string,
+      state: string,
       codeVerifier?: string
     ): Promise<void> => {
       const turnstileToken = action === "binding" ? null : getTurnstileToken();
@@ -110,60 +182,52 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         switch (action) {
           case "register": {
-            if (provider === "github") {
-              await registerViaGithubMutator.mutateAsync({
+            if (provider !== "google") {
+              const mutator =
+                provider === "github"
+                  ? registerViaGithubMutator
+                  : registerViaXMutator;
+              await mutator.mutateAsync({
                 header,
                 body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            } else if (provider === "meta") {
-              await registerViaMetaMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code },
               });
             } else {
               await registerViaGoogleMutator.mutateAsync({
                 header,
-                body: { authorizationCode: code },
+                body: { authorizationCode: code, codeVerifier: codeVerifier! },
               });
             }
             return;
           }
           case "login": {
-            if (provider === "github") {
-              await loginViaGithubMutator.mutateAsync({
+            if (provider !== "google") {
+              const mutator =
+                provider === "github"
+                  ? loginViaGithubMutator
+                  : loginViaXMutator;
+              await mutator.mutateAsync({
                 header,
                 body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            } else if (provider === "meta") {
-              await loginViaMetaMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code },
               });
             } else {
               await loginViaGoogleMutator.mutateAsync({
                 header,
-                body: { authorizationCode: code },
+                body: { authorizationCode: code, codeVerifier: codeVerifier! },
               });
             }
             return;
           }
           case "binding": {
-            if (provider === "github") {
-              await bindGithubAccountMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            } else if (provider === "meta") {
-              await bindMetaAccountMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code },
-              });
-            } else {
-              await bindGoogleAccountMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code },
-              });
-            }
+            const mutator =
+              provider === "google"
+                ? bindGoogleAccountMutator
+                : provider === "github"
+                  ? bindGithubAccountMutator
+                  : bindXAccountMutator;
+            await mutator.mutateAsync({
+              header,
+              body: { authorizationCode: code, state },
+            });
             return;
           }
         }
@@ -178,178 +242,189 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
       loginViaGoogleMutator,
       registerViaGoogleMutator,
       bindGithubAccountMutator,
+      bindXAccountMutator,
       loginViaGithubMutator,
+      loginViaXMutator,
       registerViaGithubMutator,
-      bindMetaAccountMutator,
-      loginViaMetaMutator,
-      registerViaMetaMutator,
+      registerViaXMutator,
     ]
   );
 
   const completeOAuth = useCallback(
     async (provider: string, search: string) => {
-      setLoadingPhase("validating");
       const searchParams = new URLSearchParams(search);
       const code = searchParams.get("code");
       const error = searchParams.get("error");
       const state = searchParams.get("state");
-
-      const now = Date.now();
-      const pending: unknown = SessionStorage.getItemByKey(
-        SessionStorageKey.pendingOAuthState
-      );
-      SessionStorage.removeItem(SessionStorageKey.pendingOAuthState);
-
       if (
-        provider !== "google" &&
-        provider !== "github" &&
-        provider !== "meta"
+        lastCallback.current?.provider === provider &&
+        lastCallback.current.state === state
       ) {
-        router.push(
-          WebURLPathDictionary.auth.redirect.error(
-            t("workspace.pages.redirectError"),
-            provider === "apple"
-              ? t("workspace.pages.appleRedirectUnavailable")
-              : t("workspace.pages.xRedirectUnavailable")
-          )
-        );
         return;
       }
+      lastCallback.current = { provider, state };
 
       if (
-        !isPendingOAuthState(pending) ||
-        (pending.provider ?? "google") !== provider ||
-        state === null ||
-        !oauthStatePattern.test(state) ||
-        state !== pending.state ||
-        pending.createdAt > now ||
-        now - pending.createdAt > oauthStateTtlMs
+        import.meta.env.DEV &&
+        provider === "x" &&
+        window.location.hostname === "127.0.0.1" &&
+        window.location.origin + window.location.pathname ===
+          import.meta.env.VITE_OAUTH_X_REDIRECT_URL &&
+        state?.startsWith(localXStatePrefix)
       ) {
-        toast.error(
-          t(
-            provider === "github"
-              ? "workspace.notifications.githubAuthError"
-              : provider === "meta"
-                ? "workspace.notifications.metaAuthError"
-                : "workspace.notifications.googleAuthError",
-            {
-              error: t("error.encounterUnknownError"),
-            }
-          )
-        );
-        router.push(
-          WebURLPathDictionary.auth.redirect.error(
-            t(
-              provider === "github"
-                ? "workspace.pages.githubRedirectFailed"
-                : provider === "meta"
-                  ? "workspace.pages.metaRedirectFailed"
-                  : "workspace.pages.googleRedirectFailed"
-            ),
-            t("error.encounterUnknownError")
-          )
-        );
-        return;
-      }
-
-      try {
-        const { action } = pending;
-
-        if (error !== null) {
-          toast.error(
-            t(
-              provider === "github"
-                ? "workspace.notifications.githubAuthError"
-                : provider === "meta"
-                  ? "workspace.notifications.metaAuthError"
-                  : "workspace.notifications.googleAuthError",
-              {
-                error: error,
-              }
-            )
-          );
-          router.push(
-            WebURLPathDictionary.auth.redirect.error(
-              t(
-                provider === "github"
-                  ? "workspace.pages.githubAuthFailed"
-                  : provider === "meta"
-                    ? "workspace.pages.metaAuthFailed"
-                    : "workspace.pages.googleAuthFailed"
-              ),
-              tError(error, t)
-            )
-          );
+        const localState = state.slice(localXStatePrefix.length);
+        if (oauthStatePattern.test(localState)) {
+          // X requires the IP callback. The verifier and session stay on localhost.
+          const callback = new URL(window.location.href);
+          callback.hostname = "localhost";
+          callback.search = new URLSearchParams({
+            state: localState,
+          }).toString();
+          if (code) callback.searchParams.set("code", code);
+          if (error !== null) callback.searchParams.set("error", error);
+          window.location.replace(callback.toString());
           return;
         }
-
-        if (code === null) {
-          throw new Error("error.encounterUnknownError");
-        }
-
-        const turnstileEnabled = isTurnstileEnabled();
-        const turnstileToken = getTurnstileToken();
-        if (action !== "binding" && turnstileEnabled && !turnstileToken) {
-          throw new Error("auth.turnstileRequired");
-        }
-
-        await performOAuthAction(provider, action, code, pending.codeVerifier);
-        await userManager.fetchUserData();
-
-        setLoadingPhase("redirecting");
-        router.push(getPreferredStartPath(preferences));
-      } catch (error) {
-        toast.error(tError(error, t));
-        router.push(
-          WebURLPathDictionary.auth.redirect.error(
-            t(
-              provider === "github"
-                ? "workspace.pages.githubRedirectFailed"
-                : provider === "meta"
-                  ? "workspace.pages.metaRedirectFailed"
-                  : "workspace.pages.googleRedirectFailed"
-            ),
-            tError(error, t)
-          )
-        );
       }
+
+      await startAsyncTransactionLoading(async setLabel => {
+        const now = Date.now();
+        const pending: unknown = SessionStorage.getItemByKey(
+          SessionStorageKey.pendingOAuthState
+        );
+        const matchesAttempt =
+          isPendingOAuthState(pending) &&
+          (pending.provider ?? "google") === provider &&
+          state === pending.state;
+        if (matchesAttempt || !isPendingOAuthState(pending)) {
+          SessionStorage.removeItem(SessionStorageKey.pendingOAuthState);
+        }
+
+        try {
+          if (
+            provider !== "google" &&
+            provider !== "github" &&
+            provider !== "x"
+          ) {
+            throw new NotegicError().setPresentation(
+              "workspace.pages.appleRedirectUnavailable"
+            );
+          }
+
+          if (
+            !matchesAttempt ||
+            pending.createdAt > now ||
+            now - pending.createdAt > oauthStateTtlMs
+          ) {
+            throw new NotegicError().setPresentation(
+              "workspace.pages.oauthError.restart"
+            );
+          }
+
+          if (error !== null || !code) {
+            throw new NotegicError().setPresentation(
+              error === "access_denied"
+                ? "workspace.pages.oauthError.cancelled"
+                : error !== null
+                  ? "server.error.OAuthProviderUnavailable"
+                  : "workspace.pages.oauthError.missingCode"
+            );
+          }
+
+          if (
+            pending.action !== "binding" &&
+            isTurnstileEnabled() &&
+            !getTurnstileToken()
+          ) {
+            throw new NotegicError().setPresentation("auth.turnstileRequired");
+          }
+
+          await performOAuthAction(
+            provider,
+            pending.action,
+            code,
+            pending.state,
+            pending.codeVerifier
+          );
+          if (pending.action !== "binding") await userManager.fetchUserData();
+
+          setLabel(
+            t(
+              pending.action === "binding"
+                ? "common.loading"
+                : "workspace.pages.redirectingToDashboard"
+            )
+          );
+          await router.replace(
+            pending.action === "binding"
+              ? `${WebURLPathDictionary.app.setting.account}#binding`
+              : getPreferredStartPath(preferences)
+          );
+        } catch (error) {
+          let message = tError(error, t);
+          if (error instanceof NotegicAPIError) {
+            if (error.unWrap.reason === "WrongPassword") {
+              message = t("workspace.pages.oauthError.notLinked");
+            } else if (error.unWrap.reason === "OAuthVerificationRequired") {
+              message = t("settingsPage.account.binding.oauthVerifyAgain");
+            }
+          }
+          toast.error(
+            message === t("error.encounterUnknownError")
+              ? t("workspace.pages.oauthError.failed")
+              : message
+          );
+          setLabel(t("common.loading"));
+          await router.replace(
+            matchesAttempt && pending.action === "binding"
+              ? `${WebURLPathDictionary.app.setting.account}#binding`
+              : `${WebURLPathDictionary.auth.login}?oauthFailed=true`
+          );
+        }
+      });
     },
-    [router, preferences, t, userManager, performOAuthAction]
+    [
+      router,
+      preferences,
+      t,
+      userManager,
+      performOAuthAction,
+      startAsyncTransactionLoading,
+    ]
   );
 
   const beginOAuth = async (
     provider: OAuthProviderName,
-    action: OAuthAction
+    action: OAuthAction,
+    operation?: VerifiedOAuthOperation
   ) => {
     try {
-      if (provider === "meta" && !metaAvailable) {
-        throw new Error("error.encounterUnknownError");
-      }
       if (
         action !== "binding" &&
         isTurnstileEnabled() &&
         !getTurnstileToken()
       ) {
-        throw new Error("auth.turnstileRequired");
+        throw new NotegicError().setPresentation("auth.turnstileRequired");
       }
       const random = crypto.getRandomValues(new Uint8Array(64));
-      const state = Array.from(random.slice(0, 32), byte =>
-        byte.toString(16).padStart(2, "0")
-      ).join("");
+      if (action === "binding" && !operation) {
+        throw new NotegicError().setPresentation(
+          "workspace.pages.oauthError.restart"
+        );
+      }
+      const state =
+        operation?.state ??
+        Array.from(random.slice(0, 32), byte =>
+          byte.toString(16).padStart(2, "0")
+        ).join("");
       const pending: PendingOAuthState = {
         provider,
         state,
         action,
         createdAt: Date.now(),
       };
-      let authorizeURL: string;
-      if (provider === "github") {
-        if (
-          !import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID ||
-          !import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL
-        ) {
-          throw new Error("error.encounterUnknownError");
-        }
+      let codeChallenge = operation?.codeChallenge;
+      if (!codeChallenge) {
         pending.codeVerifier = Array.from(random.slice(32), byte =>
           byte.toString(16).padStart(2, "0")
         ).join("");
@@ -357,32 +432,50 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
           "SHA-256",
           new TextEncoder().encode(pending.codeVerifier)
         );
-        const codeChallenge = btoa(
-          String.fromCharCode(...new Uint8Array(digest))
-        )
+        codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
           .replace(/\+/g, "-")
           .replace(/\//g, "_")
           .replace(/=+$/, "");
-        authorizeURL = WebURLPathDictionary.oauth.github(
-          new URLSearchParams({
-            client_id: import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID,
-            redirect_uri: import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL,
-            scope: "user:email",
-            state,
-            code_challenge: codeChallenge,
-            code_challenge_method: "S256",
-          }).toString()
-        );
-      } else if (provider === "meta") {
-        authorizeURL = WebURLPathDictionary.oauth.meta(
-          new URLSearchParams({
-            client_id: import.meta.env.VITE_OAUTH_META_CLIENT_ID,
-            redirect_uri: import.meta.env.VITE_OAUTH_META_REDIRECT_URL,
-            response_type: "code",
-            scope: "public_profile,email",
-            state,
-          }).toString()
-        );
+      }
+
+      let authorizeURL: string;
+      if (provider !== "google") {
+        const clientId =
+          provider === "github"
+            ? import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+            : import.meta.env.VITE_OAUTH_X_CLIENT_ID;
+        const redirectURL =
+          provider === "github"
+            ? import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL
+            : import.meta.env.VITE_OAUTH_X_REDIRECT_URL;
+        if (!clientId || !redirectURL) {
+          throw new NotegicError().setPresentation(
+            "workspace.pages.oauthError.unavailable"
+          );
+        }
+        const callback = new URL(redirectURL);
+        const useLocalXCallback =
+          import.meta.env.DEV &&
+          provider === "x" &&
+          window.location.hostname === "localhost" &&
+          callback.hostname === "127.0.0.1" &&
+          callback.protocol === window.location.protocol &&
+          callback.port === window.location.port;
+        const params = new URLSearchParams({
+          client_id: clientId,
+          redirect_uri: redirectURL,
+          state: useLocalXCallback ? localXStatePrefix + state : state,
+          code_challenge: codeChallenge,
+          code_challenge_method: "S256",
+        });
+        if (provider === "github") {
+          params.set("scope", "user:email");
+          authorizeURL = WebURLPathDictionary.oauth.github(params.toString());
+        } else {
+          params.set("response_type", "code");
+          params.set("scope", "tweet.read users.read users.email");
+          authorizeURL = WebURLPathDictionary.oauth.x(params.toString());
+        }
       } else {
         authorizeURL = WebURLPathDictionary.oauth.google(
           new URLSearchParams({
@@ -394,27 +487,22 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
             scope:
               "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
             state,
+            code_challenge: codeChallenge,
+            code_challenge_method: "S256",
           }).toString()
         );
       }
       if (
         !SessionStorage.setItem(SessionStorageKey.pendingOAuthState, pending)
       ) {
-        throw new Error("error.encounterUnknownError");
+        throw new NotegicError().setPresentation(
+          "workspace.pages.oauthError.storage"
+        );
       }
       router.forceNavigate(authorizeURL);
     } catch (error) {
       toast.error(tError(error, t));
     }
-  };
-
-  const unbindOAuth = async (provider: "github" | "meta", authCode: string) => {
-    const mutator =
-      provider === "github" ? unbindGithubMutator : unbindMetaMutator;
-    await mutator.mutateAsync({
-      header: getClientMutationHeaders(navigator.userAgent),
-      body: { authCode },
-    });
   };
 
   return (
@@ -423,15 +511,24 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
         beginOAuth,
         completeOAuth,
         unbindOAuth,
+        prepareOAuthOperation: body =>
+          prepareOAuthOperationMutator.mutateAsync({
+            header: getClientMutationHeaders(navigator.userAgent),
+            body,
+          }),
+        isPreparingOAuthOperation: prepareOAuthOperationMutator.isPending,
         githubAvailable: Boolean(
           import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID &&
             import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL
         ),
-        metaAvailable,
+        xAvailable: Boolean(
+          import.meta.env.VITE_OAUTH_X_CLIENT_ID &&
+            import.meta.env.VITE_OAUTH_X_REDIRECT_URL
+        ),
         isUnbinding:
-          unbindGithubMutator.isPending || unbindMetaMutator.isPending,
-        loadingPhase,
-        returnToHome: () => router.push(WebURLPathDictionary.home),
+          unbindGoogleMutator.isPending ||
+          unbindGithubMutator.isPending ||
+          unbindXMutator.isPending,
       }}
     >
       {children}

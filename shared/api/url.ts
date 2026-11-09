@@ -14,6 +14,18 @@ export const CurrentRealtimeBaseURL =
   configuredRealtimeBaseURL ||
   (import.meta.env.PROD ? API_VERSION : `realtime/development/${API_VERSION}`);
 
+// Local callbacks use both loopback names, but browser auth cookies are host scoped.
+export const getBrowserLoopbackURL = (url: string): string => {
+  if (!import.meta.env.DEV || typeof window === "undefined") return url;
+  const host = window.location.hostname;
+  if (host !== "localhost" && host !== "127.0.0.1") return url;
+
+  return url.replace(
+    /^((?:https?|wss?):\/\/)(?:localhost|127\.0\.0\.1)(?=[:/]|$)/,
+    `$1${host}`
+  );
+};
+
 export const withoutPathParams = <T extends Record<string, unknown>>(
   body: T,
   ...keys: PropertyKey[]
@@ -28,11 +40,11 @@ export const APIURLPathDictionary = {
     register: "auth/register",
     registerViaGoogle: "auth/register-via-google",
     registerViaGithub: "auth/register-via-github",
-    registerViaMeta: "auth/register-via-meta",
+    registerViaX: "auth/register-via-x",
     login: "auth/login",
     loginViaGoogle: "auth/login-via-google",
     loginViaGithub: "auth/login-via-github",
-    loginViaMeta: "auth/login-via-meta",
+    loginViaX: "auth/login-via-x",
     logout: "auth/logout",
     sendAuthCode: "auth/send-auth-code",
     validateEmail: "auth/validate-email",
@@ -57,12 +69,13 @@ export const APIURLPathDictionary = {
   userAccount: {
     getMyAccount: "me/account",
     updatedMyAccount: "me/account",
+    prepareOAuthOperation: "me/account/oauth-operations",
     bindGoogleAccount: "me/account/google",
     bindGithubAccount: "me/account/github",
-    bindMetaAccount: "me/account/meta",
+    bindXAccount: "me/account/x",
     unbindGoogleAccount: "me/account/google",
     unbindGithubAccount: "me/account/github",
-    unbindMetaAccount: "me/account/meta",
+    unbindXAccount: "me/account/x",
   },
   userQuota: {
     getMyQuota: "me/quota/",
@@ -303,18 +316,19 @@ export const getRealtimeWebSocketURL = (endpoint?: string): string => {
   const url = import.meta.env.VITE_REALTIME_WEBSOCKET_URL;
   if (!url) throw new NotegicAPIError(RealtimeError.MissingWebSocketURL());
   const basePath = endpoint ?? CurrentRealtimeBaseURL;
-  return `${url.replace(/\/+$/, "")}/${basePath.replace(/^\/+/, "")}`;
+  return `${getBrowserLoopbackURL(url).replace(/\/+$/, "")}/${basePath.replace(/^\/+/, "")}`;
 };
 
 export const getRealtimeHTTPURL = (): string => {
   const configuredURL = import.meta.env.VITE_REALTIME_HTTP_URL?.trim();
-  if (configuredURL) return configuredURL.replace(/\/+$/, "");
+  if (configuredURL)
+    return getBrowserLoopbackURL(configuredURL).replace(/\/+$/, "");
 
   const websocketURL = import.meta.env.VITE_REALTIME_WEBSOCKET_URL?.trim();
   if (!websocketURL)
     throw new NotegicAPIError(RealtimeError.MissingWebSocketURL());
 
-  return websocketURL
+  return getBrowserLoopbackURL(websocketURL)
     .replace(/^wss:/, "https:")
     .replace(/^ws:/, "http:")
     .replace(/\/+$/, "");

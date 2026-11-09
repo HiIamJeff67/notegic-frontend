@@ -47,7 +47,7 @@ createRoot(document.getElementById('root')).render(<LoadingProvider><Fixture /><
 `;
 
 const mocks: Record<string, string> = {
-  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle'});`,
+  "@tanstack/react-router": `export const useRouterState = ({select}) => select({status:'idle', location:{pathname:'/'}});`,
   "@/hooks": `
     const summary = {root:{id:'root',name:'Workspace',children:{parent:{id:'parent',name:'Folder',children:{},
       blockPackNodes:{item:{name:'Notes'}},materialNodes:{item:{name:'Reference'}}}}}};

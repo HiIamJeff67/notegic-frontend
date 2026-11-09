@@ -8,8 +8,10 @@ describe("account and quota response contracts", () => {
       data: {
         countryCode: null,
         phoneNumber: null,
-        googleCredential: null,
-        discordCredential: null,
+        googleBound: true,
+        githubBound: false,
+        xBound: false,
+        discordBound: false,
         updatedAt: "2026-09-27T00:00:00.000Z",
       },
       embedded: { publicId: "00000000-0000-4000-8000-000000000001" },
@@ -38,5 +40,32 @@ describe("account and quota response contracts", () => {
 
     expect(account.data).not.toHaveProperty("rootShelfCount");
     expect(quota.data.routineTaskExecutionMinutesUsed).toBe(10);
+  });
+
+  test("decodes legacy account responses without retaining provider IDs", () => {
+    const account = GetMyAccountResponseSchema.parse({
+      success: true,
+      data: {
+        countryCode: null,
+        phoneNumber: null,
+        googleCredential: "google-user-id",
+        xCredential: "x-user-id",
+        discordCredential: null,
+        updatedAt: "2026-09-27T00:00:00.000Z",
+      },
+      embedded: { publicId: "00000000-0000-4000-8000-000000000001" },
+      exception: null,
+    });
+
+    expect(account.data).toEqual({
+      registeredAuthProviderType: undefined,
+      countryCode: null,
+      phoneNumber: null,
+      googleBound: true,
+      githubBound: false,
+      xBound: true,
+      discordBound: false,
+      updatedAt: new Date("2026-09-27T00:00:00.000Z"),
+    });
   });
 });

@@ -1,98 +1,69 @@
-import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
-import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
-import type {
-  GetMyAccountRequest,
-  GetMyAccountResponse,
+import {
+  type PrepareOAuthOperationRequest,
+  PrepareOAuthOperationRequestSchema,
 } from "@shared/api/interfaces/userAccount.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { parseRequest } from "@shared/api/validation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { PrepareOAuthOperation } from "@/api/functions/userAccount.serverFn";
 import {
   mutationFnBindGoogleAccount,
   mutationFnBindGithubAccount,
-  mutationFnBindMetaAccount,
+  mutationFnBindXAccount,
   mutationFnUnbindGoogleAccount,
   mutationFnUnbindGithubAccount,
-  mutationFnUnbindMetaAccount,
+  mutationFnUnbindXAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
 
-export const useGetMyAccount = (
-  hookRequest?: GetMyAccountRequest,
-  options?: Partial<UseQueryOptions<GetMyAccountResponse, Error>>
-) => {
-  const queryClient = getQueryClient();
-
-  const perform = async (
-    request?: GetMyAccountRequest
-  ): Promise<GetMyAccountResponse> => {
-    try {
-      if (!request) {
-        throw new NotegicValidationError(
-          ValidationClientException.ReceivedUndefinedRequest()
-        );
-      }
-
-      const response = await queryFnGetMyAccount(request);
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const query = useQuery<GetMyAccountResponse, Error>({
+export const useGetMyAccount = () =>
+  useQuery({
     queryKey: queryKeys.userAccount.my(),
-    queryFn: async () => perform(hookRequest),
-    staleTime: UseQueryDefaultOptions.staleTime,
+    queryFn: queryFnGetMyAccount,
+    staleTime: 0,
+    networkMode: "online",
+    refetchOnReconnect: true,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
-    ...options,
-    enabled: hookRequest ? (options?.enabled ?? true) : false,
   });
-
-  const fetch = async (
-    callbackRequest: GetMyAccountRequest
-  ): Promise<GetMyAccountResponse> => {
-    return queryClient.fetchQuery({
-      queryKey: queryKeys.userAccount.my(),
-      queryFn: async () => perform(callbackRequest),
-      staleTime: UseQueryDefaultOptions.staleTime,
-      ...options,
-    });
-  };
-
-  return { ...query, fetch };
-};
 
 export const useUpdateMyAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
     mutationFn: mutationFnUpdateMyAccount,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
     },
-    onError: error => {},
   });
 
   return mutation;
 };
+
+export const usePrepareOAuthOperation = () =>
+  useMutation({
+    mutationFn: (request: PrepareOAuthOperationRequest) =>
+      PrepareOAuthOperation({
+        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
+      }),
+    retry: false,
+  });
 
 export const useBindGoogleAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
     mutationFn: mutationFnBindGoogleAccount,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
     },
-    onError: error => {},
   });
 
   return mutation;
@@ -104,70 +75,46 @@ export const useBindGithubAccount = () => {
   const mutation = useMutation({
     mutationFn: mutationFnBindGithubAccount,
     retry: false,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
     },
-    onError: error => {},
   });
 
   return mutation;
 };
 
-export const useBindMetaAccount = () => {
+export const useBindXAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnBindMetaAccount,
+    mutationFn: mutationFnBindXAccount,
     retry: false,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
     },
-    onError: error => {},
   });
 
   return mutation;
 };
 
-export const useUnbindGoogleAccount = () => {
-  const queryClient = getQueryClient();
-
-  const mutation = useMutation({
+export const useUnbindGoogleAccount = () =>
+  useMutation({
     mutationFn: mutationFnUnbindGoogleAccount,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
-    },
-    onError: error => {},
+    retry: false,
   });
 
-  return mutation;
-};
-
-export const useUnbindGithubAccount = () => {
-  const queryClient = getQueryClient();
-
-  const mutation = useMutation({
+export const useUnbindGithubAccount = () =>
+  useMutation({
     mutationFn: mutationFnUnbindGithubAccount,
     retry: false,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
-    },
-    onError: error => {},
   });
 
-  return mutation;
-};
-
-export const useUnbindMetaAccount = () => {
-  const queryClient = getQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: mutationFnUnbindMetaAccount,
+export const useUnbindXAccount = () =>
+  useMutation({
+    mutationFn: mutationFnUnbindXAccount,
     retry: false,
-    onSuccess: (response, request) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
-    },
-    onError: error => {},
   });
-
-  return mutation;
-};

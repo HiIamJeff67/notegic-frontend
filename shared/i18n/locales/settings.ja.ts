@@ -169,14 +169,31 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "電話番号と認証コードを入力してください。",
         gmail: "Google アカウントを連携",
         github: "GitHub アカウントを連携",
+        x: "X アカウントを連携",
         gmailDescription: "Google を連携して素早くログインします。",
+        oauthVerifyEmail:
+          "アカウントのメールアドレスに送信されたコードで、この変更を確認してください。",
+        oauthVerifyFallbackEmail:
+          "{{provider}} に連携されたメールアドレスに届いた認証コードを入力してください。",
+        oauthVerifyAgain:
+          "もう一度操作を開始して、新しい確認コードをリクエストしてください。",
+        unbind: "連携を解除",
+        googleUnbind: "Google の連携を解除",
+        oauthFallbackProvider: "ログインに使用する連携済みサービスを選択",
+        oauthFallbackHint:
+          "別の連携済みのログイン方法を確認するか、メールログインを設定するか、アカウントを削除してください。",
+        oauthStatusUnavailable: "アカウントの連携状態を更新できませんでした",
+        oauthRetryStatus: "再試行",
+        oauthStatusUnknown: "状態を取得できません",
+        oauthDisconnected: "アカウントの連携を解除しました",
         githubUnbind: "GitHub の連携を解除",
-        metaUnbind: "Facebook の連携を解除",
+        xUnbind: "X の連携を解除",
         githubUnbound: "GitHub アカウントの連携を解除しました",
-        metaUnbound: "Facebook の連携を解除しました",
+        xUnbound: "X アカウントの連携を解除しました",
+        oauthUnbindRejected:
+          "アカウントがまだ連携されていることを確認し、新しい確認コードを取得してからやり直してください。",
         githubDescription: "GitHub を連携して素早くログインします。",
-        meta: "Facebook アカウントを連携",
-        metaDescription: "Facebook を連携して素早くログインします。",
+        xDescription: "X を連携して素早くログインします。",
         discord: "Discord アカウントを連携",
         discordDescription: "Discord を連携して素早く利用します。",
         enterBackupEmail: "予備メールアドレスを入力",
@@ -184,6 +201,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         countryCode: "国番号",
         enterPhoneNumber: "電話番号を入力",
         bind: "連携",
+        connected: "連携済み",
         confirmBinding: "連携を確認",
       },
       modification: {
@@ -193,6 +211,9 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         resetWarning:
           "メモや設定を含む個人データが完全に消去され、元に戻せません。",
         changeEmail: "メールアドレスを変更",
+        verifyNewEmail:
+          "新しいメールアドレスに送信された確認コードを入力してください。",
+        sendNewEmailCode: "確認コードを送信",
         changeEmailDialogDescription:
           "現在のメールアドレスとは異なる新しいメールアドレスを入力してください。",
         enterNewEmail: "新しいメールアドレスを入力",

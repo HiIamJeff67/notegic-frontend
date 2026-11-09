@@ -36,7 +36,7 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyRootShelfById = createServerFn({ method: "GET" })
@@ -61,7 +61,7 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetMyRootShelfByIdResponse;
 
@@ -91,7 +91,7 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as CreateRootShelfResponse;
 
@@ -121,7 +121,7 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as CreateRootShelvesResponse;
 
@@ -159,7 +159,7 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpsertRootShelfPermissionResponse;
 
@@ -198,7 +198,7 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
 
       forwardUpstreamSetCookies(response);
 
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteRootShelfPermissionsResponse;
 
@@ -237,7 +237,7 @@ const fetchRootShelfMembership = async <T>(
   );
   forwardUpstreamSetCookies(response);
 
-  const formattedResponse = (await readAPIResponse(response)) as T & {
+  const formattedResponse = (await formatAPIResponse(response)) as T & {
     exception?: unknown;
     refreshableTokens?: { newCSRFToken?: string };
   };
@@ -297,7 +297,7 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpdateMyRootShelfByIdResponse;
 
@@ -335,7 +335,7 @@ export const UpdateMyRootShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpdateMyRootShelvesByIdsResponse;
 
@@ -371,7 +371,7 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyRootShelfByIdResponse;
 
@@ -409,7 +409,7 @@ export const RestoreMyRootShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyRootShelvesByIdsResponse;
 
@@ -445,7 +445,7 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteMyRootShelfByIdResponse;
 
@@ -483,7 +483,7 @@ export const DeleteMyRootShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteMyRootShelvesByIdsResponse;
 
@@ -521,7 +521,7 @@ export const HardDeleteMyRootShelvesByIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as HardDeleteMyRootShelvesByIdsResponse;
 

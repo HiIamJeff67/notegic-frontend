@@ -97,7 +97,7 @@ export const mountRealtimeProviderExample = (
                 forceNavigate: () => {
                   navigations++;
                 },
-                replace: () => {
+                replace: async () => {
                   navigations++;
                 },
                 back: () => {

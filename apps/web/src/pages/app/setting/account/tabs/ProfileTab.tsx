@@ -1,3 +1,4 @@
+import { useNetwork } from "@/hooks/useNetwork";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
 import {
@@ -62,6 +63,7 @@ type ProfileImageField = "avatarURL" | "coverBackgroundURL";
 const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   const loadingManager = useLoading();
   const { i18n, t } = useTranslation();
+  const { isOnline } = useNetwork();
   const userManager = useUser();
 
   const updateUserInfoMutator = useUpdateMyInfo();
@@ -142,8 +144,10 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
   );
 
   useEffect(() => {
-    void userManager.fetchUserInfo();
-  }, []);
+    if (isOnline && navigator.onLine && !userManager.userInfo) {
+      void userManager.fetchUserInfo();
+    }
+  }, [isOnline]);
 
   const userInfoForm: UseFormReturn<UserInfo> = useForm({
     resolver: zodResolver(
@@ -156,7 +160,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
 
   useEffect(() => {
     userInfoForm.reset(userManager.userInfo ?? FakeUserInfo);
-  }, [userManager, userInfoForm]);
+  }, [userManager.userInfo, userInfoForm]);
 
   const {
     formState: { isDirty, isSubmitting },
@@ -307,32 +311,31 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                 hoverText={t("settingsPage.account.personal.changeCover")}
               />
             </div>
-            <div className="absolute right-8 bottom-[-64px] z-10 group/avatar">
-              <div
-                className="w-32 h-32 rounded-full border-4 border-border shadow-lg bg-background flex items-center justify-center overflow-hidden relative cursor-pointer"
+            <div className="absolute right-8 bottom-[-64px] z-10 flex size-32 items-center justify-center overflow-hidden rounded-full border-4 border-border bg-background shadow-lg">
+              <AvatarIcon
+                avatarURL={avatarURL}
+                alt={t("settingsPage.account.personal.avatar")}
+                fallbackText={avatarFallbackText}
+                size={128}
+              />
+              <button
+                type="button"
+                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition enabled:cursor-pointer enabled:hover:opacity-100 focus-visible:opacity-100"
                 onClick={() => {
                   setEditingImageField("avatarURL");
                   setUploadImageDialogOpen(true);
                 }}
               >
-                <AvatarIcon
-                  avatarURL={avatarURL}
-                  alt={t("settingsPage.account.personal.avatar")}
-                  fallbackText={avatarFallbackText}
-                  size={128}
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition">
-                  <span className="text-white text-center font-semibold text-sm select-none">
-                    {t("settingsPage.account.personal.changeAvatar")}
-                  </span>
-                </div>
-              </div>
+                <span className="text-center text-sm font-semibold text-white select-none">
+                  {t("settingsPage.account.personal.changeAvatar")}
+                </span>
+              </button>
             </div>
             <div style={{ height: 120 }} />
           </div>
 
           <UploadImageDialog
-            open={uploadImageDialogOpen}
+            open={isOnline && uploadImageDialogOpen}
             onOpenChange={open => {
               setUploadImageDialogOpen(open);
               if (!open && croppableImage === null) {
@@ -363,7 +366,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
           />
           {croppableImage !== null && (
             <CropImageDialog
-              open={cropImageDialogOpen}
+              open={isOnline && cropImageDialogOpen}
               onOpenChange={open => {
                 setCropImageDialogOpen(open);
                 if (!open) {
@@ -450,6 +453,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   >
                     <FormControl>
                       <Select
+                        disabled={!isOnline}
                         value={field.value}
                         onValueChange={field.onChange}
                       >
@@ -488,6 +492,7 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                   >
                     <FormControl>
                       <Select
+                        disabled={!isOnline}
                         value={field.value || ""}
                         onValueChange={value => {
                           if (value === "NO_COUNTRY") {
@@ -559,7 +564,9 @@ const ProfileTab = memo(({ layout = "panel" }: ProfileTabProps) => {
                             if (date) field.onChange(date);
                           }}
                           disabled={date =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            !isOnline ||
+                            date > new Date() ||
+                            date < new Date("1900-01-01")
                           }
                           initialFocus
                         />

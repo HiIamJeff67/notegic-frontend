@@ -6,32 +6,30 @@ import { NotegicValidationError } from "@shared/api/exceptions/errors/validation
 import {
   type BindGoogleAccountRequest,
   type BindGithubAccountRequest,
-  type BindMetaAccountRequest,
+  type BindXAccountRequest,
   BindGoogleAccountRequestSchema,
   BindGithubAccountRequestSchema,
-  BindMetaAccountRequestSchema,
+  BindXAccountRequestSchema,
   type BindGoogleAccountResponse,
   type BindGithubAccountResponse,
-  type BindMetaAccountResponse,
+  type BindXAccountResponse,
   BindGoogleAccountResponseSchema,
   BindGithubAccountResponseSchema,
-  BindMetaAccountResponseSchema,
-  type GetMyAccountRequest,
-  GetMyAccountRequestSchema,
+  BindXAccountResponseSchema,
   type GetMyAccountResponse,
   GetMyAccountResponseSchema,
   type UnbindGoogleAccountRequest,
   type UnbindGithubAccountRequest,
-  type UnbindMetaAccountRequest,
+  type UnbindXAccountRequest,
   UnbindGoogleAccountRequestSchema,
   UnbindGithubAccountRequestSchema,
-  UnbindMetaAccountRequestSchema,
+  UnbindXAccountRequestSchema,
   type UnbindGoogleAccountResponse,
   type UnbindGithubAccountResponse,
-  type UnbindMetaAccountResponse,
+  type UnbindXAccountResponse,
   UnbindGoogleAccountResponseSchema,
   UnbindGithubAccountResponseSchema,
-  UnbindMetaAccountResponseSchema,
+  UnbindXAccountResponseSchema,
   type UpdateMyAccountRequest,
   UpdateMyAccountRequestSchema,
   type UpdateMyAccountResponse,
@@ -42,33 +40,25 @@ import { ZodError } from "zod";
 import {
   BindGoogleAccount,
   BindGithubAccount,
-  BindMetaAccount,
+  BindXAccount,
   GetMyAccount,
   UnbindGoogleAccount,
   UnbindGithubAccount,
-  UnbindMetaAccount,
+  UnbindXAccount,
   UpdateMyAccount,
 } from "@/api/functions/userAccount.serverFn";
 
-export const queryFnGetMyAccount = async (
-  request: GetMyAccountRequest
-): Promise<GetMyAccountResponse> => {
+export const queryFnGetMyAccount = async (): Promise<GetMyAccountResponse> => {
   try {
-    const validatedRequest = GetMyAccountRequestSchema.parse(request);
-    const response = await GetMyAccount({ data: validatedRequest });
+    const response = await GetMyAccount();
     return GetMyAccountResponseSchema.parse(response);
   } catch (error) {
-    console.error("error happening in queryFnGetMyAccount", error);
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
       );
-    } else if (error instanceof NotegicAPIError) {
-      switch (error.unWrap.reason) {
-        default:
-          throw error;
-      }
-    } else if (error instanceof TypeError) {
+    }
+    if (error instanceof TypeError) {
       throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
     }
     throw error;
@@ -153,15 +143,15 @@ export const mutationFnBindGithubAccount = async (
   }
 };
 
-export const mutationFnBindMetaAccount = async (
-  request: BindMetaAccountRequest
-): Promise<BindMetaAccountResponse> => {
+export const mutationFnBindXAccount = async (
+  request: BindXAccountRequest
+): Promise<BindXAccountResponse> => {
   try {
-    const validatedRequest = BindMetaAccountRequestSchema.parse(request);
-    const response = await BindMetaAccount({
+    const validatedRequest = BindXAccountRequestSchema.parse(request);
+    const response = await BindXAccount({
       data: validatedRequest,
     });
-    return BindMetaAccountResponseSchema.parse(response);
+    return BindXAccountResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
@@ -232,15 +222,15 @@ export const mutationFnUnbindGithubAccount = async (
   }
 };
 
-export const mutationFnUnbindMetaAccount = async (
-  request: UnbindMetaAccountRequest
-): Promise<UnbindMetaAccountResponse> => {
+export const mutationFnUnbindXAccount = async (
+  request: UnbindXAccountRequest
+): Promise<UnbindXAccountResponse> => {
   try {
-    const validatedRequest = UnbindMetaAccountRequestSchema.parse(request);
-    const response = await UnbindMetaAccount({
+    const validatedRequest = UnbindXAccountRequestSchema.parse(request);
+    const response = await UnbindXAccount({
       data: validatedRequest,
     });
-    return UnbindMetaAccountResponseSchema.parse(response);
+    return UnbindXAccountResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(

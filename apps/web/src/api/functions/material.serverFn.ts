@@ -37,7 +37,7 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const forwardMaterialObjectTicketRequest = async <TResponse>(
@@ -67,7 +67,7 @@ const forwardMaterialObjectTicketRequest = async <TResponse>(
   );
 
   forwardUpstreamSetCookies(response);
-  const formattedResponse = (await readAPIResponse(response)) as TResponse & {
+  const formattedResponse = (await formatAPIResponse(response)) as TResponse & {
     exception?: Record<string, unknown> | null;
   };
 
@@ -96,7 +96,7 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetMyMaterialByIdResponse;
 
@@ -132,7 +132,7 @@ export const GetMyMaterialAndItsParentById = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetMyMaterialAndItsParentByIdResponse;
 
@@ -175,7 +175,7 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetMyMaterialsByParentSubShelfIdResponse;
 
@@ -216,7 +216,7 @@ export const GetMyMaterialsByRootShelfId = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetMyMaterialsByRootShelfIdResponse;
 
@@ -249,7 +249,7 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as CreateMyMaterialResponse;
 
@@ -279,7 +279,7 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as UpdateMyMaterialByIdResponse;
 
@@ -309,7 +309,7 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as MoveMyMaterialByIdResponse;
 
@@ -339,7 +339,7 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as MoveMyMaterialsByIdsResponse;
 
@@ -374,7 +374,7 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyMaterialByIdResponse;
 
@@ -412,7 +412,7 @@ export const RestoreMyMaterialsByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyMaterialsByIdsResponse;
 
@@ -443,7 +443,7 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as DeleteMyMaterialByIdResponse;
 
@@ -478,7 +478,7 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteMyMaterialsByIdsResponse;
 
@@ -534,7 +534,7 @@ export const HardDeleteMyMaterialsByIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as HardDeleteMyMaterialsByIdsResponse;
 

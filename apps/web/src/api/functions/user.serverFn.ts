@@ -12,7 +12,7 @@ import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/lib/json/isJsonContext";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetUserData = createServerFn({ method: "GET" })
@@ -37,7 +37,7 @@ export const GetUserData = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetUserDataResponse;
 
@@ -96,7 +96,7 @@ export const TryGetUserData = createServerFn({ method: "GET" })
       if (!response.ok || !isJsonResponse(response)) return false;
 
       const parsedResponse = GetUserDataResponseSchema.safeParse(
-        await readAPIResponse(response)
+        await formatAPIResponse(response)
       );
       return (
         parsedResponse.success &&
@@ -150,7 +150,7 @@ export const GetMe = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetMeResponse;
 
@@ -180,7 +180,7 @@ export const UpdateMe = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as UpdateMeResponse;
 

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppRouter, useLoading, useUser } from "@/hooks";
+import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface AccountModificationTabProps {
@@ -51,6 +52,10 @@ const AccountModificationTab = ({
   const router = useAppRouter();
   const loadingManager = useLoading();
   const { t } = useTranslation();
+  const { isOnline } = useNetwork();
+  const offlineHint = isOnline
+    ? undefined
+    : t("workspace.pages.accountOffline");
   const userManager = useUser();
 
   const resetMeMutator = useResetMe();
@@ -61,6 +66,10 @@ const AccountModificationTab = ({
   const [resetMeDialogOpen, setResetMeDialogOpen] = useState<boolean>(false);
   const [resetEmailDialogOpen, setResetEmailDialogOpen] =
     useState<boolean>(false);
+  const [emailChallenge, setEmailChallenge] = useState<{
+    email: string;
+    passwordRequired: boolean;
+  } | null>(null);
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
     useState<boolean>(false);
   const [deleteMeDialogOpen, setDeleteMeDialogOpen] = useState<boolean>(false);
@@ -97,17 +106,27 @@ const AccountModificationTab = ({
   );
 
   const handleResetEmail = useCallback(
-    async (newEmail: string, authCode: string) =>
+    async (newEmail: string, authCode: string, newPassword?: string) =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
-          await resetEmailMutator.mutateAsync({
+          const response = await resetEmailMutator.mutateAsync({
             header: getClientMutationHeaders(userAgent),
             body: {
-              newEmail: newEmail,
-              authCode: authCode,
+              newEmail,
+              authCode,
+              confirm: emailChallenge !== null,
+              newPassword,
             },
           });
+          if (response.data.verificationRequired) {
+            setEmailChallenge({
+              email: newEmail,
+              passwordRequired: response.data.passwordRequired === true,
+            });
+            return;
+          }
+          setEmailChallenge(null);
           setSendAuthCodeTimeCounter(0);
           setResetEmailDialogOpen(false);
           userManager.updateUserData({ email: newEmail });
@@ -119,6 +138,7 @@ const AccountModificationTab = ({
     [
       userManager,
       resetEmailMutator,
+      emailChallenge,
       setSendAuthCodeTimeCounter,
       setResetEmailDialogOpen,
     ]
@@ -221,11 +241,13 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              title={offlineHint}
               noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
                 e.preventDefault();
+                if (!isOnline) return;
                 const formData = new FormData(e.currentTarget);
                 const authCode = formData.get("authCode") as string;
                 await handleResetMe(authCode);
@@ -233,6 +255,7 @@ const AccountModificationTab = ({
             >
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="authCode"
                   name="authCode"
                   type="number"
@@ -248,7 +271,7 @@ const AccountModificationTab = ({
                   type="button"
                   size="sm"
                   variant="default"
-                  disabled={sendAuthCodeTimeCounter > 0}
+                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
                   onClick={() => handleSendAuthCode()}
                   className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
                 >
@@ -266,7 +289,11 @@ const AccountModificationTab = ({
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button variant="destructive" type="submit">
+                <Button
+                  variant="destructive"
+                  type="submit"
+                  disabled={!isOnline}
+                >
                   {t("settingsPage.account.modification.confirmReset")}
                 </Button>
               </DialogFooter>
@@ -275,7 +302,10 @@ const AccountModificationTab = ({
         </Dialog>,
         <Dialog
           open={resetEmailDialogOpen}
-          onOpenChange={setResetEmailDialogOpen}
+          onOpenChange={open => {
+            setResetEmailDialogOpen(open);
+            if (!open) setEmailChallenge(null);
+          }}
         >
           <DialogContent>
             <DialogHeader>
@@ -283,28 +313,40 @@ const AccountModificationTab = ({
                 {t("settingsPage.account.modification.changeEmail")}
               </DialogTitle>
               <DialogDescription>
-                {t(
-                  "settingsPage.account.modification.changeEmailDialogDescription"
-                )}
+                {emailChallenge
+                  ? t("settingsPage.account.modification.verifyNewEmail")
+                  : t(
+                      "settingsPage.account.modification.changeEmailDialogDescription"
+                    )}
               </DialogDescription>
             </DialogHeader>
             <form
+              title={offlineHint}
               noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
                 e.preventDefault();
+                if (!isOnline) return;
                 const formData = new FormData(e.currentTarget);
                 const authCode = formData.get("authCode") as string;
-                const newEmail = formData.get("newEmail") as string;
-                await handleResetEmail(authCode, newEmail);
+                const newEmail =
+                  emailChallenge?.email ??
+                  String(formData.get("newEmail") ?? "");
+                const newPassword = emailChallenge?.passwordRequired
+                  ? String(formData.get("newPassword") ?? "")
+                  : undefined;
+                await handleResetEmail(newEmail, authCode, newPassword);
               }}
             >
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="newEmail"
                   name="newEmail"
                   type="email"
+                  defaultValue={emailChallenge?.email}
+                  readOnly={emailChallenge !== null}
                   placeholder={t(
                     "settingsPage.account.modification.enterNewEmail"
                   )}
@@ -314,9 +356,15 @@ const AccountModificationTab = ({
               </div>
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
+                  key={
+                    emailChallenge === null
+                      ? "current-email-code"
+                      : "new-email-code"
+                  }
                   id="authCode"
                   name="authCode"
-                  type="number"
+                  pattern="[0-9]{6}"
                   inputMode="numeric"
                   placeholder={t("settingsPage.account.security.enterCode")}
                   autoComplete="one-time-code"
@@ -325,30 +373,53 @@ const AccountModificationTab = ({
                   required
                   className="w-full px-4 py-3"
                 />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
+                {emailChallenge === null && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="default"
+                    disabled={!isOnline || sendAuthCodeTimeCounter > 0}
+                    onClick={() => handleSendAuthCode()}
+                    className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
+                  >
+                    {sendAuthCodeTimeCounter > 0
+                      ? t("settingsPage.account.security.resendIn", {
+                          count: sendAuthCodeTimeCounter,
+                        })
+                      : t("settingsPage.account.security.resendCode")}
+                  </Button>
+                )}
               </div>
+              {emailChallenge?.passwordRequired && (
+                <Input
+                  disabled={!isOnline}
+                  name="newPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder={t("auth.newPassword")}
+                  minLength={8}
+                  required
+                />
+              )}
               <DialogFooter>
                 <Button
                   variant="secondary"
-                  onClick={() => setResetEmailDialogOpen(false)}
+                  type="button"
+                  onClick={() => {
+                    setResetEmailDialogOpen(false);
+                    setEmailChallenge(null);
+                  }}
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button variant="destructive" type="submit">
-                  {t("settingsPage.account.modification.confirmChange")}
+                <Button
+                  variant="destructive"
+                  type="submit"
+                  disabled={!isOnline}
+                >
+                  {emailChallenge
+                    ? t("settingsPage.account.modification.confirmChange")
+                    : t("settingsPage.account.modification.sendNewEmailCode")}
                 </Button>
               </DialogFooter>
             </form>
@@ -370,11 +441,13 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              title={offlineHint}
               noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
                 e.preventDefault();
+                if (!isOnline) return;
                 const formData = new FormData(e.currentTarget);
                 const newPassword = formData.get("newPassword") as string;
                 const confirmPassword = formData.get(
@@ -390,6 +463,7 @@ const AccountModificationTab = ({
             >
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="newPassword"
                   name="newPassword"
                   type="password"
@@ -400,6 +474,7 @@ const AccountModificationTab = ({
               </div>
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
@@ -410,6 +485,7 @@ const AccountModificationTab = ({
               </div>
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="authCode"
                   name="authCode"
                   type="number"
@@ -425,7 +501,7 @@ const AccountModificationTab = ({
                   type="button"
                   size="sm"
                   variant="default"
-                  disabled={sendAuthCodeTimeCounter > 0}
+                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
                   onClick={() => handleSendAuthCode()}
                   className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
                 >
@@ -444,7 +520,7 @@ const AccountModificationTab = ({
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={!isOnline}>
                   {t("settingsPage.account.modification.updatePassword")}
                 </Button>
               </DialogFooter>
@@ -462,11 +538,13 @@ const AccountModificationTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              title={offlineHint}
               noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
                 e.preventDefault();
+                if (!isOnline) return;
                 const formData = new FormData(e.currentTarget);
                 const authCode = (formData.get("authCode") ?? "") as string;
                 const confirmDeleteText = formData.get(
@@ -477,6 +555,7 @@ const AccountModificationTab = ({
             >
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="authCode"
                   name="authCode"
                   type="number"
@@ -492,7 +571,7 @@ const AccountModificationTab = ({
                   type="button"
                   size="sm"
                   variant="default"
-                  disabled={sendAuthCodeTimeCounter > 0}
+                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
                   onClick={() => handleSendAuthCode()}
                   className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
                 >
@@ -505,6 +584,7 @@ const AccountModificationTab = ({
               </div>
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="confirmDeleteText"
                   name="confirmDeleteText"
                   type="text"
@@ -524,7 +604,11 @@ const AccountModificationTab = ({
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button variant="destructive" type="submit">
+                <Button
+                  variant="destructive"
+                  type="submit"
+                  disabled={!isOnline}
+                >
                   {t("settingsPage.account.modification.deletePermanently")}
                 </Button>
               </DialogFooter>

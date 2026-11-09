@@ -70,7 +70,7 @@ including settings cooldown handling, must delegate to the same session
 bridge. Direct multipart uploads and Apollo read the same current state.
 External signed object URLs never receive this header.
 
-`readAPIResponse` retains validated renewal metadata before returning or
+`formatAPIResponse` retains validated renewal metadata before returning or
 throwing a business error, including HTTP 204 and settings 429 paths. Server
 functions forward renewal in a response header with `Cache-Control: no-store`;
 the browser bridge applies it before deserialization. A late response cannot

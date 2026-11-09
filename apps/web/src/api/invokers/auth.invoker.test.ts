@@ -103,11 +103,17 @@ describe.each(
     ],
     [
       "oauthCodeInvalid",
-      () => mutationFnLoginViaGoogle({ body: { authorizationCode: "" } }),
+      () =>
+        mutationFnLoginViaGoogle({
+          body: { authorizationCode: "", codeVerifier: "a".repeat(64) },
+        }),
     ],
     [
       "oauthCodeInvalid",
-      () => mutationFnRegisterViaGoogle({ body: { authorizationCode: "" } }),
+      () =>
+        mutationFnRegisterViaGoogle({
+          body: { authorizationCode: "", codeVerifier: "a".repeat(64) },
+        }),
     ],
   ] as const)("presents %s before sending any request", async (reason, invoke) => {
     const i18n = createInstance();
@@ -144,14 +150,20 @@ describe.each(
       LoginViaGoogle,
       () =>
         mutationFnLoginViaGoogle({
-          body: { authorizationCode: "fixture-code" },
+          body: {
+            authorizationCode: "fixture-code",
+            codeVerifier: "a".repeat(64),
+          },
         }),
     ],
     [
       RegisterViaGoogle,
       () =>
         mutationFnRegisterViaGoogle({
-          body: { authorizationCode: "fixture-code" },
+          body: {
+            authorizationCode: "fixture-code",
+            codeVerifier: "a".repeat(64),
+          },
         }),
     ],
   ] as const)("does not blame input when the response is malformed (%#)", async (endpoint, invoke) => {

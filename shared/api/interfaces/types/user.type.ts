@@ -50,11 +50,25 @@ export const UserInfoSchema = z.object({
 
 export type UserInfo = z.infer<typeof UserInfoSchema>;
 
+export const AuthProviderTypeSchema = z.enum([
+  "Email",
+  "Google",
+  "Github",
+  "X",
+  "Discord",
+  "Microsoft",
+  "Apple",
+]);
+
 export const UserAccountSchema = z.object({
+  registeredAuthProviderType: AuthProviderTypeSchema.nullish(),
   countryCode: z.string().nullable(),
   phoneNumber: z.string().nullable(),
-  googleCredential: z.string().nullable(),
-  discordCredential: z.string().nullable(),
+  googleBound: z.boolean(),
+  githubBound: z.boolean(),
+  xBound: z.boolean(),
+  discordBound: z.boolean(),
+  oauthFallbackProviders: z.array(AuthProviderTypeSchema).optional(),
   updatedAt: z.coerce.date(),
 });
 

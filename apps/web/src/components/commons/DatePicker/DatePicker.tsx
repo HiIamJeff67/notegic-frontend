@@ -19,6 +19,7 @@ interface DatePickerProps {
   placeholder?: string;
   disabled?: ComponentProps<typeof Calendar>["disabled"];
   isInvalid?: boolean;
+  isDisabled?: boolean;
   className?: string;
   contentClassName?: string;
 }
@@ -30,6 +31,7 @@ const DatePicker = ({
   placeholder,
   disabled,
   isInvalid = false,
+  isDisabled = false,
   className,
   contentClassName,
 }: DatePickerProps) => {
@@ -78,7 +80,7 @@ const DatePicker = ({
 
   return (
     <PopoverPrimitive.Root
-      open={isOpen}
+      open={isOpen && !isDisabled}
       onOpenChange={open => {
         if (open) {
           setIsHintOpen(false);
@@ -107,6 +109,7 @@ const DatePicker = ({
               variant="outline"
               data-empty={!value}
               aria-invalid={isInvalid}
+              disabled={isDisabled}
               className={cn(
                 "h-10 w-full justify-start rounded-sm px-3 text-left font-normal data-[empty=true]:text-muted-foreground",
                 className

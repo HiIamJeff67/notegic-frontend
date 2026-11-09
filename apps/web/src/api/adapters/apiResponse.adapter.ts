@@ -21,7 +21,7 @@ const retainCSRFToken = createIsomorphicFn()
       setClientCSRFToken(refresh.token);
   });
 
-export async function readAPIResponse<T = unknown>(
+export async function formatAPIResponse<T = unknown>(
   response: Response,
   previousToken?: string | null
 ): Promise<T> {
@@ -84,8 +84,8 @@ export async function readAPIResponse<T = unknown>(
         {
           reason: "InternalServerError",
           domain: "Gateway",
-          operation: "ReadResponse",
-          message: "Unable to read the API response.",
+          operation: "FormatResponse",
+          message: "Unable to format the API response.",
           retryable: false,
         },
         response.status

@@ -45,7 +45,6 @@ import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
 import ApiKeysTab from "./tabs/ApiKeysTab";
 import BindingTab from "./tabs/BindingTab";
-import OfflineTab from "./tabs/OfflineTab";
 import ProfileTab from "./tabs/ProfileTab";
 import SecurityTab from "./tabs/SecurityTab";
 import UpgradeTab from "./tabs/UpgradeTab";
@@ -63,6 +62,9 @@ const AccountSettingsPage = ({
   const { t } = useTranslation();
   const userManager = useUser();
   const { isOnline } = useNetwork();
+  const offlineHint = isOnline
+    ? undefined
+    : t("workspace.pages.accountOffline");
   const { width: screenWidth } = useScreen();
   const sidebarManager = useSidebar();
   const { openSheet, closeSheet } = useSettingsDisplay();
@@ -157,6 +159,7 @@ const AccountSettingsPage = ({
   const handleSendAuthCode = useCallback(
     (onSuccess?: () => void, onBlock?: () => void, fallback?: () => void) =>
       startSendAuthCodeTransition(async () => {
+        if (!isOnline) return;
         try {
           if (sendAuthCodeTimeCounter > 0) {
             onBlock?.();
@@ -198,7 +201,13 @@ const AccountSettingsPage = ({
           toast.error(tError(error, t));
         }
       }),
-    [router, sendAuthCodeMutator, sendAuthCodeTimeCounter, userManager]
+    [
+      isOnline,
+      router,
+      sendAuthCodeMutator,
+      sendAuthCodeTimeCounter,
+      userManager,
+    ]
   );
 
   const authCodeProps = {
@@ -279,7 +288,13 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? <ProfileTab layout="page" /> : <OfflineTab />}
+              <fieldset
+                disabled={!isOnline}
+                title={offlineHint}
+                className="min-w-0"
+              >
+                <ProfileTab layout="page" />
+              </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -298,7 +313,13 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? <AccountTab layout="page" /> : <OfflineTab />}
+              <fieldset
+                disabled={!isOnline}
+                title={offlineHint}
+                className="min-w-0"
+              >
+                <AccountTab layout="page" />
+              </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -317,11 +338,7 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? (
-                <ApiKeysTab layout="page" enabled={!previewMode} />
-              ) : (
-                <OfflineTab />
-              )}
+              <ApiKeysTab layout="page" enabled={!previewMode && isOnline} />
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -340,7 +357,7 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? <UpgradeTab layout="page" /> : <OfflineTab />}
+              <UpgradeTab layout="page" />
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -359,11 +376,13 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? (
+              <fieldset
+                disabled={!isOnline}
+                title={offlineHint}
+                className="min-w-0"
+              >
                 <SecurityTab {...authCodeProps} layout="page" />
-              ) : (
-                <OfflineTab />
-              )}
+              </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -382,15 +401,13 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? (
-                <BindingTab
-                  {...authCodeProps}
-                  layout="page"
-                  onPanelClose={() => {}}
-                />
-              ) : (
-                <OfflineTab />
-              )}
+              <fieldset
+                disabled={!isOnline}
+                title={offlineHint}
+                className="min-w-0"
+              >
+                <BindingTab {...authCodeProps} layout="page" />
+              </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
@@ -409,7 +426,11 @@ const AccountSettingsPage = ({
               </p>
             </ArticleParagraphHeader>
             <ArticleParagraphContent className="max-w-none space-y-0 text-foreground">
-              {isOnline ? (
+              <fieldset
+                disabled={!isOnline}
+                title={offlineHint}
+                className="min-w-0"
+              >
                 <AccountModificationTab
                   {...authCodeProps}
                   layout="page"
@@ -417,9 +438,7 @@ const AccountSettingsPage = ({
                     router.push(WebURLPathDictionary.app.dashboard._)
                   }
                 />
-              ) : (
-                <OfflineTab />
-              )}
+              </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
         </ArticleContent>

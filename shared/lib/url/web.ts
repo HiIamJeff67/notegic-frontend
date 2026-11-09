@@ -9,11 +9,8 @@ export const WebURLPathDictionary = {
     login: "login",
     forgetPassword: "forgetPassword",
     redirect: {
-      error: (title?: string, description?: string) =>
-        `redirect/error?title=${title}&description=${description}`,
       google: "redirect/google",
       github: "redirect/github",
-      meta: "redirect/meta",
       x: "redirect/x",
       apple: "redirect/apple",
     },
@@ -24,7 +21,6 @@ export const WebURLPathDictionary = {
       return `https://accounts.google.com/o/oauth2/v2/auth?${qs}`;
     },
     github: (qs: string) => `https://github.com/login/oauth/authorize?${qs}`,
-    meta: (qs: string) => `https://www.facebook.com/v24.0/dialog/oauth?${qs}`,
     x: (qs: string) => {
       return `https://x.com/i/oauth2/authorize?${qs}`;
     },

@@ -9,12 +9,12 @@ import {
   mutationFnLogin,
   mutationFnLoginViaGoogle,
   mutationFnLoginViaGithub,
-  mutationFnLoginViaMeta,
+  mutationFnLoginViaX,
   mutationFnLogout,
   mutationFnRegister,
   mutationFnRegisterViaGoogle,
   mutationFnRegisterViaGithub,
-  mutationFnRegisterViaMeta,
+  mutationFnRegisterViaX,
   mutationFnResetEmail,
   mutationFnResetMe,
   mutationFnSendAuthCode,
@@ -82,11 +82,11 @@ export const useRegisterViaGithub = () => {
   return mutation;
 };
 
-export const useRegisterViaMeta = () => {
+export const useRegisterViaX = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegisterViaMeta,
+    mutationFn: mutationFnRegisterViaX,
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -163,11 +163,11 @@ export const useLoginViaGithub = () => {
   return mutation;
 };
 
-export const useLoginViaMeta = () => {
+export const useLoginViaX = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLoginViaMeta,
+    mutationFn: mutationFnLoginViaX,
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -229,7 +229,9 @@ export const useResetEmail = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetEmail,
     onSuccess: async (response, request) => {
+      if (response.data.verificationRequired) return;
       await AuthLocalSynchronizer.syncResetEmail(request, response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },

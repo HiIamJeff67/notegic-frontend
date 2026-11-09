@@ -4,7 +4,6 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import {
   User,
-  UserAccount,
   UserData,
   UserInfo,
 } from "@shared/api/interfaces/types/user.type";
@@ -22,7 +21,6 @@ import { isVirtualMode } from "@/api/availability";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { useLogout } from "@/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
-import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
@@ -45,11 +43,6 @@ interface UserContextType {
   setUserInfo: (userInfo: UserInfo | null) => void;
   updateUserInfo: (fields: Partial<UserInfo>) => boolean;
   fetchUserInfo: () => Promise<void>;
-
-  userAccount: UserAccount | null;
-  setUserAccount: (userAccount: UserAccount | null) => void;
-  updateUserAccount: (fields: Partial<UserAccount>) => boolean;
-  fetchUserAccount: () => Promise<void>;
 
   userQuota: UserQuota | null;
   fetchUserQuota: () => Promise<void>;
@@ -78,14 +71,12 @@ export const UserProvider = ({
   const getUserDataQuerier = useGetUserData();
   const getMeQuerier = useGetMe();
   const getMyInfoQuerier = useGetMyInfo();
-  const getMyAccountQuerier = useGetMyAccount();
   const getMyQuotaQuerier = useGetMyQuota();
   const logoutMutator = useLogout();
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
   const [userQuota, setUserQuota] = useState<UserQuota | null>(null);
 
   const logoutInFlightRef = useRef<Promise<void> | null>(null);
@@ -103,7 +94,6 @@ export const UserProvider = ({
       setUserData(null);
       setUser(null);
       setUserInfo(null);
-      setUserAccount(null);
       setUserQuota(null);
       initialQuotaFetchUserPublicIdRef.current = null;
 
@@ -289,35 +279,6 @@ export const UserProvider = ({
     return userInfo !== null;
   };
 
-  const fetchUserAccount = useCallback(
-    async () =>
-      await loadingManager.startAsyncTransactionLoading(async () => {
-        try {
-          if (isVirtualMode() || !isOnline) return;
-
-          const userAgent = navigator.userAgent;
-          const response = await getMyAccountQuerier.fetch({
-            header: getClientRequestHeaders(userAgent),
-          });
-
-          setUserAccount(response.data);
-        } catch (error) {
-          console.error(error);
-          if (NetworkExceptions.isMissingNetworkError(error)) return;
-          await expireSession();
-          return;
-        }
-      }),
-    [expireSession, getMyAccountQuerier, isOnline, loadingManager]
-  );
-
-  const updateUserAccount = (fields: Partial<UserAccount>): boolean => {
-    if (!isOnline) return false;
-    if (userAccount === null) return false;
-    setUserAccount(prev => (prev ? { ...prev, ...fields } : null));
-    return userAccount !== null;
-  };
-
   const fetchUserQuota = useCallback(
     async () =>
       await loadingManager.startAsyncTransactionLoading(async () => {
@@ -386,11 +347,6 @@ export const UserProvider = ({
     setUserInfo: setUserInfo,
     fetchUserInfo: fetchUserInfo,
     updateUserInfo: updateUserInfo,
-
-    userAccount: userAccount,
-    setUserAccount: setUserAccount,
-    fetchUserAccount: fetchUserAccount,
-    updateUserAccount: updateUserAccount,
 
     userQuota: userQuota,
     fetchUserQuota: fetchUserQuota,

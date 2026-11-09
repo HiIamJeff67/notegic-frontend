@@ -1,3 +1,4 @@
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useRouterState } from "@tanstack/react-router";
 import React, {
   createContext,
@@ -7,8 +8,10 @@ import React, {
   useState,
 } from "react";
 import AppLoadingCover from "@/components/covers/LoadingCover/AppLoadingCover";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type LoadingLevel = "strict" | "lax";
+type LoadingOperation<T> = (setLabel: (label: string) => void) => Promise<T>;
 
 interface LoadingContextType {
   isStrictLoading: boolean;
@@ -16,7 +19,7 @@ interface LoadingContextType {
   setIsLaxLoading: (state: boolean) => void;
   startSyncTransactionLoading: <T>(fn: () => T) => T;
   startAsyncTransactionLoading: <T>(
-    fn: () => Promise<T>,
+    fn: LoadingOperation<T>,
     level?: LoadingLevel,
     loadingTimeout?: number,
     errorTimeout?: number
@@ -34,19 +37,39 @@ export const LoadingProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { t } = useTranslation();
   const isRoutePending = useRouterState({
     select: state => state.status === "pending",
+  });
+  const callbackLabel = useRouterState({
+    select: state => {
+      const path = state.location.pathname.replace(/\/$/, "");
+      const { google, github, x, apple } = WebURLPathDictionary.auth.redirect;
+      switch (path) {
+        case `/${google}`:
+          return "workspace.pages.validatingGoogle";
+        case `/${github}`:
+          return "workspace.pages.validatingGithub";
+        case `/${x}`:
+          return "workspace.pages.validatingX";
+        case `/${apple}`:
+          return "workspace.pages.appleRedirectUnavailable";
+      }
+    },
   });
   const [isStrictTransactionLoading, setIsStrictTransactionLoading] =
     useState(false);
   const [isLaxTransactionLoading, setIsLaxTransactionLoading] = useState(false);
   const [hasLoadingDependencies, setHasLoadingDependencies] = useState(false);
+  const [strictLoadingLabel, setStrictLoadingLabel] = useState<string>();
 
   const strictLoadingCounterRef = useRef<number>(0);
   const laxLoadingCounterRef = useRef<number>(0);
   const loadingDependenciesRef = useRef<Map<symbol, boolean>>(new Map());
+  const strictLoadingLabelsRef = useRef(new Map<symbol, string>());
 
-  const isStrictLoading = isRoutePending || isStrictTransactionLoading;
+  const isStrictLoading =
+    isRoutePending || callbackLabel !== undefined || isStrictTransactionLoading;
   const isLaxLoading =
     isStrictLoading || isLaxTransactionLoading || hasLoadingDependencies;
 
@@ -80,7 +103,7 @@ export const LoadingProvider = ({
 
   const runAsyncTransactionLoading = useCallback(
     async <T,>(
-      fn: () => Promise<T>,
+      fn: LoadingOperation<T>,
       loadingLevel: LoadingLevel,
       loadingTimeout: number,
       errorTimeout: number
@@ -97,6 +120,8 @@ export const LoadingProvider = ({
       loadingCounterRef.current++;
       setIsTransactionLoading(true);
 
+      const transaction = Symbol();
+      const labels = strictLoadingLabelsRef.current;
       let isLoadingActive = true;
       let loadingTimer: NodeJS.Timeout | null = null;
       let errorTimer: NodeJS.Timeout | null = null;
@@ -108,6 +133,9 @@ export const LoadingProvider = ({
         loadingCounterRef.current = Math.max(0, loadingCounterRef.current - 1);
         setIsTransactionLoading(loadingCounterRef.current > 0);
 
+        if (labels.delete(transaction)) {
+          setStrictLoadingLabel(Array.from(labels.values()).at(-1));
+        }
         if (loadingTimer) clearTimeout(loadingTimer);
         if (errorTimer) clearTimeout(errorTimer);
       };
@@ -124,7 +152,11 @@ export const LoadingProvider = ({
       }
 
       try {
-        let promise = fn();
+        let promise = fn(label => {
+          if (loadingLevel !== "strict" || !isLoadingActive) return;
+          labels.set(transaction, label);
+          setStrictLoadingLabel(Array.from(labels.values()).at(-1));
+        });
 
         if (errorTimeout !== Infinity) {
           promise = Promise.race([
@@ -151,7 +183,7 @@ export const LoadingProvider = ({
 
   const startAsyncTransactionLoading = useCallback(
     <T,>(
-      fn: () => Promise<T>,
+      fn: LoadingOperation<T>,
       level: LoadingLevel = "strict",
       loadingTimeout: number = Infinity,
       errorTimeout: number = Infinity
@@ -199,7 +231,10 @@ export const LoadingProvider = ({
 
   return (
     <LoadingContext.Provider value={contextValue}>
-      <AppLoadingCover isLoading={isStrictLoading} />
+      <AppLoadingCover
+        isLoading={isStrictLoading}
+        label={strictLoadingLabel ?? (callbackLabel && t(callbackLabel))}
+      />
       {children}
     </LoadingContext.Provider>
   );

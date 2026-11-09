@@ -12,7 +12,7 @@ import {
   getRequest,
   getRequestHeader,
 } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 const requestUpstream = async (
@@ -41,7 +41,7 @@ const requestUpstream = async (
 
   forwardUpstreamSetCookies(response);
   try {
-    return await readAPIResponse(response);
+    return await formatAPIResponse(response);
   } catch (error) {
     if (response.status === 429 && error instanceof NotegicAPIError)
       return {

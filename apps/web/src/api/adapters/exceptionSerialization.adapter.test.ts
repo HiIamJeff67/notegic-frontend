@@ -6,7 +6,7 @@ import { tError } from "@shared/i18n/error";
 import { makeSerovalPlugin } from "@tanstack/router-core";
 import { createInstance } from "i18next";
 import { fromJSON, toJSON } from "seroval";
-import { readAPIResponse } from "./apiResponse.adapter";
+import { formatAPIResponse } from "./apiResponse.adapter";
 import { apiErrorSerialization } from "./exceptionSerialization.adapter";
 
 jest.mock(
@@ -25,7 +25,7 @@ jest.mock(
 test.each([
   400, 401, 403, 404, 409, 422, 429, 500, 502, 503, 504,
 ])("retains backend HTTP %s through the server-function serialization round trip", async status => {
-  const error = await readAPIResponse(
+  const error = await formatAPIResponse(
     Response.json(
       {
         exception: {
@@ -91,7 +91,7 @@ test("restores API errors across the server function transport without internal 
 });
 
 test("retains quota failures for localized presentation without retrying", async () => {
-  const error = await readAPIResponse(
+  const error = await formatAPIResponse(
     Response.json(
       {
         success: false,

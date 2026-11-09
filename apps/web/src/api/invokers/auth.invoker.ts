@@ -21,16 +21,16 @@ import {
   LoginResponseSchema,
   type LoginViaGoogleRequest,
   type LoginViaGithubRequest,
-  type LoginViaMetaRequest,
+  type LoginViaXRequest,
   LoginViaGoogleRequestSchema,
   LoginViaGithubRequestSchema,
-  LoginViaMetaRequestSchema,
+  LoginViaXRequestSchema,
   type LoginViaGoogleResponse,
   type LoginViaGithubResponse,
-  type LoginViaMetaResponse,
+  type LoginViaXResponse,
   LoginViaGoogleResponseSchema,
   LoginViaGithubResponseSchema,
-  LoginViaMetaResponseSchema,
+  LoginViaXResponseSchema,
   type LogoutRequest,
   LogoutRequestSchema,
   type LogoutResponse,
@@ -41,16 +41,16 @@ import {
   RegisterResponseSchema,
   type RegisterViaGoogleRequest,
   type RegisterViaGithubRequest,
-  type RegisterViaMetaRequest,
+  type RegisterViaXRequest,
   RegisterViaGoogleRequestSchema,
   RegisterViaGithubRequestSchema,
-  RegisterViaMetaRequestSchema,
+  RegisterViaXRequestSchema,
   type RegisterViaGoogleResponse,
   type RegisterViaGithubResponse,
-  type RegisterViaMetaResponse,
+  type RegisterViaXResponse,
   RegisterViaGoogleResponseSchema,
   RegisterViaGithubResponseSchema,
-  RegisterViaMetaResponseSchema,
+  RegisterViaXResponseSchema,
   type ResetEmailRequest,
   ResetEmailRequestSchema,
   type ResetEmailResponse,
@@ -76,12 +76,12 @@ import {
   Login,
   LoginViaGoogle,
   LoginViaGithub,
-  LoginViaMeta,
+  LoginViaX,
   Logout,
   Register,
   RegisterViaGoogle,
   RegisterViaGithub,
-  RegisterViaMeta,
+  RegisterViaX,
   ResetEmail,
   ResetMe,
   SendAuthCode,
@@ -200,15 +200,15 @@ export const mutationFnRegisterViaGithub = async (
   }
 };
 
-export const mutationFnRegisterViaMeta = async (
-  request: RegisterViaMetaRequest
-): Promise<RegisterViaMetaResponse> => {
-  const validatedRequest = parseRequest(RegisterViaMetaRequestSchema, request);
+export const mutationFnRegisterViaX = async (
+  request: RegisterViaXRequest
+): Promise<RegisterViaXResponse> => {
+  const validatedRequest = parseRequest(RegisterViaXRequestSchema, request);
   try {
-    const response = await RegisterViaMeta({
+    const response = await RegisterViaX({
       data: validatedRequest,
     });
-    return RegisterViaMetaResponseSchema.parse(response);
+    return RegisterViaXResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
@@ -330,13 +330,13 @@ export const mutationFnLoginViaGithub = async (
   }
 };
 
-export const mutationFnLoginViaMeta = async (
-  request: LoginViaMetaRequest
-): Promise<LoginViaMetaResponse> => {
-  const validatedRequest = parseRequest(LoginViaMetaRequestSchema, request);
+export const mutationFnLoginViaX = async (
+  request: LoginViaXRequest
+): Promise<LoginViaXResponse> => {
+  const validatedRequest = parseRequest(LoginViaXRequestSchema, request);
   try {
-    const response = await LoginViaMeta({ data: validatedRequest });
-    return LoginViaMetaResponseSchema.parse(response);
+    const response = await LoginViaX({ data: validatedRequest });
+    return LoginViaXResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(

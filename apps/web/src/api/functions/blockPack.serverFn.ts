@@ -37,7 +37,7 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyBlockPackById = createServerFn({ method: "GET" })
@@ -62,7 +62,7 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetMyBlockPackByIdResponse;
 
@@ -98,7 +98,7 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetMyBlockPacksByParentSubShelfIdResponse;
 
@@ -135,7 +135,7 @@ export const GetMyBlockPacksByRootShelfId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as GetMyBlockPacksByRootShelfIdResponse;
 
@@ -168,7 +168,7 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as CreateBlockPackResponse;
 
@@ -198,7 +198,7 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as CreateBlockPacksResponse;
 
@@ -233,7 +233,7 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpdateMyBlockPackByIdResponse;
 
@@ -271,7 +271,7 @@ export const UpdateMyBlockPacksByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as UpdateMyBlockPacksByIdsResponse;
 
@@ -302,7 +302,7 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as MoveMyBlockPackByIdResponse;
 
@@ -341,7 +341,7 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as MoveMyBlockPacksByParentSubShelfIdResponse;
 
@@ -381,7 +381,7 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as MoveMyBlockPacksByParentSubShelfIdsResponse;
 
@@ -417,7 +417,7 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyBlockPackByIdResponse;
 
@@ -455,7 +455,7 @@ export const RestoreMyBlockPacksByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as RestoreMyBlockPacksByIdsResponse;
 
@@ -491,7 +491,7 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteMyBlockPackByIdResponse;
 
@@ -529,7 +529,7 @@ export const DeleteMyBlockPacksByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as DeleteMyBlockPacksByIdsResponse;
 
@@ -565,7 +565,7 @@ export const HardDeleteMyBlockPacksByIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await readAPIResponse(
+      const formattedResponse = (await formatAPIResponse(
         response
       )) as HardDeleteMyBlockPacksByIdsResponse;
 

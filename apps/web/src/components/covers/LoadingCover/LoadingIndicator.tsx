@@ -20,14 +20,14 @@ const LoadingIndicator = ({ label }: LoadingIndicatorProps) => {
   const loadingLabel = label ?? t("common.loading");
   return (
     <div
-      className="flex flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center px-4 text-center"
       role="status"
       aria-live="polite"
     >
       <svg
         viewBox={LOGO_VIEW_BOX}
         aria-hidden="true"
-        className="mb-4 overflow-visible"
+        className="mb-4 shrink-0 overflow-visible"
         width={LOGO_SIZE_PX}
         height={LOGO_SIZE_PX}
       >

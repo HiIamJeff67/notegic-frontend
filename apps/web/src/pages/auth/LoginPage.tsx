@@ -22,7 +22,7 @@ import { useOAuth } from "@/hooks/useOAuth";
 
 const LoginPage = () => {
   const router = useAppRouter();
-  const { beginOAuth, githubAvailable, metaAvailable } = useOAuth();
+  const { beginOAuth, githubAvailable, xAvailable } = useOAuth();
   const { t } = useTranslation();
   const { preferences } = useLocalPreferences();
   const userManager = useUser();
@@ -168,16 +168,12 @@ const LoginPage = () => {
               disabled:
                 !githubAvailable || (turnstileRequired && !turnstileToken),
             },
-            ...(metaAvailable
-              ? [
-                  {
-                    provider: "meta" as const,
-                    label: t("workspace.pages.metaLogin"),
-                    onClick: () => beginOAuth("meta", "login"),
-                    disabled: turnstileRequired && !turnstileToken,
-                  },
-                ]
-              : []),
+            {
+              provider: "x",
+              label: t("workspace.pages.xLogin"),
+              onClick: () => beginOAuth("x", "login"),
+              disabled: !xAvailable || (turnstileRequired && !turnstileToken),
+            },
           ]}
           statusDetail={t("workspace.pages.systemReady")}
           isLoading={isLoginPending}

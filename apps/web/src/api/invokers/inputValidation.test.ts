@@ -157,11 +157,15 @@ const cases = [
     api: authAPI.ResetEmail,
     key: "auth.validation.emailFormat",
     valid: {
-      body: { authCode: "123456", newEmail: "fixture@example.invalid" },
+      body: {
+        authCode: "123456",
+        confirm: false,
+        newEmail: "fixture@example.invalid",
+      },
       header: { csrfToken: "fixture" },
     },
     invalid: {
-      body: { authCode: "123456", newEmail: "bad@" },
+      body: { authCode: "123456", confirm: false, newEmail: "bad@" },
       header: { csrfToken: "fixture" },
     },
   },

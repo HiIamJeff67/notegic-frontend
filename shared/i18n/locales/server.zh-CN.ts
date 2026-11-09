@@ -17,11 +17,13 @@ export const SimpleChineseServerTranslation = {
     ResponseReadFailed: "无法读取登录服务的响应。",
     InvalidResponse: "登录服务返回了无效的响应。",
     WrongPassword: "密码不正确。",
-    MetaAccountNotLinked:
-      "请先使用其他方式登录 Notegic，再到账户设置绑定 Facebook。",
-    MetaCredentialAlreadyBound: "此账户已绑定 Facebook。",
-    MetaEmailRequired:
-      "请允许 Facebook 分享有效的电子邮件地址，以创建 Notegic 账户。",
+    XAccountNotLinked:
+      "X 提供的电子邮件已用于一个 Notegic 账号。请先使用原来的方式登录，再前往账号设置绑定 X。",
+    XEmailRequired:
+      "如需使用 X 创建 Notegic 账号，请先在 X 验证电子邮件，再重新授权 Notegic 访问该地址。",
+    GoogleCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 Google 账号。",
+    GithubCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 GitHub 账号。",
+    XCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 X 账号。",
     WrongAuthCode: "验证码不正确。",
     LoginBlockedDueToTryingTooManyTimes: "登录尝试次数过多，请稍后再试。",
     AuthCodeBlockedDueToTryingTooManyTimes: "验证码请求次数过多，请稍后再试。",

@@ -1,5 +1,6 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import { UserRole } from "@shared/api/interfaces/enums";
+import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
@@ -42,6 +43,10 @@ const SecurityTab = ({
   const router = useAppRouter();
   const loadingManager = useLoading();
   const { t } = useTranslation();
+  const { isOnline } = useNetwork();
+  const offlineHint = isOnline
+    ? undefined
+    : t("workspace.pages.accountOffline");
   const userManager = useUser();
 
   const validateEmailMutator = useValidateEmail();
@@ -99,11 +104,13 @@ const SecurityTab = ({
               </DialogDescription>
             </DialogHeader>
             <form
+              title={offlineHint}
               noValidate
               className="space-y-4"
               method="POST"
               onSubmit={async e => {
                 e.preventDefault();
+                if (!isOnline) return;
                 const formData = new FormData(e.currentTarget);
                 const authCode = formData.get("authCode") as string;
                 await handleValidateEmailOnClick(authCode);
@@ -111,6 +118,7 @@ const SecurityTab = ({
             >
               <div className="relative flex justify-between items-center mt-1">
                 <Input
+                  disabled={!isOnline}
                   id="authCode"
                   name="authCode"
                   type="number"
@@ -126,7 +134,7 @@ const SecurityTab = ({
                   type="button"
                   size="sm"
                   variant="default"
-                  disabled={sendAuthCodeTimeCounter > 0}
+                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
                   onClick={() => handleSendAuthCode()}
                   className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
                 >
@@ -144,7 +152,7 @@ const SecurityTab = ({
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button variant="default" type="submit">
+                <Button variant="default" type="submit" disabled={!isOnline}>
                   {t("common.confirm")}
                 </Button>
               </DialogFooter>

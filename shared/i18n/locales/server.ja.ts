@@ -22,11 +22,16 @@ export const JapaneseServerTranslation = {
     ResponseReadFailed: "サインインサービスの応答を読み取れませんでした。",
     InvalidResponse: "サインインサービスから無効な応答が返されました。",
     WrongPassword: "パスワードが正しくありません。",
-    MetaAccountNotLinked:
-      "別の方法で Notegic にログインしてから、アカウント設定で Facebook を連携してください。",
-    MetaCredentialAlreadyBound: "Facebook アカウントはすでに連携されています。",
-    MetaEmailRequired:
-      "Notegic アカウントを作成するには、Facebook に有効なメールアドレスの共有を許可してください。",
+    XAccountNotLinked:
+      "X のメールアドレスはすでに Notegic アカウントで使われています。普段の方法でログインし、アカウント設定で X を連携してください。",
+    XEmailRequired:
+      "X で Notegic アカウントを作成するには、X でメールアドレスを確認し、もう一度 Notegic にそのアドレスへのアクセスを許可してください。",
+    GoogleCredentialAlreadyBound:
+      "Notegic アカウントにはすでに Google アカウントが連携されています。",
+    GithubCredentialAlreadyBound:
+      "Notegic アカウントにはすでに GitHub アカウントが連携されています。",
+    XCredentialAlreadyBound:
+      "Notegic アカウントにはすでに X アカウントが連携されています。",
     WrongAuthCode: "認証コードが正しくありません。",
     LoginBlockedDueToTryingTooManyTimes:
       "サインインの試行回数が多すぎます。しばらくしてからお試しください。",

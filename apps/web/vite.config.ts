@@ -50,6 +50,7 @@ export default defineConfig(({ command, mode }) => {
       "process.env.NOTEGIC_VITE_MODE": JSON.stringify(mode),
     },
     server: {
+      host: "127.0.0.1",
       port: Number(env.VITE_PORT || 6776),
     },
     optimizeDeps: {

@@ -19,7 +19,7 @@ const DataDeletionContent = () => {
         <ArticleSubParagraphContent>
           <p>
             {
-              "If you used Facebook Login or another third-party sign-in, you can request removal of the sign-in data Notegic received from that provider without requesting deletion of your entire Notegic account. This can include the provider account identifier and an email address used to create your account."
+              "If you used third-party sign-in, you can request removal of the sign-in data Notegic received from that provider without requesting deletion of your entire Notegic account. This can include the provider account identifier and an email address used to create your account."
             }
           </p>
           <ul className="list-disc ml-6 mt-2 space-y-1">
@@ -36,7 +36,7 @@ const DataDeletionContent = () => {
               {", find the linked sign-in method and choose "}
               <strong>{"Disconnect"}</strong>
               {
-                " where available. Complete any verification shown. This removes the link to that provider; it does not change your primary email or delete your Notegic content."
+                " where available. Complete any verification shown. This removes the link to that provider and keeps your Notegic content. Disconnecting your primary provider requires verifying a replacement sign-in method and may update your primary email."
               }
             </li>
             <li>
@@ -202,7 +202,7 @@ const DataDeletionContent = () => {
               {contactEmail}
             </a>
             {
-              " if you cannot sign in, cannot complete verification, or need help removing data supplied by Facebook Login or another provider. Include the email associated with your Notegic account, the provider name if applicable, and whether you want to keep or delete the account. We may ask you to verify that the request belongs to you. Do not include passwords or verification codes."
+              " if you cannot sign in, cannot complete verification, or need help removing data from a provider that is no longer available in Account settings. Include the email associated with your Notegic account, the provider name if applicable, and whether you want to keep or delete the account. We may ask you to verify that the request belongs to you. Do not include passwords or verification codes."
             }
           </p>
         </ArticleSubParagraphContent>

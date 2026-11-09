@@ -169,14 +169,30 @@ export const EnglishSettingsTranslation = {
           "Enter your phone number and authentication code.",
         gmail: "Google account",
         github: "GitHub account",
+        x: "X account",
         gmailDescription: "Connect Google for faster sign-in.",
+        oauthVerifyEmail:
+          "Verify this change with the code sent to your account email.",
+        oauthVerifyFallbackEmail:
+          "Enter the code sent to the email address linked to {{provider}}.",
+        oauthVerifyAgain: "Start again and request a new verification code.",
+        unbind: "Disconnect",
+        googleUnbind: "Disconnect Google",
+        oauthFallbackProvider: "Choose a linked provider to keep signing in",
+        oauthFallbackHint:
+          "Verify another linked sign-in method, set up email sign-in, or delete your account.",
+        oauthStatusUnavailable: "Could not refresh account bindings",
+        oauthRetryStatus: "Retry",
+        oauthStatusUnknown: "Status unavailable",
+        oauthDisconnected: "Account disconnected",
         githubUnbind: "Disconnect GitHub",
-        metaUnbind: "Disconnect Facebook",
+        xUnbind: "Disconnect X",
         githubUnbound: "GitHub account disconnected",
-        metaUnbound: "Facebook account disconnected",
+        xUnbound: "X account disconnected",
+        oauthUnbindRejected:
+          "Check that the account is still linked, then request a new verification code and try again.",
         githubDescription: "Connect GitHub for faster sign-in.",
-        meta: "Facebook account",
-        metaDescription: "Connect Facebook for faster sign-in.",
+        xDescription: "Connect X for faster sign-in.",
         discord: "Discord account",
         discordDescription: "Connect Discord for faster sign-in.",
         enterBackupEmail: "Enter backup email",
@@ -184,6 +200,7 @@ export const EnglishSettingsTranslation = {
         countryCode: "Country code",
         enterPhoneNumber: "Enter phone number",
         bind: "Connect",
+        connected: "Connected",
         confirmBinding: "Confirm connection",
       },
       modification: {
@@ -193,6 +210,8 @@ export const EnglishSettingsTranslation = {
         resetWarning:
           "This permanently clears your personal data, including notes and settings. This action cannot be undone.",
         changeEmail: "Change email",
+        verifyNewEmail: "Enter the verification code sent to your new email.",
+        sendNewEmailCode: "Send verification code",
         changeEmailDialogDescription:
           "Enter a new email different from your current email.",
         enterNewEmail: "Enter new email",

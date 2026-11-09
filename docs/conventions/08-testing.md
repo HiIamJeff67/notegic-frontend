@@ -354,7 +354,7 @@ data. It is development-only because it imports actual client RPC modules.
 The metadata-only case also runs against built production SSR. The live case
 checks HTTP 400/401 at the Gateway and the restored API error in the browser.
 Public exceptions deliberately omit status; Web HTTP adapters must use
-`readAPIResponse` from `api/adapters/apiResponse.adapter.ts` to retain the
+`formatAPIResponse` from `api/adapters/apiResponse.adapter.ts` to retain the
 Response's error status before server-function serialization. Legacy domain
 codes remain distinct from HTTP status. Non-JSON, malformed JSON and missing
 error envelopes receive a safe error without exposing upstream diagnostics.

@@ -20,11 +20,15 @@ export const KoreanServerTranslation = {
     ResponseReadFailed: "로그인 서비스의 응답을 읽지 못했습니다.",
     InvalidResponse: "로그인 서비스에서 잘못된 응답을 받았습니다.",
     WrongPassword: "비밀번호가 올바르지 않습니다.",
-    MetaAccountNotLinked:
-      "다른 방법으로 Notegic에 로그인한 다음 계정 설정에서 Facebook을 연결하세요.",
-    MetaCredentialAlreadyBound: "이미 Facebook 계정이 연결되어 있습니다.",
-    MetaEmailRequired:
-      "Notegic 계정을 만들려면 Facebook에서 유효한 이메일 주소를 공유하도록 허용하세요.",
+    XAccountNotLinked:
+      "X에서 제공한 이메일 주소는 이미 Notegic 계정에서 사용 중입니다. 기존 방식으로 로그인한 뒤 계정 설정에서 X를 연결하세요.",
+    XEmailRequired:
+      "X로 Notegic 계정을 만들려면 X에서 이메일 주소를 확인한 뒤 다시 시도할 때 Notegic의 이메일 접근을 허용하세요.",
+    GoogleCredentialAlreadyBound:
+      "Notegic 계정에 이미 Google 계정이 연결되어 있습니다.",
+    GithubCredentialAlreadyBound:
+      "Notegic 계정에 이미 GitHub 계정이 연결되어 있습니다.",
+    XCredentialAlreadyBound: "Notegic 계정에 이미 X 계정이 연결되어 있습니다.",
     WrongAuthCode: "인증 코드가 올바르지 않습니다.",
     LoginBlockedDueToTryingTooManyTimes:
       "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",

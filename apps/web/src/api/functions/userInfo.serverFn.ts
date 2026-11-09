@@ -5,7 +5,7 @@ import {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
 export const GetMyInfo = createServerFn({ method: "GET" })
@@ -30,7 +30,7 @@ export const GetMyInfo = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as GetMyInfoResponse;
 

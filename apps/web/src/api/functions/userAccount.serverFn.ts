@@ -1,42 +1,40 @@
 import {
   BindGoogleAccountRequest,
   BindGithubAccountRequest,
-  BindMetaAccountRequest,
+  BindXAccountRequest,
   BindGoogleAccountResponse,
   BindGithubAccountResponse,
-  BindMetaAccountResponse,
-  GetMyAccountRequest,
+  BindXAccountResponse,
+  PrepareOAuthOperationRequest,
+  PrepareOAuthOperationResponseSchema,
   GetMyAccountResponse,
+  GetMyAccountResponseSchema,
   UnbindGoogleAccountRequest,
   UnbindGithubAccountRequest,
-  UnbindMetaAccountRequest,
+  UnbindXAccountRequest,
   UnbindGoogleAccountResponse,
   UnbindGithubAccountResponse,
-  UnbindMetaAccountResponse,
+  UnbindXAccountResponse,
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
-export const GetMyAccount = createServerFn({ method: "GET" })
-  .inputValidator((data: GetMyAccountRequest) => data)
-  .handler(async ({ data: request }): Promise<GetMyAccountResponse> => {
+export const GetMyAccount = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GetMyAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
-    const userAgent =
-      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
     const response = await fetch(
       `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "User-Agent": userAgent,
-          "X-CSRF-Token":
-            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          "User-Agent": getRequestHeader("User-Agent") ?? "unknown",
+          "X-CSRF-Token": getRequestHeader("X-CSRF-Token") ?? "",
           ...(inboundCookie ? { Cookie: inboundCookie } : {}),
         },
         credentials: "include",
@@ -44,11 +42,36 @@ export const GetMyAccount = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
-      response
-    )) as GetMyAccountResponse;
+    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
+  }
+);
 
-    return formattedResponse;
+export const PrepareOAuthOperation = createServerFn({ method: "POST" })
+  .inputValidator((data: PrepareOAuthOperationRequest) => data)
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.prepareOAuthOperation}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    return PrepareOAuthOperationResponseSchema.parse(
+      await formatAPIResponse(response)
+    );
   });
 
 export const UpdateMyAccount = createServerFn({ method: "POST" })
@@ -74,7 +97,7 @@ export const UpdateMyAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as UpdateMyAccountResponse;
 
@@ -104,7 +127,7 @@ export const BindGoogleAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as BindGoogleAccountResponse;
 
@@ -134,21 +157,21 @@ export const BindGithubAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as BindGithubAccountResponse;
 
     return formattedResponse;
   });
 
-export const BindMetaAccount = createServerFn({ method: "POST" })
-  .inputValidator((data: BindMetaAccountRequest) => data)
-  .handler(async ({ data: request }): Promise<BindMetaAccountResponse> => {
+export const BindXAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: BindXAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<BindXAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
     const userAgent =
       request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
     const response = await fetch(
-      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindMetaAccount}`,
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindXAccount}`,
       {
         method: "PUT",
         headers: {
@@ -164,9 +187,9 @@ export const BindMetaAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
-    )) as BindMetaAccountResponse;
+    )) as BindXAccountResponse;
 
     return formattedResponse;
   });
@@ -180,7 +203,7 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     const response = await fetch(
       `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindGoogleAccount}`,
       {
-        method: "PUT",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
@@ -194,7 +217,7 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as UnbindGoogleAccountResponse;
 
@@ -224,21 +247,21 @@ export const UnbindGithubAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
     )) as UnbindGithubAccountResponse;
 
     return formattedResponse;
   });
 
-export const UnbindMetaAccount = createServerFn({ method: "POST" })
-  .inputValidator((data: UnbindMetaAccountRequest) => data)
-  .handler(async ({ data: request }): Promise<UnbindMetaAccountResponse> => {
+export const UnbindXAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: UnbindXAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<UnbindXAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
     const userAgent =
       request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
     const response = await fetch(
-      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindMetaAccount}`,
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindXAccount}`,
       {
         method: "DELETE",
         headers: {
@@ -254,9 +277,9 @@ export const UnbindMetaAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await readAPIResponse(
+    const formattedResponse = (await formatAPIResponse(
       response
-    )) as UnbindMetaAccountResponse;
+    )) as UnbindXAccountResponse;
 
     return formattedResponse;
   });

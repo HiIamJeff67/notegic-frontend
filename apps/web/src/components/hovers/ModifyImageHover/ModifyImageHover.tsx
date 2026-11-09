@@ -18,8 +18,9 @@ const ModifyImageHover = ({
   hoverTextClassName = "text-white text-xl font-semibold",
 }: ModifyImageHoverProps) => {
   return (
-    <div
-      className={`w-full h-full inset-0 opacity-0 hover:opacity-100 flex items-center justify-center cursor-pointer transition ${className}`}
+    <button
+      type="button"
+      className={`w-full h-full inset-0 opacity-0 enabled:hover:opacity-100 focus-visible:opacity-100 flex items-center justify-center cursor-pointer transition ${className}`}
       onClick={onClick}
     >
       {imageSrc && (
@@ -32,7 +33,7 @@ const ModifyImageHover = ({
         />
       )}
       <span className={hoverTextClassName}>{hoverText}</span>
-    </div>
+    </button>
   );
 };
 

@@ -30,7 +30,7 @@ test("@environment visitors can open the published API documentation", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.locator("html[data-density]").waitFor();
 
   await expect(
     page
@@ -61,12 +61,37 @@ test("Playground is available only in development", async ({ page }) => {
   }
 });
 
-for (const provider of ["google", "github", "meta", "x", "apple"]) {
+test("the retired Meta OAuth callback is unavailable", async ({ page }) => {
+  const response = await page.goto("/redirect/meta");
+  expect(response?.status()).toBe(404);
+});
+
+test.describe("OAuth callback before hydration", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the first document paint already shows the shared loading cover", async ({
+    page,
+  }) => {
+    const response = await page.goto("/redirect/x");
+    expect(response?.status()).toBe(200);
+    const cover = page.getByRole("status");
+    await expect(cover).toHaveCount(1);
+    await expect(cover).toHaveText("Validating X authentication...");
+    await expect(cover.locator("svg")).toHaveCSS("width", "154px");
+    await expect(cover.locator("p")).toHaveCSS("font-size", "16px");
+  });
+});
+
+for (const provider of ["google", "github", "x", "apple"]) {
   test(`the ${provider} OAuth callback has a public route`, async ({
     page,
   }) => {
+    test.setTimeout(60_000);
     const response = await page.goto(`/redirect/${provider}`);
     expect(response?.status()).toBe(200);
-    await expect(page).toHaveURL(/\/redirect\/error(?:\?|$)/);
+    await expect(page).toHaveURL(/\/login\?oauthFailed=true$/, {
+      timeout: 30_000,
+    });
+    await expect(page.locator(".loading-logo-front")).toHaveCount(0);
   });
 }

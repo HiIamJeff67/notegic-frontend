@@ -3,7 +3,7 @@ import {
   SaveMyMaterialByIdResponse,
 } from "@shared/api/interfaces/material.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { readAPIResponse } from "@/api/adapters/apiResponse.adapter";
+import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { getClientCSRFToken } from "@/api/clientHeaders";
 
 export async function SaveMyMaterialById(
@@ -27,7 +27,7 @@ export async function SaveMyMaterialById(
     }
   );
 
-  const formattedResponse = (await readAPIResponse(
+  const formattedResponse = (await formatAPIResponse(
     response,
     csrfToken
   )) as SaveMyMaterialByIdResponse;

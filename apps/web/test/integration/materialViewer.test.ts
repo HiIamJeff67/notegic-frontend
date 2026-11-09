@@ -158,7 +158,7 @@ const mocks: Record<string, string> = {
   "@tanstack/react-router": `
     export const createFileRoute = () => options => options;
     export const useLoaderData = () => window.ids;
-    export const useRouterState = ({select}) => select({status:'idle'});
+    export const useRouterState = ({select}) => select({status:'idle', location:{pathname:'/'}});
     export const notFound = () => new Error('Not found');`,
   "@/hooks": `
     const shelves = { expandedShelves: new Map(), isItemNodeEditing: () => false };

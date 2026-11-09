@@ -4,15 +4,19 @@ import ts from "typescript";
 
 const root = path.resolve(__dirname, "../..");
 const functions = path.join(root, "src/api/functions");
+const publicAuth = new Set([
+  "Register",
+  "RegisterViaGoogle",
+  "RegisterViaGithub",
+  "RegisterViaX",
+  "Login",
+  "LoginViaGoogle",
+  "LoginViaGithub",
+  "LoginViaX",
+]);
 
 test("every protected server-function upstream takes the current RPC CSRF header", () => {
   let protectedCalls = 0;
-  const publicAuth = new Set([
-    "Register",
-    "RegisterViaGoogle",
-    "Login",
-    "LoginViaGoogle",
-  ]);
   for (const name of readdirSync(functions).filter(name =>
     name.endsWith(".serverFn.ts")
   )) {
@@ -63,7 +67,7 @@ test("every protected server-function upstream takes the current RPC CSRF header
       ts.forEachChild(node, visit);
     };
     visit(source);
-    expect(source.text).toContain("readAPIResponse(");
+    expect(source.text).toContain("formatAPIResponse(");
   }
   expect(protectedCalls).toBeGreaterThan(120);
 });
@@ -94,7 +98,7 @@ test("hooks cannot replay cached response tokens into sessionStorage", () => {
       expect(source).not.toContain("setClientCSRFToken");
   }
   const auth = readFileSync(path.join(directory, "auth.hook.ts"), "utf8");
-  expect(auth.match(/setClientCSRFToken\(/g)).toHaveLength(4);
+  expect(auth.match(/setClientCSRFToken\(/g)).toHaveLength(publicAuth.size);
 });
 
 test("settings cooldown and empty membership responses cannot bypass renewal handling", () => {
@@ -106,7 +110,7 @@ test("settings cooldown and empty membership responses cannot bypass renewal han
     const source = readFileSync(path.join(functions, name), "utf8");
     expect(source).not.toContain("if (response.status === 204)");
     if (name === "userSetting.serverFn.ts") {
-      expect(source.indexOf("await readAPIResponse(response)")).toBeLessThan(
+      expect(source.indexOf("await formatAPIResponse(response)")).toBeLessThan(
         source.indexOf("response.status === 429")
       );
       expect(source).toContain("error instanceof NotegicAPIError");
@@ -118,7 +122,7 @@ test("direct browser uploads use the current token and the shared response reade
   for (const name of ["material.clientFn.ts", "userInfo.clientFn.ts"]) {
     const source = readFileSync(path.join(functions, name), "utf8");
     expect(source).toContain("const csrfToken = getClientCSRFToken()");
-    expect(source).toContain("readAPIResponse(");
+    expect(source).toContain("formatAPIResponse(");
     expect(source).not.toContain("request.header.csrfToken");
   }
 });

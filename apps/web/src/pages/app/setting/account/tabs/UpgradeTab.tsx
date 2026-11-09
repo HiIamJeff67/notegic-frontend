@@ -1,3 +1,4 @@
+import { useNetwork } from "@/hooks/useNetwork";
 import { UserPlan } from "@shared/api/interfaces/enums";
 import {
   type PlanLimitation,
@@ -182,6 +183,7 @@ interface UpgradeTabProps {
 
 const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
   const { i18n, t } = useTranslation();
+  const { isOnline } = useNetwork();
   const userManager = useUser();
   const currentPlan = userManager.userData?.plan ?? UserPlan.Free;
 
@@ -323,9 +325,15 @@ const UpgradeTab = ({ layout = "panel" }: UpgradeTabProps) => {
               {t("settingsPage.account.upgrade.supportDescription")}
             </p>
           </div>
-          <Button asChild className="shrink-0">
+          <Button asChild className="shrink-0 aria-disabled:opacity-50">
             <a
-              href="https://www.buymeacoffee.com/HiIamJeff67"
+              href={
+                isOnline
+                  ? "https://www.buymeacoffee.com/HiIamJeff67"
+                  : undefined
+              }
+              aria-disabled={!isOnline}
+              title={isOnline ? undefined : t("workspace.pages.accountOffline")}
               target="_blank"
               rel="noreferrer"
             >

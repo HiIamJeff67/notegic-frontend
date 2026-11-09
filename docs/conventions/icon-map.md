@@ -79,7 +79,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-11-03, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **133 referenced export names / 108 distinct
+imports and re-exports (excluding tests). There are **132 referenced export names / 107 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -191,7 +191,6 @@ The source column gives a representative existing consumer, not every call site.
 | `UserPlusIcon` | Add/invite participant | [ParticipantsDropdown], [ShelfSharingDialog] |
 | `UserRoundIcon` | Account navigation and personal profile | [AppSidebar], [AppCommandItem], [AccountSettingsPage] |
 | `UsersIcon` | Participants / collaboration | [ParticipantsDropdown] |
-| `WifiOffIcon` | Offline settings | [OfflineTab] |
 | `Workflow` | Open / realign dependency graph | [RoutineMenu], [GraphToolbar], [AppCommandItem]; not Routine identity |
 | `WrenchIcon` | Dashboard configuration | [DashboardPage] |
 | `X`, `XIcon` | Close / dismiss / clear | [Closeable], [GraphCanvas], [Dialog], [Toast] |
@@ -210,9 +209,9 @@ entity alias instead of its underlying custom file.
 | `LanguageIcon` | Home language menu | [LanguageIcon] |
 | `NoteIcon` | Home note/brand illustration | [NoteIcon] |
 | `OAuthGoogleIcon` | Google sign-in provider | [OAuthIcon], [AuthPanel] |
-| `OAuthMetaIcon` | Meta sign-in provider | [OAuthIcon], [AuthPanel] |
 | `OAuthAppleIcon` | Apple sign-in provider | [OAuthIcon], [AuthPanel] |
-| `OAuthGithubIcon` | GitHub sign-in provider; preserve existing export spelling | [OAuthIcon], [AuthPanel] |
+| `OAuthGithubIcon` | GitHub sign-in provider, GitHub mark; preserve existing export spelling | [OAuthIcon], [AuthPanel] |
+| `OAuthXIcon` | X sign-in provider, X mark | [OAuthIcon], [AuthPanel] |
 | `PublicAvatarImage` | Shared/public avatar image; sharing/participants | [PublicAvatarImage]; image wrapper, not a glyph |
 | `ShelfCaseIcon` | Root shelf custom base glyph | [ShelfCaseIcon]; consume as `RootShelfIcon` |
 | `ShelfIcon` | Sub shelf custom base glyph | [ShelfIcon]; consume as `SubShelfIcon` |
@@ -367,7 +366,6 @@ assets or Docker services were removed. No commit or push was performed.
 [TrashPage]: ../../apps/web/src/pages/app/trash/TrashPage.tsx
 [ParticipantsDropdown]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackParticipantsDropdown.tsx
 [ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog.tsx
-[OfflineTab]: ../../apps/web/src/pages/app/setting/account/tabs/OfflineTab.tsx
 [Closeable]: ../../apps/web/src/components/commons/Closeable/Closeable.tsx
 [Dialog]: ../../apps/web/src/components/ui/dialog.tsx
 [AvatarIcon]: ../../apps/web/src/components/icons/AvatarIcon.tsx

@@ -12,6 +12,7 @@ test.each([
   undefined,
   null,
   "delete",
+  "unbinding",
   0,
   {},
   [],
@@ -20,7 +21,12 @@ test.each([
 });
 
 test("validates the complete pending state shape without browser storage", () => {
-  const pending = { state: "a".repeat(64), action: "login", createdAt: 1_000 };
+  const pending = {
+    state: "a".repeat(64),
+    action: "login",
+    codeVerifier: "b".repeat(64),
+    createdAt: 1_000,
+  };
   expect(isPendingOAuthState(pending)).toBe(true);
   for (const invalid of [
     null,
@@ -37,12 +43,16 @@ test("validates the complete pending state shape without browser storage", () =>
   }
 });
 
-test("GitHub requires its own provider marker and valid PKCE verifier", () => {
+test.each([
+  "google",
+  "github",
+  "x",
+])("%s requires a valid PKCE verifier", provider => {
   const pending = {
     state: "a".repeat(64),
-    action: "binding",
+    action: "login",
     createdAt: 1000,
-    provider: "github",
+    provider,
     codeVerifier: "b".repeat(64),
   };
   expect(isPendingOAuthState(pending)).toBe(true);
