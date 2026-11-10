@@ -202,7 +202,7 @@ describe("application icon conventions", () => {
     for (const match of iconMap.matchAll(
       /(?:\[[^\]\n]+\]\(([^)]+)\)|^\[[^\]\n]+\]: (\S+))/gm
     )) {
-      const target = match[1] ?? match[2];
+      const [target] = (match[1] ?? match[2]).split("#", 1);
       expect(existsSync(path.resolve(path.dirname(mapPath), target))).toBe(
         true
       );

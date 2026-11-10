@@ -1,5 +1,9 @@
 # Style Conventions
 
+Token values, theme hex approximations, and the stylesheet ownership table
+live in the [UI catalog](../designs/ui/README.md). This document is the rule
+for how those selections are applied.
+
 ## Tokens and global CSS
 
 - `apps/web/src/global/styles/globals.css` is the global entrypoint. It imports Tailwind, animation, scrollbar, loading, and sidebar styles and defines theme and density tokens. Feature components import their own editor, Article, Inspector, or graph overrides only where needed.

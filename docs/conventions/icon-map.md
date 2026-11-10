@@ -27,6 +27,12 @@ the actual component directly; keep entity aliases in [WorkspaceEntityIcons].
    re-exports, local aliases, custom components and inline SVG, not only JSX
    names. Keep legacy aliases searchable; do not mass-rename working imports.
 
+A new icon component or helper still has to pass
+[Value of a new abstraction](05-helpers-and-abstractions.md#value-of-a-new-abstraction).
+Register the glyph here. Do not add an icon registry, a name-mapping wrapper,
+or a new icon framework. Confirm a new pattern with the repository owner
+before writing it.
+
 For a rescan, start with:
 
 ```sh
@@ -200,7 +206,7 @@ Inventory is not automatic approval to repurpose an icon or add a control.
 ## Custom components and wrappers
 
 All 9 files beside `WorkspaceEntityIcons.ts` in `components/icons/` are listed
-here (12 components, including the four OAuth exports). Reuse the canonical
+here (14 components, including the six OAuth exports). Reuse the canonical
 entity alias instead of its underlying custom file.
 
 | Export / component | Meaning and current use | Source / status |
@@ -210,7 +216,9 @@ entity alias instead of its underlying custom file.
 | `NoteIcon` | Home note/brand illustration | [NoteIcon] |
 | `OAuthGoogleIcon` | Google sign-in provider | [OAuthIcon], [AuthPanel] |
 | `OAuthAppleIcon` | Apple sign-in provider | [OAuthIcon], [AuthPanel] |
+| `OAuthDiscordIcon` | Discord sign-in provider, Discord mark | [OAuthIcon], [AuthPanel] |
 | `OAuthGithubIcon` | GitHub sign-in provider, GitHub mark; preserve existing export spelling | [OAuthIcon], [AuthPanel] |
+| `OAuthMicrosoftIcon` | Microsoft sign-in provider, Microsoft four-square mark | [OAuthIcon], [AuthPanel] |
 | `OAuthXIcon` | X sign-in provider, X mark | [OAuthIcon], [AuthPanel] |
 | `PublicAvatarImage` | Shared/public avatar image; sharing/participants | [PublicAvatarImage]; image wrapper, not a glyph |
 | `ShelfCaseIcon` | Root shelf custom base glyph | [ShelfCaseIcon]; consume as `RootShelfIcon` |

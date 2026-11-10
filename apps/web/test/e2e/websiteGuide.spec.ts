@@ -221,7 +221,7 @@ for (const width of [390, 1440]) {
           .map(element => stroke(element, "::before")),
       };
     });
-    expect(strokes.paragraphs).toHaveLength(4);
+    expect(strokes.paragraphs).toHaveLength(5);
     expect(strokes.subparagraphs.length).toBeGreaterThan(20);
     for (const [lines, height] of [
       [strokes.paragraphs, 2],

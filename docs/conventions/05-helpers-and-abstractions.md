@@ -8,7 +8,10 @@ future consumer.
 ## Default rule
 
 - Do not create a helper, hook, wrapper, utility module, interface, adapter, or
-  dependency for a single anticipated future use.
+  dependency for a single anticipated future use. Likely reuse of a stable
+  concept follows
+  [Value of a new abstraction](#value-of-a-new-abstraction); a new pattern
+  still needs the repository owner's confirmation.
 - Do not create a new file only to hold a helper used by one component, hook,
   page, or feature module. Keep it local unless the file boundary itself is a
   real ownership or testing boundary.
@@ -183,6 +186,35 @@ Before writing a helper:
 
 Do not create a second formatter, storage wrapper, query wrapper, or validation
 helper when an existing frontend boundary already owns that behavior.
+
+## Value of a new abstraction
+
+This gate applies to a helper function, helper method, hook, UI component, or
+any other new component. "New" means the existing pattern cannot express the
+need. A new screen, dialog, route, or entry point is not that need. If the
+current owner can take the caller's context, use it.
+
+When creation is actually required, judge the value by reuse:
+
+1. Past or present repetition. If more than one caller already needs the same
+   behavior, extract one owner they import. Follow the nearest existing
+   pattern for the file, name, props, and tests.
+2. Likely future reuse. The same extraction is allowed when the behavior is a
+   stable concept later callers in this product are likely to need, and the
+   abstraction does not collect flags for imaginary cases. Still follow an
+   existing pattern.
+3. A new pattern is a new folder role, registry, framework, generic helper
+   layer, or any structure this repository does not already use. Confirm it
+   with the repository owner before writing it. Do not introduce it silently.
+4. A one-use fragment stays beside its owner. One imagined future caller is
+   not reuse value.
+
+UI selections and their exceptions are recorded in the
+[UI catalog](../designs/ui/README.md). `AuthCodeInput` is the shared
+account-settings code field. Public `AuthPanel` flows keep their own code
+field and must not be folded into that component. Icon additions follow this
+gate and are registered in the [Icon map](icon-map.md); they do not get a
+second registry.
 
 ## Types and constants stay with their owner
 

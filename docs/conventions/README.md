@@ -20,6 +20,7 @@ recurring patterns into explicit rules for new work.
 | --- | --- |
 | [01-ui.md](01-ui.md) | UI reuse, shared loading covers, composition, accessibility, and responsive layout |
 | [02-styles.md](02-styles.md) | Tailwind tokens, global CSS, density, motion, and visual language |
+| [UI catalog](../designs/ui/README.md) | Current appearance, CSS, layout, and component selections; look up an owner before creating one |
 | [03-icons-and-images.md](03-icons-and-images.md) | Entity icons, action icons, images, and media ownership |
 | [Icon map](icon-map.md) | Searchable inventory of existing icon meanings, exports, aliases, sources and reuse boundaries |
 | [04-file-and-folder-naming.md](04-file-and-folder-naming.md) | TypeScript file names, folder names, route names, and role suffixes |
