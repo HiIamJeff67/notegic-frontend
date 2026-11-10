@@ -2,6 +2,7 @@ import type { UUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
+import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
 import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
 import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
 import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
@@ -18,7 +19,10 @@ type DatabaseSync = {
 const { DatabaseSync } = process.getBuiltinModule("node:sqlite") as {
   DatabaseSync: new (path: string) => DatabaseSync;
 };
-let mockLocalDB: ReturnType<typeof drizzle> & { isReady: boolean };
+let mockLocalDB: ReturnType<typeof drizzle> & {
+  isEnabled: boolean;
+  isReady: boolean;
+};
 jest.mock("@/api/local/db", () => ({
   get localDB() {
     return mockLocalDB;
@@ -81,7 +85,7 @@ const openFixture = () => {
       const rows = statement.all(...params).map(row => Object.values(row));
       return { rows: method === "get" ? rows[0] : rows };
     }),
-    { isReady: true }
+    { isEnabled: true, isReady: true }
   );
   return db;
 };
@@ -248,4 +252,48 @@ describe("Trash confirmed actions in real SQLite", () => {
       db.close();
     }
   });
+});
+
+it("clears the reset account's local workspace without removing shared stations", async () => {
+  const db = openFixture();
+  try {
+    db.exec(`
+      INSERT INTO UserTable (public_id,name,display_name,email,is_logged_in)
+        VALUES ('other','Other','Other','other@example.invalid',0);
+      INSERT INTO StationTable (id,name) VALUES ('shared','Shared');
+      INSERT INTO UsersToStationsTable (user_public_id,station_id,permission) VALUES
+        ('user','station','Owner'),('other','shared','Owner'),('user','shared','Admin');
+      INSERT INTO RoutineTable (id,station_id,title) VALUES ('sharedRoutine','shared','Shared routine');
+      INSERT INTO RoutineTaskTable (id,routine_id,payload) VALUES
+        ('task','routine','{}'),('sharedTask','sharedRoutine','{}');
+      INSERT INTO RoutinesToTasksTable (routine_id,task_id) VALUES
+        ('routine','task'),('sharedRoutine','sharedTask');
+      INSERT INTO RoutineTag (id,owner_public_id) VALUES ('tag','user'),('sharedTag','other');
+      INSERT INTO RoutinesToTags (routine_id,tag_id) VALUES
+        ('routine','tag'),('sharedRoutine','tag'),('sharedRoutine','sharedTag');
+    `);
+    await AuthLocalSynchronizer.syncResetMe({
+      success: true,
+      exception: null,
+      data: { updatedAt: new Date() },
+      embedded: { publicId: "user" },
+    });
+
+    expect(db.prepare("SELECT id FROM RootShelfTable").all()).toEqual([]);
+    expect(db.prepare("SELECT id FROM StationTable").all()).toEqual([
+      { id: "shared" },
+    ]);
+    expect(db.prepare("SELECT id FROM RoutineTable").all()).toEqual([
+      { id: "sharedRoutine" },
+    ]);
+    expect(db.prepare("SELECT id FROM RoutineTaskTable").all()).toEqual([
+      { id: "sharedTask" },
+    ]);
+    expect(db.prepare("SELECT tag_id FROM RoutinesToTags").all()).toEqual([
+      { tag_id: "sharedTag" },
+    ]);
+    expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
+  } finally {
+    db.close();
+  }
 });

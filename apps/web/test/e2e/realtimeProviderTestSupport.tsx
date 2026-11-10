@@ -82,7 +82,7 @@ export const mountRealtimeProviderExample = (
             value={
               {
                 preferences: defaultLocalPreferences,
-                notificationPermission: "unknown",
+                canSendDesktopNotification: _priority => false,
               } as ContextType<typeof LocalPreferencesContext>
             }
           >

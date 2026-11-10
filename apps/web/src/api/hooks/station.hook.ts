@@ -87,7 +87,8 @@ export const useGetMyStationById = (
   const queryClient = getQueryClient();
 
   const perform = async (
-    request?: GetMyStationByIdRequest
+    request?: GetMyStationByIdRequest,
+    signal?: AbortSignal
   ): Promise<GetMyStationByIdResponse> => {
     if (!request) {
       throw new NotegicValidationError(
@@ -101,33 +102,27 @@ export const useGetMyStationById = (
       }
 
       const response = await queryFnGetMyStationById(request);
+      signal?.throwIfAborted();
       await StationLocalSynchronizer.syncGetMyStationById(response);
       return response;
     } catch (error) {
-      if (
-        error instanceof NotegicAPIError ||
-        error instanceof NotegicFetchError
-      ) {
-        const station =
-          await StationLocalSimulator.simulateGetMyStationById(request);
-        return (
-          NetworkExceptions.isMissingNetworkError(error)
-            ? {
-                success: true,
-                data: station,
-                exception: null,
-                embedded: { publicId: "" },
-              }
-            : {
-                success: false,
-                data: station,
-                exception: error.unWrap,
-                embedded: { publicId: "" },
-              }
-        ) as GetMyStationByIdResponse;
+      if (error instanceof NotegicAPIError && error.isResourceUnavailable) {
+        return {
+          success: false,
+          data: null,
+          exception: error.unWrap,
+          embedded: { publicId: "" },
+        } as unknown as GetMyStationByIdResponse;
       }
-
-      throw error;
+      if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
+      const station =
+        await StationLocalSimulator.simulateGetMyStationById(request);
+      return {
+        success: true,
+        data: station,
+        exception: null,
+        embedded: { publicId: "" },
+      } as GetMyStationByIdResponse;
     }
   };
 
@@ -136,7 +131,7 @@ export const useGetMyStationById = (
       hookRequest?.param.stationId as UUID | undefined,
       hookRequest?.param.isDeleted ?? false
     ),
-    queryFn: async () => perform(hookRequest),
+    queryFn: async ({ signal }) => perform(hookRequest, signal),
     staleTime: UseQueryDefaultOptions.staleTime,
     refetchOnWindowFocus: UseQueryDefaultOptions.refetchOnWindowFocus,
     refetchOnMount: UseQueryDefaultOptions.refetchOnMount,
@@ -152,7 +147,7 @@ export const useGetMyStationById = (
         callbackRequest.param.stationId as UUID | undefined,
         callbackRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => perform(callbackRequest),
+      queryFn: async ({ signal }) => perform(callbackRequest, signal),
       staleTime: UseQueryDefaultOptions.staleTime,
       ...options,
     });

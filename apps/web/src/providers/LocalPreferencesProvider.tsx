@@ -3,6 +3,7 @@ import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
+import { isQuietHours } from "@shared/lib/time/timeString";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import React, { createContext, useEffect, useState } from "react";
 import { cleanupLocalData } from "@/api/local/cleanup";
@@ -25,8 +26,6 @@ export type PreferencePage =
 export type Density = "comfortable" | "balanced" | "compact";
 export type StartSurface = "dashboard" | "routines";
 export type EditorWidth = "narrow" | "standard" | "wide";
-export const MaxSidebarHoverDelay = 3000;
-export const SidebarHoverDelayStep = 250;
 export type NotificationPermissionState =
   | "default"
   | "granted"
@@ -67,7 +66,7 @@ export type LocalPreferences = {
   quietModeEnd: string;
 };
 
-export type UpdatePreference = <Key extends keyof LocalPreferences>(
+type UpdatePreference = <Key extends keyof LocalPreferences>(
   key: Key,
   value: LocalPreferences[Key]
 ) => void;
@@ -77,52 +76,28 @@ export type PreferenceChangeListener = <Key extends keyof LocalPreferences>(
   value: LocalPreferences[Key]
 ) => void;
 
-const timeToMinute = (value: string) => {
-  const [hours = "", minutes = ""] = value.split(":");
-  const hour = Number(hours);
-  const minute = Number(minutes);
-
-  if (
-    !Number.isInteger(hour) ||
-    !Number.isInteger(minute) ||
-    hour < 0 ||
-    hour > 23 ||
-    minute < 0 ||
-    minute > 59
-  ) {
-    return null;
-  }
-
-  return hour * 60 + minute;
+export type LocalPreferencesContextValue = {
+  preferences: LocalPreferences;
+  startPath: string;
+  updatePreference: UpdatePreference;
+  subscribePreferenceChanges: (
+    listener: PreferenceChangeListener
+  ) => () => void;
+  resetPreferences: () => void;
+  copyPreferences: () => Promise<void>;
+  clipboardState: "idle" | "copied" | "failed";
+  storageEstimate: StorageEstimate | null;
+  storageUsagePercent: number;
+  notificationPermission: NotificationPermissionState;
+  canSendDesktopNotification: (
+    priority: "low" | "normal" | "high" | "critical"
+  ) => boolean;
+  requestNotificationPermission: () => Promise<void>;
+  isReady: boolean;
 };
 
-export const isQuietHours = (now: Date, start: string, end: string) => {
-  const startMinute = timeToMinute(start);
-  const endMinute = timeToMinute(end);
-  if (startMinute === null || endMinute === null || startMinute === endMinute) {
-    return false;
-  }
-
-  const currentMinute = now.getHours() * 60 + now.getMinutes();
-  return startMinute < endMinute
-    ? currentMinute >= startMinute && currentMinute < endMinute
-    : currentMinute >= startMinute || currentMinute < endMinute;
-};
-
-export const canSendDesktopNotification = (
-  preferences: Pick<
-    LocalPreferences,
-    "desktopNotifications" | "quietMode" | "quietModeStart" | "quietModeEnd"
-  >,
-  permission: NotificationPermissionState,
-  priority: "low" | "normal" | "high" | "critical",
-  now = new Date()
-) =>
-  preferences.desktopNotifications &&
-  permission === "granted" &&
-  (!preferences.quietMode ||
-    priority === "critical" ||
-    !isQuietHours(now, preferences.quietModeStart, preferences.quietModeEnd));
+export const MaxSidebarHoverDelay = 3000;
+export const SidebarHoverDelayStep = 250;
 
 export const defaultLocalPreferences: LocalPreferences = {
   density: "balanced",
@@ -151,13 +126,6 @@ export const defaultLocalPreferences: LocalPreferences = {
   quietMode: true,
   quietModeStart: "22:00",
   quietModeEnd: "08:00",
-};
-
-export const getPreferredStartPath = (preferences: LocalPreferences) => {
-  if (preferences.startSurface === "routines") {
-    return WebURLPathDictionary.app.routines._;
-  }
-  return WebURLPathDictionary.app.dashboard._;
 };
 
 const localPreferenceStorageKeys = [
@@ -190,23 +158,6 @@ const getLocalPreferenceStorageValue = (
   return value;
 };
 
-export type LocalPreferencesContextValue = {
-  preferences: LocalPreferences;
-  updatePreference: UpdatePreference;
-  subscribePreferenceChanges: (
-    listener: PreferenceChangeListener
-  ) => () => void;
-  resetPreferences: () => void;
-  copyPreferences: () => Promise<void>;
-  clipboardState: "idle" | "copied" | "failed";
-  storageEstimate: StorageEstimate | null;
-  storageUsagePercent: number;
-  notificationPermission: NotificationPermissionState;
-  requestNotificationPermission: () => Promise<void>;
-  isReady: boolean;
-};
-
-// Vite retains this module-local value across HMR without retaining user state.
 export const LocalPreferencesContext: React.Context<
   LocalPreferencesContextValue | undefined
 > =
@@ -393,6 +344,18 @@ export const LocalPreferencesProvider = ({
     window.setTimeout(() => setClipboardState("idle"), 1400);
   };
 
+  const canSendDesktopNotification: LocalPreferencesContextValue["canSendDesktopNotification"] =
+    priority =>
+      preferences.desktopNotifications &&
+      notificationPermission === "granted" &&
+      (!preferences.quietMode ||
+        priority === "critical" ||
+        !isQuietHours(
+          new Date(),
+          preferences.quietModeStart,
+          preferences.quietModeEnd
+        ));
+
   const requestNotificationPermission = async () => {
     if (typeof window === "undefined" || !("Notification" in window)) {
       setNotificationPermission("unknown");
@@ -418,6 +381,10 @@ export const LocalPreferencesProvider = ({
     <LocalPreferencesContext.Provider
       value={{
         preferences,
+        startPath:
+          preferences.startSurface === "routines"
+            ? WebURLPathDictionary.app.routines._
+            : WebURLPathDictionary.app.dashboard._,
         updatePreference,
         subscribePreferenceChanges,
         resetPreferences,
@@ -426,6 +393,7 @@ export const LocalPreferencesProvider = ({
         storageEstimate,
         storageUsagePercent,
         notificationPermission,
+        canSendDesktopNotification,
         requestNotificationPermission,
         isReady,
       }}

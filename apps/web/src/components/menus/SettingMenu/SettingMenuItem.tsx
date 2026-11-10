@@ -5,6 +5,7 @@ import { SettingMenuLayoutContext } from "./SettingMenu";
 interface SettingMenuItemProps {
   title: string;
   description?: string;
+  descriptionDetail?: string;
   children: ReactNode;
   hideSeparator?: boolean;
   titleClassName?: string;
@@ -14,6 +15,7 @@ interface SettingMenuItemProps {
 const SettingMenuItem = ({
   title,
   description,
+  descriptionDetail,
   children,
   hideSeparator = false,
   titleClassName = "",
@@ -21,12 +23,20 @@ const SettingMenuItem = ({
 }: SettingMenuItemProps) => {
   const inheritedLayout = useContext(SettingMenuLayoutContext);
   const layout = itemLayout ?? inheritedLayout;
+  const descriptionContent = descriptionDetail ? (
+    <>
+      {description}
+      <span className="block wrap-anywhere">{descriptionDetail}</span>
+    </>
+  ) : (
+    description
+  );
 
   if (layout === "page") {
     return (
       <ArticleSettingItem
         title={title}
-        description={description}
+        description={descriptionContent}
         hideSeparator={hideSeparator}
         titleClassName={titleClassName}
       >
@@ -43,9 +53,9 @@ const SettingMenuItem = ({
     >
       <div className="min-w-0 flex-1">
         <div className={`text-sm font-medium ${titleClassName}`}>{title}</div>
-        {description && (
+        {descriptionContent && (
           <div className="text-sm text-muted-foreground mt-1">
-            {description}
+            {descriptionContent}
           </div>
         )}
       </div>

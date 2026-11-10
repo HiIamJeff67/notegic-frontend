@@ -17,14 +17,13 @@ import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
-import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
 import { useOAuth } from "@/hooks/useOAuth";
 
 const LoginPage = () => {
   const router = useAppRouter();
-  const { beginOAuth, githubAvailable, xAvailable } = useOAuth();
+  const { perform, githubAvailable, xAvailable } = useOAuth();
   const { t } = useTranslation();
-  const { preferences } = useLocalPreferences();
+  const { startPath } = useLocalPreferences();
   const userManager = useUser();
 
   const loginMutator = useLogin();
@@ -78,7 +77,7 @@ const LoginPage = () => {
 
           setAccount("");
           setPassword("");
-          router.push(getPreferredStartPath(preferences));
+          router.push(startPath);
         } catch (error) {
           setPassword("");
           resetTurnstile();
@@ -89,7 +88,7 @@ const LoginPage = () => {
     [
       account,
       password,
-      preferences,
+      startPath,
       userManager,
       loginMutator,
       router,
@@ -158,20 +157,20 @@ const LoginPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleLogin"),
-              onClick: () => beginOAuth("google", "login"),
+              onClick: () => perform("google", "login"),
               disabled: turnstileRequired && !turnstileToken,
             },
             {
               provider: "github",
               label: t("workspace.pages.githubLogin"),
-              onClick: () => beginOAuth("github", "login"),
+              onClick: () => perform("github", "login"),
               disabled:
                 !githubAvailable || (turnstileRequired && !turnstileToken),
             },
             {
               provider: "x",
               label: t("workspace.pages.xLogin"),
-              onClick: () => beginOAuth("x", "login"),
+              onClick: () => perform("x", "login"),
               disabled: !xAvailable || (turnstileRequired && !turnstileToken),
             },
           ]}

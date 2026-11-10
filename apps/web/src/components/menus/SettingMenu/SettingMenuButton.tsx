@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 interface SettingMenuButtonProps {
   children: React.ReactNode;
   onClick: () => void;
+  ariaLabel?: string;
   className?: string;
   displayDotBadge?: boolean;
   countBadgeCount?: number;
@@ -20,6 +21,7 @@ interface SettingMenuButtonProps {
 const SettingMenuButton = ({
   children,
   onClick,
+  ariaLabel,
   className = "",
   displayDotBadge,
   countBadgeCount,
@@ -28,8 +30,9 @@ const SettingMenuButton = ({
 }: SettingMenuButtonProps) => {
   return (
     <Button
+      aria-label={ariaLabel}
       variant={variant}
-      className={`relative ${className}`}
+      className={`relative min-w-[calc(4ch+2*var(--density-control-padding-x,1rem)+2px)] ${className}`}
       onClick={onClick}
       disabled={disable}
     >

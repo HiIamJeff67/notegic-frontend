@@ -141,10 +141,11 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         description: "이메일을 확인하고 계정 보안 작업을 관리합니다.",
         verifyEmail: "이메일 확인",
         verifyEmailDescription: "보낸 인증 코드로 이메일을 확인합니다.",
-        enterCodeForEmail: "{{email}}(으)로 보낸 인증 코드를 입력하세요.",
+        enterCodeForEmail:
+          "{{email}}(으)로 인증 코드를 요청해 이메일을 확인하세요.",
         enterCode: "인증 코드 입력",
         resendIn: "{{count}}초 후 재전송",
-        resendCode: "인증 코드 재전송",
+        resendCode: "재전송",
         verified: "확인됨",
         verify: "확인",
         activity: "계정 활동",
@@ -156,16 +157,19 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         description: "보조 연락처와 외부 계정을 연결합니다.",
         backupEmail: "보조 이메일 연결",
         backupEmailDescription: "계정 복구를 위한 보조 이메일을 추가합니다.",
+        currentBackupEmail: "현재 보조 이메일: {{email}}",
         backupEmailDialogDescription:
           "보조 이메일과 인증 코드를 입력하세요. 로그인 이메일과 달라야 합니다.",
         phoneNumber: "전화번호 연결",
         phoneNumberDescription: "계정 복구를 위해 전화번호를 추가합니다.",
+        currentPhoneNumber: "현재 전화번호: {{phone}}",
         phoneNumberDialogDescription: "전화번호와 인증 코드를 입력하세요.",
         gmail: "Google 계정 연결",
         github: "GitHub 계정 연결",
         x: "X 계정 연결",
         gmailDescription: "Google을 연결하여 빠르게 로그인합니다.",
-        oauthVerifyEmail: "계정 이메일로 전송된 코드로 이 변경을 확인하세요.",
+        oauthVerifyEmail:
+          "계정 이메일로 인증 코드를 요청해 이 변경을 확인하세요.",
         oauthVerifyFallbackEmail:
           "{{provider}}에 연결된 이메일로 전송된 인증 코드를 입력하세요.",
         oauthVerifyAgain: "다시 시작하고 새 인증 코드를 요청하세요.",
@@ -188,24 +192,30 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         xDescription: "X을 연결하여 빠르게 로그인합니다.",
         discord: "Discord 계정 연결",
         discordDescription: "Discord를 연결하여 빠르게 이용합니다.",
+        set: "설정",
         enterBackupEmail: "보조 이메일 입력",
         selectCountryCode: "국가 코드 선택",
         countryCode: "국가 코드",
         enterPhoneNumber: "전화번호 입력",
         bind: "연결",
         connected: "연결됨",
-        confirmBinding: "연결 확인",
       },
       modification: {
         title: "계정 변경",
         description:
           "계정을 재설정하거나 되돌릴 수 없는 계정 변경을 수행합니다.",
         resetAccount: "계정 재설정",
+        resetAction: "재설정",
+        changeAction: "변경",
         resetWarning:
           "메모와 설정을 포함한 개인 데이터가 영구 삭제되며 되돌릴 수 없습니다.",
         changeEmail: "이메일 변경",
-        verifyNewEmail: "새 이메일 주소로 전송된 인증 코드를 입력하세요.",
-        sendNewEmailCode: "인증 코드 보내기",
+        currentEmail: "현재 이메일: {{email}}",
+        verifyCurrentEmail:
+          "새 이메일 주소와 현재 이메일 주소({{email}})로 받은 인증 코드를 입력하세요.",
+        verifyNewEmail:
+          "새 이메일 주소({{email}})로 전송된 인증 코드를 입력하세요.",
+        continue: "계속",
         changeEmailDialogDescription:
           "현재 이메일과 다른 새 이메일을 입력하세요.",
         enterNewEmail: "새 이메일 입력",
@@ -214,7 +224,6 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "계정 보안을 위해 비밀번호를 업데이트합니다.",
         changePasswordDialogDescription:
           "새 비밀번호와 인증 코드를 입력하세요.",
-        updatePassword: "비밀번호 업데이트",
         deleteAccount: "계정 삭제",
         deleteAccountDescription: "계정과 모든 데이터를 영구적으로 삭제합니다.",
         deleteAccountTitle: "계정 영구 삭제",
@@ -222,13 +231,10 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
           "경고: 계정과 모든 데이터가 영구 삭제되며 되돌릴 수 없습니다.",
         enterDelete: "삭제를 확인하려면 DELETE 입력",
         deletePermanently: "영구 삭제",
-        confirmReset: "재설정 확인",
-        confirmChange: "변경 확인",
+        reset: "재설정",
         passwordMismatch: "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.",
         deleteConfirmationInvalid: "계정을 삭제하려면 DELETE를 입력하세요.",
       },
-      authCodeAlreadySent:
-        "인증 코드를 이미 보냈습니다. {{count}}초 후에 다시 시도하세요.",
       authCodeSent: "인증 코드를 {{email}}(으)로 보냈습니다.",
       sessionExpired: "세션이 만료되었습니다. 다시 로그인하세요.",
       fields: {

@@ -1,7 +1,13 @@
 import { useApolloClient } from "@apollo/client/react";
+import type { GetMyAccountResponse } from "@shared/api/interfaces/userAccount.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { type QueryKey, useMutation } from "@tanstack/react-query";
+import {
+  type QueryClient,
+  type QueryKey,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { clearClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
 import {
   mutationFnDeleteMe,
@@ -21,7 +27,23 @@ import {
   mutationFnValidateEmail,
 } from "@/api/invokers/auth.invoker";
 import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
+import { clearSearchItems } from "@/api/policies/searchItems.policy";
 import { clearSearchRootShelves } from "@/api/policies/searchRootShelves.policy";
+import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
+import { clearSearchRoutineTasks } from "@/api/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/policies/searchStations.policy";
+
+const markAccountEmailVerified = async (queryClient: QueryClient) => {
+  const queryKey = queryKeys.userAccount.my();
+  await queryClient.cancelQueries({ queryKey });
+  queryClient.setQueryData<GetMyAccountResponse>(queryKey, current =>
+    current
+      ? { ...current, data: { ...current.data, emailVerified: true } }
+      : undefined
+  );
+  void queryClient.invalidateQueries({ queryKey });
+};
 
 export const useRegister = () => {
   const queryClient = getQueryClient();
@@ -215,8 +237,10 @@ export const useSendAuthCode = () => {
 };
 
 export const useValidateEmail = () => {
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: mutationFnValidateEmail,
+    onSuccess: () => markAccountEmailVerified(queryClient),
     onError: error => {},
   });
 
@@ -231,7 +255,7 @@ export const useResetEmail = () => {
     onSuccess: async (response, request) => {
       if (response.data.verificationRequired) return;
       await AuthLocalSynchronizer.syncResetEmail(request, response);
-      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
+      await markAccountEmailVerified(queryClient);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
@@ -246,7 +270,8 @@ export const useForgetPassword = () => {
 
   const mutation = useMutation({
     mutationFn: mutationFnForgetPassword,
-    onSuccess: async response => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
@@ -263,21 +288,34 @@ export const useResetMe = () => {
   const mutation = useMutation({
     mutationFn: mutationFnResetMe,
     onSuccess: async response => {
-      await AuthLocalSynchronizer.syncResetMe(response);
-      clearSearchRootShelves(apolloClient.cache);
       const targetKeys: QueryKey[] = [
         queryKeys.user.data(),
+        queryKeys.user.data(true),
         queryKeys.userInfo.all(),
         queryKeys.rootShelf.all(),
         queryKeys.subShelf.all(),
         queryKeys.material.all(),
         queryKeys.blockPack.all(),
         queryKeys.block.all(),
+        queryKeys.station.all(),
+        queryKeys.routine.all(),
+        queryKeys.routineTag.all(),
+        queryKeys.routineTask.all(),
+        queryKeys.routineTaskDependency.all(),
+        queryKeys.routineTaskRecord.all(),
       ];
-      Promise.all(
-        targetKeys.map(targetKey =>
-          queryClient.invalidateQueries({ queryKey: targetKey })
-        )
+      await Promise.all(
+        targetKeys.map(queryKey => queryClient.cancelQueries({ queryKey }))
+      );
+      await AuthLocalSynchronizer.syncResetMe(response);
+      clearSearchItems(apolloClient.cache);
+      clearSearchRootShelves(apolloClient.cache);
+      clearSearchRoutines(apolloClient.cache);
+      clearSearchRoutineTags(apolloClient.cache);
+      clearSearchRoutineTasks(apolloClient.cache);
+      clearSearchStations(apolloClient.cache);
+      await Promise.all(
+        targetKeys.map(queryKey => queryClient.resetQueries({ queryKey }))
       );
     },
     onError: error => {},

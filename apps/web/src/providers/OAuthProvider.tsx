@@ -13,8 +13,8 @@ import { tError } from "@shared/i18n/error";
 import {
   isPendingOAuthState,
   type OAuthAction,
-  type PendingOAuthState,
   oauthStatePattern,
+  type PendingOAuthState,
 } from "@shared/lib/auth/oauthState.type";
 import {
   SessionStorage,
@@ -22,22 +22,29 @@ import {
 } from "@shared/lib/storage/sessionStorage";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import { createContext, useCallback, useRef, type ReactNode } from "react";
+import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
+import {
+  type Context,
+  createContext,
+  type ReactNode,
+  useCallback,
+  useRef,
+} from "react";
 import {
   getClientMutationHeaders,
   getClientRequestHeaders,
 } from "@/api/clientHeaders";
 import {
-  useLoginViaGoogle,
-  useRegisterViaGoogle,
   useLoginViaGithub,
+  useLoginViaGoogle,
   useLoginViaX,
   useRegisterViaGithub,
+  useRegisterViaGoogle,
   useRegisterViaX,
 } from "@/api/hooks/auth.hook";
 import {
-  useBindGoogleAccount,
   useBindGithubAccount,
+  useBindGoogleAccount,
   useBindXAccount,
   usePrepareOAuthOperation,
   useUnbindGithubAccount,
@@ -53,37 +60,22 @@ import { useAppRouter, useUser } from "@/hooks";
 import { useLoading } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
-import { getPreferredStartPath } from "@/providers/LocalPreferencesProvider";
 
-const localXStatePrefix = "localhost.";
-
-const configuredOAuthStateTtlMs = Number.parseInt(
-  import.meta.env.VITE_OAUTH_STATE_TTL_MS ?? "",
-  10
-);
-const oauthStateTtlMs =
-  configuredOAuthStateTtlMs > 0 ? configuredOAuthStateTtlMs : 5 * 60 * 1000;
-
-export type OAuthProviderName = "google" | "github" | "x";
-
-type VerifiedOAuthOperation = {
-  state: string;
-  codeChallenge: string;
-};
+const xLoopbackStatePrefix = "localhost.";
 
 type OAuthContextValue = {
-  prepareOAuthOperation: (
+  prepare: (
     body: PrepareOAuthOperationRequest["body"]
   ) => Promise<PrepareOAuthOperationResponse>;
   isPreparingOAuthOperation: boolean;
-  beginOAuth: (
-    provider: OAuthProviderName,
+  perform: (
+    provider: OAuthProviderType,
     action: OAuthAction,
-    operation?: VerifiedOAuthOperation
+    operation?: { state: string; codeChallenge: string }
   ) => Promise<void>;
-  completeOAuth: (provider: string, search: string) => Promise<void>;
-  unbindOAuth: (
-    provider: OAuthProviderName,
+  complete: (provider: string, search: string) => Promise<void>;
+  unbind: (
+    provider: OAuthProviderType,
     body: UnbindGoogleAccountRequest["body"]
   ) => Promise<UnbindGoogleAccountResponse>;
   githubAvailable: boolean;
@@ -91,14 +83,16 @@ type OAuthContextValue = {
   isUnbinding: boolean;
 };
 
-export const OAuthContext = createContext<OAuthContextValue | undefined>(
-  undefined
-);
+// Vite retains context identity across HMR without retaining OAuth state.
+export const OAuthContext: Context<OAuthContextValue | undefined> =
+  import.meta.hot?.data.context ??
+  createContext<OAuthContextValue | undefined>(undefined);
+if (import.meta.hot) import.meta.hot.data.context = OAuthContext;
 
 export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useAppRouter();
   const { t } = useTranslation();
-  const { preferences } = useLocalPreferences();
+  const { startPath } = useLocalPreferences();
   const userManager = useUser();
   const { startAsyncTransactionLoading } = useLoading();
 
@@ -122,9 +116,9 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const unbindGithubMutator = useUnbindGithubAccount();
   const unbindXMutator = useUnbindXAccount();
 
-  const unbindOAuth = useCallback(
+  const unbind = useCallback(
     async (
-      provider: OAuthProviderName,
+      provider: OAuthProviderType,
       body: UnbindGoogleAccountRequest["body"]
     ) => {
       const mutator =
@@ -165,92 +159,7 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
     [unbindGoogleMutator, unbindGithubMutator, unbindXMutator]
   );
 
-  const performOAuthAction = useCallback(
-    async (
-      provider: OAuthProviderName,
-      action: OAuthAction,
-      code: string,
-      state: string,
-      codeVerifier?: string
-    ): Promise<void> => {
-      const turnstileToken = action === "binding" ? null : getTurnstileToken();
-      const header = getClientRequestHeaders(
-        navigator.userAgent,
-        turnstileToken
-      );
-
-      try {
-        switch (action) {
-          case "register": {
-            if (provider !== "google") {
-              const mutator =
-                provider === "github"
-                  ? registerViaGithubMutator
-                  : registerViaXMutator;
-              await mutator.mutateAsync({
-                header,
-                body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            } else {
-              await registerViaGoogleMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            }
-            return;
-          }
-          case "login": {
-            if (provider !== "google") {
-              const mutator =
-                provider === "github"
-                  ? loginViaGithubMutator
-                  : loginViaXMutator;
-              await mutator.mutateAsync({
-                header,
-                body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            } else {
-              await loginViaGoogleMutator.mutateAsync({
-                header,
-                body: { authorizationCode: code, codeVerifier: codeVerifier! },
-              });
-            }
-            return;
-          }
-          case "binding": {
-            const mutator =
-              provider === "google"
-                ? bindGoogleAccountMutator
-                : provider === "github"
-                  ? bindGithubAccountMutator
-                  : bindXAccountMutator;
-            await mutator.mutateAsync({
-              header,
-              body: { authorizationCode: code, state },
-            });
-            return;
-          }
-        }
-      } finally {
-        if (action !== "binding") {
-          clearTurnstileToken();
-        }
-      }
-    },
-    [
-      bindGoogleAccountMutator,
-      loginViaGoogleMutator,
-      registerViaGoogleMutator,
-      bindGithubAccountMutator,
-      bindXAccountMutator,
-      loginViaGithubMutator,
-      loginViaXMutator,
-      registerViaGithubMutator,
-      registerViaXMutator,
-    ]
-  );
-
-  const completeOAuth = useCallback(
+  const complete = useCallback(
     async (provider: string, search: string) => {
       const searchParams = new URLSearchParams(search);
       const code = searchParams.get("code");
@@ -270,11 +179,11 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
         window.location.hostname === "127.0.0.1" &&
         window.location.origin + window.location.pathname ===
           import.meta.env.VITE_OAUTH_X_REDIRECT_URL &&
-        state?.startsWith(localXStatePrefix)
+        state?.startsWith(xLoopbackStatePrefix)
       ) {
-        const localState = state.slice(localXStatePrefix.length);
+        const localState = state.slice(xLoopbackStatePrefix.length);
         if (oauthStatePattern.test(localState)) {
-          // X requires the IP callback. The verifier and session stay on localhost.
+          // The dev app uses an IP callback while the verifier and session stay on localhost.
           const callback = new URL(window.location.href);
           callback.hostname = "localhost";
           callback.search = new URLSearchParams({
@@ -311,6 +220,13 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
             );
           }
 
+          const _oauthStateTtlMs = Number.parseInt(
+            import.meta.env.VITE_OAUTH_STATE_TTL_MS ?? "",
+            10
+          );
+          const oauthStateTtlMs =
+            _oauthStateTtlMs > 0 ? _oauthStateTtlMs : 5 * 60 * 1000;
+
           if (
             !matchesAttempt ||
             pending.createdAt > now ||
@@ -331,34 +247,67 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
             );
           }
 
-          if (
-            pending.action !== "binding" &&
-            isTurnstileEnabled() &&
-            !getTurnstileToken()
-          ) {
-            throw new NotegicError().setPresentation("auth.turnstileRequired");
-          }
+          const { action, codeVerifier } = pending;
+          if (action === "binding") {
+            const mutator = {
+              google: bindGoogleAccountMutator,
+              github: bindGithubAccountMutator,
+              x: bindXAccountMutator,
+            }[provider];
+            await mutator.mutateAsync({
+              header: getClientRequestHeaders(navigator.userAgent, null),
+              body: { authorizationCode: code, state: pending.state },
+            });
+          } else {
+            const turnstileToken = getTurnstileToken();
+            if (isTurnstileEnabled() && !turnstileToken) {
+              throw new NotegicError().setPresentation(
+                "auth.turnstileRequired"
+              );
+            }
+            if (!codeVerifier) {
+              throw new NotegicError().setPresentation(
+                "workspace.pages.oauthError.restart"
+              );
+            }
 
-          await performOAuthAction(
-            provider,
-            pending.action,
-            code,
-            pending.state,
-            pending.codeVerifier
-          );
-          if (pending.action !== "binding") await userManager.fetchUserData();
+            const mutator = {
+              register: {
+                google: registerViaGoogleMutator,
+                github: registerViaGithubMutator,
+                x: registerViaXMutator,
+              },
+              login: {
+                google: loginViaGoogleMutator,
+                github: loginViaGithubMutator,
+                x: loginViaXMutator,
+              },
+            }[action][provider];
+            try {
+              await mutator.mutateAsync({
+                header: getClientRequestHeaders(
+                  navigator.userAgent,
+                  turnstileToken
+                ),
+                body: { authorizationCode: code, codeVerifier },
+              });
+            } finally {
+              clearTurnstileToken();
+            }
+            await userManager.fetchUserData();
+          }
 
           setLabel(
             t(
-              pending.action === "binding"
+              action === "binding"
                 ? "common.loading"
                 : "workspace.pages.redirectingToDashboard"
             )
           );
           await router.replace(
-            pending.action === "binding"
+            action === "binding"
               ? `${WebURLPathDictionary.app.setting.account}#binding`
-              : getPreferredStartPath(preferences)
+              : startPath
           );
         } catch (error) {
           let message = tError(error, t);
@@ -385,18 +334,26 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
     },
     [
       router,
-      preferences,
+      startPath,
       t,
       userManager,
-      performOAuthAction,
+      bindGoogleAccountMutator,
+      bindGithubAccountMutator,
+      bindXAccountMutator,
+      loginViaGoogleMutator,
+      loginViaGithubMutator,
+      loginViaXMutator,
+      registerViaGoogleMutator,
+      registerViaGithubMutator,
+      registerViaXMutator,
       startAsyncTransactionLoading,
     ]
   );
 
-  const beginOAuth = async (
-    provider: OAuthProviderName,
+  const perform = async (
+    provider: OAuthProviderType,
     action: OAuthAction,
-    operation?: VerifiedOAuthOperation
+    operation?: { state: string; codeChallenge: string }
   ) => {
     try {
       if (
@@ -464,12 +421,13 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
         const params = new URLSearchParams({
           client_id: clientId,
           redirect_uri: redirectURL,
-          state: useLocalXCallback ? localXStatePrefix + state : state,
+          state: useLocalXCallback ? xLoopbackStatePrefix + state : state,
           code_challenge: codeChallenge,
           code_challenge_method: "S256",
         });
         if (provider === "github") {
           params.set("scope", "user:email");
+          params.set("prompt", "select_account");
           authorizeURL = WebURLPathDictionary.oauth.github(params.toString());
         } else {
           params.set("response_type", "code");
@@ -483,7 +441,7 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
             redirect_uri: import.meta.env.VITE_OAUTH_GOOGLE_REDIRECT_URL,
             access_type: "offline",
             response_type: "code",
-            prompt: "consent",
+            prompt: "select_account consent",
             scope:
               "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
             state,
@@ -508,10 +466,10 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <OAuthContext.Provider
       value={{
-        beginOAuth,
-        completeOAuth,
-        unbindOAuth,
-        prepareOAuthOperation: body =>
+        perform,
+        complete,
+        unbind,
+        prepare: body =>
           prepareOAuthOperationMutator.mutateAsync({
             header: getClientMutationHeaders(navigator.userAgent),
             body,

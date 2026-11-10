@@ -2,7 +2,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import {
   dateToTimeString,
   timeStringToDate,
-} from "@shared/lib/string/timeString";
+} from "@shared/lib/time/timeString";
 import TimePicker from "@/components/commons/TimePicker/TimePicker";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";

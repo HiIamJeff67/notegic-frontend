@@ -36,8 +36,10 @@ export const EnglishServerTranslation = {
       "Too many sign-in attempts. Please try again later.",
     AuthCodeBlockedDueToTryingTooManyTimes:
       "Too many verification code requests. Please try again later.",
+    OAuthPasswordSetupRequired:
+      "Set a password before disconnecting your last sign-in provider.",
     PermissionDeniedDueToUserRole:
-      "Your account role does not allow this action.",
+      "This action requires the Normal account role or higher. Verify your email under Account settings → Security, then try again.",
     PermissionDeniedDueToUserPlan:
       "Your current plan does not allow this action.",
     PermissionDeniedDueToInvalidRequestOriginDomain:

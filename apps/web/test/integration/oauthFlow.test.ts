@@ -8,14 +8,18 @@ import {
 import { build } from "esbuild";
 
 const fixture = `
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
+import AccountModificationTab from '@/pages/app/setting/account/tabs/AccountModificationTab';
 import BindingTab from '@/pages/app/setting/account/tabs/BindingTab';
+import SecurityTab from '@/pages/app/setting/account/tabs/SecurityTab';
 import OAuthRedirectPage from '@/pages/auth/redirect/OAuthRedirectPage';
 import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
+import { AuthCodeProvider } from '@/providers/AuthCodeProvider';
 import { OAuthProvider } from '@/providers/OAuthProvider';
 import { LoadingProvider } from '@/providers/LoadingProvider';
 window.events = { navigations: [], pushes: [], replacements: [], requests: [], errors: [], fetched: 0, cleared: 0, authCodesSent: 0 };
@@ -27,6 +31,10 @@ window.rejectReason = '';
 window.routePending = false;
 window.googleBound = false;
 window.registeredAuthProviderType = "Email";
+window.passwordConfigured = true;
+window.backupEmail = null;
+window.phoneNumber = null;
+window.emailVerified = false;
 window.githubBound = false;
 window.xBound = false;
 window.oauthFallbackProviders = [];
@@ -48,7 +56,7 @@ window.router = {
     window.dispatchEvent(new Event('fixture-route-status'));
   },
 };
-window.user = { fetchUserData: async () => { window.events.fetched++; } };
+window.user = { userData: { email: 'account@example.test' }, fetchUserData: async () => { window.events.fetched++; } };
 window.mutator = action => ({ mutateAsync: async request => {
   window.events.requests.push({ action, request, pending: sessionStorage.getItem('notegic_PendingOAuthState') });
   await window.oauthRequestReady;
@@ -64,6 +72,7 @@ window.mutator = action => ({ mutateAsync: async request => {
   }
 } });
 const root = createRoot(document.getElementById('root'));
+const queryClient = new QueryClient();
 let revision = 0;
 window.mount = (surface, remount = true) => {
   if (remount) {
@@ -72,14 +81,14 @@ window.mount = (surface, remount = true) => {
       ? '/redirect/' + (surface.split('-')[1] ?? 'google')
       : '/';
   }
-  root.render(<React.StrictMode><LoadingProvider><OAuthProvider>
+  root.render(<React.StrictMode><QueryClientProvider client={queryClient}><AuthCodeProvider><LoadingProvider><OAuthProvider>
   {surface === 'login' ? <LoginPage /> :
    surface === 'register' ? <RegisterPage /> :
-   surface === 'binding' ? <BindingTab layout="panel" sendAuthCodeTimeCounter={0}
-     setSendAuthCodeTimeCounter={() => {}} isSendAuthCodePending={false}
-     handleSendAuthCode={() => { window.events.authCodesSent++; }} /> :
+   surface === 'binding' ? <BindingTab layout="panel" /> :
+   surface === 'security' ? <SecurityTab layout="panel" /> :
+   surface === 'account-modification' ? <AccountModificationTab layout="panel" onPanelClose={() => {}} /> :
    <OAuthRedirectPage key={revision} provider={surface === 'redirect-github' ? 'github' : surface === 'redirect-x' ? 'x' : surface === 'redirect-apple' ? 'apple' : 'google'} />}
-</OAuthProvider></LoadingProvider></React.StrictMode>);
+</OAuthProvider></LoadingProvider></AuthCodeProvider></QueryClientProvider></React.StrictMode>);
 };
 window.renderDestinationLocation = () => {
   const callbackSearch = window.callbackSearch;
@@ -90,24 +99,41 @@ window.renderDestinationLocation = () => {
 `;
 
 const mocks: Record<string, string> = {
-  "@/hooks/useTranslation": `const t = (key, options) => key.includes(".") ? key : options?.defaultValue ?? key;
+  "@/hooks/useTranslation": `const t = (key, options) => {
+    if (key === 'settingsPage.account.binding.currentBackupEmail') return 'Current backup email: ' + options.email;
+    if (key === 'settingsPage.account.binding.currentPhoneNumber') return 'Current phone number: ' + options.phone;
+    if (key === 'settingsPage.account.modification.currentEmail') return 'Current email: ' + options.email;
+    if (key === 'settingsPage.account.security.enterCodeForEmail') return 'Send a verification code to ' + options.email;
+    return key.includes('.') ? key : options?.defaultValue ?? key;
+  };
      export const useTranslation = () => ({ t });`,
   "@shared/lib/toast/toast":
     "export default { error: message => window.events.errors.push(message), success: () => {} };",
   "@/hooks": `export const useAppRouter = () => window.router;
     export const useUser = () => window.user;
+    export const useStationRoutine = () => ({ refresh: async () => {} });
     export { useLoading } from "@/hooks/useLoading";`,
   "@/hooks/useTheme":
     "export const useTheme = () => ({ currentTheme: { isDark: false } });",
   "@/hooks/useLocalPreferences":
-    "export const useLocalPreferences = () => ({ preferences: {} });",
-  "@/providers/LocalPreferencesProvider":
-    "export const getPreferredStartPath = () => 'app/dashboard';",
+    "export const useLocalPreferences = () => ({ startPath: 'app/dashboard' });",
   "@/components/commons/CloudflareTurnstile/CloudflareTurnstile":
     "export default () => null;",
   "@/components/commons/Article/Article":
     "export { default as ArticleSettingItem } from '@/components/commons/Article/ArticleSettingItem';",
-  "@/api/hooks/auth.hook": `export const useLogin = () => window.mutator('password-login');
+  "@/api/hooks/auth.hook": `import { useMutation } from '@tanstack/react-query';
+    export const useLogin = () => window.mutator('password-login');
+    export const useValidateEmail = () => window.mutator('validate-email');
+    export const useDeleteMe = () => window.mutator('delete-account');
+    export const useForgetPassword = () => window.mutator('change-password');
+    export const useResetEmail = () => window.mutator('change-email');
+    export const useResetMe = () => window.mutator('reset-account');
+    export const useSendAuthCode = () => useMutation({ mutationFn: async () => {
+      window.events.authCodesSent++;
+      await window.authCodeRequestReady;
+      const updatedAt = new Date();
+      return { data: { updatedAt, blockAuthCodeUntil: new Date(updatedAt.getTime() + 60000) } };
+    } });
     export const useRegister = () => window.mutator('password-register');
     export const useLoginViaGoogle = () => window.mutator('login');
     export const useRegisterViaGoogle = () => window.mutator('register');
@@ -133,7 +159,7 @@ const mocks: Record<string, string> = {
         window.accountDataAvailable = true;
         window.mount("binding", false);
       },
-      data: window.accountDataAvailable ? { data: { registeredAuthProviderType: window.registeredAuthProviderType, googleBound: window.googleBound, githubBound: window.githubBound, xBound: window.xBound, oauthFallbackProviders: window.oauthFallbackProviders } } : undefined });
+      data: window.accountDataAvailable ? { data: { registeredAuthProviderType: window.registeredAuthProviderType, passwordConfigured: window.passwordConfigured, emailVerified: window.emailVerified, backupEmail: window.backupEmail, phoneNumber: window.phoneNumber, countryCode: window.countryCode, googleBound: window.googleBound, githubBound: window.githubBound, xBound: window.xBound, oauthFallbackProviders: window.oauthFallbackProviders } } : undefined });
     export const useUnbindGoogleAccount = () => window.mutator('google-unbind');
     export const useUnbindGithubAccount = () => window.mutator('github-unbind');
     export const useBindXAccount = () => window.mutator('x-binding');
@@ -229,6 +255,37 @@ describe("OAuth state in the real entry and callback components", () => {
     await browser?.close();
   });
 
+  test.each([
+    "login",
+    "register",
+  ] as const)("%s shows icon-only OAuth buttons in provider order", async action => {
+    await page.evaluate(action => (window as any).mount(action), action);
+    const suffix = action === "login" ? "Login" : "Register";
+    const buttons = page.getByRole("button", {
+      name: /^(workspace\.pages\.(google|github|x)(Login|Register)|Apple|Discord|Microsoft)$/,
+    });
+    await browserExpect(buttons).toHaveCount(6);
+    expect(
+      await buttons.evaluateAll(elements =>
+        elements.map(button => [
+          button.getAttribute("aria-label"),
+          button.textContent,
+        ])
+      )
+    ).toEqual([
+      [`workspace.pages.google${suffix}`, ""],
+      ["Apple", ""],
+      [`workspace.pages.x${suffix}`, ""],
+      ["Discord", ""],
+      [`workspace.pages.github${suffix}`, ""],
+      ["Microsoft", ""],
+    ]);
+    await browserExpect(buttons.nth(2)).toBeEnabled();
+    for (const name of ["Apple", "Discord", "Microsoft"]) {
+      await browserExpect(page.getByRole("button", { name })).toBeDisabled();
+    }
+  });
+
   test("protects the only registered OAuth provider and allows an email account to disconnect it", async () => {
     await page.evaluate(() => {
       (window as any).googleBound = true;
@@ -246,6 +303,17 @@ describe("OAuth state in the real entry and callback components", () => {
 
     await page.evaluate(() => {
       (window as any).registeredAuthProviderType = "Email";
+      (window as any).passwordConfigured = false;
+      (window as any).mount("binding");
+    });
+    await browserExpect(disconnect).toBeDisabled();
+    await browserExpect(disconnect.locator("..")).toHaveAttribute(
+      "title",
+      "server.error.OAuthPasswordSetupRequired"
+    );
+
+    await page.evaluate(() => {
+      (window as any).passwordConfigured = true;
       (window as any).mount("binding");
     });
     await browserExpect(disconnect).toBeEnabled();
@@ -256,6 +324,181 @@ describe("OAuth state in the real entry and callback components", () => {
     expect(await page.evaluate(() => (window as any).events.requests)).toEqual(
       []
     );
+  });
+
+  test("opens Backup email when an older account response omits the field", async () => {
+    await page.evaluate(() => {
+      (window as any).backupEmail = undefined;
+      (window as any).mount("binding");
+    });
+    const row = page
+      .getByText("settingsPage.account.binding.backupEmail", { exact: true })
+      .locator("../..");
+    await row
+      .getByRole("button", { name: "settingsPage.account.binding.set" })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "settingsPage.account.binding.backupEmail",
+    });
+    await browserExpect(dialog).toBeVisible();
+    await browserExpect(
+      dialog.getByText("Send a verification code to account@example.test")
+    ).toBeVisible();
+    await browserExpect(row.getByText(/Current backup email:/)).toHaveCount(0);
+    expect(
+      await page.evaluate(() => (window as any).events.authCodesSent)
+    ).toBe(0);
+  });
+
+  test("displays current contact details with enabled Change actions", async () => {
+    await page.evaluate(() => {
+      (window as any).backupEmail = "backup@example.test";
+      (window as any).phoneNumber = "912345678";
+      (window as any).countryCode = "+886";
+      (window as any).mount("binding");
+    });
+    for (const label of [
+      "settingsPage.account.binding.backupEmail",
+      "settingsPage.account.binding.phoneNumber",
+    ]) {
+      const row = page.getByText(label, { exact: true }).locator("../..");
+      await browserExpect(
+        row.getByRole("button", {
+          name: "settingsPage.account.modification.changeAction",
+        })
+      ).toBeEnabled();
+    }
+    await browserExpect(
+      page
+        .getByText("Current backup email: backup@example.test", { exact: true })
+        .locator("..")
+    ).toHaveText(
+      /backupEmailDescription\s*Current backup email: backup@example\.test/
+    );
+    await browserExpect(
+      page
+        .getByText("Current phone number: +886 912345678", { exact: true })
+        .locator("..")
+    ).toHaveText(
+      /phoneNumberDescription\s*Current phone number: \+886 912345678/
+    );
+  });
+
+  test("prefers account verification status and keeps Verified visible when that field is unavailable", async () => {
+    await page.evaluate(() => {
+      (window as any).user.userData.role = "Normal";
+      (window as any).mount("security");
+    });
+    await browserExpect(
+      page.getByRole("button", {
+        name: "settingsPage.account.security.verify",
+        exact: true,
+      })
+    ).toBeEnabled();
+    await page.evaluate(() => {
+      (window as any).emailVerified = true;
+      (window as any).mount("security");
+    });
+    await browserExpect(
+      page.getByRole("button", {
+        name: "settingsPage.account.security.verified",
+        exact: true,
+      })
+    ).toBeDisabled();
+    await page.evaluate(() => {
+      (window as any).emailVerified = undefined;
+      (window as any).mount("security");
+    });
+    await browserExpect(
+      page.getByRole("button", {
+        name: "settingsPage.account.security.verified",
+        exact: true,
+      })
+    ).toBeDisabled();
+  });
+
+  test("shows the signed-in email below Change email", async () => {
+    await page.evaluate(() => (window as any).mount("account-modification"));
+    await browserExpect(
+      page
+        .getByText("Current email: account@example.test", { exact: true })
+        .locator("..")
+    ).toHaveText(
+      /changeEmailDialogDescription\s*Current email: account@example\.test/
+    );
+  });
+
+  test("sends only on request and keeps one cooldown across routes and verification dialogs", async () => {
+    await page.evaluate(() => (window as any).mount("binding"));
+    const dialog = page.getByRole("dialog");
+    const send = dialog.getByRole("button", {
+      name: "common.send",
+      exact: true,
+    });
+    const countdown = dialog.getByRole("button", {
+      name: "settingsPage.account.security.resendIn",
+    });
+    const cancel = dialog.getByRole("button", { name: "common.cancel" });
+    const backup = page
+      .getByText("settingsPage.account.binding.backupEmail", { exact: true })
+      .locator("../..");
+    const connectBackup = backup.getByRole("button", {
+      name: "settingsPage.account.binding.set",
+    });
+
+    await connectBackup.click();
+    await cancel.click();
+    expect(
+      await page.evaluate(() => (window as any).events.authCodesSent)
+    ).toBe(0);
+
+    await connectBackup.click();
+    await page.evaluate(() => {
+      const fixture = window as any;
+      fixture.authCodeRequestReady = new Promise(resolve => {
+        fixture.finishAuthCodeRequest = resolve;
+      });
+    });
+    await send.evaluate((button: HTMLButtonElement) => {
+      button.click();
+      button.click();
+    });
+    await browserExpect(send).toBeDisabled();
+    expect(
+      await page.evaluate(() => (window as any).events.authCodesSent)
+    ).toBe(1);
+    await page.evaluate(() => (window as any).finishAuthCodeRequest());
+    await browserExpect(countdown).toBeDisabled();
+    await page.clock.setFixedTime(new Date("2026-10-31T00:01:00Z"));
+    await browserExpect(
+      dialog.getByRole("button", {
+        name: "settingsPage.account.security.resendCode",
+      })
+    ).toBeEnabled();
+    await dialog
+      .getByRole("button", {
+        name: "settingsPage.account.security.resendCode",
+      })
+      .click();
+    await browserExpect(countdown).toBeDisabled();
+    await cancel.click();
+
+    await page.evaluate(() => (window as any).mount("login"));
+    await browserExpect(
+      page.getByRole("button", { name: "workspace.pages.googleLogin" })
+    ).toBeVisible();
+    await page.evaluate(() => (window as any).mount("binding"));
+    await page
+      .getByText("settingsPage.account.binding.phoneNumber", { exact: true })
+      .locator("../..")
+      .getByRole("button", { name: "settingsPage.account.binding.set" })
+      .click();
+    await browserExpect(countdown).toBeDisabled();
+    expect(
+      await page.evaluate(() => (window as any).events.authCodesSent)
+    ).toBe(2);
+    await page.clock.setFixedTime(new Date("2026-10-31T00:02:00Z"));
+    await browserExpect(send).toBeEnabled();
   });
 
   test("keeps binding controls visible offline and disables an open verification form", async () => {
@@ -350,7 +593,18 @@ describe("OAuth state in the real entry and callback components", () => {
     await browserExpect(dialog.getByRole("textbox")).toBeVisible();
     expect(
       await page.evaluate(() => (window as any).events.authCodesSent)
+    ).toBe(0);
+    await dialog
+      .getByRole("button", { name: "common.send", exact: true })
+      .click();
+    expect(
+      await page.evaluate(() => (window as any).events.authCodesSent)
     ).toBe(1);
+    const countdown = dialog.getByRole("button", {
+      name: "settingsPage.account.security.resendIn",
+    });
+    await browserExpect(countdown).toBeDisabled();
+    await browserExpect(dialog.getByRole("textbox")).toBeEmpty();
     await verifyOAuthDialog(page, disconnect);
     if (verifyEmail) {
       await browserExpect(
@@ -358,6 +612,7 @@ describe("OAuth state in the real entry and callback components", () => {
           "settingsPage.account.binding.oauthVerifyFallbackEmail"
         )
       ).toBeVisible();
+      await browserExpect(countdown).toHaveCount(0);
       await browserExpect(dialog.getByRole("textbox")).toHaveValue("");
       await dialog.getByRole("textbox").fill("654321");
       await dialog.getByRole("button", { name: disconnect }).click();
@@ -427,6 +682,9 @@ describe("OAuth state in the real entry and callback components", () => {
         (window as any).events.navigations.at(-1)
       );
       expect(new URL(navigation).hostname).toBe("accounts.google.com");
+      expect(new URL(navigation).searchParams.get("prompt")).toBe(
+        "select_account consent"
+      );
       expect(new URL(navigation).searchParams.get("state")).toBe(pending.state);
       expect(
         new URL(navigation).searchParams.get("code_challenge_method")
@@ -680,6 +938,9 @@ describe("OAuth state in the real entry and callback components", () => {
           provider === "github"
             ? "user:email"
             : "tweet.read users.read users.email"
+        );
+        expect(url.searchParams.get("prompt")).toBe(
+          provider === "github" ? "select_account" : null
         );
         if (provider === "x")
           expect(url.searchParams.get("response_type")).toBe("code");

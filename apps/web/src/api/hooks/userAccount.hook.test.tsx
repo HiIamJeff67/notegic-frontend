@@ -1,3 +1,4 @@
+import { CountryCode } from "@shared/api/interfaces/enums";
 import type { GetMyAccountResponse } from "@shared/api/interfaces/userAccount.interface";
 import { createQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -7,11 +8,15 @@ import {
   QueryObserver,
 } from "@tanstack/react-query";
 import { renderToString } from "react-dom/server";
-import { GetMyAccount } from "@/api/functions/userAccount.serverFn";
-import { useGetMyAccount } from "./userAccount.hook";
+import {
+  GetMyAccount,
+  UpdateMyAccount,
+} from "@/api/functions/userAccount.serverFn";
+import { useGetMyAccount, useUpdateMyAccount } from "./userAccount.hook";
 
 jest.mock("@/api/functions/userAccount.serverFn", () => ({
   GetMyAccount: jest.fn(),
+  UpdateMyAccount: jest.fn(),
 }));
 
 test("refetches the account after a binding update and after reconnecting", async () => {
@@ -95,6 +100,73 @@ test("refetches the account after a binding update and after reconnecting", asyn
       queryClient.unmount();
       onlineManager.setOnline(wasOnline);
     }
+  } finally {
+    queryClient.clear();
+  }
+});
+
+test("updates cached contact bindings from the successful write", async () => {
+  const queryClient = createQueryClient();
+  const queryKey = queryKeys.userAccount.my();
+  const updatedAt = new Date("2026-11-09T00:00:00Z");
+  const response: GetMyAccountResponse = {
+    success: true,
+    data: {
+      backupEmail: null,
+      countryCode: null,
+      phoneNumber: null,
+      googleBound: true,
+      githubBound: false,
+      xBound: false,
+      discordBound: false,
+      updatedAt,
+    },
+    embedded: { publicId: "user-1" },
+    exception: null,
+  };
+  queryClient.setQueryData(queryKey, response);
+  jest.mocked(UpdateMyAccount).mockResolvedValueOnce({
+    ...response,
+    data: {
+      backupEmail: "backup@example.test",
+      countryCode: "+886",
+      phoneNumber: "912345678",
+      updatedAt,
+    },
+  });
+  let updateAccount!: ReturnType<typeof useUpdateMyAccount>["mutateAsync"];
+
+  function AccountMutation() {
+    updateAccount = useUpdateMyAccount().mutateAsync;
+    return null;
+  }
+
+  try {
+    renderToString(
+      <QueryClientProvider client={queryClient}>
+        <AccountMutation />
+      </QueryClientProvider>
+    );
+    await updateAccount({
+      header: { csrfToken: "test-token" },
+      body: {
+        authCode: "123456",
+        values: {
+          backupEmail: "backup@example.test",
+          countryCode: CountryCode.Taiwan,
+          phoneNumber: "912345678",
+        },
+      },
+    });
+    expect(queryClient.getQueryData(queryKey)).toEqual({
+      ...response,
+      data: {
+        ...response.data,
+        backupEmail: "backup@example.test",
+        countryCode: "+886",
+        phoneNumber: "912345678",
+      },
+    });
   } finally {
     queryClient.clear();
   }

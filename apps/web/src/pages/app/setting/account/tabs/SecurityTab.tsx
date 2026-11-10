@@ -7,6 +7,8 @@ import toast from "@shared/lib/toast/toast";
 import { useCallback, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import { useValidateEmail } from "@/api/hooks/auth.hook";
+import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
+import AuthCodeInput from "@/components/inputs/AuthCodeInput";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -18,29 +20,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useAppRouter, useLoading, useUser } from "@/hooks";
+import { useLoading, useUser } from "@/hooks";
 
 interface SecurityTabProps {
   layout?: "panel" | "page";
-  sendAuthCodeTimeCounter: number;
-  setSendAuthCodeTimeCounter: (newSendAuthCodeTimeCounter: number) => void;
-  isSendAuthCodePending: boolean;
-  handleSendAuthCode: (
-    onSuccess?: () => void,
-    onBlock?: () => void,
-    fallback?: () => void
-  ) => void;
 }
 
-const SecurityTab = ({
-  layout,
-  sendAuthCodeTimeCounter,
-  setSendAuthCodeTimeCounter,
-  isSendAuthCodePending,
-  handleSendAuthCode,
-}: SecurityTabProps) => {
-  const router = useAppRouter();
+const SecurityTab = ({ layout }: SecurityTabProps) => {
   const loadingManager = useLoading();
   const { t } = useTranslation();
   const { isOnline } = useNetwork();
@@ -48,6 +34,10 @@ const SecurityTab = ({
     ? undefined
     : t("workspace.pages.accountOffline");
   const userManager = useUser();
+  const emailVerified = useGetMyAccount().data?.data.emailVerified;
+  const role = userManager.userData?.role;
+  const isEmailVerified =
+    emailVerified ?? (role === UserRole.Normal || role === UserRole.Admin);
 
   const validateEmailMutator = useValidateEmail();
 
@@ -67,19 +57,15 @@ const SecurityTab = ({
               authCode: authCode,
             },
           });
-          setSendAuthCodeTimeCounter(0);
           setValidateEmailDialogOpen(false);
-          userManager.updateUserData({ role: UserRole.Normal });
+          if (userManager.userData?.role === UserRole.Guest) {
+            userManager.updateUserData({ role: UserRole.Normal });
+          }
         } catch (error) {
           toast.error(tError(error, t));
         }
       }),
-    [
-      userManager,
-      validateEmailMutator,
-      setSendAuthCodeTimeCounter,
-      setValidateEmailDialogOpen,
-    ]
+    [userManager, validateEmailMutator, setValidateEmailDialogOpen]
   );
 
   return (
@@ -116,37 +102,14 @@ const SecurityTab = ({
                 await handleValidateEmailOnClick(authCode);
               }}
             >
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={{ email: userManager.userData?.email }}
+              />
               <DialogFooter>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => setValidateEmailDialogOpen(false)}
                 >
@@ -171,19 +134,14 @@ const SecurityTab = ({
       >
         <SettingMenuButton
           variant="outline"
-          onClick={() =>
-            handleSendAuthCode(
-              () => setValidateEmailDialogOpen(true),
-              () => setValidateEmailDialogOpen(true)
-            )
-          }
+          onClick={() => setValidateEmailDialogOpen(true)}
           disable={
-            userManager.userData?.role &&
-            userManager.userData.role !== UserRole.Guest
+            !isOnline ||
+            emailVerified !== false ||
+            validateEmailMutator.isPending
           }
         >
-          {userManager.userData?.role &&
-          userManager.userData.role !== UserRole.Guest
+          {isEmailVerified
             ? t("settingsPage.account.security.verified")
             : t("settingsPage.account.security.verify")}
         </SettingMenuButton>

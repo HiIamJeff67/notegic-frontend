@@ -145,10 +145,11 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         verifyEmail: "メールアドレスを確認",
         verifyEmailDescription:
           "送信した認証コードでメールアドレスを確認します。",
-        enterCodeForEmail: "{{email}} に送信した認証コードを入力してください。",
+        enterCodeForEmail:
+          "{{email}} に認証コードを送信して、メールアドレスを確認してください。",
         enterCode: "認証コードを入力",
         resendIn: "{{count}} 秒後に再送",
-        resendCode: "認証コードを再送",
+        resendCode: "再送",
         verified: "確認済み",
         verify: "確認",
         activity: "アカウントアクティビティ",
@@ -161,10 +162,12 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         backupEmail: "予備メールアドレスを連携",
         backupEmailDescription:
           "アカウント復旧のための予備メールアドレスを追加します。",
+        currentBackupEmail: "現在の予備メールアドレス：{{email}}",
         backupEmailDialogDescription:
           "予備メールアドレスと認証コードを入力してください。ログイン用メールアドレスとは異なる必要があります。",
         phoneNumber: "電話番号を連携",
         phoneNumberDescription: "アカウント復旧のために電話番号を追加します。",
+        currentPhoneNumber: "現在の電話番号：{{phone}}",
         phoneNumberDialogDescription:
           "電話番号と認証コードを入力してください。",
         gmail: "Google アカウントを連携",
@@ -172,7 +175,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         x: "X アカウントを連携",
         gmailDescription: "Google を連携して素早くログインします。",
         oauthVerifyEmail:
-          "アカウントのメールアドレスに送信されたコードで、この変更を確認してください。",
+          "アカウントのメールアドレスに認証コードを送信して、この変更を確認してください。",
         oauthVerifyFallbackEmail:
           "{{provider}} に連携されたメールアドレスに届いた認証コードを入力してください。",
         oauthVerifyAgain:
@@ -196,24 +199,29 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         xDescription: "X を連携して素早くログインします。",
         discord: "Discord アカウントを連携",
         discordDescription: "Discord を連携して素早く利用します。",
+        set: "設定",
         enterBackupEmail: "予備メールアドレスを入力",
         selectCountryCode: "国番号を選択",
         countryCode: "国番号",
         enterPhoneNumber: "電話番号を入力",
         bind: "連携",
         connected: "連携済み",
-        confirmBinding: "連携を確認",
       },
       modification: {
         title: "アカウントの変更",
         description: "アカウントをリセットするか、元に戻せない変更を行います。",
         resetAccount: "アカウントをリセット",
+        resetAction: "リセット",
+        changeAction: "変更",
         resetWarning:
           "メモや設定を含む個人データが完全に消去され、元に戻せません。",
         changeEmail: "メールアドレスを変更",
+        currentEmail: "現在のメールアドレス：{{email}}",
+        verifyCurrentEmail:
+          "新しいメールアドレスと、現在のアドレス（{{email}}）に届いた確認コードを入力してください。",
         verifyNewEmail:
-          "新しいメールアドレスに送信された確認コードを入力してください。",
-        sendNewEmailCode: "確認コードを送信",
+          "新しいメールアドレス（{{email}}）に届いた確認コードを入力してください。",
+        continue: "続ける",
         changeEmailDialogDescription:
           "現在のメールアドレスとは異なる新しいメールアドレスを入力してください。",
         enterNewEmail: "新しいメールアドレスを入力",
@@ -222,7 +230,6 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "アカウントを安全に保つためパスワードを更新します。",
         changePasswordDialogDescription:
           "新しいパスワードと認証コードを入力してください。",
-        updatePassword: "パスワードを更新",
         deleteAccount: "アカウントを削除",
         deleteAccountDescription:
           "アカウントとすべてのデータを完全に削除します。",
@@ -231,14 +238,11 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
           "警告: アカウントとすべてのデータが完全に削除され、元に戻せません。",
         enterDelete: "削除を確認するには DELETE と入力",
         deletePermanently: "完全に削除",
-        confirmReset: "リセットを確認",
-        confirmChange: "変更を確認",
+        reset: "リセット",
         passwordMismatch: "新しいパスワードと確認用パスワードが一致しません。",
         deleteConfirmationInvalid:
           "アカウントを削除するには DELETE と入力してください。",
       },
-      authCodeAlreadySent:
-        "認証コードは送信済みです。{{count}} 秒後にもう一度お試しください。",
       authCodeSent: "認証コードを {{email}} に送信しました。",
       sessionExpired:
         "セッションの有効期限が切れました。もう一度ログインしてください。",

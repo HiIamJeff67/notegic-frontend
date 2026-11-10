@@ -179,7 +179,7 @@ const PreferencesPage = ({
             {isReady && <AppearanceSettings layout="article" />}
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="dashboard"
@@ -190,7 +190,7 @@ const PreferencesPage = ({
             {isReady && <DashboardSettings layout="article" />}
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="editor"
@@ -201,7 +201,7 @@ const PreferencesPage = ({
             {isReady && <EditorSettings layout="article" />}
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="offline"
@@ -212,7 +212,7 @@ const PreferencesPage = ({
             {isReady && <OfflineSettings layout="article" />}
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="privacy"
@@ -223,7 +223,7 @@ const PreferencesPage = ({
             <PrivacyTab layout="article" />
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="browser-permissions"
@@ -236,7 +236,7 @@ const PreferencesPage = ({
             <BrowserPermissionsTab layout="article" />
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="feedback"
@@ -247,7 +247,7 @@ const PreferencesPage = ({
             <FeedbackTab layout="article" />
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="notifications"
@@ -260,7 +260,7 @@ const PreferencesPage = ({
             <NotificationsTab layout="article" />
           </PreferenceTab>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <PreferenceTab
             id="about"

@@ -23,6 +23,7 @@ export interface ServerTranslation {
     WrongAuthCode: string;
     LoginBlockedDueToTryingTooManyTimes: string;
     AuthCodeBlockedDueToTryingTooManyTimes: string;
+    OAuthPasswordSetupRequired: string;
     PermissionDeniedDueToUserRole: string;
     PermissionDeniedDueToUserPlan: string;
     PermissionDeniedDueToInvalidRequestOriginDomain: string;

@@ -37,8 +37,10 @@ export const JapaneseServerTranslation = {
       "サインインの試行回数が多すぎます。しばらくしてからお試しください。",
     AuthCodeBlockedDueToTryingTooManyTimes:
       "認証コードのリクエストが多すぎます。しばらくしてからお試しください。",
+    OAuthPasswordSetupRequired:
+      "最後のログイン方法の連携を解除する前に、パスワードを設定してください。",
     PermissionDeniedDueToUserRole:
-      "アカウントのロールではこの操作を実行できません。",
+      "この操作には Normal 以上のアカウントロールが必要です。「アカウント設定 → セキュリティ」でメールアドレスを確認してから、もう一度お試しください。",
     PermissionDeniedDueToUserPlan: "現在のプランではこの操作を実行できません。",
     PermissionDeniedDueToInvalidRequestOriginDomain:
       "このリクエスト元は許可されていません。",

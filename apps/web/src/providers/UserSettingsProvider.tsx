@@ -7,6 +7,10 @@ import {
   AllLanguageData,
   LanguageKeyMap,
 } from "@shared/i18n/availableLanguages";
+import {
+  minutesToTimeString,
+  timeToMinutes,
+} from "@shared/lib/time/timeString";
 import { useEffect, useRef } from "react";
 import {
   getClientMutationHeaders,
@@ -24,45 +28,7 @@ import type {
   Density,
   PreferenceChangeListener,
   StartSurface,
-  UpdatePreference,
 } from "./LocalPreferencesProvider";
-
-const applyRemoteSettings = (
-  setting: UserSetting,
-  updatePreference: UpdatePreference
-) => {
-  const density = {
-    [UserSettingDensity.Comfortable]: "comfortable",
-    [UserSettingDensity.Balanced]: "balanced",
-    [UserSettingDensity.Compact]: "compact",
-  }[setting.density] as Density;
-  const startSurface = {
-    [UserSettingStartSurface.Dashboard]: "dashboard",
-    [UserSettingStartSurface.Routines]: "routines",
-  }[setting.startSurface] as StartSurface;
-  const startHour = Math.floor(setting.quietModeStartMinute / 60);
-  const startMinute = setting.quietModeStartMinute % 60;
-  const endHour = Math.floor(setting.quietModeEndMinute / 60);
-  const endMinute = setting.quietModeEndMinute % 60;
-
-  updatePreference("density", density);
-  updatePreference("startSurface", startSurface);
-  updatePreference("reduceMotion", setting.reduceMotion);
-  updatePreference("lineWrap", setting.lineWrap);
-  updatePreference("quickInsert", setting.quickInsert);
-  updatePreference("privatePreviews", setting.privatePreviews);
-  updatePreference("routineNudges", setting.routineNudges);
-  updatePreference("syncNotifications", setting.syncNotifications);
-  updatePreference("quietMode", setting.quietMode);
-  updatePreference(
-    "quietModeStart",
-    `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`
-  );
-  updatePreference(
-    "quietModeEnd",
-    `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`
-  );
-};
 
 export const UserSettingsProvider = ({
   children,
@@ -123,18 +89,14 @@ export const UserSettingsProvider = ({
         case "quietMode":
           values = { quietMode: value as boolean };
           break;
-        case "quietModeStart": {
-          const [hour = "0", minute = "0"] = (value as string).split(":");
-          values = {
-            quietModeStartMinute: Number(hour) * 60 + Number(minute),
-          };
-          break;
-        }
+        case "quietModeStart":
         case "quietModeEnd": {
-          const [hour = "0", minute = "0"] = (value as string).split(":");
-          values = {
-            quietModeEndMinute: Number(hour) * 60 + Number(minute),
-          };
+          const minutes = timeToMinutes(value as string);
+          if (minutes === null) return;
+          values =
+            key === "quietModeStart"
+              ? { quietModeStartMinute: minutes }
+              : { quietModeEndMinute: minutes };
           break;
         }
       }
@@ -190,7 +152,36 @@ export const UserSettingsProvider = ({
       }
       applyingRemoteSettings.current = true;
       try {
-        applyRemoteSettings(setting, updatePreference);
+        updatePreference(
+          "density",
+          {
+            [UserSettingDensity.Comfortable]: "comfortable",
+            [UserSettingDensity.Balanced]: "balanced",
+            [UserSettingDensity.Compact]: "compact",
+          }[setting.density] as Density
+        );
+        updatePreference(
+          "startSurface",
+          {
+            [UserSettingStartSurface.Dashboard]: "dashboard",
+            [UserSettingStartSurface.Routines]: "routines",
+          }[setting.startSurface] as StartSurface
+        );
+        updatePreference("reduceMotion", setting.reduceMotion);
+        updatePreference("lineWrap", setting.lineWrap);
+        updatePreference("quickInsert", setting.quickInsert);
+        updatePreference("privatePreviews", setting.privatePreviews);
+        updatePreference("routineNudges", setting.routineNudges);
+        updatePreference("syncNotifications", setting.syncNotifications);
+        updatePreference("quietMode", setting.quietMode);
+        updatePreference(
+          "quietModeStart",
+          minutesToTimeString(setting.quietModeStartMinute)
+        );
+        updatePreference(
+          "quietModeEnd",
+          minutesToTimeString(setting.quietModeEndMinute)
+        );
       } finally {
         applyingRemoteSettings.current = false;
       }

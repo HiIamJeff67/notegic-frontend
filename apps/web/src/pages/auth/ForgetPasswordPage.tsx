@@ -1,47 +1,41 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
-import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
+import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useForgetPassword, useSendAuthCode } from "@/api/hooks/auth.hook";
+import { useForgetPassword } from "@/api/hooks/auth.hook";
 import { clearTurnstileToken, isTurnstileEnabled } from "@/api/turnstile";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter } from "@/hooks";
+import { useAuthCode } from "@/hooks/useAuthCode";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
+import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const ForgetPasswordPage = () => {
   const router = useAppRouter();
   const { t } = useTranslation();
-  const sendAuthCodeMutator = useSendAuthCode();
+  const { isOnline } = useNetwork();
+  const { seconds, isSending, sendAuthCode } = useAuthCode();
   const forgetPasswordMutator = useForgetPassword();
 
   const [email, setEmail] = useState<string>("");
+  const [sentEmail, setSentEmail] = useState<string>();
   const [authCode, setAuthCode] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
-  const [sendAuthCodeTimeCounter, setSendAuthCodeTimeCounter] =
-    useState<number>(0);
   const turnstileRequired = isTurnstileEnabled();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
-  const [isSendAuthCodePending, startSendAuthCodeTransition] = useTransition();
   const [isResetPasswordPending, startResetPasswordTransition] =
     useTransition();
 
-  useRegisterLoadingDependencies(isSendAuthCodePending, isResetPasswordPending);
+  useRegisterLoadingDependencies(isResetPasswordPending);
 
   const resetTurnstile = useCallback(() => {
     clearTurnstileToken();
@@ -49,60 +43,16 @@ const ForgetPasswordPage = () => {
     setTurnstileResetKey(value => value + 1);
   }, []);
 
-  useEffect(() => {
-    if (sendAuthCodeTimeCounter === 0) return;
-    const timer = setInterval(() => {
-      setSendAuthCodeTimeCounter(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [sendAuthCodeTimeCounter]);
-
-  const handleSendAuthCodeOnClick = useCallback(async (): Promise<void> => {
-    if (turnstileRequired && !turnstileToken) {
-      toast.error(t("auth.turnstileRequired"));
-      return;
+  const handleSendAuthCode = async () => {
+    try {
+      if (!(await sendAuthCode(email, turnstileToken))) return;
+      setSentEmail(email);
+      toast.success(t("settingsPage.account.authCodeSent", { email }));
+    } catch (error) {
+      toast.error(tError(error, t));
     }
-
-    startSendAuthCodeTransition(async () => {
-      try {
-        const userAgent = navigator.userAgent;
-        const responseOfSendingAuthCode = await sendAuthCodeMutator.mutateAsync(
-          {
-            header: getClientRequestHeaders(userAgent, turnstileToken),
-            body: {
-              email: email,
-            },
-          }
-        );
-
-        const blockUntil = new Date(
-          responseOfSendingAuthCode.data.blockAuthCodeUntil
-        );
-        const blockTime = Math.floor(
-          (blockUntil.getTime() - new Date().getTime()) / 1000
-        );
-        setSendAuthCodeTimeCounter(Math.max(AuthCodeBlockedSecond, blockTime));
-        resetTurnstile();
-      } catch (error) {
-        setSendAuthCodeTimeCounter(0);
-        resetTurnstile();
-        toast.error(tError(error, t));
-      }
-    });
-  }, [
-    email,
-    resetTurnstile,
-    sendAuthCodeMutator,
-    turnstileRequired,
-    turnstileToken,
-  ]);
+    resetTurnstile();
+  };
 
   const handleResetPasswordOnSubmit = useCallback(
     async function (): Promise<void> {
@@ -150,11 +100,7 @@ const ForgetPasswordPage = () => {
     <GridBackground>
       <Suspense fallback={<LoadingCover />}>
         <LoadingCover
-          condition={
-            sendAuthCodeMutator.isPending ||
-            forgetPasswordMutator.isPending ||
-            isResetPasswordPending
-          }
+          condition={forgetPasswordMutator.isPending || isResetPasswordPending}
         />
         <AuthPanel
           noValidate
@@ -171,23 +117,26 @@ const ForgetPasswordPage = () => {
               onChange: setEmail,
               required: true,
             },
+            // Public recovery uses the AuthPanel field instead of AuthCodeInput.
             {
               title: t("auth.authCode"),
               placeholder: t("auth.authCodeExample"),
               type: "number",
               value: authCode,
               onChange: setAuthCode,
-              required: true,
               rightButton: {
                 description:
-                  sendAuthCodeTimeCounter > 0
-                    ? `${sendAuthCodeTimeCounter}s`
-                    : `${t("common.send")}${t(
-                        "syntax.separator"
-                      )}${t("auth.authCode")}`,
-                onClick: async () => handleSendAuthCodeOnClick(),
+                  seconds > 0
+                    ? `${seconds}s`
+                    : sentEmail === email
+                      ? t("settingsPage.account.security.resendCode")
+                      : t("common.send"),
+                onClick: handleSendAuthCode,
                 disabled:
-                  sendAuthCodeTimeCounter > 0 ||
+                  !isOnline ||
+                  !email ||
+                  isSending ||
+                  seconds > 0 ||
                   (turnstileRequired && !turnstileToken),
               },
             },

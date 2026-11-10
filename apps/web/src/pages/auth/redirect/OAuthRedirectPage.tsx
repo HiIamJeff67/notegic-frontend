@@ -1,23 +1,23 @@
+import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useOAuth } from "@/hooks/useOAuth";
-import type { OAuthProviderName } from "@/providers/OAuthProvider";
 
 function OAuthRedirectPage({
   provider,
 }: {
-  provider: OAuthProviderName | "apple";
+  provider: OAuthProviderType | "apple";
 }) {
   const location = useLocation();
-  const { completeOAuth } = useOAuth();
+  const { complete } = useOAuth();
   const hasStartedCallback = useRef(false);
 
   useEffect(() => {
     // The router can publish the destination before this callback page unmounts.
     if (hasStartedCallback.current) return;
     hasStartedCallback.current = true;
-    void completeOAuth(provider, location.searchStr);
-  }, [completeOAuth, provider, location.searchStr]);
+    void complete(provider, location.searchStr);
+  }, [complete, provider, location.searchStr]);
 
   return null;
 }

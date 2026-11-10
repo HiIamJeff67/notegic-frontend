@@ -27,7 +27,10 @@ export const TraditionalChineseServerTranslation = {
     WrongAuthCode: "驗證碼不正確。",
     LoginBlockedDueToTryingTooManyTimes: "登入嘗試次數過多，請稍後再試。",
     AuthCodeBlockedDueToTryingTooManyTimes: "驗證碼請求次數過多，請稍後再試。",
-    PermissionDeniedDueToUserRole: "你的帳號角色無法執行此操作。",
+    OAuthPasswordSetupRequired:
+      "請先到「更改密碼」設定密碼，再解除最後一個登入方式。",
+    PermissionDeniedDueToUserRole:
+      "此操作需要 Normal 或更高的帳戶角色。請先前往「帳戶設定 → 安全」驗證電子郵件，再試一次。",
     PermissionDeniedDueToUserPlan: "你目前的方案無法執行此操作。",
     PermissionDeniedDueToInvalidRequestOriginDomain: "此請求來源不受允許。",
     PermissionDeniedDueToTooManyRequests: "請求次數過多，請稍候再試。",

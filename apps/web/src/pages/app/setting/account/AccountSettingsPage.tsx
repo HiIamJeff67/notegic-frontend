@@ -1,11 +1,8 @@
-import { tError } from "@shared/i18n/error";
-import { AuthCodeBlockedSecond } from "@shared/lib/auth/oauthState.type";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import {
   HeartIcon,
@@ -18,9 +15,7 @@ import {
   UserPenIcon,
   UserRoundIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSendAuthCode } from "@/api/hooks/auth.hook";
+import { useEffect } from "react";
 import {
   Article,
   ArticleContent,
@@ -38,7 +33,6 @@ import {
   useNetwork,
   useScreen,
   useSettingsDisplay,
-  useUser,
 } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import AccountModificationTab from "./tabs/AccountModificationTab";
@@ -60,7 +54,6 @@ const AccountSettingsPage = ({
 }) => {
   const router = useAppRouter();
   const { t } = useTranslation();
-  const userManager = useUser();
   const { isOnline } = useNetwork();
   const offlineHint = isOnline
     ? undefined
@@ -68,9 +61,6 @@ const AccountSettingsPage = ({
   const { width: screenWidth } = useScreen();
   const sidebarManager = useSidebar();
   const { openSheet, closeSheet } = useSettingsDisplay();
-  const sendAuthCodeMutator = useSendAuthCode();
-  const [sendAuthCodeTimeCounter, setSendAuthCodeTimeCounter] = useState(0);
-  const [isSendAuthCodePending, startSendAuthCodeTransition] = useTransition();
   const navigationItems = [
     {
       id: "personal",
@@ -140,82 +130,6 @@ const AccountSettingsPage = ({
 
     return () => cancelAnimationFrame(animationFrame);
   }, [initialSection]);
-
-  useEffect(() => {
-    if (sendAuthCodeTimeCounter === 0) return;
-    const timer = setInterval(() => {
-      setSendAuthCodeTimeCounter(current => {
-        if (current <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return current - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [sendAuthCodeTimeCounter]);
-
-  const handleSendAuthCode = useCallback(
-    (onSuccess?: () => void, onBlock?: () => void, fallback?: () => void) =>
-      startSendAuthCodeTransition(async () => {
-        if (!isOnline) return;
-        try {
-          if (sendAuthCodeTimeCounter > 0) {
-            onBlock?.();
-            toast.error(
-              t("settingsPage.account.authCodeAlreadySent", {
-                count: sendAuthCodeTimeCounter,
-              })
-            );
-            return;
-          }
-          if (userManager.userData?.email === undefined) {
-            router.push(WebURLPathDictionary.home);
-            userManager.logout();
-            throw new Error("settingsPage.account.sessionExpired");
-          }
-
-          const response = await sendAuthCodeMutator.mutateAsync({
-            header: getClientRequestHeaders(navigator.userAgent),
-            body: { email: userManager.userData.email },
-          });
-          const blockTime = Math.floor(
-            (new Date(response.data.blockAuthCodeUntil).getTime() -
-              Date.now()) /
-              1000
-          );
-
-          onSuccess?.();
-          setSendAuthCodeTimeCounter(
-            Math.max(AuthCodeBlockedSecond, blockTime)
-          );
-          toast.success(
-            t("settingsPage.account.authCodeSent", {
-              email: userManager.userData.email,
-            })
-          );
-        } catch (error) {
-          fallback?.();
-          setSendAuthCodeTimeCounter(0);
-          toast.error(tError(error, t));
-        }
-      }),
-    [
-      isOnline,
-      router,
-      sendAuthCodeMutator,
-      sendAuthCodeTimeCounter,
-      userManager,
-    ]
-  );
-
-  const authCodeProps = {
-    sendAuthCodeTimeCounter,
-    setSendAuthCodeTimeCounter,
-    isSendAuthCodePending,
-    handleSendAuthCode,
-  };
 
   return (
     <div
@@ -298,7 +212,7 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="account">
             <ArticleParagraphHeader>
@@ -323,7 +237,7 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="api-keys">
             <ArticleParagraphHeader>
@@ -342,7 +256,7 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="upgrade">
             <ArticleParagraphHeader>
@@ -361,7 +275,7 @@ const AccountSettingsPage = ({
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="security">
             <ArticleParagraphHeader>
@@ -381,12 +295,12 @@ const AccountSettingsPage = ({
                 title={offlineHint}
                 className="min-w-0"
               >
-                <SecurityTab {...authCodeProps} layout="page" />
+                <SecurityTab layout="page" />
               </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="binding">
             <ArticleParagraphHeader>
@@ -406,12 +320,12 @@ const AccountSettingsPage = ({
                 title={offlineHint}
                 className="min-w-0"
               >
-                <BindingTab {...authCodeProps} layout="page" />
+                <BindingTab layout="page" />
               </fieldset>
             </ArticleParagraphContent>
           </ArticleParagraph>
 
-          <ArticleParagraphSeparator />
+          <ArticleParagraphSeparator fullWidth />
 
           <ArticleParagraph id="account-modification">
             <ArticleParagraphHeader>
@@ -432,7 +346,6 @@ const AccountSettingsPage = ({
                 className="min-w-0"
               >
                 <AccountModificationTab
-                  {...authCodeProps}
                   layout="page"
                   onPanelClose={() =>
                     router.push(WebURLPathDictionary.app.dashboard._)

@@ -1,7 +1,9 @@
 import {
   OAuthAppleIcon,
+  OAuthDiscordIcon,
   OAuthGithubIcon,
   OAuthGoogleIcon,
+  OAuthMicrosoftIcon,
   OAuthXIcon,
 } from "@/components/icons/OAuthIcon";
 import "@/global/styles/panel.css";
@@ -10,10 +12,12 @@ import { type ReactNode } from "react";
 import { useTheme } from "@/hooks/useTheme";
 
 const OAuthIcons = {
-  google: (className: string) => <OAuthGoogleIcon className={className} />,
-  github: (className: string) => <OAuthGithubIcon className={className} />,
-  x: (className: string) => <OAuthXIcon className={className} />,
-  apple: (className: string) => <OAuthAppleIcon className={className} />,
+  google: { Icon: OAuthGoogleIcon, name: "Google" },
+  apple: { Icon: OAuthAppleIcon, name: "Apple" },
+  x: { Icon: OAuthXIcon, name: "X" },
+  discord: { Icon: OAuthDiscordIcon, name: "Discord" },
+  github: { Icon: OAuthGithubIcon, name: "GitHub" },
+  microsoft: { Icon: OAuthMicrosoftIcon, name: "Microsoft" },
 };
 
 interface AuthPanelInput {
@@ -249,17 +253,24 @@ const AuthPanel = ({
                 <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
               </div>
 
-              <div className="flex flex-col gap-3">
-                {oauthButtons.map((button, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={button.onClick}
-                    disabled={button.disabled || isLoading}
-                    className={`
-                            group flex w-full items-center justify-center
-                            px-4 py-3 rounded border text-left
-                            font-mono text-sm leading-normal tracking-wider font-bold
+              <div className="grid grid-cols-3 gap-3">
+                {Object.entries(OAuthIcons).map(
+                  ([provider, { Icon, name }]) => {
+                    const button = oauthButtons.find(
+                      option => option.provider === provider
+                    );
+                    const label = button?.label ?? name;
+                    return (
+                      <button
+                        key={provider}
+                        type="button"
+                        aria-label={label}
+                        title={label}
+                        onClick={button?.onClick}
+                        disabled={!button || button.disabled || isLoading}
+                        className={`
+                            group flex min-w-0 items-center justify-center
+                            px-4 py-3 rounded border
                             transition-all duration-300
                             ${
                               themeManager.currentTheme.isDark
@@ -269,20 +280,15 @@ const AuthPanel = ({
                             hover:shadow-[0_0_15px_rgba(0,255,136,0.15)]
                             disabled:opacity-50 disabled:cursor-not-allowed
                         `}
-                  >
-                    <span className="flex w-full max-w-56 min-w-0 items-center gap-4">
-                      <span
-                        aria-hidden="true"
-                        className="size-5 shrink-0 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-110"
                       >
-                        {OAuthIcons[button.provider]("size-full")}
-                      </span>
-                      <span className="min-w-0 wrap-break-word">
-                        {button.label}
-                      </span>
-                    </span>
-                  </button>
-                ))}
+                        <Icon
+                          aria-hidden="true"
+                          className="size-5 shrink-0 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-110"
+                        />
+                      </button>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}

@@ -44,7 +44,6 @@ import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
-import { canSendDesktopNotification } from "./LocalPreferencesProvider";
 
 export const getBlockPackRoomName = (blockPackId: UUID | string) =>
   `block-pack:${blockPackId}`;
@@ -109,7 +108,7 @@ export const RealtimeProvider = ({
   const { userData } = useUser();
   const userPublicId = userData?.publicId ?? null;
   const { isOnline } = useNetwork();
-  const { preferences, notificationPermission } = useLocalPreferences();
+  const { preferences, canSendDesktopNotification } = useLocalPreferences();
   const apolloClient = useApolloClient();
   const queryClient = getQueryClient();
   const clientRef = useRef<RealtimeClient | null>(null);
@@ -119,10 +118,10 @@ export const RealtimeProvider = ({
   );
   const rejectedDraftBlockPackIdsRef = useRef<Set<UUID>>(new Set());
   const preferencesRef = useRef(preferences);
-  const notificationPermissionRef = useRef(notificationPermission);
+  const canSendDesktopNotificationRef = useRef(canSendDesktopNotification);
 
   preferencesRef.current = preferences;
-  notificationPermissionRef.current = notificationPermission;
+  canSendDesktopNotificationRef.current = canSendDesktopNotification;
   const [rootState, setRootState] = useState<RealtimeConnectionState>("idle");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
@@ -193,11 +192,7 @@ export const RealtimeProvider = ({
       if (
         typeof window === "undefined" ||
         typeof Notification === "undefined" ||
-        !canSendDesktopNotification(
-          preferencesRef.current,
-          notificationPermissionRef.current,
-          priority
-        )
+        !canSendDesktopNotificationRef.current(priority)
       ) {
         return;
       }

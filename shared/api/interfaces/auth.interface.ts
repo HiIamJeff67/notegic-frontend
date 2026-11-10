@@ -302,7 +302,6 @@ export const ResetEmailRequestSchema = NotegicRequestSchema.extend({
     newEmail: z.email({ error: "auth.validation.emailFormat" }),
     authCode: AuthCodeSchema,
     confirm: z.boolean(),
-    newPassword: PasswordSchema.optional(),
   }),
 });
 
@@ -312,7 +311,6 @@ export const ResetEmailResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
     updatedAt: z.coerce.date(),
     verificationRequired: z.boolean().optional(),
-    passwordRequired: z.boolean().optional(),
   }),
   embedded: z.object({
     publicId: z.string(),

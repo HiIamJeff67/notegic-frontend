@@ -144,10 +144,10 @@ export const EnglishSettingsTranslation = {
         verifyEmail: "Verify email",
         verifyEmailDescription: "Verify your email with the code we send.",
         enterCodeForEmail:
-          "Enter the code we sent to {{email}} to verify your email.",
+          "Send a verification code to {{email}}, then enter it here.",
         enterCode: "Enter authentication code",
         resendIn: "Resend in {{count}}s",
-        resendCode: "Resend code",
+        resendCode: "Resend",
         verified: "Verified",
         verify: "Verify",
         activity: "Account activity",
@@ -160,11 +160,13 @@ export const EnglishSettingsTranslation = {
         backupEmail: "Backup email",
         backupEmailDescription:
           "Add a backup email to help recover your account.",
+        currentBackupEmail: "Current backup email: {{email}}",
         backupEmailDialogDescription:
           "Enter a backup email and authentication code. It must differ from your sign-in email.",
         phoneNumber: "Phone number",
         phoneNumberDescription:
           "Add a phone number to improve account recovery.",
+        currentPhoneNumber: "Current phone number: {{phone}}",
         phoneNumberDialogDescription:
           "Enter your phone number and authentication code.",
         gmail: "Google account",
@@ -172,7 +174,7 @@ export const EnglishSettingsTranslation = {
         x: "X account",
         gmailDescription: "Connect Google for faster sign-in.",
         oauthVerifyEmail:
-          "Verify this change with the code sent to your account email.",
+          "Send a code to your account email to verify this change.",
         oauthVerifyFallbackEmail:
           "Enter the code sent to the email address linked to {{provider}}.",
         oauthVerifyAgain: "Start again and request a new verification code.",
@@ -195,23 +197,29 @@ export const EnglishSettingsTranslation = {
         xDescription: "Connect X for faster sign-in.",
         discord: "Discord account",
         discordDescription: "Connect Discord for faster sign-in.",
+        set: "Set",
         enterBackupEmail: "Enter backup email",
         selectCountryCode: "Select country code",
         countryCode: "Country code",
         enterPhoneNumber: "Enter phone number",
         bind: "Connect",
         connected: "Connected",
-        confirmBinding: "Confirm connection",
       },
       modification: {
         title: "Account changes",
         description: "Reset your account or make irreversible account changes.",
         resetAccount: "Reset account",
+        resetAction: "Reset",
+        changeAction: "Change",
         resetWarning:
-          "This permanently clears your personal data, including notes and settings. This action cannot be undone.",
+          "Resetting your account clears your personal data, including notes and settings. You can’t recover this data after the reset.",
         changeEmail: "Change email",
-        verifyNewEmail: "Enter the verification code sent to your new email.",
-        sendNewEmailCode: "Send verification code",
+        currentEmail: "Current email: {{email}}",
+        verifyCurrentEmail:
+          "Enter a new email address and the verification code from your current email ({{email}}).",
+        verifyNewEmail:
+          "Enter the verification code sent to your new email ({{email}}).",
+        continue: "Continue",
         changeEmailDialogDescription:
           "Enter a new email different from your current email.",
         enterNewEmail: "Enter new email",
@@ -220,7 +228,6 @@ export const EnglishSettingsTranslation = {
           "Update your password to keep your account secure.",
         changePasswordDialogDescription:
           "Enter your new password and authentication code.",
-        updatePassword: "Update password",
         deleteAccount: "Delete account",
         deleteAccountDescription:
           "Permanently delete your account and all its data.",
@@ -229,13 +236,10 @@ export const EnglishSettingsTranslation = {
           "Warning: This permanently deletes your account and all data. This action cannot be undone.",
         enterDelete: "Enter DELETE to confirm deletion",
         deletePermanently: "Delete permanently",
-        confirmReset: "Confirm reset",
-        confirmChange: "Confirm change",
+        reset: "Reset",
         passwordMismatch: "The new password and confirmation do not match.",
         deleteConfirmationInvalid: "Enter DELETE to delete your account.",
       },
-      authCodeAlreadySent:
-        "An authentication code was already sent. Try again in {{count}} seconds.",
       authCodeSent: "Authentication code sent to {{email}}.",
       sessionExpired: "Your session has expired. Please log in again.",
       fields: {

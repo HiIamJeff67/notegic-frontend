@@ -27,7 +27,10 @@ export const SimpleChineseServerTranslation = {
     WrongAuthCode: "验证码不正确。",
     LoginBlockedDueToTryingTooManyTimes: "登录尝试次数过多，请稍后再试。",
     AuthCodeBlockedDueToTryingTooManyTimes: "验证码请求次数过多，请稍后再试。",
-    PermissionDeniedDueToUserRole: "你的账号角色无法执行此操作。",
+    OAuthPasswordSetupRequired:
+      "请先在「更改密码」中设置密码，再解除最后一个登录方式。",
+    PermissionDeniedDueToUserRole:
+      "此操作需要 Normal 或更高的账户角色。请先前往「账户设置 → 安全」验证邮箱，再试一次。",
     PermissionDeniedDueToUserPlan: "你当前的方案无法执行此操作。",
     PermissionDeniedDueToInvalidRequestOriginDomain: "此请求来源不受允许。",
     PermissionDeniedDueToTooManyRequests: "请求次数过多，请稍候再试。",

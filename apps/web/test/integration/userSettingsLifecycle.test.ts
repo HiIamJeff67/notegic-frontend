@@ -23,6 +23,9 @@ function Probe() {
   const context = useLocalPreferences();
   window.preferences = context.preferences;
   window.updatePreference = context.updatePreference;
+  window.startPath = context.startPath;
+  window.canSendDesktopNotification = context.canSendDesktopNotification;
+  window.requestNotificationPermission = context.requestNotificationPermission;
   return null;
 }
 const root = createRoot(document.getElementById('root'));
@@ -148,6 +151,46 @@ describe("user settings lifecycle in Chromium", () => {
     expect(
       await page.evaluate("state.signals.every(signal => signal.aborted)")
     ).toBe(true);
+  });
+
+  it("hydrates the start path and quiet hours without writing them back", async () => {
+    await page.evaluate(
+      "setting.startSurface = 'Routines'; setting.quietModeStartMinute = 1315; render();"
+    );
+    await page.waitForFunction(
+      "startPath === 'app/routines' && preferences.quietModeStart === '21:55'"
+    );
+    expect(await page.evaluate("state.writes.length")).toBe(0);
+    await page.evaluate("updatePreference('quietModeEnd', '09:05');");
+    expect(await page.evaluate("state.writes[0].body.values")).toEqual({
+      quietModeEndMinute: 545,
+    });
+  });
+
+  it("applies notification permission and quiet hours from the preferences context", async () => {
+    await page.clock.setFixedTime(new Date(2026, 0, 1, 23, 30));
+    await page.evaluate(
+      "Object.defineProperty(Notification, 'permission', { value: 'default' }); Notification.requestPermission = async () => 'granted'; render();"
+    );
+    await page.waitForFunction(
+      "typeof canSendDesktopNotification === 'function'"
+    );
+    await page.evaluate("updatePreference('desktopNotifications', true);");
+    await page.waitForFunction("preferences.desktopNotifications");
+    expect(await page.evaluate("canSendDesktopNotification('critical')")).toBe(
+      false
+    );
+    await page.evaluate("requestNotificationPermission();");
+    await page.waitForFunction("canSendDesktopNotification('critical')");
+    expect(await page.evaluate("canSendDesktopNotification('normal')")).toBe(
+      false
+    );
+    await page.clock.setFixedTime(new Date(2026, 0, 1, 12));
+    expect(await page.evaluate("canSendDesktopNotification('normal')")).toBe(
+      true
+    );
+    await page.evaluate("updatePreference('desktopNotifications', false);");
+    await page.waitForFunction("!canSendDesktopNotification('critical')");
   });
 
   it("fetches once on reconnect, not on each preference update", async () => {

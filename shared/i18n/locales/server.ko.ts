@@ -34,8 +34,10 @@ export const KoreanServerTranslation = {
       "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
     AuthCodeBlockedDueToTryingTooManyTimes:
       "인증 코드 요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    OAuthPasswordSetupRequired:
+      "마지막 로그인 수단의 연결을 해제하기 전에 비밀번호를 설정해 주세요.",
     PermissionDeniedDueToUserRole:
-      "계정 역할로는 이 작업을 수행할 수 없습니다.",
+      "이 작업을 수행하려면 Normal 이상의 계정 역할이 필요합니다. ‘계정 설정 → 보안’에서 이메일을 확인한 후 다시 시도해 주세요.",
     PermissionDeniedDueToUserPlan:
       "현재 요금제로는 이 작업을 수행할 수 없습니다.",
     PermissionDeniedDueToInvalidRequestOriginDomain:

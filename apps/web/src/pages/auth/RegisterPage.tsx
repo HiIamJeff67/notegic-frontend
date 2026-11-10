@@ -21,7 +21,7 @@ import { useOAuth } from "@/hooks/useOAuth";
 
 const RegisterPage = () => {
   const router = useAppRouter();
-  const { beginOAuth, githubAvailable, xAvailable } = useOAuth();
+  const { perform, githubAvailable, xAvailable } = useOAuth();
   const { t } = useTranslation();
   const userManager = useUser();
 
@@ -179,20 +179,20 @@ const RegisterPage = () => {
             {
               provider: "google",
               label: t("workspace.pages.googleRegister"),
-              onClick: () => beginOAuth("google", "register"),
+              onClick: () => perform("google", "register"),
               disabled: turnstileRequired && !turnstileToken,
             },
             {
               provider: "github",
               label: t("workspace.pages.githubRegister"),
-              onClick: () => beginOAuth("github", "register"),
+              onClick: () => perform("github", "register"),
               disabled:
                 !githubAvailable || (turnstileRequired && !turnstileToken),
             },
             {
               provider: "x",
               label: t("workspace.pages.xRegister"),
-              onClick: () => beginOAuth("x", "register"),
+              onClick: () => perform("x", "register"),
               disabled: !xAvailable || (turnstileRequired && !turnstileToken),
             },
           ]}

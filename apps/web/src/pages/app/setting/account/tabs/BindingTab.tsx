@@ -2,12 +2,14 @@ import { NotegicAPIError } from "@shared/api/exceptions";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
+import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import { useCallback, useMemo, useState } from "react";
 import { getClientMutationHeaders } from "@/api/clientHeaders";
 import {
   useUpdateMyAccount,
   useGetMyAccount,
 } from "@/api/hooks/userAccount.hook";
+import AuthCodeInput from "@/components/inputs/AuthCodeInput";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -36,28 +38,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { useLoading, useUser } from "@/hooks";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
-import type { OAuthProviderName } from "@/providers/OAuthProvider";
 import { useOAuth } from "@/hooks/useOAuth";
 
 interface BindingTabProps {
   layout?: "panel" | "page";
-  sendAuthCodeTimeCounter: number;
-  setSendAuthCodeTimeCounter: (newSendAuthCodeTimeCounter: number) => void;
-  isSendAuthCodePending: boolean;
-  handleSendAuthCode: (
-    onSuccess?: () => void,
-    onBlock?: () => void,
-    fallback?: () => void
-  ) => void;
 }
 
-const BindingTab = ({
-  layout,
-  sendAuthCodeTimeCounter,
-  setSendAuthCodeTimeCounter,
-  isSendAuthCodePending,
-  handleSendAuthCode,
-}: BindingTabProps) => {
+const BindingTab = ({ layout }: BindingTabProps) => {
   const loadingManager = useLoading();
   const { t } = useTranslation();
   const { isOnline } = useNetwork();
@@ -69,15 +56,17 @@ const BindingTab = ({
   const updateUserAccountMutator = useUpdateMyAccount();
   const accountQuery = useGetMyAccount();
   const {
-    beginOAuth,
-    unbindOAuth,
-    prepareOAuthOperation,
+    perform,
+    unbind,
+    prepare,
     isPreparingOAuthOperation,
     isUnbinding,
     githubAvailable,
     xAvailable,
   } = useOAuth();
   const account = accountQuery.data?.data;
+  const backupEmail = account?.backupEmail;
+  const phoneNumber = account?.phoneNumber;
   const registeredProvider = account?.registeredAuthProviderType;
   const providers = [
     {
@@ -112,11 +101,11 @@ const BindingTab = ({
     },
   ] as const;
   const [unbindProvider, setUnbindProvider] =
-    useState<OAuthProviderName | null>(null);
-  const [bindProvider, setBindProvider] = useState<OAuthProviderName | null>(
+    useState<OAuthProviderType | null>(null);
+  const [bindProvider, setBindProvider] = useState<OAuthProviderType | null>(
     null
   );
-  const [fallbackProvider, setFallbackProvider] = useState<OAuthProviderName>();
+  const [fallbackProvider, setFallbackProvider] = useState<OAuthProviderType>();
   const [verificationProvider, setVerificationProvider] =
     useState<(typeof providers)[number]["type"]>();
   const disconnecting = providers.find(
@@ -178,14 +167,13 @@ const BindingTab = ({
               },
             },
           });
-          setSendAuthCodeTimeCounter(0);
           setBindBackupEmailDialogOpen(false);
           toast.success(t("settingsPage.account.messages.backupEmailSet"));
         } catch (error) {
           toast.error(tError(error, t));
         }
       }),
-    [updateUserAccountMutator, setSendAuthCodeTimeCounter, t]
+    [updateUserAccountMutator, t]
   );
 
   const handleBindPhoneNumber = useCallback(
@@ -203,15 +191,16 @@ const BindingTab = ({
               },
             },
           });
-          setSendAuthCodeTimeCounter(0);
           setBindPhoneNumberDialogOpen(false);
           toast.success(t("settingsPage.account.messages.phoneNumberSet"));
         } catch (error) {
           toast.error(tError(error, t));
         }
       }),
-    [updateUserAccountMutator, setSendAuthCodeTimeCounter, t]
+    [updateUserAccountMutator, t]
   );
+
+  const authCodeDelivery = { email: userManager.userData?.email };
 
   return (
     <SettingMenu
@@ -252,11 +241,11 @@ const BindingTab = ({
                 const authCode = String(formData.get("authCode") ?? "");
                 if (binding) {
                   try {
-                    const { data } = await prepareOAuthOperation({
+                    const { data } = await prepare({
                       provider: binding.type,
                       authCode,
                     });
-                    await beginOAuth(binding.name, "binding", data);
+                    await perform(binding.name, "binding", data);
                   } catch (error) {
                     toast.error(
                       error instanceof NotegicAPIError &&
@@ -270,7 +259,7 @@ const BindingTab = ({
                 if (unbindProvider === null) return;
                 await loadingManager.startAsyncTransactionLoading(async () => {
                   try {
-                    const { data } = await unbindOAuth(
+                    const { data } = await unbind(
                       unbindProvider,
                       verificationProvider
                         ? {
@@ -329,47 +318,12 @@ const BindingTab = ({
                 });
               }}
             >
-              <div className="relative mt-1">
-                <Input
-                  disabled={!isOnline}
-                  key={verificationProvider ?? "account-code"}
-                  name="authCode"
-                  aria-label={t("settingsPage.account.security.enterCode")}
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  required
-                  pattern="[0-9]{6}"
-                  maxLength={6}
-                  className={
-                    verificationProvider
-                      ? "w-full px-4 py-3"
-                      : "w-full py-3 pr-[40%] pl-4"
-                  }
-                />
-                {!verificationProvider && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="default"
-                    disabled={
-                      !isOnline ||
-                      isSendAuthCodePending ||
-                      sendAuthCodeTimeCounter > 0
-                    }
-                    onClick={() => handleSendAuthCode()}
-                    className="absolute right-0.5 top-1/2 max-w-2/5 -translate-y-1/2 px-3 text-xs font-bold"
-                  >
-                    <span className="truncate">
-                      {sendAuthCodeTimeCounter > 0
-                        ? t("settingsPage.account.security.resendIn", {
-                            count: sendAuthCodeTimeCounter,
-                          })
-                        : t("settingsPage.account.security.resendCode")}
-                    </span>
-                  </Button>
-                )}
-              </div>
+              <AuthCodeInput
+                key={verificationProvider ?? "account-code"}
+                className="mt-1"
+                disabled={!isOnline}
+                send={verificationProvider ? undefined : authCodeDelivery}
+              />
               {needsFallback &&
                 !verificationProvider &&
                 fallbackProviders.length > 1 && (
@@ -429,6 +383,13 @@ const BindingTab = ({
               </DialogTitle>
               <DialogDescription>
                 {t("settingsPage.account.binding.backupEmailDialogDescription")}
+                {authCodeDelivery.email && (
+                  <span className="mt-1 block wrap-anywhere">
+                    {t("settingsPage.account.security.enterCodeForEmail", {
+                      email: authCodeDelivery.email,
+                    })}
+                  </span>
+                )}
               </DialogDescription>
             </DialogHeader>
             <form
@@ -458,44 +419,21 @@ const BindingTab = ({
                   className="w-full px-4 py-3"
                 />
               </div>
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={authCodeDelivery}
+              />
               <DialogFooter>
                 <Button
-                  variant="secondary"
+                  type="button"
+                  variant="outline"
                   onClick={() => setBindBackupEmailDialogOpen(false)}
                 >
                   {t("common.cancel")}
                 </Button>
                 <Button variant="default" type="submit" disabled={!isOnline}>
-                  {t("settingsPage.account.binding.confirmBinding")}
+                  {t("common.confirm")}
                 </Button>
               </DialogFooter>
             </form>
@@ -562,44 +500,21 @@ const BindingTab = ({
                   className="w-full px-4 py-3"
                 />
               </div>
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={authCodeDelivery}
+              />
               <DialogFooter>
                 <Button
-                  variant="secondary"
+                  type="button"
+                  variant="outline"
                   onClick={() => setBindPhoneNumberDialogOpen(false)}
                 >
                   {t("common.cancel")}
                 </Button>
                 <Button variant="default" type="submit" disabled={!isOnline}>
-                  {t("settingsPage.account.binding.confirmBinding")}
+                  {t("common.confirm")}
                 </Button>
               </DialogFooter>
             </form>
@@ -610,31 +525,45 @@ const BindingTab = ({
       <SettingMenuItem
         title={t("settingsPage.account.binding.backupEmail")}
         description={t("settingsPage.account.binding.backupEmailDescription")}
+        descriptionDetail={
+          backupEmail
+            ? t("settingsPage.account.binding.currentBackupEmail", {
+                email: backupEmail,
+              })
+            : undefined
+        }
       >
         <SettingMenuButton
           variant="outline"
-          disable={!isOnline}
-          onClick={() => {
-            setBindBackupEmailDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          disable={!isOnline || !account}
+          onClick={() => setBindBackupEmailDialogOpen(true)}
         >
-          {t("settingsPage.account.binding.bind")}
+          {backupEmail
+            ? t("settingsPage.account.modification.changeAction")
+            : t("settingsPage.account.binding.set")}
         </SettingMenuButton>
       </SettingMenuItem>
       <SettingMenuItem
         title={t("settingsPage.account.binding.phoneNumber")}
         description={t("settingsPage.account.binding.phoneNumberDescription")}
+        descriptionDetail={
+          phoneNumber
+            ? t("settingsPage.account.binding.currentPhoneNumber", {
+                phone: [account?.countryCode, phoneNumber]
+                  .filter(Boolean)
+                  .join(" "),
+              })
+            : undefined
+        }
       >
         <SettingMenuButton
           variant="outline"
-          disable={!isOnline}
-          onClick={() => {
-            setBindPhoneNumberDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          disable={!isOnline || phoneNumber === undefined}
+          onClick={() => setBindPhoneNumberDialogOpen(true)}
         >
-          {t("settingsPage.account.binding.bind")}
+          {phoneNumber
+            ? t("settingsPage.account.modification.changeAction")
+            : t("settingsPage.account.binding.set")}
         </SettingMenuButton>
       </SettingMenuItem>
       {accountQuery.isError && !account && (
@@ -651,9 +580,15 @@ const BindingTab = ({
         </SettingMenuItem>
       )}
       {providers.map(provider => {
+        const needsPassword =
+          provider.bound &&
+          registeredProvider === "Email" &&
+          account?.passwordConfigured !== true &&
+          !providers.some(other => other.name !== provider.name && other.bound);
         const disconnectBlocked =
           provider.bound &&
-          (registeredProvider === undefined ||
+          (needsPassword ||
+            registeredProvider === undefined ||
             ((registeredProvider === null ||
               registeredProvider === provider.type) &&
               !providers.some(
@@ -677,7 +612,9 @@ const BindingTab = ({
                   [
                     offlineHint,
                     disconnectBlocked &&
-                      t("settingsPage.account.binding.oauthFallbackHint"),
+                      (needsPassword
+                        ? t("server.error.OAuthPasswordSetupRequired")
+                        : t("settingsPage.account.binding.oauthFallbackHint")),
                   ]
                     .filter(Boolean)
                     .join(" ") || undefined
@@ -696,12 +633,6 @@ const BindingTab = ({
                       setUnbindProvider(provider.name);
                     } else {
                       setBindProvider(provider.name);
-                    }
-                    if (
-                      sendAuthCodeTimeCounter === 0 &&
-                      !isSendAuthCodePending
-                    ) {
-                      handleSendAuthCode();
                     }
                   }}
                 >

@@ -11,6 +11,7 @@ import {
   useResetEmail,
   useResetMe,
 } from "@/api/hooks/auth.hook";
+import AuthCodeInput from "@/components/inputs/AuthCodeInput";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
@@ -24,29 +25,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useAppRouter, useLoading, useUser } from "@/hooks";
+import { useAppRouter, useLoading, useStationRoutine, useUser } from "@/hooks";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface AccountModificationTabProps {
   layout?: "panel" | "page";
-  sendAuthCodeTimeCounter: number;
-  setSendAuthCodeTimeCounter: (newSendAuthCodeTimeCounter: number) => void;
-  isSendAuthCodePending: boolean;
-  handleSendAuthCode: (
-    onSuccess?: () => void,
-    onBlock?: () => void,
-    fallback?: () => void
-  ) => void;
   onPanelClose: () => void;
 }
 
 const AccountModificationTab = ({
   layout,
-  sendAuthCodeTimeCounter,
-  setSendAuthCodeTimeCounter,
-  isSendAuthCodePending,
-  handleSendAuthCode,
   onPanelClose,
 }: AccountModificationTabProps) => {
   const router = useAppRouter();
@@ -57,6 +46,8 @@ const AccountModificationTab = ({
     ? undefined
     : t("workspace.pages.accountOffline");
   const userManager = useUser();
+  const { refresh: refreshStationRoutines } = useStationRoutine();
+  const currentEmail = userManager.userData?.email;
 
   const resetMeMutator = useResetMe();
   const resetEmailMutator = useResetEmail();
@@ -66,10 +57,7 @@ const AccountModificationTab = ({
   const [resetMeDialogOpen, setResetMeDialogOpen] = useState<boolean>(false);
   const [resetEmailDialogOpen, setResetEmailDialogOpen] =
     useState<boolean>(false);
-  const [emailChallenge, setEmailChallenge] = useState<{
-    email: string;
-    passwordRequired: boolean;
-  } | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
     useState<boolean>(false);
   const [deleteMeDialogOpen, setDeleteMeDialogOpen] = useState<boolean>(false);
@@ -85,8 +73,10 @@ const AccountModificationTab = ({
               authCode: authCode,
             },
           });
-          setSendAuthCodeTimeCounter(0);
+          userManager.setUserInfo(null);
+          userManager.updateUserData({ avatarURL: "" });
           setResetMeDialogOpen(false);
+          void refreshStationRoutines().catch(error => console.error(error));
           await userManager.fetchUserData();
           onPanelClose();
           toast.success(t("settingsPage.account.messages.accountReset"));
@@ -95,18 +85,11 @@ const AccountModificationTab = ({
           toast.error(tError(error, t));
         }
       }),
-    [
-      router,
-      userManager,
-      resetMeMutator,
-      setSendAuthCodeTimeCounter,
-      setResetMeDialogOpen,
-      onPanelClose,
-    ]
+    [router, userManager, resetMeMutator, refreshStationRoutines, onPanelClose]
   );
 
   const handleResetEmail = useCallback(
-    async (newEmail: string, authCode: string, newPassword?: string) =>
+    async (newEmail: string, authCode: string) =>
       await loadingManager.startAsyncTransactionLoading(async () => {
         try {
           const userAgent = navigator.userAgent;
@@ -115,33 +98,27 @@ const AccountModificationTab = ({
             body: {
               newEmail,
               authCode,
-              confirm: emailChallenge !== null,
-              newPassword,
+              confirm: pendingEmail !== null,
             },
           });
           if (response.data.verificationRequired) {
-            setEmailChallenge({
-              email: newEmail,
-              passwordRequired: response.data.passwordRequired === true,
-            });
+            setPendingEmail(newEmail);
             return;
           }
-          setEmailChallenge(null);
-          setSendAuthCodeTimeCounter(0);
+          setPendingEmail(null);
           setResetEmailDialogOpen(false);
-          userManager.updateUserData({ email: newEmail });
+          userManager.updateUserData({
+            email: newEmail,
+            ...(userManager.userData?.role === UserRole.Guest && {
+              role: UserRole.Normal,
+            }),
+          });
           toast.success(t("settingsPage.account.messages.emailReset"));
         } catch (error) {
           toast.error(tError(error, t));
         }
       }),
-    [
-      userManager,
-      resetEmailMutator,
-      emailChallenge,
-      setSendAuthCodeTimeCounter,
-      setResetEmailDialogOpen,
-    ]
+    [userManager, resetEmailMutator, pendingEmail, setResetEmailDialogOpen]
   );
 
   const handleChangePassword = useCallback(
@@ -169,7 +146,6 @@ const AccountModificationTab = ({
               authCode: authCode,
             },
           });
-          setSendAuthCodeTimeCounter(0);
           setChangePasswordDialogOpen(false);
           toast.success(t("settingsPage.account.messages.passwordChanged"));
         } catch (error) {
@@ -180,7 +156,6 @@ const AccountModificationTab = ({
       userManager,
       t,
       forgetPasswordMutator,
-      setSendAuthCodeTimeCounter,
       setChangePasswordDialogOpen,
       onPanelClose,
     ]
@@ -205,7 +180,6 @@ const AccountModificationTab = ({
               authCode: authCode,
             },
           });
-          setSendAuthCodeTimeCounter(0);
           setDeleteMeDialogOpen(false);
           onPanelClose();
           userManager.setUserData(null);
@@ -220,11 +194,12 @@ const AccountModificationTab = ({
       userManager,
       t,
       deleteMeMutator,
-      setSendAuthCodeTimeCounter,
       setDeleteMeDialogOpen,
       onPanelClose,
     ]
   );
+
+  const authCodeDelivery = { email: currentEmail };
 
   return (
     <SettingMenu
@@ -253,38 +228,15 @@ const AccountModificationTab = ({
                 await handleResetMe(authCode);
               }}
             >
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={authCodeDelivery}
+              />
               <DialogFooter>
                 <Button
-                  variant="secondary"
+                  type="button"
+                  variant="outline"
                   onClick={() => setResetMeDialogOpen(false)}
                 >
                   {t("common.cancel")}
@@ -294,7 +246,7 @@ const AccountModificationTab = ({
                   type="submit"
                   disabled={!isOnline}
                 >
-                  {t("settingsPage.account.modification.confirmReset")}
+                  {t("settingsPage.account.modification.reset")}
                 </Button>
               </DialogFooter>
             </form>
@@ -304,7 +256,7 @@ const AccountModificationTab = ({
           open={resetEmailDialogOpen}
           onOpenChange={open => {
             setResetEmailDialogOpen(open);
-            if (!open) setEmailChallenge(null);
+            if (!open) setPendingEmail(null);
           }}
         >
           <DialogContent>
@@ -312,12 +264,21 @@ const AccountModificationTab = ({
               <DialogTitle>
                 {t("settingsPage.account.modification.changeEmail")}
               </DialogTitle>
-              <DialogDescription>
-                {emailChallenge
-                  ? t("settingsPage.account.modification.verifyNewEmail")
-                  : t(
-                      "settingsPage.account.modification.changeEmailDialogDescription"
-                    )}
+              <DialogDescription className="wrap-anywhere">
+                {pendingEmail
+                  ? t("settingsPage.account.modification.verifyNewEmail", {
+                      email: pendingEmail,
+                    })
+                  : currentEmail
+                    ? t(
+                        "settingsPage.account.modification.verifyCurrentEmail",
+                        {
+                          email: currentEmail,
+                        }
+                      )
+                    : t(
+                        "settingsPage.account.modification.changeEmailDialogDescription"
+                      )}
               </DialogDescription>
             </DialogHeader>
             <form
@@ -331,12 +292,8 @@ const AccountModificationTab = ({
                 const formData = new FormData(e.currentTarget);
                 const authCode = formData.get("authCode") as string;
                 const newEmail =
-                  emailChallenge?.email ??
-                  String(formData.get("newEmail") ?? "");
-                const newPassword = emailChallenge?.passwordRequired
-                  ? String(formData.get("newPassword") ?? "")
-                  : undefined;
-                await handleResetEmail(newEmail, authCode, newPassword);
+                  pendingEmail ?? String(formData.get("newEmail") ?? "");
+                await handleResetEmail(newEmail, authCode);
               }}
             >
               <div className="relative flex justify-between items-center mt-1">
@@ -345,8 +302,8 @@ const AccountModificationTab = ({
                   id="newEmail"
                   name="newEmail"
                   type="email"
-                  defaultValue={emailChallenge?.email}
-                  readOnly={emailChallenge !== null}
+                  defaultValue={pendingEmail ?? undefined}
+                  readOnly={pendingEmail !== null}
                   placeholder={t(
                     "settingsPage.account.modification.enterNewEmail"
                   )}
@@ -354,72 +311,27 @@ const AccountModificationTab = ({
                   className="w-full px-4 py-3"
                 />
               </div>
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  key={
-                    emailChallenge === null
-                      ? "current-email-code"
-                      : "new-email-code"
-                  }
-                  id="authCode"
-                  name="authCode"
-                  pattern="[0-9]{6}"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                {emailChallenge === null && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="default"
-                    disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                    onClick={() => handleSendAuthCode()}
-                    className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                  >
-                    {sendAuthCodeTimeCounter > 0
-                      ? t("settingsPage.account.security.resendIn", {
-                          count: sendAuthCodeTimeCounter,
-                        })
-                      : t("settingsPage.account.security.resendCode")}
-                  </Button>
-                )}
-              </div>
-              {emailChallenge?.passwordRequired && (
-                <Input
-                  disabled={!isOnline}
-                  name="newPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  placeholder={t("auth.newPassword")}
-                  minLength={8}
-                  required
-                />
-              )}
+              <AuthCodeInput
+                key={pendingEmail ? "new-email-code" : "current-email-code"}
+                className="mt-1"
+                disabled={!isOnline}
+                send={pendingEmail ? undefined : authCodeDelivery}
+              />
               <DialogFooter>
                 <Button
-                  variant="secondary"
                   type="button"
+                  variant="outline"
                   onClick={() => {
                     setResetEmailDialogOpen(false);
-                    setEmailChallenge(null);
+                    setPendingEmail(null);
                   }}
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button
-                  variant="destructive"
-                  type="submit"
-                  disabled={!isOnline}
-                >
-                  {emailChallenge
-                    ? t("settingsPage.account.modification.confirmChange")
-                    : t("settingsPage.account.modification.sendNewEmailCode")}
+                <Button variant="default" type="submit" disabled={!isOnline}>
+                  {pendingEmail
+                    ? t("common.confirm")
+                    : t("settingsPage.account.modification.continue")}
                 </Button>
               </DialogFooter>
             </form>
@@ -483,35 +395,11 @@ const AccountModificationTab = ({
                   className="mt-1"
                 />
               </div>
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={authCodeDelivery}
+              />
               <DialogFooter>
                 <Button
                   type="button"
@@ -521,7 +409,7 @@ const AccountModificationTab = ({
                   {t("common.cancel")}
                 </Button>
                 <Button type="submit" disabled={!isOnline}>
-                  {t("settingsPage.account.modification.updatePassword")}
+                  {t("common.confirm")}
                 </Button>
               </DialogFooter>
             </form>
@@ -553,35 +441,11 @@ const AccountModificationTab = ({
                 await handleDeleteMe(confirmDeleteText, authCode);
               }}
             >
-              <div className="relative flex justify-between items-center mt-1">
-                <Input
-                  disabled={!isOnline}
-                  id="authCode"
-                  name="authCode"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder={t("settingsPage.account.security.enterCode")}
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  minLength={6}
-                  required={userManager.userData?.role !== UserRole.Guest}
-                  className="w-full px-4 py-3"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="default"
-                  disabled={!isOnline || sendAuthCodeTimeCounter > 0}
-                  onClick={() => handleSendAuthCode()}
-                  className="absolute right-0.5 max-w-2/5 top-1/2 px-3 -translate-y-1/2 text-xs font-bold"
-                >
-                  {sendAuthCodeTimeCounter > 0
-                    ? t("settingsPage.account.security.resendIn", {
-                        count: sendAuthCodeTimeCounter,
-                      })
-                    : t("settingsPage.account.security.resendCode")}
-                </Button>
-              </div>
+              <AuthCodeInput
+                className="mt-1"
+                disabled={!isOnline}
+                send={authCodeDelivery}
+              />
               <div className="relative flex justify-between items-center mt-1">
                 <Input
                   disabled={!isOnline}
@@ -597,6 +461,7 @@ const AccountModificationTab = ({
               </div>
               <DialogFooter>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => {
                     setDeleteMeDialogOpen(false);
@@ -622,13 +487,11 @@ const AccountModificationTab = ({
         description={t("settingsPage.account.modification.resetWarning")}
       >
         <SettingMenuButton
+          ariaLabel={t("settingsPage.account.modification.resetAccount")}
           variant="outline"
-          onClick={() => {
-            setResetMeDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          onClick={() => setResetMeDialogOpen(true)}
         >
-          {t("settingsPage.account.modification.resetAccount")}
+          {t("settingsPage.account.modification.resetAction")}
         </SettingMenuButton>
       </SettingMenuItem>
 
@@ -637,15 +500,20 @@ const AccountModificationTab = ({
         description={t(
           "settingsPage.account.modification.changeEmailDialogDescription"
         )}
+        descriptionDetail={
+          currentEmail
+            ? t("settingsPage.account.modification.currentEmail", {
+                email: currentEmail,
+              })
+            : undefined
+        }
       >
         <SettingMenuButton
+          ariaLabel={t("settingsPage.account.modification.changeEmail")}
           variant="outline"
-          onClick={() => {
-            setResetEmailDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          onClick={() => setResetEmailDialogOpen(true)}
         >
-          {t("settingsPage.account.modification.changeEmail")}
+          {t("settingsPage.account.modification.changeAction")}
         </SettingMenuButton>
       </SettingMenuItem>
 
@@ -656,13 +524,11 @@ const AccountModificationTab = ({
         )}
       >
         <SettingMenuButton
+          ariaLabel={t("settingsPage.account.modification.changePassword")}
           variant="outline"
-          onClick={() => {
-            setChangePasswordDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          onClick={() => setChangePasswordDialogOpen(true)}
         >
-          {t("settingsPage.account.modification.changePassword")}
+          {t("settingsPage.account.modification.changeAction")}
         </SettingMenuButton>
       </SettingMenuItem>
 
@@ -676,10 +542,7 @@ const AccountModificationTab = ({
       >
         <SettingMenuButton
           variant="destructive"
-          onClick={() => {
-            setDeleteMeDialogOpen(true);
-            handleSendAuthCode();
-          }}
+          onClick={() => setDeleteMeDialogOpen(true)}
         >
           {t("common.delete")}
         </SettingMenuButton>

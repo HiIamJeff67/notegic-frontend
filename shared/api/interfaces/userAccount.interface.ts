@@ -15,6 +15,8 @@ export const GetMyAccountResponseSchema = NotegicResponseSchema.extend({
     UserAccountSchema.pick({
       countryCode: true,
       phoneNumber: true,
+      backupEmail: true,
+      emailVerified: true,
       updatedAt: true,
     })
       .extend({
@@ -33,6 +35,7 @@ export const GetMyAccountResponseSchema = NotegicResponseSchema.extend({
         }) => ({
           ...account,
           registeredAuthProviderType: undefined,
+          passwordConfigured: undefined,
           googleBound: googleCredential !== null,
           githubBound: githubCredential != null,
           xBound: xCredential != null,
@@ -82,6 +85,9 @@ export type UpdateMyAccountRequest = z.infer<
 
 export const UpdateMyAccountResponseSchema = NotegicResponseSchema.extend({
   data: z.object({
+    backupEmail: z.string().nullish(),
+    countryCode: z.string().nullish(),
+    phoneNumber: z.string().nullish(),
     updatedAt: z.coerce.date(),
   }),
   embedded: z.object({

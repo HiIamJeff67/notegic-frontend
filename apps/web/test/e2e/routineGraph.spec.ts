@@ -964,6 +964,8 @@ test("layout conflicts retain the draft without retrying on rerenders", async ({
 test("version conflicts preserve drafts and require review plus a separate atomic Save", async ({
   page,
 }) => {
+  // Failed review attempts and a fresh Vite mount share this test's budget.
+  test.setTimeout(60_000);
   const editor = await mountLayoutEditor(page, true);
   const action = editor.locator(
     '.react-flow__node[data-id="42345678-1234-4234-8234-123456789abc"]'

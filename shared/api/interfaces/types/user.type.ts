@@ -62,6 +62,9 @@ export const AuthProviderTypeSchema = z.enum([
 
 export const UserAccountSchema = z.object({
   registeredAuthProviderType: AuthProviderTypeSchema.nullish(),
+  passwordConfigured: z.boolean().optional(),
+  emailVerified: z.boolean().optional(),
+  backupEmail: z.string().nullish(),
   countryCode: z.string().nullable(),
   phoneNumber: z.string().nullable(),
   googleBound: z.boolean(),

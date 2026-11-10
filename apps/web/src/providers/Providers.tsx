@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { LocalDBRecoveryCover } from "@/components/covers/LocalDBRecoveryCover/LocalDBRecoveryCover";
 import { AppRouterProvider } from "@/providers/AppRouterProvider";
+import { AuthCodeProvider } from "@/providers/AuthCodeProvider";
 import { ClipboardGuardProvider } from "@/providers/ClipboardGuardProvider";
 import { LoadingProvider } from "@/providers/LoadingProvider";
 import { LocalPreferencesProvider } from "@/providers/LocalPreferencesProvider";
@@ -17,18 +18,20 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <PerformanceProvider>
       <ScreenProvider>
         <QueryClientProvider client={queryClient}>
-          <LoadingProvider>
-            <AppRouterProvider>
-              <ThemeProvider>
-                <LocalPreferencesProvider>
-                  <ClipboardGuardProvider>
-                    <LocalDBRecoveryCover />
-                    {children}
-                  </ClipboardGuardProvider>
-                </LocalPreferencesProvider>
-              </ThemeProvider>
-            </AppRouterProvider>
-          </LoadingProvider>
+          <AuthCodeProvider>
+            <LoadingProvider>
+              <AppRouterProvider>
+                <ThemeProvider>
+                  <LocalPreferencesProvider>
+                    <ClipboardGuardProvider>
+                      <LocalDBRecoveryCover />
+                      {children}
+                    </ClipboardGuardProvider>
+                  </LocalPreferencesProvider>
+                </ThemeProvider>
+              </AppRouterProvider>
+            </LoadingProvider>
+          </AuthCodeProvider>
         </QueryClientProvider>
       </ScreenProvider>
     </PerformanceProvider>
