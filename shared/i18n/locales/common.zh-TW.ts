@@ -150,6 +150,8 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
     userRole: "使用者角色",
     userPlan: "使用者方案",
     forgetPassword: "忘記密碼？",
+    passwordResetAccountNotFound:
+      "找不到使用這個電子郵件地址的帳號。請確認地址或註冊新帳號。",
     haveNotRegisterAnAccount: "還沒有註冊帳號？",
     alreadyHaveAnAccount: "已經有帳號了？",
     authenticationPanelSubtitle: "身份驗證面板",

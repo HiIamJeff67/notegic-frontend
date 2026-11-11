@@ -147,6 +147,7 @@ export interface CommonTranslation {
     userRole: string;
     userPlan: string;
     forgetPassword: string;
+    passwordResetAccountNotFound: string;
     haveNotRegisterAnAccount: string;
     alreadyHaveAnAccount: string;
     authenticationPanelSubtitle: string;

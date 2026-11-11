@@ -160,6 +160,8 @@ export const KoreanCommonTranslation: CommonTranslation = {
     userRole: "사용자 역할",
     userPlan: "사용자 플랜",
     forgetPassword: "비밀번호를 잊으셨나요?",
+    passwordResetAccountNotFound:
+      "이 이메일 주소로 등록된 계정을 찾을 수 없습니다. 주소를 확인하거나 새 계정을 등록하세요。",
     haveNotRegisterAnAccount: "아직 계정을 등록하지 않으셨나요？",
     alreadyHaveAnAccount: "이미 계정이 있으신가요？",
     authenticationPanelSubtitle: "인증 패널",
