@@ -1,8 +1,9 @@
 # Style Conventions
 
-Token values, theme hex approximations, and the stylesheet ownership table
-live in the [UI catalog](../designs/ui/README.md). This document is the rule
-for how those selections are applied.
+This document is how to write CSS and Tailwind. The colors, type, radius,
+density, and motion a person should see are in
+[UI appearance](../designs/ui/appearance.md). Use the tokens below so a theme
+change reaches the new interface without a new palette.
 
 ## Tokens and global CSS
 
@@ -10,6 +11,45 @@ for how those selections are applied.
 - Use semantic Tailwind tokens (`bg-canvas`, `bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-sidebar`) instead of raw colour values in feature code.
 - Add a new global rule only for a cross-application contract such as a theme token, density, reduced motion or a third-party editor override. Keep feature-specific styling beside its component.
 - `panel.css` is imported only by `AuthPanel`; it is not an application-wide stylesheet.
+
+`globals.css` is the running theme. It has no `@config`. The Vite plugin is
+`@tailwindcss/vite`. `apps/web/tailwind.config.ts` is the leftover file named
+by `components.json`; do not add tokens there, and do not add `prose` classes.
+The app does not use `@tailwindcss/typography`.
+
+Join classes with `cn` from `@shared/lib/classname/cn`. Primitive variants use
+`cva` in the primitive file. Do not add a second `cva` map in a feature for a
+variant the primitive already has.
+
+`data-slot` is the styling contract. Density, inspector, article, and editor
+CSS select those slots. A new shared control that must follow density sets an
+existing slot or extends the `html[data-density]` rule in `globals.css`.
+
+| Stylesheet | Loaded by | Use it for |
+| --- | --- | --- |
+| `globals.css` | Application entry | Tailwind, tokens, themes, density, reduced motion, base caret and cursor, number-input spin removal, switch thumb. |
+| `scrollbar.css` | `globals.css` | Thin scrollbars and `.hide-scrollbar`. |
+| `loading.css` | `globals.css` | Loading-logo animation. |
+| `sidebar.css` | `globals.css` | Sidebar group animation and the density height that must beat a utility `h-*`. |
+| `panel.css` | `AuthPanel` only | The public auth panel's gradient, texture, and glow. |
+| `article.css` | `ArticleNavigation` | Wrapped article-sidebar labels. |
+| `inspector.css` | `StationRoutineInspectorHost` | Inspector controls stay on `--background`. |
+| `block-editor.css` | Block pack editor and the block-pack payload editor | BlockNote menus and the language picker. |
+| `app-command.css` | `AppCommand` and `ArticleCommand` | Command palette motion. |
+| `image.css` | `Image` | Blur reveal after load. |
+
+Add or extend a stylesheet only for a cross-application contract, a keyframe
+the existing utilities cannot express, or a third-party DOM the component does
+not control. Import it from the owner in the table. Do not create `styles.ts`
+or a class-name helper to hide one component's class list.
+
+Theme-scoped utilities exist for `standard`, `dark`, `light`, `neon`, `ocean`,
+`forest`, `phoenix`, `pearl`, `sakura`, and `citrus`. Use one only when the
+structure changes. Color differences belong to tokens.
+
+Responsive prefixes already in use are `sm`, `md`, and `lg`. Match the nearest
+surface instead of adding `xl` or `2xl` for one screen. State styling uses
+Radix `data-state` and `disabled:` when the primitive already publishes them.
 
 ## Density and motion
 

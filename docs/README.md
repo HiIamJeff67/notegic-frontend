@@ -38,10 +38,11 @@ Before choosing or introducing an icon, consult the
 [Icon map](conventions/icon-map.md) and
 [Icons and Images conventions](conventions/03-icons-and-images.md).
 
-Before adding a control, color, stylesheet, or layout, consult the
-[UI catalog](designs/ui/README.md). It records the current component owners,
-tokens, and layout shells. Contributor rules remain in
-[UI](conventions/01-ui.md) and [Style](conventions/02-styles.md) conventions.
+Before adding a control, stylesheet, or layout, follow
+[UI conventions](conventions/01-ui.md),
+[UI components](conventions/ui-components.md), and
+[Style conventions](conventions/02-styles.md). The visible appearance those
+rules implement is described in [UI appearance](designs/ui/appearance.md).
 
 - [Routes](designs/routes/README.md) documents frontend transport entry points,
   contracts, and client-facing API concerns.

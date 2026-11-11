@@ -209,8 +209,8 @@ When creation is actually required, judge the value by reuse:
 4. A one-use fragment stays beside its owner. One imagined future caller is
    not reuse value.
 
-UI selections and their exceptions are recorded in the
-[UI catalog](../designs/ui/README.md). `AuthCodeInput` is the shared
+UI owners and their exceptions are recorded in
+[UI components](ui-components.md). `AuthCodeInput` is the shared
 account-settings code field. Public `AuthPanel` flows keep their own code
 field and must not be folded into that component. Icon additions follow this
 gate and are registered in the [Icon map](icon-map.md); they do not get a

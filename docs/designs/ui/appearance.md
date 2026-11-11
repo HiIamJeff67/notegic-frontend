@@ -1,188 +1,230 @@
-# Appearance
+# UI appearance
 
-Notegic's workspace is a compact industrial tool: monospace type, small radii,
-neutral surfaces, and color used for meaning. The default theme is
-`Default Standard` on the dark base (`shared/lib/theme/defaults.ts`). A user
-can switch the base to light and the accent family among the built-in
-subthemes. Feature code does not restyle itself per theme; it uses semantic
-tokens and the active theme class supplies the values.
+This document describes the appearance a person should see, and the
+consistency that appearance requires. How to choose a component, where a file
+lives, and how stylesheets are owned are in
+[UI conventions](../../conventions/01-ui.md),
+[UI components](../../conventions/ui-components.md), and
+[Style conventions](../../conventions/02-styles.md).
 
-Public sign-in is the deliberate exception. `AuthPanel` is an instrument panel,
-not a workspace card. Keep that treatment on the public auth surface. Do not
-copy its screws, green title, or raw gradients into the workspace.
+The examples below use those conventions: semantic tokens, existing `Button`
+variants, and utilities. They show the shape of the markup, not a new
+component.
 
-## How to choose a color
+## What the product feels like
 
-1. Use a semantic utility: `bg-canvas`, `bg-inset`, `bg-background`,
-   `bg-card`, `bg-popover`, `bg-sidebar`, `text-foreground`,
-   `text-muted-foreground`, `border-border`, `bg-primary`,
-   `text-primary-foreground`, `bg-destructive`, `bg-accent`, `bg-muted`,
-   `bg-overlay`, or `ring-ring`.
-2. Let the active subtheme own accent. Do not hardcode Standard's brown, or
-   any other subtheme primary, inside a feature.
-3. Charts use `var(--chart-1)` through `var(--chart-5)` through
-   `getChartColor` in `apps/web/src/components/charts/color.ts`.
-4. HTTP method badges use the `http-get`, `http-post`, `http-put`, and
-   `http-patch` tokens.
-5. A raw Tailwind palette class or hex value is limited to the exceptions at
-   the end of this document.
-6. A genuinely new semantic color is added in `globals.css` as a variable and
-   an `@theme` color, then recorded here. Do not add it only in
-   `apps/web/tailwind.config.ts`.
+The workspace is a compact industrial tool. Type is monospace. Corners are
+small. Surfaces are neutral gray or near-white, and color is reserved for
+meaning: the current theme's action color, a destructive action, a quiet
+secondary line, or a status that must be recognized at a glance. Borders
+contain something or separate two real regions. Space, not extra boxes,
+creates hierarchy. Shadows stay small on objects and larger only on a dialog
+or a sheet that floats above the work.
 
-Hex values below are sRGB approximations of the OKLCH source so a person can
-see the color. The source of truth is the `oklch(...)` value in
-`apps/web/src/global/styles/globals.css`. Feature code keeps the token, not
-the hex.
+The default presentation is the Standard theme on a dark ground: warm metal
+for actions, olive as the second hue, and light gray text on near-black
+surfaces. A person can switch the ground between dark and light, and can
+switch the action color among the built-in themes. The workspace does not
+restyle itself per screen. The same action, the same object, and the same
+quiet text look the same in the sidebar, a menu, a table, and a dialog.
 
-`ThemeProvider` puts `dark` or `light` on `document.documentElement`, then adds
-the subtheme class taken from the second word of a default theme name
-(`standard`, `neon`, `ocean`, `forest`, `phoenix`, `pearl`, `sakura`,
-`citrus`). A stored custom theme uses its id as the class. Subthemes override
-primary, accent, decoration, sidebar accent, ring, switch thumb, and caret.
-They do not replace the neutral canvas.
+Public sign-in is the one surface that does not look like the workspace. It
+is an instrument panel: dark metal, corner screws, and a green monospace
+title. After authentication the product becomes the neutral workspace. Do not
+bring the screws, the green title, or the metal gradient into the workspace.
 
-## Dark base
+## Color
 
-Applied with `.dark`. This is the default base.
+A person reads color by role.
 
-| Token | OKLCH | Approx. sRGB | Use |
+| Role | Dark ground | Light ground | What it means |
 | --- | --- | --- | --- |
-| `--canvas` | `oklch(0.185 0 0)` | `#131313` | Page ground behind panels. `body` uses `bg-canvas`. |
-| `--inset` | `oklch(0.215 0 0)` | `#191919` | Recessed strips inside the canvas. |
-| `--background` | `oklch(0.32 0 0)` | `#333333` | Control and input surface. |
-| `--foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Primary text. |
-| `--card` | `oklch(0.255 0 0)` | `#232323` | Cards, dialog content, graph task nodes. |
-| `--popover` | `oklch(0.29 0 0)` | `#2B2B2B` | Menus and popovers. |
-| `--primary` | `oklch(0.922 0 0)` | `#E5E5E5` | Neutral primary before a subtheme replaces it. |
-| `--primary-foreground` | `oklch(0.205 0 0)` | `#171717` | Text on primary. |
-| `--secondary` | `oklch(0.29 0 0)` | `#2B2B2B` | Secondary button fill. |
-| `--muted` | `oklch(0.235 0 0)` | `#1E1E1E` | Quiet fills. |
-| `--muted-foreground` | `oklch(0.7 0 0)` | `#9E9E9E` | Secondary text and placeholders. |
-| `--accent` | `oklch(0.31 0 0)` | `#303030` | Hover and selected neutral. |
-| `--destructive` | `oklch(0.63 0.191 22.216)` | `#E64B51` | Destructive actions. |
-| `--destructive-foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Text on destructive. |
-| `--border` | `oklch(1 0 0 / 11%)` | white at 11% | Hairline containment. |
-| `--input` | `oklch(1 0 0 / 16%)` | white at 16% | Input border. |
-| `--ring` | `oklch(0.62 0 0)` | `#868686` | Focus ring until a subtheme replaces it. |
-| `--overlay` | `oklch(0 0 0 / 56%)` | black at 56% | Dialog and sheet scrim. |
-| `--sidebar` | `oklch(0.275 0 0)` | `#282828` | App sidebar surface. |
-| `--sidebar-primary` | `oklch(0.488 0.243 264.376)` | `#1447E6` | Sidebar emphasis before a subtheme replaces it. |
+| Page ground | `#131313` | `#FDFDFD` | The area behind the work. |
+| Recessed strip | `#191919` | `#F7F7F7` | A band set into that ground. |
+| Control surface | `#333333` | `#D6D6D6` | Buttons, fields, and other controls. |
+| Primary text | `#FAFAFA` | `#0B0B0B` | The words the person is meant to read. |
+| Object surface | `#232323` | `#EBEBEB` | A card, a dialog, or a task on the graph. |
+| Menu surface | `#2B2B2B` | `#E3E3E3` | A menu or popover. |
+| Quiet text | `#9E9E9E` | `#505050` | A placeholder, a path, or a secondary line. |
+| Destructive | `#E64B51` | `#D00114` | Delete and other destructive actions. |
+| Hairline | white at 11% | `#B1B1B1` | The edge of a contained region. |
+| Scrim | black at 56% | black at 36% | The dim layer behind a dialog. |
+| Sidebar | `#282828` | `#E8E8E8` | The workspace navigation column. |
 
-Dark chart series, in order: `#1447E6`, `#00BC7D`, `#FE9A00`, `#AD46FF`,
-`#FF2056`. These are the approximations of `--chart-1` through `--chart-5`.
+These are the sRGB readings of the theme tokens. New interface code uses the
+token, so a theme change repaints the role:
 
-## Light base
+```tsx
+<section className="min-w-0 bg-canvas text-foreground">
+  <article className="rounded-lg border border-border bg-card shadow-sm">
+    <h2 className="text-sm font-medium">{title}</h2>
+    <p className="text-xs text-muted-foreground">{detail}</p>
+  </article>
+</section>
+```
 
-Applied with `.light`.
+The action color changes with the selected theme. Standard is `#855732` with
+an olive second hue. Neon is violet. Ocean is cool water. Forest is
+low-chroma green. Phoenix is deep red. Pearl is pale blue-gray. Sakura is
+pink. Citrus is amber. The second hue is decoration, not a second button
+style. A feature does not hardcode one theme's action color.
 
-| Token | OKLCH | Approx. sRGB | Use |
+Charts repeat five series in order. On a dark ground they read blue
+`#1447E6`, green `#00BC7D`, amber `#FE9A00`, violet `#AD46FF`, and red
+`#FF2056`. Documentation method marks use green for GET, yellow for POST,
+blue for PUT, violet for PATCH, and the destructive red for DELETE.
+
+Two existing colors are status, not a new palette. An active Routine Start
+is emerald `#10B981`. An inactive Start falls back to the quiet surface and
+quiet text. The public panel title is green `#4ADE80` on the dark panel and
+`#16A34A` on the light panel.
+
+## Type, corner, and elevation
+
+Both interface text and code use JetBrains Mono, then the platform monospace
+stack. There is no second UI font.
+
+Corners are 6px for a small mark, 8px for a button, a field, and a graph
+task, 10px for a dialog, and 14px for a card. The base radius is 10px.
+
+An object in the workspace may have a small shadow. A dialog or sheet may
+have a large shadow. A shadow is not a substitute for a border, and a border
+is not added just to make a region visible.
+
+Focus is a two-pixel ring in the theme's ring color, offset from the control.
+The ring stays visible.
+
+## Density and motion
+
+Density is a preference, not a separate layout. Balanced is the normal size.
+Comfortable gives controls and rows more height and more space. Compact
+tightens them. The person should see the same screen, only with more or less
+room.
+
+| | Control height | Space between sections | Menu row |
 | --- | --- | --- | --- |
-| `--canvas` | `oklch(0.995 0 0)` | `#FDFDFD` | Page ground. |
-| `--inset` | `oklch(0.975 0 0)` | `#F7F7F7` | Recessed strips. |
-| `--background` | `oklch(0.875 0 0)` | `#D6D6D6` | Control surface. |
-| `--foreground` | `oklch(0.15 0 0)` | `#0B0B0B` | Primary text. |
-| `--card` | `oklch(0.94 0 0)` | `#EBEBEB` | Cards and dialogs. |
-| `--popover` | `oklch(0.915 0 0)` | `#E3E3E3` | Menus and popovers. |
-| `--primary` | `oklch(0.205 0 0)` | `#171717` | Neutral primary before a subtheme replaces it. |
-| `--primary-foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Text on primary. |
-| `--muted` | `oklch(0.955 0 0)` | `#F0F0F0` | Quiet fills. |
-| `--muted-foreground` | `oklch(0.43 0 0)` | `#505050` | Secondary text. |
-| `--accent` | `oklch(0.895 0 0)` | `#DCDCDC` | Hover and selected neutral. |
-| `--destructive` | `oklch(0.54 0.22 27.325)` | `#D00114` | Destructive actions. |
-| `--border` | `oklch(0.76 0 0)` | `#B1B1B1` | Containment. |
-| `--input` | `oklch(0.8 0 0)` | `#BEBEBE` | Input border. |
-| `--ring` | `oklch(0.48 0 0)` | `#5D5D5D` | Focus ring until a subtheme replaces it. |
-| `--overlay` | `oklch(0 0 0 / 36%)` | black at 36% | Dialog and sheet scrim. |
-| `--sidebar` | `oklch(0.93 0 0)` | `#E8E8E8` | App sidebar surface. |
+| Balanced | 36px | 16px | 32px |
+| Comfortable | 40px | 20px | 36px |
+| Compact | 32px | 12px | 28px |
 
-Light chart series, in order: `#326EFF`, `#007E44`, `#822400`, `#8700D9`,
-`#B7001F`.
+A normal button, field, and menu row follow that preference. An icon button
+stays square. A calendar grid and a control that must keep a fixed size stay
+fixed.
 
-## Subthemes
+When the person asks for reduced motion, animation and smooth scrolling
+collapse. A state that matters is still visible without the animation. Dialogs
+and sheets may enter and leave, but a second animation is not added on top.
 
-Each row is the accent family layered on the current dark or light base.
-`primary` is the action color. `decoration` is the second hue for ornamental
-emphasis, not a second button style. Sidebar primary follows `primary`.
+## Actions
 
-| Class | Base default | Primary | Accent | Decoration | Product reading |
-| --- | --- | --- | --- | --- | --- |
-| `standard` | dark | `#855732` | `#4F3B2C` | `#3C4330` | Default. Warm metal and olive, the product's normal voice. |
-| `neon` | dark | `#9A6BFF` | `#493283` | `#DF59D7` | High-chroma violet for a deliberately loud workspace. |
-| `ocean` | light | `#61AFBD` | `#356D76` | `#509779` | Cool water on a light ground. |
-| `forest` | dark | `#486749` | `#2B3E2B` | `#9C663C` | Low-chroma green with a wood decoration. |
-| `phoenix` | dark | `#9D3434` | `#642625` | `#B16E37` | Deep red with an ember decoration. |
-| `pearl` | light | `#43617B` | `#CEDDEB` | `#008E96` | Pale blue-gray with a teal decoration. |
-| `sakura` | light | `#AE4976` | `#F8D2DF` | `#518253` | Pink with a leaf decoration. |
-| `citrus` | light | `#7F5D09` | `#F2DFBC` | `#208562` | Amber with a green decoration. |
+A primary action is filled with the theme action color and its contrasting
+text. A secondary action is quieter. A destructive action is the destructive
+red with light text. A button that only navigates or dismisses a
+non-destructive dialog can be a border with no fill. A button in a row of
+tools can be text until the pointer is over it.
 
-## HTTP method colors
+```tsx
+<Button type="submit">{t("common.create")}</Button>
+<Button type="button" variant="outline">{t("common.cancel")}</Button>
+<Button type="button" variant="destructive">{t("common.delete")}</Button>
+```
 
-Used by documentation method badges, not by workspace actions.
+On a destructive confirmation the person sees Cancel on the left, bordered,
+and the destructive verb on the right, filled red. On a narrow screen the
+destructive verb stacks above Cancel so the primary action is reached first.
+The title names the object and the consequence. The button uses one verb,
+such as **Delete** under **Delete station**. **Continue** advances a step.
+**Confirm** accepts a change the description already explained. **Delete
+permanently** is used when permanence is the point. A finished one-time
+action stays visible and disabled, with a label such as **Verified**.
 
-| Method | Mark | Dark foreground | Light foreground fallback |
-| --- | --- | --- | --- |
-| GET | Tailwind emerald-500 `#10B981` | emerald-300 `#6EE7B7` | emerald-700 `#047857` |
-| POST | yellow-500 `#EAB308` | yellow-300 `#FDE047` | yellow-700 `#A16207` |
-| PUT | blue-500 `#3B82F6` | blue-300 `#93C5FD` | blue-700 `#1D4ED8` |
-| PATCH | violet-500 `#8B5CF6` | violet-300 `#C4B5FD` | violet-700 `#6D28D9` |
+Create and rename already show Cancel in the destructive color and the submit
+action in the normal action color. New work of that kind matches that pair.
 
-Utilities are `bg-http-get`, `text-http-get-foreground`, and the matching
-`post`, `put`, and `patch` names. `ArticleMethodBadge` is the owner. DELETE
-reuses `bg-destructive/10 text-destructive`. An unknown method uses
-`bg-muted text-muted-foreground`.
+A button that is working shows a spinner inside itself and both actions are
+unavailable. The rest of the workspace does not gain a second loading panel
+for that short wait.
 
-## Type, radius, and elevation
+## Space
 
-- Both `--font-sans` and `--font-mono` are JetBrains Mono, then the platform
-  monospace stack. Do not introduce a second UI font for a feature.
-- `--radius` is `0.625rem` (10px). `rounded-sm` is 6px, `rounded-md` is 8px,
-  `rounded-lg` is 10px, and `rounded-xl` is 14px. Buttons, inputs, and graph
-  task nodes use `rounded-md`. Dialogs use `rounded-lg`. Cards use
-  `rounded-xl`.
-- Workspace elevation is `shadow-sm` on cards and graph nodes, `shadow-lg` on
-  dialogs and sheets. Do not add a drop shadow to make a layout visible.
-- Borders describe containment or a real separation. Hierarchy comes from
-  spacing and `text-muted-foreground`, not from extra boxes.
-- Focus uses `ring-2 ring-ring` with an offset. Do not remove the focus ring
-  to make a control look quieter.
+A parent section has more space than the options inside it. Sections follow
+the density gap. Text in a horizontal row shrinks or wraps instead of forcing
+the page wider than the window.
 
-## Density
+```tsx
+<div className="flex min-w-0 flex-col gap-[var(--density-content-gap)]">
+  <h2 className="text-sm font-medium text-foreground">{section}</h2>
+  <p className="truncate text-sm text-muted-foreground">{option}</p>
+</div>
+```
 
-`LocalPreferencesProvider` sets `html[data-density]` to `comfortable`,
-`balanced`, or `compact`. Balanced is the default and uses the `:root`
-variables. Comfortable and compact override those variables. The
-`html[data-density]` rules still apply min height and padding for all three,
-including balanced.
+A caption that divides a form sits on a hairline, or between two hairlines.
+It is quiet text, smaller than the section title.
 
-| | Control height | Control padding x | Content gap | Content padding | Menu row | Table cell |
-| --- | --- | --- | --- | --- | --- | --- |
-| balanced | `2.25rem` | `0.75rem` | `1rem` | `1rem` | `2rem` | `1rem` |
-| comfortable | `2.5rem` | `1rem` | `1.25rem` | `1.25rem` | `2.25rem` | `1.25rem` |
-| compact | `2rem` | `0.625rem` | `0.75rem` | `0.75rem` | `1.75rem` | `0.625rem` |
+## Surfaces
 
-`--app-toolbar-height` is `3rem`. `--app-navigation-height` is two menu rows
-plus `1.25rem` plus a 1px separator. Normal buttons, inputs, textareas, select
-triggers, and menu rows participate automatically through `data-slot`. Icon
-buttons (`data-size="icon"`) stay square. `data-density-static` is the opt-out
-for a control that must keep a fixed size, such as calendar grids and some
-settings rows.
+### Public sign-in
 
-## Motion
+The person sees a centered metal panel, at most about 450px wide, on a black
+or white grid. The title is green, monospace, and tracked apart. Corner screws
+sit on the panel. The fields are stacked. A code field keeps its send action
+inside the field, on the right. Connected accounts appear as a row of provider
+marks under the form.
 
-`html[data-reduce-motion="true"]` collapses animation, transition, and smooth
-scroll to 1ms. Preference storage sets `dataset.reduceMotion`. Sidebar collapse
-also respects `prefers-reduced-motion`. Do not convey state only through
-motion. Dialog and sheet enter/exit animations belong to the primitives; do
-not add a second animation on the same overlay.
+This panel is the exception to the workspace tokens. Its metal gradient, brown
+texture, and green title stay on this surface. Workspace screens use the
+token example above.
 
-## Raw-color exceptions
+### Workspace
 
-These are existing choices. They are not permission to add another palette.
+After sign-in the person sees three regions in one row: a command palette, a
+navigation column, and the current page. The page scrolls inside its region.
+The shell does not grow a second page scrollbar.
 
-| Surface | Choice | Why it stays local |
-| --- | --- | --- |
-| `AuthPanel` dark skin | Gradient `#2A2A2A` → `#1A1A1A` → `#0F0F0F`, saddle-brown texture `rgba(139, 69, 19, …)`, title `text-green-400` `#4ADE80` | The public instrument panel. Light mode uses `text-green-600` `#16A34A` and a gray glass fill. Owned by `panel.css` and `AuthPanel`. |
-| `GridBackground` | Solid black or white behind the grid | Public auth backdrop, chosen from `currentTheme.isDark`. |
-| Routine Start node | Active: `border-emerald-500` `#10B981` at 20% fill, emerald text. Inactive: `border-border bg-muted text-muted-foreground`. | Execution-active state of the circular Start node in `RoutineTaskGraphNode`. A task node stays `bg-card`. |
-| BlockNote suggestion shadow | `rgb(0 0 0 / 28%)` | Editor menu shadow in `block-editor.css`, independent of theme tokens. |
+Each object in the column shows its own glyph and a name that truncates. A
+shelf discloses with a chevron. Pointing at a row can show a detail card.
+Opening a menu closes that card. The same object uses the same glyph in the
+column, a menu, a list, and an empty state.
+
+### Dialogs
+
+A dialog sits centered over a dim scrim, on an object surface, with a small
+radius and a large shadow. The title is left-aligned from a normal window
+width upward. A close mark stays in the top-right corner. The actions sit at
+the end of the dialog and remain reachable when the window is narrow.
+
+### Settings
+
+Account and preferences open as a panel over the current page, from the right.
+The workspace stays visible. Clicking the workspace does not discard the
+panel. The panel is wide enough to read a form, and narrows with the window
+until it nearly fills a phone. Its close mark stays at the top-right.
+
+### Routine graph
+
+A Start is a circle. Its title sits outside the circle. Active is emerald.
+Inactive is quiet. Every other task is a compact object-surface rectangle
+with a status dot, one truncated title, and a quiet second line. Selecting a
+task draws a soft ring in the action color. The graph is a dependency view,
+not a stack of cards.
+
+```tsx
+<div className="min-w-56 max-w-64 rounded-md border border-border bg-card px-3 py-2 shadow-sm">
+  <p className="min-w-0 truncate text-sm font-medium text-foreground">{title}</p>
+  <p className="truncate text-xs text-muted-foreground">{detail}</p>
+</div>
+```
+
+### Dashboard, documents, and waiting
+
+The dashboard is the same workspace, with personal widgets in a grid. A new
+widget joins that grid. It does not introduce a second application frame.
+
+Public documents are a reading page. Long titles in the document navigation
+wrap. Code samples sit in a bordered block with a language tab and a copy
+action. Method names use the method colors above. An editable document is the
+block editor, not a second copy of the reading sample.
+
+Opening the application, or a document that cannot be used yet, covers the
+work with the loading mark. The mark remains available when the rest of the
+page is not. A control-sized wait stays inside the control.

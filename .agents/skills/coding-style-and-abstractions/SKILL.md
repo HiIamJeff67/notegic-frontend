@@ -13,7 +13,8 @@ Use the repository documentation as the source of truth. Before editing, read on
 - [Icon map](../../../docs/conventions/icon-map.md) — required whenever selecting, using, reusing, adding, replacing, or removing an icon.
 - `docs/conventions/04-file-and-folder-naming.md`
 - `docs/conventions/05-helpers-and-abstractions.md`
-- [UI catalog](../../../docs/designs/ui/README.md) — required before adding or duplicating a control, style, color, or layout.
+- [UI components](../../../docs/conventions/ui-components.md) — required before adding or duplicating a control.
+- [UI appearance](../../../docs/designs/ui/appearance.md) — the visible result a control, color, or layout must match.
 - `docs/conventions/06-react-hooks.md`
 - `docs/conventions/08-testing.md`
 
@@ -27,7 +28,7 @@ documented architecture requires a deliberate deviation.
 
 ## Rules
 
-- Reuse existing shadcn primitives, Tailwind v4 semantic tokens, canonical icons, and established components. Look up the owner in the [UI catalog](../../../docs/designs/ui/README.md) before creating a control, color, stylesheet, or layout.
+- Reuse existing shadcn primitives, Tailwind v4 semantic tokens, canonical icons, and established components. Look up the owner in [UI components](../../../docs/conventions/ui-components.md) before creating a control. Match the visible result to [UI appearance](../../../docs/designs/ui/appearance.md).
 - Before adding or duplicating a UI, helper, hook, provider, API/storage boundary or interaction, follow [Reuse before creating](../../../docs/conventions/05-helpers-and-abstractions.md#reuse-before-creating), [Value of a new abstraction](../../../docs/conventions/05-helpers-and-abstractions.md#value-of-a-new-abstraction), and [Reuse the owning interaction](../../../docs/conventions/01-ui.md#reuse-the-owning-interaction): inspect the existing owner, callers and tests, then reuse it or make a minimal justified extension. A separate entry point is not a reason to fork behavior or create a pass-through wrapper.
 - Create a helper function, helper method, hook, or component only when the existing pattern cannot express the need. If it can, use it. When creation is required, extract one importable owner if past or present callers already share the behavior, or if likely future callers need that same stable concept. Follow the nearest existing pattern. Confirm a new pattern — a new folder role, registry, framework, or generic helper layer — with the user before writing it. Keep a one-use fragment local. `AuthCodeInput` is the shared account-settings code field; public `AuthPanel` keeps its own field.
 - Before implementing loading feedback, follow [Loading feedback](../../../docs/conventions/01-ui.md#loading-feedback). Evaluate the existing LoadingCover/LoadingProvider flow (historically StrictLoadingCover) for heavy blocking work; do not invent a feature-specific loading UI when it fits. Preserve mounted state, cover readiness through the required stages, release on error/unmount, avoid stacked covers, and do not block routine editing or background work.

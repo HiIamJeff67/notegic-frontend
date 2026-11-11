@@ -5,20 +5,24 @@ description: Apply Notegic UI, CSS, Tailwind, layout, and component-reuse rules 
 
 # UI, styles, and layout
 
-Before changing interface code, read the matching parts of the [UI catalog](../../../docs/designs/ui/README.md). The catalog is the current selection of owners, tokens, and shells. [UI conventions](../../../docs/conventions/01-ui.md) and [Style conventions](../../../docs/conventions/02-styles.md) are the rules. The codebase wins when they disagree; update the catalog in the same change that changes a selection.
+Before changing interface code, read the convention that matches the change, then check the appearance the person should see.
 
-Read only the documents the change needs:
+How to write and which existing piece to use:
 
-- [Appearance](../../../docs/designs/ui/appearance.md) for color, type, radius, density, and motion.
-- [CSS](../../../docs/designs/ui/css.md) for Tailwind v4, tokens, and stylesheets.
-- [Layout](../../../docs/designs/ui/layout.md) for shells, overlays, spacing, and dialog footers.
-- [Components](../../../docs/designs/ui/components.md) before creating or duplicating a control.
-- [Examples](../../../docs/designs/ui/examples.md) when the change belongs to an existing product surface.
+- [UI conventions](../../../docs/conventions/01-ui.md) for composition, dialogs, loading, and responsive behavior.
+- [UI components](../../../docs/conventions/ui-components.md) before creating or duplicating a control.
+- [Style conventions](../../../docs/conventions/02-styles.md) for Tailwind, tokens, and stylesheets.
 - The [Icon map](../../../docs/conventions/icon-map.md) when the change selects or adds an icon.
+
+What the result should look like:
+
+- [UI appearance](../../../docs/designs/ui/appearance.md) for color, type, density, motion, and the existing product surfaces.
+
+The appearance document shows compliant markup. It does not choose a file owner. The conventions do.
 
 ## Reuse before a new piece
 
-Search the catalog and `apps/web/src/components/` before writing a component or style helper. A new screen, dialog, or entry point uses the owner that already implements that interaction.
+Search [UI components](../../../docs/conventions/ui-components.md) and `apps/web/src/components/` before writing a component or style helper. A new screen, dialog, or entry point uses the owner that already implements that interaction.
 
 Create a helper or component only when that existing pattern cannot express the need. Then judge reuse:
 
@@ -33,8 +37,8 @@ The same gate is recorded in [Value of a new abstraction](../../../docs/conventi
 
 ## Dialog actions
 
-For a two-action confirmation, follow [dialog action conventions](../../../docs/conventions/01-ui.md#two-action-confirmation-dialogs) and the footer patterns in [layout](../../../docs/designs/ui/layout.md#dialog-actions). Destructive confirmation uses outline Cancel on the left and the destructive verb on the right. Existing create and rename dialogs keep their current pair. Do not invent a third footer.
+For a two-action confirmation, follow [dialog action conventions](../../../docs/conventions/01-ui.md#two-action-confirmation-dialogs). Destructive confirmation uses outline Cancel on the left and the destructive verb on the right. Existing create and rename dialogs keep their current pair. Do not invent a third footer. The visible order and color are described in [UI appearance](../../../docs/designs/ui/appearance.md#actions).
 
 ## Check
 
-Name the existing owner you reused, or the concrete gap that forced a new one. A new color uses a semantic token from `globals.css`, not a raw hex in a feature. A new layout keeps `min-w-0`, density slots, and a reachable close or cancel control. Run the narrowest relevant test, and verify a user-visible UI change in the browser.
+Name the existing owner you reused, or the concrete gap that forced a new one. A new color uses a semantic token, not a raw hex in a feature. A new layout keeps `min-w-0`, density, and a reachable close or cancel control. Run the narrowest relevant test, and verify a user-visible UI change in the browser.
