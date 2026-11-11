@@ -10,17 +10,26 @@ import { parseRequest } from "@shared/api/validation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PrepareOAuthOperation } from "@/api/functions/userAccount.serverFn";
 import {
-  mutationFnBindGoogleAccount,
-  mutationFnBindGithubAccount,
-  mutationFnBindXAccount,
   mutationFnBindDiscordAccount,
-  mutationFnUnbindGoogleAccount,
-  mutationFnUnbindGithubAccount,
-  mutationFnUnbindXAccount,
+  mutationFnBindGithubAccount,
+  mutationFnBindGoogleAccount,
+  mutationFnBindXAccount,
   mutationFnUnbindDiscordAccount,
+  mutationFnUnbindGithubAccount,
+  mutationFnUnbindGoogleAccount,
+  mutationFnUnbindXAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
+
+export const usePrepareOAuthOperation = () =>
+  useMutation({
+    mutationFn: (request: PrepareOAuthOperationRequest) =>
+      PrepareOAuthOperation({
+        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
+      }),
+    retry: false,
+  });
 
 export const useGetMyAccount = () =>
   useQuery({
@@ -75,15 +84,6 @@ export const useUpdateMyAccount = () => {
 
   return mutation;
 };
-
-export const usePrepareOAuthOperation = () =>
-  useMutation({
-    mutationFn: (request: PrepareOAuthOperationRequest) =>
-      PrepareOAuthOperation({
-        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
-      }),
-    retry: false,
-  });
 
 export const useBindGoogleAccount = () => {
   const queryClient = getQueryClient();

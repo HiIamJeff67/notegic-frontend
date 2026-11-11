@@ -1,24 +1,24 @@
 import {
-  BindGoogleAccountRequest,
-  BindGithubAccountRequest,
-  BindXAccountRequest,
   BindDiscordAccountRequest,
-  BindGoogleAccountResponse,
-  BindGithubAccountResponse,
-  BindXAccountResponse,
   BindDiscordAccountResponse,
-  PrepareOAuthOperationRequest,
-  PrepareOAuthOperationResponseSchema,
+  BindGithubAccountRequest,
+  BindGithubAccountResponse,
+  BindGoogleAccountRequest,
+  BindGoogleAccountResponse,
+  BindXAccountRequest,
+  BindXAccountResponse,
   GetMyAccountResponse,
   GetMyAccountResponseSchema,
-  UnbindGoogleAccountRequest,
-  UnbindGithubAccountRequest,
-  UnbindXAccountRequest,
+  PrepareOAuthOperationRequest,
+  PrepareOAuthOperationResponseSchema,
   UnbindDiscordAccountRequest,
-  UnbindGoogleAccountResponse,
-  UnbindGithubAccountResponse,
-  UnbindXAccountResponse,
   UnbindDiscordAccountResponse,
+  UnbindGithubAccountRequest,
+  UnbindGithubAccountResponse,
+  UnbindGoogleAccountRequest,
+  UnbindGoogleAccountResponse,
+  UnbindXAccountRequest,
+  UnbindXAccountResponse,
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
@@ -27,28 +27,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
-
-export const GetMyAccount = createServerFn({ method: "GET" }).handler(
-  async (): Promise<GetMyAccountResponse> => {
-    const inboundCookie = getRequestHeader("cookie");
-    const response = await fetch(
-      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": getRequestHeader("User-Agent") ?? "unknown",
-          "X-CSRF-Token": getRequestHeader("X-CSRF-Token") ?? "",
-          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-        },
-        credentials: "include",
-      }
-    );
-
-    forwardUpstreamSetCookies(response);
-    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
-  }
-);
 
 export const PrepareOAuthOperation = createServerFn({ method: "POST" })
   .inputValidator((data: PrepareOAuthOperationRequest) => data)
@@ -77,6 +55,28 @@ export const PrepareOAuthOperation = createServerFn({ method: "POST" })
       await formatAPIResponse(response)
     );
   });
+
+export const GetMyAccount = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GetMyAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": getRequestHeader("User-Agent") ?? "unknown",
+          "X-CSRF-Token": getRequestHeader("X-CSRF-Token") ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
+  }
+);
 
 export const UpdateMyAccount = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyAccountRequest) => data)
