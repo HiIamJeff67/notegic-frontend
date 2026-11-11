@@ -129,7 +129,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Download`, `DownloadIcon` | Download / export | [GraphToolbar], [MaterialPDFViewer], [LocalDBRecoveryCover] |
 | `EllipsisVerticalIcon` | Overflow / more actions | [BlockSideMenu], [Extendable]; graph nodes use their context menu instead |
 | `EraserIcon` | Erase PDF annotation | [MaterialPDFViewer] |
-| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item / view in overview | [MaterialMenu], [PrivacyPolicyPage], [DocumentPrivacyPolicy], [StationMenu], [RoutineMenu], [AppCommandItem] |
+| `ExternalLink`, `ExternalLinkIcon` | Open externally / open linked item / view in overview | [MaterialMenu], [PrivacyPolicySections], [DocumentPrivacyPolicy], [StationMenu], [RoutineMenu], [AppCommandItem] |
 | `Eye` | View execution details | [RoutineRecordTable] |
 | `FileCode2`, `FileCode2Icon` | Source/code content / API reference | [CodeExamplePanel], [API] |
 | `FilePlus` | Import material content | [MaterialViewerFrame] |
@@ -341,7 +341,7 @@ assets or Docker services were removed. No commit or push was performed.
 [MaterialPDFViewer]: ../../apps/web/src/components/core/MaterialViewer/MaterialPDFViewerContent.tsx
 [Extendable]: ../../apps/web/src/components/commons/Extendable/Extendable.tsx
 [MaterialMenu]: ../../apps/web/src/components/menus/MaterialMenu/MaterialMenuItem.tsx
-[PrivacyPolicyPage]: ../../apps/web/src/pages/privacy-policy/PrivacyPolicyPage.tsx
+[PrivacyPolicySections]: ../../apps/web/src/pages/privacy-policy/PrivacyPolicySections.tsx
 [DocumentPrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicyContent.tsx
 [MaterialViewerFrame]: ../../apps/web/src/components/core/MaterialViewer/MaterialViewerFrame.tsx
 [SubShelfMenu]: ../../apps/web/src/components/menus/SubShelfMenu/SubShelfMenuItem.tsx
