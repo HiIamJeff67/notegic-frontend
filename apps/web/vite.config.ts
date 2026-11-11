@@ -165,6 +165,12 @@ export default defineConfig(({ command, mode }) => {
             command === "build" || mode === "production"
               ? "^\\(.+\\)$"
               : undefined,
+          // Keep this file typechecked. @ts-nocheck hides dotted route ids
+          // such as /robots.txt from the editor's FileRoutesByPath.
+          routeTreeFileHeader: [
+            "/* eslint-disable */",
+            "// noinspection JSUnusedGlobalSymbols",
+          ],
         },
       }),
       viteReact(),

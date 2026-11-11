@@ -11,6 +11,7 @@ boundaries or runtime concerns.
 - [Routine graph drafts and atomic saves](routine-graph-drafts.md)
 - [App command chain](app-command.md)
 - [Desktop application preparation](desktop-application-preparation.md)
+- [Public site indexing](public-site-indexing.md)
 
 ## Topics for this repository
 

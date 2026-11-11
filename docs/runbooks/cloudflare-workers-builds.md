@@ -70,6 +70,7 @@ VITE_REALTIME_WEBSOCKET_URL
 VITE_REALTIME_BASE_PATH
 VITE_APP_BASE_PATH
 VITE_CONTACT_EMAIL
+VITE_PUBLIC_SITE_ORIGIN
 VITE_OAUTH_GITHUB_CLIENT_ID
 VITE_OAUTH_GITHUB_REDIRECT_URL
 VITE_OAUTH_GOOGLE_CLIENT_ID
@@ -89,6 +90,12 @@ CLOUDFLARE_WORKER_NAME
 NITRO_PRESET
 NODE_VERSION
 ```
+
+`VITE_PUBLIC_SITE_ORIGIN` is the absolute site origin used for canonical URLs,
+Open Graph URLs, the sitemap, and `llms.txt`. Production must set it to
+`https://www.notegic.com` with no trailing slash. Any other value makes
+`/robots.txt` return `Disallow: /`. The apex-to-www redirect stays in
+Cloudflare. See [Public site indexing](../designs/systems/public-site-indexing.md).
 
 Production requests therefore use `https://client.notegic.com/v1`, while
 realtime connections use `wss://realtime.notegic.com/v1`. The public API-key

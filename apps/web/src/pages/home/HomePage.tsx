@@ -13,6 +13,7 @@ import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { Button } from "@/components/ui/button";
 import { useAppRouter, useTheme } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
+import { publicFacts, publicFaqs, publicPages } from "@/seo/publicPage";
 
 const DisplayTitle = {
   mainTitle: "Notegic",
@@ -144,7 +145,9 @@ export const HomePage = () => {
         <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4">
           <div className="text-foreground text-center select-none flex flex-col items-center justify-center gap-0">
             <div className="min-h-[160px] flex flex-col items-center justify-center">
+              <h1 className="sr-only">{publicFacts.name}</h1>
               <div
+                aria-hidden="true"
                 className={`
                 ${
                   displayTitle
@@ -158,6 +161,9 @@ export const HomePage = () => {
                 <span className="animate-pulse text-foreground">|</span>
               </div>
               <p className="text-lg opacity-80">{t("homePage.subtitle")}</p>
+              <p className="mt-3 max-w-xl text-base" lang="en">
+                {publicFacts.definition}
+              </p>
             </div>
             <div className="flex items-center justify-center gap-6 mt-4">
               <Button
@@ -190,6 +196,37 @@ export const HomePage = () => {
             </div>
           </div>
         </div>
+        <section
+          lang="en"
+          className="relative z-10 mx-auto min-w-0 max-w-3xl px-6 pb-24 text-left text-foreground"
+        >
+          <p>{publicFacts.audience}</p>
+          <p className="mt-4">{publicFacts.limits}</p>
+          <nav className="mt-6 flex min-w-0 flex-wrap gap-x-4 gap-y-2 text-sm">
+            {publicPages
+              .filter(page => page.path !== "/")
+              .map(page => (
+                <a
+                  key={page.path}
+                  className="pointer-events-auto underline"
+                  href={page.path}
+                >
+                  {page.linkLabel}
+                </a>
+              ))}
+          </nav>
+          <h2 className="mt-10 text-2xl font-semibold tracking-tight">
+            Questions
+          </h2>
+          <div className="mt-4 space-y-6">
+            {publicFaqs.map(faq => (
+              <section key={faq.question}>
+                <h3 className="text-lg font-semibold">{faq.question}</h3>
+                <p className="mt-2">{faq.answer}</p>
+              </section>
+            ))}
+          </div>
+        </section>
       </Suspense>
     </TerrainBackground>
   );
