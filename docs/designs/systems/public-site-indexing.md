@@ -43,9 +43,13 @@ responses from those routes, not files placed in `public/`.
 
 `/app`, sign-in, registration, password reset, OAuth redirects, `/playground`,
 and unknown URLs send `noindex, nofollow` and are absent from the sitemap.
+Unknown URLs also respond with HTTP 404.
 
-The home page keeps the existing Get Started and View Docs buttons. Crawlable
-links are additional anchors. The Website guide is not rewritten.
+The home page keeps the existing Get Started and View Docs buttons. Below
+the hero, a left-aligned poster states the product definition, then the next
+viewport holds the same FAQ strings in an accordion. The terrain stays one
+viewport tall and does not scroll with those sections. Crawlable links are
+additional anchors. The Website guide is not rewritten.
 
 ## Structured data
 

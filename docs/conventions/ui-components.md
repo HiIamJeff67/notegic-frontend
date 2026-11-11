@@ -33,6 +33,7 @@ there only when the control does not exist yet.
 | Toast | `@shared/lib/toast/toast` | `toast.success` and `toast.error`. One provider in the root. See [Toast feedback](01-ui.md#toast-feedback). |
 | Card, table | `ui/card`, `ui/table` | Column dividers use `SeparatableTable`. |
 | Divider | `ui/separator`, `ui/marker` | `Marker` variants: `default`, `separator`, `border`. |
+| Disclosure | `ui/accordion` | One column at the width of its parent. Do not give it a fixed width. |
 | Inline pending | `ui/spinner`, `ui/skeleton`, `ui/progress` | A screen that cannot be used yet uses `LoadingCover`, not a new overlay. |
 | Sidebar chrome | `ui/sidebar` | App and article sidebars. |
 | Code | `ui/code-block` | Documentation pages compose it through `CodeExamplePanel`. |

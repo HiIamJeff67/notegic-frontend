@@ -129,7 +129,34 @@ const assertFragment = fragment => {
   assert(ids.has(fragment), "Unknown section: " + fragment);
   return ids.get(fragment);
 };
-const blocks = tokens =>
+const questionList = token => {
+  const items = token.items.map(item => {
+    const raw = item.text.trim();
+    const split = raw.indexOf(": ");
+    assert(split > 0, "Question list item needs a label and an answer");
+    return {
+      label: raw.slice(0, split),
+      answer: raw.slice(split + 2),
+    };
+  });
+  return (
+    '<Accordion type="single" collapsible className="w-full min-w-0">' +
+    items
+      .map(
+        (item, index) =>
+          "<AccordionItem value=" +
+          quote(String(index)) +
+          ' className="w-full min-w-0"><AccordionTrigger className="w-full text-left text-base">' +
+          text(item.label) +
+          "</AccordionTrigger><AccordionContent>" +
+          text(item.answer) +
+          "</AccordionContent></AccordionItem>"
+      )
+      .join("") +
+    "</Accordion>"
+  );
+};
+const blocks = (tokens, sectionId = "") =>
   tokens
     .map((token, index) => {
       switch (token.type) {
@@ -156,7 +183,7 @@ const blocks = tokens =>
             '">' +
             text(token.title) +
             "</ArticleSubParagraphHeader><ArticleSubParagraphContent level={1}>" +
-            blocks(token.children) +
+            blocks(token.children, token.id) +
             "</ArticleSubParagraphContent></ArticleSubParagraph>"
           );
         }
@@ -225,6 +252,8 @@ const blocks = tokens =>
         case "text":
           return token.tokens ? inline(token.tokens) : text(token.text);
         case "list":
+          if (sectionId === "q-and-a" && !token.ordered)
+            return questionList(token);
           return (
             "<" +
             (token.ordered ? "ol" : "ul") +
@@ -308,32 +337,35 @@ const navigation = document.children
       })),
   }));
 const imports = [...media]
+  .map(([file, name]) => ({
+    name,
+    specifier:
+      "@assets/document/" +
+      path.relative(assets, file).split(path.sep).join("/") +
+      "?url",
+  }))
+  .sort((left, right) => left.specifier.localeCompare(right.specifier))
   .map(
-    ([file, name]) =>
-      "import " +
-      name +
-      " from " +
-      quote(
-        "@assets/document/" +
-          path.relative(assets, file).split(path.sep).join("/") +
-          "?url"
-      ) +
-      ";"
+    ({ name, specifier }) =>
+      "import " + name + " from " + quote(specifier) + ";"
   )
   .join("\n");
 destinations.push([
   path.join(output, name + ".tsx"),
   "// Generated from apps/web/src/pages/document/website/sources/" +
     file +
-    "; run npm run generate:website-guide.\n" +
+    "; run npm run generate:website-guide.\n\n" +
     imports +
-    "\nimport { ArticleImage, ArticleVideo, ArticleLink, ArticleSubParagraph, ArticleSubParagraphHeader, ArticleSubParagraphContent" +
+    "\nimport { ArticleImage, ArticleLink, ArticleSubParagraph, ArticleSubParagraphContent, ArticleSubParagraphHeader" +
     (content.includes("<ArticleSubParagraphSeparator")
       ? ", ArticleSubParagraphSeparator"
       : "") +
-    ' } from "@/components/commons/Article/Article";\n' +
+    ', ArticleVideo } from "@/components/commons/Article/Article";\n' +
     'import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";\n' +
-    "const " +
+    (content.includes("<Accordion")
+      ? 'import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";\n'
+      : "") +
+    "\nconst " +
     name +
     " = () => <>\n" +
     content +

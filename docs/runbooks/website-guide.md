@@ -87,6 +87,10 @@ infrastructure. `website/Website.tsx` owns the Article section and imports the
 generated `WebsiteContent`. Keep `lang="en"` on that content regardless of the
 application UI language.
 
+The Common situations list is a label and an answer separated by a colon.
+Generation renders that list as `ui/accordion` at the full width of the
+article paragraph. Other lists stay lists.
+
 Adjacent sections use Article's automatic separators. A Markdown thematic break
 at the same boundary does not produce a second line; thematic breaks within
 section content remain explicit separators. The generator sets
