@@ -32,7 +32,9 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAppRouterActions, useScreen, useSettingsDisplay } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 import {
   AppearanceSettings,
   DashboardSettings,
@@ -52,6 +54,8 @@ const PreferencesPage = ({
   displayMode?: "page" | "sheet";
   initialSection?: string;
 }) => {
+  usePageTitle(displayMode === "page" ? pageTitle("Preferences") : null);
+
   const { isReady } = useLocalPreferences();
   const router = useAppRouterActions();
   const { width: screenWidth } = useScreen();

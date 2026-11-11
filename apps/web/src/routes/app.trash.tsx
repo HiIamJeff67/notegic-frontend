@@ -37,6 +37,7 @@ import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator"
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
 import i18n from "@/i18n";
 import TrashPage from "@/pages/app/trash/TrashPage";
+import { pageTitle } from "@/seo/pageTitle";
 
 const emptySearchPageInfo = {
   __typename: "SearchPageInfo" as const,
@@ -121,6 +122,9 @@ const reportTrashNetwork = () => {
 
 export const Route = createFileRoute("/app/trash")({
   ssr: false,
+  head: () => ({
+    meta: [{ title: pageTitle("Trash") }],
+  }),
   validateSearch: search => ({
     query: typeof search.query === "string" ? search.query : "",
   }),

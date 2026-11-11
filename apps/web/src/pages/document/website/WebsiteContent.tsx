@@ -1,38 +1,46 @@
 // Generated from apps/web/src/pages/document/website/sources/website.md; run npm run generate:website-guide.
-import media0 from "@assets/document/images/dashboard-overview.png?url";
-import media1 from "@assets/document/images/widgets-defaults-picker.jpg?url";
-import media2 from "@assets/document/images/widgets-clock-settings.jpg?url";
-import media3 from "@assets/document/images/widgets-timer-duration.jpg?url";
-import media4 from "@assets/document/images/widgets-todo-usage.jpg?url";
-import media5 from "@assets/document/images/widgets-calendar.jpg?url";
-import media6 from "@assets/document/images/widgets-scratch-pad-editing.jpg?url";
-import media7 from "@assets/document/images/widgets-scratch-pad-preview.jpg?url";
+
 import media8 from "@assets/document/images/dashboard-layout-editing.jpg?url";
-import media9 from "@assets/document/images/widgets-item-menu.jpg?url";
-import media10 from "@assets/document/images/sidebar-overview.jpg?url";
-import media11 from "@assets/document/videos/sidebar-navigation.gif?url";
+import media0 from "@assets/document/images/dashboard-overview.png?url";
 import media12 from "@assets/document/images/editor-block-menu.jpg?url";
-import media13 from "@assets/document/images/editor-diagram-preview.jpg?url";
 import media14 from "@assets/document/images/editor-diagram-code.jpg?url";
-import media15 from "@assets/document/videos/sharing-and-permissions.gif?url";
-import media16 from "@assets/document/images/routines-overview.jpg?url";
-import media17 from "@assets/document/images/routines-chart-picker.jpg?url";
-import media18 from "@assets/document/images/station-create-form.jpg?url";
-import media19 from "@assets/document/images/routine-create-form.jpg?url";
-import media20 from "@assets/document/images/routine-schedule-picker.jpg?url";
-import media21 from "@assets/document/videos/routine-dependencies.gif?url";
+import media13 from "@assets/document/images/editor-diagram-preview.jpg?url";
 import media22 from "@assets/document/images/preferences-appearance.jpg?url";
 import media23 from "@assets/document/images/preferences-editor.jpg?url";
+import media19 from "@assets/document/images/routine-create-form.jpg?url";
+import media20 from "@assets/document/images/routine-schedule-picker.jpg?url";
+import media17 from "@assets/document/images/routines-chart-picker.jpg?url";
+import media16 from "@assets/document/images/routines-overview.jpg?url";
+import media10 from "@assets/document/images/sidebar-overview.jpg?url";
+import media18 from "@assets/document/images/station-create-form.jpg?url";
+import media5 from "@assets/document/images/widgets-calendar.jpg?url";
+import media2 from "@assets/document/images/widgets-clock-settings.jpg?url";
+import media1 from "@assets/document/images/widgets-defaults-picker.jpg?url";
+import media9 from "@assets/document/images/widgets-item-menu.jpg?url";
+import media6 from "@assets/document/images/widgets-scratch-pad-editing.jpg?url";
+import media7 from "@assets/document/images/widgets-scratch-pad-preview.jpg?url";
+import media3 from "@assets/document/images/widgets-timer-duration.jpg?url";
+import media4 from "@assets/document/images/widgets-todo-usage.jpg?url";
+import media21 from "@assets/document/videos/routine-dependencies.gif?url";
 import media24 from "@assets/document/videos/settings-presentation.gif?url";
+import media15 from "@assets/document/videos/sharing-and-permissions.gif?url";
+import media11 from "@assets/document/videos/sidebar-navigation.gif?url";
 import {
   ArticleImage,
-  ArticleVideo,
   ArticleLink,
   ArticleSubParagraph,
-  ArticleSubParagraphHeader,
   ArticleSubParagraphContent,
+  ArticleSubParagraphHeader,
+  ArticleVideo,
 } from "@/components/commons/Article/Article";
 import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 const WebsiteContent = () => (
   <>
     <p>
@@ -4287,38 +4295,68 @@ const WebsiteContent = () => (
             {"Common situations"}
           </ArticleSubParagraphHeader>
           <ArticleSubParagraphContent level={1}>
-            <ul className="space-y-2 pl-5 list-disc">
-              <li>
-                {
-                  "Missing document: check the Root Shelf, collapsed categories, account permissions, and applicable Trash entries before creating a duplicate."
-                }
-              </li>
-              <li>
-                {
-                  "Editor unavailable: check read-only access, loading state, and synchronization errors."
-                }
-              </li>
-              <li>
-                {
-                  "Material preview unavailable: check the file type, connection, and loading result. If downloading is available, inspect the source in an appropriate application."
-                }
-              </li>
-              <li>
-                {
-                  "Unexpected automation result: inspect the correct Routine and task execution records, including time range and inputs."
-                }
-              </li>
-              <li>
-                {
-                  "Different layout in another browser: distinguish browser-local customization from shared account data; not every setting synchronizes."
-                }
-              </li>
-              <li>
-                {
-                  "Unclear action result: inspect lists and status before retrying, particularly for creation, deletion, or other data-changing actions."
-                }
-              </li>
-            </ul>
+            <Accordion type="single" collapsible className="w-full min-w-0">
+              <AccordionItem value="0" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Missing document"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "check the Root Shelf, collapsed categories, account permissions, and applicable Trash entries before creating a duplicate."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="1" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Editor unavailable"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "check read-only access, loading state, and synchronization errors."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="2" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Material preview unavailable"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "check the file type, connection, and loading result. If downloading is available, inspect the source in an appropriate application."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="3" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Unexpected automation result"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "inspect the correct Routine and task execution records, including time range and inputs."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="4" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Different layout in another browser"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "distinguish browser-local customization from shared account data; not every setting synchronizes."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="5" className="w-full min-w-0">
+                <AccordionTrigger className="w-full text-left text-base">
+                  {"Unclear action result"}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {
+                    "inspect lists and status before retrying, particularly for creation, deletion, or other data-changing actions."
+                  }
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <p>
               {
                 "If these checks do not resolve the issue, report reproducible steps and appropriately redacted screenshots or recordings. You do not need to expose your entire private workspace."

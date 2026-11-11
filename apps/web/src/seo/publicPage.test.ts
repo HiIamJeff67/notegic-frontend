@@ -1,3 +1,4 @@
+import { pageTitle } from "./pageTitle";
 import {
   createLlmsTxt,
   createPrivatePageHead,
@@ -10,6 +11,17 @@ import {
   publicPages,
   publicSiteOrigin,
 } from "./publicPage";
+
+test("names every public page for its browser title", () => {
+  expect(publicPages.map(page => [page.path, page.title])).toEqual([
+    ["/", pageTitle("Home")],
+    ["/document", pageTitle("Document")],
+    ["/privacy-policy", pageTitle("Privacy and Policy")],
+    ["/eula", pageTitle("Eula")],
+    ["/data-deletion", pageTitle("Data Deletion")],
+    ["/contact", pageTitle("Contact")],
+  ]);
+});
 
 test("indexes only the production origin", () => {
   expect(isPublicSiteIndexable(publicSiteOrigin)).toBe(true);

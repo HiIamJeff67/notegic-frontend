@@ -3,6 +3,7 @@ import { getClientRequestHeaders } from "@/api/clientHeaders";
 import { fetchGetUserData } from "@/api/fetches/user.fetch";
 import { HasAuthCookies } from "@/api/functions/auth.serverFn";
 import LoginPage from "@/pages/auth/LoginPage";
+import { pageTitle } from "@/seo/pageTitle";
 
 export const Route = createFileRoute("/_auth/login")({
   validateSearch: search => ({
@@ -33,5 +34,8 @@ export const Route = createFileRoute("/_auth/login")({
       return {};
     }
   },
+  head: () => ({
+    meta: [{ title: pageTitle("Login") }],
+  }),
   component: LoginPage,
 });

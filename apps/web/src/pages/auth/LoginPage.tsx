@@ -16,10 +16,14 @@ import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useOAuth } from "@/hooks/useOAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const LoginPage = () => {
+  usePageTitle(pageTitle("Login"));
+
   const router = useAppRouter();
   const { perform, githubAvailable, xAvailable, discordAvailable } = useOAuth();
   const { t } = useTranslation();

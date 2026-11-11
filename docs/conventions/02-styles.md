@@ -13,9 +13,13 @@ change reaches the new interface without a new palette.
 - `panel.css` is imported only by `AuthPanel`; it is not an application-wide stylesheet.
 
 `globals.css` is the running theme. It has no `@config`. The Vite plugin is
-`@tailwindcss/vite`. `apps/web/tailwind.config.ts` is the leftover file named
-by `components.json`; do not add tokens there, and do not add `prose` classes.
-The app does not use `@tailwindcss/typography`.
+`@tailwindcss/vite`. `apps/web/tailwind.config.ts` is leftover and is not
+loaded. `apps/web/components.json` leaves `tailwind.config` empty so
+`shadcn add` does not write tokens or keyframes into that file. Add a new
+shadcn primitive from `apps/web`, where that config's `aliases.utils` is
+`@shared/lib/classname/cn` and `aliases.ui` is `@/components/ui`. Animation
+keyframes belong in `globals.css`. Do not add `prose` classes. The app does
+not use `@tailwindcss/typography`.
 
 Join classes with `cn` from `@shared/lib/classname/cn`. Primitive variants use
 `cva` in the primitive file. Do not add a second `cva` map in a feature for a

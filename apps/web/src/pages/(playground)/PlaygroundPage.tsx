@@ -1,11 +1,15 @@
 import AppCommand from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommand";
 import AppSidebarInset from "@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { AppCommandProvider } from "@/providers/AppCommandProvider";
 import { ResizeSidebarProvider } from "@/providers/ResizeSidebarProvider";
 import { UserProvider } from "@/providers/UserProvider";
+import { pageTitle } from "@/seo/pageTitle";
 
 const PlaygroundPage = () => {
+  usePageTitle(pageTitle("Playground"));
+
   return (
     <UserProvider>
       <AppCommandProvider>

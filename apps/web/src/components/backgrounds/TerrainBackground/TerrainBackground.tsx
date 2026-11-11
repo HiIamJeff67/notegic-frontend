@@ -146,63 +146,69 @@ export const TerrainBackground = ({
   }, [capability, isCapabilityDetected]);
 
   if (isCapabilityDetected && capability === "Severely") {
-    return <GridBackground className="min-h-screen">{children}</GridBackground>;
+    return (
+      <div className="relative min-h-screen w-full">
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-dvh w-full overflow-hidden">
+          <GridBackground className="h-full w-full" />
+        </div>
+        <div className="relative z-10">{children}</div>
+      </div>
+    );
   }
 
   return (
     <div
-      className="relative min-h-screen w-full overflow-hidden"
+      className="relative min-h-screen w-full"
       style={{ backgroundColor: isDark ? "#000000" : "#ffffff" }}
     >
       {terrain && (
-        <>
-          <div className="pointer-events-auto absolute inset-0 z-0">
-            <Canvas
-              camera={{
-                far: 280,
-                fov: 34,
-                near: 0.1,
-                position: camera.position,
-              }}
-              className="size-full"
-              dpr={1}
-              frameloop="always"
-              gl={{
-                alpha: false,
-                antialias: false,
-                powerPreference: "high-performance",
-              }}
-              onCreated={({ gl }) => {
-                gl.outputColorSpace = THREE.SRGBColorSpace;
-              }}
-            >
-              <TerrainRendererSettings isDark={isDark} />
-              <TerrainCamera
-                position={camera.position}
-                rotation={camera.rotation}
-                target={camera.target}
-              />
-              <OrbitControls
-                autoRotate
-                autoRotateSpeed={-1}
-                enableDamping={false}
-                makeDefault
-                target={camera.target}
-              />
-              <TerrainGridFloor isDark={isDark} />
-              <TerrainPointCloud
-                color={isDark ? "#ffffff" : "#111111"}
-                pointCount={terrain.pointCount}
-                pointSize={terrain.pointSize}
-                seed={terrain.seed}
-                algorithm={terrain.algorithm}
-              />
-            </Canvas>
-          </div>
-        </>
+        <div className="pointer-events-auto fixed inset-x-0 top-0 z-0 h-dvh w-full overflow-hidden">
+          <Canvas
+            camera={{
+              far: 280,
+              fov: 34,
+              near: 0.1,
+              position: camera.position,
+            }}
+            className="size-full"
+            dpr={1}
+            frameloop="always"
+            gl={{
+              alpha: false,
+              antialias: false,
+              powerPreference: "high-performance",
+            }}
+            onCreated={({ gl }) => {
+              gl.outputColorSpace = THREE.SRGBColorSpace;
+            }}
+          >
+            <TerrainRendererSettings isDark={isDark} />
+            <TerrainCamera
+              position={camera.position}
+              rotation={camera.rotation}
+              target={camera.target}
+            />
+            <OrbitControls
+              autoRotate
+              autoRotateSpeed={-1}
+              enableDamping={false}
+              enableZoom={false}
+              makeDefault
+              target={camera.target}
+            />
+            <TerrainGridFloor isDark={isDark} />
+            <TerrainPointCloud
+              color={isDark ? "#ffffff" : "#111111"}
+              pointCount={terrain.pointCount}
+              pointSize={terrain.pointSize}
+              seed={terrain.seed}
+              algorithm={terrain.algorithm}
+            />
+          </Canvas>
+        </div>
       )}
       <div
-        className="pointer-events-none absolute inset-0 z-[1]"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[1] h-dvh w-full"
         style={{
           background: isDark
             ? "radial-gradient(ellipse clamp(260px, 42vw, 620px) clamp(160px, 30vh, 300px) at 50% 48%, rgba(0, 0, 0, 0.64) 0%, rgba(0, 0, 0, 0.42) 36%, rgba(0, 0, 0, 0.16) 72%, transparent 100%)"

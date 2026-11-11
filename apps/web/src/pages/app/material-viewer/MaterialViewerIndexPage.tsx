@@ -1,4 +1,3 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { Link } from "@tanstack/react-router";
@@ -8,8 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const MaterialViewerIndexPage = () => {
+  usePageTitle(pageTitle("Materials"));
+
   const loadingManager = useLoading();
   const { t } = useTranslation();
   const shelfItemManager = useShelfItem();
