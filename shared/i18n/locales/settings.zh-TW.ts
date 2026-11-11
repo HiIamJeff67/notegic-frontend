@@ -177,6 +177,7 @@ export const TraditionalChineseSettingsTranslation = {
         oauthDisconnected: "帳號已解除綁定",
         githubUnbind: "解除 GitHub 綁定",
         xUnbind: "解除 X 綁定",
+        discordUnbind: "解除 Discord 綁定",
         githubUnbound: "已解除 GitHub 帳號綁定",
         xUnbound: "已解除 X 帳號綁定",
         oauthUnbindRejected:

@@ -191,6 +191,7 @@ export const JapaneseSettingsTranslation: SettingsTranslation = {
         oauthDisconnected: "アカウントの連携を解除しました",
         githubUnbind: "GitHub の連携を解除",
         xUnbind: "X の連携を解除",
+        discordUnbind: "Discord の連携を解除",
         githubUnbound: "GitHub アカウントの連携を解除しました",
         xUnbound: "X アカウントの連携を解除しました",
         oauthUnbindRejected:

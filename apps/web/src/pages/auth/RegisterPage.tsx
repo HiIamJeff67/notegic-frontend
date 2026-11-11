@@ -21,7 +21,7 @@ import { useOAuth } from "@/hooks/useOAuth";
 
 const RegisterPage = () => {
   const router = useAppRouter();
-  const { perform, githubAvailable, xAvailable } = useOAuth();
+  const { perform, githubAvailable, xAvailable, discordAvailable } = useOAuth();
   const { t } = useTranslation();
   const userManager = useUser();
 
@@ -194,6 +194,13 @@ const RegisterPage = () => {
               label: t("workspace.pages.xRegister"),
               onClick: () => perform("x", "register"),
               disabled: !xAvailable || (turnstileRequired && !turnstileToken),
+            },
+            {
+              provider: "discord",
+              label: t("workspace.pages.discordRegister"),
+              onClick: () => perform("discord", "register"),
+              disabled:
+                !discordAvailable || (turnstileRequired && !turnstileToken),
             },
           ]}
           statusDetail={t("workspace.pages.systemReady")}

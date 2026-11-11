@@ -63,6 +63,7 @@ const BindingTab = ({ layout }: BindingTabProps) => {
     isUnbinding,
     githubAvailable,
     xAvailable,
+    discordAvailable,
   } = useOAuth();
   const account = accountQuery.data?.data;
   const backupEmail = account?.backupEmail;
@@ -98,6 +99,16 @@ const BindingTab = ({ layout }: BindingTabProps) => {
       title: t("settingsPage.account.binding.x"),
       description: t("settingsPage.account.binding.xDescription"),
       disconnectTitle: t("settingsPage.account.binding.xUnbind"),
+    },
+    {
+      name: "discord",
+      type: "Discord",
+      label: "Discord",
+      available: discordAvailable,
+      bound: account?.discordBound,
+      title: t("settingsPage.account.binding.discord"),
+      description: t("settingsPage.account.binding.discordDescription"),
+      disconnectTitle: t("settingsPage.account.binding.discordUnbind"),
     },
   ] as const;
   const [unbindProvider, setUnbindProvider] =
@@ -602,6 +613,7 @@ const BindingTab = ({ layout }: BindingTabProps) => {
             key={provider.name}
             title={provider.title}
             description={provider.description}
+            hideSeparator={provider.name === "discord"}
           >
             {provider.bound !== undefined ? (
               <span
@@ -655,17 +667,6 @@ const BindingTab = ({ layout }: BindingTabProps) => {
           </SettingMenuItem>
         );
       })}
-      <SettingMenuItem
-        title={t("settingsPage.account.binding.discord")}
-        description={t("settingsPage.account.binding.discordDescription")}
-        hideSeparator
-      >
-        {account?.discordBound && (
-          <span className="text-sm text-muted-foreground">
-            {t("settingsPage.account.binding.connected")}
-          </span>
-        )}
-      </SettingMenuItem>
     </SettingMenu>
   );
 };

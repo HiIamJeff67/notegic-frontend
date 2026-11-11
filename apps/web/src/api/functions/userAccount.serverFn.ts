@@ -2,9 +2,11 @@ import {
   BindGoogleAccountRequest,
   BindGithubAccountRequest,
   BindXAccountRequest,
+  BindDiscordAccountRequest,
   BindGoogleAccountResponse,
   BindGithubAccountResponse,
   BindXAccountResponse,
+  BindDiscordAccountResponse,
   PrepareOAuthOperationRequest,
   PrepareOAuthOperationResponseSchema,
   GetMyAccountResponse,
@@ -12,9 +14,11 @@ import {
   UnbindGoogleAccountRequest,
   UnbindGithubAccountRequest,
   UnbindXAccountRequest,
+  UnbindDiscordAccountRequest,
   UnbindGoogleAccountResponse,
   UnbindGithubAccountResponse,
   UnbindXAccountResponse,
+  UnbindDiscordAccountResponse,
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
@@ -194,6 +198,36 @@ export const BindXAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const BindDiscordAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: BindDiscordAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<BindDiscordAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindDiscordAccount}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as BindDiscordAccountResponse;
+
+    return formattedResponse;
+  });
+
 export const UnbindGoogleAccount = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindGoogleAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindGoogleAccountResponse> => {
@@ -280,6 +314,36 @@ export const UnbindXAccount = createServerFn({ method: "POST" })
     const formattedResponse = (await formatAPIResponse(
       response
     )) as UnbindXAccountResponse;
+
+    return formattedResponse;
+  });
+
+export const UnbindDiscordAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: UnbindDiscordAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<UnbindDiscordAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindDiscordAccount}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as UnbindDiscordAccountResponse;
 
     return formattedResponse;
   });

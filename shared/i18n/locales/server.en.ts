@@ -23,14 +23,20 @@ export const EnglishServerTranslation = {
     WrongPassword: "The password is incorrect.",
     XAccountNotLinked:
       "An existing Notegic account uses the email address from X. Sign in with your usual method, then link X in Account settings.",
+    DiscordAccountNotLinked:
+      "This Discord account is not linked to Notegic. Sign in with your usual method, then link Discord in Account settings.",
     XEmailRequired:
       "To create a Notegic account with X, confirm your email address on X, then allow Notegic to access it when you try again.",
+    DiscordEmailRequired:
+      "Verify your email on Discord and grant Notegic access to it to create an account.",
     GoogleCredentialAlreadyBound:
       "Your Notegic account already has a Google account linked.",
     GithubCredentialAlreadyBound:
       "Your Notegic account already has a GitHub account linked.",
     XCredentialAlreadyBound:
       "Your Notegic account already has a X account linked.",
+    DiscordCredentialAlreadyBound:
+      "Your Notegic account already has a Discord account linked.",
     WrongAuthCode: "The verification code is incorrect.",
     LoginBlockedDueToTryingTooManyTimes:
       "Too many sign-in attempts. Please try again later.",

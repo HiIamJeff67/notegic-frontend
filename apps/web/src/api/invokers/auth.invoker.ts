@@ -22,15 +22,19 @@ import {
   type LoginViaGoogleRequest,
   type LoginViaGithubRequest,
   type LoginViaXRequest,
+  type LoginViaDiscordRequest,
   LoginViaGoogleRequestSchema,
   LoginViaGithubRequestSchema,
   LoginViaXRequestSchema,
+  LoginViaDiscordRequestSchema,
   type LoginViaGoogleResponse,
   type LoginViaGithubResponse,
   type LoginViaXResponse,
+  type LoginViaDiscordResponse,
   LoginViaGoogleResponseSchema,
   LoginViaGithubResponseSchema,
   LoginViaXResponseSchema,
+  LoginViaDiscordResponseSchema,
   type LogoutRequest,
   LogoutRequestSchema,
   type LogoutResponse,
@@ -42,15 +46,19 @@ import {
   type RegisterViaGoogleRequest,
   type RegisterViaGithubRequest,
   type RegisterViaXRequest,
+  type RegisterViaDiscordRequest,
   RegisterViaGoogleRequestSchema,
   RegisterViaGithubRequestSchema,
   RegisterViaXRequestSchema,
+  RegisterViaDiscordRequestSchema,
   type RegisterViaGoogleResponse,
   type RegisterViaGithubResponse,
   type RegisterViaXResponse,
+  type RegisterViaDiscordResponse,
   RegisterViaGoogleResponseSchema,
   RegisterViaGithubResponseSchema,
   RegisterViaXResponseSchema,
+  RegisterViaDiscordResponseSchema,
   type ResetEmailRequest,
   ResetEmailRequestSchema,
   type ResetEmailResponse,
@@ -77,11 +85,13 @@ import {
   LoginViaGoogle,
   LoginViaGithub,
   LoginViaX,
+  LoginViaDiscord,
   Logout,
   Register,
   RegisterViaGoogle,
   RegisterViaGithub,
   RegisterViaX,
+  RegisterViaDiscord,
   ResetEmail,
   ResetMe,
   SendAuthCode,
@@ -233,6 +243,42 @@ export const mutationFnRegisterViaX = async (
   }
 };
 
+export const mutationFnRegisterViaDiscord = async (
+  request: RegisterViaDiscordRequest
+): Promise<RegisterViaDiscordResponse> => {
+  const validatedRequest = parseRequest(
+    RegisterViaDiscordRequestSchema,
+    request
+  );
+  try {
+    const response = await RegisterViaDiscord({
+      data: validatedRequest,
+    });
+    return RegisterViaDiscordResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
 export const mutationFnLogin = async (
   request: LoginRequest
 ): Promise<LoginResponse> => {
@@ -337,6 +383,37 @@ export const mutationFnLoginViaX = async (
   try {
     const response = await LoginViaX({ data: validatedRequest });
     return LoginViaXResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("auth.validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        case ExceptionReasonDictionary.auth.turnstileVerificationFailed:
+          throw error.setPresentation("auth.turnstileRequired");
+
+        case ExceptionReasonDictionary.auth.turnstileProviderUnavailable:
+          throw error.setPresentation("auth.turnstileUnavailable");
+
+        case ExceptionReasonDictionary.user.notFound:
+          throw error.setPresentation("error.apiError.getUser.failedToGetUser");
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.NetworkRequired());
+    }
+
+    throw error;
+  }
+};
+
+export const mutationFnLoginViaDiscord = async (
+  request: LoginViaDiscordRequest
+): Promise<LoginViaDiscordResponse> => {
+  const validatedRequest = parseRequest(LoginViaDiscordRequestSchema, request);
+  try {
+    const response = await LoginViaDiscord({ data: validatedRequest });
+    return LoginViaDiscordResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(

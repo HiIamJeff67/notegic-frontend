@@ -37,6 +37,7 @@ window.phoneNumber = null;
 window.emailVerified = false;
 window.githubBound = false;
 window.xBound = false;
+window.discordBound = false;
 window.oauthFallbackProviders = [];
 window.accountQueryError = false;
 window.accountDataAvailable = true;
@@ -87,7 +88,7 @@ window.mount = (surface, remount = true) => {
    surface === 'binding' ? <BindingTab layout="panel" /> :
    surface === 'security' ? <SecurityTab layout="panel" /> :
    surface === 'account-modification' ? <AccountModificationTab layout="panel" onPanelClose={() => {}} /> :
-   <OAuthRedirectPage key={revision} provider={surface === 'redirect-github' ? 'github' : surface === 'redirect-x' ? 'x' : surface === 'redirect-apple' ? 'apple' : 'google'} />}
+   <OAuthRedirectPage key={revision} provider={surface === 'redirect-github' ? 'github' : surface === 'redirect-x' ? 'x' : surface === 'redirect-discord' ? 'discord' : surface === 'redirect-apple' ? 'apple' : 'google'} />}
 </OAuthProvider></LoadingProvider></AuthCodeProvider></QueryClientProvider></React.StrictMode>);
 };
 window.renderDestinationLocation = () => {
@@ -140,7 +141,9 @@ const mocks: Record<string, string> = {
     export const useLoginViaGithub = () => window.mutator('github-login');
     export const useRegisterViaGithub = () => window.mutator('github-register');
     export const useLoginViaX = () => window.mutator('x-login');
-    export const useRegisterViaX = () => window.mutator('x-register');`,
+    export const useRegisterViaX = () => window.mutator('x-register');
+    export const useLoginViaDiscord = () => window.mutator('discord-login');
+    export const useRegisterViaDiscord = () => window.mutator('discord-register');`,
   "@/api/hooks/userAccount.hook": `export const useUpdateMyAccount = () => window.mutator('update-account');
     export const useBindGoogleAccount = () => window.mutator('binding');
     export const useBindGithubAccount = () => window.mutator('github-binding');
@@ -159,11 +162,13 @@ const mocks: Record<string, string> = {
         window.accountDataAvailable = true;
         window.mount("binding", false);
       },
-      data: window.accountDataAvailable ? { data: { registeredAuthProviderType: window.registeredAuthProviderType, passwordConfigured: window.passwordConfigured, emailVerified: window.emailVerified, backupEmail: window.backupEmail, phoneNumber: window.phoneNumber, countryCode: window.countryCode, googleBound: window.googleBound, githubBound: window.githubBound, xBound: window.xBound, oauthFallbackProviders: window.oauthFallbackProviders } } : undefined });
+      data: window.accountDataAvailable ? { data: { registeredAuthProviderType: window.registeredAuthProviderType, passwordConfigured: window.passwordConfigured, emailVerified: window.emailVerified, backupEmail: window.backupEmail, phoneNumber: window.phoneNumber, countryCode: window.countryCode, googleBound: window.googleBound, githubBound: window.githubBound, xBound: window.xBound, discordBound: window.discordBound, oauthFallbackProviders: window.oauthFallbackProviders } } : undefined });
     export const useUnbindGoogleAccount = () => window.mutator('google-unbind');
     export const useUnbindGithubAccount = () => window.mutator('github-unbind');
     export const useBindXAccount = () => window.mutator('x-binding');
-    export const useUnbindXAccount = () => window.mutator('x-unbind');`,
+    export const useUnbindXAccount = () => window.mutator('x-unbind');
+    export const useBindDiscordAccount = () => window.mutator('discord-binding');
+    export const useUnbindDiscordAccount = () => window.mutator('discord-unbind');`,
   "@/api/turnstile": `export const isTurnstileEnabled = () => window.turnstileRequired;
     export const getTurnstileToken = () => null;
     export const setTurnstileToken = () => {};
@@ -208,6 +213,9 @@ describe("OAuth state in the real entry and callback components", () => {
           VITE_OAUTH_GITHUB_CLIENT_ID: "fixture-github-client",
           VITE_OAUTH_GITHUB_REDIRECT_URL: "http://localhost/redirect/github",
           VITE_OAUTH_X_CLIENT_ID: "fixture-x-client",
+          VITE_OAUTH_DISCORD_CLIENT_ID: "fixture-discord-client",
+          VITE_OAUTH_DISCORD_REDIRECT_URL:
+            "http://localhost:6779/redirect/discord",
           VITE_OAUTH_X_REDIRECT_URL: "http://127.0.0.1:6779/redirect/x",
         }),
       },
@@ -262,7 +270,7 @@ describe("OAuth state in the real entry and callback components", () => {
     await page.evaluate(action => (window as any).mount(action), action);
     const suffix = action === "login" ? "Login" : "Register";
     const buttons = page.getByRole("button", {
-      name: /^(workspace\.pages\.(google|github|x)(Login|Register)|Apple|Discord|Microsoft)$/,
+      name: /^(workspace\.pages\.(google|github|x|discord)(Login|Register)|Apple|Microsoft)$/,
     });
     await browserExpect(buttons).toHaveCount(6);
     expect(
@@ -276,14 +284,133 @@ describe("OAuth state in the real entry and callback components", () => {
       [`workspace.pages.google${suffix}`, ""],
       ["Apple", ""],
       [`workspace.pages.x${suffix}`, ""],
-      ["Discord", ""],
+      [`workspace.pages.discord${suffix}`, ""],
       [`workspace.pages.github${suffix}`, ""],
       ["Microsoft", ""],
     ]);
     await browserExpect(buttons.nth(2)).toBeEnabled();
-    for (const name of ["Apple", "Discord", "Microsoft"]) {
+    await browserExpect(buttons.nth(3)).toBeEnabled();
+    for (const name of ["Apple", "Microsoft"]) {
       await browserExpect(page.getByRole("button", { name })).toBeDisabled();
     }
+  });
+
+  test.each([
+    "login",
+    "register",
+    "binding",
+  ] as const)("Discord %s uses S256 and forwards only the matching callback", async action => {
+    await page.evaluate(action => (window as any).mount(action), action);
+    if (action === "binding") {
+      await page
+        .getByRole("group", { name: "settingsPage.account.binding.discord" })
+        .getByRole("button", { name: "settingsPage.account.binding.bind" })
+        .click();
+      await verifyOAuthDialog(page, "settingsPage.account.binding.bind");
+    } else {
+      await page
+        .getByRole("button", {
+          name:
+            action === "login"
+              ? "workspace.pages.discordLogin"
+              : "workspace.pages.discordRegister",
+        })
+        .click();
+    }
+    await browserExpect
+      .poll(() =>
+        page.evaluate(() => (window as any).events.navigations.length)
+      )
+      .toBe(1);
+    const { navigation, pending } = await page.evaluate(() => ({
+      navigation: (window as any).events.navigations[0],
+      pending: JSON.parse(sessionStorage.getItem("notegic_PendingOAuthState")!),
+    }));
+    const authorization = new URL(navigation);
+    expect(authorization.origin + authorization.pathname).toBe(
+      "https://discord.com/oauth2/authorize"
+    );
+    expect(authorization.searchParams.get("scope")).toBe("identify email");
+    expect(authorization.searchParams.get("response_type")).toBe("code");
+    expect(authorization.searchParams.get("code_challenge_method")).toBe(
+      "S256"
+    );
+    expect(authorization.searchParams.get("state")).toBe(pending.state);
+    expect(pending.provider).toBe("discord");
+
+    await page.evaluate(state => {
+      const fixture = window as any;
+      fixture.callbackSearch = `?code=fixture-code&state=${state}&iss=https%3A%2F%2Fdiscord.com`;
+      fixture.mount("redirect-discord");
+    }, pending.state);
+    await browserExpect
+      .poll(() => page.evaluate(() => (window as any).events.requests))
+      .toEqual([
+        {
+          action: `discord-${action}`,
+          request: {
+            header: {},
+            body: {
+              authorizationCode: "fixture-code",
+              ...(action === "binding"
+                ? { state: pending.state }
+                : { codeVerifier: pending.codeVerifier }),
+            },
+          },
+          pending: null,
+        },
+      ]);
+  });
+
+  test.each([
+    "",
+    "&iss=https%3A%2F%2Fother.example",
+  ])("Discord rejects a missing or mismatched issuer before exchange (%s)", async issuer => {
+    await page.evaluate(issuer => {
+      const fixture = window as any;
+      const state = "a".repeat(64);
+      sessionStorage.setItem(
+        "notegic_PendingOAuthState",
+        JSON.stringify({
+          provider: "discord",
+          action: "login",
+          state,
+          createdAt: Date.now(),
+          codeVerifier: "b".repeat(64),
+        })
+      );
+      fixture.callbackSearch = `?code=fixture-code&state=${state}${issuer}`;
+      fixture.mount("redirect-discord");
+    }, issuer);
+    await browserExpect
+      .poll(() => page.evaluate(() => (window as any).events.replacements))
+      .toEqual(["login?oauthFailed=true"]);
+    expect(await page.evaluate(() => (window as any).events.requests)).toEqual(
+      []
+    );
+  });
+
+  test("disconnects Discord with the Notegic email code and no redirect", async () => {
+    await page.evaluate(() => {
+      (window as any).discordBound = true;
+      (window as any).mount("binding");
+    });
+    const disconnect = "settingsPage.account.binding.unbind";
+    await page
+      .getByRole("group", { name: "settingsPage.account.binding.discord" })
+      .getByRole("button", { name: disconnect })
+      .click();
+    await verifyOAuthDialog(page, disconnect);
+    await browserExpect(page.getByRole("dialog")).toBeHidden();
+    const events = await page.evaluate(() => (window as any).events);
+    expect(events.navigations).toEqual([]);
+    expect(events.requests).toEqual([
+      {
+        action: "discord-unbind",
+        request: { header: {}, body: { authCode: "123456" } },
+        pending: null,
+      },
+    ]);
   });
 
   test("protects the only registered OAuth provider and allows an email account to disconnect it", async () => {

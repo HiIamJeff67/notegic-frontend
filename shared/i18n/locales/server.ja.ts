@@ -24,14 +24,20 @@ export const JapaneseServerTranslation = {
     WrongPassword: "パスワードが正しくありません。",
     XAccountNotLinked:
       "X のメールアドレスはすでに Notegic アカウントで使われています。普段の方法でログインし、アカウント設定で X を連携してください。",
+    DiscordAccountNotLinked:
+      "この Discord アカウントは Notegic と連携されていません。いつもの方法でログインし、アカウント設定から Discord を連携してください。",
     XEmailRequired:
       "X で Notegic アカウントを作成するには、X でメールアドレスを確認し、もう一度 Notegic にそのアドレスへのアクセスを許可してください。",
+    DiscordEmailRequired:
+      "アカウントを作成するには、Discord でメールアドレスを認証し、Notegic にアクセスを許可してください。",
     GoogleCredentialAlreadyBound:
       "Notegic アカウントにはすでに Google アカウントが連携されています。",
     GithubCredentialAlreadyBound:
       "Notegic アカウントにはすでに GitHub アカウントが連携されています。",
     XCredentialAlreadyBound:
       "Notegic アカウントにはすでに X アカウントが連携されています。",
+    DiscordCredentialAlreadyBound:
+      "Notegic アカウントにはすでに Discord アカウントが連携されています。",
     WrongAuthCode: "認証コードが正しくありません。",
     LoginBlockedDueToTryingTooManyTimes:
       "サインインの試行回数が多すぎます。しばらくしてからお試しください。",

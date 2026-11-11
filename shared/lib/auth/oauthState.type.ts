@@ -29,7 +29,8 @@ export const isPendingOAuthState = (
     (pending.provider === undefined ||
       pending.provider === "google" ||
       pending.provider === "github" ||
-      pending.provider === "x") &&
+      pending.provider === "x" ||
+      pending.provider === "discord") &&
     (pending.action === "binding" ||
       (typeof pending.codeVerifier === "string" &&
         /^[A-Za-z0-9._~\-]{43,128}$/.test(pending.codeVerifier))) &&

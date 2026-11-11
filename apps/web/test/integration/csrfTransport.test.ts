@@ -9,10 +9,12 @@ const publicAuth = new Set([
   "RegisterViaGoogle",
   "RegisterViaGithub",
   "RegisterViaX",
+  "RegisterViaDiscord",
   "Login",
   "LoginViaGoogle",
   "LoginViaGithub",
   "LoginViaX",
+  "LoginViaDiscord",
 ]);
 
 test("every protected server-function upstream takes the current RPC CSRF header", () => {

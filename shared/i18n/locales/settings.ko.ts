@@ -184,6 +184,7 @@ export const KoreanSettingsTranslation: SettingsTranslation = {
         oauthDisconnected: "계정 연결이 해제되었습니다",
         githubUnbind: "GitHub 연결 해제",
         xUnbind: "X 연결 해제",
+        discordUnbind: "Discord 연결 해제",
         githubUnbound: "GitHub 계정 연결이 해제되었습니다",
         xUnbound: "X 계정 연결이 해제되었습니다",
         oauthUnbindRejected:

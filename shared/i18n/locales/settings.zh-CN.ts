@@ -181,6 +181,7 @@ export const SimpleChineseSettingsTranslation: SettingsTranslation = {
         oauthDisconnected: "账号已解除绑定",
         githubUnbind: "解除 GitHub 绑定",
         xUnbind: "解除 X 绑定",
+        discordUnbind: "解除 Discord 绑定",
         githubUnbound: "已解除 GitHub 账户绑定",
         xUnbound: "已解除 X 账户绑定",
         oauthUnbindRejected:

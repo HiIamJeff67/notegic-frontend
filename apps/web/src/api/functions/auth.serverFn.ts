@@ -8,9 +8,11 @@ import {
   LoginViaGoogleRequest,
   LoginViaGithubRequest,
   LoginViaXRequest,
+  LoginViaDiscordRequest,
   LoginViaGoogleResponse,
   LoginViaGithubResponse,
   LoginViaXResponse,
+  LoginViaDiscordResponse,
   LogoutRequest,
   LogoutResponse,
   RegisterRequest,
@@ -18,9 +20,11 @@ import {
   RegisterViaGoogleRequest,
   RegisterViaGithubRequest,
   RegisterViaXRequest,
+  RegisterViaDiscordRequest,
   RegisterViaGoogleResponse,
   RegisterViaGithubResponse,
   RegisterViaXResponse,
+  RegisterViaDiscordResponse,
   ResetEmailRequest,
   ResetEmailResponse,
   ResetMeRequest,
@@ -176,6 +180,37 @@ export const RegisterViaX = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const RegisterViaDiscord = createServerFn({ method: "POST" })
+  .inputValidator((data: RegisterViaDiscordRequest) => data)
+  .handler(async ({ data: request }): Promise<RegisterViaDiscordResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.registerViaDiscord}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as RegisterViaDiscordResponse;
+
+    return formattedResponse;
+  });
+
 export const Login = createServerFn({ method: "POST" })
   .inputValidator((data: LoginRequest) => data)
   .handler(async ({ data: request }): Promise<LoginResponse> => {
@@ -296,6 +331,37 @@ export const LoginViaX = createServerFn({ method: "POST" })
     const formattedResponse = (await formatAPIResponse(
       response
     )) as LoginViaXResponse;
+
+    return formattedResponse;
+  });
+
+export const LoginViaDiscord = createServerFn({ method: "POST" })
+  .inputValidator((data: LoginViaDiscordRequest) => data)
+  .handler(async ({ data: request }): Promise<LoginViaDiscordResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.loginViaDiscord}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as LoginViaDiscordResponse;
 
     return formattedResponse;
   });

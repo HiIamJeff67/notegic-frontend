@@ -13,9 +13,11 @@ import {
   mutationFnBindGoogleAccount,
   mutationFnBindGithubAccount,
   mutationFnBindXAccount,
+  mutationFnBindDiscordAccount,
   mutationFnUnbindGoogleAccount,
   mutationFnUnbindGithubAccount,
   mutationFnUnbindXAccount,
+  mutationFnUnbindDiscordAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
@@ -130,6 +132,22 @@ export const useBindXAccount = () => {
   return mutation;
 };
 
+export const useBindDiscordAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnBindDiscordAccount,
+    retry: false,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
+    },
+  });
+
+  return mutation;
+};
+
 export const useUnbindGoogleAccount = () =>
   useMutation({
     mutationFn: mutationFnUnbindGoogleAccount,
@@ -145,5 +163,11 @@ export const useUnbindGithubAccount = () =>
 export const useUnbindXAccount = () =>
   useMutation({
     mutationFn: mutationFnUnbindXAccount,
+    retry: false,
+  });
+
+export const useUnbindDiscordAccount = () =>
+  useMutation({
+    mutationFn: mutationFnUnbindDiscordAccount,
     retry: false,
   });

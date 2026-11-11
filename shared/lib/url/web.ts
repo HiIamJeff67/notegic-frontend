@@ -12,6 +12,7 @@ export const WebURLPathDictionary = {
       google: "redirect/google",
       github: "redirect/github",
       x: "redirect/x",
+      discord: "redirect/discord",
       apple: "redirect/apple",
     },
   },
@@ -24,6 +25,7 @@ export const WebURLPathDictionary = {
     x: (qs: string) => {
       return `https://x.com/i/oauth2/authorize?${qs}`;
     },
+    discord: (qs: string) => `https://discord.com/oauth2/authorize?${qs}`,
   },
   app: {
     materialViewer: {

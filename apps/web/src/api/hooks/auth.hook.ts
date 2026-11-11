@@ -16,11 +16,13 @@ import {
   mutationFnLoginViaGoogle,
   mutationFnLoginViaGithub,
   mutationFnLoginViaX,
+  mutationFnLoginViaDiscord,
   mutationFnLogout,
   mutationFnRegister,
   mutationFnRegisterViaGoogle,
   mutationFnRegisterViaGithub,
   mutationFnRegisterViaX,
+  mutationFnRegisterViaDiscord,
   mutationFnResetEmail,
   mutationFnResetMe,
   mutationFnSendAuthCode,
@@ -124,6 +126,25 @@ export const useRegisterViaX = () => {
   return mutation;
 };
 
+export const useRegisterViaDiscord = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnRegisterViaDiscord,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncRegisterViaOAuth(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
+  });
+
+  return mutation;
+};
+
 export const useLogin = () => {
   const queryClient = getQueryClient();
 
@@ -200,6 +221,25 @@ export const useLoginViaX = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
     onError: error => {},
+  });
+
+  return mutation;
+};
+
+export const useLoginViaDiscord = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnLoginViaDiscord,
+    retry: false,
+    onSuccess: async response => {
+      setClientCSRFToken(
+        response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
+      );
+      await AuthLocalSynchronizer.syncLogin(response);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
+    },
   });
 
   return mutation;
