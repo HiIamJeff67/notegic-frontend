@@ -45,7 +45,9 @@ import {
   useScreen,
   useWidget,
 } from "@/hooks";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const DashboardElementZIndexes = {
   headerBackgroundImage: 50,
@@ -61,6 +63,8 @@ const DashboardElementZIndexes = {
 };
 
 const DashboardPage = () => {
+  usePageTitle(pageTitle("Dashboard"));
+
   const { t } = useTranslation();
   const screenManager = useScreen();
   const widgetManager = useWidget();

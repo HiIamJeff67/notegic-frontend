@@ -19,6 +19,11 @@ Cloudflare Workers Builds build variable `VITE_PUBLIC_SITE_ORIGIN` to exactly
 does not embed that value into the build. Any other value, including local
 development and preview, returns `Disallow: /`.
 
+Browser titles use `pageTitle`: the page or content name, then ` | Notegic`.
+A name longer than 32 characters keeps the first 32 and ends with `...`.
+Public titles come from `publicPages`. Each `...Page.tsx` sets the same title
+for its own browser tab. Nested components do not.
+
 `publicPages` is the editable list of indexed URLs, titles, and descriptions.
 `privatePathPrefixes` is the editable list blocked by `robots.txt`. Adding or
 removing a public page means changing that list and the route that calls

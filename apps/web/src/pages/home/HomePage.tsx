@@ -12,7 +12,9 @@ import NoteIcon from "@/components/icons/NoteIcon";
 import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { Button } from "@/components/ui/button";
 import { useAppRouter, useTheme } from "@/hooks";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 import { publicFacts, publicFaqs, publicPages } from "@/seo/publicPage";
 
 const DisplayTitle = {
@@ -21,6 +23,8 @@ const DisplayTitle = {
 };
 
 export const HomePage = () => {
+  usePageTitle(pageTitle("Home"));
+
   const router = useAppRouter();
   const { t } = useTranslation();
   const themeManager = useTheme();
@@ -138,96 +142,82 @@ export const HomePage = () => {
   }, []);
 
   return (
-    <TerrainBackground isDark={themeManager.currentTheme.isDark}>
-      <Suspense fallback={<LoadingCover />}>
-        <HomeMenu />
+    <>
+      <meta name="description" content={publicFacts.definition} />
+      <TerrainBackground isDark={themeManager.currentTheme.isDark}>
+        <Suspense fallback={<LoadingCover />}>
+          <HomeMenu />
 
-        <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4">
-          <div className="text-foreground text-center select-none flex flex-col items-center justify-center gap-0">
-            <div className="min-h-[160px] flex flex-col items-center justify-center">
-              <h1 className="sr-only">{publicFacts.name}</h1>
-              <div
-                aria-hidden="true"
-                className={`
+          <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4">
+            <div className="text-foreground flex flex-col items-center justify-center gap-0 text-center select-none">
+              <div className="flex min-h-[160px] flex-col items-center justify-center">
+                <div
+                  className={`
                 ${
                   displayTitle
                     ? "max-w-[400px] text-6xl"
                     : "max-w-[600px] text-4xl"
                 }
-                font-bold pb-2 leading-tight text-center
+                pb-2 text-center leading-tight font-bold
               `}
-              >
-                {currentText}
-                <span className="animate-pulse text-foreground">|</span>
+                >
+                  {currentText}
+                  <span className="text-foreground animate-pulse">|</span>
+                </div>
+                <p className="text-lg opacity-80">{t("homePage.subtitle")}</p>
               </div>
-              <p className="text-lg opacity-80">{t("homePage.subtitle")}</p>
-              <p className="mt-3 max-w-xl text-base" lang="en">
-                {publicFacts.definition}
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-6 mt-4">
-              <Button
-                variant="secondary"
-                className="pointer-events-auto cursor-pointer font-bold hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
-                onClick={() => {
-                  router.push(WebURLPathDictionary.document);
-                }}
-              >
-                <BookOpenIcon size={18} />
-                {t("homePage.viewDocs")}
-              </Button>
-              <Button
-                variant="default"
-                className="pointer-events-auto cursor-pointer font-bold hover:bg-primary/90 focus:bg-primary/90 active:bg-primary/90"
-                onClick={() => void handleGetStartedOnClick()}
-                disabled={isStarting}
-                aria-busy={isStarting}
-              >
-                {isStarting ? (
-                  <LoaderCircleIcon className="size-[18px] animate-spin" />
-                ) : (
-                  <NoteIcon size={18} />
-                )}
-                {t("homePage.getStarted")}
-              </Button>
-              {/* <Button disabled variant="secondary" onClick={localDB.download}>
-                Download Local DB File
-              </Button> */}
+              <div className="mt-4 flex items-center justify-center gap-6">
+                <Button
+                  variant="secondary"
+                  className="pointer-events-auto cursor-pointer font-bold hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground active:bg-accent active:text-accent-foreground"
+                  onClick={() => {
+                    router.push(WebURLPathDictionary.document);
+                  }}
+                >
+                  <BookOpenIcon size={18} />
+                  {t("homePage.viewDocs")}
+                </Button>
+                <Button
+                  variant="default"
+                  className="pointer-events-auto cursor-pointer font-bold hover:bg-primary/90 focus:bg-primary/90 active:bg-primary/90"
+                  onClick={() => void handleGetStartedOnClick()}
+                  disabled={isStarting}
+                  aria-busy={isStarting}
+                >
+                  {isStarting ? (
+                    <LoaderCircleIcon className="size-[18px] animate-spin" />
+                  ) : (
+                    <NoteIcon size={18} />
+                  )}
+                  {t("homePage.getStarted")}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <section
-          lang="en"
-          className="relative z-10 mx-auto min-w-0 max-w-3xl px-6 pb-24 text-left text-foreground"
-        >
-          <p>{publicFacts.audience}</p>
-          <p className="mt-4">{publicFacts.limits}</p>
-          <nav className="mt-6 flex min-w-0 flex-wrap gap-x-4 gap-y-2 text-sm">
-            {publicPages
-              .filter(page => page.path !== "/")
-              .map(page => (
-                <a
-                  key={page.path}
-                  className="pointer-events-auto underline"
-                  href={page.path}
-                >
-                  {page.linkLabel}
-                </a>
-              ))}
-          </nav>
-          <h2 className="mt-10 text-2xl font-semibold tracking-tight">
-            Questions
-          </h2>
-          <div className="mt-4 space-y-6">
+          <div className="sr-only">
+            <h1>{publicFacts.name}</h1>
+            <p>{publicFacts.definition}</p>
+            <p>{publicFacts.audience}</p>
+            <p>{publicFacts.limits}</p>
+            <nav>
+              {publicPages
+                .filter(page => page.path !== "/")
+                .map(page => (
+                  <a key={page.path} href={page.path}>
+                    {page.linkLabel}
+                  </a>
+                ))}
+            </nav>
+            <h2>Questions</h2>
             {publicFaqs.map(faq => (
               <section key={faq.question}>
-                <h3 className="text-lg font-semibold">{faq.question}</h3>
-                <p className="mt-2">{faq.answer}</p>
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
               </section>
             ))}
           </div>
-        </section>
-      </Suspense>
-    </TerrainBackground>
+        </Suspense>
+      </TerrainBackground>
+    </>
   );
 };

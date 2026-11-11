@@ -34,7 +34,9 @@ import {
   useScreen,
   useSettingsDisplay,
 } from "@/hooks";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 import AccountModificationTab from "./tabs/AccountModificationTab";
 import AccountTab from "./tabs/AccountTab";
 import ApiKeysTab from "./tabs/ApiKeysTab";
@@ -52,6 +54,8 @@ const AccountSettingsPage = ({
   previewMode?: boolean;
   initialSection?: string;
 }) => {
+  usePageTitle(displayMode === "page" ? pageTitle("Account") : null);
+
   const router = useAppRouter();
   const { t } = useTranslation();
   const { isOnline } = useNetwork();

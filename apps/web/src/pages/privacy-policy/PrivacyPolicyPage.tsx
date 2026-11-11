@@ -1,4 +1,3 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import { ExternalLinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Trans } from "react-i18next";
@@ -8,6 +7,9 @@ import {
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const PrivacySection = ({
   id,
@@ -170,6 +172,8 @@ export const PrivacyPolicySections = ({
 };
 
 const PrivacyPolicyPage = () => {
+  usePageTitle(pageTitle("Privacy and Policy"));
+
   const { t } = useTranslation();
 
   return (

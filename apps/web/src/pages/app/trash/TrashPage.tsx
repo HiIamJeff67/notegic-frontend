@@ -32,7 +32,9 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDebounceValue } from "@/hooks/useDebounce";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 import {
   getTrashEntryKey,
   type TrashEntry,
@@ -70,6 +72,8 @@ const TrashPage = ({
   onQueryChange: (query: string) => void;
   onChanged: () => Promise<void>;
 }) => {
+  usePageTitle(pageTitle("Trash"));
+
   const { i18n, t } = useTranslation();
   const sidebarManager = useSidebar();
   const [query, setQuery] = useState(initialQuery);

@@ -1,6 +1,10 @@
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { pageTitle } from "@/seo/pageTitle";
 import { publicFacts, publicPages } from "@/seo/publicPage";
 
 const ContactPage = () => {
+  usePageTitle(pageTitle("Contact"));
+
   const contactEmail = import.meta.env.VITE_CONTACT_EMAIL ?? "";
   const relatedPages = publicPages.filter(page => page.path !== "/contact");
 

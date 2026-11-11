@@ -8,6 +8,8 @@ import {
   ArticleSidebar,
 } from "@/components/commons/Article/Article";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { pageTitle } from "@/seo/pageTitle";
 import API, { apiNavigation } from "./api/API";
 import DataDeletion, {
   dataDeletionNavigation,
@@ -23,6 +25,8 @@ import Versions, {
 import Website, { websiteNavigation } from "./website/Website";
 
 const DocumentPage = () => {
+  usePageTitle(pageTitle("Document"));
+
   const articleRef = useRef<HTMLElement>(null);
   const versionsRef = useRef<VersionsHandle>(null);
   const navigationItems = [

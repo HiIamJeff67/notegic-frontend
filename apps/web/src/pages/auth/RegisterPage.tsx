@@ -16,10 +16,14 @@ import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useOAuth } from "@/hooks/useOAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const RegisterPage = () => {
+  usePageTitle(pageTitle("Register"));
+
   const router = useAppRouter();
   const { perform, githubAvailable, xAvailable } = useOAuth();
   const { t } = useTranslation();

@@ -1,3 +1,5 @@
+import { pageTitle } from "./pageTitle";
+
 export const publicSiteOrigin = "https://www.notegic.com";
 
 export const publicFacts = {
@@ -52,7 +54,7 @@ export const privatePathPrefixes = [
 export const publicPages = [
   {
     path: "/",
-    title: "Notegic",
+    title: pageTitle("Home"),
     description: publicFacts.definition,
     linkLabel: "Home",
     changefreq: "weekly",
@@ -60,7 +62,7 @@ export const publicPages = [
   },
   {
     path: "/document",
-    title: "Documentation | Notegic",
+    title: pageTitle("Document"),
     description:
       "Guides for using Notegic, the public API, releases, and privacy.",
     linkLabel: "Documentation",
@@ -69,7 +71,7 @@ export const publicPages = [
   },
   {
     path: "/privacy-policy",
-    title: "Privacy Policy | Notegic",
+    title: pageTitle("Privacy and Policy"),
     description: "How Notegic collects, uses, and deletes account data.",
     linkLabel: "Privacy Policy",
     changefreq: "monthly",
@@ -77,7 +79,7 @@ export const publicPages = [
   },
   {
     path: "/eula",
-    title: "End User License Agreement | Notegic",
+    title: pageTitle("Eula"),
     description: "The commercial end user license agreement for Notegic.",
     linkLabel: "EULA",
     changefreq: "monthly",
@@ -85,7 +87,7 @@ export const publicPages = [
   },
   {
     path: "/data-deletion",
-    title: "Data deletion | Notegic",
+    title: pageTitle("Data Deletion"),
     description:
       "How to remove linked sign-in data or delete your Notegic account.",
     linkLabel: "Data deletion",
@@ -94,7 +96,7 @@ export const publicPages = [
   },
   {
     path: "/contact",
-    title: "Contact | Notegic",
+    title: pageTitle("Contact"),
     description:
       "How to contact Notegic about the product, support, or a public page.",
     linkLabel: "Contact",

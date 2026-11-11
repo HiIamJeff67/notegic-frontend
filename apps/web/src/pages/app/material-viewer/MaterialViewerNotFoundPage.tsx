@@ -1,7 +1,11 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { pageTitle } from "@/seo/pageTitle";
 
 const MaterialViewerNotFoundPage = () => {
+  usePageTitle(pageTitle("Material Not Found"));
+
   const { t } = useTranslation();
   const sidebarManager = useSidebar();
   return (

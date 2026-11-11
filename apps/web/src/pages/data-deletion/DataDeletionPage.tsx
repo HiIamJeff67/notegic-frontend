@@ -1,7 +1,11 @@
 import { Article, ArticleContent } from "@/components/commons/Article/Article";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import DataDeletion from "@/pages/document/data-deletion/DataDeletion";
+import { pageTitle } from "@/seo/pageTitle";
 
 export default function DataDeletionPage() {
+  usePageTitle(pageTitle("Data Deletion"));
+
   return (
     <div className="h-svh min-h-0 overflow-hidden bg-canvas">
       <Article>
