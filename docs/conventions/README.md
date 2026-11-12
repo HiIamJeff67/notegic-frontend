@@ -30,18 +30,20 @@ recurring patterns into explicit rules for new work.
 | [08-testing.md](08-testing.md) | Unit and integration test ownership |
 | [09-widgets.md](09-widgets.md) | Dashboard widget structure and local persistence |
 | [10-translations.md](10-translations.md) | Project translation hook, async notifications, errors, enum mappings, and language ownership |
+| [11-desktop-tauri.md](11-desktop-tauri.md) | Tauri layout, Rust names, commands, permissions, and sidecars for the desktop shell |
 
 ## Priority order
 
 1. Correctness, security, data integrity, and existing public contracts.
 2. Explicit conventions in this directory.
 3. Established patterns adjacent to the changed feature.
-4. Framework conventions, especially TanStack Router route-file syntax.
+4. Framework conventions. TanStack Router owns Web route-file syntax. Tauri owns the desktop shell layout and Rust names.
 5. The smallest readable, testable implementation.
 
 ## Scope rule
 
 Do not add a shared abstraction, package, or dependency for a possible future
-platform. This documentation currently covers the Web application only. Future
-application architecture is tracked in Linear and should not be introduced
-into the codebase docs until that work begins.
+platform. Web TypeScript, UI, and tests follow the documents above. The
+desktop shell follows [11-desktop-tauri.md](11-desktop-tauri.md) for Tauri and
+Rust, and the TypeScript documents for its webview. Mobile remains a planned
+boundary.

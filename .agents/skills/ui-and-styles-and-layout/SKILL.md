@@ -20,6 +20,8 @@ What the result should look like:
 
 The appearance document shows compliant markup. It does not choose a file owner. The conventions do.
 
+Webview UI under `apps/desktop/src/` uses the same UI, component, and style conventions. Tauri window configuration, Rust, capabilities, and sidecars follow [Desktop shell and Tauri](../../../docs/conventions/11-desktop-tauri.md), not a CSS component.
+
 ## Reuse before a new piece
 
 Search [UI components](../../../docs/conventions/ui-components.md) and `apps/web/src/components/` before writing a component or style helper. A new screen, dialog, or entry point uses the owner that already implements that interaction.

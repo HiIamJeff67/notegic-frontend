@@ -1,13 +1,20 @@
 # Notegic Desktop
 
-The desktop shell is a Tauri 2 window. It does not load the Web application,
-`shared/`, BlockNote, or the Node sidecar.
+The desktop shell is a Tauri 2 window. Its webview renders the existing web
+pages and components through TanStack Router. It does not boot TanStack Start's
+server runtime, Nitro, or SQLocal.
+
+Account and data requests from those components still use the web client until
+the bearer-token client and native SQLite sidecar exist. Server function calls
+reject. The local database boundary stays disabled. A Node sidecar starts with
+the window and rejects a request that lacks its per-launch token.
+
+The files that stay out of the desktop runtime are listed in
+[webview-source-skips.md](webview-source-skips.md).
 
 [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
-owns the shell. The preparation gates in
-[desktop application preparation](../../docs/designs/systems/desktop-application-preparation.md)
-start after this window can host the current editor and a native SQLite sidecar.
-Those pieces are not part of this shell yet.
+owns this shell. The editor and SQLite gates remain in
+[desktop application preparation](../../docs/designs/systems/desktop-application-preparation.md).
 
 ## Local development
 
@@ -22,4 +29,4 @@ npm run dev:desktop
 ```
 
 The window uses the system webview: WKWebView on macOS and WebView2 on Windows.
-Rust owns the window process only.
+Rust owns the window and the sidecar process.

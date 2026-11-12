@@ -1,6 +1,6 @@
 ---
 name: documentation-and-linear-naming
-description: Write or revise Notegic documentation and Linear projects, milestones, and issues with repository scope, naming, and skill-format conventions.
+description: Write or revise Notegic documentation and Linear projects, milestones, and issues with repository scope, naming, desktop Tauri names, and skill-format conventions.
 ---
 
 # Documentation and Linear naming
@@ -13,6 +13,7 @@ Before writing, read the relevant local documentation:
 
 - Start with [docs/README.md](../../docs/README.md) and [docs/conventions/README.md](../../docs/conventions/README.md).
 - Use the document index to select the narrowest applicable convention; do not load unrelated documents.
+- For desktop shell, Tauri, Rust, command, capability, permission, or sidecar names, follow [Desktop shell and Tauri](../../docs/conventions/11-desktop-tauri.md). Do not rename those files onto TypeScript role suffixes. Webview TypeScript under `apps/desktop/src/` still follows the TypeScript conventions.
 - Treat the current codebase and current Linear state as the source of truth when older notes conflict.
 - Record cross-cutting decisions in the appropriate `docs/conventions/` or `docs/designs/` document instead of duplicating them in a chat or issue.
 

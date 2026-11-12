@@ -1,4 +1,4 @@
-body {
-  margin: 0;
-  font-family: sans-serif;
-}
+@import "../../web/src/global/styles/globals.css";
+@source ".";
+@source "../../web/src";
+@source "../../../shared";

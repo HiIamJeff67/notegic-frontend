@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-sidecar-session"
+description = "Enables the sidecar_session command."
+commands.allow = ["sidecar_session"]
