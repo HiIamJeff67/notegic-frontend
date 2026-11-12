@@ -42,7 +42,7 @@ commit body when needed.
 ## Commit types
 
 `<type>` is a closed list. Use exactly one of these values. Do not invent
-another prefix, such as `style`. A change that does not fit one of these types
+another prefix. A change that does not fit one of these types
 needs the user's approval before the commit is created.
 
 `feat` creates a capability. `build` changes how artifacts are produced. Do not
@@ -55,6 +55,7 @@ use `build` for a new feature.
 | `fix` | Correct a defect. |
 | `perf` | Make existing behavior faster or use fewer resources, without adding a capability. |
 | `refactor` | Restructure code without changing intended behavior. |
+| `style` | Change formatting or presentation only, without changing behavior. |
 | `docs` | Change documentation only. |
 | `test` | Add or change tests only. |
 | `build` | Change the build, bundling, or dependency setup that produces artifacts. |
