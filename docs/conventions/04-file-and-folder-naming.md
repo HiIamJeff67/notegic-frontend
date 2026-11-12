@@ -67,6 +67,7 @@ below reflect the current repository and are the default for new files.
 | Integration tests in the integration directory | `name.test.ts(x)` | `userProvider.test.ts` |
 | Browser E2E tests | `name.spec.ts` | `articleNavigation.spec.ts` |
 | Performance tests | `name.performance.test.ts` | `shelfNode.performance.test.ts` |
+| Desktop Tauri shell | [11-desktop-tauri.md](11-desktop-tauri.md) | `src-tauri/src/lib.rs`, `capabilities/default.json` |
 
 Keep established API role suffixes where they describe the module, such as
 `routine.hook.ts` and `searchLocal.adapter.ts`. Do not invent a suffix or rename

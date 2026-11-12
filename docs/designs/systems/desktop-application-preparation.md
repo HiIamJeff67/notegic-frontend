@@ -18,6 +18,7 @@ Related boundaries:
 
 - [Frontend architecture](../codebases/frontend-architecture.md)
 - [API, query, storage, and platform boundaries](api-query-storage-platform-boundaries.md)
+- [Desktop shell and Tauri](../../conventions/11-desktop-tauri.md) for Tauri layout, Rust names, commands, permissions, and sidecars
 
 ## Goal
 

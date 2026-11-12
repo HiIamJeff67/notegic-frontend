@@ -1,6 +1,6 @@
 ---
 name: coding-style-and-abstractions
-description: Apply this repository's frontend UI, styling, icon reuse, naming, React hook, helper, and abstraction conventions before changing code. Use when implementing, refactoring, reviewing, or deciding whether to introduce a component, hook, helper, wrapper, or dependency.
+description: Apply this repository's frontend UI, styling, icon reuse, naming, React hook, helper, abstraction, and desktop Tauri conventions before changing code. Use when implementing, refactoring, reviewing, or deciding whether to introduce a component, hook, helper, wrapper, dependency, Tauri command, capability, or sidecar.
 ---
 
 # Coding style and abstractions
@@ -17,6 +17,7 @@ Use the repository documentation as the source of truth. Before editing, read on
 - [UI appearance](../../../docs/designs/ui/appearance.md) — the visible result a control, color, or layout must match.
 - `docs/conventions/06-react-hooks.md`
 - `docs/conventions/08-testing.md`
+- `docs/conventions/11-desktop-tauri.md` when the change touches `apps/desktop`, `src-tauri`, Tauri configuration, a command, a capability, a permission, or a sidecar
 
 Inspect nearby components, tokens, helpers, hooks, and tests before creating anything new.
 
@@ -48,6 +49,7 @@ documented architecture requires a deliberate deviation.
 - Follow [Feature-local status labels](../../../docs/conventions/10-translations.md#feature-local-status-labels): inline direct literal translation calls for short local branches; do not add translation-key helper functions, key-building wrappers or one-use lookup maps.
 - Keep responsive layouts safe with `min-w-0`; preserve accessibility, keyboard behavior, focus states, and reduced-motion expectations.
 - Prefer CSS and existing platform/library primitives before custom JavaScript behavior.
+- For `apps/desktop/src-tauri` and Tauri configuration, follow [Desktop shell and Tauri](../../../docs/conventions/11-desktop-tauri.md): keep `main.rs` as the thin entry, name commands in snake_case, expose them with `allow-<command>` permissions, and add a new sidecar as a packaged binary. TypeScript under `apps/desktop/src/` still follows the TypeScript conventions above.
 
 ## Check
 

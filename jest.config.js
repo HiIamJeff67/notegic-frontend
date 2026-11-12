@@ -3,6 +3,7 @@ export default {
   testEnvironment: "node",
   watchman: false,
   roots: [
+    "<rootDir>/apps/desktop",
     "<rootDir>/apps/web/src",
     "<rootDir>/apps/web/test",
     "<rootDir>/shared",

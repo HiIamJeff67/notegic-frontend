@@ -72,5 +72,7 @@ documentation.
 
 The frontend monorepo architecture is documented here following the approved
 workspace decision and migration. The current Web app lives under `apps/web`;
-portable resources and contracts live under `shared/`.
-Desktop and Mobile are planned boundaries only and have no implementation yet.
+portable resources and contracts live under `shared/`. The desktop shell lives
+under `apps/desktop`. Its Tauri and Rust names are in
+[Desktop shell and Tauri](conventions/11-desktop-tauri.md). Mobile remains a
+planned boundary and has no implementation yet.
