@@ -5,21 +5,25 @@ import {
   ForgetPasswordResponse,
   LoginRequest,
   LoginResponse,
-  LoginViaGoogleRequest,
+  LoginViaDiscordRequest,
+  LoginViaDiscordResponse,
   LoginViaGithubRequest,
-  LoginViaXRequest,
-  LoginViaGoogleResponse,
   LoginViaGithubResponse,
+  LoginViaGoogleRequest,
+  LoginViaGoogleResponse,
+  LoginViaXRequest,
   LoginViaXResponse,
   LogoutRequest,
   LogoutResponse,
   RegisterRequest,
   RegisterResponse,
-  RegisterViaGoogleRequest,
+  RegisterViaDiscordRequest,
+  RegisterViaDiscordResponse,
   RegisterViaGithubRequest,
-  RegisterViaXRequest,
-  RegisterViaGoogleResponse,
   RegisterViaGithubResponse,
+  RegisterViaGoogleRequest,
+  RegisterViaGoogleResponse,
+  RegisterViaXRequest,
   RegisterViaXResponse,
   ResetEmailRequest,
   ResetEmailResponse,
@@ -36,10 +40,8 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
-export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() => {
-  const cookieHeader = getRequestHeader("cookie") ?? "";
-
-  return cookieHeader.split(";").some(cookie => {
+const hasAuthSession = (cookieHeader: string | undefined) =>
+  (cookieHeader ?? "").split(";").some(cookie => {
     const separatorIndex = cookie.indexOf("=");
     if (separatorIndex < 1) return false;
 
@@ -50,7 +52,10 @@ export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() => {
       (name === "accessToken" || name === "refreshToken") && value.length > 0
     );
   });
-});
+
+export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() =>
+  hasAuthSession(getRequestHeader("cookie"))
+);
 
 export const Register = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterRequest) => data)
@@ -172,6 +177,37 @@ export const RegisterViaX = createServerFn({ method: "POST" })
     const formattedResponse = (await formatAPIResponse(
       response
     )) as RegisterViaXResponse;
+
+    return formattedResponse;
+  });
+
+export const RegisterViaDiscord = createServerFn({ method: "POST" })
+  .inputValidator((data: RegisterViaDiscordRequest) => data)
+  .handler(async ({ data: request }): Promise<RegisterViaDiscordResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.registerViaDiscord}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as RegisterViaDiscordResponse;
 
     return formattedResponse;
   });
@@ -300,6 +336,37 @@ export const LoginViaX = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const LoginViaDiscord = createServerFn({ method: "POST" })
+  .inputValidator((data: LoginViaDiscordRequest) => data)
+  .handler(async ({ data: request }): Promise<LoginViaDiscordResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.auth.loginViaDiscord}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          ...(request.header?.turnstileToken
+            ? { "X-Turnstile-Token": request.header.turnstileToken }
+            : {}),
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as LoginViaDiscordResponse;
+
+    return formattedResponse;
+  });
+
 export const Logout = createServerFn({ method: "POST" })
   .inputValidator((data: LogoutRequest) => data)
   .handler(async ({ data: request }): Promise<LogoutResponse> => {
@@ -336,6 +403,8 @@ export const Logout = createServerFn({ method: "POST" })
 export const SendAuthCode = createServerFn({ method: "POST" })
   .inputValidator((data: SendAuthCodeRequest) => data)
   .handler(async ({ data: request }): Promise<SendAuthCodeResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const authenticated = hasAuthSession(inboundCookie);
     const userAgent =
       request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
     const response = await fetch(
@@ -347,7 +416,8 @@ export const SendAuthCode = createServerFn({ method: "POST" })
           "User-Agent": userAgent,
           "X-CSRF-Token":
             getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
-          ...(request.header?.turnstileToken
+          ...(authenticated && inboundCookie ? { Cookie: inboundCookie } : {}),
+          ...(!authenticated && request.header?.turnstileToken
             ? { "X-Turnstile-Token": request.header.turnstileToken }
             : {}),
         },

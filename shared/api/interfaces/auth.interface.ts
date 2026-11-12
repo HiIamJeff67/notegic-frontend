@@ -447,3 +447,23 @@ export type LoginViaGithubResponse = z.infer<
 >;
 
 export type LoginViaXResponse = z.infer<typeof LoginViaXResponseSchema>;
+
+export const LoginViaDiscordRequestSchema = LoginViaXRequestSchema;
+export type LoginViaDiscordRequest = z.infer<
+  typeof LoginViaDiscordRequestSchema
+>;
+
+export const LoginViaDiscordResponseSchema = LoginViaXResponseSchema;
+export type LoginViaDiscordResponse = z.infer<
+  typeof LoginViaDiscordResponseSchema
+>;
+
+export const RegisterViaDiscordRequestSchema = RegisterViaXRequestSchema;
+export type RegisterViaDiscordRequest = z.infer<
+  typeof RegisterViaDiscordRequestSchema
+>;
+
+export const RegisterViaDiscordResponseSchema = RegisterViaXResponseSchema;
+export type RegisterViaDiscordResponse = z.infer<
+  typeof RegisterViaDiscordResponseSchema
+>;

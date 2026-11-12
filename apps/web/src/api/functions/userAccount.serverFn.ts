@@ -1,19 +1,23 @@
 import {
-  BindGoogleAccountRequest,
+  BindDiscordAccountRequest,
+  BindDiscordAccountResponse,
   BindGithubAccountRequest,
-  BindXAccountRequest,
-  BindGoogleAccountResponse,
   BindGithubAccountResponse,
+  BindGoogleAccountRequest,
+  BindGoogleAccountResponse,
+  BindXAccountRequest,
   BindXAccountResponse,
-  PrepareOAuthOperationRequest,
-  PrepareOAuthOperationResponseSchema,
   GetMyAccountResponse,
   GetMyAccountResponseSchema,
-  UnbindGoogleAccountRequest,
+  PrepareOAuthOperationRequest,
+  PrepareOAuthOperationResponseSchema,
+  UnbindDiscordAccountRequest,
+  UnbindDiscordAccountResponse,
   UnbindGithubAccountRequest,
-  UnbindXAccountRequest,
-  UnbindGoogleAccountResponse,
   UnbindGithubAccountResponse,
+  UnbindGoogleAccountRequest,
+  UnbindGoogleAccountResponse,
+  UnbindXAccountRequest,
   UnbindXAccountResponse,
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
@@ -23,28 +27,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
-
-export const GetMyAccount = createServerFn({ method: "GET" }).handler(
-  async (): Promise<GetMyAccountResponse> => {
-    const inboundCookie = getRequestHeader("cookie");
-    const response = await fetch(
-      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": getRequestHeader("User-Agent") ?? "unknown",
-          "X-CSRF-Token": getRequestHeader("X-CSRF-Token") ?? "",
-          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-        },
-        credentials: "include",
-      }
-    );
-
-    forwardUpstreamSetCookies(response);
-    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
-  }
-);
 
 export const PrepareOAuthOperation = createServerFn({ method: "POST" })
   .inputValidator((data: PrepareOAuthOperationRequest) => data)
@@ -73,6 +55,28 @@ export const PrepareOAuthOperation = createServerFn({ method: "POST" })
       await formatAPIResponse(response)
     );
   });
+
+export const GetMyAccount = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GetMyAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": getRequestHeader("User-Agent") ?? "unknown",
+          "X-CSRF-Token": getRequestHeader("X-CSRF-Token") ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
+  }
+);
 
 export const UpdateMyAccount = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyAccountRequest) => data)
@@ -194,6 +198,36 @@ export const BindXAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
+export const BindDiscordAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: BindDiscordAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<BindDiscordAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.bindDiscordAccount}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as BindDiscordAccountResponse;
+
+    return formattedResponse;
+  });
+
 export const UnbindGoogleAccount = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindGoogleAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindGoogleAccountResponse> => {
@@ -280,6 +314,36 @@ export const UnbindXAccount = createServerFn({ method: "POST" })
     const formattedResponse = (await formatAPIResponse(
       response
     )) as UnbindXAccountResponse;
+
+    return formattedResponse;
+  });
+
+export const UnbindDiscordAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: UnbindDiscordAccountRequest) => data)
+  .handler(async ({ data: request }): Promise<UnbindDiscordAccountResponse> => {
+    const inboundCookie = getRequestHeader("cookie");
+    const userAgent =
+      request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.unbindDiscordAccount}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+
+    forwardUpstreamSetCookies(response);
+    const formattedResponse = (await formatAPIResponse(
+      response
+    )) as UnbindDiscordAccountResponse;
 
     return formattedResponse;
   });

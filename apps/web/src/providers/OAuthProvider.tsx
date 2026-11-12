@@ -38,18 +38,22 @@ import {
   useLoginViaGithub,
   useLoginViaGoogle,
   useLoginViaX,
+  useLoginViaDiscord,
   useRegisterViaGithub,
   useRegisterViaGoogle,
   useRegisterViaX,
+  useRegisterViaDiscord,
 } from "@/api/hooks/auth.hook";
 import {
   useBindGithubAccount,
   useBindGoogleAccount,
   useBindXAccount,
+  useBindDiscordAccount,
   usePrepareOAuthOperation,
   useUnbindGithubAccount,
   useUnbindGoogleAccount,
   useUnbindXAccount,
+  useUnbindDiscordAccount,
 } from "@/api/hooks/userAccount.hook";
 import {
   clearTurnstileToken,
@@ -80,6 +84,7 @@ type OAuthContextValue = {
   ) => Promise<UnbindGoogleAccountResponse>;
   githubAvailable: boolean;
   xAvailable: boolean;
+  discordAvailable: boolean;
   isUnbinding: boolean;
 };
 
@@ -103,8 +108,11 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const loginViaGithubMutator = useLoginViaGithub();
   const bindGithubAccountMutator = useBindGithubAccount();
   const registerViaXMutator = useRegisterViaX();
+  const registerViaDiscordMutator = useRegisterViaDiscord();
   const loginViaXMutator = useLoginViaX();
+  const loginViaDiscordMutator = useLoginViaDiscord();
   const bindXAccountMutator = useBindXAccount();
+  const bindDiscordAccountMutator = useBindDiscordAccount();
 
   const lastCallback = useRef<{
     provider: string;
@@ -115,18 +123,19 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
   const unbindGoogleMutator = useUnbindGoogleAccount();
   const unbindGithubMutator = useUnbindGithubAccount();
   const unbindXMutator = useUnbindXAccount();
+  const unbindDiscordMutator = useUnbindDiscordAccount();
 
   const unbind = useCallback(
     async (
       provider: OAuthProviderType,
       body: UnbindGoogleAccountRequest["body"]
     ) => {
-      const mutator =
-        provider === "google"
-          ? unbindGoogleMutator
-          : provider === "github"
-            ? unbindGithubMutator
-            : unbindXMutator;
+      const mutator = {
+        google: unbindGoogleMutator,
+        github: unbindGithubMutator,
+        x: unbindXMutator,
+        discord: unbindDiscordMutator,
+      }[provider];
       const response = await mutator.mutateAsync({
         header: getClientMutationHeaders(navigator.userAgent),
         body,
@@ -156,7 +165,12 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
       void queryClient.invalidateQueries({ queryKey });
       return response;
     },
-    [unbindGoogleMutator, unbindGithubMutator, unbindXMutator]
+    [
+      unbindGoogleMutator,
+      unbindGithubMutator,
+      unbindXMutator,
+      unbindDiscordMutator,
+    ]
   );
 
   const complete = useCallback(
@@ -213,7 +227,8 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
           if (
             provider !== "google" &&
             provider !== "github" &&
-            provider !== "x"
+            provider !== "x" &&
+            provider !== "discord"
           ) {
             throw new NotegicError().setPresentation(
               "workspace.pages.appleRedirectUnavailable"
@@ -247,12 +262,22 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
             );
           }
 
+          if (
+            provider === "discord" &&
+            searchParams.get("iss") !== "https://discord.com"
+          ) {
+            throw new NotegicError().setPresentation(
+              "workspace.pages.oauthError.restart"
+            );
+          }
+
           const { action, codeVerifier } = pending;
           if (action === "binding") {
             const mutator = {
               google: bindGoogleAccountMutator,
               github: bindGithubAccountMutator,
               x: bindXAccountMutator,
+              discord: bindDiscordAccountMutator,
             }[provider];
             await mutator.mutateAsync({
               header: getClientRequestHeaders(navigator.userAgent, null),
@@ -276,11 +301,13 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
                 google: registerViaGoogleMutator,
                 github: registerViaGithubMutator,
                 x: registerViaXMutator,
+                discord: registerViaDiscordMutator,
               },
               login: {
                 google: loginViaGoogleMutator,
                 github: loginViaGithubMutator,
                 x: loginViaXMutator,
+                discord: loginViaDiscordMutator,
               },
             }[action][provider];
             try {
@@ -340,12 +367,15 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
       bindGoogleAccountMutator,
       bindGithubAccountMutator,
       bindXAccountMutator,
+      bindDiscordAccountMutator,
       loginViaGoogleMutator,
       loginViaGithubMutator,
       loginViaXMutator,
+      loginViaDiscordMutator,
       registerViaGoogleMutator,
       registerViaGithubMutator,
       registerViaXMutator,
+      registerViaDiscordMutator,
       startAsyncTransactionLoading,
     ]
   );
@@ -397,14 +427,20 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
 
       let authorizeURL: string;
       if (provider !== "google") {
-        const clientId =
-          provider === "github"
-            ? import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
-            : import.meta.env.VITE_OAUTH_X_CLIENT_ID;
-        const redirectURL =
-          provider === "github"
-            ? import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL
-            : import.meta.env.VITE_OAUTH_X_REDIRECT_URL;
+        const { clientId, redirectURL } = {
+          github: {
+            clientId: import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID,
+            redirectURL: import.meta.env.VITE_OAUTH_GITHUB_REDIRECT_URL,
+          },
+          x: {
+            clientId: import.meta.env.VITE_OAUTH_X_CLIENT_ID,
+            redirectURL: import.meta.env.VITE_OAUTH_X_REDIRECT_URL,
+          },
+          discord: {
+            clientId: import.meta.env.VITE_OAUTH_DISCORD_CLIENT_ID,
+            redirectURL: import.meta.env.VITE_OAUTH_DISCORD_REDIRECT_URL,
+          },
+        }[provider];
         if (!clientId || !redirectURL) {
           throw new NotegicError().setPresentation(
             "workspace.pages.oauthError.unavailable"
@@ -431,8 +467,15 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
           authorizeURL = WebURLPathDictionary.oauth.github(params.toString());
         } else {
           params.set("response_type", "code");
-          params.set("scope", "tweet.read users.read users.email");
-          authorizeURL = WebURLPathDictionary.oauth.x(params.toString());
+          params.set(
+            "scope",
+            provider === "discord"
+              ? "identify email"
+              : "tweet.read users.read users.email"
+          );
+          authorizeURL = WebURLPathDictionary.oauth[provider](
+            params.toString()
+          );
         }
       } else {
         authorizeURL = WebURLPathDictionary.oauth.google(
@@ -483,10 +526,15 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
           import.meta.env.VITE_OAUTH_X_CLIENT_ID &&
             import.meta.env.VITE_OAUTH_X_REDIRECT_URL
         ),
+        discordAvailable: Boolean(
+          import.meta.env.VITE_OAUTH_DISCORD_CLIENT_ID &&
+            import.meta.env.VITE_OAUTH_DISCORD_REDIRECT_URL
+        ),
         isUnbinding:
           unbindGoogleMutator.isPending ||
           unbindGithubMutator.isPending ||
-          unbindXMutator.isPending,
+          unbindXMutator.isPending ||
+          unbindDiscordMutator.isPending,
       }}
     >
       {children}

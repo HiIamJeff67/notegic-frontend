@@ -1,3 +1,7 @@
+import {
+  ExceptionReasonDictionary,
+  NotegicAPIError,
+} from "@shared/api/exceptions";
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
@@ -53,7 +57,12 @@ const ForgetPasswordPage = () => {
       setSentEmail(email);
       toast.success(t("settingsPage.account.authCodeSent", { email }));
     } catch (error) {
-      toast.error(tError(error, t));
+      toast.error(
+        error instanceof NotegicAPIError &&
+          error.unWrap.reason === ExceptionReasonDictionary.user.notFound
+          ? t("auth.passwordResetAccountNotFound")
+          : tError(error, t)
+      );
     }
     resetTurnstile();
   };

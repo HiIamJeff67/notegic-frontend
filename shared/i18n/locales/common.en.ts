@@ -161,6 +161,8 @@ export const EnglishCommonTranslation: CommonTranslation = {
     userRole: "User Role",
     userPlan: "User Plan",
     forgetPassword: "Forgot Password?",
+    passwordResetAccountNotFound:
+      "No account was found for this email. Check the address or register a new account.",
     haveNotRegisterAnAccount: "Haven't register an account?",
     alreadyHaveAnAccount: "Already have an account?",
     authenticationPanelSubtitle: "Authentication panel for",

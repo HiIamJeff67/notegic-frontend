@@ -10,15 +10,26 @@ import { parseRequest } from "@shared/api/validation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PrepareOAuthOperation } from "@/api/functions/userAccount.serverFn";
 import {
-  mutationFnBindGoogleAccount,
+  mutationFnBindDiscordAccount,
   mutationFnBindGithubAccount,
+  mutationFnBindGoogleAccount,
   mutationFnBindXAccount,
-  mutationFnUnbindGoogleAccount,
+  mutationFnUnbindDiscordAccount,
   mutationFnUnbindGithubAccount,
+  mutationFnUnbindGoogleAccount,
   mutationFnUnbindXAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
 } from "@/api/invokers/userAccount.invoker";
+
+export const usePrepareOAuthOperation = () =>
+  useMutation({
+    mutationFn: (request: PrepareOAuthOperationRequest) =>
+      PrepareOAuthOperation({
+        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
+      }),
+    retry: false,
+  });
 
 export const useGetMyAccount = () =>
   useQuery({
@@ -74,15 +85,6 @@ export const useUpdateMyAccount = () => {
   return mutation;
 };
 
-export const usePrepareOAuthOperation = () =>
-  useMutation({
-    mutationFn: (request: PrepareOAuthOperationRequest) =>
-      PrepareOAuthOperation({
-        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
-      }),
-    retry: false,
-  });
-
 export const useBindGoogleAccount = () => {
   const queryClient = getQueryClient();
 
@@ -130,6 +132,22 @@ export const useBindXAccount = () => {
   return mutation;
 };
 
+export const useBindDiscordAccount = () => {
+  const queryClient = getQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: mutationFnBindDiscordAccount,
+    retry: false,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.userAccount.my(),
+      });
+    },
+  });
+
+  return mutation;
+};
+
 export const useUnbindGoogleAccount = () =>
   useMutation({
     mutationFn: mutationFnUnbindGoogleAccount,
@@ -145,5 +163,11 @@ export const useUnbindGithubAccount = () =>
 export const useUnbindXAccount = () =>
   useMutation({
     mutationFn: mutationFnUnbindXAccount,
+    retry: false,
+  });
+
+export const useUnbindDiscordAccount = () =>
+  useMutation({
+    mutationFn: mutationFnUnbindDiscordAccount,
     retry: false,
   });

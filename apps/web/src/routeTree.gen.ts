@@ -29,6 +29,7 @@ import { Route as AppMaterialViewerRouteImport } from './routes/app.material-vie
 import { Route as AppRoutinesRouteImport } from './routes/app.routines'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AuthRedirectAppleRouteImport } from './routes/_auth.redirect.apple'
+import { Route as AuthRedirectDiscordRouteImport } from './routes/_auth.redirect.discord'
 import { Route as AuthRedirectGithubRouteImport } from './routes/_auth.redirect.github'
 import { Route as AuthRedirectGoogleRouteImport } from './routes/_auth.redirect.google'
 import { Route as AuthRedirectXRouteImport } from './routes/_auth.redirect.x'
@@ -152,6 +153,11 @@ const AuthRedirectAppleRoute = AuthRedirectAppleRouteImport.update({
   path: '/redirect/apple',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthRedirectDiscordRoute = AuthRedirectDiscordRouteImport.update({
+  id: '/redirect/discord',
+  path: '/redirect/discord',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRedirectGithubRoute = AuthRedirectGithubRouteImport.update({
   id: '/redirect/github',
   path: '/redirect/github',
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
+  '/redirect/discord': typeof AuthRedirectDiscordRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
   '/redirect/x': typeof AuthRedirectXRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/app/trash': typeof AppTrashRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
+  '/redirect/discord': typeof AuthRedirectDiscordRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
   '/redirect/google': typeof AuthRedirectGoogleRoute
   '/redirect/x': typeof AuthRedirectXRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
   '/_auth/redirect/apple': typeof AuthRedirectAppleRoute
+  '/_auth/redirect/discord': typeof AuthRedirectDiscordRoute
   '/_auth/redirect/github': typeof AuthRedirectGithubRoute
   '/_auth/redirect/google': typeof AuthRedirectGoogleRoute
   '/_auth/redirect/x': typeof AuthRedirectXRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/app/routines'
     | '/app/trash'
     | '/redirect/apple'
+    | '/redirect/discord'
     | '/redirect/github'
     | '/redirect/google'
     | '/redirect/x'
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/app/trash'
     | '/redirect/apple'
+    | '/redirect/discord'
     | '/redirect/github'
     | '/redirect/google'
     | '/redirect/x'
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/app/routines'
     | '/app/trash'
     | '/_auth/redirect/apple'
+    | '/_auth/redirect/discord'
     | '/_auth/redirect/github'
     | '/_auth/redirect/google'
     | '/_auth/redirect/x'
@@ -607,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRedirectAppleRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/redirect/discord': {
+      id: '/_auth/redirect/discord'
+      path: '/redirect/discord'
+      fullPath: '/redirect/discord'
+      preLoaderRoute: typeof AuthRedirectDiscordRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/redirect/github': {
       id: '/_auth/redirect/github'
       path: '/redirect/github'
@@ -706,6 +725,7 @@ interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthRedirectAppleRoute: typeof AuthRedirectAppleRoute
+  AuthRedirectDiscordRoute: typeof AuthRedirectDiscordRoute
   AuthRedirectGithubRoute: typeof AuthRedirectGithubRoute
   AuthRedirectGoogleRoute: typeof AuthRedirectGoogleRoute
   AuthRedirectXRoute: typeof AuthRedirectXRoute
@@ -716,6 +736,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthRedirectAppleRoute: AuthRedirectAppleRoute,
+  AuthRedirectDiscordRoute: AuthRedirectDiscordRoute,
   AuthRedirectGithubRoute: AuthRedirectGithubRoute,
   AuthRedirectGoogleRoute: AuthRedirectGoogleRoute,
   AuthRedirectXRoute: AuthRedirectXRoute,

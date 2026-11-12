@@ -30,38 +30,6 @@ import {
 import { RoutineTaskDependencyLocalSimulator } from "@/api/local/simulators/routineTaskDependency.simulator";
 import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
 
-export const useUpdateRoutineTaskGraphByRoutineId = () =>
-  useMutation({
-    retry: false,
-    networkMode: "always",
-    mutationFn: async (request: UpdateRoutineTaskGraphByRoutineIdRequest) => {
-      if (typeof navigator !== "undefined" && !navigator.onLine) {
-        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-      }
-      const response =
-        await mutationFnUpdateRoutineTaskGraphByRoutineId(request);
-      return response;
-    },
-  });
-
-const createLocalGetResponse = (
-  error: NotegicAPIError | NotegicFetchError,
-  data: GetRoutineTaskDependenciesByRoutineIdResponse["data"]
-): GetRoutineTaskDependenciesByRoutineIdResponse =>
-  NetworkExceptions.isMissingNetworkError(error)
-    ? {
-        success: true,
-        data: data,
-        exception: null,
-        embedded: { publicId: "" },
-      }
-    : {
-        success: false,
-        data,
-        exception: error.unWrap,
-        embedded: { publicId: "" },
-      };
-
 export const useGetRoutineTaskDependenciesByRoutineId = (
   options?: Partial<
     UseQueryOptions<GetRoutineTaskDependenciesByRoutineIdResponse, Error>
@@ -94,7 +62,19 @@ export const useGetRoutineTaskDependenciesByRoutineId = (
             await RoutineTaskDependencyLocalSimulator.simulateGetRoutineTaskDependenciesByRoutineId(
               request
             );
-          return createLocalGetResponse(error, dependencies);
+          return NetworkExceptions.isMissingNetworkError(error)
+            ? {
+                success: true,
+                data: dependencies,
+                exception: null,
+                embedded: { publicId: "" },
+              }
+            : {
+                success: false,
+                data: dependencies,
+                exception: error.unWrap,
+                embedded: { publicId: "" },
+              };
         }
 
         throw error;
@@ -166,6 +146,20 @@ export const useCreateRoutineTaskDependencyByRoutineId = () => {
     },
   });
 };
+
+export const useUpdateRoutineTaskGraphByRoutineId = () =>
+  useMutation({
+    retry: false,
+    networkMode: "always",
+    mutationFn: async (request: UpdateRoutineTaskGraphByRoutineIdRequest) => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+      }
+      const response =
+        await mutationFnUpdateRoutineTaskGraphByRoutineId(request);
+      return response;
+    },
+  });
 
 export const useUpdateRoutineTaskDependencyByRoutineId = () => {
   const queryClient = getQueryClient();

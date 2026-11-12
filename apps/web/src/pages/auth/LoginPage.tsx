@@ -25,7 +25,7 @@ const LoginPage = () => {
   usePageTitle(pageTitle("Login"));
 
   const router = useAppRouter();
-  const { perform, githubAvailable, xAvailable } = useOAuth();
+  const { perform, githubAvailable, xAvailable, discordAvailable } = useOAuth();
   const { t } = useTranslation();
   const { startPath } = useLocalPreferences();
   const userManager = useUser();
@@ -176,6 +176,13 @@ const LoginPage = () => {
               label: t("workspace.pages.xLogin"),
               onClick: () => perform("x", "login"),
               disabled: !xAvailable || (turnstileRequired && !turnstileToken),
+            },
+            {
+              provider: "discord",
+              label: t("workspace.pages.discordLogin"),
+              onClick: () => perform("discord", "login"),
+              disabled:
+                !discordAvailable || (turnstileRequired && !turnstileToken),
             },
           ]}
           statusDetail={t("workspace.pages.systemReady")}

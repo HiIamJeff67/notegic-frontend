@@ -19,11 +19,16 @@ export const SimpleChineseServerTranslation = {
     WrongPassword: "密码不正确。",
     XAccountNotLinked:
       "X 提供的电子邮件已用于一个 Notegic 账号。请先使用原来的方式登录，再前往账号设置绑定 X。",
+    DiscordAccountNotLinked:
+      "此 Discord 账号尚未绑定 Notegic。请先使用原有方式登录，再前往账号设置绑定 Discord。",
     XEmailRequired:
       "如需使用 X 创建 Notegic 账号，请先在 X 验证电子邮件，再重新授权 Notegic 访问该地址。",
+    DiscordEmailRequired:
+      "请先在 Discord 验证电子邮件地址，再授权 Notegic 读取该地址以创建账号。",
     GoogleCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 Google 账号。",
     GithubCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 GitHub 账号。",
     XCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 X 账号。",
+    DiscordCredentialAlreadyBound: "你的 Notegic 账号已绑定一个 Discord 账号。",
     WrongAuthCode: "验证码不正确。",
     LoginBlockedDueToTryingTooManyTimes: "登录尝试次数过多，请稍后再试。",
     AuthCodeBlockedDueToTryingTooManyTimes: "验证码请求次数过多，请稍后再试。",

@@ -189,6 +189,7 @@ export const EnglishSettingsTranslation = {
         oauthDisconnected: "Account disconnected",
         githubUnbind: "Disconnect GitHub",
         xUnbind: "Disconnect X",
+        discordUnbind: "Disconnect Discord",
         githubUnbound: "GitHub account disconnected",
         xUnbound: "X account disconnected",
         oauthUnbindRejected:

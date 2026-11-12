@@ -39,6 +39,30 @@ information.
 Write the description in lowercase English. Keep implementation details in the
 commit body when needed.
 
+## Commit types
+
+`<type>` is a closed list. Use exactly one of these values. Do not invent
+another prefix. A change that does not fit one of these types
+needs the user's approval before the commit is created.
+
+`feat` creates a capability. `build` changes how artifacts are produced. Do not
+use `build` for a new feature.
+
+| Type | Use for |
+| --- | --- |
+| `init` | Initialize a repository, package, or other new baseline. |
+| `feat` | Add a user-facing capability or behavior. |
+| `fix` | Correct a defect. |
+| `perf` | Make existing behavior faster or use fewer resources, without adding a capability. |
+| `refactor` | Restructure code without changing intended behavior. |
+| `style` | Change formatting or presentation only, without changing behavior. |
+| `docs` | Change documentation only. |
+| `test` | Add or change tests only. |
+| `build` | Change the build, bundling, or dependency setup that produces artifacts. |
+| `ci` | Change continuous integration or automation configuration. |
+| `chore` | Do maintenance that is none of the above, such as formatting or tooling. |
+| `revert` | Undo a previous commit. Name that commit in the message. |
+
 ## Development logs
 
 Before committing repository changes, stage the intended changes, generate the

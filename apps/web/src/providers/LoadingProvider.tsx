@@ -44,7 +44,8 @@ export const LoadingProvider = ({
   const callbackLabel = useRouterState({
     select: state => {
       const path = state.location.pathname.replace(/\/$/, "");
-      const { google, github, x, apple } = WebURLPathDictionary.auth.redirect;
+      const { google, github, x, discord, apple } =
+        WebURLPathDictionary.auth.redirect;
       switch (path) {
         case `/${google}`:
           return "workspace.pages.validatingGoogle";
@@ -52,6 +53,8 @@ export const LoadingProvider = ({
           return "workspace.pages.validatingGithub";
         case `/${x}`:
           return "workspace.pages.validatingX";
+        case `/${discord}`:
+          return "workspace.pages.validatingDiscord";
         case `/${apple}`:
           return "workspace.pages.appleRedirectUnavailable";
       }

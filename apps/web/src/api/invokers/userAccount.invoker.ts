@@ -7,29 +7,37 @@ import {
   type BindGoogleAccountRequest,
   type BindGithubAccountRequest,
   type BindXAccountRequest,
+  type BindDiscordAccountRequest,
   BindGoogleAccountRequestSchema,
   BindGithubAccountRequestSchema,
   BindXAccountRequestSchema,
+  BindDiscordAccountRequestSchema,
   type BindGoogleAccountResponse,
   type BindGithubAccountResponse,
   type BindXAccountResponse,
+  type BindDiscordAccountResponse,
   BindGoogleAccountResponseSchema,
   BindGithubAccountResponseSchema,
   BindXAccountResponseSchema,
+  BindDiscordAccountResponseSchema,
   type GetMyAccountResponse,
   GetMyAccountResponseSchema,
   type UnbindGoogleAccountRequest,
   type UnbindGithubAccountRequest,
   type UnbindXAccountRequest,
+  type UnbindDiscordAccountRequest,
   UnbindGoogleAccountRequestSchema,
   UnbindGithubAccountRequestSchema,
   UnbindXAccountRequestSchema,
+  UnbindDiscordAccountRequestSchema,
   type UnbindGoogleAccountResponse,
   type UnbindGithubAccountResponse,
   type UnbindXAccountResponse,
+  type UnbindDiscordAccountResponse,
   UnbindGoogleAccountResponseSchema,
   UnbindGithubAccountResponseSchema,
   UnbindXAccountResponseSchema,
+  UnbindDiscordAccountResponseSchema,
   type UpdateMyAccountRequest,
   UpdateMyAccountRequestSchema,
   type UpdateMyAccountResponse,
@@ -41,10 +49,12 @@ import {
   BindGoogleAccount,
   BindGithubAccount,
   BindXAccount,
+  BindDiscordAccount,
   GetMyAccount,
   UnbindGoogleAccount,
   UnbindGithubAccount,
   UnbindXAccount,
+  UnbindDiscordAccount,
   UpdateMyAccount,
 } from "@/api/functions/userAccount.serverFn";
 
@@ -169,6 +179,32 @@ export const mutationFnBindXAccount = async (
   }
 };
 
+export const mutationFnBindDiscordAccount = async (
+  request: BindDiscordAccountRequest
+): Promise<BindDiscordAccountResponse> => {
+  try {
+    const validatedRequest = BindDiscordAccountRequestSchema.parse(request);
+    const response = await BindDiscordAccount({
+      data: validatedRequest,
+    });
+    return BindDiscordAccountResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
 export const mutationFnUnbindGoogleAccount = async (
   request: UnbindGoogleAccountRequest
 ): Promise<UnbindGoogleAccountResponse> => {
@@ -231,6 +267,32 @@ export const mutationFnUnbindXAccount = async (
       data: validatedRequest,
     });
     return UnbindXAccountResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnUnbindDiscordAccount = async (
+  request: UnbindDiscordAccountRequest
+): Promise<UnbindDiscordAccountResponse> => {
+  try {
+    const validatedRequest = UnbindDiscordAccountRequestSchema.parse(request);
+    const response = await UnbindDiscordAccount({
+      data: validatedRequest,
+    });
+    return UnbindDiscordAccountResponseSchema.parse(response);
   } catch (error) {
     if (error instanceof ZodError) {
       throw new NotegicValidationError(

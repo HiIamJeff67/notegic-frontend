@@ -150,6 +150,8 @@ export const SimpleChineseCommonTranslation: CommonTranslation = {
     userRole: "用户角色",
     userPlan: "用户方案",
     forgetPassword: "忘记密码？",
+    passwordResetAccountNotFound:
+      "找不到使用此电子邮件地址的账号。请确认地址或注册新账号。",
     haveNotRegisterAnAccount: "还没有注册账号？",
     alreadyHaveAnAccount: "已经有账号了？",
     authenticationPanelSubtitle: "身份验证面板",

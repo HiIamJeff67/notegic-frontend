@@ -165,6 +165,8 @@ export const JapaneseCommonTranslation: CommonTranslation = {
     userRole: "ユーザーの役割",
     userPlan: "ユーザープラン",
     forgetPassword: "パスワードを忘れた？",
+    passwordResetAccountNotFound:
+      "このメールアドレスに対応するアカウントが見つかりません。アドレスを確認するか、新しいアカウントを登録してください。",
     haveNotRegisterAnAccount: "まだアカウントを登録していませんか？",
     alreadyHaveAnAccount: "すでにアカウントをお持ちですか？",
     authenticationPanelSubtitle: "認証パネル",

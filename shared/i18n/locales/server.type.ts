@@ -16,10 +16,13 @@ export interface ServerTranslation {
     InvalidResponse: string;
     WrongPassword: string;
     XAccountNotLinked: string;
+    DiscordAccountNotLinked: string;
     XEmailRequired: string;
+    DiscordEmailRequired: string;
     GoogleCredentialAlreadyBound: string;
     GithubCredentialAlreadyBound: string;
     XCredentialAlreadyBound: string;
+    DiscordCredentialAlreadyBound: string;
     WrongAuthCode: string;
     LoginBlockedDueToTryingTooManyTimes: string;
     AuthCodeBlockedDueToTryingTooManyTimes: string;

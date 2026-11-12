@@ -105,6 +105,7 @@ const OAuthOperationProviderSchema = AuthProviderTypeSchema.extract([
   "Google",
   "Github",
   "X",
+  "Discord",
 ]);
 const OAuthOperationStateSchema = z.string().regex(/^[0-9a-f]{64}$/);
 
@@ -244,4 +245,26 @@ export type UnbindGithubAccountResponse = z.infer<
 
 export type UnbindXAccountResponse = z.infer<
   typeof UnbindXAccountResponseSchema
+>;
+
+export const BindDiscordAccountRequestSchema = BindGoogleAccountRequestSchema;
+export type BindDiscordAccountRequest = z.infer<
+  typeof BindDiscordAccountRequestSchema
+>;
+
+export const BindDiscordAccountResponseSchema = BindGoogleAccountResponseSchema;
+export type BindDiscordAccountResponse = z.infer<
+  typeof BindDiscordAccountResponseSchema
+>;
+
+export const UnbindDiscordAccountRequestSchema =
+  UnbindGoogleAccountRequestSchema;
+export type UnbindDiscordAccountRequest = z.infer<
+  typeof UnbindDiscordAccountRequestSchema
+>;
+
+export const UnbindDiscordAccountResponseSchema =
+  UnbindGoogleAccountResponseSchema;
+export type UnbindDiscordAccountResponse = z.infer<
+  typeof UnbindDiscordAccountResponseSchema
 >;

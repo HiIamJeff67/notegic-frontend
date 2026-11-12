@@ -16,45 +16,6 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
 import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
 
-export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
-  method: "POST",
-})
-  .inputValidator((data: UpdateRoutineTaskGraphByRoutineIdRequest) => data)
-  .handler(
-    async ({
-      data: request,
-    }): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
-      const url =
-        import.meta.env.VITE_API_DOMAIN_URL +
-        "/" +
-        CurrentAPIBaseURL +
-        "/" +
-        APIURLPathDictionary.routineTaskDependency.updateGraphByRoutineId(
-          request.param.routineId
-        );
-      const inboundCookie = getRequestHeader("cookie");
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent":
-            request.header?.userAgent ??
-            getRequestHeader("User-Agent") ??
-            "unknown",
-          "X-CSRF-Token":
-            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
-          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-        },
-        body: JSON.stringify(request.body),
-        credentials: "include",
-      });
-      forwardUpstreamSetCookies(response);
-      return (await formatAPIResponse(
-        response
-      )) as UpdateRoutineTaskGraphByRoutineIdResponse;
-    }
-  );
-
 export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
   method: "GET",
 })
@@ -135,6 +96,45 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
       )) as CreateRoutineTaskDependencyByRoutineIdResponse;
 
       return formattedResponse;
+    }
+  );
+
+export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
+  method: "POST",
+})
+  .inputValidator((data: UpdateRoutineTaskGraphByRoutineIdRequest) => data)
+  .handler(
+    async ({
+      data: request,
+    }): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        APIURLPathDictionary.routineTaskDependency.updateGraphByRoutineId(
+          request.param.routineId
+        );
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await formatAPIResponse(
+        response
+      )) as UpdateRoutineTaskGraphByRoutineIdResponse;
     }
   );
 

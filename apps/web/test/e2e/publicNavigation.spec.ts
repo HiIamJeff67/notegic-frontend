@@ -82,7 +82,7 @@ test.describe("OAuth callback before hydration", () => {
   });
 });
 
-for (const provider of ["google", "github", "x", "apple"]) {
+for (const provider of ["google", "github", "x", "discord", "apple"]) {
   test(`the ${provider} OAuth callback has a public route`, async ({
     page,
   }) => {
