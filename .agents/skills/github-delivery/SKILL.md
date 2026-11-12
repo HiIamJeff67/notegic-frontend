@@ -27,6 +27,7 @@ Invocation does not authorize creating or pushing tags, force-pushing, rewriting
 ## Commit and remote actions
 
 - Use the documented English lowercase commit format: `<type>(<optional-scope>)!: <description>`.
+- `<type>` must be exactly one entry from the closed commit-type list in `docs/conventions/07-version-control.md`. There is no exception. If no listed type fits the change, stop and ask the user before committing. Do not invent a prefix such as `style`.
 - When one commit contains multiple change items, keep a concise header and describe the items in the commit body with a Markdown bullet list, using one `- ` item per change. This is preferred over creating several tiny commits only to give each item its own header.
 - For each planned group, stage only that group, run `npm run devlog`, stage the generated devlog entry, inspect `git diff --cached`, and then commit.
 - Repeat grouping, verification, devlog generation, staging, and committing until no deliverable tracked or untracked changes remain.
