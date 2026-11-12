@@ -19,7 +19,7 @@ applications that people use to create, manage, and collaborate on that work.
 | Application | Status | Details |
 | --- | --- | --- |
 | [Web](apps/web/README.md) | Available | Browser experience, local setup, supported features, and Web-specific architecture. |
-| Desktop | Planned | Its README will live at `apps/desktop/README.md` when the application is introduced. |
+| [Desktop](apps/desktop/README.md) | Shell | Tauri 2 window. The web UI, sidecar, and preparation gates are not in this shell yet. |
 | Mobile | Planned | Its README will live at `apps/mobile/README.md` when the application is introduced. |
 
 ## Repository structure
@@ -27,7 +27,7 @@ applications that people use to create, manage, and collaborate on that work.
 ```text
 apps/
   web/              Current browser application
-  desktop/          Future desktop application boundary
+  desktop/          Tauri 2 desktop shell
   mobile/           Future mobile application boundary
 shared/             Code and contracts shared by applications
 docs/               Product, architecture, and operating documentation
@@ -53,9 +53,9 @@ This section is automatically maintained from the current change and recent loca
 
 ### Recent snapshots
 
+- [2026-11/2026-11-12](docs/devlogs/2026-11/2026-11-12.md)
 - [2026-11/2026-11-11](docs/devlogs/2026-11/2026-11-11.md)
 - [2026-11/2026-11-10](docs/devlogs/2026-11/2026-11-10.md)
 - [2026-11/2026-11-09](docs/devlogs/2026-11/2026-11-09.md)
 - [2026-11/2026-11-07](docs/devlogs/2026-11/2026-11-07.md)
-- [2026-11/2026-11-06](docs/devlogs/2026-11/2026-11-06.md)
 <!-- DEVLOG:END -->

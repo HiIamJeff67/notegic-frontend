@@ -1,11 +1,11 @@
 # Frontend Architecture and Ownership
 
-This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented; Desktop and Mobile remain planned boundaries without app implementations.
+This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented. `apps/desktop` is a Tauri 2 shell and does not load the Web UI or `shared/` yet. Mobile remains a planned boundary without an implementation.
 
 ## Current repository
 
-The repository currently contains one implemented Web workspace and the shared
-portable code used by future applications:
+The repository currently contains the Web workspace, a Tauri 2 desktop shell,
+and the shared portable code used by future applications:
 
 ```text
 apps/web/
@@ -13,6 +13,7 @@ apps/web/
   assets/           Web-owned images and icons
   public/           browser metadata and immutable public files
   vite.config.ts    Web build, TanStack Start, and Nitro configuration
+apps/desktop/       Tauri 2 shell. Its window does not load Web UI or shared code.
 shared/
   api/              portable API/query contracts and generated client artifacts
   graphql/          GraphQL schemas, documents, and codegen inputs
