@@ -3,7 +3,7 @@ import type {
   SubmitFeedbackReportResponse,
 } from "@shared/api/interfaces/feedback.interface";
 import { useMutation } from "@tanstack/react-query";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { mutationFnSubmitFeedbackReport } from "@/api/invokers/feedback.invoker";
 
 export const useSubmitFeedbackReport = () =>

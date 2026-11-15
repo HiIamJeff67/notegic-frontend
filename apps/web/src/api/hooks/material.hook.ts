@@ -6,16 +6,11 @@ import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
 import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import {
-  CreateMyMaterialRequestSchema,
-  UpdateMyMaterialByIdRequestSchema,
-  MoveMyMaterialByIdRequestSchema,
-  RestoreMyMaterialByIdRequestSchema,
-  RestoreMyMaterialsByIdsRequestSchema,
-  DeleteMyMaterialByIdRequestSchema,
-  DeleteMyMaterialsByIdsRequestSchema,
-  HardDeleteMyMaterialsByIdsRequestSchema,
   type CreateMaterialObjectTicketRequest,
   type CreateMaterialObjectTicketResponse,
+  CreateMyMaterialRequestSchema,
+  DeleteMyMaterialByIdRequestSchema,
+  DeleteMyMaterialsByIdsRequestSchema,
   type GetMyMaterialAndItsParentByIdRequest,
   type GetMyMaterialAndItsParentByIdResponse,
   type GetMyMaterialByIdRequest,
@@ -24,16 +19,21 @@ import {
   type GetMyMaterialsByParentSubShelfIdResponse,
   type GetMyMaterialsByRootShelfIdRequest,
   type GetMyMaterialsByRootShelfIdResponse,
+  HardDeleteMyMaterialsByIdsRequestSchema,
+  MoveMyMaterialByIdRequestSchema,
   type ResolveMaterialObjectTicketRequest,
   type ResolveMaterialObjectTicketResponse,
+  RestoreMyMaterialByIdRequestSchema,
+  RestoreMyMaterialsByIdsRequestSchema,
   type SaveMyMaterialByIdRequest,
   SaveMyMaterialByIdRequestSchema,
   SaveMyMaterialByIdResponseSchema,
+  UpdateMyMaterialByIdRequestSchema,
 } from "@shared/api/interfaces/material.interface";
-import { parseRequest } from "@shared/api/validation";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
+import { parseRequest } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -41,9 +41,8 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
-import { isRemoteUnavailable } from "@/api/availability";
-import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
 import {
   mutationFnCreateMaterialObjectTicket,
@@ -63,6 +62,7 @@ import {
 } from "@/api/invokers/material.invoker";
 import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 
 const materialObjectTicketStaleTime = 60 * 1000;
 

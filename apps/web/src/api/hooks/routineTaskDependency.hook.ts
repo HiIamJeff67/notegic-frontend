@@ -19,7 +19,7 @@ import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { type UseQueryOptions, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   mutationFnCreateRoutineTaskDependencyByRoutineId,
   mutationFnDeleteRoutineTaskDependencyByRoutineId,

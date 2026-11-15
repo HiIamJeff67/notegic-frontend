@@ -27,7 +27,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";

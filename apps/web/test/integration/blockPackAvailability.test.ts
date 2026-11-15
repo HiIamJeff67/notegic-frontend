@@ -29,7 +29,7 @@ test("an open BlockPack tracks deletion, while background reads retain mounted e
     import { queryKeys } from '@shared/api/queryKeys';
     import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
     import { Route } from '@/routes/app.block-pack-editor.$blockPackId';
-    import { invalidateDeletedResources } from '@/api/policies/availablity.policy';
+    import { invalidateDeletedResources } from '@/api/hooks/policies/deleted.policy';
     const id = '12345678-1234-4234-8234-123456789abc';
     const client = getQueryClient();
     const key = queryKeys.blockPack.oneById(id);

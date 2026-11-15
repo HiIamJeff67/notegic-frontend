@@ -2,13 +2,13 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useLogin } from "@/api/hooks/auth.hook";
 import {
   clearTurnstileToken,
   isTurnstileEnabled,
   setTurnstileToken,
-} from "@/api/turnstile";
+} from "@/api/tokens/turnstile";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";

@@ -39,8 +39,8 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const GetMySubShelfById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMySubShelfByIdRequest) => data)
@@ -64,7 +64,7 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMySubShelfByIdResponse;
 
@@ -100,7 +100,7 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetMySubShelvesByPrevSubShelfIdResponse;
 
@@ -137,7 +137,7 @@ export const GetMySubShelvesByRootShelfId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetMySubShelvesByRootShelfIdResponse;
 
@@ -176,7 +176,7 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetMySubShelvesAndItemsByPrevSubShelfIdResponse;
 
@@ -214,7 +214,7 @@ export const CreateSubShelfByRootShelfId = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateSubShelfByRootShelfIdResponse;
 
@@ -254,7 +254,7 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateSubShelvesByRootShelfIdsResponse;
 
@@ -285,7 +285,7 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UpdateMySubShelfByIdResponse;
 
@@ -322,7 +322,7 @@ export const UpdateMySubShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateMySubShelvesByIdsResponse;
 
@@ -355,7 +355,7 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as MoveMySubShelfResponse;
 
@@ -392,7 +392,7 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as MoveMySubShelvesByRootShelfIdResponse;
 
@@ -430,7 +430,7 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as MoveMySubShelvesByRootShelfIdsResponse;
 
@@ -466,7 +466,7 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as RestoreMySubShelfByIdResponse;
 
@@ -504,7 +504,7 @@ export const RestoreMySubShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as RestoreMySubShelvesByIdsResponse;
 
@@ -535,7 +535,7 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as DeleteMySubShelfByIdResponse;
 
@@ -572,7 +572,7 @@ export const DeleteMySubShelvesByIds = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as DeleteMySubShelvesByIdsResponse;
 
@@ -608,7 +608,7 @@ export const HardDeleteMySubShelvesByIds = createServerFn({ method: "POST" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMySubShelvesByIdsResponse;
 

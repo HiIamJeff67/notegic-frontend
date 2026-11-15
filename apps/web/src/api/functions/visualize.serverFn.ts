@@ -1,8 +1,8 @@
 import type { NotegicException } from "@shared/api/exceptions";
 import { CurrentAPIBaseURL } from "@shared/api/url";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 interface VisualizeServerRequest {
   header?: {
@@ -58,7 +58,7 @@ export async function fetchVisualizeResponse<TResponse>(
   });
 
   forwardUpstreamSetCookies(response);
-  const formattedResponse = (await formatAPIResponse(response)) as TResponse & {
+  const formattedResponse = (await format(response)) as TResponse & {
     exception: ConstructorParameters<typeof NotegicException>[0] | null;
     refreshableTokens?: { newCSRFToken?: string };
   };

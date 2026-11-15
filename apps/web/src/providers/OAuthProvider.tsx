@@ -30,10 +30,7 @@ import {
   useCallback,
   useRef,
 } from "react";
-import {
-  getClientMutationHeaders,
-  getClientRequestHeaders,
-} from "@/api/clientHeaders";
+import { getClientMutationHeaders, getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   useLoginViaGithub,
   useLoginViaGoogle,
@@ -59,7 +56,7 @@ import {
   clearTurnstileToken,
   getTurnstileToken,
   isTurnstileEnabled,
-} from "@/api/turnstile";
+} from "@/api/tokens/turnstile";
 import { useAppRouter, useUser } from "@/hooks";
 import { useLoading } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";

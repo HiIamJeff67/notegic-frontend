@@ -11,7 +11,7 @@ import toast from "@shared/lib/toast/toast";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import type { UUID } from "crypto";
 import { SquarePen, Trash2 } from "lucide-react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import {

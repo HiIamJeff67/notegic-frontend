@@ -18,9 +18,9 @@ import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchItemsLazyQuery } from "@/api/graphql/hooks/useSearchItems";
-import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchItemsLazyQuery } from "@/api/hooks/graphql/useSearchItems";
+import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
 import {
   useCreateSubShelfByRootShelfId,
   useDeleteMySubShelfById,

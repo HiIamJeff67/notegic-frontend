@@ -53,7 +53,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   mutationFnCreateSubShelfByRootShelfId,
   mutationFnCreateSubShelvesByRootShelfIds,

@@ -8,7 +8,7 @@ import {
 import type { UUID } from "crypto";
 import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";

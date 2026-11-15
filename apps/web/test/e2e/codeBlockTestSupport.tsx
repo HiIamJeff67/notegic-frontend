@@ -15,7 +15,7 @@ import * as Y from "yjs";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import CreateBlockPackPayloadTemplateEditor from "@/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor";
 import { ThemeContext } from "@/providers/ThemeProvider";
-import "@/global/styles/block-editor.css";
+import "@/styles/block-editor.css";
 
 export const editors: Record<
   string,

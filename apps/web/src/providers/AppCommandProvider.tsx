@@ -30,16 +30,16 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchBlockPacksLazyQuery } from "@/api/graphql/hooks/useSearchBlockPacks";
-import { useSearchItemsLazyQuery } from "@/api/graphql/hooks/useSearchItems";
-import { useSearchMaterialsLazyQuery } from "@/api/graphql/hooks/useSearchMaterials";
-import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
-import { useSearchRoutineTagsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTags";
-import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
-import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
-import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStations";
-import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchBlockPacksLazyQuery } from "@/api/hooks/graphql/useSearchBlockPacks";
+import { useSearchItemsLazyQuery } from "@/api/hooks/graphql/useSearchItems";
+import { useSearchMaterialsLazyQuery } from "@/api/hooks/graphql/useSearchMaterials";
+import { useSearchRoutinesLazyQuery } from "@/api/hooks/graphql/useSearchRoutines";
+import { useSearchRoutineTagsLazyQuery } from "@/api/hooks/graphql/useSearchRoutineTags";
+import { useSearchRoutineTasksLazyQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
+import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";
+import { useSearchStationsLazyQuery } from "@/api/hooks/graphql/useSearchStations";
+import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
 import { useUpdateMe } from "@/api/hooks/user.hook";
 import { localDB } from "@/api/local/db";
 import { RootShelf, SubShelf, UsersToShelves } from "@/api/local/schemas";

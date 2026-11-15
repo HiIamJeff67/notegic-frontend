@@ -32,13 +32,13 @@ import {
 } from "react";
 import * as Y from "yjs";
 import type { z } from "zod";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   mutationFnCreateMyBlockPackChannelTicket,
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@/api/invokers/realtime.invoker";
 import { localDB } from "@/api/local/db";
-import { isVirtualMode } from "@/api/availability";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";

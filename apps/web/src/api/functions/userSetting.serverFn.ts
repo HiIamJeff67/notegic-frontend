@@ -12,8 +12,8 @@ import {
   getRequest,
   getRequestHeader,
 } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 const requestUpstream = async (
   request: GetMySettingRequest | UpdateMySettingRequest,
@@ -41,7 +41,7 @@ const requestUpstream = async (
 
   forwardUpstreamSetCookies(response);
   try {
-    return await formatAPIResponse(response);
+    return await format(response);
   } catch (error) {
     if (response.status === 429 && error instanceof NotegicAPIError)
       return {

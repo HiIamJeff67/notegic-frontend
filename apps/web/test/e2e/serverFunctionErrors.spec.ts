@@ -179,7 +179,7 @@ for (const language of supportedLanguages) {
     await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
-      const path = "/src/i18n/index.ts";
+      const path = "/src/i18n.ts";
       const { default: i18n } = await import(/* @vite-ignore */ path);
       await i18n.changeLanguage(language);
     }, language);
@@ -230,7 +230,7 @@ for (const language of supportedLanguages) {
     await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
-      const path = "/src/i18n/index.ts";
+      const path = "/src/i18n.ts";
       const { default: i18n } = await import(/* @vite-ignore */ path);
       await i18n.changeLanguage(language);
     }, language);
@@ -266,7 +266,7 @@ for (const language of supportedLanguages) {
     await page.waitForLoadState("networkidle");
     await page.locator("html[data-density]").waitFor();
     await page.evaluate(async language => {
-      const path = "/src/i18n/index.ts";
+      const path = "/src/i18n.ts";
       const { default: i18n } = await import(/* @vite-ignore */ path);
       await i18n.changeLanguage(language);
     }, language);
@@ -353,7 +353,7 @@ test("real server-function conflicts retain their API type, translation and no-r
       `/@fs${repositoryRoot}/shared/api/queryClient.ts`
     );
     const { tError } = await load(`/@fs${repositoryRoot}/shared/i18n/error.ts`);
-    const { default: i18n } = await load("/src/i18n/index.ts");
+    const { default: i18n } = await load("/src/i18n.ts");
     const client = createQueryClient();
     try {
       await client
@@ -415,7 +415,7 @@ test("real Routine activation rejection retains its translation without retrying
     const { default: toast } = await load(
       `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
     );
-    const { default: i18n } = await load("/src/i18n/index.ts");
+    const { default: i18n } = await load("/src/i18n.ts");
     await i18n.changeLanguage("zh-TW");
     const client = createQueryClient();
     try {
@@ -484,7 +484,7 @@ for (const batch of [false, true]) {
         const { default: toast } = await load(
           `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
         );
-        const { default: i18n } = await load("/src/i18n/index.ts");
+        const { default: i18n } = await load("/src/i18n.ts");
         await i18n.changeLanguage("zh-TW");
         toast.dismiss();
         const client = createQueryClient();

@@ -23,8 +23,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchItemsLazyQuery } from "@/api/graphql/hooks/useSearchItems";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchItemsLazyQuery } from "@/api/hooks/graphql/useSearchItems";
 import {
   useCreateBlockPack,
   useDeleteMyBlockPackById,

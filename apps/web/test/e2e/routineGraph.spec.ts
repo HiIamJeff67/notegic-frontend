@@ -8,7 +8,7 @@ import {
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { makeSerovalPlugin } from "@tanstack/router-core";
 import { fromJSON, toCrossJSONAsync } from "seroval";
-import { apiErrorSerialization } from "@/api/adapters/exceptionSerialization.adapter";
+import { apiErrorSerializationAdapter } from "@/adapters/apiErrorSerialization.adapter";
 
 // Include SQLocal reconnection and persisted reconciliation, not only RPC completion.
 const expect = playwrightExpect.configure({ timeout: 30_000 });
@@ -430,7 +430,7 @@ test("toolbar activation shares the Routine update flow and rolls back rejected 
         body: JSON.stringify(
           await toCrossJSONAsync(
             { error },
-            { plugins: [makeSerovalPlugin(apiErrorSerialization)] }
+            { plugins: [makeSerovalPlugin(apiErrorSerializationAdapter)] }
           )
         ),
       });
@@ -489,7 +489,7 @@ test("expired schedule activation shows the actionable error and preserves the g
       body: JSON.stringify(
         await toCrossJSONAsync(
           { error },
-          { plugins: [makeSerovalPlugin(apiErrorSerialization)] }
+          { plugins: [makeSerovalPlugin(apiErrorSerializationAdapter)] }
         )
       ),
     });
@@ -910,7 +910,7 @@ test("layout conflicts retain the draft without retrying on rerenders", async ({
     await toCrossJSONAsync(
       { error },
       {
-        plugins: [makeSerovalPlugin(apiErrorSerialization)],
+        plugins: [makeSerovalPlugin(apiErrorSerializationAdapter)],
       }
     )
   );
@@ -944,7 +944,7 @@ test("layout conflicts retain the draft without retrying on rerenders", async ({
     )
   ).toBeVisible();
   await page.evaluate(async () => {
-    const path = "/src/i18n/index.ts";
+    const path = "/src/i18n.ts";
     const { default: i18n } = await import(/* @vite-ignore */ path);
     await i18n.changeLanguage("zh-TW");
   });
@@ -1030,7 +1030,7 @@ test("version conflicts preserve drafts and require review plus a separate atomi
           )
         ),
       },
-      { plugins: [makeSerovalPlugin(apiErrorSerialization)] }
+      { plugins: [makeSerovalPlugin(apiErrorSerializationAdapter)] }
     )
   );
   await page.route("**/_serverFn/**", async route => {

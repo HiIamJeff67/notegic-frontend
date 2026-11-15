@@ -13,8 +13,8 @@ import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchRoutineTagsLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTags";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchRoutineTagsLazyQuery } from "@/api/hooks/graphql/useSearchRoutineTags";
 import {
   useCreateRoutineTag,
   useHardDeleteMyRoutineTagById,

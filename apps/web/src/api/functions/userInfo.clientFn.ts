@@ -3,8 +3,8 @@ import type {
   UpdateMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { getClientCSRFToken } from "@/api/clientHeaders";
+import { getClientCSRFToken } from "@/api/functions/headers/csrfToken";
+import { format } from "@/api/functions/helpers/format";
 
 export async function UpdateMyInfo(
   request: UpdateMyInfoRequest
@@ -35,7 +35,7 @@ export async function UpdateMyInfo(
     }
   );
 
-  const formattedResponse = (await formatAPIResponse(
+  const formattedResponse = (await format(
     response,
     csrfToken
   )) as UpdateMyInfoResponse;

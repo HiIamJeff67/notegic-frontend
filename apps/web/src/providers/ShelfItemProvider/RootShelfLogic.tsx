@@ -28,9 +28,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
-import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";
+import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
 import {
   useCreateRootShelf,
   useDeleteMyRootShelfById,

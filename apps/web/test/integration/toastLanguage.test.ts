@@ -64,7 +64,7 @@ const mocks: Record<string, string> = {
     getItemByKey: () => { window.state.reads++; return '[]'; }, setItem: () => {},
   };`,
   "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets = {};`,
-  "@/api/clientHeaders": `export const getClientRequestHeaders = () => ({});`,
+  "@/api/functions/headers/clientHeaders": `export const getClientRequestHeaders = () => ({});`,
   "@/api/hooks/material.hook": `
     import { NotegicAPIError, NotegicException } from '@shared/api/exceptions';
     const mutator = { mutateAsync: () => {

@@ -18,7 +18,7 @@ import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import toast from "@shared/lib/toast/toast";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
+import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";
 import {
   useDeleteRootShelfPermissions,
   useUpsertRootShelfPermission,

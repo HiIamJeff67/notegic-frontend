@@ -2,14 +2,14 @@
 // Do not fork these modules into apps/desktop.
 // biome-ignore-all assist/source/organizeImports: the identifier order matches this generated list.
 
-import * as source0 from "@/api/adapters/exceptionSerialization.adapter";
-import * as source1 from "@/api/availability";
-import * as source2 from "@/api/bridges/session.bridge";
-import * as source3 from "@/api/clientHeaders";
-import * as source4 from "@/api/graphql/hooks/useSearchBlocks";
-import * as source5 from "@/api/graphql/hooks/useSearchRoutineRecords";
-import * as source6 from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
-import * as source7 from "@/api/graphql/hooks/useSearchUsers";
+import * as source0 from "@/adapters/apiErrorSerialization.adapter";
+import * as source1 from "@/api/functions/helpers/availability";
+import * as source2 from "@/api/functions/serverFn";
+import * as source3 from "@/api/functions/headers/clientHeaders";
+import * as source4 from "@/api/hooks/graphql/useSearchBlocks";
+import * as source5 from "@/api/hooks/graphql/useSearchRoutineRecords";
+import * as source6 from "@/api/hooks/graphql/useSearchRoutineTaskRecords";
+import * as source7 from "@/api/hooks/graphql/useSearchUsers";
 import * as source8 from "@/api/hooks/visualize.hook";
 import * as source9 from "@/api/invokers/visualize.invoker";
 import * as source10 from "@/api/local/policy";
@@ -36,16 +36,16 @@ import * as source30 from "@/api/local/schemas/user.schema";
 import * as source31 from "@/api/local/schemas/userSetting.schema";
 import * as source32 from "@/api/local/schemas/usersToShelves.schema";
 import * as source33 from "@/api/local/schemas/usersToStations.schema";
-import * as source34 from "@/api/policies/availablity.policy";
-import * as source35 from "@/api/policies/searchItems.policy";
-import * as source36 from "@/api/policies/searchPagination.policy";
-import * as source37 from "@/api/policies/searchQueryFields.policy";
-import * as source38 from "@/api/policies/searchRootShelves.policy";
-import * as source39 from "@/api/policies/searchRoutineTags.policy";
-import * as source40 from "@/api/policies/searchRoutineTasks.policy";
-import * as source41 from "@/api/policies/searchRoutines.policy";
-import * as source42 from "@/api/policies/searchStations.policy";
-import * as source43 from "@/api/turnstile";
+import * as source34 from "@/api/hooks/policies/deleted.policy";
+import * as source35 from "@/api/hooks/graphql/policies/searchItems.policy";
+import * as source36 from "@/api/hooks/graphql/policies/searchPagination.policy";
+import * as source37 from "@/api/hooks/graphql/policies/searchQueryFields.policy";
+import * as source38 from "@/api/hooks/graphql/policies/searchRootShelves.policy";
+import * as source39 from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
+import * as source40 from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
+import * as source41 from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import * as source42 from "@/api/hooks/graphql/policies/searchStations.policy";
+import * as source43 from "@/api/tokens/turnstile";
 import * as source44 from "@/api/websocketClient";
 import * as source45 from "@/components/backgrounds/GridBackground/GridBackground";
 import * as source46 from "@/components/backgrounds/LazyBackground/LazyBackground";
@@ -477,6 +477,7 @@ import * as source471 from "@shared/types/cord";
 import * as source472 from "@shared/types/imageInfo.type";
 import * as source473 from "@shared/types/oauthProvider.type";
 import * as source474 from "@shared/types/range.type";
+import * as source475 from "@/api/functions/headers/csrfToken";
 
 export const existingWebviewSource = [
   source0,
@@ -954,4 +955,5 @@ export const existingWebviewSource = [
   source472,
   source473,
   source474,
+  source475,
 ] as const;

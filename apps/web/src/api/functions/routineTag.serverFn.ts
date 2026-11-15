@@ -23,8 +23,8 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const GetMyRoutineTagById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineTagByIdRequest) => data)
@@ -69,7 +69,7 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMyRoutineTagByIdResponse;
 
@@ -106,7 +106,7 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetAllMyRoutineTagsResponse;
 
@@ -139,7 +139,7 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as CreateRoutineTagResponse;
 
@@ -172,7 +172,7 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as CreateRoutineTagsResponse;
 
@@ -210,7 +210,7 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateMyRoutineTagByIdResponse;
 
@@ -247,7 +247,7 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateMyRoutineTagsByIdsResponse;
 
@@ -286,7 +286,7 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyRoutineTagByIdResponse;
 
@@ -325,7 +325,7 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyRoutineTagsByIdsResponse;
 

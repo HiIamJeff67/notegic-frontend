@@ -19,7 +19,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { useTranslation } from "@/hooks/useTranslation";
-import "@/global/styles/app-command.css";
+import "@/styles/app-command.css";
 import { ArticleMethodBadge } from "./ArticleMethodBadge";
 import type { ArticleNavigationItem } from "./ArticleNavigation";
 

@@ -9,7 +9,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
 import {
   useGetMyRoutineTaskById,

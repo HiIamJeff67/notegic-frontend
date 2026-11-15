@@ -27,7 +27,7 @@ import {
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
-import "@/global/styles/article.css";
+import "@/styles/article.css";
 import ArticleCommand from "./ArticleCommand";
 import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";
 import { ArticleInlineText } from "./ArticleInlineText";

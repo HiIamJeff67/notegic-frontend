@@ -9,7 +9,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useUpdateMe } from "@/api/hooks/user.hook";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { Button } from "@/components/ui/button";

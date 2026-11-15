@@ -378,3 +378,17 @@ Keep these checks local; a cleanup does not require adding hosted CI jobs.
   existing category.
 - Do not rename existing files solely to make the repository uniform; document
   and track a rename as a separate migration when import churn is justified.
+
+## Application boundaries
+
+An app does not import another app. `apps/web`, `apps/desktop`, and
+`apps/mobile` import `shared/` and their own trees. The platform function that
+performs an API call lives in that app's `api/functions/` directory. Web's
+files there are TanStack Start server functions. Desktop and Mobile use the
+same folder role and do not import those server functions.
+
+Shared UI primitives live in `shared/components/ui/`. Feature components and
+pages stay in the owning app's `components/` and `pages/`. The shared local
+schema, ordered migrations, and version cap live in `shared/api/local/`.
+Those ownership rules are in
+[Shared application boundaries](../designs/systems/shared-application-boundaries.md).

@@ -174,7 +174,7 @@ test("new tabs, session renewal and real graph conflicts preserve authentication
     },
   ]);
   const renewal = await page.evaluate(async () => {
-    const path = "/src/api/clientHeaders.ts";
+    const path = "/src/api/functions/headers/csrfToken.ts";
     const { getClientCSRFToken } = await import(/* @vite-ignore */ path);
     const token = getClientCSRFToken();
     const rpcPath = "/src/api/functions/user.serverFn.ts";
@@ -265,7 +265,7 @@ test("new tabs, session renewal and real graph conflicts preserve authentication
   await expect(dialog).toHaveCount(0);
   const beforeExplicitSave = await page.evaluate(
     async ({ apiURL, id }) => {
-      const path = "/src/api/clientHeaders.ts";
+      const path = "/src/api/functions/headers/csrfToken.ts";
       const { getClientCSRFToken } = await import(/* @vite-ignore */ path);
       const response = await fetch(
         `${apiURL}/api/development/v1/routine-tasks/${id}`,

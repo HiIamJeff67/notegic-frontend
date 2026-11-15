@@ -39,8 +39,8 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyTotalCount = createServerFn({ method: "GET" })
@@ -82,7 +82,7 @@ const fetchStationMembership = async <T>(
   );
   forwardUpstreamSetCookies(response);
 
-  const formattedResponse = (await formatAPIResponse(response)) as T & {
+  const formattedResponse = (await format(response)) as T & {
     exception?: unknown;
     refreshableTokens?: { newCSRFToken?: string };
   };
@@ -157,7 +157,7 @@ export const GetMyStationById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMyStationByIdResponse;
 
@@ -192,7 +192,7 @@ export const GetAllMyStations = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetAllMyStationsResponse;
 
@@ -225,7 +225,7 @@ export const CreateStation = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as CreateStationResponse;
 
@@ -258,7 +258,7 @@ export const CreateStations = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as CreateStationsResponse;
 
@@ -291,7 +291,7 @@ export const UpdateMyStationById = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UpdateMyStationByIdResponse;
 
@@ -327,7 +327,7 @@ export const UpdateMyStationsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateMyStationsByIdsResponse;
 
@@ -361,7 +361,7 @@ export const RestoreMyStationById = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RestoreMyStationByIdResponse;
 
@@ -397,7 +397,7 @@ export const RestoreMyStationsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as RestoreMyStationsByIdsResponse;
 
@@ -431,7 +431,7 @@ export const DeleteMyStationById = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as DeleteMyStationByIdResponse;
 
@@ -467,7 +467,7 @@ export const DeleteMyStationsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as DeleteMyStationsByIdsResponse;
 
@@ -506,7 +506,7 @@ export const HardDeleteMyStationById = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyStationByIdResponse;
 
@@ -543,7 +543,7 @@ export const HardDeleteMyStationsByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyStationsByIdsResponse;
 

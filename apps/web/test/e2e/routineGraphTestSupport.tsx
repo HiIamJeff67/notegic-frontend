@@ -1,4 +1,4 @@
-import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   ApolloClient,
   ApolloLink,
@@ -13,7 +13,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import type { ContextType } from "react";
 import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";
 import { localDB } from "@/api/local/db";
-import { searchPaginationPolicy } from "@/api/policies/searchPagination.policy";
+import { searchPaginationPolicy } from "@/api/hooks/graphql/policies/searchPagination.policy";
 import RoutineTaskDependencyGraphEditor from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphEditor";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useStationRoutine } from "@/hooks/useStationRoutine";

@@ -1,5 +1,5 @@
 import { useStationRoutine } from "@/hooks";
-import "@/global/styles/inspector.css";
+import "@/styles/inspector.css";
 import RoutineInspector from "./RoutineInspector";
 import RoutineTagInspector from "./RoutineTagInspector";
 import RoutineTaskInspector from "./RoutineTaskInspector";

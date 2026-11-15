@@ -40,7 +40,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
     page.getByRole("menuitem").filter({ hasText: name })
   ).toBeVisible({ timeout: 30_000 });
   const csrfToken = await page.evaluate(async () => {
-    const path = "/src/api/clientHeaders.ts";
+    const path = "/src/api/functions/headers/csrfToken.ts";
     return (await import(/* @vite-ignore */ path)).getClientCSRFToken();
   });
   expect(typeof csrfToken).toBe("string");

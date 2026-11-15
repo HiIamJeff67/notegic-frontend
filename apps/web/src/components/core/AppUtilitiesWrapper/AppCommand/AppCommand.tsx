@@ -12,7 +12,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import AppCommandContent from "./AppCommandContent";
 import AppCommandItem from "./AppCommandItem";
 import AppCommandPath from "./AppCommandPath";
-import "@/global/styles/app-command.css";
+import "@/styles/app-command.css";
 
 const AppCommand = () => {
   const { t } = useTranslation();

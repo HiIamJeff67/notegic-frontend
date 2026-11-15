@@ -51,8 +51,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
-import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   mutationFnCreateBlockPack,
   mutationFnCreateBlockPacks,
@@ -72,6 +71,7 @@ import {
 } from "@/api/invokers/blockPack.invoker";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 
 export const useGetMyBlockPackById = (
   hookRequest?: GetMyBlockPackByIdRequest,

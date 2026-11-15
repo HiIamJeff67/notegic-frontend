@@ -69,7 +69,7 @@ test("every protected server-function upstream takes the current RPC CSRF header
       ts.forEachChild(node, visit);
     };
     visit(source);
-    expect(source.text).toContain("formatAPIResponse(");
+    expect(source.text).toContain("format(");
   }
   expect(protectedCalls).toBeGreaterThan(120);
 });
@@ -112,7 +112,7 @@ test("settings cooldown and empty membership responses cannot bypass renewal han
     const source = readFileSync(path.join(functions, name), "utf8");
     expect(source).not.toContain("if (response.status === 204)");
     if (name === "userSetting.serverFn.ts") {
-      expect(source.indexOf("await formatAPIResponse(response)")).toBeLessThan(
+      expect(source.indexOf("await format(response)")).toBeLessThan(
         source.indexOf("response.status === 429")
       );
       expect(source).toContain("error instanceof NotegicAPIError");
@@ -124,7 +124,7 @@ test("direct browser uploads use the current token and the shared response reade
   for (const name of ["material.clientFn.ts", "userInfo.clientFn.ts"]) {
     const source = readFileSync(path.join(functions, name), "utf8");
     expect(source).toContain("const csrfToken = getClientCSRFToken()");
-    expect(source).toContain("formatAPIResponse(");
+    expect(source).toContain("format(");
     expect(source).not.toContain("request.header.csrfToken");
   }
 });
@@ -139,7 +139,7 @@ test("CSRF storage has one owner across the frontend, not per-feature writers", 
         typeof name !== "string" ||
         !/\.tsx?$/.test(name) ||
         /\.(test|spec)\./.test(name) ||
-        name === path.join("api", "clientHeaders.ts")
+        name === path.join("api", "functions", "headers", "csrfToken.ts")
       )
         continue;
       const source = readFileSync(path.join(directory, name), "utf8");

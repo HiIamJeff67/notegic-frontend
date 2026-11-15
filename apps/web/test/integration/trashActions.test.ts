@@ -23,7 +23,7 @@ import {NotegicAPIError,NotegicException} from '@shared/api/exceptions';
 import {AccessControlPermission} from '@shared/api/interfaces/enums';
 import {SessionStorage} from '@shared/lib/storage/sessionStorage';
 import {SessionStorageKey} from '@shared/lib/storage/sessionStorage';
-import {setClientCSRFToken} from '@/api/clientHeaders';
+import { setClientCSRFToken } from '@/api/functions/headers/csrfToken';
 import {Route} from '@/routes/app.trash';
 import i18n from '@/i18n';
 const queryClient=getQueryClient();
@@ -195,9 +195,9 @@ describe("Trash actions in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/global/styles/globals.css", "utf8"),
+      await readFile("apps/web/src/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/global/styles"),
+        base: path.resolve("apps/web/src/styles"),
         onDependency: () => {},
       }
     );

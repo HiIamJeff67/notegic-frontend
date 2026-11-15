@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";

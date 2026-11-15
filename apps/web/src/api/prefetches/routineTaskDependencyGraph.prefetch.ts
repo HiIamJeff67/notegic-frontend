@@ -3,7 +3,7 @@ import { PrefetchQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { QueryClient } from "@tanstack/react-query";
 import type { UUID } from "crypto";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { queryFnGetMyRoutineTasksByRoutineId } from "@/api/invokers/routineTask.invoker";
 import { queryFnGetRoutineTaskDependenciesByRoutineId } from "@/api/invokers/routineTaskDependency.invoker";
 import { RoutineTaskLocalSynchronizer } from "@/api/local/synchronizers/routineTask.synchronizer";

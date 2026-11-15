@@ -1,6 +1,8 @@
 # Frontend Architecture and Ownership
 
-This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented. `apps/desktop` is a Tauri 2 shell and does not load the Web UI or `shared/` yet. Mobile remains a planned boundary without an implementation.
+This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented. `apps/desktop` is a Tauri 2 shell. Its current `@/` alias still points at `apps/web/src`; that cross-app import is a temporary bridge. Mobile remains a planned boundary without an implementation.
+
+Which code may move to `shared/`, and which call sites stay inside one app, is decided in [Shared application boundaries](../systems/shared-application-boundaries.md).
 
 ## Current repository
 
@@ -104,14 +106,15 @@ The current global CSS, Tailwind configuration, and BlockNote/editor styles rema
 The lowest common API boundary is an HTTP request/response contract:
 
 ```text
-shared/api/              request contracts, payloads, queries, mappings, domain rules
+shared/api/                         contracts, payloads, queries, mappings, domain rules
+shared/api/local/                   shared sqlite-core schema and ordered migrations
         │
-        ├── apps/web/src/api/     TanStack Start and browser runtime adapters
-        ├── apps/desktop/server/  optional server-function adapter where integration is sound
-        └── apps/mobile/client/   direct HTTP client and mobile runtime adapters
+        ├── apps/web/src/api/functions/      TanStack Start server functions
+        ├── apps/desktop/src/api/functions/  desktop API callers
+        └── apps/mobile/src/api/functions/   mobile API callers, when that app exists
 ```
 
-Web and Desktop may use TanStack Start `serverFn` where their runtime integration is appropriate. Mobile is not required to support `serverFn`; direct requests are valid. No application should use a server function as an implicit database connection or write path for another client. Authentication, headers, cookies, CSRF, retries, storage, focus, online state, and lifecycle belong to runtime adapters. TanStack Query configuration can be shared when it remains runtime-neutral; focus/online managers and persistence are supplied by each app.
+Only Web uses TanStack Start server functions. Desktop and Mobile keep their own `api/functions/` implementations and do not import Web's. No application should use a server function as an implicit database connection or write path for another client. Authentication, headers, cookies, CSRF, retries, storage, focus, online state, and lifecycle belong to runtime adapters. TanStack Query configuration can be shared when it remains runtime-neutral; focus/online managers and persistence are supplied by each app. The local schema version cap is in [Shared application boundaries](../systems/shared-application-boundaries.md).
 
 ## Dependency direction
 

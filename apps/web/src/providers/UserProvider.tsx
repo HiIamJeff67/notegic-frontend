@@ -17,8 +17,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { isVirtualMode } from "@/api/availability";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useLogout } from "@/api/hooks/auth.hook";
 import { useGetMe, useGetUserData } from "@/api/hooks/user.hook";
 import { useGetMyInfo } from "@/api/hooks/userInfo.hook";

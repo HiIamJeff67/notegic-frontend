@@ -16,7 +16,7 @@ test("API and Website guides stay in English regardless of the UI language", asy
   await page.goto("/document");
   await page.waitForLoadState("networkidle");
   await page.evaluate(async () => {
-    const path = "/src/i18n/index.ts";
+    const path = "/src/i18n.ts";
     const { default: i18n } = await import(/* @vite-ignore */ path);
     await i18n.changeLanguage("zh-TW");
   });

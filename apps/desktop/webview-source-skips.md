@@ -64,9 +64,9 @@ web app:
 - `apps/web/src/routes/llms[.]txt.ts`
 - `apps/web/src/routes/robots[.]txt.ts`
 - `apps/web/src/routes/sitemap[.]xml.ts`
-- `apps/web/src/api/bridges/cookie.bridge.ts`
+- `apps/web/src/api/functions/helpers/cookie.ts`
 
-`cookie.bridge.ts` is only imported by the server function modules above, so
+`cookie.ts` is only imported by the server function modules above, so
 the desktop graph does not load it.
 
 The other files in `apps/web/src/routes/` register the web file routes. Desktop
@@ -93,8 +93,8 @@ These are not desktop-specific implementations:
 
 - `apps/web/src/api/apolloClient.ts` sends GraphQL with cookie credentials and
   the CSRF header.
-- `apps/web/src/api/clientHeaders.ts` reads and writes the browser CSRF cookie.
-- `apps/web/src/api/adapters/apiResponse.adapter.ts` keeps the client half of
+- `apps/web/src/api/functions/headers/csrfToken.ts` reads and writes the browser CSRF cookie.
+- `apps/web/src/api/functions/helpers/format.ts` keeps the client half of
   `createIsomorphicFn`, which can store a CSRF token from a response.
 - `apps/web/src/api/functions/*.clientFn.ts` and the invokers that call them.
 - Local synchronizers and simulators still import the database boundary. With

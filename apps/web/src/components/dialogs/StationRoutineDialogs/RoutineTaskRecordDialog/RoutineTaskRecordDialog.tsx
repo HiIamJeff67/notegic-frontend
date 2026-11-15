@@ -14,7 +14,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useEffect, useRef, useState } from "react";
-import { useSearchRoutineTaskRecordsQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
+import { useSearchRoutineTaskRecordsQuery } from "@/api/hooks/graphql/useSearchRoutineTaskRecords";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import RoutineRecordFilters, {
   defaultRoutineRecordFilters,

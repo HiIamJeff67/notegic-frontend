@@ -475,7 +475,7 @@ test("real backend filters complete Routine history before cursor pagination", a
   await page.waitForLoadState("networkidle");
   const fixture = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientRequestHeaders } = await load("/src/api/clientHeaders.ts");
+    const { getClientRequestHeaders } = await load("/src/api/functions/headers/clientHeaders.ts");
     const { CreateStation } = await load(
       "/src/api/functions/station.serverFn.ts"
     );

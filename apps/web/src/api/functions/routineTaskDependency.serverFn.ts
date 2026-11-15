@@ -13,8 +13,8 @@ import type {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
   method: "GET",
@@ -49,7 +49,7 @@ export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetRoutineTaskDependenciesByRoutineIdResponse;
 
@@ -91,7 +91,7 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateRoutineTaskDependencyByRoutineIdResponse;
 
@@ -132,7 +132,7 @@ export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
         credentials: "include",
       });
       forwardUpstreamSetCookies(response);
-      return (await formatAPIResponse(
+      return (await format(
         response
       )) as UpdateRoutineTaskGraphByRoutineIdResponse;
     }
@@ -172,7 +172,7 @@ export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateRoutineTaskDependencyByRoutineIdResponse;
 
@@ -214,7 +214,7 @@ export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as DeleteRoutineTaskDependencyByRoutineIdResponse;
 

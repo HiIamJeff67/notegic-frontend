@@ -10,7 +10,7 @@ import type {
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   mutationFnCreateMyAPIKey,
   mutationFnRevokeMyAPIKey,

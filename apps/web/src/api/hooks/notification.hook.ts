@@ -15,7 +15,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getClientMutationHeaders,
   getClientRequestHeaders,
-} from "@/api/clientHeaders";
+} from "@/api/functions/headers/clientHeaders";
 import {
   mutationFnDeleteNotifications,
   mutationFnMarkNotificationsRead,

@@ -43,7 +43,10 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import {
   mutationFnCreateStation,
   mutationFnCreateStations,
@@ -63,9 +66,6 @@ import {
 } from "@/api/invokers/station.invoker";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
-import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
-import { clearSearchRoutineTasks } from "@/api/policies/searchRoutineTasks.policy";
-import { clearSearchStations } from "@/api/policies/searchStations.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyTotalCount = (

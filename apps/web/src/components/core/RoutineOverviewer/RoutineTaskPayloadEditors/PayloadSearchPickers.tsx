@@ -10,9 +10,9 @@ import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchRootShelvesLazyQuery } from "@/api/graphql/hooks/useSearchShelves";
-import { useSearchStationsLazyQuery } from "@/api/graphql/hooks/useSearchStations";
-import { useSearchSubShelvesLazyQuery } from "@/api/graphql/hooks/useSearchSubShelves";
+import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";
+import { useSearchStationsLazyQuery } from "@/api/hooks/graphql/useSearchStations";
+import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,

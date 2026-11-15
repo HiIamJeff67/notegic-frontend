@@ -15,7 +15,7 @@ import {
 } from "@shared/api/interfaces/userSetting.interface";
 import { getRetryAt } from "@shared/api/retry";
 import { ZodError } from "zod";
-import { fetchServerFunction } from "@/api/bridges/session.bridge";
+import { fetchServerFunction } from "@/api/functions/serverFn";
 import {
   GetMySetting,
   UpdateMySetting,

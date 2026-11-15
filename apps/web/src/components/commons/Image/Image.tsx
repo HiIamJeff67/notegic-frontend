@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import "@/global/styles/image.css";
+import "@/styles/image.css";
 
 export type ImageLoadingStatus = "loading" | "loaded" | "error";
 

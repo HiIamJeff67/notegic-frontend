@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { isTurnstileEnabled } from "@/api/turnstile";
+import { isTurnstileEnabled } from "@/api/tokens/turnstile";
 
 interface TurnstileRenderOptions {
   sitekey: string;

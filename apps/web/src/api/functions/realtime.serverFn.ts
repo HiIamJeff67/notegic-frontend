@@ -15,8 +15,8 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const CreateMyRealtimeConnectionTicket = createServerFn({
   method: "POST",
@@ -50,7 +50,7 @@ export const CreateMyRealtimeConnectionTicket = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateMyRealtimeConnectionTicketResponse;
 
@@ -90,7 +90,7 @@ export const CreateMyBlockPackChannelTicket = createServerFn({
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateMyBlockPackChannelTicketResponse;
 
@@ -125,7 +125,7 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
       );
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetBlockPackParticipantsResponse;
 

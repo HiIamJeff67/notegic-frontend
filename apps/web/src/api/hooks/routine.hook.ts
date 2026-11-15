@@ -57,8 +57,17 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
-import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
+import { readSearchFieldInput } from "@/api/hooks/graphql/policies/searchPagination.policy";
+import {
+  clearSearchRoutines,
+  placeSearchRoutine,
+  removeSearchRoutines,
+  routineSearchCursor,
+} from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -86,16 +95,7 @@ import {
 } from "@/api/invokers/routine.invoker";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
-import { clearSearchItems } from "@/api/policies/searchItems.policy";
-import { readSearchFieldInput } from "@/api/policies/searchPagination.policy";
-import {
-  clearSearchRoutines,
-  placeSearchRoutine,
-  removeSearchRoutines,
-  routineSearchCursor,
-} from "@/api/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
-import { clearSearchStations } from "@/api/policies/searchStations.policy";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineStatusCount = (

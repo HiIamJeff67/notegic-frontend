@@ -38,7 +38,7 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useCallback } from "react";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";

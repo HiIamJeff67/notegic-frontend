@@ -25,8 +25,8 @@ import {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const PrepareOAuthOperation = createServerFn({ method: "POST" })
   .inputValidator((data: PrepareOAuthOperationRequest) => data)
@@ -52,7 +52,7 @@ export const PrepareOAuthOperation = createServerFn({ method: "POST" })
 
     forwardUpstreamSetCookies(response);
     return PrepareOAuthOperationResponseSchema.parse(
-      await formatAPIResponse(response)
+      await format(response)
     );
   });
 
@@ -74,7 +74,7 @@ export const GetMyAccount = createServerFn({ method: "GET" }).handler(
     );
 
     forwardUpstreamSetCookies(response);
-    return GetMyAccountResponseSchema.parse(await formatAPIResponse(response));
+    return GetMyAccountResponseSchema.parse(await format(response));
   }
 );
 
@@ -101,7 +101,7 @@ export const UpdateMyAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UpdateMyAccountResponse;
 
@@ -131,7 +131,7 @@ export const BindGoogleAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as BindGoogleAccountResponse;
 
@@ -161,7 +161,7 @@ export const BindGithubAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as BindGithubAccountResponse;
 
@@ -191,7 +191,7 @@ export const BindXAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as BindXAccountResponse;
 
@@ -221,7 +221,7 @@ export const BindDiscordAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as BindDiscordAccountResponse;
 
@@ -251,7 +251,7 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UnbindGoogleAccountResponse;
 
@@ -281,7 +281,7 @@ export const UnbindGithubAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UnbindGithubAccountResponse;
 
@@ -311,7 +311,7 @@ export const UnbindXAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UnbindXAccountResponse;
 
@@ -341,7 +341,7 @@ export const UnbindDiscordAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as UnbindDiscordAccountResponse;
 

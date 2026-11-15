@@ -41,7 +41,7 @@ const mocks: Record<string, string> = {
   "@/api/hooks/user.hook": "export const useUpdateMe = () => window.mutator;",
   "@/api/hooks/userInfo.hook":
     "export const useUpdateMyInfo = () => window.mutator;",
-  "@/api/clientHeaders": "export const getClientRequestHeaders = () => ({});",
+  "@/api/functions/headers/clientHeaders": "export const getClientRequestHeaders = () => ({});",
   "@/components/dialogs/ImageDialog/CropImageDialog":
     "export default () => null;",
   "@/components/dialogs/ImageDialog/UploadImageDialog":

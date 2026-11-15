@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSendAuthCode } from "@/api/hooks/auth.hook";
 
 interface AuthCodeContextValue {

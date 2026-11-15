@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ArticleImage } from "./ArticleImage";
 import { ArticleVideo } from "./ArticleVideo";
 
-jest.mock("@/global/styles/image.css", () => ({}));
+jest.mock("@/styles/image.css", () => ({}));
 jest.mock("@/hooks/useLocalPreferences", () => ({
   useLocalPreferences: () => ({ preferences: { reduceMotion: false } }),
 }));

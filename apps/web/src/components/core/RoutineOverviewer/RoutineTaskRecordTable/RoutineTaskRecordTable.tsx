@@ -15,7 +15,7 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { HistoryIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useSearchRoutineTaskRecordsQuery } from "@/api/graphql/hooks/useSearchRoutineTaskRecords";
+import { useSearchRoutineTaskRecordsQuery } from "@/api/hooks/graphql/useSearchRoutineTaskRecords";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import RoutineRecordFilters, {
   defaultRoutineRecordFilters,

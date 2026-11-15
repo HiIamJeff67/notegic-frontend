@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import Image from "./Image";
 
-jest.mock("@/global/styles/image.css", () => ({}));
+jest.mock("@/styles/image.css", () => ({}));
 
 test("images start with native lazy loading and reserve the caller's dimensions", () => {
   const html = renderToStaticMarkup(

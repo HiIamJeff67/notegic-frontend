@@ -5,7 +5,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { useCallback, useState } from "react";
-import { getClientMutationHeaders } from "@/api/clientHeaders";
+import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
 import { useValidateEmail } from "@/api/hooks/auth.hook";
 import { useGetMyAccount } from "@/api/hooks/userAccount.hook";
 import AuthCodeInput from "@/components/inputs/AuthCodeInput";

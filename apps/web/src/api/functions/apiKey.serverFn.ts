@@ -9,8 +9,8 @@ import type {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const CreateMyAPIKey = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMyAPIKeyRequest) => data)
@@ -36,7 +36,7 @@ export const CreateMyAPIKey = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as CreateMyAPIKeyResponse;
 
@@ -66,7 +66,7 @@ export const ListMyAPIKeys = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as ListMyAPIKeysResponse;
 
@@ -96,7 +96,7 @@ export const RevokeMyAPIKey = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RevokeMyAPIKeyResponse;
 

@@ -23,7 +23,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   queryFnGetMyRoutineTaskRecordsByRoutineTaskId,
   queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,

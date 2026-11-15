@@ -119,3 +119,8 @@ sidecar or a later sync contract to work around it.
 
 Start sync and agent work only after both gates pass. macOS must pass both.
 Windows must pass Gate 1 before the shell is treated as proven.
+
+What the apps may share after the shell exists, including the local schema
+version cap and the per-app `api/functions/` call site, is in
+[Shared application boundaries](shared-application-boundaries.md). The current
+desktop imports of `apps/web` are a temporary bridge, not that target.

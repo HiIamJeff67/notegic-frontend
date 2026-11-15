@@ -59,7 +59,7 @@ jest.mock("@tanstack/react-query", () => ({
 jest.mock("@shared/api/queryClient", () => ({
   getQueryClient: () => mockClient,
 }));
-jest.mock("@/api/availability", () => ({ isRemoteUnavailable: () => false }));
+jest.mock("@/api/functions/helpers/availability", () => ({ isRemoteUnavailable: () => false }));
 jest.mock("@apollo/client/react", () => ({
   useApolloClient: () => ({
     cache: { modify: jest.fn(), gc: jest.fn(), evict: jest.fn() },

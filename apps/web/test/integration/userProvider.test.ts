@@ -31,8 +31,8 @@ const mocks: Record<string, string> = {
   export const useAppRouterActions = () => router;
   export const useLoading = () => ({ startAsyncTransactionLoading: task => task() });
   export const useNetwork = () => ({ isOnline: true });`,
-  "@/api/clientHeaders": `export const getClientRequestHeaders = () => ({});`,
-  "@/api/availability": `export const isVirtualMode = () => false; export const isRemoteUnavailable = () => false;`,
+  "@/api/functions/headers/clientHeaders": `export const getClientRequestHeaders = () => ({});`,
+  "@/api/functions/helpers/availability": `export const isVirtualMode = () => false; export const isRemoteUnavailable = () => false;`,
   "@/api/local/synchronizers/user.synchronizer": `export class UserLocalSynchronizer { static ensureLoggedInUser = async () => ({ publicId: "virtual" }); static getLoggedInUser = async () => null; static clearLoggedIn = async () => {}; }`,
   "@/api/hooks/auth.hook": `const mutator = { mutateAsync: async () => {
     window.state.logouts++;

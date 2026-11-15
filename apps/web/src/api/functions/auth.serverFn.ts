@@ -37,8 +37,8 @@ import {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 const hasAuthSession = (cookieHeader: string | undefined) =>
   (cookieHeader ?? "").split(";").some(cookie => {
@@ -81,7 +81,7 @@ export const Register = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RegisterResponse;
 
@@ -112,7 +112,7 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RegisterViaGoogleResponse;
 
@@ -143,7 +143,7 @@ export const RegisterViaGithub = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RegisterViaGithubResponse;
 
@@ -174,7 +174,7 @@ export const RegisterViaX = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RegisterViaXResponse;
 
@@ -205,7 +205,7 @@ export const RegisterViaDiscord = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as RegisterViaDiscordResponse;
 
@@ -236,7 +236,7 @@ export const Login = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as LoginResponse;
 
@@ -267,7 +267,7 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as LoginViaGoogleResponse;
 
@@ -298,7 +298,7 @@ export const LoginViaGithub = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as LoginViaGithubResponse;
 
@@ -329,7 +329,7 @@ export const LoginViaX = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as LoginViaXResponse;
 
@@ -360,7 +360,7 @@ export const LoginViaDiscord = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as LoginViaDiscordResponse;
 
@@ -389,7 +389,7 @@ export const Logout = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const rawResponse = (await formatAPIResponse(
+    const rawResponse = (await format(
       response
     )) as Partial<LogoutResponse>;
     const formattedResponse = {
@@ -426,7 +426,7 @@ export const SendAuthCode = createServerFn({ method: "POST" })
       }
     );
 
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as SendAuthCodeResponse;
 
@@ -456,7 +456,7 @@ export const ValidateEmail = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as ValidateEmailResponse;
 
@@ -486,7 +486,7 @@ export const ResetEmail = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as ResetEmailResponse;
 
@@ -513,7 +513,7 @@ export const ForgetPassword = createServerFn({ method: "POST" })
       }
     );
 
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as ForgetPasswordResponse;
 
@@ -543,7 +543,7 @@ export const ResetMe = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as ResetMeResponse;
 
@@ -572,7 +572,7 @@ export const DeleteMe = createServerFn({ method: "POST" })
       }
     );
 
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as DeleteMeResponse;
 

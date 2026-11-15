@@ -3,7 +3,7 @@ import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.t
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import toast from "@shared/lib/toast/toast";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";

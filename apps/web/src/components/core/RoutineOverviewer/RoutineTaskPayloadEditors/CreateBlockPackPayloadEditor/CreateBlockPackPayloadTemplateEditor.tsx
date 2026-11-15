@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useTheme } from "@/hooks/useTheme";
-import "@/global/styles/block-editor.css";
+import "@/styles/block-editor.css";
 
 interface CreateBlockPackPayloadTemplateEditorProps {
   editor: BlockNoteEditor<any, any, any>;

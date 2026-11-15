@@ -15,9 +15,9 @@ import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
-import { isVirtualMode } from "@/api/availability";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchRoutinesLazyQuery } from "@/api/graphql/hooks/useSearchRoutines";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchRoutinesLazyQuery } from "@/api/hooks/graphql/useSearchRoutines";
 import {
   useCreateRoutineByStationId,
   useDeleteMyRoutineById,

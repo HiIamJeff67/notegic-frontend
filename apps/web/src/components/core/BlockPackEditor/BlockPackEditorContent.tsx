@@ -48,7 +48,7 @@ import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTheme } from "@/hooks/useTheme";
-import "@/global/styles/block-editor.css";
+import "@/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {
   blockPackMeta: BlockPackMeta;

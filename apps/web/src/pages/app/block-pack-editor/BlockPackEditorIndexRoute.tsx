@@ -1,7 +1,7 @@
 import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { useLoaderData } from "@tanstack/react-router";
 import type { UUID } from "crypto";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyBlockPackById } from "@/api/hooks/blockPack.hook";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import BlockPackEditorNotFoundPage from "@/pages/app/block-pack-editor/BlockPackEditorNotFoundPage";

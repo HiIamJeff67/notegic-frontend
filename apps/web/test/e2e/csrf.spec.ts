@@ -219,7 +219,7 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/station.serverFn.ts"
     );
     const { getClientMutationHeaders } = await load(
-      "/src/api/clientHeaders.ts"
+      "/src/api/functions/headers/clientHeaders.ts"
     );
     const header = getClientMutationHeaders();
     const response = await CreateStation({
@@ -246,7 +246,7 @@ test("real login and protected writes retain both origin and backend token check
         "/src/api/functions/routineTask.serverFn.ts"
       );
       const { getClientMutationHeaders } = await load(
-        "/src/api/clientHeaders.ts"
+        "/src/api/functions/headers/clientHeaders.ts"
       );
       const scheduledStartAt = new Date(Date.now() + 3_600_000);
       scheduledStartAt.setSeconds(0, 0);
@@ -365,7 +365,7 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/station.serverFn.ts"
     );
     const { getClientMutationHeaders } = await load(
-      "/src/api/clientHeaders.ts"
+      "/src/api/functions/headers/clientHeaders.ts"
     );
     try {
       await CreateStation({
@@ -431,7 +431,7 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/apiKey.serverFn.ts"
     );
     const { getClientMutationHeaders } = await load(
-      "/src/api/clientHeaders.ts"
+      "/src/api/functions/headers/clientHeaders.ts"
     );
     const response = await CreateMyAPIKey({
       data: {
@@ -467,7 +467,7 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/station.serverFn.ts"
     );
     const { getClientMutationHeaders } = await load(
-      "/src/api/clientHeaders.ts"
+      "/src/api/functions/headers/clientHeaders.ts"
     );
     let authRequired = false;
     const onAuthRequired = () => {

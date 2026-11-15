@@ -7,7 +7,7 @@ asset pipeline.
 ## Implementation
 
 The guard is implemented in
-[`apps/web/server/middleware/maintenance.ts`](../../apps/web/server/middleware/maintenance.ts).
+[`apps/web/server/middlewares/maintenance.middleware.ts`](../../apps/web/server/middlewares/maintenance.middleware.ts).
 It reads the Cloudflare runtime binding `IS_MAINTENANCE` and returns an inline
 HTML response when maintenance mode is enabled.
 

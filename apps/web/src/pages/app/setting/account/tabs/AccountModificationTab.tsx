@@ -4,7 +4,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { useCallback, useState } from "react";
-import { getClientMutationHeaders } from "@/api/clientHeaders";
+import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   useDeleteMe,
   useForgetPassword,

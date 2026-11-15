@@ -2,9 +2,9 @@
 
 Phase 1 establishes a portable shared core with application-owned runtime
 adapters. The lowest common API boundary is an HTTP request/response contract.
-TanStack Start server functions are optional for Web and Desktop where the
-integration is sound; Mobile may use direct requests and has no server-function
-requirement.
+Only Web uses TanStack Start server functions. Desktop and Mobile keep the
+same `api/functions/` role with their own implementations. See
+[Shared application boundaries](shared-application-boundaries.md).
 
 ## Boundary map
 
@@ -15,7 +15,7 @@ shared/
         │
         ├── apps/web       browser lifecycle, serverFn adapter, Web storage,
         │                  local database, WebSocket lifecycle, Web UI/styles
-        ├── apps/desktop   app lifecycle, optional serverFn/direct HTTP,
+        ├── apps/desktop   app lifecycle, desktop API functions, sidecar SQLite,
         │                  desktop persistence, desktop UI/assets
         └── apps/mobile    app lifecycle, direct HTTP, mobile persistence,
                            mobile UI/assets

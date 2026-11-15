@@ -12,14 +12,11 @@ import {
   timeToMinutes,
 } from "@shared/lib/time/timeString";
 import { useEffect, useRef } from "react";
-import {
-  getClientMutationHeaders,
-  getClientRequestHeaders,
-} from "@/api/clientHeaders";
+import { getClientMutationHeaders, getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useUpdateMySetting } from "@/api/hooks/userSetting.hook";
 import { queryFnGetMySetting } from "@/api/invokers/userSetting.invoker";
 import { UserSettingLocalSynchronizer } from "@/api/local/synchronizers/userSetting.synchronizer";
-import { isVirtualMode } from "@/api/availability";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";

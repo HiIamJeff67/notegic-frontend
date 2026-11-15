@@ -45,7 +45,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
 import { useGetMyRoutineTasksByRoutineId } from "@/api/hooks/routineTask.hook";
 import {

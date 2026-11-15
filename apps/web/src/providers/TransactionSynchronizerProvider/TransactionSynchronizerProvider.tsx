@@ -1,8 +1,8 @@
 import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { and, asc, eq, gte, InferSelectModel, inArray, lt } from "drizzle-orm";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-import { isVirtualMode } from "@/api/availability";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   MaterialLocalSynchronizer,
   replaceMaterialId,

@@ -11,7 +11,7 @@ jest.mock("@/hooks/useTranslation", () => ({
   }),
 }));
 
-jest.mock("@/api/graphql/hooks/useSearchRoutineRecords", () => ({
+jest.mock("@/api/hooks/graphql/useSearchRoutineRecords", () => ({
   useSearchRoutineRecordsQuery: () => ({ fetchMore: jest.fn() }),
 }));
 

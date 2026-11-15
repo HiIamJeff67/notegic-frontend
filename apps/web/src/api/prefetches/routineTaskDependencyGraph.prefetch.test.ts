@@ -6,7 +6,7 @@ const mockGetRoutineTaskDependenciesByRoutineId = jest.fn();
 const mockSyncGetMyRoutineTasksByRoutineId = jest.fn();
 const mockSyncGetRoutineTaskDependenciesByRoutineId = jest.fn();
 
-jest.mock("@/api/clientHeaders", () => ({
+jest.mock("@/api/functions/headers/clientHeaders", () => ({
   getClientRequestHeaders: mockGetClientRequestHeaders,
 }));
 

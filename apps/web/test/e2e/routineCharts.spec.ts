@@ -55,7 +55,7 @@ test("Overview charts and all eleven statistics queries use fresh session header
     });
   });
   await page.evaluate(async () => {
-    const headersPath = "/src/api/clientHeaders.ts";
+    const headersPath = "/src/api/functions/headers/csrfToken.ts";
     const { setClientCSRFToken } = await import(/* @vite-ignore */ headersPath);
     setClientCSRFToken("initial-fixture-token");
     window.chartAuthenticationFailures = 0;
@@ -81,7 +81,7 @@ test("Overview charts and all eleven statistics queries use fresh session header
   await expect
     .poll(() =>
       page.evaluate(async () => {
-        const path = "/src/api/clientHeaders.ts";
+        const path = "/src/api/functions/headers/csrfToken.ts";
         const { getClientCSRFToken } = await import(/* @vite-ignore */ path);
         return getClientCSRFToken();
       })
@@ -99,7 +99,7 @@ test("Overview charts and all eleven statistics queries use fresh session header
       )
   ).toBe(true);
   await page.evaluate(async () => {
-    const path = "/src/api/clientHeaders.ts";
+    const path = "/src/api/functions/headers/csrfToken.ts";
     const { setClientCSRFToken } = await import(/* @vite-ignore */ path);
     setClientCSRFToken("latest-fixture-token");
     return window.routineChartsExample.fetchTotal();
@@ -202,7 +202,7 @@ test("real backend keeps Overview authenticated and validates all statistics req
   const refreshed = await login.json();
   expect(typeof refreshed.data.csrfToken).toBe("string");
   await page.evaluate(async token => {
-    const path = "/src/api/clientHeaders.ts";
+    const path = "/src/api/functions/headers/csrfToken.ts";
     const { getClientCSRFToken, setClientCSRFToken } = await import(
       /* @vite-ignore */ path
     );

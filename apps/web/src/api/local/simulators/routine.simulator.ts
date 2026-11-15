@@ -44,6 +44,7 @@ import {
   lt,
   sql,
 } from "drizzle-orm";
+import { pageSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
 import { localDB } from "@/api/local/db";
 import {
   Item,
@@ -61,7 +62,6 @@ import {
 } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { pageSearchRoutines } from "@/api/policies/searchRoutines.policy";
 export class RoutineLocalSimulator {
   private static getPassPermissionCheckSQL = (
     queryBuilder: Pick<typeof localDB, "select">,

@@ -7,8 +7,11 @@ import {
 } from "@apollo/client-integration-tanstack-start";
 import { CurrentAPIBaseURL, getBrowserLoopbackURL } from "@shared/api/url";
 import { tap } from "rxjs";
-import { getClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
-import { searchQueryFieldPolicies } from "./policies/searchQueryFields.policy";
+import {
+  getClientCSRFToken,
+  setClientCSRFToken,
+} from "@/api/functions/headers/csrfToken";
+import { searchQueryFieldPolicies } from "./hooks/graphql/policies/searchQueryFields.policy";
 
 export const createApolloClient = () => {
   const apiDomainURL = getBrowserLoopbackURL(

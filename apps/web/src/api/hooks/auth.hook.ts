@@ -8,33 +8,36 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { clearClientCSRFToken, setClientCSRFToken } from "@/api/clientHeaders";
+import {
+  clearClientCSRFToken,
+  setClientCSRFToken,
+} from "@/api/functions/headers/csrfToken";
+import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
+import { clearSearchRootShelves } from "@/api/hooks/graphql/policies/searchRootShelves.policy";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
+import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import {
   mutationFnDeleteMe,
   mutationFnForgetPassword,
   mutationFnLogin,
-  mutationFnLoginViaGoogle,
-  mutationFnLoginViaGithub,
-  mutationFnLoginViaX,
   mutationFnLoginViaDiscord,
+  mutationFnLoginViaGithub,
+  mutationFnLoginViaGoogle,
+  mutationFnLoginViaX,
   mutationFnLogout,
   mutationFnRegister,
-  mutationFnRegisterViaGoogle,
-  mutationFnRegisterViaGithub,
-  mutationFnRegisterViaX,
   mutationFnRegisterViaDiscord,
+  mutationFnRegisterViaGithub,
+  mutationFnRegisterViaGoogle,
+  mutationFnRegisterViaX,
   mutationFnResetEmail,
   mutationFnResetMe,
   mutationFnSendAuthCode,
   mutationFnValidateEmail,
 } from "@/api/invokers/auth.invoker";
 import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
-import { clearSearchItems } from "@/api/policies/searchItems.policy";
-import { clearSearchRootShelves } from "@/api/policies/searchRootShelves.policy";
-import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
-import { clearSearchRoutineTasks } from "@/api/policies/searchRoutineTasks.policy";
-import { clearSearchStations } from "@/api/policies/searchStations.policy";
 
 const markAccountEmailVerified = async (queryClient: QueryClient) => {
   const queryKey = queryKeys.userAccount.my();

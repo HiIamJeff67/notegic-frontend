@@ -15,7 +15,7 @@ through SSR. Run `npm run generate:document` to regenerate them all.
 | API key guidance | `api/APIKey.tsx` | Subcomponent of `api/API.tsx`, not a separate tab |
 | Versions | `versions/sources/versions.md`, `scripts/generateDocumentSections.mjs` | `versions/generated.ts` and `versions/VersionsContent.tsx`; owned by `versions/Versions.tsx` and the existing `VersionCard` UI |
 | Privacy and policy | `privacy-policy/sources/privacy-policy.md`, `scripts/generateDocumentSections.mjs` | `privacy-policy/generated.ts` and `PrivacyPolicyContent.tsx`; owned by `PrivacyPolicy.tsx`; standalone `/privacy-policy` retains its existing translations |
-| Shared layout | `apps/web/src/components/commons/Article/`, project UI primitives, `apps/web/src/global/styles/article.css` and global styles | Shared Article layout, navigation and media components |
+| Shared layout | `apps/web/src/components/commons/Article/`, project UI primitives, `apps/web/src/styles/article.css` and global styles | Shared Article layout, navigation and media components |
 
 Tab-relative paths above are under `apps/web/src/pages/document/`. Keep each
 tab flat except for its `sources/` folder. Generated data uses `generated.ts`;

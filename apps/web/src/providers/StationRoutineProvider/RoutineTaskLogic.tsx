@@ -16,8 +16,8 @@ import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
-import { useSearchRoutineTasksLazyQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useSearchRoutineTasksLazyQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
 import {
   useCreateRoutineTaskByRoutineId,
   useUpdateMyRoutineTaskById,

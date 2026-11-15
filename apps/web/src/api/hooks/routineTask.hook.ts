@@ -33,8 +33,12 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { isRemoteUnavailable } from "@/api/availability";
-import { invalidateDeletedResources } from "@/api/policies/availablity.policy";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import {
+  clearSearchRoutineTasks,
+  removeSearchRoutineTasks,
+} from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
 import {
   mutationFnCreateRoutineTaskByRoutineId,
   mutationFnHardDeleteMyRoutineTaskById,
@@ -47,11 +51,7 @@ import {
 } from "@/api/invokers/routineTask.invoker";
 import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
 import { RoutineTaskLocalSynchronizer } from "@/api/local/synchronizers/routineTask.synchronizer";
-import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
-import {
-  clearSearchRoutineTasks,
-  removeSearchRoutineTasks,
-} from "@/api/policies/searchRoutineTasks.policy";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineTaskPurposeCount = (

@@ -12,7 +12,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
 import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";

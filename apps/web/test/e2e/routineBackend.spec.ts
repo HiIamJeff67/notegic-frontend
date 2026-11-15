@@ -188,7 +188,7 @@ test("expired access and a missing session cache renew before updating a graph t
           "/src/api/invokers/routineTask.invoker.ts"
         );
         const { getClientMutationHeaders } = await load(
-          "/src/api/clientHeaders.ts"
+          "/src/api/functions/headers/clientHeaders.ts"
         );
         const response = await mutationFnUpdateMyRoutineTaskById({
           header: getClientMutationHeaders(),
@@ -280,7 +280,7 @@ test("editing a new Routine refreshes Start and Action versions and preserves re
   ).toBeVisible();
   const csrfToken = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientCSRFToken } = await load("/src/api/clientHeaders.ts");
+    const { getClientCSRFToken } = await load("/src/api/functions/headers/csrfToken.ts");
     return getClientCSRFToken();
   });
   expect(typeof csrfToken).toBe("string");
@@ -1220,7 +1220,7 @@ test("authenticated graph persists through Core and executes once in DurableJob 
   ).toBeVisible();
   csrfToken = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientCSRFToken } = await load("/src/api/clientHeaders.ts");
+    const { getClientCSRFToken } = await load("/src/api/functions/headers/csrfToken.ts");
     return getClientCSRFToken();
   });
   expect(typeof csrfToken).toBe("string");

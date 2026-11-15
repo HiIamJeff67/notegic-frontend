@@ -6,7 +6,7 @@ import {
   OAuthMicrosoftIcon,
   OAuthXIcon,
 } from "@/components/icons/OAuthIcon";
-import "@/global/styles/panel.css";
+import "@/styles/panel.css";
 import { useTranslation } from "@/hooks/useTranslation";
 import { type ReactNode } from "react";
 import { useTheme } from "@/hooks/useTheme";

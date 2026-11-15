@@ -12,7 +12,7 @@ providers and custom hooks.
 | Shared resources and supported languages | `@shared/i18n` |
 | Error presentation | `@shared/i18n/error` (`tError`) |
 | Enum-to-key mappings | `@shared/i18n/tKeys/<enumName>.tKey` |
-| Web instance initialization | `apps/web/src/i18n/index.ts` (`@/i18n`) |
+| Web instance initialization | `apps/web/src/i18n.ts` (`@/i18n`) |
 | Account language restoration and persistence | `UserSettingsProvider` |
 
 Import `useTranslation` directly from the project module, not from

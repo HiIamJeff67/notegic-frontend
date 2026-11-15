@@ -67,13 +67,15 @@ test.each([
 
 test("GraphQL query modules retain useSearch names", () => {
   const files = readdirSync(
-    join(process.cwd(), "apps/web/src/api/graphql/hooks")
-  );
+    join(process.cwd(), "apps/web/src/api/hooks/graphql")
+  ).filter(file => file.endsWith(".ts"));
   expect(files.length).toBeGreaterThan(0);
   expect(
     files.filter(
       file =>
-        file !== "error.ts" && !/^useSearch[A-Z][a-zA-Z0-9]*\.ts$/.test(file)
+        file !== "localSearch.hook.ts" &&
+        file !== "localSearch.hook.test.ts" &&
+        !/^useSearch[A-Z][a-zA-Z0-9]*\.ts$/.test(file)
     )
   ).toEqual([]);
 });
@@ -83,11 +85,7 @@ test("API infrastructure respects roles and framework-reserved suffixes", () => 
     file => file.endsWith(".ts")
   );
   expect(files).toEqual(
-    expect.arrayContaining([
-      "apolloClient.ts",
-      "websocketClient.ts",
-      "clientHeaders.ts",
-    ])
+    expect.arrayContaining(["apolloClient.ts", "websocketClient.ts"])
   );
   expect(
     files.filter(

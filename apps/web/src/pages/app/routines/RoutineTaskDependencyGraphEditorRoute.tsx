@@ -2,7 +2,7 @@ import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
 import { isValidUUID } from "@shared/lib/uuid/uuidv4.type";
 import { notFound, useLoaderData } from "@tanstack/react-router";
 import type { UUID } from "crypto";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import { prefetchRoutineTaskDependencyGraph } from "@/api/prefetches/routineTaskDependencyGraph.prefetch";
 import RoutineTaskDependencyGraphEditorPage from "@/pages/app/routines/RoutineTaskDependencyGraphEditorPage";
 

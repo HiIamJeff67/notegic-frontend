@@ -9,8 +9,8 @@ import {
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 
 export const GetMyBlockById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlockByIdRequest) => data)
@@ -34,7 +34,7 @@ export const GetMyBlockById = createServerFn({ method: "GET" })
 
     forwardUpstreamSetCookies(response);
 
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMyBlockByIdResponse;
 
@@ -66,7 +66,7 @@ export const GetMyBlocksByIds = createServerFn({ method: "GET" })
 
     forwardUpstreamSetCookies(response);
 
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMyBlocksByIdsResponse;
 
@@ -100,7 +100,7 @@ export const GetMyBlocksByBlockPackId = createServerFn({
 
       forwardUpstreamSetCookies(response);
 
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetMyBlocksByBlockPackIdResponse;
 

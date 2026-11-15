@@ -180,6 +180,20 @@ export default defineConfig(({ command, mode }) => {
           ? resolve(webRoot, env.NOTEGIC_NITRO_BUILD_DIR)
           : undefined,
         serverDir: join(webRoot, "server"),
+        // Nitro scans only server/middleware. Register the renamed directory
+        // explicitly, with maintenance ahead of the isolation headers.
+        handlers: [
+          {
+            route: "/**",
+            middleware: true,
+            handler: "./server/middlewares/maintenance.middleware.ts",
+          },
+          {
+            route: "/**",
+            middleware: true,
+            handler: "./server/middlewares/securityHeaders.middleware.ts",
+          },
+        ],
         routeRules: {
           "/assets/**": {
             headers: {

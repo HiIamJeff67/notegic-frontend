@@ -2,7 +2,7 @@ import type { UUID } from "node:crypto";
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import toast from "@shared/lib/toast/toast";
 import { useRef, useState } from "react";
-import { getClientMutationHeaders } from "@/api/clientHeaders";
+import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   useGetMyBlockPackById,
   useHardDeleteMyBlockPacksByIds,

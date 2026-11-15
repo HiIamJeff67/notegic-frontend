@@ -25,8 +25,8 @@ import {
 } from "@shared/api/url";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
-import { formatAPIResponse } from "@/api/adapters/apiResponse.adapter";
-import { forwardUpstreamSetCookies } from "@/api/bridges/cookie.bridge";
+import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
+import { format } from "@/api/functions/helpers/format";
 import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineTaskPurposeCount = createServerFn({
@@ -86,7 +86,7 @@ export const GetMyRoutineTaskById = createServerFn({ method: "GET" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetMyRoutineTaskByIdResponse;
 
@@ -132,7 +132,7 @@ export const GetMyRoutineTasksByRoutineId = createServerFn({
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as GetMyRoutineTasksByRoutineIdResponse;
 
@@ -172,7 +172,7 @@ export const GetAllMyRoutineTasks = createServerFn({
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await formatAPIResponse(
+    const formattedResponse = (await format(
       response
     )) as GetAllMyRoutineTasksResponse;
 
@@ -212,7 +212,7 @@ export const CreateRoutineTaskByRoutineId = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as CreateRoutineTaskByRoutineIdResponse;
 
@@ -251,7 +251,7 @@ export const UpdateMyRoutineTaskById = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as UpdateMyRoutineTaskByIdResponse;
 
@@ -290,7 +290,7 @@ export const HardDeleteMyRoutineTaskById = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyRoutineTaskByIdResponse;
 
@@ -329,7 +329,7 @@ export const HardDeleteMyRoutineTasksByIds = createServerFn({ method: "POST" })
       });
 
       forwardUpstreamSetCookies(response);
-      const formattedResponse = (await formatAPIResponse(
+      const formattedResponse = (await format(
         response
       )) as HardDeleteMyRoutineTasksByIdsResponse;
 

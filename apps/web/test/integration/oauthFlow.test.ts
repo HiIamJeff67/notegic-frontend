@@ -169,11 +169,11 @@ const mocks: Record<string, string> = {
     export const useUnbindXAccount = () => window.mutator('x-unbind');
     export const useBindDiscordAccount = () => window.mutator('discord-binding');
     export const useUnbindDiscordAccount = () => window.mutator('discord-unbind');`,
-  "@/api/turnstile": `export const isTurnstileEnabled = () => window.turnstileRequired;
+  "@/api/tokens/turnstile": `export const isTurnstileEnabled = () => window.turnstileRequired;
     export const getTurnstileToken = () => null;
     export const setTurnstileToken = () => {};
     export const clearTurnstileToken = () => { window.events.cleared++; };`,
-  "@/api/clientHeaders":
+  "@/api/functions/headers/clientHeaders":
     "export const getClientRequestHeaders = () => ({}); export const getClientMutationHeaders = () => ({});",
   "@tanstack/react-router": `import { useSyncExternalStore } from 'react';
     const subscribe = notify => {
@@ -1198,7 +1198,7 @@ describe("OAuth state in the real entry and callback components", () => {
     "cancel",
   ] as const)("X %s keeps one animated cover mounted until navigation finishes", async result => {
     await page.addStyleTag({
-      path: "apps/web/src/global/styles/loading.css",
+      path: "apps/web/src/styles/loading.css",
     });
     await page.evaluate(result => {
       const fixture = window as any;

@@ -26,7 +26,9 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
 import {
   mutationFnCreateRoutineTag,
   mutationFnCreateRoutineTags,
@@ -39,8 +41,6 @@ import {
 } from "@/api/invokers/routineTag.invoker";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
-import { clearSearchRoutines } from "@/api/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/policies/searchRoutineTags.policy";
 
 export const useGetMyRoutineTagById = (
   hookRequest?: GetMyRoutineTagByIdRequest,

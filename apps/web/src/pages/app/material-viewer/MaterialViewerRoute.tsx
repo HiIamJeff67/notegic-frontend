@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { notFound, useLoaderData } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import { useEffect } from "react";
-import { getClientRequestHeaders } from "@/api/clientHeaders";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   useCreateMaterialObjectTicket,
   useGetMyMaterialAndItsParentById,

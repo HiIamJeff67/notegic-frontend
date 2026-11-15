@@ -82,7 +82,7 @@ for (const operation of [
     operation === "SearchRoutineRecords"
       ? "RoutineRecordStatus_Failed"
       : "RoutineTaskRecordStatus_Failed";
-  mocks[`@/api/graphql/hooks/use${operation}`] = `
+  mocks[`@/api/hooks/graphql/use${operation}`] = `
     const data = {${field}:{totalCount:30,
       searchPageInfo:{hasNextPage:false, endEncodedSearchCursor:null},
       searchEdges:Array.from({length:30},(_,index)=>({node:{
@@ -149,9 +149,9 @@ describe("Routine overview responsive layout in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/global/styles/globals.css", "utf8"),
+      await readFile("apps/web/src/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/global/styles"),
+        base: path.resolve("apps/web/src/styles"),
         onDependency: () => {},
       }
     );

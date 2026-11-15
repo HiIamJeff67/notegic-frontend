@@ -2,7 +2,7 @@ const mockUseMutation = jest.fn((options: { retry?: boolean }) => options);
 jest.mock("@tanstack/react-query", () => ({ useMutation: mockUseMutation }));
 jest.mock("@apollo/client/react", () => ({ useApolloClient: jest.fn() }));
 jest.mock("@shared/api/queryClient", () => ({ getQueryClient: jest.fn() }));
-jest.mock("@/api/clientHeaders", () => ({
+jest.mock("@/api/functions/headers/csrfToken", () => ({
   clearClientCSRFToken: jest.fn(),
   setClientCSRFToken: jest.fn(),
 }));
@@ -16,8 +16,8 @@ jest.mock("@/api/local/synchronizers/auth.synchronizer", () => ({
 
 import {
   useLogin,
-  useLoginViaGoogle,
   useLoginViaGithub,
+  useLoginViaGoogle,
   useRegisterViaGithub,
 } from "./auth.hook";
 

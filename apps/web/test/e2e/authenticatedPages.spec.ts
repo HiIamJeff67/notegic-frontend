@@ -65,7 +65,7 @@ test("local authenticated pages retain the session without CSRF failures", async
 
   const fixture = await page.evaluate(async suffix => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientRequestHeaders } = await load("/src/api/clientHeaders.ts");
+    const { getClientRequestHeaders } = await load("/src/api/functions/headers/clientHeaders.ts");
     const { CreateStation } = await load(
       "/src/api/functions/station.serverFn.ts"
     );

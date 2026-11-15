@@ -50,7 +50,13 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/availability";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  clearSearchRootShelves,
+  prependMissingSearchRootShelves,
+  prependSearchRootShelves,
+  removeSearchRootShelves,
+} from "@/api/hooks/graphql/policies/searchRootShelves.policy";
 import {
   mutationFnCreateRootShelf,
   mutationFnCreateRootShelves,
@@ -69,12 +75,6 @@ import {
 } from "@/api/invokers/rootShelf.invoker";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
-import {
-  clearSearchRootShelves,
-  prependMissingSearchRootShelves,
-  prependSearchRootShelves,
-  removeSearchRootShelves,
-} from "@/api/policies/searchRootShelves.policy";
 
 export const useGetMyRootShelfById = (
   hookRequest?: GetMyRootShelfByIdRequest,

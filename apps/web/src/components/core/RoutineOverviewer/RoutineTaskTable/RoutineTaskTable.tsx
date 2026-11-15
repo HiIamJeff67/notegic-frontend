@@ -10,7 +10,7 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { ListFilter, SquarePen } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { useSearchRoutineTasksQuery } from "@/api/graphql/hooks/useSearchRoutineTasks";
+import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

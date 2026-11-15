@@ -1,8 +1,11 @@
-import { GetMyAccountResponseSchema } from "@shared/api/interfaces/userAccount.interface";
+import {
+  GetMyAccountResponse,
+  GetMyAccountResponseSchema,
+} from "@shared/api/interfaces/userAccount.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { getAccessToken } from "../session";
 
-export const getMyAccount = async () => {
+export const getMyAccount = async (): Promise<GetMyAccountResponse> => {
   const domain = import.meta.env.VITE_API_DOMAIN_URL || "http://localhost";
   const response = await fetch(
     `${domain}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
