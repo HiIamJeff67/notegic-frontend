@@ -1,3 +1,10 @@
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@shared/components/ui/command";
 import { defaultFilter } from "cmdk";
 import { BookOpenIcon, Code2Icon, GripHorizontalIcon } from "lucide-react";
 import {
@@ -11,13 +18,6 @@ import {
 } from "react";
 import AppCommandContent from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandContent";
 import AppCommandPath from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandPath";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
 import { useTranslation } from "@/hooks/useTranslation";
 import "@/styles/app-command.css";
 import { ArticleMethodBadge } from "./ArticleMethodBadge";

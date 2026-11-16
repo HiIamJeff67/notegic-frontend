@@ -2,24 +2,24 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import { useTranslation } from "@/hooks/useTranslation";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { useCallback, useEffect, useState, useTransition } from "react";
-import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import Closeable from "@/components/commons/Closeable/Closeable";
-import Image from "@/components/commons/Image/Image";
-import { Button } from "@/components/ui/button";
+import Closeable from "@shared/components/commons/Closeable/Closeable";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
+import Image from "@/components/commons/Image/Image";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ModalProps } from "@/providers/ModalProvider";
 import CropImageDialog from "./CropImageDialog";
 import UploadImageDialog from "./UploadImageDialog";

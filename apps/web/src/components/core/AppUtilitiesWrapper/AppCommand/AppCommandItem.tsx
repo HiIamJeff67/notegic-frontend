@@ -1,3 +1,4 @@
+import { CommandItem } from "@shared/components/ui/command";
 import {
   AppWindowIcon,
   BellIcon,
@@ -36,7 +37,6 @@ import {
   StationIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import { CommandItem } from "@/components/ui/command";
 import { useTranslation } from "@/hooks/useTranslation";
 import type {
   AppCommandHint,

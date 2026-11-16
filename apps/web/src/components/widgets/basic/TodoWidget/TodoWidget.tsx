@@ -1,4 +1,13 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { generateDynamicDNDType } from "@shared/components/commons/DNDable/dnd.type";
+import { VerticalDNDable } from "@shared/components/commons/DNDable/VerticalDNDable";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import { Input } from "@shared/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   getDefaultTodoData,
@@ -13,18 +22,9 @@ import { WidgetProps } from "@widgets/widget";
 import type { UUID } from "crypto";
 import { CheckIcon, GripVertical, LinkIcon, Plus, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
-import { generateDynamicDNDType } from "@/components/commons/DNDable/dnd.type";
-import { VerticalDNDable } from "@/components/commons/DNDable/VerticalDNDable";
 import DebouncedInput from "@/components/inputs/DebouncedInput";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useAnyTypeState } from "@/hooks/useAnyTypeState";
+import { useTranslation } from "@/hooks/useTranslation";
 import EditTodoWidgetDialog from "./EditTodoWidgetDialog";
 
 const TodoWidget = ({

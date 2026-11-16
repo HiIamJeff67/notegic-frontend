@@ -1,4 +1,5 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Slider } from "@shared/components/ui/slider";
+import { Switch } from "@shared/components/ui/switch";
 import { TimerSetting } from "@widgets/basic/TimerWidget/setting/timerSetting";
 import { Dispatch, SetStateAction } from "react";
 import {
@@ -6,8 +7,7 @@ import {
   EditWidgetDialogOption,
   EditWidgetDialogSeparator,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditTimerWidgetDialogContentProps {
   setting: TimerSetting;

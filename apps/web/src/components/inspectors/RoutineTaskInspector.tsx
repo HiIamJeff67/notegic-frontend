@@ -3,9 +3,28 @@ import {
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
 import type { GetMyRoutineTaskByIdResponse } from "@shared/api/interfaces/routineTask.interface";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import ContainableSelect from "@shared/components/commons/ContainableSelect/ContainableSelect";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import {
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+} from "@shared/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@shared/components/ui/sheet";
+import { Spinner } from "@shared/components/ui/spinner";
+import { Textarea } from "@shared/components/ui/textarea";
 import { tError } from "@shared/i18n/error";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useState } from "react";
@@ -15,27 +34,8 @@ import {
   useGetMyRoutineTaskById,
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
-import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import { useStationRoutine, useUser } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 

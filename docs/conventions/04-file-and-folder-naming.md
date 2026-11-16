@@ -59,7 +59,8 @@ below reflect the current repository and are the default for new files.
 | UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
 | General shared types, including enums | `domain.type.ts` in `shared/types/` | `range.type.ts` |
-| Constants | `domain.constant.ts` | `triggerLimitations.constant.ts` |
+| Constants | `domain.constant.ts` | `domain.constant.ts` |
+| Interface seeds | `domain.seed.ts` | `user.seed.ts`, `userInfo.seed.ts` |
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
@@ -125,7 +126,7 @@ operations. Approximate allocation costs used by Shelf analysis live in
 `shared/lib/byte/byte.type.ts`, beside byte units and formatting. Preserve their
 values during ownership changes; the estimates are not guarantees of actual
 JavaScript heap usage. Import these owners
-directly instead of retaining forwarding exports in `shared/constants/`.
+directly from the module that owns them.
 
 Shared conversion operations live in `shared/lib/conversions/`; entity
 comparators and their owned input types live in `shared/lib/comparisons/`.
@@ -137,12 +138,11 @@ portable package's file-format contract a Web UI type.
 
 Reusable editor code lives under `shared/lib/blockpack/`.
 Web chart renderers live under `apps/web/src/components/charts/`, with one
-component folder per chart kind. Keep chart-specific types/data and tests in
-that folder. Types shared by several chart kinds still belong to Charts:
-keep common models and conversions at its root, dimensional input types beside
-`BaseChart`, and chart defaults in `charts/defaults.ts`. Several components within
-one feature are callers of the same owner, not independent owners. Move a chart
-type to shared only when it has real independent non-Charts owners.
+component folder per chart kind. A renderer that uses app copy stays there.
+Pure chart models, scales, ticks, defaults, and their tests live in
+`shared/components/charts/`. Dimensional input types stay beside `BaseChart`
+in that folder. Several components within one feature are callers of the same
+owner, not independent owners. Do not move those chart models to `shared/types/`.
 Independent shared type definitions without a dedicated
 owner have one root home:
 `shared/types/`. Use `<name>.type.ts` there for enums, interfaces, structural
@@ -154,7 +154,7 @@ jointly define and use a contract without a narrower common owner, put it in
 `shared/types/`. Multiple callers within one domain do not create multiple
 owners. For example, Web drag-and-drop types
 and their intrinsic operations live in
-`apps/web/src/components/commons/DNDable/dnd.type.ts`, not `shared/types/`.
+`shared/components/commons/DNDable/dnd.type.ts`, not `shared/types/`.
 Shelf analysis status belongs with the summary it describes in
 `shared/lib/shelf/summary.type.ts`. Prefer concise concept names such as
 `summary.type.ts` and `dnd.type.ts` over repeating the folder or the word
@@ -229,13 +229,14 @@ cooldowns live in `shared/lib/auth/oauthState.type.ts`, Shelf traversal limits i
 `shared/lib/search/limits.ts`. Realtime wire version belongs to
 `shared/api/websocket/version.ts`. Preserve their values when relocating them.
 
-Account placeholder data lives in `shared/constants/defaultUser.constant.ts`.
-The plan limitation model and display values live together in
+Account placeholders live in `shared/api/interfaces/seeds/user.seed.ts` and
+`shared/api/interfaces/seeds/userInfo.seed.ts`. The plan limitation model and
+display values live together in
 `shared/api/interfaces/types/planLimitation.type.ts`; these values do not enforce
 backend quotas. Widget frame defaults and bounds live
-in `apps/web/src/components/widgets/layout.ts`. Import these owners directly,
-without forwarding exports from `shared/constants/`. The cross-feature
-`triggerLimitations.constant.ts` remains there pending a separate counter review.
+in `apps/web/src/components/widgets/layout.ts`. Import these owners directly.
+The render-trigger
+counter stays inside `useStateTrigger` and is not a shared constant.
 
 ## Local types and constants
 
@@ -272,7 +273,7 @@ apps/web/src/components/dialogs/NotificationDialog/NotificationDialog.tsx
 apps/web/src/components/dialogs/NotificationDialog/NotificationDialogContent.tsx
 ```
 
-The `apps/web/src/components/ui/` directory is a shadcn-style primitive collection and
+The `shared/components/ui/` directory is a shadcn-style primitive collection and
 uses kebab-case files. Do not make a new primitive there PascalCase merely to
 match feature components.
 
@@ -392,3 +393,5 @@ pages stay in the owning app's `components/` and `pages/`. The shared local
 schema, ordered migrations, and version cap live in `shared/api/local/`.
 Those ownership rules are in
 [Shared application boundaries](../designs/systems/shared-application-boundaries.md).
+The current and planned contents of `shared/api/` are in
+[shared/api/README.md](../../shared/api/README.md).

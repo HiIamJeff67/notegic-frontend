@@ -1,5 +1,16 @@
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@shared/components/ui/sheet";
+import { Spinner } from "@shared/components/ui/spinner";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
@@ -8,19 +19,8 @@ import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
 import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 

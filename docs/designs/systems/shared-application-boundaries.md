@@ -4,8 +4,13 @@ What Web, Desktop, and a future Mobile app may share, and what stays inside
 one app. Apps do not import one another. `shared/` is the only code they may
 all import.
 
-The current desktop window still aliases `@/` to `apps/web/src`. That alias is
-a temporary bridge. It is not the target.
+The current desktop window still aliases `@/` to `apps/web/src`. That alias
+violates this rule. [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
+removes it. A file both apps use moves to `shared/` first.
+
+The folder map for `shared/api/`, including paths that are decided and not
+created yet, is [shared/api/README.md](../../../shared/api/README.md). Update
+that file when this boundary adds or removes a module there.
 
 ## Goal
 
@@ -138,5 +143,7 @@ driver. Rust does not open the database.
 `apps/web/src`. `apps/desktop/src/router.tsx` and
 `apps/desktop/src/existingWebviewSource.ts` import that tree.
 `apps/desktop/src/styles.css` imports the Web global stylesheet. Those imports
-are the bridge this document retires. Removing them is a later change, not
-part of recording the decision.
+are not a sharing mechanism. Web and Desktop share a file only after it lives
+in `shared/` and imports neither app. [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
+removes the alias, the Web imports, and the webview shims that exist only to
+keep those imports from booting SQLocal and TanStack Start.

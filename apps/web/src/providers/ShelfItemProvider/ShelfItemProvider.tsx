@@ -1,11 +1,10 @@
 import type { RealtimeResourceEventFrame } from "@shared/api/websocket";
+import { LRUCache } from "@shared/lib/cache/LRUCache";
+import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import {
   MaxMaterialsOfRootShelf,
   MaxSubShelvesOfRootShelf,
 } from "@shared/lib/shelf/limits";
-import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
-import { LRUCache } from "@shared/lib/cache/LRUCache";
-import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
 import type { UUID } from "crypto";
@@ -17,6 +16,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useStateTrigger } from "@/hooks/useStateTrigger";
 import { useItemLogic } from "./ItemLogic";
 import { useRootShelfLogic } from "./RootShelfLogic";
 import { useSubShelfLogic } from "./SubShelfLogic";
@@ -44,7 +44,7 @@ export const ShelfItemProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [_, setUpdateTrigger] = useState(0);
+  const forceUpdate = useStateTrigger();
   const [focusedNode, setFocusedNode] = useState<
     RootShelfNode | SubShelfNode | MaterialNode | BlockPackNode | undefined
   >(undefined);
@@ -55,10 +55,6 @@ export const ShelfItemProvider = ({
       MaxSubShelvesOfRootShelf + MaxMaterialsOfRootShelf
     )
   );
-
-  const forceUpdate = useCallback(() => {
-    setUpdateTrigger(prev => (prev + 1) % MaxTriggerValue);
-  }, []);
 
   const isFocused = useCallback(
     (id: UUID): boolean => {

@@ -61,7 +61,7 @@ import {
   type UpsertRootShelfPermissionResponse,
   UpsertRootShelfPermissionResponseSchema,
 } from "@shared/api/interfaces/rootShelf.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateRootShelf,
@@ -112,7 +112,7 @@ export const queryFnGetMyRootShelfById = async (
 export const mutationFnCreateRootShelf = async (
   request: CreateRootShelfRequest
 ): Promise<CreateRootShelfResponse> => {
-  const validatedRequest = parseRequest(CreateRootShelfRequestSchema, request);
+  const validatedRequest = parse(CreateRootShelfRequestSchema, request);
   try {
     const response = await CreateRootShelf({ data: validatedRequest });
     return CreateRootShelfResponseSchema.parse(response);
@@ -137,10 +137,7 @@ export const mutationFnCreateRootShelf = async (
 export const mutationFnCreateRootShelves = async (
   request: CreateRootShelvesRequest
 ): Promise<CreateRootShelvesResponse> => {
-  const validatedRequest = parseRequest(
-    CreateRootShelvesRequestSchema,
-    request
-  );
+  const validatedRequest = parse(CreateRootShelvesRequestSchema, request);
   try {
     const response = await CreateRootShelves({
       data: validatedRequest,
@@ -165,10 +162,7 @@ export const mutationFnCreateRootShelves = async (
 export const mutationFnUpdateMyRootShelfById = async (
   request: UpdateMyRootShelfByIdRequest
 ): Promise<UpdateMyRootShelfByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyRootShelfByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyRootShelfByIdRequestSchema, request);
   try {
     const response = await UpdateMyRootShelfById({
       data: validatedRequest,
@@ -195,7 +189,7 @@ export const mutationFnUpdateMyRootShelfById = async (
 export const mutationFnUpsertRootShelfPermission = async (
   request: UpsertRootShelfPermissionRequest
 ): Promise<UpsertRootShelfPermissionResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     UpsertRootShelfPermissionRequestSchema,
     request
   );
@@ -297,7 +291,7 @@ export const mutationFnLeaveMyRootShelf = async (
 export const mutationFnUpdateMyRootShelvesByIds = async (
   request: UpdateMyRootShelvesByIdsRequest
 ): Promise<UpdateMyRootShelvesByIdsResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     UpdateMyRootShelvesByIdsRequestSchema,
     request
   );

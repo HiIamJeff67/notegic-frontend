@@ -12,6 +12,15 @@ import {
   type SearchStationsQuery,
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import { Input } from "@shared/components/ui/input";
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Spinner } from "@shared/components/ui/spinner";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@shared/components/ui/toggle-group";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { ArchiveRestoreIcon, SearchIcon, Trash2Icon } from "lucide-react";
@@ -25,12 +34,6 @@ import {
   StationIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDebounceValue } from "@/hooks/useDebounce";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";

@@ -3,6 +3,7 @@ import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.excep
 import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
 import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import { UserSettingExceptions } from "@shared/api/exceptions/userSetting.exception";
 import {
   GetMySettingRequest,
   GetMySettingRequestSchema,
@@ -13,7 +14,7 @@ import {
   UpdateMySettingResponse,
   UpdateMySettingResponseSchema,
 } from "@shared/api/interfaces/userSetting.interface";
-import { getRetryAt } from "@shared/api/retry";
+import { getRetryClient, minimumRetryDelayMs } from "@shared/api/retryClient";
 import { ZodError } from "zod";
 import { fetchServerFunction } from "@/api/functions/serverFn";
 import {
@@ -21,50 +22,36 @@ import {
   UpdateMySetting,
 } from "@/api/functions/userSetting.serverFn";
 
-// Shared by settings reads and writes in this browser, never by SSR users.
-let rateLimitedUntil = 0;
-
-export class UserSettingsRateLimitError extends Error {
-  constructor(public readonly retryAt: number) {
-    super("User settings requests are temporarily paused after HTTP 429");
-  }
-}
-
-const fetchUserSettings: typeof fetch = async (input, init) => {
-  if (Date.now() < rateLimitedUntil)
-    throw new UserSettingsRateLimitError(rateLimitedUntil);
-  const response = await fetchServerFunction(input, init);
-  if (response.status === 429) {
-    const retryAt = getRetryAt(response.headers.get("Retry-After"));
-    if (typeof window !== "undefined")
-      rateLimitedUntil = Math.max(rateLimitedUntil, retryAt);
-    throw new UserSettingsRateLimitError(retryAt);
-  }
-  return response;
-};
-
 export const queryFnGetMySetting = async (
   request: GetMySettingRequest,
   signal?: AbortSignal
 ): Promise<GetMySettingResponse> => {
+  const retryClient = getRetryClient();
+  retryClient.assertReady(UserSettingExceptions.RetryScope, retryAt => {
+    throw UserSettingExceptions.TooManyRequests(retryAt);
+  });
   try {
-    if (Date.now() < rateLimitedUntil)
-      throw new UserSettingsRateLimitError(rateLimitedUntil);
     const response = await GetMySetting({
       data: GetMySettingRequestSchema.parse(request),
       signal,
-      fetch: fetchUserSettings,
+      fetch: retryClient.createFetch({
+        scope: UserSettingExceptions.RetryScope,
+        fetch: fetchServerFunction,
+        minimumDelayMs: minimumRetryDelayMs,
+        paused: retryAt => {
+          throw UserSettingExceptions.TooManyRequests(retryAt);
+        },
+      }),
     });
-    if ("rateLimitedUntil" in response) {
-      if (typeof window !== "undefined")
-        rateLimitedUntil = Math.max(
-          rateLimitedUntil,
-          response.rateLimitedUntil
-        );
-      throw new UserSettingsRateLimitError(response.rateLimitedUntil);
-    }
     return GetMySettingResponseSchema.parse(response);
   } catch (error) {
+    if (error instanceof NotegicAPIError && error.unWrap.status === 429) {
+      const retryAt = retryClient.pause(
+        UserSettingExceptions.RetryScope,
+        Date.now() + minimumRetryDelayMs
+      );
+      throw UserSettingExceptions.TooManyRequests(retryAt);
+    }
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)
@@ -81,23 +68,31 @@ export const queryFnGetMySetting = async (
 export const mutationFnUpdateMySetting = async (
   request: UpdateMySettingRequest
 ): Promise<UpdateMySettingResponse> => {
+  const retryClient = getRetryClient();
+  retryClient.assertReady(UserSettingExceptions.RetryScope, retryAt => {
+    throw UserSettingExceptions.TooManyRequests(retryAt);
+  });
   try {
-    if (Date.now() < rateLimitedUntil)
-      throw new UserSettingsRateLimitError(rateLimitedUntil);
     const response = await UpdateMySetting({
       data: UpdateMySettingRequestSchema.parse(request),
-      fetch: fetchUserSettings,
+      fetch: retryClient.createFetch({
+        scope: UserSettingExceptions.RetryScope,
+        fetch: fetchServerFunction,
+        minimumDelayMs: minimumRetryDelayMs,
+        paused: retryAt => {
+          throw UserSettingExceptions.TooManyRequests(retryAt);
+        },
+      }),
     });
-    if ("rateLimitedUntil" in response) {
-      if (typeof window !== "undefined")
-        rateLimitedUntil = Math.max(
-          rateLimitedUntil,
-          response.rateLimitedUntil
-        );
-      throw new UserSettingsRateLimitError(response.rateLimitedUntil);
-    }
     return UpdateMySettingResponseSchema.parse(response);
   } catch (error) {
+    if (error instanceof NotegicAPIError && error.unWrap.status === 429) {
+      const retryAt = retryClient.pause(
+        UserSettingExceptions.RetryScope,
+        Date.now() + minimumRetryDelayMs
+      );
+      throw UserSettingExceptions.TooManyRequests(retryAt);
+    }
     if (error instanceof ZodError) {
       throw new NotegicValidationError(
         ValidationClientException.ZodParsingFailed(error)

@@ -4,7 +4,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "@shared/components/ui/sheet";
 import { useSettingsDisplay } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import AccountSettingsPage from "@/pages/app/setting/account/AccountSettingsPage";

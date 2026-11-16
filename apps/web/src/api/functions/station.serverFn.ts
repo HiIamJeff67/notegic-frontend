@@ -32,89 +32,117 @@ import {
   UpdateMyStationsByIdsRequest,
   UpdateMyStationsByIdsResponse,
 } from "@shared/api/interfaces/station.interface";
-import {
-  APIURLPathDictionary,
-  CurrentAPIBaseURL,
-  withoutPathParams,
-} from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
+import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
-import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyTotalCount = createServerFn({ method: "GET" })
   .inputValidator((data: VisualizeMyTotalCountRequest) => data)
   .handler(
-    async ({ data: request }): Promise<VisualizeMyTotalCountResponse> =>
-      fetchVisualizeResponse(
-        request,
-        APIURLPathDictionary.station.visualizeMyTotalCount
-      )
-  );
-
-const fetchStationMembership = async <T>(
-  request: {
-    header?: { userAgent?: string; csrfToken?: string };
-    body?: unknown;
-  },
-  path: string,
-  method: "POST" | "DELETE"
-): Promise<T> => {
-  const inboundCookie = getRequestHeader("cookie");
-  const response = await fetch(
-    `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${path}`,
-    {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent":
-          request.header?.userAgent ??
-          getRequestHeader("User-Agent") ??
-          "unknown",
-        "X-CSRF-Token":
-          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
-        ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-      },
-      body: JSON.stringify(request.body ?? {}),
-      credentials: "include",
+    async ({ data: request }): Promise<VisualizeMyTotalCountResponse> => {
+      const path = APIURLPathDictionary.station.visualizeMyTotalCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(response)) as VisualizeMyTotalCountResponse;
     }
   );
-  forwardUpstreamSetCookies(response);
-
-  const formattedResponse = (await format(response)) as T & {
-    exception?: unknown;
-    refreshableTokens?: { newCSRFToken?: string };
-  };
-
-  return formattedResponse;
-};
 
 export const TransferMyStationOwnership = createServerFn({ method: "POST" })
   .inputValidator((data: TransferMyStationOwnershipRequest) => data)
-  .handler(
-    ({ data: request }): Promise<TransferMyStationOwnershipResponse> =>
-      fetchStationMembership(
-        request,
-        APIURLPathDictionary.station.transferOwnership(
-          request.param.stationId as import("node:crypto").UUID
-        ),
-        "POST"
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.station.transferOwnership(request.param.stationId as import("node:crypto").UUID)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body ?? {}),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as TransferMyStationOwnershipResponse;
+  });
 
 export const LeaveMyStation = createServerFn({ method: "POST" })
   .inputValidator((data: LeaveMyStationRequest) => data)
-  .handler(
-    ({ data: request }): Promise<LeaveMyStationResponse> =>
-      fetchStationMembership(
-        request,
-        APIURLPathDictionary.station.leave(
-          request.param.stationId as import("node:crypto").UUID
-        ),
-        "DELETE"
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.station.leave(request.param.stationId as import("node:crypto").UUID)}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body ?? {}),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as LeaveMyStationResponse;
+  });
 
 export const GetMyStationById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyStationByIdRequest) => data)
@@ -225,9 +253,7 @@ export const CreateStation = createServerFn({ method: "POST" })
     });
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as CreateStationResponse;
+    const formattedResponse = (await format(response)) as CreateStationResponse;
 
     return formattedResponse;
   });

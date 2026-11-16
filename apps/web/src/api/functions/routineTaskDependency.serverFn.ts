@@ -10,7 +10,7 @@ import type {
   UpdateRoutineTaskGraphByRoutineIdRequest,
   UpdateRoutineTaskGraphByRoutineIdResponse,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";

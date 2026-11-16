@@ -1,5 +1,5 @@
-import { NotegicAPIError, NotegicException } from "./index";
 import { ServerError } from "@apollo/client/errors";
+import { NotegicAPIError, NotegicException } from "./index";
 import { NetworkExceptions } from "./network.exception";
 
 test.each([502, 503, 504])("gateway HTTP %s permits local fallback", status => {

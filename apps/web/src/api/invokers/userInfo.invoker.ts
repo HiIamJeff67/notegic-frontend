@@ -13,7 +13,7 @@ import {
   type UpdateMyInfoResponse,
   UpdateMyInfoResponseSchema,
 } from "@shared/api/interfaces/userInfo.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import { UpdateMyInfo } from "@/api/functions/userInfo.clientFn";
 import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
@@ -46,7 +46,7 @@ export const queryFnGetMyInfo = async (
 export const mutationFnUpdateMyInfo = async (
   request: UpdateMyInfoRequest
 ): Promise<UpdateMyInfoResponse> => {
-  const validatedRequest = parseRequest(UpdateMyInfoRequestSchema, request);
+  const validatedRequest = parse(UpdateMyInfoRequestSchema, request);
   try {
     const response = await UpdateMyInfo(validatedRequest);
     return UpdateMyInfoResponseSchema.parse(response);

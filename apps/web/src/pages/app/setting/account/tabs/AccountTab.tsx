@@ -1,26 +1,17 @@
-import { useNetwork } from "@/hooks/useNetwork";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllUserStatus } from "@shared/api/interfaces/enums";
+import { FakeUser } from "@shared/api/interfaces/seeds/user.seed";
 import { User, UserSchema } from "@shared/api/interfaces/types/user.type";
 import { UpdateMeRequestSchema } from "@shared/api/interfaces/user.interface";
-import { FakeUser } from "@shared/constants/defaultUser.constant";
-import { useTranslation } from "@/hooks/useTranslation";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import { memo, useCallback, useEffect, useMemo } from "react";
-import { UseFormReturn, useForm } from "react-hook-form";
-import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { useUpdateMe } from "@/api/hooks/user.hook";
-import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@shared/components/ui/form";
+import { Input } from "@shared/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -30,8 +21,17 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@shared/components/ui/select";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import { memo, useCallback, useEffect, useMemo } from "react";
+import { UseFormReturn, useForm } from "react-hook-form";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useUpdateMe } from "@/api/hooks/user.hook";
+import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading } from "@/hooks";
+import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 interface AccountTabProps {

@@ -29,13 +29,10 @@ import {
   UpsertRootShelfPermissionRequest,
   UpsertRootShelfPermissionResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
-import {
-  APIURLPathDictionary,
-  CurrentAPIBaseURL,
-  withoutPathParams,
-} from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
+import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
@@ -206,68 +203,59 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
     }
   );
 
-const fetchRootShelfMembership = async <T>(
-  request: {
-    header?: { userAgent?: string; csrfToken?: string };
-    body?: unknown;
-  },
-  path: string,
-  method: "POST" | "DELETE"
-): Promise<T> => {
-  const inboundCookie = getRequestHeader("cookie");
-  const response = await fetch(
-    `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${path}`,
-    {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent":
-          request.header?.userAgent ??
-          getRequestHeader("User-Agent") ??
-          "unknown",
-        "X-CSRF-Token":
-          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
-        ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-      },
-      ...(method === "POST" || request.body !== undefined
-        ? { body: JSON.stringify(request.body ?? {}) }
-        : {}),
-      credentials: "include",
-    }
-  );
-  forwardUpstreamSetCookies(response);
-
-  const formattedResponse = (await format(response)) as T & {
-    exception?: unknown;
-    refreshableTokens?: { newCSRFToken?: string };
-  };
-
-  return formattedResponse;
-};
-
 export const TransferMyRootShelfOwnership = createServerFn({ method: "POST" })
   .inputValidator((data: TransferMyRootShelfOwnershipRequest) => data)
-  .handler(
-    ({ data: request }): Promise<TransferMyRootShelfOwnershipResponse> =>
-      fetchRootShelfMembership(
-        request,
-        APIURLPathDictionary.rootShelf.transferOwnership(
-          request.param.rootShelfId as UUID
-        ),
-        "POST"
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.rootShelf.transferOwnership(request.param.rootShelfId as UUID)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body ?? {}),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as TransferMyRootShelfOwnershipResponse;
+  });
 
 export const LeaveMyRootShelf = createServerFn({ method: "POST" })
   .inputValidator((data: LeaveMyRootShelfRequest) => data)
-  .handler(
-    ({ data: request }): Promise<LeaveMyRootShelfResponse> =>
-      fetchRootShelfMembership(
-        request,
-        APIURLPathDictionary.rootShelf.leave(request.param.rootShelfId as UUID),
-        "DELETE"
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.rootShelf.leave(request.param.rootShelfId as UUID)}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        ...(request.body !== undefined
+          ? { body: JSON.stringify(request.body) }
+          : {}),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as LeaveMyRootShelfResponse;
+  });
 
 export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRootShelfByIdRequest) => data)

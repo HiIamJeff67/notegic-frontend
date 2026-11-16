@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import {
   CodeBlock,
   CodeBlockActions,
@@ -7,7 +6,8 @@ import {
   CodeBlockHeader,
   CodeBlockLine,
   CodeBlockTitle,
-} from "@/components/ui/code-block";
+} from "@shared/components/ui/code-block";
+import type { CSSProperties } from "react";
 import { useHighlightedCode } from "@/hooks/useHighlightedCode";
 
 interface CodeExampleProps {

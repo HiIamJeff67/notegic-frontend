@@ -3,30 +3,21 @@ import {
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { ListFilter, SquarePen } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
-import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@shared/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@shared/components/ui/select";
 import {
   Table,
   TableBody,
@@ -34,9 +25,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@shared/components/ui/table";
+import { tError } from "@shared/i18n/error";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
+import { ListFilter, SquarePen } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
+import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@/hooks/useDebounce";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 

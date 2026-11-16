@@ -2,22 +2,22 @@ import type {
   FeedbackReportType,
   SubmitFeedbackReportRequest,
 } from "@shared/api/interfaces/feedback.interface";
-import { useTranslation } from "@/hooks/useTranslation";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import { type FormEvent, useState } from "react";
-import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+} from "@shared/components/ui/select";
+import { Textarea } from "@shared/components/ui/textarea";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import { type FormEvent, useState } from "react";
+import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Section } from "./PreferenceRows";
 
 interface FeedbackTabProps {

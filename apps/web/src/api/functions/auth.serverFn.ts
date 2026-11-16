@@ -34,7 +34,7 @@ import {
   ValidateEmailRequest,
   ValidateEmailResponse,
 } from "@shared/api/interfaces/auth.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -81,9 +81,7 @@ export const Register = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as RegisterResponse;
+    const formattedResponse = (await format(response)) as RegisterResponse;
 
     return formattedResponse;
   });
@@ -174,9 +172,7 @@ export const RegisterViaX = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as RegisterViaXResponse;
+    const formattedResponse = (await format(response)) as RegisterViaXResponse;
 
     return formattedResponse;
   });
@@ -236,9 +232,7 @@ export const Login = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as LoginResponse;
+    const formattedResponse = (await format(response)) as LoginResponse;
 
     return formattedResponse;
   });
@@ -329,9 +323,7 @@ export const LoginViaX = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as LoginViaXResponse;
+    const formattedResponse = (await format(response)) as LoginViaXResponse;
 
     return formattedResponse;
   });
@@ -389,9 +381,7 @@ export const Logout = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const rawResponse = (await format(
-      response
-    )) as Partial<LogoutResponse>;
+    const rawResponse = (await format(response)) as Partial<LogoutResponse>;
     const formattedResponse = {
       ...rawResponse,
       exception: rawResponse.exception ?? null,
@@ -426,9 +416,7 @@ export const SendAuthCode = createServerFn({ method: "POST" })
       }
     );
 
-    const formattedResponse = (await format(
-      response
-    )) as SendAuthCodeResponse;
+    const formattedResponse = (await format(response)) as SendAuthCodeResponse;
 
     return formattedResponse;
   });
@@ -456,9 +444,7 @@ export const ValidateEmail = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as ValidateEmailResponse;
+    const formattedResponse = (await format(response)) as ValidateEmailResponse;
 
     return formattedResponse;
   });
@@ -486,9 +472,7 @@ export const ResetEmail = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as ResetEmailResponse;
+    const formattedResponse = (await format(response)) as ResetEmailResponse;
 
     return formattedResponse;
   });
@@ -543,9 +527,7 @@ export const ResetMe = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as ResetMeResponse;
+    const formattedResponse = (await format(response)) as ResetMeResponse;
 
     return formattedResponse;
   });
@@ -572,9 +554,7 @@ export const DeleteMe = createServerFn({ method: "POST" })
       }
     );
 
-    const formattedResponse = (await format(
-      response
-    )) as DeleteMeResponse;
+    const formattedResponse = (await format(response)) as DeleteMeResponse;
 
     return formattedResponse;
   });

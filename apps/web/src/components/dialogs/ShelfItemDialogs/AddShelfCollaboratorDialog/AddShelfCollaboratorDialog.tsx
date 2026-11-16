@@ -1,7 +1,5 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
-import { useTranslation } from "@/hooks/useTranslation";
-import type { UUID } from "crypto";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,15 +7,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@shared/components/ui/select";
+import type { UUID } from "crypto";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export type ShelfCollaboratorPermission =
   | AccessControlPermission.Admin

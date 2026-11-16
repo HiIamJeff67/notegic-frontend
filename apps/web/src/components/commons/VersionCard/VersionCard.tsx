@@ -1,3 +1,12 @@
+import { Button } from "@shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@shared/components/ui/card";
+import { Progress } from "@shared/components/ui/progress";
+import { Ring } from "@shared/components/ui/ring";
 import { cn } from "@shared/lib/classname/cn";
 import {
   CheckCircle2Icon,
@@ -6,15 +15,6 @@ import {
   CircleDotIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Ring } from "@/components/ui/ring";
 export type VersionTask = {
   title: string;
   description: string;

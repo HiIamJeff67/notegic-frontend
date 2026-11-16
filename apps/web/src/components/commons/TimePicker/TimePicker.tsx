@@ -1,10 +1,13 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@shared/components/ui/toggle-group";
 import { cn } from "@shared/lib/classname/cn";
 import { ClockIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface TimePickerProps {
   value: Date | undefined;

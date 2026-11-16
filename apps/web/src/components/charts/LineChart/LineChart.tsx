@@ -1,3 +1,32 @@
+import type {
+  CartesianChartData,
+  CartesianChartDatum,
+} from "@shared/components/charts/cartesian";
+import type {
+  ChartActive,
+  ChartMargin,
+  ChartTooltipContext,
+  ChartValueMode,
+} from "@shared/components/charts/chart.type";
+import { getChartColor } from "@shared/components/charts/color";
+import {
+  DEFAULT_CHART_MARGIN,
+  DEFAULT_VIEWBOX_HEIGHT,
+  DEFAULT_VIEWBOX_WIDTH,
+} from "@shared/components/charts/defaults";
+import {
+  createIntegerDomain,
+  createLinearDomain,
+} from "@shared/components/charts/domain";
+import {
+  createBandScale,
+  createLinearScale,
+} from "@shared/components/charts/scale";
+import { splitSvgTextLines } from "@shared/components/charts/svgText";
+import {
+  createIntegerTicks,
+  createLinearTicks,
+} from "@shared/components/charts/ticks";
 import type { CSSProperties, ReactNode } from "react";
 import { useState } from "react";
 import {
@@ -7,32 +36,6 @@ import {
   formatNumber,
   type TooltipPosition,
 } from "@/components/charts/ChartFrame/ChartFrame";
-import type {
-  CartesianChartData,
-  CartesianChartDatum,
-} from "@/components/charts/cartesian";
-import type {
-  ChartActive,
-  ChartMargin,
-  ChartTooltipContext,
-  ChartValueMode,
-} from "@/components/charts/chart.type";
-import { getChartColor } from "@/components/charts/color";
-import {
-  DEFAULT_CHART_MARGIN,
-  DEFAULT_VIEWBOX_HEIGHT,
-  DEFAULT_VIEWBOX_WIDTH,
-} from "@/components/charts/defaults";
-import {
-  createIntegerDomain,
-  createLinearDomain,
-} from "@/components/charts/domain";
-import { createBandScale, createLinearScale } from "@/components/charts/scale";
-import { splitSvgTextLines } from "@/components/charts/svgText";
-import {
-  createIntegerTicks,
-  createLinearTicks,
-} from "@/components/charts/ticks";
 
 export interface LineChartProps<TMeta = unknown> {
   data: CartesianChartData<TMeta>;

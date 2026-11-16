@@ -1,5 +1,5 @@
+import { Input } from "@shared/components/ui/input";
 import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { useDebounceCallback } from "@/hooks/useDebounce";
 
 interface DebouncedInputProps

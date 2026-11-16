@@ -1,5 +1,11 @@
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Calendar } from "@shared/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
@@ -10,14 +16,8 @@ import { CalendarClock, CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useStationRoutine, useUser } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import RoutineTrain from "./RoutineTrain";

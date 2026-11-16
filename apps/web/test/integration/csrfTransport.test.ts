@@ -83,7 +83,7 @@ test("RPCs and the settings custom fetch share the session boundary", () => {
       path.join(root, "src/api/invokers/userSetting.invoker.ts"),
       "utf8"
     )
-  ).toContain("await fetchServerFunction(input, init)");
+  ).toContain("fetch: fetchServerFunction");
 });
 
 test("hooks cannot replay cached response tokens into sessionStorage", () => {
@@ -112,10 +112,9 @@ test("settings cooldown and empty membership responses cannot bypass renewal han
     const source = readFileSync(path.join(functions, name), "utf8");
     expect(source).not.toContain("if (response.status === 204)");
     if (name === "userSetting.serverFn.ts") {
-      expect(source.indexOf("await format(response)")).toBeLessThan(
-        source.indexOf("response.status === 429")
-      );
-      expect(source).toContain("error instanceof NotegicAPIError");
+      expect(source).toContain("await format(response)");
+      expect(source).not.toContain("response.status === 429");
+      expect(source).not.toContain("rateLimitedUntil");
     }
   }
 });

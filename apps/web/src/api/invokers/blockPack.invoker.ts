@@ -65,7 +65,7 @@ import {
   type UpdateMyBlockPacksByIdsResponse,
   UpdateMyBlockPacksByIdsResponseSchema,
 } from "@shared/api/interfaces/blockPack.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateBlockPack,
@@ -180,7 +180,7 @@ export const queryFnGetMyBlockPacksByRootShelfId = async (
 export const mutationFnCreateBlockPack = async (
   request: CreateBlockPackRequest
 ): Promise<CreateBlockPackResponse> => {
-  const validatedRequest = parseRequest(CreateBlockPackRequestSchema, request);
+  const validatedRequest = parse(CreateBlockPackRequestSchema, request);
   try {
     const response = await CreateBlockPack({ data: validatedRequest });
     return CreateBlockPackResponseSchema.parse(response);
@@ -206,7 +206,7 @@ export const mutationFnCreateBlockPack = async (
 export const mutationFnCreateBlockPacks = async (
   request: CreateBlockPacksRequest
 ): Promise<CreateBlockPacksResponse> => {
-  const validatedRequest = parseRequest(CreateBlockPacksRequestSchema, request);
+  const validatedRequest = parse(CreateBlockPacksRequestSchema, request);
   try {
     const response = await CreateBlockPacks({ data: validatedRequest });
     return CreateBlockPacksResponseSchema.parse(response);
@@ -232,10 +232,7 @@ export const mutationFnCreateBlockPacks = async (
 export const mutationFnUpdateMyBlockPackById = async (
   request: UpdateMyBlockPackByIdRequest
 ): Promise<UpdateMyBlockPackByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyBlockPackByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyBlockPackByIdRequestSchema, request);
   try {
     const response = await UpdateMyBlockPackById({
       data: validatedRequest,
@@ -263,10 +260,7 @@ export const mutationFnUpdateMyBlockPackById = async (
 export const mutationFnUpdateMyBlockPacksByIds = async (
   request: UpdateMyBlockPacksByIdsRequest
 ): Promise<UpdateMyBlockPacksByIdsResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyBlockPacksByIdsRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyBlockPacksByIdsRequestSchema, request);
   try {
     const response = await UpdateMyBlockPacksByIds({
       data: validatedRequest,

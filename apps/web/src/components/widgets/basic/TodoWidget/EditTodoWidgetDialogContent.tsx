@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Slider } from "@shared/components/ui/slider";
 import { TodoSetting } from "@widgets/basic/TodoWidget/setting/todoSetting";
 import { Dispatch, SetStateAction } from "react";
 import {
@@ -6,7 +6,7 @@ import {
   EditWidgetDialogOption,
   EditWidgetDialogSeparator,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import { Slider } from "@/components/ui/slider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditTodoWidgetDialogContentProps {
   setting: TodoSetting;

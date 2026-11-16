@@ -30,13 +30,10 @@ import {
   UpdateMyBlockPacksByIdsRequest,
   UpdateMyBlockPacksByIdsResponse,
 } from "@shared/api/interfaces/blockPack.interface";
-import {
-  APIURLPathDictionary,
-  CurrentAPIBaseURL,
-  withoutPathParams,
-} from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
+import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 

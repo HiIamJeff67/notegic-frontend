@@ -1,7 +1,7 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
 import React, { useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ImageCropperProps {
   imageURL: string;

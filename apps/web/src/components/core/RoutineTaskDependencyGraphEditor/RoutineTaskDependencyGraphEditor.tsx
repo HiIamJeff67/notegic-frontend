@@ -1,20 +1,14 @@
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { type Edge, type ReactFlowInstance } from "@xyflow/react";
+import { useTranslation } from "@/hooks/useTranslation";
 import "@xyflow/react/dist/style.css";
-import type { UUID } from "crypto";
-import { ChevronDownIcon, SquarePen, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
-import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
-import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import RoutineTaskInspector from "@/components/inspectors/RoutineTaskInspector";
-import { Button } from "@/components/ui/button";
+import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,9 +24,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/ui/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Spinner } from "@shared/components/ui/spinner";
+import type { UUID } from "crypto";
+import { ChevronDownIcon, SquarePen, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
+import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
+import RoutineTaskInspector from "@/components/inspectors/RoutineTaskInspector";
 import {
   useModal,
   useRoutineTaskDependencyGraphDraft,

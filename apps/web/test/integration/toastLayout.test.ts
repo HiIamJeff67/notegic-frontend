@@ -17,10 +17,10 @@ const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import toast from '@shared/lib/toast/toast';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@shared/components/ui/toaster';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { toastManager, useToastManager } from '@/components/ui/toast';
+import { toastManager, useToastManager } from '@shared/components/ui/toast';
 window.notify = toast;
 window.nativeNotify = toastManager.add;
 function Probe() {

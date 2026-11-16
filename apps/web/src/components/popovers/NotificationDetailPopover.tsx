@@ -1,11 +1,11 @@
 import type { Notification } from "@shared/api/interfaces/notification.interface";
-import { cn } from "@shared/lib/classname/cn";
-import type { ReactNode } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@shared/components/ui/popover";
+import { cn } from "@shared/lib/classname/cn";
+import type { ReactNode } from "react";
 
 const formatValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "—";

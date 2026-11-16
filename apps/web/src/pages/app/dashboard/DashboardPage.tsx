@@ -2,6 +2,11 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
+import { DNDType } from "@shared/components/commons/DNDable/dnd.type";
+import Draggable from "@shared/components/commons/Draggable/Draggable";
+import Extendable from "@shared/components/commons/Extendable/Extendable";
+import { Button } from "@shared/components/ui/button";
+import { DropdownMenuItem } from "@shared/components/ui/dropdown-menu";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
 import {
@@ -16,15 +21,10 @@ import { DropTargetMonitor } from "react-dnd";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import PlaceableBackground from "@/components/backgrounds/PlaceableBackground/PlaceableBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
-import { DNDType } from "@/components/commons/DNDable/dnd.type";
-import Draggable from "@/components/commons/Draggable/Draggable";
-import Extendable from "@/components/commons/Extendable/Extendable";
 import Image from "@/components/commons/Image/Image";
 import XYResizable from "@/components/commons/Resizable/XYResizable";
 import CreateWidgetDialog from "@/components/dialogs/WidgetDialog/CreateWidgetDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
-import { Button } from "@/components/ui/button";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   DashboardWidthFrameCountStep,
   MaxDashboardWidthFrameCount,

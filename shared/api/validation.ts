@@ -3,11 +3,11 @@ import { NotegicValidationError } from "@shared/api/exceptions/errors/validation
 import { z } from "zod";
 
 // Validate before transport, offline persistence or draft mutation.
-export const parseRequest = <Schema extends z.ZodType>(
+export const parse = <Schema extends z.ZodType>(
   schema: Schema,
-  input: unknown
+  request: unknown
 ): z.output<Schema> => {
-  const result = schema.safeParse(input);
+  const result = schema.safeParse(request);
   if (!result.success) {
     throw new NotegicValidationError(
       ValidationClientException.ZodParsingFailed(result.error)

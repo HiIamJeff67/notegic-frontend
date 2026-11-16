@@ -1,4 +1,3 @@
-import { Fragment, useLayoutEffect, useRef } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,7 +5,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@shared/components/ui/breadcrumb";
+import { Fragment, useLayoutEffect, useRef } from "react";
 
 const AppCommandPath = ({
   path,

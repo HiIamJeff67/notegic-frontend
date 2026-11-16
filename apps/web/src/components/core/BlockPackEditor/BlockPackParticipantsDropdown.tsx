@@ -12,6 +12,20 @@ import type {
   RealtimePresenceFrame,
   RealtimePresenceParticipant,
 } from "@shared/api/websocket";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from "@shared/components/ui/avatar";
+import { Button } from "@shared/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
@@ -30,20 +44,6 @@ import ShelfSharingOverviewDialog, {
   type ShelfSharingOverviewRow,
 } from "@/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
-import {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-} from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";

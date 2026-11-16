@@ -1,7 +1,13 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import { UserRole } from "@shared/api/interfaces/enums";
-import { useNetwork } from "@/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { useCallback, useState } from "react";
@@ -12,15 +18,9 @@ import AuthCodeInput from "@/components/inputs/AuthCodeInput";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useLoading, useUser } from "@/hooks";
+import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SecurityTabProps {
   layout?: "panel" | "page";

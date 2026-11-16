@@ -9,17 +9,14 @@ import {
   type SubmitFeedbackReportResponse,
   SubmitFeedbackReportResponseSchema,
 } from "@shared/api/interfaces/feedback.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import { SubmitFeedbackReport } from "@/api/functions/feedback.serverFn";
 
 export const mutationFnSubmitFeedbackReport = async (
   request: SubmitFeedbackReportRequest
 ): Promise<SubmitFeedbackReportResponse> => {
-  const validatedRequest = parseRequest(
-    SubmitFeedbackReportRequestSchema,
-    request
-  );
+  const validatedRequest = parse(SubmitFeedbackReportRequestSchema, request);
   try {
     return SubmitFeedbackReportResponseSchema.parse(
       await SubmitFeedbackReport({

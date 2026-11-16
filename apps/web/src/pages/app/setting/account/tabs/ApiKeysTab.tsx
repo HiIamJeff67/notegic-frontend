@@ -1,9 +1,25 @@
-import { useNetwork } from "@/hooks/useNetwork";
 import type {
   APIKeySummary,
   CreateMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
-import { useTranslation } from "@/hooks/useTranslation";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@shared/components/ui/accordion";
+import { Button } from "@shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
@@ -16,24 +32,8 @@ import {
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ApiKeysTabProps {
   layout?: "panel" | "page";

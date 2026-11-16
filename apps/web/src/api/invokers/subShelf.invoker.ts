@@ -69,7 +69,7 @@ import {
   type UpdateMySubShelvesByIdsResponse,
   UpdateMySubShelvesByIdsResponseSchema,
 } from "@shared/api/interfaces/subShelf.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateSubShelfByRootShelfId,
@@ -215,7 +215,7 @@ export const queryFnGetMySubShelvesAndItemsByPrevSubShelfId = async (
 export const mutationFnCreateSubShelfByRootShelfId = async (
   request: CreateSubShelfByRootShelfIdRequest
 ): Promise<CreateSubShelfByRootShelfIdResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     CreateSubShelfByRootShelfIdRequestSchema,
     request
   );
@@ -248,7 +248,7 @@ export const mutationFnCreateSubShelfByRootShelfId = async (
 export const mutationFnCreateSubShelvesByRootShelfIds = async (
   request: CreateSubShelvesByRootShelfIdsRequest
 ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     CreateSubShelvesByRootShelfIdsRequestSchema,
     request
   );
@@ -281,10 +281,7 @@ export const mutationFnCreateSubShelvesByRootShelfIds = async (
 export const mutationFnUpdateMySubShelfById = async (
   request: UpdateMySubShelfByIdRequest
 ): Promise<UpdateMySubShelfByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMySubShelfByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMySubShelfByIdRequestSchema, request);
   try {
     const response = await UpdateMySubShelfById({
       data: validatedRequest,
@@ -311,10 +308,7 @@ export const mutationFnUpdateMySubShelfById = async (
 export const mutationFnUpdateMySubShelvesByIds = async (
   request: UpdateMySubShelvesByIdsRequest
 ): Promise<UpdateMySubShelvesByIdsResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMySubShelvesByIdsRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMySubShelvesByIdsRequestSchema, request);
   try {
     const response = await UpdateMySubShelvesByIds({
       data: validatedRequest,

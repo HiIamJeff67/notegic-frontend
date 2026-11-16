@@ -43,7 +43,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -166,7 +166,7 @@ export const useCreateRootShelf = (
     request: CreateRootShelfRequest
   ): Promise<CreateRootShelfResponse> => {
     try {
-      parseRequest(CreateRootShelfRequestSchema, request);
+      parse(CreateRootShelfRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -233,7 +233,7 @@ export const useCreateRootShelves = () => {
     request: CreateRootShelvesRequest
   ): Promise<CreateRootShelvesResponse> => {
     try {
-      parseRequest(CreateRootShelvesRequestSchema, request);
+      parse(CreateRootShelvesRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -311,7 +311,7 @@ export const useUpdateMyRootShelfById = () => {
     request: UpdateMyRootShelfByIdRequest
   ): Promise<UpdateMyRootShelfByIdResponse> => {
     try {
-      parseRequest(UpdateMyRootShelfByIdRequestSchema, request);
+      parse(UpdateMyRootShelfByIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -498,7 +498,7 @@ export const useUpdateMyRootShelvesByIds = (
     request: UpdateMyRootShelvesByIdsRequest
   ): Promise<UpdateMyRootShelvesByIdsResponse> => {
     try {
-      parseRequest(UpdateMyRootShelvesByIdsRequestSchema, request);
+      parse(UpdateMyRootShelvesByIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }

@@ -2,7 +2,8 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { useSidebar } from "@shared/components/ui/sidebar";
 import {
   LocalStorage,
   LocalStorageKey,
@@ -19,14 +20,13 @@ import GridBackground from "@/components/backgrounds/GridBackground/GridBackgrou
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
 import Image from "@/components/commons/Image/Image";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
 import {
   useBackgroundImages,
   useModal,
   useResizeSidebar,
   useStationRoutine,
 } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import AddChartDialog from "./RoutineCharts/AddChartDialog";
 import RoutineCharts, {
   CHART_DEFINITIONS,

@@ -3,6 +3,14 @@ import {
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@shared/components/ui/context-menu";
 import { tError } from "@shared/i18n/error";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
@@ -14,14 +22,6 @@ import { SquarePen, Trash2 } from "lucide-react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 

@@ -65,7 +65,7 @@ import {
   type VisualizeMyTotalCountResponse,
   VisualizeMyTotalCountResponseSchema,
 } from "@shared/api/interfaces/station.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateStation,
@@ -192,7 +192,7 @@ export const mutationFnLeaveMyStation = async (
 export const mutationFnCreateStation = async (
   request: CreateStationRequest
 ): Promise<CreateStationResponse> => {
-  const validatedRequest = parseRequest(CreateStationRequestSchema, request);
+  const validatedRequest = parse(CreateStationRequestSchema, request);
   try {
     const response = await CreateStation({
       data: validatedRequest,
@@ -219,7 +219,7 @@ export const mutationFnCreateStation = async (
 export const mutationFnCreateStations = async (
   request: CreateStationsRequest
 ): Promise<CreateStationsResponse> => {
-  const validatedRequest = parseRequest(CreateStationsRequestSchema, request);
+  const validatedRequest = parse(CreateStationsRequestSchema, request);
   try {
     const response = await CreateStations({
       data: validatedRequest,
@@ -246,10 +246,7 @@ export const mutationFnCreateStations = async (
 export const mutationFnUpdateMyStationById = async (
   request: UpdateMyStationByIdRequest
 ): Promise<UpdateMyStationByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyStationByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyStationByIdRequestSchema, request);
   try {
     const response = await UpdateMyStationById({
       data: validatedRequest,
@@ -276,10 +273,7 @@ export const mutationFnUpdateMyStationById = async (
 export const mutationFnUpdateMyStationsByIds = async (
   request: UpdateMyStationsByIdsRequest
 ): Promise<UpdateMyStationsByIdsResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyStationsByIdsRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyStationsByIdsRequestSchema, request);
   try {
     const response = await UpdateMyStationsByIds({
       data: validatedRequest,

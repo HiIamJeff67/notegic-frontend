@@ -78,10 +78,12 @@ math, diagram, calendar, and Yjs collaboration. Block bytes for the web app
 are cached in IndexedDB through `LocalYjsDocumentStore`.
 
 The web app's local database is SQLocal (WASM SQLite in a worker, stored in
-OPFS) with Drizzle over `drizzle-orm/sqlite-proxy`. Table definitions use
-`drizzle-orm/sqlite-core` under `apps/web/src/api/local/schemas/`. That schema
-package is the one the sidecar must open. The web worker, OPFS, and
-cross-origin isolation stay on the web app.
+OPFS) with Drizzle over `drizzle-orm/sqlite-proxy`. Table definitions currently
+use `drizzle-orm/sqlite-core` under `apps/web/src/api/local/schemas/`.
+[NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration)
+moves that schema to `shared/api/local/`. The sidecar opens the shared schema.
+It does not import `apps/web`. The web worker, OPFS, and cross-origin isolation
+stay on the web app.
 
 Desktop writes go only to the local database. The web simulator and
 synchronizer path is a remote-first cache, and this gate does not reuse it.
@@ -122,5 +124,8 @@ Windows must pass Gate 1 before the shell is treated as proven.
 
 What the apps may share after the shell exists, including the local schema
 version cap and the per-app `api/functions/` call site, is in
-[Shared application boundaries](shared-application-boundaries.md). The current
-desktop imports of `apps/web` are a temporary bridge, not that target.
+[Shared application boundaries](shared-application-boundaries.md). Desktop
+reaches that code through `shared/`. It does not import `apps/web`. The
+current desktop imports of `apps/web` violate that rule.
+[NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
+removes them.

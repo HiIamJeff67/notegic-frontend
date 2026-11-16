@@ -1,4 +1,9 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/ui/collapsible";
 import { GuideData, getDefaultGuideData } from "@widgets/guide/data/guideData";
 import { WidgetProps } from "@widgets/widget";
 import {
@@ -8,13 +13,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useAnyTypeState } from "@/hooks/useAnyTypeState";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type GuideStep = {
   id: string;

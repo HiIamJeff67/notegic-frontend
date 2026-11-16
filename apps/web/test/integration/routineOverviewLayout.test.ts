@@ -8,7 +8,7 @@ import { build } from "esbuild";
 const fixture = `
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
+import { SidebarProvider, useSidebar } from '@shared/components/ui/sidebar';
 import { ResizeSidebarProvider } from '@/providers/ResizeSidebarProvider';
 import ResizableSidebar from '@/components/core/AppUtilitiesWrapper/ResizableSidebar/ResizableSidebar';
 import AppSidebarInset from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset';

@@ -1,4 +1,7 @@
-import { SidebarMenuItem, SidebarMenuSkeleton } from "@/components/ui/sidebar";
+import {
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+} from "@shared/components/ui/sidebar";
 
 const RoutineTagMenuItemSkeleton = ({ number = 1 }: { number?: number }) => (
   <>

@@ -5,7 +5,7 @@ to choose and reuse an existing owner. What the result should look like is in
 the [UI appearance](../designs/ui/appearance.md). Icons stay in the
 [Icon map](icon-map.md).
 
-Primitives live in `apps/web/src/components/ui/` and own Radix or Base UI
+Primitives live in `shared/components/ui/` and own Radix or Base UI
 behavior plus `data-slot`. Feature code imports those files. Add a primitive
 there only when the control does not exist yet.
 

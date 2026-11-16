@@ -11,8 +11,7 @@ import {
   APIURLPathDictionary,
   CurrentAPIBaseURL,
   CurrentRealtimeBaseURL,
-  getRealtimeHTTPURL,
-} from "@shared/api/url";
+} from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -107,22 +106,25 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
         request.header?.userAgent ??
         getRequestHeader("User-Agent") ??
         "unknown";
-      const response = await fetch(
-        `${getRealtimeHTTPURL()}/${CurrentRealtimeBaseURL}/${APIURLPathDictionary.realtime.getBlockPackParticipants(request.param.blockPackId as UUID)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "User-Agent": userAgent,
-            "X-CSRF-Token":
-              getRequestHeader("X-CSRF-Token") ??
-              request.header?.csrfToken ??
-              "",
-            ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-          },
-          credentials: "include",
-        }
-      );
+      const websocketURL = import.meta.env.VITE_REALTIME_WEBSOCKET_URL?.trim();
+      const participantsPath = `${CurrentRealtimeBaseURL}/${APIURLPathDictionary.realtime.getBlockPackParticipants(request.param.blockPackId as UUID)}`;
+      const participantsURL = websocketURL
+        ? `${websocketURL
+            .replace(/^wss:/, "https:")
+            .replace(/^ws:/, "http:")
+            .replace(/\/+$/, "")}/${participantsPath}`
+        : APIURLPathDictionary.notFound();
+      const response = await fetch(participantsURL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
 
       forwardUpstreamSetCookies(response);
       const formattedResponse = (await format(

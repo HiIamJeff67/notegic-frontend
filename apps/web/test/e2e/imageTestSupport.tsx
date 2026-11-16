@@ -1,3 +1,4 @@
+import { Button } from "@shared/components/ui/button";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import Image, {
@@ -6,7 +7,6 @@ import Image, {
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
-import { Button } from "@/components/ui/button";
 
 export const imageStatuses: ImageLoadingStatus[] = [];
 export const imageEvents: string[] = [];

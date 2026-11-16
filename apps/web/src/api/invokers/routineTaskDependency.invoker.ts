@@ -25,7 +25,7 @@ import {
   type UpdateRoutineTaskGraphByRoutineIdResponse,
   UpdateRoutineTaskGraphByRoutineIdResponseSchema,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateRoutineTaskDependencyByRoutineId,
@@ -38,7 +38,7 @@ import {
 export const mutationFnUpdateRoutineTaskGraphByRoutineId = async (
   request: UpdateRoutineTaskGraphByRoutineIdRequest
 ): Promise<UpdateRoutineTaskGraphByRoutineIdResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     UpdateRoutineTaskGraphByRoutineIdRequestSchema,
     request
   );

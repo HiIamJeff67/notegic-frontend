@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { SidebarMenuItem } from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
@@ -7,8 +7,8 @@ import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuItem";
 import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPackMenuItemSkeleton";
-import { SidebarMenuItem } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface BlockPackMenuProps {
   parent: SubShelfNode;

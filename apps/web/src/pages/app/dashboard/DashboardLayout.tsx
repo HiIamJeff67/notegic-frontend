@@ -1,6 +1,6 @@
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
 import React, { Suspense } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { WidgetProvider } from "@/providers/WidgetProvider";
 

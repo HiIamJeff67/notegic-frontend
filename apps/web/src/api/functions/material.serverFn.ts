@@ -30,49 +30,12 @@ import {
   UpdateMyMaterialByIdRequest,
   UpdateMyMaterialByIdResponse,
 } from "@shared/api/interfaces/material.interface";
-import {
-  APIURLPathDictionary,
-  CurrentAPIBaseURL,
-  withoutPathParams,
-} from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
+import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
-
-const forwardMaterialObjectTicketRequest = async <TResponse>(
-  request: {
-    header?: { userAgent?: string; csrfToken?: string };
-    body: object;
-  },
-  path: string
-): Promise<TResponse> => {
-  const inboundCookie = getRequestHeader("cookie");
-  const userAgent =
-    request.header?.userAgent ?? getRequestHeader("User-Agent") ?? "unknown";
-  const response = await fetch(
-    `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${path}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": userAgent,
-        "X-CSRF-Token":
-          getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
-        ...(inboundCookie ? { Cookie: inboundCookie } : {}),
-      },
-      body: JSON.stringify(request.body),
-      credentials: "include",
-    }
-  );
-
-  forwardUpstreamSetCookies(response);
-  const formattedResponse = (await format(response)) as TResponse & {
-    exception?: Record<string, unknown> | null;
-  };
-
-  return formattedResponse;
-};
 
 export const GetMyMaterialById = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyMaterialByIdRequest) => data)
@@ -488,23 +451,55 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
 
 export const CreateMaterialObjectTicket = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMaterialObjectTicketRequest) => data)
-  .handler(
-    ({ data: request }): Promise<CreateMaterialObjectTicketResponse> =>
-      forwardMaterialObjectTicketRequest(
-        request,
-        APIURLPathDictionary.material.createObjectTicket
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.createObjectTicket}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as CreateMaterialObjectTicketResponse;
+  });
 
 export const ResolveMaterialObjectTicket = createServerFn({ method: "POST" })
   .inputValidator((data: ResolveMaterialObjectTicketRequest) => data)
-  .handler(
-    ({ data: request }): Promise<ResolveMaterialObjectTicketResponse> =>
-      forwardMaterialObjectTicketRequest(
-        request,
-        APIURLPathDictionary.material.resolveObjectTicket
-      )
-  );
+  .handler(async ({ data: request }) => {
+    const inboundCookie = getRequestHeader("cookie");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_DOMAIN_URL}/${CurrentAPIBaseURL}/${APIURLPathDictionary.material.resolveObjectTicket}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        body: JSON.stringify(request.body),
+        credentials: "include",
+      }
+    );
+    forwardUpstreamSetCookies(response);
+    return (await format(response)) as ResolveMaterialObjectTicketResponse;
+  });
 
 export const HardDeleteMyMaterialsByIds = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyMaterialsByIdsRequest) => data)

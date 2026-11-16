@@ -1,5 +1,5 @@
+import { SidebarInset, useSidebar } from "@shared/components/ui/sidebar";
 import React from "react";
-import { SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { useResizeSidebar } from "@/hooks";
 
 interface AppSidebarInsetProps {

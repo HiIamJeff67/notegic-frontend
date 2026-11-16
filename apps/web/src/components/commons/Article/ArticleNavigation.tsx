@@ -1,15 +1,10 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
-import { cn } from "@shared/lib/classname/cn";
-import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
-import type { ComponentType, ReactNode, RefObject } from "react";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { flushSync } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
+} from "@shared/components/ui/hover-card";
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +18,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar";
+} from "@shared/components/ui/sidebar";
+import { cn } from "@shared/lib/classname/cn";
+import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
+import type { ComponentType, ReactNode, RefObject } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";

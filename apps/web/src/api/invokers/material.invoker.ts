@@ -61,7 +61,7 @@ import {
   type UpdateMyMaterialByIdResponse,
   UpdateMyMaterialByIdResponseSchema,
 } from "@shared/api/interfaces/material.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateMaterialObjectTicket,
@@ -216,7 +216,7 @@ export const queryFnGetMyMaterialsByRootShelfId = async (
 export const mutationFnCreateMyMaterial = async (
   request: CreateMyMaterialRequest
 ): Promise<CreateMyMaterialResponse> => {
-  const validatedRequest = parseRequest(CreateMyMaterialRequestSchema, request);
+  const validatedRequest = parse(CreateMyMaterialRequestSchema, request);
   try {
     const response = await CreateMyMaterial({
       data: validatedRequest,
@@ -243,10 +243,7 @@ export const mutationFnCreateMyMaterial = async (
 export const mutationFnUpdateMyMaterialById = async (
   request: UpdateMyMaterialByIdRequest
 ): Promise<UpdateMyMaterialByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyMaterialByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyMaterialByIdRequestSchema, request);
   try {
     const response = await UpdateMyMaterialById({
       data: validatedRequest,

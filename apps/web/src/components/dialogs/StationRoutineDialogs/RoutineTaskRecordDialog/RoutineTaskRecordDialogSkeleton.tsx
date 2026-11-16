@@ -1,12 +1,11 @@
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@shared/components/ui/dialog";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -14,7 +13,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@shared/components/ui/table";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface RoutineTaskRecordDialogSkeletonProps {
   isOpen: boolean;

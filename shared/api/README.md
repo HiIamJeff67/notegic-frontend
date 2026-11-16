@@ -1,44 +1,76 @@
-# Shared API Boundary
+# Shared API
 
-`shared/api/` contains reusable frontend API contracts and runtime-neutral
-request/query code. Web-only adapters are under `apps/web/src/api/` so future
-Desktop and Mobile consumers can use the shared boundary without importing
-TanStack Start, browser storage, SQLocal/OPFS, or React lifecycle code.
+Portable API contracts and runtime-neutral helpers. Web, Desktop, and a future
+Mobile app may import this tree. It must not import `apps/*`.
 
-## Portable responsibilities
+The product decision for what stays in an app is
+[Shared application boundaries](../../docs/designs/systems/shared-application-boundaries.md).
+This file is the map of `shared/api/` itself. Update it in the same change
+that adds, moves, or removes a folder or a root module here.
 
-| Area | Shared responsibility |
+## Now
+
+```text
+interfaces/          request and response contracts, enums, types, seeds
+graphql/             conversions and generated operations; do not hand-edit generated/
+websocket/           frame, ticket, and channel contracts
+exceptions/          NotegicException catalogs and NotegicError subclasses
+queryKeys.ts         TanStack Query keys
+queryClient.ts       shared QueryClient defaults and getQueryClient()
+queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
+retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
+validation.ts        parse(schema, request) before transport or a draft write
+```
+
+`queryClient` decides whether one in-flight query or mutation runs again. It
+does not retry HTTP 4xx, including 429. `getQueryClient()` keeps one client
+while `window` exists. Without `window` it returns a new client, so server
+rendering does not share cache across requests.
+
+`retryClient` is a different job. It remembers one deadline per API scope and
+refuses later calls until that time. It does not replay the failed call.
+`getRetryAt` converts `Retry-After` and lives in this file. A catalog does not
+import `RetryClient`. The invoker records the deadline, then throws the
+catalog error. See
+[Exceptions and errors](../../docs/conventions/12-exceptions-and-errors.md).
+
+`exceptions/client/` holds failures that start in the client, such as fetch,
+validation, and the local database. `exceptions/errors/` holds the thrown
+`NotegicError` subclasses. `RealtimeError` is an existing catalog that returns
+`NotegicException`. New catalogs use the `Exceptions` name.
+
+The connection that uses these contracts stays in the app: Web server
+functions, the Web Apollo client, and the WebSocket lifecycle are under
+`apps/web/src/api/`. Desktop and Mobile do not import those files.
+
+## Next
+
+These paths are decided and are not in the tree yet.
+
+| Path | What lands there | Issue |
+| --- | --- | --- |
+| `local/` | Shared `sqlite-core` tables, one ordered SQL migration chain, the migrator, and the per-app version cap | [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration), after [NOT-155](https://linear.app/notegic/issue/NOT-155/open-native-sqlite-from-the-desktop-sidecar) opens the desktop file |
+
+Do not add `shared/local/`. An app applies migrations only through its build
+cap and cannot skip a number. The TypeScript schema that app compiles matches
+the cap. A desktop-only table stays beside `apps/desktop/sidecar/driver/`
+until Web raises its cap.
+
+[NOT-159](https://linear.app/notegic/issue/NOT-159/commit-shelf-changes-on-the-desktop-sidecar-before-remote-sync)
+writes shelf changes through that schema after the cap exists. Web keeps its
+current simulator and synchronizer path until that desktop path is trusted.
+Rust does not open the database.
+
+## Last call
+
+`shared/api` owns the contract, path, and validation. The function that
+performs the call stays in that app:
+
+| App | `api/functions/` |
 | --- | --- |
-| Contracts | Request/response types, endpoint semantics, and validation schemas |
-| Requests | HTTP method, URL/payload, headers required by the public contract |
-| Queries | Query keys, cache policy, invalidation, and runtime-neutral query configuration |
-| Domain | Data mapping and business rules that do not require a platform |
-| GraphQL | Documents, generated types, conversions, and client-neutral operation definitions |
-| Realtime | Frame/channel contracts and runtime-neutral message mapping |
+| Web | TanStack Start server functions, cookies, and CSRF |
+| Desktop | TypeScript that calls a Tauri command, or a bearer request |
+| Mobile | That platform's request implementation |
 
-HTTP request/response is the lowest common boundary for all applications.
-Mobile may use direct HTTP. Desktop may use direct HTTP or a server-function
-adapter. Web and Desktop may use TanStack Start `serverFn` where their runtime
-integration is sound, but shared code must not require TanStack Start.
-
-## Runtime-specific code
-
-| Current area | Ownership during migration |
-| --- | --- |
-| `apps/web/src/api/functions/*.serverFn.ts` | TanStack Start Web server/client adapter; Desktop is optional |
-| cookies, headers, CSRF, and request forwarding | Web/server request adapter |
-| SQLocal, OPFS, browser database, and local migrations | Current Web local-runtime code until the real shared/runtime split |
-| local/session storage | App-specific storage adapter and lifecycle |
-| focus and online managers | App lifecycle adapter |
-| WebSocket connection lifecycle | App runtime adapter around shared frame/channel contracts |
-
-No server function is a requirement for Mobile, and no server function should
-be used as an implicit database connection or database write path for another
-client.
-
-## Import rule
-
-Portable code belongs under the shared boundary and must not import Web-only
-globals, CSS, DOM APIs, or platform storage. Runtime adapters belong under
-the owning app and should be introduced only when a real application consumer
-needs them; do not add speculative runtime abstractions.
+Only Web uses a server function. A server function is not a database
+connection for another app.

@@ -12,12 +12,11 @@ import type {
   VisualizeMyRoutineTaskRecordStatusCountRequest,
   VisualizeMyRoutineTaskRecordStatusCountResponse,
 } from "@shared/api/interfaces/routineTaskRecord.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
-import { fetchVisualizeResponse } from "./visualize.serverFn";
 
 export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
   method: "GET",
@@ -28,12 +27,58 @@ export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
   .handler(
     async ({
       data: request,
-    }): Promise<VisualizeMyRoutineTaskRecordStatusCountResponse> =>
-      fetchVisualizeResponse(
-        request,
+    }): Promise<VisualizeMyRoutineTaskRecordStatusCountResponse> => {
+      const path =
         APIURLPathDictionary.routineTaskRecord
-          .visualizeMyRoutineTaskRecordStatusCount
-      )
+          .visualizeMyRoutineTaskRecordStatusCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(
+        response
+      )) as VisualizeMyRoutineTaskRecordStatusCountResponse;
+    }
   );
 
 export const VisualizeMyRoutineTaskRecordPurposeCount = createServerFn({
@@ -45,12 +90,58 @@ export const VisualizeMyRoutineTaskRecordPurposeCount = createServerFn({
   .handler(
     async ({
       data: request,
-    }): Promise<VisualizeMyRoutineTaskRecordPurposeCountResponse> =>
-      fetchVisualizeResponse(
-        request,
+    }): Promise<VisualizeMyRoutineTaskRecordPurposeCountResponse> => {
+      const path =
         APIURLPathDictionary.routineTaskRecord
-          .visualizeMyRoutineTaskRecordPurposeCount
-      )
+          .visualizeMyRoutineTaskRecordPurposeCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(
+        response
+      )) as VisualizeMyRoutineTaskRecordPurposeCountResponse;
+    }
   );
 
 export const VisualizeMyRoutineTaskRecordScheduledAtCount = createServerFn({
@@ -62,12 +153,58 @@ export const VisualizeMyRoutineTaskRecordScheduledAtCount = createServerFn({
   .handler(
     async ({
       data: request,
-    }): Promise<VisualizeMyRoutineTaskRecordScheduledAtCountResponse> =>
-      fetchVisualizeResponse(
-        request,
+    }): Promise<VisualizeMyRoutineTaskRecordScheduledAtCountResponse> => {
+      const path =
         APIURLPathDictionary.routineTaskRecord
-          .visualizeMyRoutineTaskRecordScheduledAtCount
-      )
+          .visualizeMyRoutineTaskRecordScheduledAtCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(
+        response
+      )) as VisualizeMyRoutineTaskRecordScheduledAtCountResponse;
+    }
   );
 
 export const VisualizeMyRoutineTaskRecordActualStartedAtCount = createServerFn({
@@ -79,12 +216,58 @@ export const VisualizeMyRoutineTaskRecordActualStartedAtCount = createServerFn({
   .handler(
     async ({
       data: request,
-    }): Promise<VisualizeMyRoutineTaskRecordActualStartedAtCountResponse> =>
-      fetchVisualizeResponse(
-        request,
+    }): Promise<VisualizeMyRoutineTaskRecordActualStartedAtCountResponse> => {
+      const path =
         APIURLPathDictionary.routineTaskRecord
-          .visualizeMyRoutineTaskRecordActualStartedAtCount
-      )
+          .visualizeMyRoutineTaskRecordActualStartedAtCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(
+        response
+      )) as VisualizeMyRoutineTaskRecordActualStartedAtCountResponse;
+    }
   );
 
 export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
@@ -96,12 +279,58 @@ export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
   .handler(
     async ({
       data: request,
-    }): Promise<VisualizeMyRoutineTaskRecordActualEndedAtCountResponse> =>
-      fetchVisualizeResponse(
-        request,
+    }): Promise<VisualizeMyRoutineTaskRecordActualEndedAtCountResponse> => {
+      const path =
         APIURLPathDictionary.routineTaskRecord
-          .visualizeMyRoutineTaskRecordActualEndedAtCount
-      )
+          .visualizeMyRoutineTaskRecordActualEndedAtCount;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(request.param) as [
+      string,
+      unknown,
+    ][]) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          for (const entry of value) {
+            params.append(
+              key,
+              entry instanceof Date ? entry.toISOString() : String(entry)
+            );
+          }
+          continue;
+        }
+        params.set(
+          key,
+          value instanceof Date ? value.toISOString() : String(value)
+        );
+      }
+      const url =
+        import.meta.env.VITE_API_DOMAIN_URL +
+        "/" +
+        CurrentAPIBaseURL +
+        "/" +
+        path +
+        "?" +
+        params.toString();
+      const inboundCookie = getRequestHeader("cookie");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            request.header?.userAgent ??
+            getRequestHeader("User-Agent") ??
+            "unknown",
+          "X-CSRF-Token":
+            getRequestHeader("X-CSRF-Token") ?? request.header?.csrfToken ?? "",
+          ...(inboundCookie ? { Cookie: inboundCookie } : {}),
+        },
+        credentials: "include",
+      });
+      forwardUpstreamSetCookies(response);
+      return (await format(
+        response
+      )) as VisualizeMyRoutineTaskRecordActualEndedAtCountResponse;
+    }
   );
 
 export const GetMyRoutineTaskRecordsByRoutineTaskId = createServerFn({

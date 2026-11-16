@@ -180,9 +180,7 @@ test.each([
     exception: null,
     refreshableTokens: { newCSRFToken: "fixture" },
   };
-  await expect(
-    format(Response.json(body, { status }))
-  ).resolves.toEqual(body);
+  await expect(format(Response.json(body, { status }))).resolves.toEqual(body);
 });
 
 test("rejects a malformed successful response with a safe protocol error", async () => {

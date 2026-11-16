@@ -1,24 +1,9 @@
 import { RoutinePeriod, RoutinePhase } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
-import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { useEffect, useState } from "react";
-import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
-import ContainableSelect from "@/components/commons/ContainableSelect/ContainableSelect";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
-import MonthlyDayPicker from "@/components/commons/MonthlyDayPicker/MonthlyDayPicker";
-import TimePicker from "@/components/commons/TimePicker/TimePicker";
-import TimezoneSelector, {
-  SupportedTimezones,
-} from "@/components/commons/TimezoneSelector/TimezoneSelector";
-import WeekdayPicker from "@/components/commons/WeekdayPicker/WeekdayPicker";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import ContainableSelect from "@shared/components/commons/ContainableSelect/ContainableSelect";
+import MonthlyDayPicker from "@shared/components/commons/MonthlyDayPicker/MonthlyDayPicker";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Sheet,
   SheetContent,
@@ -26,11 +11,26 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+} from "@shared/components/ui/sheet";
+import { Spinner } from "@shared/components/ui/spinner";
+import { Switch } from "@shared/components/ui/switch";
+import { Textarea } from "@shared/components/ui/textarea";
+import { tError } from "@shared/i18n/error";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
+import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
+import { useEffect, useState } from "react";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
+import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import TimePicker from "@/components/commons/TimePicker/TimePicker";
+import TimezoneSelector, {
+  SupportedTimezones,
+} from "@/components/commons/TimezoneSelector/TimezoneSelector";
+import WeekdayPicker from "@/components/commons/WeekdayPicker/WeekdayPicker";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";

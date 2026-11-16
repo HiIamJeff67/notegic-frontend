@@ -1,9 +1,9 @@
 import type { RoutineTaskDependency } from "@shared/api/interfaces/routineTaskDependency.interface";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Textarea } from "@shared/components/ui/textarea";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
 interface RoutineTaskDependencyInspectorProps {
   dependency: RoutineTaskDependency;

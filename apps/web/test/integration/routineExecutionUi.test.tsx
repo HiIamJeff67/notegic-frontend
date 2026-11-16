@@ -60,7 +60,7 @@ jest.mock("@/hooks", () => ({
   }),
 }));
 
-jest.mock("@/components/ui/sheet", () => {
+jest.mock("@shared/components/ui/sheet", () => {
   const Passthrough = ({ children }: { children?: ReactNode }) => (
     <div>{children}</div>
   );

@@ -1,6 +1,21 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
-import { useTranslation } from "@/hooks/useTranslation";
+import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
+import { Button } from "@shared/components/ui/button";
+import { ButtonGroup } from "@shared/components/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Spinner } from "@shared/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@shared/components/ui/tooltip";
 import { tError } from "@shared/i18n/error";
 import {
   convertBlocksToDOCX,
@@ -12,28 +27,13 @@ import {
   FileContentType,
 } from "@shared/lib/blockpack/conversions";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
-import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import BlockPackParticipantsDropdown from "@/components/core/BlockPackEditor/BlockPackParticipantsDropdown";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import { SuggestionMenu } from "@/components/core/BlockPackEditor/SuggestionMenu";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useShelfItem } from "@/hooks";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
+import { useTranslation } from "@/hooks/useTranslation";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";

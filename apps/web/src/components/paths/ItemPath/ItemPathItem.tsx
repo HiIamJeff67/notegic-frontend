@@ -1,3 +1,13 @@
+import {
+  BreadcrumbItem,
+  BreadcrumbSeparator,
+} from "@shared/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
@@ -12,16 +22,6 @@ import {
   MaterialIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import {
-  BreadcrumbItem,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useAppRouter, useShelfItem } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 

@@ -1,7 +1,5 @@
 import { SearchSortOrder } from "@shared/api/graphql/generated/graphql";
-import { useTranslation } from "@/hooks/useTranslation";
-import { ArrowDownUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +8,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@shared/components/ui/dropdown-menu";
+import { ArrowDownUp } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface RoutineSearchOrderProps<SortBy extends string> {
   label: string;

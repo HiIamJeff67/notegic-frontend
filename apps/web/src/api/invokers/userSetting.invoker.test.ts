@@ -3,6 +3,9 @@ jest.mock("@/api/functions/userSetting.serverFn", () => ({
   UpdateMySetting: jest.fn(),
 }));
 
+import { NotegicAPIError } from "@shared/api/exceptions";
+import { UserSettingExceptions } from "@shared/api/exceptions/userSetting.exception";
+import { minimumRetryDelayMs } from "@shared/api/retryClient";
 import {
   GetMySetting,
   UpdateMySetting,
@@ -10,7 +13,6 @@ import {
 import {
   mutationFnUpdateMySetting,
   queryFnGetMySetting,
-  UserSettingsRateLimitError,
 } from "./userSetting.invoker";
 
 describe("settings request cooldown", () => {
@@ -32,36 +34,35 @@ describe("settings request cooldown", () => {
   });
 
   it("blocks GET and PUT throughout cooldown without queued replay", async () => {
-    const deadline = Date.now() + 60_000;
     jest
       .mocked(GetMySetting)
-      .mockResolvedValueOnce({ rateLimitedUntil: deadline });
+      .mockRejectedValueOnce(UserSettingExceptions.TooManyRequests(Date.now()));
     await expect(queryFnGetMySetting({})).rejects.toBeInstanceOf(
-      UserSettingsRateLimitError
+      NotegicAPIError
     );
     for (let index = 0; index < 1000; index++) {
       await expect(queryFnGetMySetting({})).rejects.toBeInstanceOf(
-        UserSettingsRateLimitError
+        NotegicAPIError
       );
       await expect(
         mutationFnUpdateMySetting({ body: { values: {} } })
-      ).rejects.toBeInstanceOf(UserSettingsRateLimitError);
+      ).rejects.toBeInstanceOf(NotegicAPIError);
     }
     expect(GetMySetting).toHaveBeenCalledTimes(1);
     expect(UpdateMySetting).not.toHaveBeenCalled();
-    jest.advanceTimersByTime(60_000);
+    jest.advanceTimersByTime(minimumRetryDelayMs);
     expect(GetMySetting).toHaveBeenCalledTimes(1);
     expect(UpdateMySetting).not.toHaveBeenCalled();
 
     jest
       .mocked(UpdateMySetting)
-      .mockResolvedValueOnce({ rateLimitedUntil: Date.now() + 120_000 });
+      .mockRejectedValueOnce(UserSettingExceptions.TooManyRequests(Date.now()));
     await expect(
       mutationFnUpdateMySetting({ body: { values: {} } })
-    ).rejects.toBeInstanceOf(UserSettingsRateLimitError);
-    jest.advanceTimersByTime(60_000);
+    ).rejects.toBeInstanceOf(NotegicAPIError);
+    jest.advanceTimersByTime(minimumRetryDelayMs - 1);
     await expect(queryFnGetMySetting({})).rejects.toBeInstanceOf(
-      UserSettingsRateLimitError
+      NotegicAPIError
     );
     expect(GetMySetting).toHaveBeenCalledTimes(1);
     expect(UpdateMySetting).toHaveBeenCalledTimes(1);
@@ -96,11 +97,11 @@ describe("settings request cooldown", () => {
     });
     try {
       await expect(queryFnGetMySetting({})).rejects.toBeInstanceOf(
-        UserSettingsRateLimitError
+        NotegicAPIError
       );
       await expect(
         mutationFnUpdateMySetting({ body: { values: {} } })
-      ).rejects.toBeInstanceOf(UserSettingsRateLimitError);
+      ).rejects.toBeInstanceOf(NotegicAPIError);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     } finally {
       fetchSpy.mockRestore();

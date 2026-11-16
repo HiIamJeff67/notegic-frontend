@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@shared/components/ui/skeleton";
 
 const RoutineScopeBarSkeleton = () => (
   <div className="flex h-10 w-full items-center justify-between gap-3 px-3">

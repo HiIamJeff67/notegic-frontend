@@ -1,19 +1,6 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
-import { useCallback, useMemo, useState } from "react";
-import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
-import {
-  useUpdateMyAccount,
-  useGetMyAccount,
-} from "@/api/hooks/userAccount.hook";
-import AuthCodeInput from "@/components/inputs/AuthCodeInput";
-import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
-import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
-import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -22,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -33,12 +20,25 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/ui/select";
+import { Spinner } from "@shared/components/ui/spinner";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
+import { useCallback, useMemo, useState } from "react";
+import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
+import {
+  useGetMyAccount,
+  useUpdateMyAccount,
+} from "@/api/hooks/userAccount.hook";
+import AuthCodeInput from "@/components/inputs/AuthCodeInput";
+import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
+import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
+import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading, useUser } from "@/hooks";
 import { useNetwork } from "@/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useOAuth } from "@/hooks/useOAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface BindingTabProps {
   layout?: "panel" | "page";

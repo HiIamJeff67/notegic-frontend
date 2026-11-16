@@ -43,7 +43,7 @@ import {
   type UpdateMyAccountResponse,
   UpdateMyAccountResponseSchema,
 } from "@shared/api/interfaces/userAccount.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   BindDiscordAccount,
@@ -78,7 +78,7 @@ export const queryFnGetMyAccount = async (): Promise<GetMyAccountResponse> => {
 export const mutationFnUpdateMyAccount = async (
   request: UpdateMyAccountRequest
 ): Promise<UpdateMyAccountResponse> => {
-  const validatedRequest = parseRequest(UpdateMyAccountRequestSchema, request);
+  const validatedRequest = parse(UpdateMyAccountRequestSchema, request);
   try {
     const response = await UpdateMyAccount({ data: validatedRequest });
     return UpdateMyAccountResponseSchema.parse(response);

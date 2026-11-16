@@ -1,10 +1,9 @@
-import { useNetwork } from "@/hooks/useNetwork";
 import { UserPlan } from "@shared/api/interfaces/enums";
 import {
   type PlanLimitation,
   PlanLimitations,
 } from "@shared/api/interfaces/types/planLimitation.type";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
 import { formatByteSize } from "@shared/lib/byte/byte.type";
 import {
   CheckIcon,
@@ -15,8 +14,9 @@ import {
   ShieldCheckIcon,
 } from "lucide-react";
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks";
+import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type PlanOption = {
   plan: UserPlan;

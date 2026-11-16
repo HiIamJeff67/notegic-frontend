@@ -14,8 +14,8 @@ import { createRoot } from 'react-dom/client';
 import { useTranslation } from '@/hooks/useTranslation';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { Toaster } from '@/components/ui/toaster';
-import { useToastManager } from '@/components/ui/toast';
+import { Toaster } from '@shared/components/ui/toaster';
+import { useToastManager } from '@shared/components/ui/toast';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
 import { LoadingProvider } from '@/providers/LoadingProvider';
 import { MaterialContentType } from '@shared/api/interfaces/enums';
@@ -82,7 +82,7 @@ const mocks: Record<string, string> = {
     return null;
   }`,
   "@/components/paths/ItemPath/ItemPath": `export default () => null;`,
-  "@/components/ui/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
+  "@shared/components/ui/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
 };
 
 describe("toast language in Chromium", () => {

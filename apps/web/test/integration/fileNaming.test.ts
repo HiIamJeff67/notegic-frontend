@@ -56,7 +56,7 @@ test.each([
       if (
         /\/(?:generated|migrations)\//.test(fullPath) ||
         fullPath.startsWith("apps/web/src/routes/") ||
-        fullPath.startsWith("apps/web/src/components/ui/") ||
+        fullPath.startsWith("shared/components/ui/") ||
         /\/i18n\/locales\/[^/]+\.zh-(?:CN|TW)\.ts$/.test(fullPath)
       )
         return false;

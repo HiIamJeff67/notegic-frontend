@@ -1,4 +1,22 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { ButtonGroup } from "@shared/components/ui/button-group";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
+import { Separator } from "@shared/components/ui/separator";
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@shared/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@shared/components/ui/tooltip";
 import { cn } from "@shared/lib/classname/cn";
 import { ChartNoAxesCombined, Tags } from "lucide-react";
 import {
@@ -13,23 +31,8 @@ import {
   RoutineTaskIcon,
   StationIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useStationRoutine } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type RoutineScopeBarProps = {
   onOpenAddChart?: () => void;

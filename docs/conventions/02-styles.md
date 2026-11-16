@@ -17,7 +17,7 @@ change reaches the new interface without a new palette.
 loaded. `apps/web/components.json` leaves `tailwind.config` empty so
 `shadcn add` does not write tokens or keyframes into that file. Add a new
 shadcn primitive from `apps/web`, where that config's `aliases.utils` is
-`@shared/lib/classname/cn` and `aliases.ui` is `@/components/ui`. Animation
+`@shared/lib/classname/cn` and `aliases.ui` is `@shared/components/ui`. Animation
 keyframes belong in `globals.css`. Do not add `prose` classes. The app does
 not use `@tailwindcss/typography`.
 

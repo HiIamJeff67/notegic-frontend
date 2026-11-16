@@ -17,11 +17,11 @@ import {
   type UpdateMyMaterialByIdRequest,
   UpdateMyMaterialByIdRequestSchema,
 } from "@shared/api/interfaces/material.interface";
+import { parse } from "@shared/api/validation";
 import type { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
-import { parseRequest } from "@shared/api/validation";
 import type {
   MergedTransaction,
   MergedTransactionsResult,
@@ -103,7 +103,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: async () => {
           const result = await mutators.createMaterialMutator.mutateAsync({
-            ...parseRequest(CreateMyMaterialRequestSchema, {
+            ...parse(CreateMyMaterialRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -141,7 +141,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.updateMaterialMutator.mutateAsync({
-            ...parseRequest(UpdateMyMaterialByIdRequestSchema, {
+            ...parse(UpdateMyMaterialByIdRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -162,7 +162,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.moveMaterialMutator.mutateAsync({
-            ...parseRequest(MoveMyMaterialByIdRequestSchema, {
+            ...parse(MoveMyMaterialByIdRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -183,7 +183,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.restoreMaterialMutator.mutateAsync({
-            ...parseRequest(RestoreMyMaterialByIdRequestSchema, {
+            ...parse(RestoreMyMaterialByIdRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -204,7 +204,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.restoreMaterialsMutator.mutateAsync({
-            ...parseRequest(RestoreMyMaterialsByIdsRequestSchema, {
+            ...parse(RestoreMyMaterialsByIdsRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -225,7 +225,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.deleteMaterialMutator.mutateAsync({
-            ...parseRequest(DeleteMyMaterialByIdRequestSchema, {
+            ...parse(DeleteMyMaterialByIdRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -246,7 +246,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.deleteMaterialsMutator.mutateAsync({
-            ...parseRequest(DeleteMyMaterialsByIdsRequestSchema, {
+            ...parse(DeleteMyMaterialsByIdsRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),
@@ -267,7 +267,7 @@ export const prepareMaterialSyncJobs = ({
         sequences,
         run: () =>
           mutators.hardDeleteMaterialsMutator.mutateAsync({
-            ...parseRequest(HardDeleteMyMaterialsByIdsRequestSchema, {
+            ...parse(HardDeleteMyMaterialsByIdsRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }),

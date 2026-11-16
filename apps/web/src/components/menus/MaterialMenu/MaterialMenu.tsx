@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { SidebarMenuItem } from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
@@ -7,8 +7,8 @@ import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import MaterialMenuItem from "@/components/menus/MaterialMenu/MaterialMenuItem";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
-import { SidebarMenuItem } from "@/components/ui/sidebar";
 import { useLoading, useShelfItem } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface MaterialMenuProps {
   parent: SubShelfNode;

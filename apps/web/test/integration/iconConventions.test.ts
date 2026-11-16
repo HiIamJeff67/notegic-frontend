@@ -74,7 +74,7 @@ describe("application icon conventions", () => {
 
   test.each([
     ["pages/app/dashboard/DashboardPage.tsx", "SquarePen"],
-    ["components/commons/Editable/Editable.tsx", "SquarePen"],
+    ["shared/components/commons/Editable/Editable.tsx", "SquarePen"],
     [
       "components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode.tsx",
       "SquarePen",
@@ -113,7 +113,8 @@ describe("application icon conventions", () => {
     ["pages/app/setting/account/tabs/ApiKeysTab.tsx", "CopyIcon"],
   ])("%s uses the agreed %s glyph", (file, icon) => {
     const source = sources.find(
-      source => source.fileName === `apps/web/src/${file}`
+      source =>
+        source.fileName === file || source.fileName === `apps/web/src/${file}`
     );
     if (!source) throw new Error(`Missing production source: ${file}`);
     expect(getLucideNames(source)).toContain(icon);

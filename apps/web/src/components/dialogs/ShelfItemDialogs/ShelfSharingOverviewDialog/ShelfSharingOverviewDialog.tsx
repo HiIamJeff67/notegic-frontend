@@ -1,17 +1,18 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
-import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
-import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+} from "@shared/components/ui/avatar";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
 import {
   Table,
   TableBody,
@@ -19,7 +20,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@shared/components/ui/table";
+import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
+import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export interface ShelfSharingOverviewRow {
   userPublicId: string;

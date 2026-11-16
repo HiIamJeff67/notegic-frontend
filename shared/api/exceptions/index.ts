@@ -297,6 +297,7 @@ export const ExceptionReasonDictionary = {
     ...GraphQLExceptionReasons,
     ...TypeExceptionReasons,
     ...CommonExceptionReasons,
+    tooManyRequests: "TooManyRequests",
   },
   userAccount: {
     ...DatabaseExceptionReasons,

@@ -8,15 +8,15 @@ import {
 import { ItemType, RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineByIdRequest } from "@shared/api/interfaces/routine.interface";
 import { CreateRoutineByStationIdRequestSchema } from "@shared/api/interfaces/routine.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
-import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { useSearchRoutinesLazyQuery } from "@/api/hooks/graphql/useSearchRoutines";
 import {
   useCreateRoutineByStationId,
@@ -410,7 +410,7 @@ export const useRoutineLogic = ({
         }
       }
 
-      const { body } = parseRequest(CreateRoutineByStationIdRequestSchema, {
+      const { body } = parse(CreateRoutineByStationIdRequestSchema, {
         body: {
           stationId,
           title: values.title.trim(),

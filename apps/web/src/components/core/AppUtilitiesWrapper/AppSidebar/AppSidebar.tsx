@@ -1,3 +1,46 @@
+import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
+import { Button } from "@shared/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarGroup,
+  MenubarItem,
+  MenubarLabel,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@shared/components/ui/menubar";
+import {
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+} from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import {
   LocalStorage,
@@ -19,7 +62,6 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useEffect } from "react";
-import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import AvatarIcon from "@/components/icons/AvatarIcon";
 import {
   RootShelfIcon,
@@ -31,48 +73,6 @@ import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";
 import { NotificationPopover } from "@/components/popovers/NotificationPopover";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarGroup,
-  MenubarItem,
-  MenubarLabel,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import {
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import {
   useAppRouterActions,
   useResizeSidebar,

@@ -1,7 +1,4 @@
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/ui/dialog";
+import { Spinner } from "@shared/components/ui/spinner";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";

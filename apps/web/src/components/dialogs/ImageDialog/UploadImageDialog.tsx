@@ -1,17 +1,17 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState } from "react";
-import Closeable from "@/components/commons/Closeable/Closeable";
-import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
-import Image from "@/components/commons/Image/Image";
-import { Button } from "@/components/ui/button";
+import Closeable from "@shared/components/commons/Closeable/Closeable";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/ui/dialog";
+import { Spinner } from "@shared/components/ui/spinner";
+import { useEffect, useState } from "react";
+import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
+import Image from "@/components/commons/Image/Image";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface UploadImageDialogProps {
   open: boolean;

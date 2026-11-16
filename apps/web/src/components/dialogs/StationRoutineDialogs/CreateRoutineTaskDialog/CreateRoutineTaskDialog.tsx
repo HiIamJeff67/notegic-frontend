@@ -3,13 +3,7 @@ import {
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
 import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
-import { tError } from "@shared/i18n/error";
-import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -17,9 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -29,8 +23,14 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/ui/select";
+import { Spinner } from "@shared/components/ui/spinner";
+import { tError } from "@shared/i18n/error";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useStationRoutine, useUser } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";

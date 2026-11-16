@@ -17,7 +17,7 @@ import {
   type RevokeMyAPIKeyResponse,
   RevokeMyAPIKeyResponseSchema,
 } from "@shared/api/interfaces/apiKey.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateMyAPIKey,
@@ -25,23 +25,10 @@ import {
   RevokeMyAPIKey,
 } from "@/api/functions/apiKey.serverFn";
 
-const rethrowAPIKeyError = (error: unknown): never => {
-  if (error instanceof ZodError) {
-    throw new NotegicValidationError(
-      ValidationClientException.ZodParsingFailed(error)
-    );
-  }
-  if (error instanceof NotegicAPIError) throw error;
-  if (error instanceof TypeError) {
-    throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-  }
-  throw error;
-};
-
 export const mutationFnCreateMyAPIKey = async (
   request: CreateMyAPIKeyRequest
 ): Promise<CreateMyAPIKeyResponse> => {
-  const validatedRequest = parseRequest(CreateMyAPIKeyRequestSchema, request);
+  const validatedRequest = parse(CreateMyAPIKeyRequestSchema, request);
   try {
     return CreateMyAPIKeyResponseSchema.parse(
       await CreateMyAPIKey({
@@ -54,7 +41,11 @@ export const mutationFnCreateMyAPIKey = async (
         ValidationClientException.ZodParsingFailed(error)
       ).setPresentation("validation.invalidResponse");
     }
-    return rethrowAPIKeyError(error);
+    if (error instanceof NotegicAPIError) throw error;
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
   }
 };
 
@@ -68,7 +59,16 @@ export const queryFnListMyAPIKeys = async (
       })
     );
   } catch (error) {
-    return rethrowAPIKeyError(error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof NotegicAPIError) throw error;
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
   }
 };
 
@@ -82,6 +82,15 @@ export const mutationFnRevokeMyAPIKey = async (
       })
     );
   } catch (error) {
-    return rethrowAPIKeyError(error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof NotegicAPIError) throw error;
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
   }
 };

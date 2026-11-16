@@ -1,3 +1,4 @@
+import { SidebarProvider, SidebarTrigger } from "@shared/components/ui/sidebar";
 import { useRef } from "react";
 import {
   Article,
@@ -7,7 +8,6 @@ import {
   ArticleParagraphSeparator,
   ArticleSidebar,
 } from "@/components/commons/Article/Article";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 import API, { apiNavigation } from "./api/API";

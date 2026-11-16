@@ -9,7 +9,7 @@ import {
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyStationByIdRequest } from "@shared/api/interfaces/station.interface";
 import { CreateStationRequestSchema } from "@shared/api/interfaces/station.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
 import toast from "@shared/lib/toast/toast";
@@ -115,7 +115,7 @@ export const useStationLogic = ({
       icon: SupportedIcon | null = null,
       headerBackgroundURL: string | null = null
     ): Promise<StationNode> => {
-      const { body } = parseRequest(CreateStationRequestSchema, {
+      const { body } = parse(CreateStationRequestSchema, {
         body: {
           name: name.trim(),
           description: description.trim(),

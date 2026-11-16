@@ -1,4 +1,20 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
+import { Progress } from "@shared/components/ui/progress";
 import type { TFunction } from "i18next";
 import {
   ChevronDownIcon,
@@ -14,24 +30,8 @@ import type {
   LocalDBDiagnostics,
   LocalDBResult,
 } from "@/api/local/diagnostics";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
 import { useLoading } from "@/hooks/useLoading";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const recoveryPhases = new Set([
   "failed",

@@ -4,7 +4,9 @@ Phase 1 establishes a portable shared core with application-owned runtime
 adapters. The lowest common API boundary is an HTTP request/response contract.
 Only Web uses TanStack Start server functions. Desktop and Mobile keep the
 same `api/functions/` role with their own implementations. See
-[Shared application boundaries](shared-application-boundaries.md).
+[Shared application boundaries](shared-application-boundaries.md). The
+`shared/api/` tree those apps import is mapped in
+[shared/api/README.md](../../../shared/api/README.md).
 
 ## Boundary map
 
@@ -131,19 +133,19 @@ results; the server-function adapter forwards the request's abort signal to
 the gateway. Language hydration tracks pending changes so asynchronous
 `languageChanged` events are not mistaken for user edits.
 
-Settings mutations explicitly disable automatic retries. Both gateway and web
-adapters use the domain-neutral `apps/web/src/api/retry.ts` entry point
-`getRetryAt(retryAfter, now?)` to calculate the retry deadline. Other API domains
-can reuse this calculation; cooldown state and scheduling remain caller-owned.
-Both gateway and web
-HTTP 429 responses pause settings GET and PUT in the current browser runtime
-for at least 60 seconds, or longer when `Retry-After` specifies a later time
-(delta-seconds or HTTP date). The cooldown survives provider remounts, but is
-not persisted across page reloads or shared between tabs. It is not global
-server state and cannot pause another SSR user's requests. No timer replays
-failed reads or writes when the cooldown expires. Local preferences remain
-available; a failed/cooldown-blocked save must not be interpreted as a remote
-save or queued for replay.
+Settings mutations explicitly disable automatic retries. The user-setting
+server functions throw the upstream API error. They do not calculate a retry
+deadline. The invoker gives an HTTP 429 to `shared/api/retryClient.ts`, which
+stores one deadline per API scope in the current browser. A raw HTTP 429 seen
+by that client uses `Retry-After`. User setting reads and
+writes share `UserSettingExceptions.RetryScope`. Another API uses the client
+with its own scope, so it does not inherit the settings deadline. The cooldown
+survives provider
+remounts, but is not persisted across page reloads or shared between tabs. It
+is not global server state and cannot pause another SSR user's requests. No
+timer replays failed reads or writes when the cooldown expires. Local
+preferences remain available; a failed/cooldown-blocked save must not be
+interpreted as a remote save or queued for replay.
 
 The shared query retry policy also rejects explicit non-retryable API errors,
 HTTP 4xx errors and aborts. Its bounded retry/backoff for other failures remains

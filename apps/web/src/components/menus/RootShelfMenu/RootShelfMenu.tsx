@@ -1,8 +1,8 @@
+import { SidebarMenu } from "@shared/components/ui/sidebar";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { Suspense } from "react";
 import RootShelfMenuItem from "@/components/menus/RootShelfMenu/RootShelfMenuItem";
 import RootShelfMenuItemSkeleton from "@/components/menus/RootShelfMenu/RootShelfMenuItemSkeleton";
-import { SidebarMenu } from "@/components/ui/sidebar";
 import { useShelfItem } from "@/hooks";
 
 const RootShelfMenu = () => {

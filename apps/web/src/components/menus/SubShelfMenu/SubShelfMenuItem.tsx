@@ -1,3 +1,31 @@
+import { DNDType } from "@shared/components/commons/DNDable/dnd.type";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/ui/collapsible";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@shared/components/ui/context-menu";
+import {
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+} from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { MaxShelfDepth } from "@shared/lib/shelf/limits";
@@ -16,7 +44,6 @@ import {
 } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import {
@@ -28,30 +55,6 @@ import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPac
 import MaterialMenu from "@/components/menus/MaterialMenu/MaterialMenu";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuGroup,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
 import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
 import { useTranslation } from "@/hooks/useTranslation";

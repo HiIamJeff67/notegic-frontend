@@ -2,7 +2,7 @@ import type {
   UpdateMyInfoRequest,
   UpdateMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { getClientCSRFToken } from "@/api/functions/headers/csrfToken";
 import { format } from "@/api/functions/helpers/format";
 

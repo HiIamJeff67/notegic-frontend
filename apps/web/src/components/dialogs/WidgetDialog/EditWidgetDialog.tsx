@@ -1,12 +1,12 @@
-import React, { CSSProperties, useEffect } from "react";
-import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@shared/components/ui/dialog";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import React, { CSSProperties, useEffect } from "react";
+import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 
 interface EditWidgetDialogProps {
   open: boolean;

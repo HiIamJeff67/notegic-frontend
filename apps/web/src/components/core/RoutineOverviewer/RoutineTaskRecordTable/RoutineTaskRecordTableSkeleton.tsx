@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@shared/components/ui/skeleton";
 
 const RoutineTaskRecordTableSkeleton = () => (
   <section className="w-full rounded-md border border-border/60 bg-card">

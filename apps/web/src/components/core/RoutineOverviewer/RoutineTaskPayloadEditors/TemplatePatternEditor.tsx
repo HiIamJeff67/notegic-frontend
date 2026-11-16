@@ -1,31 +1,31 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import { PlusIcon, SquarePen, Trash2Icon } from "lucide-react";
-import { useState } from "react";
-import SeparatableTable from "@/components/commons/SeparatableTable/SeparatableTable";
-import { Button } from "@/components/ui/button";
+import SeparatableTable from "@shared/components/commons/SeparatableTable/SeparatableTable";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@shared/components/ui/select";
 import {
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@shared/components/ui/table";
+import { PlusIcon, SquarePen, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export type RoutineTaskTemplatePattern = Record<
   string,

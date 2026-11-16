@@ -1,9 +1,9 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { DNDType } from "@shared/components/commons/DNDable/dnd.type";
 import { cn } from "@shared/lib/classname/cn";
 import type { UUID } from "crypto";
 import { useDrag, useDrop } from "react-dnd";
-import { DNDType } from "@/components/commons/DNDable/dnd.type";
 import { StationIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface TimeRailsStationBarItemProps {

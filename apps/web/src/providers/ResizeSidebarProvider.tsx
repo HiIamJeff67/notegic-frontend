@@ -1,8 +1,9 @@
+import { useSidebar } from "@shared/components/ui/sidebar";
+import { clamp } from "@shared/lib/math/clamp";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import { clamp } from "@shared/lib/math/clamp";
 import {
   CSSProperties,
   createContext,
@@ -12,7 +13,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useSidebar } from "@/components/ui/sidebar";
 
 export type ResizeSidebarOptions = {
   side?: "left" | "right";

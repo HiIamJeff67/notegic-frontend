@@ -1,10 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import { cn } from "@shared/lib/classname/cn";
-import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@shared/components/ui/button";
+import { Card, CardContent } from "@shared/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +8,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+} from "@shared/components/ui/dialog";
+import { Label } from "@shared/components/ui/label";
+import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
+import { cn } from "@shared/lib/classname/cn";
+import type { ReactNode } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface FormPayloadEditorProps {
   isOpen: boolean;

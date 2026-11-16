@@ -13,8 +13,8 @@ const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import SidebarHoverCard from '@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard';
-import { ContextMenu, ContextMenuProvider, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
-import { HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
+import { ContextMenu, ContextMenuProvider, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@shared/components/ui/context-menu';
+import { HoverCardTrigger, HoverCardContent } from '@shared/components/ui/hover-card';
 window.sidebarMenuChanges = [];
 window.sidebarMenuSelections = 0;
 window.preferences = { sidebarHoverDelay: 250 };

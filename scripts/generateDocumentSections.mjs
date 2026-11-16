@@ -85,7 +85,7 @@ outputs.push([
 import { cn } from "@shared/lib/classname/cn";
 import { ArticleSubParagraph, ArticleSubParagraphContent, ArticleSubParagraphHeader } from "@/components/commons/Article/Article";
 import { VersionCard } from "@/components/commons/VersionCard/VersionCard";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import { versionRoadmap } from "./generated";
 
 export const versionSections = versionRoadmap.map(version => ({

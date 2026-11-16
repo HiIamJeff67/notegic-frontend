@@ -1,13 +1,38 @@
-import { useNetwork } from "@/hooks/useNetwork";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AllCountries, AllUserGenders } from "@shared/api/interfaces/enums";
+import { FakeUserInfo } from "@shared/api/interfaces/seeds/userInfo.seed";
 import {
   UserInfo,
   UserInfoSchema,
 } from "@shared/api/interfaces/types/user.type";
 import { UpdateMyInfoRequestSchema } from "@shared/api/interfaces/userInfo.interface";
-import { FakeUserInfo } from "@shared/constants/defaultUser.constant";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Calendar } from "@shared/components/ui/calendar";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@shared/components/ui/form";
+import { Input } from "@shared/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/components/ui/select";
+import { Textarea } from "@shared/components/ui/textarea";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { format } from "date-fns";
@@ -24,34 +49,9 @@ import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialo
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useLoading } from "@/hooks";
+import { useNetwork } from "@/hooks/useNetwork";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 interface ProfileTabProps {

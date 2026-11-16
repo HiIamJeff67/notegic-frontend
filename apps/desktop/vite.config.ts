@@ -4,7 +4,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 
 const desktopRoot = path.dirname(fileURLToPath(import.meta.url));
 const localDatabaseModule = path.resolve(desktopRoot, "src/localDatabase.ts");
@@ -82,43 +82,52 @@ const desktopRuntimeBoundary = (): Plugin => ({
 
 const host = process.env.TAURI_DEV_HOST;
 
-export default defineConfig(({ mode }) => ({
-  clearScreen: false,
-  plugins: [desktopRuntimeBoundary(), react(), tailwindcss()],
-  optimizeDeps: {
-    exclude: [
-      "@tanstack/react-start",
-      "@tanstack/start-client-core",
-      "@tanstack/start-storage-context",
-    ],
-  },
-  define: {
-    "process.env.NOTEGIC_VITE_MODE": JSON.stringify(
-      mode === "production" ? "production" : "development"
-    ),
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(desktopRoot, "../web/src"),
-      "@assets": path.resolve(desktopRoot, "../web/assets"),
-      "@widgets": path.resolve(desktopRoot, "../web/src/components/widgets"),
-      "@shared": path.resolve(desktopRoot, "../../shared"),
-      "node:async_hooks": asyncLocalStorageModule,
+export default defineConfig(({ mode }) => {
+  const applicationVersion = loadEnv(
+    mode,
+    path.resolve(desktopRoot, "../web"),
+    ""
+  ).VITE_APPLICATION_VERSION;
+  return {
+    clearScreen: false,
+    plugins: [desktopRuntimeBoundary(), react(), tailwindcss()],
+    optimizeDeps: {
+      exclude: [
+        "@tanstack/react-start",
+        "@tanstack/start-client-core",
+        "@tanstack/start-storage-context",
+      ],
     },
-  },
-  server: {
-    port: 1420,
-    strictPort: true,
-    host: host || false,
-    hmr: host
-      ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
-      : undefined,
-    watch: {
-      ignored: ["**/src-tauri/**"],
+    define: {
+      "process.env.NOTEGIC_VITE_MODE": JSON.stringify(
+        mode === "production" ? "production" : "development"
+      ),
+      "import.meta.env.VITE_APPLICATION_VERSION":
+        JSON.stringify(applicationVersion),
     },
-  },
-}));
+    resolve: {
+      alias: {
+        "@": path.resolve(desktopRoot, "../web/src"),
+        "@assets": path.resolve(desktopRoot, "../web/assets"),
+        "@widgets": path.resolve(desktopRoot, "../web/src/components/widgets"),
+        "@shared": path.resolve(desktopRoot, "../../shared"),
+        "node:async_hooks": asyncLocalStorageModule,
+      },
+    },
+    server: {
+      port: 1420,
+      strictPort: true,
+      host: host || false,
+      hmr: host
+        ? {
+            protocol: "ws",
+            host,
+            port: 1421,
+          }
+        : undefined,
+      watch: {
+        ignored: ["**/src-tauri/**"],
+      },
+    },
+  };
+});

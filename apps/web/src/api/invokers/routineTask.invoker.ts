@@ -37,7 +37,7 @@ import {
   type VisualizeMyRoutineTaskPurposeCountResponse,
   VisualizeMyRoutineTaskPurposeCountResponseSchema,
 } from "@shared/api/interfaces/routineTask.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateRoutineTaskByRoutineId,
@@ -150,7 +150,7 @@ export const queryFnGetAllMyRoutineTasks = async (
 export const mutationFnCreateRoutineTaskByRoutineId = async (
   request: CreateRoutineTaskByRoutineIdRequest
 ): Promise<CreateRoutineTaskByRoutineIdResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     CreateRoutineTaskByRoutineIdRequestSchema,
     request
   );
@@ -183,10 +183,7 @@ export const mutationFnCreateRoutineTaskByRoutineId = async (
 export const mutationFnUpdateMyRoutineTaskById = async (
   request: UpdateMyRoutineTaskByIdRequest
 ): Promise<UpdateMyRoutineTaskByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyRoutineTaskByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyRoutineTaskByIdRequestSchema, request);
   try {
     const response = await UpdateMyRoutineTaskById({
       data: validatedRequest,

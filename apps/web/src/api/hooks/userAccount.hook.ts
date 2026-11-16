@@ -6,7 +6,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PrepareOAuthOperation } from "@/api/functions/userAccount.serverFn";
 import {
@@ -26,7 +26,7 @@ export const usePrepareOAuthOperation = () =>
   useMutation({
     mutationFn: (request: PrepareOAuthOperationRequest) =>
       PrepareOAuthOperation({
-        data: parseRequest(PrepareOAuthOperationRequestSchema, request),
+        data: parse(PrepareOAuthOperationRequestSchema, request),
       }),
     retry: false,
   });

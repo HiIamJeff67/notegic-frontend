@@ -76,7 +76,7 @@ import {
   type ValidateEmailResponse,
   ValidateEmailResponseSchema,
 } from "@shared/api/interfaces/auth.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   DeleteMe,
@@ -101,7 +101,7 @@ import {
 export const mutationFnRegister = async (
   request: RegisterRequest
 ): Promise<RegisterResponse> => {
-  const validatedRequest = parseRequest(RegisterRequestSchema, request);
+  const validatedRequest = parse(RegisterRequestSchema, request);
   try {
     const response = await Register({ data: validatedRequest });
     return RegisterResponseSchema.parse(response);
@@ -139,10 +139,7 @@ export const mutationFnRegister = async (
 export const mutationFnRegisterViaGoogle = async (
   request: RegisterViaGoogleRequest
 ): Promise<RegisterViaGoogleResponse> => {
-  const validatedRequest = parseRequest(
-    RegisterViaGoogleRequestSchema,
-    request
-  );
+  const validatedRequest = parse(RegisterViaGoogleRequestSchema, request);
   try {
     const response = await RegisterViaGoogle({
       data: validatedRequest,
@@ -177,10 +174,7 @@ export const mutationFnRegisterViaGoogle = async (
 export const mutationFnRegisterViaGithub = async (
   request: RegisterViaGithubRequest
 ): Promise<RegisterViaGithubResponse> => {
-  const validatedRequest = parseRequest(
-    RegisterViaGithubRequestSchema,
-    request
-  );
+  const validatedRequest = parse(RegisterViaGithubRequestSchema, request);
   try {
     const response = await RegisterViaGithub({
       data: validatedRequest,
@@ -213,7 +207,7 @@ export const mutationFnRegisterViaGithub = async (
 export const mutationFnRegisterViaX = async (
   request: RegisterViaXRequest
 ): Promise<RegisterViaXResponse> => {
-  const validatedRequest = parseRequest(RegisterViaXRequestSchema, request);
+  const validatedRequest = parse(RegisterViaXRequestSchema, request);
   try {
     const response = await RegisterViaX({
       data: validatedRequest,
@@ -246,10 +240,7 @@ export const mutationFnRegisterViaX = async (
 export const mutationFnRegisterViaDiscord = async (
   request: RegisterViaDiscordRequest
 ): Promise<RegisterViaDiscordResponse> => {
-  const validatedRequest = parseRequest(
-    RegisterViaDiscordRequestSchema,
-    request
-  );
+  const validatedRequest = parse(RegisterViaDiscordRequestSchema, request);
   try {
     const response = await RegisterViaDiscord({
       data: validatedRequest,
@@ -282,7 +273,7 @@ export const mutationFnRegisterViaDiscord = async (
 export const mutationFnLogin = async (
   request: LoginRequest
 ): Promise<LoginResponse> => {
-  const validatedRequest = parseRequest(LoginRequestSchema, request);
+  const validatedRequest = parse(LoginRequestSchema, request);
   try {
     const response = await Login({ data: validatedRequest });
     return LoginResponseSchema.parse(response);
@@ -315,7 +306,7 @@ export const mutationFnLogin = async (
 export const mutationFnLoginViaGoogle = async (
   request: LoginViaGoogleRequest
 ): Promise<LoginViaGoogleResponse> => {
-  const validatedRequest = parseRequest(LoginViaGoogleRequestSchema, request);
+  const validatedRequest = parse(LoginViaGoogleRequestSchema, request);
   try {
     const response = await LoginViaGoogle({ data: validatedRequest });
     return LoginViaGoogleResponseSchema.parse(response);
@@ -348,7 +339,7 @@ export const mutationFnLoginViaGoogle = async (
 export const mutationFnLoginViaGithub = async (
   request: LoginViaGithubRequest
 ): Promise<LoginViaGithubResponse> => {
-  const validatedRequest = parseRequest(LoginViaGithubRequestSchema, request);
+  const validatedRequest = parse(LoginViaGithubRequestSchema, request);
   try {
     const response = await LoginViaGithub({ data: validatedRequest });
     return LoginViaGithubResponseSchema.parse(response);
@@ -379,7 +370,7 @@ export const mutationFnLoginViaGithub = async (
 export const mutationFnLoginViaX = async (
   request: LoginViaXRequest
 ): Promise<LoginViaXResponse> => {
-  const validatedRequest = parseRequest(LoginViaXRequestSchema, request);
+  const validatedRequest = parse(LoginViaXRequestSchema, request);
   try {
     const response = await LoginViaX({ data: validatedRequest });
     return LoginViaXResponseSchema.parse(response);
@@ -410,7 +401,7 @@ export const mutationFnLoginViaX = async (
 export const mutationFnLoginViaDiscord = async (
   request: LoginViaDiscordRequest
 ): Promise<LoginViaDiscordResponse> => {
-  const validatedRequest = parseRequest(LoginViaDiscordRequestSchema, request);
+  const validatedRequest = parse(LoginViaDiscordRequestSchema, request);
   try {
     const response = await LoginViaDiscord({ data: validatedRequest });
     return LoginViaDiscordResponseSchema.parse(response);
@@ -471,7 +462,7 @@ export const mutationFnLogout = async (
 export const mutationFnSendAuthCode = async (
   request: SendAuthCodeRequest
 ): Promise<SendAuthCodeResponse> => {
-  const validatedRequest = parseRequest(SendAuthCodeRequestSchema, request);
+  const validatedRequest = parse(SendAuthCodeRequestSchema, request);
   try {
     const response = await SendAuthCode({ data: validatedRequest });
     return SendAuthCodeResponseSchema.parse(response);
@@ -507,7 +498,7 @@ export const mutationFnSendAuthCode = async (
 export const mutationFnValidateEmail = async (
   request: ValidateEmailRequest
 ): Promise<ValidateEmailResponse> => {
-  const validatedRequest = parseRequest(ValidateEmailRequestSchema, request);
+  const validatedRequest = parse(ValidateEmailRequestSchema, request);
   try {
     const response = await ValidateEmail({ data: validatedRequest });
     return ValidateEmailResponseSchema.parse(response);
@@ -537,7 +528,7 @@ export const mutationFnValidateEmail = async (
 export const mutationFnResetEmail = async (
   request: ResetEmailRequest
 ): Promise<ResetEmailResponse> => {
-  const validatedRequest = parseRequest(ResetEmailRequestSchema, request);
+  const validatedRequest = parse(ResetEmailRequestSchema, request);
   try {
     const response = await ResetEmail({ data: validatedRequest });
     return ResetEmailResponseSchema.parse(response);
@@ -567,7 +558,7 @@ export const mutationFnResetEmail = async (
 export const mutationFnForgetPassword = async (
   request: ForgetPasswordRequest
 ): Promise<ForgetPasswordResponse> => {
-  const validatedRequest = parseRequest(ForgetPasswordRequestSchema, request);
+  const validatedRequest = parse(ForgetPasswordRequestSchema, request);
   try {
     const response = await ForgetPassword({ data: validatedRequest });
     return ForgetPasswordResponseSchema.parse(response);
@@ -597,7 +588,7 @@ export const mutationFnForgetPassword = async (
 export const mutationFnResetMe = async (
   request: ResetMeRequest
 ): Promise<ResetMeResponse> => {
-  const validatedRequest = parseRequest(ResetMeRequestSchema, request);
+  const validatedRequest = parse(ResetMeRequestSchema, request);
   try {
     const response = await ResetMe({ data: validatedRequest });
     return ResetMeResponseSchema.parse(response);
@@ -621,7 +612,7 @@ export const mutationFnResetMe = async (
 export const mutationFnDeleteMe = async (
   request: DeleteMeRequest
 ): Promise<DeleteMeResponse> => {
-  const validatedRequest = parseRequest(DeleteMeRequestSchema, request);
+  const validatedRequest = parse(DeleteMeRequestSchema, request);
   try {
     const response = await DeleteMe({ data: validatedRequest });
     return DeleteMeResponseSchema.parse(response);

@@ -4,7 +4,24 @@ import type {
 } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/ui/table";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CircleAlertIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -13,24 +30,7 @@ import {
   useNotifications,
 } from "@/api/hooks/notification.hook";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const NotificationDialog = ({
   open,

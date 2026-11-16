@@ -44,7 +44,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -52,6 +52,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateBlockPack,
   mutationFnCreateBlockPacks,
@@ -71,7 +72,6 @@ import {
 } from "@/api/invokers/blockPack.invoker";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 
 export const useGetMyBlockPackById = (
   hookRequest?: GetMyBlockPackByIdRequest,
@@ -339,7 +339,7 @@ export const useCreateBlockPack = () => {
     request: CreateBlockPackRequest
   ): Promise<CreateBlockPackResponse> => {
     try {
-      parseRequest(CreateBlockPackRequestSchema, request);
+      parse(CreateBlockPackRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -392,7 +392,7 @@ export const useCreateBlockPacks = (
     request: CreateBlockPacksRequest
   ): Promise<CreateBlockPacksResponse> => {
     try {
-      parseRequest(CreateBlockPacksRequestSchema, request);
+      parse(CreateBlockPacksRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -458,7 +458,7 @@ export const useUpdateMyBlockPackById = () => {
     request: UpdateMyBlockPackByIdRequest
   ): Promise<UpdateMyBlockPackByIdResponse> => {
     try {
-      parseRequest(UpdateMyBlockPackByIdRequestSchema, request);
+      parse(UpdateMyBlockPackByIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -511,7 +511,7 @@ export const useUpdateMyBlockPacksByIds = (
     request: UpdateMyBlockPacksByIdsRequest
   ): Promise<UpdateMyBlockPacksByIdsResponse> => {
     try {
-      parseRequest(UpdateMyBlockPacksByIdsRequestSchema, request);
+      parse(UpdateMyBlockPacksByIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }

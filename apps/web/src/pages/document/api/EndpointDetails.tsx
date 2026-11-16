@@ -1,3 +1,9 @@
+import { Button } from "@shared/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/ui/collapsible";
 import { cn } from "@shared/lib/classname/cn";
 import { ChevronRight } from "lucide-react";
 import {
@@ -5,12 +11,6 @@ import {
   ArticleInlineText,
 } from "@/components/commons/Article/Article";
 import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import type { DocumentEndpoint } from "./generated";
 
 const EndpointDetails = ({ endpoint }: { endpoint: DocumentEndpoint }) => {

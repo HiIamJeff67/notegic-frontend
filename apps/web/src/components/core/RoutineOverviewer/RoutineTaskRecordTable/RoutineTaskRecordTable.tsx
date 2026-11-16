@@ -7,10 +7,17 @@ import {
   RoutineTaskPurpose,
   RoutineTaskRecordStatus,
 } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/ui/table";
+import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { HistoryIcon } from "lucide-react";
@@ -21,16 +28,9 @@ import RoutineRecordFilters, {
   defaultRoutineRecordFilters,
   type RoutineRecordFiltersValue,
 } from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@/hooks/useDebounce";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const RoutineTaskRecordTable = ({
   routineTaskIds = [],

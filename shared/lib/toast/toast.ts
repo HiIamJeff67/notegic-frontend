@@ -1,5 +1,5 @@
+import { toastManager } from "@shared/components/ui/toast";
 import type { ReactNode } from "react";
-import { toastManager } from "@/components/ui/toast";
 
 export type ToastPosition =
   | "top-left"

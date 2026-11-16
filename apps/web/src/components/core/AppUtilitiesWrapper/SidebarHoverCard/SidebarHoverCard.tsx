@@ -1,6 +1,6 @@
+import { ContextMenuOpenContext } from "@shared/components/ui/context-menu";
+import { HoverCard } from "@shared/components/ui/hover-card";
 import { type ComponentProps, useContext, useState } from "react";
-import { ContextMenuOpenContext } from "@/components/ui/context-menu";
-import { HoverCard } from "@/components/ui/hover-card";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { MaxSidebarHoverDelay } from "@/providers/LocalPreferencesProvider";
 

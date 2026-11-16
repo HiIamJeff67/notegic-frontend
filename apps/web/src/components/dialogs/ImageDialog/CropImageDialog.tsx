@@ -1,12 +1,12 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import ImageCropper from "@/components/commons/ImageCropper/ImageCropper";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
+import ImageCropper from "@/components/commons/ImageCropper/ImageCropper";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CropImageDialogProps {
   open: boolean;

@@ -26,6 +26,12 @@ import media24 from "@assets/document/videos/settings-presentation.gif?url";
 import media15 from "@assets/document/videos/sharing-and-permissions.gif?url";
 import media11 from "@assets/document/videos/sidebar-navigation.gif?url";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@shared/components/ui/accordion";
+import {
   ArticleImage,
   ArticleLink,
   ArticleSubParagraph,
@@ -34,12 +40,6 @@ import {
   ArticleVideo,
 } from "@/components/commons/Article/Article";
 import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 const WebsiteContent = () => (
   <>

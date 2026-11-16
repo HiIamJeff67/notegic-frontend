@@ -1,20 +1,20 @@
 import { SupportedIcon } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { cn } from "@shared/lib/classname/cn";
-import { CheckIcon, SearchIcon, SmilePlusIcon, XIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@shared/components/ui/popover";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@shared/components/ui/tooltip";
+import { cn } from "@shared/lib/classname/cn";
+import { CheckIcon, SearchIcon, SmilePlusIcon, XIcon } from "lucide-react";
+import { useRef, useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SupportedIconTableProps {
   value: SupportedIcon | null;

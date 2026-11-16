@@ -1,5 +1,5 @@
+import { Skeleton } from "@shared/components/ui/skeleton";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import { Skeleton } from "@/components/ui/skeleton";
 import RoutineChartsSkeleton from "./RoutineCharts/RoutineChartsSkeleton";
 import RoutineScopeBarSkeleton from "./RoutineScopeBar/RoutineScopeBarSkeleton";
 import RoutineTableSkeleton from "./RoutineTable/RoutineTableSkeleton";

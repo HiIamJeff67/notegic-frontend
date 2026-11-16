@@ -1,4 +1,12 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/components/ui/select";
+import { Slider } from "@shared/components/ui/slider";
+import { Switch } from "@shared/components/ui/switch";
 import { formatTimezone } from "@shared/lib/time/timezone";
 import { ClockStyles } from "@widgets/basic/ClockWidget/data/clockStyles";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
@@ -8,16 +16,8 @@ import {
   EditWidgetDialogOption,
   EditWidgetDialogSeparator,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { ClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditClockWidgetDialogContentProps {
   setting: ClockSetting;

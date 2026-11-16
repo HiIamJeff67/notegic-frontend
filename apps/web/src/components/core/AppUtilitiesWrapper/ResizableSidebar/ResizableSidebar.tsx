@@ -1,4 +1,4 @@
-import { Sidebar, useSidebar } from "@/components/ui/sidebar";
+import { Sidebar, useSidebar } from "@shared/components/ui/sidebar";
 import { useResizeSidebar } from "@/hooks";
 
 interface ResizableSidebarProps {

@@ -8,7 +8,7 @@ import {
 } from "@shared/api/interfaces/enums";
 import type { UpdateMyRoutineTaskByIdRequest } from "@shared/api/interfaces/routineTask.interface";
 import { CreateRoutineTaskByRoutineIdRequestSchema } from "@shared/api/interfaces/routineTask.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
@@ -433,7 +433,7 @@ export const useRoutineTaskLogic = ({
       }
       if (!stationNode || !routineNode)
         throw new Error("routine does not exist");
-      const { body } = parseRequest(CreateRoutineTaskByRoutineIdRequestSchema, {
+      const { body } = parse(CreateRoutineTaskByRoutineIdRequestSchema, {
         body: {
           routineId,
           expectedDefinitionVersion:

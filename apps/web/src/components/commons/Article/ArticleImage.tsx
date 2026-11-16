@@ -1,8 +1,8 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
 import { useContext, useEffect, useRef, useState } from "react";
 import Image from "@/components/commons/Image/Image";
-import { Button } from "@/components/ui/button";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useTranslation } from "@/hooks/useTranslation";
 import { ArticleScrollContext } from "./ArticleContext";
 
 export const ArticleImage = ({

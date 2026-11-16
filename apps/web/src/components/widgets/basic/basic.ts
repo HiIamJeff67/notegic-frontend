@@ -1,4 +1,4 @@
-import CalendarWidget from "@widgets/basic/CalendarWidget/CalendarWidget";
+import CalendarWidget from "@shared/components/widgets/basic/CalendarWidget/CalendarWidget";
 import ClockWidget from "@widgets/basic/ClockWidget/ClockWidget";
 import TodoWidget from "@widgets/basic/TodoWidget/TodoWidget";
 import { PreviewWidget } from "@widgets/widget";

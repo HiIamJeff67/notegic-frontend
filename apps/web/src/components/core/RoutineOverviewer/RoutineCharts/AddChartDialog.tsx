@@ -1,16 +1,16 @@
-import { cn } from "@shared/lib/classname/cn";
-import { IntChart } from "@/components/charts";
 import type {
   TwoDimensionalChartType,
   TwoDimensionalData,
-} from "@/components/charts/BaseChart/BaseChart.type";
+} from "@shared/components/charts/BaseChart/BaseChart.type";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
+import { cn } from "@shared/lib/classname/cn";
+import { IntChart } from "@/components/charts";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   CHART_DEFINITIONS,

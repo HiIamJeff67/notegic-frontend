@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@shared/components/ui/skeleton";
 
 const CreateRoutineTagDialogSkeleton = () => (
   <div className="flex flex-col gap-4">

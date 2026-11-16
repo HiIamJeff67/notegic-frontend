@@ -1,15 +1,15 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { cn } from "@shared/lib/classname/cn";
 import { Bookmark } from "lucide-react";
 import type { PointerEvent } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 
 const RoutineTrain = ({

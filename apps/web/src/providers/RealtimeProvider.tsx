@@ -7,7 +7,10 @@ import {
   RealtimePermission,
   RealtimePermissionSchema,
 } from "@shared/api/interfaces/enums";
-import { mergeRealtimeNotificationIntoCache } from "@shared/api/notificationCache";
+import type {
+  ListNotificationsResponse,
+  Notification,
+} from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import {
@@ -21,6 +24,7 @@ import {
 import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast/toast";
+import type { InfiniteData } from "@tanstack/react-query";
 import type { UUID } from "crypto";
 import {
   createContext,
@@ -33,12 +37,12 @@ import {
 import * as Y from "yjs";
 import type { z } from "zod";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
 import {
   mutationFnCreateMyBlockPackChannelTicket,
   mutationFnCreateMyRealtimeConnectionTicket,
 } from "@/api/invokers/realtime.invoker";
 import { localDB } from "@/api/local/db";
-import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useNetwork } from "@/hooks/useNetwork";
@@ -98,6 +102,46 @@ export type RealtimeContextType = {
 export const RealtimeContext = createContext<RealtimeContextType | undefined>(
   undefined
 );
+
+const mergeRealtimeNotificationIntoCache = (notification: Notification) => {
+  const queryClient = getQueryClient();
+  queryClient.setQueryData<InfiniteData<ListNotificationsResponse>>(
+    queryKeys.notification.list(),
+    current => {
+      if (!current || current.pages.length === 0) return current;
+      if (
+        current.pages.some(page =>
+          page.data.searchEdges.some(edge => edge.node.id === notification.id)
+        )
+      ) {
+        return current;
+      }
+      const [firstPage, ...restPages] = current.pages;
+      return {
+        ...current,
+        pages: [
+          {
+            ...firstPage,
+            data: {
+              ...firstPage.data,
+              searchEdges: [
+                {
+                  encodedSearchCursor: notification.id,
+                  node: notification,
+                },
+                ...firstPage.data.searchEdges,
+              ],
+            },
+          },
+          ...restPages,
+        ],
+      };
+    }
+  );
+  void queryClient.invalidateQueries({
+    queryKey: queryKeys.notification.unreadCount(),
+  });
+};
 
 export const RealtimeProvider = ({
   children,

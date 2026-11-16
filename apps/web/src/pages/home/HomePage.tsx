@@ -1,22 +1,22 @@
 import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@shared/components/ui/accordion";
+import { Button } from "@shared/components/ui/button";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BookOpenIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isVirtualMode } from "@/api/functions/helpers/availability";
 import { TryGetUserData } from "@/api/functions/user.serverFn";
 import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 import { TerrainBackground } from "@/components/backgrounds/TerrainBackground/TerrainBackground";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import NoteIcon from "@/components/icons/NoteIcon";
 import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { useAppRouter, useTheme } from "@/hooks";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";

@@ -1,12 +1,12 @@
-import { defaultFilter } from "cmdk";
-import { GripHorizontalIcon } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
-} from "@/components/ui/command";
+} from "@shared/components/ui/command";
+import { defaultFilter } from "cmdk";
+import { GripHorizontalIcon } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useAppCommand } from "@/hooks/useAppCommand";
 import { useTranslation } from "@/hooks/useTranslation";
 import AppCommandContent from "./AppCommandContent";

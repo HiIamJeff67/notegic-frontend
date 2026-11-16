@@ -2,7 +2,7 @@ import {
   GetMyAccountResponse,
   GetMyAccountResponseSchema,
 } from "@shared/api/interfaces/userAccount.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { getAccessToken } from "../session";
 
 export const getMyAccount = async (): Promise<GetMyAccountResponse> => {

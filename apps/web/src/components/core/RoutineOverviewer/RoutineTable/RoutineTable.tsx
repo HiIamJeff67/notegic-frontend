@@ -7,7 +7,29 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { RoutineAdmissionState } from "@shared/api/interfaces/routine.interface";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
+import { Switch } from "@shared/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/ui/table";
 import { tError } from "@shared/i18n/error";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
@@ -26,32 +48,10 @@ import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_ent
 import DatePicker from "@/components/commons/DatePicker/DatePicker";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@/hooks/useDebounce";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 

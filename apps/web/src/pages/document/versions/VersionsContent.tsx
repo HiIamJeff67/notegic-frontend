@@ -1,5 +1,6 @@
 // Generated from apps/web/src/pages/document/versions/sources/versions.md; run npm run generate:document.
 
+import { Button } from "@shared/components/ui/button";
 import { cn } from "@shared/lib/classname/cn";
 import {
   ArticleSubParagraph,
@@ -7,7 +8,6 @@ import {
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
 import { VersionCard } from "@/components/commons/VersionCard/VersionCard";
-import { Button } from "@/components/ui/button";
 import { versionRoadmap } from "./generated";
 
 export const versionSections = versionRoadmap.map(version => ({

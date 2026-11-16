@@ -1,5 +1,25 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { ButtonGroup } from "@shared/components/ui/button-group";
+import {
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+} from "@shared/components/ui/dropdown-menu";
+import { Input } from "@shared/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@shared/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@shared/components/ui/tooltip";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
@@ -29,24 +49,7 @@ import {
 } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslation";
 import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";

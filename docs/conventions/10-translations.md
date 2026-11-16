@@ -144,7 +144,7 @@ Schemas emit translation keys in Zod's `error` option. Keys live under
 all five locales. Do not import i18n into a schema, persist localized errors,
 or duplicate field rules in a translation-key mapper.
 
-Use `parseRequest(schema, input)` from `@shared/api/validation` at an interactive
+Use `parse(schema, request)` from `@shared/api/validation` at an interactive
 request boundary, before transport or offline writes. It retains
 `NotegicValidationError`, assigns the first issue's presentation key and preserves
 the existing no-retry policy. Draft-only task edits use the same definition
@@ -152,7 +152,7 @@ schema before writing the draft, so sidebar creation and graph creation cannot
 silently diverge. UI prevalidation must keep the first issue's presentation too.
 
 ```ts
-const validatedRequest = parseRequest(UpdateMeRequestSchema, request);
+const validatedRequest = parse(UpdateMeRequestSchema, request);
 try {
   const response = await UpdateMe({ data: validatedRequest });
   return UpdateMeResponseSchema.parse(response);
@@ -183,7 +183,9 @@ native browser popups do not intercept the app's error path. Keep useful input
 types and accessibility attributes. `FormMessage` translates field keys at
 render time. Existing callbacks use `toast.error(tError(error, t))` after failure.
 Confirmation mismatches use `NotegicError.setPresentation(key)`, never
-`new Error(t(key))`. JSON syntax errors keep their existing translated feedback;
+`new Error(t(key))`. The error classes themselves stay in
+`shared/api/exceptions/`, as described in
+[Exceptions and errors](12-exceptions-and-errors.md). JSON syntax errors keep their existing translated feedback;
 structural payload issues flow through Zod.
 
 Current rollout: auth account/code/password flows, editable account/profile and

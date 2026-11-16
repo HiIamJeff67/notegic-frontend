@@ -1,5 +1,15 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { UserRole } from "@shared/api/interfaces/enums";
+import { Button } from "@shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
@@ -15,16 +25,6 @@ import AuthCodeInput from "@/components/inputs/AuthCodeInput";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { useAppRouter, useLoading, useStationRoutine, useUser } from "@/hooks";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";

@@ -8,8 +8,8 @@ import {
   UpdateMeRequest,
   UpdateMeResponse,
 } from "@shared/api/interfaces/user.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
 import { isJsonResponse } from "@shared/lib/json/isJsonContext";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -37,9 +37,7 @@ export const GetUserData = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as GetUserDataResponse;
+    const formattedResponse = (await format(response)) as GetUserDataResponse;
 
     return formattedResponse;
   });
@@ -150,9 +148,7 @@ export const GetMe = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as GetMeResponse;
+    const formattedResponse = (await format(response)) as GetMeResponse;
 
     return formattedResponse;
   });
@@ -180,9 +176,7 @@ export const UpdateMe = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as UpdateMeResponse;
+    const formattedResponse = (await format(response)) as UpdateMeResponse;
 
     return formattedResponse;
   });

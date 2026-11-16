@@ -1,18 +1,13 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import { cn } from "@shared/lib/classname/cn";
-import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import { generateDynamicDNDType } from "@/components/commons/DNDable/dnd.type";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { generateDynamicDNDType } from "@shared/components/commons/DNDable/dnd.type";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@shared/components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,8 +15,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@shared/components/ui/table";
+import { cn } from "@shared/lib/classname/cn";
+import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { StartSurface } from "@/providers/LocalPreferencesProvider";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
 

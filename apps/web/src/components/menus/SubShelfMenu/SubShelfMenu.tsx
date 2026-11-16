@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { SidebarMenu, SidebarMenuItem } from "@shared/components/ui/sidebar";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { RootShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
@@ -6,8 +6,8 @@ import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import SubShelfMenuItem from "@/components/menus/SubShelfMenu/SubShelfMenuItem";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
-import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { useShelfItem } from "@/hooks";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SubShelfMenuProps {
   summary: ShelfTreeSummary;

@@ -1,5 +1,5 @@
+import { CommandList } from "@shared/components/ui/command";
 import type { ReactNode } from "react";
-import { CommandList } from "@/components/ui/command";
 
 const AppCommandContent = ({ children }: { children: ReactNode }) => {
   return (

@@ -1,21 +1,21 @@
-import type { CSSProperties, ReactNode } from "react";
-import { BarChart } from "@/components/charts/BarChart/BarChart";
 import type {
   TwoDimensionalChartType,
   TwoDimensionalData,
-} from "@/components/charts/BaseChart/BaseChart.type";
-import { ColumnChart } from "@/components/charts/ColumnChart/ColumnChart";
-import { toCartesianChartData } from "@/components/charts/cartesian";
+} from "@shared/components/charts/BaseChart/BaseChart.type";
+import { toCartesianChartData } from "@shared/components/charts/cartesian";
 import type {
   ChartActive,
   ChartMargin,
   ChartSeries,
   ChartTooltipContext,
   ChartValueMode,
-} from "@/components/charts/chart.type";
+} from "@shared/components/charts/chart.type";
+import { toPieChartData } from "@shared/components/charts/PieChart/PieChart.type";
+import type { CSSProperties, ReactNode } from "react";
+import { BarChart } from "@/components/charts/BarChart/BarChart";
+import { ColumnChart } from "@/components/charts/ColumnChart/ColumnChart";
 import { LineChart } from "@/components/charts/LineChart/LineChart";
 import { PieChart } from "@/components/charts/PieChart/PieChart";
-import { toPieChartData } from "@/components/charts/PieChart/PieChart.type";
 
 export interface BaseChartProps<TMeta = unknown> {
   data: TwoDimensionalData<TMeta>;

@@ -1,30 +1,30 @@
-import { AllLanguageData } from "@shared/i18n/availableLanguages";
-import {
-  DashboardWidthFrameCountStep,
-  MaxDashboardWidthFrameCount,
-  MinDashboardWidthFrameCount,
-} from "@/components/widgets/layout";
-import { useTranslation } from "@/hooks/useTranslation";
-import { LocalYjsDocumentStore } from "@shared/lib/blockpack";
-import { formatByteSize } from "@shared/lib/byte/byte.type";
-import toast from "@shared/lib/toast/toast";
-import { HardDriveIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { ArticleSettingItem } from "@/components/commons/Article/Article";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
+} from "@shared/components/ui/select";
+import { Slider } from "@shared/components/ui/slider";
+import { AllLanguageData } from "@shared/i18n/availableLanguages";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack";
+import { formatByteSize } from "@shared/lib/byte/byte.type";
+import toast from "@shared/lib/toast/toast";
+import { HardDriveIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { ArticleSettingItem } from "@/components/commons/Article/Article";
+import {
+  DashboardWidthFrameCountStep,
+  MaxDashboardWidthFrameCount,
+  MinDashboardWidthFrameCount,
+} from "@/components/widgets/layout";
 import { useMaterialAttachmentCache, useTheme } from "@/hooks";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import type {
   Density,

@@ -1,6 +1,6 @@
 # Frontend Architecture and Ownership
 
-This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented. `apps/desktop` is a Tauri 2 shell. Its current `@/` alias still points at `apps/web/src`; that cross-app import is a temporary bridge. Mobile remains a planned boundary without an implementation.
+This document describes the current Web application and the approved target architecture for the frontend monorepo. The Web workspace migration is implemented. `apps/desktop` is a Tauri 2 shell. It composes `shared/` and its own screens. It does not import `apps/web`. The current `@/` alias to `apps/web/src` violates that rule; [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell) removes it. Mobile remains a planned boundary without an implementation.
 
 Which code may move to `shared/`, and which call sites stay inside one app, is decided in [Shared application boundaries](../systems/shared-application-boundaries.md).
 
@@ -15,7 +15,7 @@ apps/web/
   assets/           Web-owned images and icons
   public/           browser metadata and immutable public files
   vite.config.ts    Web build, TanStack Start, and Nitro configuration
-apps/desktop/       Tauri 2 shell. Its window does not load Web UI or shared code.
+apps/desktop/       Tauri 2 shell. Its window uses `shared/` and desktop-owned screens, not `apps/web`.
 shared/
   api/              portable API/query contracts and generated client artifacts
   graphql/          GraphQL schemas, documents, and codegen inputs
@@ -34,7 +34,8 @@ shared/
 server functions, React hooks/invokers, browser local persistence, Apollo
 client setup, WebSocket lifecycle, and browser request headers/cookies.
 `shared/api/` keeps the portable request, query, contract, GraphQL, and
-runtime-neutral WebSocket pieces.
+runtime-neutral WebSocket pieces. Its current tree and the not-yet-created
+`local/` schema live in [shared/api/README.md](../../../shared/api/README.md).
 
 ## Target monorepo
 
@@ -100,6 +101,16 @@ packaging rules. Web favicon, manifest, and browser metadata remain
 Web-owned.
 
 The current global CSS, Tailwind configuration, and BlockNote/editor styles remain Web-owned. Platform-neutral design values may be extracted into `shared/design-tokens/`, but shared business logic must not import Web CSS or assume a specific styling framework.
+
+## Not found
+
+TanStack Router does not publish a separate not-found URL. Web's root route
+sets `notFoundComponent` to `RootNotFoundPage`, and `apps/web/src/routes/$.tsx`
+throws `notFound()` for every unmatched path. Desktop registers the same page
+on `/$`. The reusable path is `not-found`, under the app base path when one is
+set (`/not-found`, or `/development/v1/not-found` in local Web). `WebURLPathDictionary.notFound`
+is that path. Do not add a second not-found page for a missing API origin or
+realtime URL.
 
 ## API, query, and server boundaries
 

@@ -4,7 +4,6 @@ import {
   RealtimePermission,
   RealtimePermissionSchema,
 } from "@shared/api/interfaces/enums";
-import { getRealtimeWebSocketURL } from "@shared/api/url";
 import {
   encodeRealtimeBinaryFrame,
   encodeRealtimePingFrame,
@@ -26,6 +25,7 @@ import {
   type RealtimeRoutineTaskLifecycleFrame,
   type RealtimeSubscribedFrame,
 } from "@shared/api/websocket/types";
+import { APIURLPathDictionary } from "@shared/lib/url/api";
 import type { z } from "zod";
 
 type RealtimeClientOptions = {
@@ -338,7 +338,7 @@ export class RealtimeClient {
         return;
 
       const socket = new WebSocket(
-        getRealtimeWebSocketURL(ticket.realtimeEndpoint),
+        APIURLPathDictionary.realtime.webSocket(ticket.realtimeEndpoint),
         ticket.connectionTicket
       );
       socket.binaryType = "arraybuffer";

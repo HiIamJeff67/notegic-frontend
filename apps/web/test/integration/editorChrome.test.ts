@@ -13,7 +13,7 @@ import { build, transform } from "esbuild";
 const fixture = `
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@shared/components/ui/sidebar';
 import { AppSidebar } from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar';
 import AppSidebarInset from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset';
 import BlockPackEditorContent from '@/components/core/BlockPackEditor/BlockPackEditorContent';

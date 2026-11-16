@@ -1,6 +1,6 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { getQueryClient } from "@shared/api/queryClient";
-import { APIURLPathDictionary } from "@shared/api/url";
+import { APIURLPathDictionary } from "@shared/lib/url/api";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import {

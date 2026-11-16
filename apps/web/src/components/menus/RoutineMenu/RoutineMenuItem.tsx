@@ -1,5 +1,32 @@
 import { ItemType as GraphQLItemType } from "@shared/api/graphql/generated/graphql";
 import { ItemType } from "@shared/api/interfaces/enums";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/ui/collapsible";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@shared/components/ui/context-menu";
+import {
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
+import {
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
@@ -30,30 +57,6 @@ import {
 } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
 import RoutineTaskMenuItemSkeleton from "@/components/menus/RoutineTaskMenu/RoutineTaskMenuItemSkeleton";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuGroup,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import {
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
 import {
   useLoading,
   useMobile,

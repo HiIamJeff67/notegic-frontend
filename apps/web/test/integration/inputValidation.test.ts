@@ -11,7 +11,8 @@ import { build } from "esbuild";
 const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FakeUser, FakeUserInfo } from "@shared/constants/defaultUser.constant";
+import { FakeUserInfo } from "@shared/api/interfaces/seeds/userInfo.seed";
+import { FakeUser } from "@shared/api/interfaces/seeds/user.seed";
 import i18n from '@/i18n';
 import AccountTab from '@/pages/app/setting/account/tabs/AccountTab';
 import ProfileTab from '@/pages/app/setting/account/tabs/ProfileTab';
@@ -41,7 +42,8 @@ const mocks: Record<string, string> = {
   "@/api/hooks/user.hook": "export const useUpdateMe = () => window.mutator;",
   "@/api/hooks/userInfo.hook":
     "export const useUpdateMyInfo = () => window.mutator;",
-  "@/api/functions/headers/clientHeaders": "export const getClientRequestHeaders = () => ({});",
+  "@/api/functions/headers/clientHeaders":
+    "export const getClientRequestHeaders = () => ({});",
   "@/components/dialogs/ImageDialog/CropImageDialog":
     "export default () => null;",
   "@/components/dialogs/ImageDialog/UploadImageDialog":

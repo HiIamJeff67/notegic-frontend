@@ -46,7 +46,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -428,7 +428,7 @@ export const useCreateSubShelfByRootShelfId = () => {
     request: CreateSubShelfByRootShelfIdRequest
   ): Promise<CreateSubShelfByRootShelfIdResponse> => {
     try {
-      parseRequest(CreateSubShelfByRootShelfIdRequestSchema, request);
+      parse(CreateSubShelfByRootShelfIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -490,7 +490,7 @@ export const useCreateSubShelvesByRootShelfIds = (
     request: CreateSubShelvesByRootShelfIdsRequest
   ): Promise<CreateSubShelvesByRootShelfIdsResponse> => {
     try {
-      parseRequest(CreateSubShelvesByRootShelfIdsRequestSchema, request);
+      parse(CreateSubShelvesByRootShelfIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -555,7 +555,7 @@ export const useUpdateMySubShelfById = () => {
     request: UpdateMySubShelfByIdRequest
   ): Promise<UpdateMySubShelfByIdResponse> => {
     try {
-      parseRequest(UpdateMySubShelfByIdRequestSchema, request);
+      parse(UpdateMySubShelfByIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -607,7 +607,7 @@ export const useUpdateMySubShelvesByIds = (
     request: UpdateMySubShelvesByIdsRequest
   ): Promise<UpdateMySubShelvesByIdsResponse> => {
     try {
-      parseRequest(UpdateMySubShelvesByIdsRequestSchema, request);
+      parse(UpdateMySubShelvesByIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }

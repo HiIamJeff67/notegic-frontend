@@ -33,7 +33,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import {
   type QueryKey,
   type UseQueryOptions,
@@ -41,9 +41,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ZodError } from "zod";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateMaterialObjectTicket,
   mutationFnCreateMyMaterial,
@@ -62,7 +63,6 @@ import {
 } from "@/api/invokers/material.invoker";
 import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 
 const materialObjectTicketStaleTime = 60 * 1000;
 
@@ -452,7 +452,7 @@ export const useCreateMyMaterial = (
   const perform = async (
     request: Parameters<typeof mutationFnCreateMyMaterial>[0]
   ) => {
-    parseRequest(CreateMyMaterialRequestSchema, request);
+    parse(CreateMyMaterialRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -509,7 +509,7 @@ export const useUpdateMyMaterialById = (
   const perform = async (
     request: Parameters<typeof mutationFnUpdateMyMaterialById>[0]
   ) => {
-    parseRequest(UpdateMyMaterialByIdRequestSchema, request);
+    parse(UpdateMyMaterialByIdRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -607,7 +607,7 @@ export const useMoveMyMaterialById = (
   const perform = async (
     request: Parameters<typeof mutationFnMoveMyMaterialById>[0]
   ) => {
-    parseRequest(MoveMyMaterialByIdRequestSchema, request);
+    parse(MoveMyMaterialByIdRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -665,7 +665,7 @@ export const useRestoreMyMaterialById = (
   const perform = async (
     request: Parameters<typeof mutationFnRestoreMyMaterialById>[0]
   ) => {
-    parseRequest(RestoreMyMaterialByIdRequestSchema, request);
+    parse(RestoreMyMaterialByIdRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -723,7 +723,7 @@ export const useRestoreMyMaterialsByIds = (
   const perform = async (
     request: Parameters<typeof mutationFnRestoreMyMaterialsByIds>[0]
   ) => {
-    parseRequest(RestoreMyMaterialsByIdsRequestSchema, request);
+    parse(RestoreMyMaterialsByIdsRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -792,7 +792,7 @@ export const useDeleteMyMaterialById = (
   const perform = async (
     request: Parameters<typeof mutationFnDeleteMyMaterialById>[0]
   ) => {
-    parseRequest(DeleteMyMaterialByIdRequestSchema, request);
+    parse(DeleteMyMaterialByIdRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -856,7 +856,7 @@ export const useDeleteMyMaterialsByIds = (
   const perform = async (
     request: Parameters<typeof mutationFnDeleteMyMaterialsByIds>[0]
   ) => {
-    parseRequest(DeleteMyMaterialsByIdsRequestSchema, request);
+    parse(DeleteMyMaterialsByIdsRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
@@ -931,7 +931,7 @@ export const useHardDeleteMyMaterialsByIds = (
   const perform = async (
     request: Parameters<typeof mutationFnHardDeleteMyMaterialsByIds>[0]
   ) => {
-    parseRequest(HardDeleteMyMaterialsByIdsRequestSchema, request);
+    parse(HardDeleteMyMaterialsByIdsRequestSchema, request);
     try {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());

@@ -1,8 +1,8 @@
+import { Button } from "@shared/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ArticleInlineText } from "@/components/commons/Article/Article";
 import { ArticleMethodBadge } from "@/components/commons/Article/ArticleMethodBadge";
-import { Button } from "@/components/ui/button";
 import EndpointDetails from "./EndpointDetails";
 import type { DocumentEndpoint } from "./generated";
 

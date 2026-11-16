@@ -1,5 +1,24 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
+import { Button } from "@shared/components/ui/button";
+import { ButtonGroup } from "@shared/components/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Spinner } from "@shared/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@shared/components/ui/tooltip";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import toast from "@shared/lib/toast/toast";
@@ -15,31 +34,12 @@ import { useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
-import TruncatedText from "@/components/commons/TruncatedText/TruncatedText";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { MaterialIcon } from "@/components/icons/WorkspaceEntityIcons";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useShelfItem } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export interface MaterialFileState {
   isLoading: boolean;

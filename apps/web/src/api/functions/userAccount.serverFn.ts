@@ -22,7 +22,7 @@ import {
   UpdateMyAccountRequest,
   UpdateMyAccountResponse,
 } from "@shared/api/interfaces/userAccount.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -51,9 +51,7 @@ export const PrepareOAuthOperation = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    return PrepareOAuthOperationResponseSchema.parse(
-      await format(response)
-    );
+    return PrepareOAuthOperationResponseSchema.parse(await format(response));
   });
 
 export const GetMyAccount = createServerFn({ method: "GET" }).handler(
@@ -191,9 +189,7 @@ export const BindXAccount = createServerFn({ method: "POST" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as BindXAccountResponse;
+    const formattedResponse = (await format(response)) as BindXAccountResponse;
 
     return formattedResponse;
   });

@@ -1,11 +1,17 @@
-import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
-import { useTranslation } from "@/hooks/useTranslation";
+import Closeable from "@shared/components/commons/Closeable/Closeable";
+import { Button } from "@shared/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
+import { isColor } from "@shared/lib/string/color";
 import toast from "@shared/lib/toast/toast";
 import {
   CheckIcon,
@@ -15,14 +21,9 @@ import {
   XIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useUser } from "@/hooks";
-import Closeable from "../Closeable/Closeable";
+import { useStateTrigger } from "@/hooks/useStateTrigger";
+import { useTranslation } from "@/hooks/useTranslation";
 import ColorPicker from "../ColorPicker/ColorPicker";
 
 interface ColorSelectorProps {
@@ -31,8 +32,6 @@ interface ColorSelectorProps {
   disabled?: boolean;
   className?: string;
 }
-
-const isColor = (value: string): boolean => /^#[0-9a-fA-F]{6}$/.test(value);
 
 const ColorSelector = ({
   value,
@@ -52,7 +51,7 @@ const ColorSelector = ({
   const [customColor, setCustomColor] = useState<string>(
     isColor(value) ? value : "#64748b"
   );
-  const [_, setUpdateTrigger] = useState<number>(0);
+  const forceUpdate = useStateTrigger();
 
   const colorsRef = useRef<string[]>([
     "#64748b",
@@ -72,10 +71,6 @@ const ColorSelector = ({
     "#d946ef",
     "#ec4899",
   ]);
-
-  const forceUpdate = useCallback(() => {
-    setUpdateTrigger(prev => (prev + 1) % MaxTriggerValue);
-  }, []);
 
   useEffect(() => {
     const initializeColors = async () => {

@@ -5,6 +5,7 @@
 @import "./sidebar.css";
 
 @source "../../../../node_modules/@blocknote/shadcn";
+@source "../../../../shared";
 
 @custom-variant standard (&:is(.standard *));
 @custom-variant dark (&:is(.dark *));

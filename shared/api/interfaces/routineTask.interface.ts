@@ -3,7 +3,7 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { z } from "zod";
 import {
   RoutineTaskPayloadSchema,
@@ -112,7 +112,7 @@ export const CreateRoutineTaskBodySchema = z
 export const parseRoutineTaskDefinition = (
   input: z.input<typeof CreateRoutineTaskBodySchema>
 ) => {
-  const body = parseRequest(CreateRoutineTaskBodySchema, input);
+  const body = parse(CreateRoutineTaskBodySchema, input);
   const { purpose: compatibilityPurpose, ...definition } = body;
   const purpose =
     body.kind === "Start"

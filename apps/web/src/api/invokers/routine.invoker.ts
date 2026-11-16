@@ -97,7 +97,7 @@ import {
   type VisualizeMyRoutineStatusCountResponse,
   VisualizeMyRoutineStatusCountResponseSchema,
 } from "@shared/api/interfaces/routine.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import {
   CreateRoutineByStationId,
@@ -256,7 +256,7 @@ export const queryFnGetMyRoutinesByTimeRange = async (
 export const mutationFnCreateRoutineByStationId = async (
   request: CreateRoutineByStationIdRequest
 ): Promise<CreateRoutineByStationIdResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     CreateRoutineByStationIdRequestSchema,
     request
   );
@@ -289,7 +289,7 @@ export const mutationFnCreateRoutineByStationId = async (
 export const mutationFnCreateRoutinesByStationIds = async (
   request: CreateRoutinesByStationIdsRequest
 ): Promise<CreateRoutinesByStationIdsResponse> => {
-  const validatedRequest = parseRequest(
+  const validatedRequest = parse(
     CreateRoutinesByStationIdsRequestSchema,
     request
   );
@@ -322,10 +322,7 @@ export const mutationFnCreateRoutinesByStationIds = async (
 export const mutationFnUpdateMyRoutineById = async (
   request: UpdateMyRoutineByIdRequest
 ): Promise<UpdateMyRoutineByIdResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyRoutineByIdRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyRoutineByIdRequestSchema, request);
   try {
     const response = await UpdateMyRoutineById({
       data: validatedRequest,
@@ -352,10 +349,7 @@ export const mutationFnUpdateMyRoutineById = async (
 export const mutationFnUpdateMyRoutinesByIds = async (
   request: UpdateMyRoutinesByIdsRequest
 ): Promise<UpdateMyRoutinesByIdsResponse> => {
-  const validatedRequest = parseRequest(
-    UpdateMyRoutinesByIdsRequestSchema,
-    request
-  );
+  const validatedRequest = parse(UpdateMyRoutinesByIdsRequestSchema, request);
   try {
     const response = await UpdateMyRoutinesByIds({
       data: validatedRequest,

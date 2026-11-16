@@ -37,7 +37,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import {
   type UseQueryOptions,
   useMutation,
@@ -241,7 +241,7 @@ export const useCreateStation = (
 
   const perform = async (request: CreateStationRequest) => {
     try {
-      parseRequest(CreateStationRequestSchema, request);
+      parse(CreateStationRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -298,7 +298,7 @@ export const useCreateStations = (
 
   const perform = async (request: CreateStationsRequest) => {
     try {
-      parseRequest(CreateStationsRequestSchema, request);
+      parse(CreateStationsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -355,7 +355,7 @@ export const useUpdateMyStationById = (
 
   const perform = async (request: UpdateMyStationByIdRequest) => {
     try {
-      parseRequest(UpdateMyStationByIdRequestSchema, request);
+      parse(UpdateMyStationByIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -411,7 +411,7 @@ export const useUpdateMyStationsByIds = (
 
   const perform = async (request: UpdateMyStationsByIdsRequest) => {
     try {
-      parseRequest(UpdateMyStationsByIdsRequestSchema, request);
+      parse(UpdateMyStationsByIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }

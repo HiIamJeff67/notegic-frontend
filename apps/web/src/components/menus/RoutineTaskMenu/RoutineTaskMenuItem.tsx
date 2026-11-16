@@ -1,3 +1,20 @@
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@shared/components/ui/context-menu";
+import {
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@shared/components/ui/hover-card";
+import {
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@shared/components/ui/sidebar";
 import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
@@ -8,20 +25,6 @@ import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuGroup,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import {
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
 import { useMobile, useModal, useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";

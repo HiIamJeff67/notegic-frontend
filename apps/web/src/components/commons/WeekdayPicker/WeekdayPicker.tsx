@@ -1,6 +1,6 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
 import { cn } from "@shared/lib/classname/cn";
-import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface WeekdayPickerProps {
   value: {

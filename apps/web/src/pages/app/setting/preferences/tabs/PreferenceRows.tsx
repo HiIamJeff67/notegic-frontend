@@ -1,7 +1,7 @@
+import { Button } from "@shared/components/ui/button";
+import { Switch } from "@shared/components/ui/switch";
 import { createContext, type ReactNode, useContext } from "react";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 
 interface SectionProps {
   children: ReactNode;

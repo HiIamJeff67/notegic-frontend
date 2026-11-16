@@ -2,7 +2,7 @@ import {
   GetMyInfoRequest,
   GetMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -30,9 +30,7 @@ export const GetMyInfo = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as GetMyInfoResponse;
+    const formattedResponse = (await format(response)) as GetMyInfoResponse;
 
     return formattedResponse;
   });

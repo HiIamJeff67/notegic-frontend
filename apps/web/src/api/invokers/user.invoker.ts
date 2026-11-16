@@ -20,7 +20,7 @@ import {
   type UpdateMeResponse,
   UpdateMeResponseSchema,
 } from "@shared/api/interfaces/user.interface";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { ZodError } from "zod";
 import { GetMe, GetUserData, UpdateMe } from "@/api/functions/user.serverFn";
 
@@ -83,7 +83,7 @@ export const queryFnGetMe = async (
 export const mutationFnUpdateMe = async (
   request: UpdateMeRequest
 ): Promise<UpdateMeResponse> => {
-  const validatedRequest = parseRequest(UpdateMeRequestSchema, request);
+  const validatedRequest = parse(UpdateMeRequestSchema, request);
   try {
     const response = await UpdateMe({ data: validatedRequest });
     return UpdateMeResponseSchema.parse(response);

@@ -1,13 +1,13 @@
-import type { CSSProperties, ReactNode } from "react";
 import type {
   ChartActive,
   ChartTooltipContext,
-} from "@/components/charts/chart.type";
+} from "@shared/components/charts/chart.type";
 import {
   DEFAULT_VIEWBOX_HEIGHT,
   DEFAULT_VIEWBOX_WIDTH,
-} from "@/components/charts/defaults";
-import { Spinner } from "@/components/ui/spinner";
+} from "@shared/components/charts/defaults";
+import { Spinner } from "@shared/components/ui/spinner";
+import type { CSSProperties, ReactNode } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 export interface ChartLegendItem {

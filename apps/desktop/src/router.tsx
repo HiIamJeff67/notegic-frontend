@@ -1,4 +1,5 @@
 import { ApolloProvider } from "@apollo/client/react";
+import { Toaster } from "@shared/components/ui/toaster";
 import {
   createRootRouteWithContext,
   createRoute,
@@ -7,7 +8,6 @@ import {
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect } from "react";
 import { createApolloClient } from "@/api/apolloClient";
-import { Toaster } from "@/components/ui/toaster";
 import { syncStoredLanguage } from "@/i18n";
 import PlaygroundPage from "@/pages/(playground)/PlaygroundPage";
 import AppLayout from "@/pages/app/AppLayout";

@@ -1,11 +1,11 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
 import { cn } from "@shared/lib/classname/cn";
 import { formatTimezone } from "@shared/lib/time/timezone";
 import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const SupportedTimezones = Array.from(
   new Set(["UTC", ...Intl.supportedValuesOf("timeZone")])

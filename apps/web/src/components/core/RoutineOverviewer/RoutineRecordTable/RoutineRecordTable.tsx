@@ -4,7 +4,15 @@ import {
   SearchRoutineRecordSortBy,
 } from "@shared/api/graphql/generated/graphql";
 import { RoutineRecordStatus } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/ui/table";
 import { tError } from "@shared/i18n/error";
 import { routineRecordStatusTKeys } from "@shared/i18n/tKeys/routineRecordStatus.tKey";
 import toast from "@shared/lib/toast/toast";
@@ -16,17 +24,9 @@ import RoutineRecordFilters, {
   defaultRoutineRecordFilters,
   type RoutineRecordFiltersValue,
 } from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useModal, useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@/hooks/useDebounce";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const RoutineRecordTable = () => {
   const { i18n, t } = useTranslation();

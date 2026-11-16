@@ -1,4 +1,3 @@
-import { parseRequest } from "@shared/api/validation";
 import {
   type LinkRoutineItemByIdRequest,
   LinkRoutineItemByIdRequestSchema,
@@ -13,6 +12,7 @@ import {
   type LinkRoutineTasksByIdsRequest,
   LinkRoutineTasksByIdsRequestSchema,
 } from "@shared/api/interfaces/routine.interface";
+import { parse } from "@shared/api/validation";
 import type { InferSelectModel } from "drizzle-orm";
 import { Transaction } from "@/api/local/schemas";
 import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
@@ -127,7 +127,7 @@ export const prepareRoutineRelationSyncJobs = ({
         operations.push(() =>
           mutators.linkRoutineItemMutator.mutateAsync({
             header,
-            body: parseRequest(LinkRoutineItemByIdRequestSchema, {
+            body: parse(LinkRoutineItemByIdRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }).body,
@@ -149,7 +149,7 @@ export const prepareRoutineRelationSyncJobs = ({
         operations.push(() =>
           mutators.linkRoutineItemsMutator.mutateAsync({
             header,
-            body: parseRequest(LinkRoutineItemsByIdsRequestSchema, {
+            body: parse(LinkRoutineItemsByIdsRequestSchema, {
               ...transaction,
               affected: transaction.affected ?? undefined,
             }).body,

@@ -1,9 +1,9 @@
+import { Button } from "@shared/components/ui/button";
+import { Input } from "@shared/components/ui/input";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import toast from "@shared/lib/toast/toast";
 import { type ComponentProps, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuthCode } from "@/hooks/useAuthCode";
 import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";

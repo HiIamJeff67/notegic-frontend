@@ -1,7 +1,7 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
 import { RefreshCwIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Section, SettingRow } from "./PreferenceRows";
 
 type PermissionDisplayState =

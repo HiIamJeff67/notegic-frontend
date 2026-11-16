@@ -1,11 +1,11 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { Slider } from "@shared/components/ui/slider";
 import { ScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import { Dispatch, SetStateAction } from "react";
 import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import { Slider } from "@/components/ui/slider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditScratchPadWidgetDialogContentProps {
   setting: ScratchPadSetting;

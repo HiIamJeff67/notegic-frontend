@@ -2,6 +2,9 @@ import type { UUID } from "crypto";
 
 export const WebURLPathDictionary = {
   home: "",
+  // Unmatched paths already render RootNotFoundPage through the splat route.
+  // Reuse this path. Do not add another not-found page.
+  notFound: "not-found",
   document: "document",
   privacyPolicy: "privacy-policy",
   auth: {

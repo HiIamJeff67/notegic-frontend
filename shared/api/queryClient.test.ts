@@ -1,8 +1,8 @@
+import { z } from "zod";
 import { NotegicAPIError, NotegicException } from "./exceptions";
-import { createQueryClient } from "./queryClient";
 import { ValidationClientException } from "./exceptions/client/validation.exception";
 import { NotegicValidationError } from "./exceptions/errors/validation.error";
-import { z } from "zod";
+import { createQueryClient } from "./queryClient";
 
 describe("query retry policy", () => {
   it("never retries validation failures in queries or mutations", async () => {

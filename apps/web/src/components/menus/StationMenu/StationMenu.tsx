@@ -1,6 +1,6 @@
+import { SidebarMenu } from "@shared/components/ui/sidebar";
 import { lazy, Suspense } from "react";
 import StationMenuItemSkeleton from "@/components/menus/StationMenu/StationMenuItemSkeleton";
-import { SidebarMenu } from "@/components/ui/sidebar";
 import { useStationRoutine } from "@/hooks";
 
 const StationMenuItem = lazy(

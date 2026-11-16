@@ -1,7 +1,12 @@
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@shared/components/ui/tabs";
 import { cn } from "@shared/lib/classname/cn";
 import { Braces, FileCode2, Globe2, Terminal } from "lucide-react";
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CodeExample from "./CodeExample";
 
 type CodeLanguage =

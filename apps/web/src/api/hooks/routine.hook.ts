@@ -50,7 +50,7 @@ import {
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
-import { parseRequest } from "@shared/api/validation";
+import { parse } from "@shared/api/validation";
 import { matchesSearch } from "@shared/lib/search/searchPage";
 import {
   type UseQueryOptions,
@@ -68,6 +68,7 @@ import {
 } from "@/api/hooks/graphql/policies/searchRoutines.policy";
 import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
 import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -95,7 +96,6 @@ import {
 } from "@/api/invokers/routine.invoker";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineStatusCount = (
@@ -466,7 +466,7 @@ export const useCreateRoutineByStationId = (
 
   const perform = async (request: CreateRoutineByStationIdRequest) => {
     try {
-      parseRequest(CreateRoutineByStationIdRequestSchema, request);
+      parse(CreateRoutineByStationIdRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -564,7 +564,7 @@ export const useCreateRoutinesByStationIds = (
 
   const perform = async (request: CreateRoutinesByStationIdsRequest) => {
     try {
-      parseRequest(CreateRoutinesByStationIdsRequestSchema, request);
+      parse(CreateRoutinesByStationIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
@@ -670,7 +670,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
     request: UpdateMyRoutineByIdRequest
   ): Promise<UpdateMyRoutineByIdResponse> => {
     try {
-      parseRequest(UpdateMyRoutineByIdRequestSchema, request);
+      parse(UpdateMyRoutineByIdRequestSchema, request);
       if (isRemoteUnavailable())
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       return await mutationFnUpdateMyRoutineById(request);
@@ -802,7 +802,7 @@ export const useUpdateMyRoutinesByIds = (
 
   const perform = async (request: UpdateMyRoutinesByIdsRequest) => {
     try {
-      parseRequest(UpdateMyRoutinesByIdsRequestSchema, request);
+      parse(UpdateMyRoutinesByIdsRequestSchema, request);
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }

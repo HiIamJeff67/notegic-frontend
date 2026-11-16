@@ -1,8 +1,8 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useTranslation } from "@/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";
 import { ShelfLocationPicker } from "../PayloadSearchPickers";
 import TemplatePatternEditor, {

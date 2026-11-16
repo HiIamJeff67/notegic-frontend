@@ -2,22 +2,22 @@ import {
   AllRoutinePeriods,
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
-import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
-import { useEffect, useState } from "react";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
-import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Checkbox } from "@shared/components/ui/checkbox";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+} from "@shared/components/ui/select";
+import { Textarea } from "@shared/components/ui/textarea";
+import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
+import { useEffect, useState } from "react";
+import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";
+import { useTranslation } from "@/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";
 import TemplatePatternEditor, {
   type RoutineTaskTemplatePattern,

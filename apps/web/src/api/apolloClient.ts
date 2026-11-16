@@ -5,7 +5,7 @@ import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
-import { CurrentAPIBaseURL, getBrowserLoopbackURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { tap } from "rxjs";
 import {
   getClientCSRFToken,
@@ -14,12 +14,14 @@ import {
 import { searchQueryFieldPolicies } from "./hooks/graphql/policies/searchQueryFields.policy";
 
 export const createApolloClient = () => {
-  const apiDomainURL = getBrowserLoopbackURL(
-    import.meta.env.VITE_API_DOMAIN_URL || ""
-  );
+  const apiDomainURL = APIURLPathDictionary.origin();
+  const unavailable = APIURLPathDictionary.notFound();
 
   const httpLink = new HttpLink({
-    uri: `${apiDomainURL}/${CurrentAPIBaseURL}/graphql/`,
+    uri:
+      apiDomainURL === unavailable
+        ? apiDomainURL
+        : `${apiDomainURL}/${CurrentAPIBaseURL}/graphql/`,
     credentials: "include", // for including the cookies
   });
 

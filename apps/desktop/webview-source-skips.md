@@ -1,13 +1,13 @@
 # Desktop webview boundaries
 
-The desktop window renders the existing web pages and components. It does not
-fork those components. `apps/desktop/src/router.tsx` is the desktop route tree.
-Screen logic that both route trees share lives next to the page, not in a
-second copy.
+`apps/desktop` still imports `apps/web` through the `@/` alias. That import is
+not the sharing design. A file both apps use moves to `shared/` first.
+[NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
+removes the alias. `apps/desktop/src/router.tsx` is the desktop route tree.
 
-The desktop build still does not execute SQLocal or the TanStack Start server
-runtime. Those modules are replaced at the bundler boundary. The replacements
-are not a native database and not a bearer-token API client.
+Until that import is gone, the desktop build replaces Web-only runtimes before
+they execute. The replacements are not a native database, not a bearer-token
+API client, and not a sharing layer. Delete them with the Web imports.
 
 ## Replaced before the bundle runs
 

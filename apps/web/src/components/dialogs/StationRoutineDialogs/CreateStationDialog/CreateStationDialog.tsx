@@ -1,10 +1,5 @@
 import type { SupportedIcon } from "@shared/api/interfaces/enums";
-import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
-import type { UUID } from "crypto";
-import { useEffect, useState } from "react";
-import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,11 +7,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
+import { Spinner } from "@shared/components/ui/spinner";
+import { Textarea } from "@shared/components/ui/textarea";
+import { tError } from "@shared/i18n/error";
+import toast from "@shared/lib/toast/toast";
+import type { UUID } from "crypto";
+import { useEffect, useState } from "react";
+import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";

@@ -1,7 +1,6 @@
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import type { UpdateRoutineTaskGraphByRoutineIdResponse } from "@shared/api/interfaces/routineTaskDependency.interface";
 import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
-import { MaxTriggerValue } from "@shared/constants/triggerLimitations.constant";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";
@@ -14,6 +13,7 @@ import React, {
   useState,
 } from "react";
 import { useUser } from "@/hooks";
+import { useStateTrigger } from "@/hooks/useStateTrigger";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
@@ -142,7 +142,7 @@ export const StationRoutineProvider = ({
     query: "",
   });
 
-  const [_, setUpdateTrigger] = useState<number>(0);
+  const forceUpdate = useStateTrigger();
   const [state, setState] = useState<"idle" | "loading" | "syncing">("idle");
   const [viewMode, setViewMode] = useState<"overview" | "station">("overview");
   const [activeStationId, setActiveStationId] = useState<UUID | null>(null);
@@ -155,10 +155,6 @@ export const StationRoutineProvider = ({
   const [timeRailScale, setTimeRailScale] = useState<"day" | "week" | "month">(
     "week"
   );
-
-  const forceUpdate = useCallback(() => {
-    setUpdateTrigger(prev => (prev + 1) % MaxTriggerValue);
-  }, []);
 
   const routineTaskLogic = useRoutineTaskLogic({
     stationsRef,

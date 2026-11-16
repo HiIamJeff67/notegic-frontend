@@ -1,7 +1,13 @@
 import type { Notification } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@shared/components/ui/button";
+import { MenubarMenu, MenubarTrigger } from "@shared/components/ui/menubar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
 import { cn } from "@shared/lib/classname/cn";
 import {
   AlertCircleIcon,
@@ -20,13 +26,7 @@ import {
 } from "@/api/hooks/notification.hook";
 import { NotificationDialog } from "@/components/dialogs/NotificationDialog";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
-import { Button } from "@/components/ui/button";
-import { MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const NotificationPopover = ({
   mobile = false,

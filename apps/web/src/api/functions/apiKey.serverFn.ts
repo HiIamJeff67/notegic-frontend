@@ -6,7 +6,7 @@ import type {
   RevokeMyAPIKeyRequest,
   RevokeMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
-import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/api/url";
+import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
@@ -66,9 +66,7 @@ export const ListMyAPIKeys = createServerFn({ method: "GET" })
     );
 
     forwardUpstreamSetCookies(response);
-    const formattedResponse = (await format(
-      response
-    )) as ListMyAPIKeysResponse;
+    const formattedResponse = (await format(response)) as ListMyAPIKeysResponse;
 
     return formattedResponse;
   });

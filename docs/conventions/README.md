@@ -31,6 +31,7 @@ recurring patterns into explicit rules for new work.
 | [09-widgets.md](09-widgets.md) | Dashboard widget structure and local persistence |
 | [10-translations.md](10-translations.md) | Project translation hook, async notifications, errors, enum mappings, and language ownership |
 | [11-desktop-tauri.md](11-desktop-tauri.md) | Tauri layout, Rust names, commands, permissions, and sidecars for the desktop shell |
+| [12-exceptions-and-errors.md](12-exceptions-and-errors.md) | Where exception catalogs and NotegicError subclasses live, and how a request throws one |
 
 ## Priority order
 

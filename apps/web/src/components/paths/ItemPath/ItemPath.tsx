@@ -1,4 +1,15 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@shared/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@shared/components/ui/dropdown-menu";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { ItemType } from "@shared/lib/shelf/itemNodes.type";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
@@ -8,18 +19,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { useCallback, useState, type WheelEvent } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import ItemPathItem from "@/components/paths/ItemPath/ItemPathItem";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ItemPathProps {
   parentSubShelfId: UUID;

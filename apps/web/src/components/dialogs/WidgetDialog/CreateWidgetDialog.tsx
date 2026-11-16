@@ -1,17 +1,17 @@
-import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@shared/components/ui/dialog";
+import { useEffect } from "react";
 import {
   BasicPreviewWidgets,
   GuidePreviewWidgets,
 } from "@/components/widgets/basic/basic";
 import { PreviewWidget } from "@/components/widgets/widget";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CreateWidgetDialogProps {
   open: boolean;
