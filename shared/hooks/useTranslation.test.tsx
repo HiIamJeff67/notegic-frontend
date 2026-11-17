@@ -1,8 +1,8 @@
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { resources } from "@shared/i18n";
 import { createInstance } from "i18next";
 import { renderToStaticMarkup } from "react-dom/server";
 import { I18nextProvider } from "react-i18next";
-import { useTranslation } from "@/hooks/useTranslation";
 
 test("uses the supplied i18n context without importing the Web runtime", async () => {
   const i18n = createInstance();

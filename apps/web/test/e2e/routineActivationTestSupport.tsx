@@ -4,10 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { type ContextType, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { localDB } from "@/api/local/db";
-import { Station, User } from "@/api/local/schemas";
+import { Station, User } from "@shared/api/local/schemas";
 import RoutineInspector from "@/components/inspectors/RoutineInspector";
 import { StationRoutineContext } from "@/providers/StationRoutineProvider/StationRoutineProvider";
-import { ThemeContext } from "@/providers/ThemeProvider";
+import { ThemeContext } from "@shared/providers/ThemeProvider";
 
 const routineId = "12345678-1234-4234-8234-123456789abc";
 const stationId = "22345678-1234-4234-8234-123456789abc";

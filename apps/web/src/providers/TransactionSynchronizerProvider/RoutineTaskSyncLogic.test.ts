@@ -1,7 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
-import type { Transaction } from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import type { Transaction } from "@shared/api/local/schemas";
+import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import { prepareRoutineTaskSyncJobs } from "@/providers/TransactionSynchronizerProvider/RoutineTaskSyncLogic";
 
 const routineId = "12345678-1234-4234-8234-123456789abc";

@@ -79,7 +79,7 @@ test("crossing the documentation boundary preserves committed rows, pending tran
       const load = (path: string) => import(/* @vite-ignore */ path);
       const { localDB } = await load("/src/api/local/db.ts");
       const { Transaction, User } = await load(
-        "/src/api/local/schemas/index.ts"
+        "/test/e2e/localDatabaseModules.ts"
       );
       const { LocalYjsDocumentStore } = await load(
         "/test/e2e/localDatabaseTestSupport.ts"
@@ -139,7 +139,7 @@ test("crossing the documentation boundary preserves committed rows, pending tran
       const load = (path: string) => import(/* @vite-ignore */ path);
       const { localDB } = await load("/src/api/local/db.ts");
       const { Transaction, User } = await load(
-        "/src/api/local/schemas/index.ts"
+        "/test/e2e/localDatabaseModules.ts"
       );
       const { eq, LocalYjsDocumentStore } = await load(
         "/test/e2e/localDatabaseTestSupport.ts"

@@ -60,7 +60,7 @@ const mocks: Record<string, string> = {
   `,
   "@/hooks/useModal": "export const useModal = () => ({});",
   "@/hooks/useUser": "export const useUser = () => ({});",
-  "@/hooks/useTheme": `export const useTheme = () => ({currentTheme:{isDark:document.documentElement.classList.contains('dark')}});`,
+  "@shared/hooks/useTheme": `export const useTheme = () => ({currentTheme:{isDark:document.documentElement.classList.contains('dark')}});`,
   "@/hooks/useBlockEditor": `export const useBlockEditor = () => ({editor:{}, state:'syncError'});`,
   "@/hooks/useLocalPreferences": `export const useLocalPreferences = () => ({preferences:{editorWidth:'standard',editorFontSize:16}});`,
   "@/api/hooks/material.hook":

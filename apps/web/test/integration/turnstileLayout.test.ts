@@ -56,7 +56,7 @@ window.root.render(<Fixture />);
 `;
 
 const mocks: Record<string, string> = {
-  "@/hooks/useTheme": `export const useTheme = () => ({ currentTheme: { isDark: true } });`,
+  "@shared/hooks/useTheme": `export const useTheme = () => ({ currentTheme: { isDark: true } });`,
   "react-i18next": `export const useTranslation = () => ({ t: key => key });`,
 };
 

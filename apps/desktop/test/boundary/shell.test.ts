@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
-const sourceRoot = path.resolve(__dirname, "../src");
+const sourceRoot = path.resolve(__dirname, "../../src");
 
 const sourceFiles = (directory: string): string[] =>
   readdirSync(directory).flatMap(entry => {
@@ -27,5 +27,16 @@ describe("desktop shell boundary", () => {
     });
 
     expect(violations).toEqual([]);
+  });
+
+  it("does not mount the web page tree", () => {
+    const routerSource = readFileSync(
+      path.join(sourceRoot, "router.tsx"),
+      "utf8"
+    );
+    expect(routerSource).not.toContain("@/pages");
+    expect(routerSource).not.toContain("@/providers");
+    expect(routerSource).not.toContain("LoginPage");
+    expect(routerSource).not.toContain("HomePage");
   });
 });

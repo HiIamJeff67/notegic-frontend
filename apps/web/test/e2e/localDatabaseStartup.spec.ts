@@ -108,7 +108,7 @@ test("@environment starts the local database without migration errors", async ({
     await page.evaluate(async () => {
       const load = (path: string) => import(/* @vite-ignore */ path);
       const { localDB } = await load("/src/api/local/db.ts");
-      const { User } = await load("/src/api/local/schemas/index.ts");
+      const { User } = await load("/test/e2e/localDatabaseModules.ts");
       await localDB.insert(User).values({
         publicId: "e2e-multitab-startup",
         name: "Startup marker",
@@ -127,7 +127,7 @@ test("@environment starts the local database without migration errors", async ({
       const marker = await currentPage.evaluate(async () => {
         const load = (path: string) => import(/* @vite-ignore */ path);
         const { localDB } = await load("/src/api/local/db.ts");
-        const { User } = await load("/src/api/local/schemas/index.ts");
+        const { User } = await load("/test/e2e/localDatabaseModules.ts");
         const { eq } = await load("/test/e2e/localDatabaseTestSupport.ts");
         await localDB.ensureReady();
         return await localDB
@@ -317,7 +317,7 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
       "/test/e2e/localDatabaseTestSupport.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
 
     const userPublicId = "e2e-local-db-user";
@@ -374,7 +374,7 @@ test("preserves local rows, pending transactions, and Yjs across a reload", asyn
       "/test/e2e/localDatabaseTestSupport.ts"
     );
     const { Routine, Station, Transaction, User } = await importModule(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     const userPublicId = "e2e-local-db-user";
     const user = await localDB.query.User.findFirst({
@@ -421,11 +421,11 @@ test("upgrades a freshly created database after a local down migration", async (
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { getOrderedMigrations } = await importModule(
-      "/src/api/local/migrationCatalog.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine, Station } = await importModule(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
 
     await localDB.insert(Station).values({
@@ -470,10 +470,10 @@ test("upgrades a freshly created database after a local down migration", async (
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { getOrderedMigrations } = await importModule(
-      "/src/api/local/migrationCatalog.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     const { eq } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
-    const { Routine } = await importModule("/src/api/local/schemas/index.ts");
+    const { Routine } = await importModule("/test/e2e/localDatabaseModules.ts");
     await localDB.ensureReady();
     const routine = await localDB.query.Routine.findFirst({
       where: eq(Routine.id, "e2e-updown-routine"),

@@ -32,7 +32,7 @@ import {
   StationRoutineProvider,
 } from "@/providers/StationRoutineProvider/StationRoutineProvider";
 import { getDefaultStationNode } from "@/providers/StationRoutineProvider/stationNode.type";
-import { ThemeContext } from "@/providers/ThemeProvider";
+import { ThemeContext } from "@shared/providers/ThemeProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import "@xyflow/react/dist/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";

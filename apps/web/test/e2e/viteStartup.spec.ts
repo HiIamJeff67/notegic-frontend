@@ -196,7 +196,7 @@ test("HMR accepts updates and a full reload reconnects SQLite without losing row
     ).notegicHmrRevision = module.revision;
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
-    const { User } = await load("/src/api/local/schemas/index.ts");
+    const { User } = await load("/test/e2e/localDatabaseModules.ts");
     await localDB.ensureReady();
     await localDB.insert(User).values({
       publicId: "e2e-vite-hmr",
@@ -233,7 +233,7 @@ test("HMR accepts updates and a full reload reconnects SQLite without losing row
   const rows = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
-    const { User } = await load("/src/api/local/schemas/index.ts");
+    const { User } = await load("/test/e2e/localDatabaseModules.ts");
     const { eq } = await load("/test/e2e/localDatabaseTestSupport.ts");
     await localDB.ensureReady();
     return await localDB

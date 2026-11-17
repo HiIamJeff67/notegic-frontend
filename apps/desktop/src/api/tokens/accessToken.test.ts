@@ -1,7 +1,4 @@
-import {
-  getAccessToken,
-  setAccessToken,
-} from "../../../src/api/tokens/accessToken";
+import { getAccessToken, setAccessToken } from "./accessToken";
 
 describe("desktop access token", () => {
   it("keeps the bearer token in memory", () => {

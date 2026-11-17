@@ -44,7 +44,7 @@ const respondGraphSave = async (route: Route, page: Page) => {
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
     const { RoutineTask, RoutineTaskDependency } = await load(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     const tasks = new Map<string, any>(
       (await localDB.select().from(RoutineTask)).map((task: any) => [
@@ -983,7 +983,7 @@ test("version conflicts preserve drafts and require review plus a separate atomi
   const fixture = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
-    const { RoutineTask } = await load("/src/api/local/schemas/index.ts");
+    const { RoutineTask } = await load("/test/e2e/localDatabaseModules.ts");
     const { RoutineLocalSimulator } = await load(
       "/src/api/local/simulators/routine.simulator.ts"
     );
@@ -1459,10 +1459,10 @@ test("SQLocal preserves a populated Routine graph, queue and draft across down/u
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { LocalDBMigrator } = await importModule(
-      "/src/api/local/migrator.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     const { getOrderedMigrations } = await importModule(
-      "/src/api/local/migrationCatalog.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     await localDB.ensureReady();
     const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
@@ -2052,7 +2052,7 @@ test("deleted Routine shows Not Found while retaining the local graph draft", as
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
     const { RoutineTaskDependencyGraphDraft } = await load(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     return JSON.stringify(
       await localDB.select().from(RoutineTaskDependencyGraphDraft)
@@ -2074,7 +2074,7 @@ test("deleted Routine shows Not Found while retaining the local graph draft", as
       const load = (path: string) => import(/* @vite-ignore */ path);
       const { localDB } = await load("/src/api/local/db.ts");
       const { RoutineTaskDependencyGraphDraft } = await load(
-        "/src/api/local/schemas/index.ts"
+        "/test/e2e/localDatabaseModules.ts"
       );
       return JSON.stringify(
         await localDB.select().from(RoutineTaskDependencyGraphDraft)

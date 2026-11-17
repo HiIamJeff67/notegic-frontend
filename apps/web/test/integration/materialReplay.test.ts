@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
-import * as schema from "@/api/local/schemas";
-import { TransactionActionType as Action } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType as Entity } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import * as schema from "@shared/api/local/schemas";
+import { TransactionActionType as Action } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { TransactionEntityType as Entity } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import {
   MaterialLocalSynchronizer,
   replaceMaterialId,
@@ -98,7 +98,7 @@ const fixture = () => {
   const db = new DatabaseSync(":memory:");
   db.exec(
     readFileSync(
-      resolve(process.cwd(), "apps/web/src/api/local/bootstrap.sql"),
+      resolve(process.cwd(), "shared/api/local/bootstrap.sql"),
       "utf8"
     )
   );

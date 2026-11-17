@@ -12,7 +12,7 @@ test("manual recovery keeps failed data until an exported, confirmed rebuild", a
   const journal = JSON.parse(
     await readFile(
       new URL(
-        "../../src/api/local/migrations/meta/_journal.json",
+        "../../../../shared/api/local/migrations/meta/_journal.json",
         import.meta.url
       ),
       "utf8"
@@ -40,7 +40,7 @@ test("manual recovery keeps failed data until an exported, confirmed rebuild", a
       "/test/e2e/localDatabaseTestSupport.ts"
     );
     const { User, Station, Routine, Transaction } = await load(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     await localDB.ensureReady();
     await localDB.insert(User).values({

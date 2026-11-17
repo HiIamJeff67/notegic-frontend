@@ -114,7 +114,7 @@ const mocks: Record<string, string> = {
     export const useUser = () => window.user;
     export const useStationRoutine = () => ({ refresh: async () => {} });
     export { useLoading } from "@/hooks/useLoading";`,
-  "@/hooks/useTheme":
+  "@shared/hooks/useTheme":
     "export const useTheme = () => ({ currentTheme: { isDark: false } });",
   "@/hooks/useLocalPreferences":
     "export const useLocalPreferences = () => ({ startPath: 'app/dashboard' });",

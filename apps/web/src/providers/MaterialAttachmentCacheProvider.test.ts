@@ -1,4 +1,4 @@
-jest.mock("@/api/local/policy", () => ({
+jest.mock("@shared/api/local/policy", () => ({
   isLocalPreferenceEnabled: jest.fn(() => true),
 }));
 jest.mock("@shared/lib/storage/indexedDB", () => ({
@@ -11,7 +11,7 @@ jest.mock("@shared/lib/storage/indexedDB", () => ({
 }));
 
 import { IndexedDB } from "@shared/lib/storage/indexedDB";
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import {
   cleanupMaterialAttachmentCache,
   clearMaterialAttachmentCache,

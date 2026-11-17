@@ -179,7 +179,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
       )) as typeof import("@shared/api/queryClient");
       const { localDB } = await load("/src/api/local/db.ts");
       const { RoutineTaskDependencyGraphDraft } = await load(
-        "/src/api/local/schemas/index.ts"
+        "/test/e2e/localDatabaseModules.ts"
       );
       const rows = await localDB.select().from(RoutineTaskDependencyGraphDraft);
       const baseline = rows.flatMap(
@@ -274,7 +274,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
     const load = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await load("/src/api/local/db.ts");
     const { RoutineTaskDependencyGraphDraft } = await load(
-      "/src/api/local/schemas/index.ts"
+      "/test/e2e/localDatabaseModules.ts"
     );
     return JSON.stringify(
       await localDB.select().from(RoutineTaskDependencyGraphDraft)
@@ -292,7 +292,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
       const load = (path: string) => import(/* @vite-ignore */ path);
       const { localDB } = await load("/src/api/local/db.ts");
       const { RoutineTaskDependencyGraphDraft } = await load(
-        "/src/api/local/schemas/index.ts"
+        "/test/e2e/localDatabaseModules.ts"
       );
       return JSON.stringify(
         await localDB.select().from(RoutineTaskDependencyGraphDraft)

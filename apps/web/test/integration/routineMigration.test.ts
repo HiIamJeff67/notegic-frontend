@@ -12,11 +12,11 @@ const { DatabaseSync } = process.getBuiltinModule("node:sqlite") as {
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { LocalDBMigrator, splitSqlStatements } from "@/api/local/migrator";
+import { LocalDBMigrator, splitSqlStatements } from "@shared/api/local/migrator";
 
 const migrationDirectory = resolve(
   process.cwd(),
-  "apps/web/src/api/local/migrations"
+  "shared/api/local/migrations"
 );
 const readMigration = (name: string) =>
   readFileSync(resolve(migrationDirectory, name), "utf8");

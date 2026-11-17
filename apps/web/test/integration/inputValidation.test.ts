@@ -32,7 +32,7 @@ createRoot(document.getElementById('root')).render(<>
 `;
 
 const mocks: Record<string, string> = {
-  "@/hooks/useTheme":
+  "@shared/hooks/useTheme":
     "export const useTheme = () => ({ currentTheme: { isDark: true } });",
   "@/components/commons/Article/Article":
     "export { default as ArticleSettingItem } from '@/components/commons/Article/ArticleSettingItem';",

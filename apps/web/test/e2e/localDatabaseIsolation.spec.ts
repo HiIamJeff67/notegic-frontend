@@ -26,8 +26,8 @@ test("a graph draft acknowledged during another transaction survives that transa
       "/src/api/local/db.ts"
     )) as typeof import("../../src/api/local/db");
     const { RoutineTaskDependencyGraphDraft } = (await load(
-      "/src/api/local/schemas/index.ts"
-    )) as typeof import("../../src/api/local/schemas");
+      "/test/e2e/localDatabaseModules.ts"
+    )) as typeof import("@shared/api/local/schemas");
     const routineId = "12345678-1234-4234-8234-123456789abc";
     await localDB.all(
       "SELECT count(*) FROM RoutineTaskDependencyGraphDraftTable"
@@ -105,8 +105,8 @@ test("raw, builder, prepared, relational and batch reads cannot see another tran
       "/src/api/local/db.ts"
     )) as typeof import("../../src/api/local/db");
     const { Routine } = (await load(
-      "/src/api/local/schemas/index.ts"
-    )) as typeof import("../../src/api/local/schemas");
+      "/test/e2e/localDatabaseModules.ts"
+    )) as typeof import("@shared/api/local/schemas");
     const original = await localDB
       .select({ title: Routine.title })
       .from(Routine);

@@ -23,7 +23,7 @@ jest.mock("react", () => ({
   useRef: (current: unknown) => ({ current }),
   useEffect: () => {},
 }));
-jest.mock("@/api/local/policy", () => ({
+jest.mock("@shared/api/local/policy", () => ({
   isLocalPreferenceEnabled: () => true,
 }));
 

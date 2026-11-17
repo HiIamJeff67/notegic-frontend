@@ -1,38 +1,71 @@
-import { readdirSync } from "node:fs";
-import { basename, join } from "node:path";
+import { existsSync, readdirSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
+
+const testCategories = new Set([
+  "architecture",
+  "boundary",
+  "compatibility",
+  "integration",
+  "load",
+  "release",
+  "smoke",
+  "e2e",
+  "performance",
+]);
 
 test("test filenames use their location and source owner without redundant categories", () => {
   const violations: string[] = [];
   for (const directory of [
     "apps/web/test",
     "apps/desktop/test",
+    "shared/test",
     "test",
     "scripts",
   ]) {
+    if (!existsSync(join(process.cwd(), directory))) continue;
     const files = readdirSync(join(process.cwd(), directory), {
       recursive: true,
       encoding: "utf8",
     });
     for (const file of files) {
-      if (!/\.test\.(?:tsx?|mjs)$/.test(file)) continue;
+      if (file.startsWith("results/")) continue;
+      if (!/\.(?:test|spec)\.(?:tsx?|mjs)$/.test(file)) continue;
       if (/\.(?:unit|integration)\.test\./.test(file))
         violations.push(`${directory}/${file}`);
+      if (directory === "scripts") continue;
+      const category = file.split(/[\\/]/)[0];
+      if (!testCategories.has(category))
+        violations.push(`${directory}/${file}`);
+      if (category === "release" && directory !== "apps/desktop/test")
+        violations.push(`${directory}/${file}: release`);
+      if (/\.spec\.(?:tsx?|mjs)$/.test(file) && category !== "e2e")
+        violations.push(`${directory}/${file}: spec`);
+      if (/\.performance\.test\./.test(file) !== (category === "performance"))
+        violations.push(`${directory}/${file}: performance`);
     }
   }
-  for (const directory of [
-    "apps/web/src",
-    "apps/web/server",
-    "apps/desktop/src",
-    "apps/desktop/sidecar",
-    "shared",
-  ]) {
+  for (const directory of ["apps/web/src", "shared", "apps/desktop/src"]) {
     const files = readdirSync(join(process.cwd(), directory), {
       recursive: true,
       encoding: "utf8",
     });
     for (const file of files) {
-      if (/\.test\.(?:tsx?|mjs)$/.test(file))
-        violations.push(`${directory}/${file}`);
+      if (directory === "shared" && file.startsWith("test/")) continue;
+      if (!/\.test\.(?:tsx?|mjs)$/.test(file)) continue;
+      const name = basename(file).replace(/\.test\.(?:tsx?|mjs)$/, "");
+      const neighbors = readdirSync(
+        join(process.cwd(), directory, dirname(file))
+      );
+      const owner = neighbors.find(
+        candidate =>
+          /\.(?:tsx?|mjs)$/.test(candidate) &&
+          !/\.test\.(?:tsx?|mjs)$/.test(candidate) &&
+          candidate.replace(/\.(?:tsx?|mjs)$/, "").toLowerCase() ===
+            name.toLowerCase()
+      );
+      if (owner && owner.replace(/\.(?:tsx?|mjs)$/, "") !== name) {
+        violations.push(`${directory}/${file}: match ${owner}`);
+      }
     }
   }
   expect(violations).toEqual([]);
@@ -45,14 +78,15 @@ test.each([
   "apps/web/test",
   "apps/desktop/src",
   "apps/desktop/test",
-  "apps/desktop/sidecar",
-  "test",
+  "apps/desktop/sidecars",
   "scripts",
 ])("%s has no ungoverned kebab-case code filenames", directory => {
   const files = readdirSync(join(process.cwd(), directory), {
     recursive: true,
     encoding: "utf8",
-  }).filter(file => /\.(?:tsx?|mjs|js)$/.test(file));
+  }).filter(
+    file => !file.startsWith("results/") && /\.(?:tsx?|mjs|js)$/.test(file)
+  );
   expect(files.length).toBeGreaterThan(0);
   expect(
     files.filter(file => {
@@ -73,7 +107,7 @@ test.each([
 test("GraphQL query modules retain useSearch names", () => {
   const files = readdirSync(
     join(process.cwd(), "apps/web/src/api/hooks/graphql")
-  ).filter(file => file.endsWith(".ts"));
+  ).filter(file => file.endsWith(".ts") && !file.endsWith(".test.ts"));
   expect(files.length).toBeGreaterThan(0);
   expect(
     files.filter(
