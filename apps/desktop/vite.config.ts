@@ -114,7 +114,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(desktopRoot, "../web/src"),
         "@assets": path.resolve(desktopRoot, "../web/assets"),
-        "@widgets": path.resolve(desktopRoot, "../web/src/components/widgets"),
+        "@widgets": path.resolve(desktopRoot, "src/components/widgets"),
         "@shared": path.resolve(desktopRoot, "../../shared"),
         "node:async_hooks": asyncLocalStorageModule,
       },

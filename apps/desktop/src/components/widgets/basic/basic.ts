@@ -1,0 +1,209 @@
+import CalendarWidget from "@shared/components/widgets/basic/CalendarWidget/CalendarWidget";
+import { getDefaultGuideData } from "../guide/data/guideData";
+import GuideWidget from "../guide/GuideWidget";
+import VideoGuideWidget from "../guide/VideoGuideWidget";
+import { PreviewWidget } from "../widget";
+import ClockWidget from "./ClockWidget/ClockWidget";
+import { getDefaultClockSetting } from "./ClockWidget/setting/clockSetting";
+import { getDefaultScratchPadData } from "./ScratchPadWidget/data/scratchPadData";
+import ScratchPadWidget from "./ScratchPadWidget/ScratchPadWidget";
+import { getDefaultScratchPadSetting } from "./ScratchPadWidget/setting/scratchPadSetting";
+import { getDefaultTimerData } from "./TimerWidget/data/timerData";
+import { getDefaultTimerSetting } from "./TimerWidget/setting/timerSetting";
+import TimerWidget from "./TimerWidget/TimerWidget";
+import { getDefaultTodoData } from "./TodoWidget/data/todoData";
+import { getDefaultTodoSetting } from "./TodoWidget/setting/todoSetting";
+import TodoWidget from "./TodoWidget/TodoWidget";
+
+const guideWidgetSizes = [
+  { widthFrameCount: 3, heightFrameCount: 2 },
+  { widthFrameCount: 4, heightFrameCount: 2 },
+  { widthFrameCount: 4, heightFrameCount: 3 },
+  { widthFrameCount: 5, heightFrameCount: 3 },
+  { widthFrameCount: 6, heightFrameCount: 3 },
+  { widthFrameCount: 6, heightFrameCount: 4 },
+  { widthFrameCount: 8, heightFrameCount: 4 },
+  { widthFrameCount: 8, heightFrameCount: 5 },
+];
+
+// The walkthrough video is 4:3. These sizes keep that ratio, and 4×3 is the
+// smallest so the default widget can sit in four frames.
+const videoGuideWidgetSizes = [
+  { widthFrameCount: 4, heightFrameCount: 3 },
+  { widthFrameCount: 8, heightFrameCount: 6 },
+  { widthFrameCount: 12, heightFrameCount: 9 },
+];
+
+export const BasicPreviewWidgets: Record<string, PreviewWidget> = {
+  clock: {
+    name: "clock",
+    component: ClockWidget,
+    size: {
+      widthFrameCount: 1,
+      heightFrameCount: 1,
+    },
+    minSize: {
+      widthFrameCount: 1,
+      heightFrameCount: 1,
+    },
+    maxSize: {
+      widthFrameCount: 2,
+      heightFrameCount: 2,
+    },
+    availableSizes: [
+      { widthFrameCount: 1, heightFrameCount: 1 },
+      { widthFrameCount: 2, heightFrameCount: 2 },
+    ],
+    defaultSetting: getDefaultClockSetting(),
+    defaultData: {},
+    isEditable: true,
+  },
+  timer: {
+    name: "timer",
+    component: TimerWidget,
+    size: {
+      widthFrameCount: 2,
+      heightFrameCount: 1,
+    },
+    minSize: {
+      widthFrameCount: 2,
+      heightFrameCount: 1,
+    },
+    maxSize: {
+      widthFrameCount: 4,
+      heightFrameCount: 4,
+    },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 1 },
+      { widthFrameCount: 2, heightFrameCount: 2 },
+      { widthFrameCount: 2, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 2 },
+      { widthFrameCount: 3, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 4 },
+      { widthFrameCount: 4, heightFrameCount: 4 },
+      { widthFrameCount: 4, heightFrameCount: 5 },
+      { widthFrameCount: 4, heightFrameCount: 6 },
+    ],
+    defaultSetting: getDefaultTimerSetting(),
+    defaultData: getDefaultTimerData(),
+    isEditable: true,
+  },
+  todo: {
+    name: "todo",
+    component: TodoWidget,
+    size: {
+      widthFrameCount: 2,
+      heightFrameCount: 3,
+    },
+    minSize: {
+      widthFrameCount: 2,
+      heightFrameCount: 3,
+    },
+    maxSize: {
+      widthFrameCount: 4,
+      heightFrameCount: 6,
+    },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 3 },
+      { widthFrameCount: 2, heightFrameCount: 4 },
+      { widthFrameCount: 2, heightFrameCount: 5 },
+      { widthFrameCount: 3, heightFrameCount: 4 },
+      { widthFrameCount: 3, heightFrameCount: 5 },
+      { widthFrameCount: 4, heightFrameCount: 5 },
+      { widthFrameCount: 4, heightFrameCount: 6 },
+    ],
+    defaultSetting: getDefaultTodoSetting(),
+    defaultData: getDefaultTodoData(),
+    isEditable: true,
+  },
+  calendar: {
+    name: "calendar",
+    component: CalendarWidget,
+    size: {
+      widthFrameCount: 2,
+      heightFrameCount: 3,
+    },
+    minSize: {
+      widthFrameCount: 2,
+      heightFrameCount: 3,
+    },
+    maxSize: {
+      widthFrameCount: 3,
+      heightFrameCount: 4,
+    },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 4 },
+    ],
+    defaultSetting: {},
+    defaultData: getDefaultGuideData(),
+    isEditable: false,
+  },
+  scratchPad: {
+    name: "scratchPad",
+    component: ScratchPadWidget,
+    size: {
+      widthFrameCount: 2,
+      heightFrameCount: 2,
+    },
+    minSize: {
+      widthFrameCount: 2,
+      heightFrameCount: 2,
+    },
+    maxSize: {
+      widthFrameCount: 4,
+      heightFrameCount: 6,
+    },
+    availableSizes: [
+      { widthFrameCount: 2, heightFrameCount: 2 },
+      { widthFrameCount: 2, heightFrameCount: 3 },
+      { widthFrameCount: 2, heightFrameCount: 4 },
+      { widthFrameCount: 2, heightFrameCount: 5 },
+      { widthFrameCount: 2, heightFrameCount: 6 },
+      { widthFrameCount: 3, heightFrameCount: 3 },
+      { widthFrameCount: 3, heightFrameCount: 4 },
+      { widthFrameCount: 3, heightFrameCount: 5 },
+      { widthFrameCount: 3, heightFrameCount: 6 },
+      { widthFrameCount: 4, heightFrameCount: 4 },
+      { widthFrameCount: 4, heightFrameCount: 5 },
+      { widthFrameCount: 4, heightFrameCount: 6 },
+    ],
+    defaultSetting: getDefaultScratchPadSetting(),
+    defaultData: getDefaultScratchPadData(),
+    isEditable: true,
+  },
+};
+
+export const GuidePreviewWidgets: Record<string, PreviewWidget> = {
+  guide: {
+    name: "guide",
+    component: GuideWidget,
+    size: {
+      widthFrameCount: 4,
+      heightFrameCount: 3,
+    },
+    minSize: guideWidgetSizes[0],
+    maxSize: guideWidgetSizes[guideWidgetSizes.length - 1],
+    availableSizes: guideWidgetSizes,
+    defaultSetting: {},
+    defaultData: { completedSteps: {} },
+    isEditable: false,
+  },
+  videoGuide: {
+    name: "videoGuide",
+    component: VideoGuideWidget,
+    size: videoGuideWidgetSizes[0],
+    minSize: videoGuideWidgetSizes[0],
+    maxSize: videoGuideWidgetSizes[videoGuideWidgetSizes.length - 1],
+    availableSizes: videoGuideWidgetSizes,
+    defaultSetting: {},
+    defaultData: { videoURL: "" },
+    isEditable: false,
+  },
+};
+
+export const DashboardPreviewWidgets: Record<string, PreviewWidget> = {
+  ...BasicPreviewWidgets,
+  ...GuidePreviewWidgets,
+};

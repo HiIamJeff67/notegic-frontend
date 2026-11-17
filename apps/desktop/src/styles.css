@@ -2,3 +2,10 @@
 @source ".";
 @source "../../web/src";
 @source "../../../shared";
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}

@@ -1,0 +1,191 @@
+import Closeable from "@shared/components/commons/Closeable/Closeable";
+import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
+import Image from "@shared/components/commons/Image/Image";
+import { Button } from "@shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
+import { Spinner } from "@shared/components/ui/spinner";
+import { useEffect, useState } from "react";
+import { useTranslation } from "@shared/hooks/useTranslation";
+
+interface UploadImageDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  maxCount?: number;
+  title?: string;
+  onUpload: (files: File[]) => void | Promise<void>;
+  onCancel: () => void | Promise<void>;
+  removable?: boolean;
+  onRemove?: () => void | Promise<void>;
+}
+
+const UploadImageDialog: React.FC<UploadImageDialogProps> = ({
+  open,
+  onOpenChange,
+  maxCount = 5,
+  title,
+  onUpload,
+  onCancel,
+  removable = false,
+  onRemove,
+}) => {
+  const { t } = useTranslation();
+  const [uploadedImages, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ file: File; url: string }[]>([]);
+  const [error, setError] = useState<string>("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isRemoving, setIsRemoving] = useState<boolean>(false);
+
+  useEffect(() => {
+    const nextPreviews = uploadedImages.map(file => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setPreviews(nextPreviews);
+    return () => {
+      for (const preview of nextPreviews) URL.revokeObjectURL(preview.url);
+    };
+  }, [uploadedImages]);
+
+  const uploadImages = async (files: File[]) => {
+    try {
+      setIsUploading(true);
+      await onUpload(files);
+      setSelectedFiles([]);
+      setError("");
+      onOpenChange(false);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleOnDrop = async (files: File[]) => {
+    if (files.length > maxCount) {
+      setError(t("workspace.dialogs.maxImages", { count: maxCount }));
+      return;
+    }
+
+    if (maxCount === 1) {
+      await uploadImages(files);
+      return;
+    }
+
+    setSelectedFiles(prev => [...prev, ...files]);
+    setError("");
+  };
+
+  const handleOnUpload = async () => {
+    if (uploadedImages.length === 0) {
+      setError(t("workspace.dialogs.selectAtLeastOneImage"));
+      return;
+    }
+    await uploadImages(uploadedImages);
+  };
+
+  const handleOnRemove = async () => {
+    if (!onRemove) return;
+
+    try {
+      setIsRemoving(true);
+      await onRemove();
+      setSelectedFiles([]);
+      setError("");
+      onOpenChange(false);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  const isBusy = isUploading || isRemoving;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md shadow-xl rounded-xl p-6 flex flex-col items-center gap-4">
+        <DialogHeader>
+          <DialogTitle>
+            {title ?? t("workspace.dialogs.uploadImage")}
+          </DialogTitle>
+        </DialogHeader>
+        <DialogDescription className="px-2">
+          {t("workspace.dialogs.uploadImagesDescription", { count: maxCount })}
+        </DialogDescription>
+        <DropFileZone
+          accept={{ "image/*": [".jpg", ".jpeg", ".png", ".gif", ".webp"] }}
+          multiple={maxCount > 1}
+          disabled={isBusy}
+          width="100%"
+          height="140px"
+          className="mb-2 bg-muted/45 hover:bg-muted/60"
+          onDrop={handleOnDrop}
+        >
+          <div className="flex-col justify-center items-center">
+            <p className="text-sm text-muted-foreground">
+              {t("workspace.dialogs.dropImages")}
+            </p>
+          </div>
+        </DropFileZone>
+        {maxCount > 1 && uploadedImages.length > 0 && (
+          <div className="w-full flex flex-wrap gap-2 mt-2">
+            {previews.map((image, index) => (
+              <div
+                key={index}
+                className="w-16 h-16 relative rounded-lg overflow-hidden"
+              >
+                <Closeable
+                  className="z-10 w-2 h-2 top-1 left-1 absolute"
+                  onClose={() => {
+                    setSelectedFiles(
+                      uploadedImages.filter((_, i) => i !== index)
+                    );
+                  }}
+                >
+                  <Image
+                    src={image.url}
+                    width={160}
+                    height={160}
+                    alt={image.file.name}
+                    loading="eager"
+                    className="object-cover w-full h-full"
+                  />
+                </Closeable>
+              </div>
+            ))}
+          </div>
+        )}
+        {error && <div className="text-destructive text-sm">{error}</div>}
+        <div className="w-full flex justify-end gap-2 mt-4">
+          {removable && onRemove && (
+            <Button
+              variant="ghost"
+              className="mr-auto text-destructive hover:text-destructive"
+              disabled={isBusy}
+              onClick={handleOnRemove}
+            >
+              {t("settingsPage.account.personal.removeImage")}
+            </Button>
+          )}
+          <Button variant="destructive" disabled={isBusy} onClick={onCancel}>
+            {t("workspace.widgets.cancel")}
+          </Button>
+          {maxCount > 1 && (
+            <Button
+              variant="default"
+              onClick={handleOnUpload}
+              disabled={uploadedImages.length === 0 || isBusy}
+            >
+              {isUploading && <Spinner />}
+              {t("workspace.dialogs.upload")}
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default UploadImageDialog;

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import "@blocknote/core/style.css";
-import { GetMyAccount } from "../../api/functions/userAccount";
+import { GetMyAccount } from "../../api/functions/userAccount.function";
 import { getAccessToken, setAccessToken } from "../../api/tokens/accessToken";
 
 type SidecarSession = {

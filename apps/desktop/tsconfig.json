@@ -16,7 +16,7 @@
     "paths": {
       "@/*": ["../web/src/*"],
       "@assets/*": ["../web/assets/*"],
-      "@widgets/*": ["../web/src/components/widgets/*"],
+        "@widgets/*": ["./src/components/widgets/*"],
       "@shared/*": ["../../shared/*"]
     }
   },

@@ -1,0 +1,382 @@
+import {
+  LocalStorage,
+  LocalStorageKey,
+} from "@shared/lib/storage/localStorage";
+import { isQuietHours } from "@shared/lib/time/timeString";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
+import React, { createContext, useEffect, useState } from "react";
+import {
+  DashboardWidthFrameCountStep,
+  MaxDashboardWidthFrameCount,
+  MinDashboardWidthFrameCount,
+} from "../components/widgets/layout";
+
+export type PreferencePage =
+  | "appearance"
+  | "editor"
+  | "offline"
+  | "privacy"
+  | "browserPermissions"
+  | "notifications"
+  | "about";
+
+export type Density = "comfortable" | "balanced" | "compact";
+export type StartSurface = "dashboard" | "routines";
+export type EditorWidth = "narrow" | "standard" | "wide";
+export type NotificationPermissionState =
+  | "default"
+  | "granted"
+  | "denied"
+  | "unknown";
+
+export type StorageEstimate = {
+  quota: number;
+  usage: number;
+};
+
+export type LocalPreferences = {
+  density: Density;
+  reduceMotion: boolean;
+  tactileFeedback: boolean;
+  sidebarHoverDelay: number;
+  startSurface: StartSurface;
+  editorWidth: EditorWidth;
+  manualDashboardWidth: boolean;
+  dashboardWidthFrameCount: number;
+  editorFontSize: number;
+  lineWrap: boolean;
+  spellcheck: boolean;
+  quickInsert: boolean;
+  blockDragHandle: boolean;
+  localVault: boolean;
+  offlineQueue: boolean;
+  cacheAttachments: boolean;
+  cleanupAfterDays: number;
+  privatePreviews: boolean;
+  clipboardGuard: boolean;
+  clipboardGuardPatterns: string[];
+  desktopNotifications: boolean;
+  routineNudges: boolean;
+  syncNotifications: boolean;
+  quietMode: boolean;
+  quietModeStart: string;
+  quietModeEnd: string;
+};
+
+type UpdatePreference = <Key extends keyof LocalPreferences>(
+  key: Key,
+  value: LocalPreferences[Key]
+) => void;
+
+export type PreferenceChangeListener = <Key extends keyof LocalPreferences>(
+  key: Key,
+  value: LocalPreferences[Key]
+) => void;
+
+export type LocalPreferencesContextValue = {
+  preferences: LocalPreferences;
+  startPath: string;
+  updatePreference: UpdatePreference;
+  subscribePreferenceChanges: (
+    listener: PreferenceChangeListener
+  ) => () => void;
+  resetPreferences: () => void;
+  copyPreferences: () => Promise<void>;
+  clipboardState: "idle" | "copied" | "failed";
+  storageEstimate: StorageEstimate | null;
+  storageUsagePercent: number;
+  notificationPermission: NotificationPermissionState;
+  canSendDesktopNotification: (
+    priority: "low" | "normal" | "high" | "critical"
+  ) => boolean;
+  requestNotificationPermission: () => Promise<void>;
+  isReady: boolean;
+};
+
+export const MaxSidebarHoverDelay = 3000;
+export const SidebarHoverDelayStep = 250;
+
+export const defaultLocalPreferences: LocalPreferences = {
+  density: "balanced",
+  reduceMotion: false,
+  tactileFeedback: true,
+  sidebarHoverDelay: 250,
+  startSurface: "dashboard",
+  editorWidth: "standard",
+  manualDashboardWidth: false,
+  dashboardWidthFrameCount: MinDashboardWidthFrameCount,
+  editorFontSize: 15,
+  lineWrap: true,
+  spellcheck: true,
+  quickInsert: true,
+  blockDragHandle: true,
+  localVault: true,
+  offlineQueue: true,
+  cacheAttachments: false,
+  cleanupAfterDays: 30,
+  privatePreviews: false,
+  clipboardGuard: false,
+  clipboardGuardPatterns: [],
+  desktopNotifications: false,
+  routineNudges: true,
+  syncNotifications: true,
+  quietMode: true,
+  quietModeStart: "22:00",
+  quietModeEnd: "08:00",
+};
+
+const localPreferenceStorageKeys = [
+  "tactileFeedback",
+  "sidebarHoverDelay",
+  "editorWidth",
+  "manualDashboardWidth",
+  "dashboardWidthFrameCount",
+  "editorFontSize",
+  "spellcheck",
+  "blockDragHandle",
+  "localVault",
+  "offlineQueue",
+  "cacheAttachments",
+  "cleanupAfterDays",
+  "clipboardGuard",
+  "clipboardGuardPatterns",
+  "desktopNotifications",
+] as const satisfies ReadonlyArray<keyof LocalPreferences>;
+
+const getLocalPreferenceStorageValue = (
+  preferences: Partial<LocalPreferences>
+): Partial<LocalPreferences> => {
+  const value: Partial<LocalPreferences> = {};
+  for (const key of localPreferenceStorageKeys) {
+    if (preferences[key] !== undefined) {
+      Object.assign(value, { [key]: preferences[key] });
+    }
+  }
+  return value;
+};
+
+export const LocalPreferencesContext: React.Context<
+  LocalPreferencesContextValue | undefined
+> =
+  import.meta.hot?.data.context ??
+  createContext<LocalPreferencesContextValue | undefined>(undefined);
+if (import.meta.hot) import.meta.hot.data.context = LocalPreferencesContext;
+
+export const LocalPreferencesProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [preferences, setPreferences] = useState<LocalPreferences>(
+    defaultLocalPreferences
+  );
+  const [isReady, setIsReady] = useState(false);
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermissionState>("unknown");
+  const [storageEstimate, setStorageEstimate] =
+    useState<StorageEstimate | null>(null);
+  const [clipboardState, setClipboardState] = useState<
+    "idle" | "copied" | "failed"
+  >("idle");
+  const preferenceChangeListeners = React.useRef<Set<PreferenceChangeListener>>(
+    new Set()
+  );
+
+  useEffect(() => {
+    const saved = LocalStorage.getItemByKey(LocalStorageKey.localPreferences);
+
+    if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+      const savedPreferences = saved as Partial<LocalPreferences>;
+      const storedLocalPreferences =
+        getLocalPreferenceStorageValue(savedPreferences);
+      setPreferences({
+        ...defaultLocalPreferences,
+        ...storedLocalPreferences,
+        sidebarHoverDelay:
+          typeof storedLocalPreferences.sidebarHoverDelay === "number" &&
+          Number.isInteger(storedLocalPreferences.sidebarHoverDelay) &&
+          storedLocalPreferences.sidebarHoverDelay >= 0 &&
+          storedLocalPreferences.sidebarHoverDelay <= MaxSidebarHoverDelay &&
+          storedLocalPreferences.sidebarHoverDelay % SidebarHoverDelayStep === 0
+            ? storedLocalPreferences.sidebarHoverDelay
+            : defaultLocalPreferences.sidebarHoverDelay,
+        manualDashboardWidth:
+          storedLocalPreferences.manualDashboardWidth === true,
+        dashboardWidthFrameCount:
+          typeof storedLocalPreferences.dashboardWidthFrameCount === "number" &&
+          storedLocalPreferences.dashboardWidthFrameCount >=
+            MinDashboardWidthFrameCount &&
+          storedLocalPreferences.dashboardWidthFrameCount <=
+            MaxDashboardWidthFrameCount &&
+          (storedLocalPreferences.dashboardWidthFrameCount -
+            MinDashboardWidthFrameCount) %
+            DashboardWidthFrameCountStep ===
+            0
+            ? storedLocalPreferences.dashboardWidthFrameCount
+            : defaultLocalPreferences.dashboardWidthFrameCount,
+      });
+    }
+
+    setNotificationPermission(
+      typeof window !== "undefined" && "Notification" in window
+        ? Notification.permission
+        : "unknown"
+    );
+
+    if (typeof navigator !== "undefined" && navigator.storage?.estimate) {
+      navigator.storage.estimate().then(estimate => {
+        setStorageEstimate({
+          quota: estimate.quota ?? 0,
+          usage: estimate.usage ?? 0,
+        });
+      });
+    } else {
+      setStorageEstimate(null);
+    }
+
+    setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+    LocalStorage.setItem(
+      LocalStorageKey.localPreferences,
+      getLocalPreferenceStorageValue(preferences)
+    );
+  }, [isReady, preferences]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    root.dataset.density = preferences.density;
+    root.dataset.reduceMotion = String(preferences.reduceMotion);
+
+    const handlePointerUp = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest("button, a, [role='button'], input, select")) {
+        return;
+      }
+      navigator.vibrate(8);
+    };
+
+    if (
+      preferences.tactileFeedback &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function"
+    ) {
+      document.addEventListener("pointerup", handlePointerUp, {
+        passive: true,
+      });
+    }
+
+    return () => {
+      delete root.dataset.density;
+      delete root.dataset.reduceMotion;
+      document.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [
+    preferences.density,
+    preferences.reduceMotion,
+    preferences.tactileFeedback,
+  ]);
+
+  const updatePreference: UpdatePreference = React.useCallback((key, value) => {
+    setPreferences(prev =>
+      Object.is(prev[key], value)
+        ? prev
+        : {
+            ...prev,
+            [key]: value,
+          }
+    );
+    preferenceChangeListeners.current.forEach(listener => listener(key, value));
+  }, []);
+
+  const subscribePreferenceChanges = React.useCallback(
+    (listener: PreferenceChangeListener) => {
+      preferenceChangeListeners.current.add(listener);
+      return () => {
+        preferenceChangeListeners.current.delete(listener);
+      };
+    },
+    []
+  );
+
+  const resetPreferences = () => {
+    setPreferences(defaultLocalPreferences);
+    setClipboardState("idle");
+  };
+
+  const copyPreferences = async () => {
+    try {
+      if (typeof navigator === "undefined" || !navigator.clipboard) {
+        throw new Error("Clipboard is not available.");
+      }
+      await navigator.clipboard.writeText(JSON.stringify(preferences, null, 2));
+      setClipboardState("copied");
+    } catch {
+      setClipboardState("failed");
+    }
+
+    window.setTimeout(() => setClipboardState("idle"), 1400);
+  };
+
+  const canSendDesktopNotification: LocalPreferencesContextValue["canSendDesktopNotification"] =
+    priority =>
+      preferences.desktopNotifications &&
+      notificationPermission === "granted" &&
+      (!preferences.quietMode ||
+        priority === "critical" ||
+        !isQuietHours(
+          new Date(),
+          preferences.quietModeStart,
+          preferences.quietModeEnd
+        ));
+
+  const requestNotificationPermission = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      setNotificationPermission("unknown");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+    if (permission === "granted") {
+      updatePreference("desktopNotifications", true);
+    }
+  };
+
+  const storageUsagePercent =
+    storageEstimate && storageEstimate.quota > 0
+      ? Math.min(
+          100,
+          Math.round((storageEstimate.usage / storageEstimate.quota) * 100)
+        )
+      : 0;
+
+  return (
+    <LocalPreferencesContext.Provider
+      value={{
+        preferences,
+        startPath:
+          preferences.startSurface === "routines"
+            ? WebURLPathDictionary.app.routines._
+            : WebURLPathDictionary.app.dashboard._,
+        updatePreference,
+        subscribePreferenceChanges,
+        resetPreferences,
+        copyPreferences,
+        clipboardState,
+        storageEstimate,
+        storageUsagePercent,
+        notificationPermission,
+        canSendDesktopNotification,
+        requestNotificationPermission,
+        isReady,
+      }}
+    >
+      {children}
+    </LocalPreferencesContext.Provider>
+  );
+};
