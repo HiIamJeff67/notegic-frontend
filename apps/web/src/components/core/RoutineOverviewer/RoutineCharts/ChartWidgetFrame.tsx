@@ -8,7 +8,7 @@ import {
 } from "@shared/components/ui/select";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface ChartWidgetFrameProps<TValue extends string> {
   title: string;

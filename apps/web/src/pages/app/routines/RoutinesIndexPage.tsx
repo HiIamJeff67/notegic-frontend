@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import RoutineOverviewer from "@/components/core/RoutineOverviewer/RoutineOverviewer";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useStationRoutine, useUser } from "@/hooks";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 
 const RoutinesIndexPage = () => {

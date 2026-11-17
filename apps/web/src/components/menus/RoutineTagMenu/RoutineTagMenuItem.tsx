@@ -43,7 +43,7 @@ import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
 import { useLoading, useMobile, useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 
 interface RoutineTagMenuItemProps {

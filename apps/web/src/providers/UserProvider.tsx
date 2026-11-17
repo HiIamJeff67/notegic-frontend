@@ -25,7 +25,7 @@ import { useGetMyInfo } from "@/api/hooks/userInfo.hook";
 import { useGetMyQuota } from "@/api/hooks/userQuota.hook";
 import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 import { useAppRouterActions, useLoading, useNetwork } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { clearMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 interface UserContextType {

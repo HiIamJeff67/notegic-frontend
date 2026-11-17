@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
 import SupportedIconTable from "@shared/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTagDialogSkeleton from "./CreateRoutineTagDialogSkeleton";
 

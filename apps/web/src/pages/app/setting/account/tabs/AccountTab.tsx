@@ -31,7 +31,7 @@ import { useUpdateMe } from "@/api/hooks/user.hook";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading } from "@/hooks";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 interface AccountTabProps {

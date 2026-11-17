@@ -1,5 +1,5 @@
 import { ChartNoAxesCombined } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import OverallChartWidget from "./OverallChartWidget";
 import RoutineChartWidget from "./RoutineChartWidget";
 import RoutineTaskChartWidget from "./RoutineTaskChartWidget";

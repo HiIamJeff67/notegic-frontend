@@ -57,7 +57,7 @@ import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMe
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
 import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface SubShelfMenuItemProps {
   summary: ShelfTreeSummary;

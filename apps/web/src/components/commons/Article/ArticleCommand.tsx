@@ -18,7 +18,7 @@ import {
 } from "react";
 import AppCommandContent from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandContent";
 import AppCommandPath from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommandPath";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import "@/styles/app-command.css";
 import { ArticleMethodBadge } from "./ArticleMethodBadge";
 import type { ArticleNavigationItem } from "./ArticleNavigation";

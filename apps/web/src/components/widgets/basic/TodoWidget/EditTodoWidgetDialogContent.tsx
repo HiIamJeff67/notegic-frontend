@@ -6,7 +6,7 @@ import {
   EditWidgetDialogOption,
   EditWidgetDialogSeparator,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface EditTodoWidgetDialogContentProps {
   setting: TodoSetting;

@@ -32,7 +32,7 @@ import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useStationRoutine, useUser } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTaskDialogSkeleton from "./CreateRoutineTaskDialogSkeleton";
 import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";

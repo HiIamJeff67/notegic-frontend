@@ -54,7 +54,7 @@ import {
   useModal,
   useStationRoutine,
 } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface StationMenuItemProps {

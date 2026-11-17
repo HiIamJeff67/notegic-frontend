@@ -11,7 +11,7 @@ import { Spinner } from "@shared/components/ui/spinner";
 import { useEffect, useState } from "react";
 import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
 import Image from "@shared/components/commons/Image/Image";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UploadImageDialogProps {
   open: boolean;

@@ -1,7 +1,7 @@
 import { Button } from "@shared/components/ui/button";
 import { CopyIcon, RotateCcwIcon } from "lucide-react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { Section, SettingRow } from "./PreferenceRows";
 
 interface AboutTabProps {

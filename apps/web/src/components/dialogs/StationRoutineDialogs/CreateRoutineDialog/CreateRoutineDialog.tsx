@@ -32,7 +32,7 @@ import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import TimePicker from "@shared/components/commons/TimePicker/TimePicker";
 import WeekdayPicker from "@shared/components/commons/WeekdayPicker/WeekdayPicker";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineDialogSkeleton from "./CreateRoutineDialogSkeleton";
 

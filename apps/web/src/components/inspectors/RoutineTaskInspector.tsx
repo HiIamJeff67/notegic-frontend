@@ -35,7 +35,7 @@ import {
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
 import { useStationRoutine, useUser } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";

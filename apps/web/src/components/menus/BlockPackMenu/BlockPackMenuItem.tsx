@@ -22,7 +22,7 @@ import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { useAppRouter, useMobile, useShelfItem } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface BlockPackMenuItemProps {
   parent: SubShelfNode;

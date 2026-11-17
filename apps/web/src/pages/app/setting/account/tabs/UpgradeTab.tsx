@@ -16,7 +16,7 @@ import {
 import { useMemo } from "react";
 import { useUser } from "@/hooks";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 type PlanOption = {
   plan: UserPlan;

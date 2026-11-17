@@ -30,7 +30,7 @@ import {
   useNotifications,
 } from "@/api/hooks/notification.hook";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export const NotificationDialog = ({
   open,

@@ -35,7 +35,7 @@ import {
   useDeleteMyMaterialById,
   useUpdateMyMaterialById,
 } from "@/api/hooks/material.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseItemLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;

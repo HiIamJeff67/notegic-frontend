@@ -19,7 +19,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { useCallback, useState, type WheelEvent } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 import ItemPathItem from "@/components/paths/ItemPath/ItemPathItem";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface ItemPathProps {
   parentSubShelfId: UUID;

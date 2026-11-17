@@ -2,7 +2,7 @@ import { Button } from "@shared/components/ui/button";
 import { useContext, useEffect, useRef, useState } from "react";
 import Image from "@shared/components/commons/Image/Image";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ArticleScrollContext } from "./ArticleContext";
 
 export const ArticleImage = ({

@@ -3,7 +3,7 @@ import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { Textarea } from "@shared/components/ui/textarea";
 import { useEffect, useState } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";
 import TemplatePatternEditor, {
   type RoutineTaskTemplatePattern,

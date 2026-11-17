@@ -18,8 +18,8 @@ import { useAppRouter } from "@/hooks";
 import { useAuthCode } from "@/hooks/useAuthCode";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 
 const ForgetPasswordPage = () => {

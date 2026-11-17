@@ -23,7 +23,7 @@ import {
 } from "@shared/components/ui/table";
 import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export interface ShelfSharingOverviewRow {
   userPublicId: string;

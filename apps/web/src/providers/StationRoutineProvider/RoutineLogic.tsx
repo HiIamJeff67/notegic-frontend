@@ -25,7 +25,7 @@ import {
   useLinkRoutineTagById,
   useUpdateMyRoutineById,
 } from "@/api/hooks/routine.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";

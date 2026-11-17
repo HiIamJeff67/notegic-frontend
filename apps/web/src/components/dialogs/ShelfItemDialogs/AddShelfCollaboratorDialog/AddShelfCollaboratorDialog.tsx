@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@shared/components/ui/select";
 import type { UUID } from "crypto";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export type ShelfCollaboratorPermission =
   | AccessControlPermission.Admin

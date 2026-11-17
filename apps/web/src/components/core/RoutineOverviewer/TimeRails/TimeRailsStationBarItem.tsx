@@ -3,7 +3,7 @@ import { cn } from "@shared/lib/classname/cn";
 import type { UUID } from "crypto";
 import { useDrag, useDrop } from "react-dnd";
 import { StationIcon } from "@/components/icons/WorkspaceEntityIcons";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 
 interface TimeRailsStationBarItemProps {

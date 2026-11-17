@@ -1,11 +1,11 @@
-import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
+import { useThemeStore } from "@shared/hooks/useThemeStore";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import { ThemeData } from "@shared/lib/theme/theme.type";
 import React, { createContext, useEffect, useState } from "react";
-import { useThemeStore } from "@/hooks/useThemeStore";
 
 interface ThemeContextType {
   currentTheme: ThemeData;

@@ -11,7 +11,7 @@ import {
   GuidePreviewWidgets,
 } from "@/components/widgets/basic/basic";
 import { PreviewWidget } from "@/components/widgets/widget";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface CreateWidgetDialogProps {
   open: boolean;

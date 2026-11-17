@@ -6,7 +6,7 @@ import {
   SheetTitle,
 } from "@shared/components/ui/sheet";
 import { useSettingsDisplay } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import AccountSettingsPage from "@/pages/app/setting/account/AccountSettingsPage";
 import PreferencesPage from "@/pages/app/setting/preferences/PreferencesPage";
 

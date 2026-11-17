@@ -17,7 +17,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutinesByTimeRange } from "@/api/hooks/routine.hook";
 import { useStationRoutine, useUser } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import RoutineTrain from "./RoutineTrain";

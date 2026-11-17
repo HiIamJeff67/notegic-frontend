@@ -22,7 +22,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 
 const RoutineTaskGraphNode = ({

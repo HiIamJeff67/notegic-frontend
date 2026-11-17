@@ -2,7 +2,7 @@ import { BlockPackMeta } from "@shared/reducers/blockPackMeta.reducer";
 import { Suspense } from "react";
 import BlockPackEditor from "@/components/core/BlockPackEditor/BlockPackEditor";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 
 interface BlockPackEditorPageProps {

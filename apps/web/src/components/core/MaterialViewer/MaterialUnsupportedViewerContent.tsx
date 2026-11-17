@@ -1,5 +1,5 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import MaterialViewerFrame, {
   type MaterialFileState,

@@ -39,7 +39,7 @@ import { MaterialIcon } from "@/components/icons/WorkspaceEntityIcons";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { useShelfItem } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export interface MaterialFileState {
   isLoading: boolean;

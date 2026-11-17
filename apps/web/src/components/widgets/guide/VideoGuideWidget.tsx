@@ -1,6 +1,6 @@
 import workspaceOverviewVideo from "@assets/document/videos/workspace-overview.mp4";
 import workspaceOverviewPoster from "@assets/document/videos/workspace-overview.png";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { cn } from "@shared/lib/classname/cn";
 import type { WidgetProps } from "@widgets/widget";
 

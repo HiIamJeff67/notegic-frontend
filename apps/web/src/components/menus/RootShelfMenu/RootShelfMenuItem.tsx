@@ -49,7 +49,7 @@ import SubShelfMenu from "@/components/menus/SubShelfMenu/SubShelfMenu";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
 import { useLoading, useMobile, useShelfItem } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RootShelfMenuItemProps {
   rootShelfEdge: SearchRootShelfEdge;

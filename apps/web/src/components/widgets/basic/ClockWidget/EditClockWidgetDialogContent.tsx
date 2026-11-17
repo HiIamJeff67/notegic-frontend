@@ -17,7 +17,7 @@ import {
   EditWidgetDialogSeparator,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
 import { ClockSetting } from "@/components/widgets/basic/ClockWidget/setting/clockSetting";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface EditClockWidgetDialogContentProps {
   setting: ClockSetting;

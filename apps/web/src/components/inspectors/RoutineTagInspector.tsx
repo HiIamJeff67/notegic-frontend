@@ -20,7 +20,7 @@ import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
 import SupportedIconTable from "@shared/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 

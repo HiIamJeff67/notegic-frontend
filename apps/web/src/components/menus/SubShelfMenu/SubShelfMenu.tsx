@@ -7,7 +7,7 @@ import { Suspense, useCallback } from "react";
 import SubShelfMenuItem from "@/components/menus/SubShelfMenu/SubShelfMenuItem";
 import SubShelfMenuItemSkeleton from "@/components/menus/SubShelfMenu/SubShelfMenuItemSkeleton";
 import { useShelfItem } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface SubShelfMenuProps {
   summary: ShelfTreeSummary;

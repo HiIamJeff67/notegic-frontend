@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { formatTimezone } from "@shared/lib/time/timezone";
 import { TimeZones } from "@widgets/basic/ClockWidget/data/timeZones";
 import {
@@ -7,7 +7,7 @@ import {
 } from "@widgets/basic/ClockWidget/setting/clockSetting";
 import { WidgetProps } from "@widgets/widget";
 import { useEffect, useMemo, useState } from "react";
-import { useAnyTypeState } from "@/hooks/useAnyTypeState";
+import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";
 import EditClockWidgetDialog from "./EditClockWidgetDialog";
 
 const ClockWidget = ({

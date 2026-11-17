@@ -7,9 +7,9 @@ import {
   OAuthXIcon,
 } from "@/components/icons/OAuthIcon";
 import "@/styles/panel.css";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { type ReactNode } from "react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@shared/hooks/useTheme";
 
 const OAuthIcons = {
   google: { Icon: OAuthGoogleIcon, name: "Google" },

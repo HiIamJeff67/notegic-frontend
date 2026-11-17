@@ -13,7 +13,7 @@ import { Label } from "@shared/components/ui/label";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { cn } from "@shared/lib/classname/cn";
 import type { ReactNode } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface FormPayloadEditorProps {
   isOpen: boolean;

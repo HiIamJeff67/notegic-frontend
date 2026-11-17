@@ -8,8 +8,8 @@ import { CheckIcon } from "lucide-react";
 import { marked } from "marked";
 import { useEffect, useRef, useState } from "react";
 import { WidgetProps } from "@/components/widgets/widget";
-import { useAnyTypeState } from "@/hooks/useAnyTypeState";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import EditScratchPadWidgetDialog from "./EditScratchPadWidgetDialog";
 
 const ScratchPadWidget = ({

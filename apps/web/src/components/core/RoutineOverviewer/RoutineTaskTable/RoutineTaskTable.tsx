@@ -36,7 +36,7 @@ import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutine
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 

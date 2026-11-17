@@ -7,8 +7,8 @@ import { Link } from "@tanstack/react-router";
 import { BookOpenIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useLoading, useShelfItem } from "@/hooks";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 
 const BlockPackEditorIndexPage = () => {

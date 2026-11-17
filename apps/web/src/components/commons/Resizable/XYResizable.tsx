@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@shared/hooks/useTheme";
 
 interface XYResizableProps {
   children?: React.ReactNode;

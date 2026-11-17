@@ -23,7 +23,7 @@ import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyStationById } from "@/api/hooks/station.hook";
 import SupportedIconTable from "@shared/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 

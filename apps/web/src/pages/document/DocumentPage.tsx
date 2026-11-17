@@ -8,7 +8,7 @@ import {
   ArticleParagraphSeparator,
   ArticleSidebar,
 } from "@/components/commons/Article/Article";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 import API, { apiNavigation } from "./api/API";
 import DataDeletion, {

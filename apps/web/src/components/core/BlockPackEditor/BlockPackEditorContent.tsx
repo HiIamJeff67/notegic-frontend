@@ -33,7 +33,7 @@ import { SuggestionMenu } from "@/components/core/BlockPackEditor/SuggestionMenu
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { useShelfItem } from "@/hooks";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
@@ -47,7 +47,7 @@ import { ChevronDownIcon, Download, Import } from "lucide-react";
 import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@shared/hooks/useTheme";
 import "@shared/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {

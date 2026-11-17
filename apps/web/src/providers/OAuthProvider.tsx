@@ -60,7 +60,7 @@ import {
 import { useAppRouter, useUser } from "@/hooks";
 import { useLoading } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 const xLoopbackStatePrefix = "localhost.";
 

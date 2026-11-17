@@ -11,6 +11,6 @@ export * from "./ResizeSidebarProvider";
 export * from "./RoutineTaskDependencyGraphDraftProvider";
 export * from "./ShelfItemProvider/ShelfItemProvider";
 export * from "./StationRoutineProvider/StationRoutineProvider";
-export * from "./ThemeProvider";
+export * from "@shared/providers/ThemeProvider";
 export * from "./UserProvider";
 export * from "./WidgetProvider";

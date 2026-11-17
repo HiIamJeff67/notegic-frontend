@@ -12,7 +12,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 
 interface DeleteStationDialogProps extends ModalProps {

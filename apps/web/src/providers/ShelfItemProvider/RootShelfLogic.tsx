@@ -38,7 +38,7 @@ import {
   useTransferMyRootShelfOwnership,
   useUpdateMyRootShelfById,
 } from "@/api/hooks/rootShelf.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseRootShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;

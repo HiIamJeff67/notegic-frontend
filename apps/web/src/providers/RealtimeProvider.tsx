@@ -50,7 +50,7 @@ import {
 import { localDB } from "@/api/local/db";
 import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 export const getBlockPackRoomName = (blockPackId: UUID | string) =>

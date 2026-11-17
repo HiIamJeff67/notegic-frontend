@@ -1,6 +1,6 @@
 import type { UUID } from "crypto";
 import RoutineTaskDependencyGraphEditor from "@/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphEditor";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { useStationRoutine } from "@/hooks/useStationRoutine";
 import { RoutineTaskDependencyGraphDraftProvider } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 import { pageTitle } from "@/seo/pageTitle";

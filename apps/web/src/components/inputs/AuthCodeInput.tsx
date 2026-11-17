@@ -6,7 +6,7 @@ import toast from "@shared/lib/toast/toast";
 import { type ComponentProps, useState } from "react";
 import { useAuthCode } from "@/hooks/useAuthCode";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface AuthCodeInputProps
   extends Pick<

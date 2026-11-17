@@ -12,7 +12,7 @@ import { Spinner } from "@shared/components/ui/spinner";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import React, { useRef, useState } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ModalProps } from "@/providers/ModalProvider";
 
 interface DeleteShelfItemDialogProps extends ModalProps {

@@ -2,7 +2,7 @@ import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useOAuth } from "@/hooks/useOAuth";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 
 function OAuthRedirectPage({

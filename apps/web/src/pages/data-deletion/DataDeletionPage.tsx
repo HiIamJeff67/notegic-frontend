@@ -1,5 +1,5 @@
 import { Article, ArticleContent } from "@/components/commons/Article/Article";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import DataDeletion from "@/pages/document/data-deletion/DataDeletion";
 import { pageTitle } from "@/seo/pageTitle";
 

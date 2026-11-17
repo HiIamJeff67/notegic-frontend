@@ -21,7 +21,7 @@ import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { StartSurface } from "@/providers/LocalPreferencesProvider";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
 

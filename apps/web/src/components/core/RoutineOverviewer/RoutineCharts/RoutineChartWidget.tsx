@@ -6,7 +6,7 @@ import {
   useVisualizeMyRoutineStatusCount,
 } from "@/api/hooks/routine.hook";
 import { IntChart } from "@shared/components/charts";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { RoutineChartType } from "./RoutineCharts";
 

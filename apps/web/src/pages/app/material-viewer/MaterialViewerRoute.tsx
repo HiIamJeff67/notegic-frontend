@@ -13,7 +13,7 @@ import {
   useResolveMaterialObjectTicket,
 } from "@/api/hooks/material.hook";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import MaterialViewerNotFoundPage from "@/pages/app/material-viewer/MaterialViewerNotFoundPage";
 import MaterialViewerPage from "@/pages/app/material-viewer/MaterialViewerPage";
 

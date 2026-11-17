@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { TodoSetting } from "@widgets/basic/TodoWidget/setting/todoSetting";
 import { Dispatch, lazy, SetStateAction } from "react";
 import { DeferredSuspense } from "@shared/components/commons/DeferredSuspense/DeferredSuspense";

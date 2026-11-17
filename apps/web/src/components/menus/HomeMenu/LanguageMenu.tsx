@@ -1,5 +1,5 @@
 import { AllLanguageData } from "@shared/i18n/availableLanguages";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { HomeMenuSection } from "./HomeMenuSection";
 import { SelectionDot } from "./SelectionDot";
 

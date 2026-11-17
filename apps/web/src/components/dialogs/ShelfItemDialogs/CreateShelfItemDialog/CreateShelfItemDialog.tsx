@@ -10,7 +10,7 @@ import {
 import { Input } from "@shared/components/ui/input";
 import { Spinner } from "@shared/components/ui/spinner";
 import React, { useState } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ModalProps } from "@/providers/ModalProvider";
 
 interface CreateShelfItemDialogProps extends ModalProps {

@@ -32,7 +32,7 @@ import {
   StationIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 type RoutineScopeBarProps = {
   onOpenAddChart?: () => void;

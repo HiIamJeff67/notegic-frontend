@@ -8,7 +8,7 @@ import { defaultFilter } from "cmdk";
 import { GripHorizontalIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useAppCommand } from "@/hooks/useAppCommand";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import AppCommandContent from "./AppCommandContent";
 import AppCommandItem from "./AppCommandItem";
 import AppCommandPath from "./AppCommandPath";

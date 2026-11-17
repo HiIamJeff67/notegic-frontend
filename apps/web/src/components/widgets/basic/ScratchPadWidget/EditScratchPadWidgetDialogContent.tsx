@@ -5,7 +5,7 @@ import {
   EditWidgetDialogContent,
   EditWidgetDialogOption,
 } from "@/components/dialogs/WidgetDialog/EditWidgetDialog";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface EditScratchPadWidgetDialogContentProps {
   setting: ScratchPadSetting;

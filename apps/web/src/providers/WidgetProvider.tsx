@@ -9,7 +9,7 @@ import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
 import { toWidget, Widget } from "@/components/widgets/widget";
 import { useUser } from "@/hooks";
 import { useStateTrigger } from "@shared/hooks/useStateTrigger";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface WidgetContextType {
   hasChanged: boolean;

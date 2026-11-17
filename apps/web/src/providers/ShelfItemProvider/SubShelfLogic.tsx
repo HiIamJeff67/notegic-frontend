@@ -27,7 +27,7 @@ import {
   useMoveMySubShelf,
   useUpdateMySubShelfById,
 } from "@/api/hooks/subShelf.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseSubShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;

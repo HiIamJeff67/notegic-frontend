@@ -8,7 +8,7 @@ import { Suspense, useCallback } from "react";
 import MaterialMenuItem from "@/components/menus/MaterialMenu/MaterialMenuItem";
 import MaterialMenuItemSkeleton from "@/components/menus/MaterialMenu/MaterialMenuItemSkeleton";
 import { useLoading, useShelfItem } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface MaterialMenuProps {
   parent: SubShelfNode;

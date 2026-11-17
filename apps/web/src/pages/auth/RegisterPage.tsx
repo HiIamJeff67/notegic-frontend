@@ -17,8 +17,8 @@ import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useOAuth } from "@/hooks/useOAuth";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 
 const RegisterPage = () => {

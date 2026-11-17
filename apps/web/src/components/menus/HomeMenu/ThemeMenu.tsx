@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useTheme } from "@/hooks";
 import { HomeMenuSection } from "./HomeMenuSection";
 import { SelectionDot } from "./SelectionDot";

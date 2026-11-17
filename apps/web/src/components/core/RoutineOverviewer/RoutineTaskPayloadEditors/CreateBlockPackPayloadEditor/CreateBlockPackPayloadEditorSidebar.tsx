@@ -24,7 +24,7 @@ import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import type { PatternBlock } from "@/components/core/BlockPackEditor/PatternToggleButton";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ShelfLocationPicker } from "../PayloadSearchPickers";
 import TemplatePatternEditor, {
   type RoutineTaskTemplatePattern,

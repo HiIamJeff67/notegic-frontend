@@ -23,8 +23,8 @@ import type { UUID } from "crypto";
 import { CheckIcon, GripVertical, LinkIcon, Plus, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import DebouncedInput from "@/components/inputs/DebouncedInput";
-import { useAnyTypeState } from "@/hooks/useAnyTypeState";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import EditTodoWidgetDialog from "./EditTodoWidgetDialog";
 
 const TodoWidget = ({

@@ -25,7 +25,7 @@ import {
 } from "@shared/components/ui/table";
 import { PlusIcon, SquarePen, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export type RoutineTaskTemplatePattern = Record<
   string,

@@ -29,7 +29,7 @@ import {
   useHardDeleteMySubShelvesByIds,
   useRestoreMySubShelvesByIds,
 } from "@/api/hooks/subShelf.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export type TrashEntry = {
   id: UUID;

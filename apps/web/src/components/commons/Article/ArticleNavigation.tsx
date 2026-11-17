@@ -26,7 +26,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import "@/styles/article.css";
 import ArticleCommand from "./ArticleCommand";
 import { ArticleDisplayContext, ArticleScrollContext } from "./ArticleContext";

@@ -26,7 +26,7 @@ import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCar
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
 import { useMobile, useModal, useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 
 interface RoutineTaskMenuItemProps {

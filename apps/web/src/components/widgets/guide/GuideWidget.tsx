@@ -13,8 +13,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { useAnyTypeState } from "@/hooks/useAnyTypeState";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 type GuideStep = {
   id: string;

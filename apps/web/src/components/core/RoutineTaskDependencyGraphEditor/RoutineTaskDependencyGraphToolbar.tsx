@@ -24,7 +24,7 @@ import {
   RoutineTaskActionIcon,
   RoutineTaskStartIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RoutineTaskDependencyGraphToolbarProps {
   isAddMenuOpen: boolean;

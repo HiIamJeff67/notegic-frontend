@@ -1,7 +1,7 @@
 import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
 import React, { Suspense } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { WidgetProvider } from "@/providers/WidgetProvider";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

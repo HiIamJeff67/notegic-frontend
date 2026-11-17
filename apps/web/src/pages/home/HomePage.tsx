@@ -18,8 +18,8 @@ import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import NoteIcon from "@/components/icons/NoteIcon";
 import { HomeMenu } from "@/components/menus/HomeMenu/HomeMenu";
 import { useAppRouter, useTheme } from "@/hooks";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 import { publicFacts, publicFaqs, publicPages } from "@/seo/publicPage";
 

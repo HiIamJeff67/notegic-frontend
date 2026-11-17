@@ -23,7 +23,7 @@ import {
   useUpdateMyRoutineTaskById,
 } from "@/api/hooks/routineTask.hook";
 import { useGetMyRoutineTaskRecordsByRoutineTaskId } from "@/api/hooks/routineTaskRecord.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 

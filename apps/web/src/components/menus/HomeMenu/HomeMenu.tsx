@@ -1,4 +1,4 @@
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useState } from "react";
 import LanguageIcon from "@/components/icons/LanguageIcon";
 import { ThemeIcon } from "@/components/icons/ThemeIcon";

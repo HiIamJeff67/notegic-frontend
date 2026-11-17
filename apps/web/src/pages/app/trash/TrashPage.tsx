@@ -35,8 +35,8 @@ import {
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 import {
   getTrashEntryKey,

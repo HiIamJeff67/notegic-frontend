@@ -45,7 +45,7 @@ import ShelfSharingOverviewDialog, {
 } from "@/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import { useRealtime } from "@/hooks/useRealtime";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 interface BlockPackParticipantsDropdownProps {

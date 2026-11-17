@@ -5,7 +5,7 @@ import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import toast from "@shared/lib/toast/toast";
 import { type Edge, type ReactFlowInstance } from "@xyflow/react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import "@xyflow/react/dist/style.css";
 import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
 import { Button } from "@shared/components/ui/button";

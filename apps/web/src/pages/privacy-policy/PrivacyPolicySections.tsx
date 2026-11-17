@@ -7,7 +7,7 @@ import {
   ArticleSubParagraphHeader,
 } from "@/components/commons/Article/Article";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 const PrivacyPolicySection = ({
   id,

@@ -18,7 +18,7 @@ import {
 } from "@shared/lib/blockpack";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PatternBlock } from "@/components/core/BlockPackEditor/PatternToggleButton";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskTemplatePattern } from "../TemplatePatternEditor";
 import CreateBlockPackPayloadEditorSidebar from "./CreateBlockPackPayloadEditorSidebar";
 import CreateBlockPackPayloadTemplateEditor from "./CreateBlockPackPayloadTemplateEditor";

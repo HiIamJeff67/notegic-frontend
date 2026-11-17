@@ -15,7 +15,7 @@ import {
 } from "@xyflow/react";
 import { Map as MapIcon, X } from "lucide-react";
 import { useScreen } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskGraphNode as RoutineTaskGraphNodeType } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
 import RoutineTaskGraphNode from "./RoutineTaskGraphNode";
 

@@ -19,7 +19,7 @@ import GridBackground from "@/components/backgrounds/GridBackground/GridBackgrou
 import Image from "@shared/components/commons/Image/Image";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ModalProps } from "@/providers/ModalProvider";
 import CropImageDialog from "./CropImageDialog";
 import UploadImageDialog from "./UploadImageDialog";

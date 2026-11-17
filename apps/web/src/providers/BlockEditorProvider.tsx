@@ -14,7 +14,7 @@ import { createContext, useCallback, useEffect, useMemo } from "react";
 import type * as Y from "yjs";
 import { useAppRouterActions } from "@/hooks/useAppRouter";
 import { useBlockPackRealtimeChannel, useRealtime } from "@/hooks/useRealtime";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
 const getBlockNoteXmlFragment = (doc: Y.Doc) =>

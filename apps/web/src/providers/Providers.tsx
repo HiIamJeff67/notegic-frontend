@@ -9,7 +9,7 @@ import { LoadingProvider } from "@/providers/LoadingProvider";
 import { LocalPreferencesProvider } from "@/providers/LocalPreferencesProvider";
 import { PerformanceProvider } from "@/providers/PerformanceProvider";
 import { ScreenProvider } from "@shared/providers/ScreenProvider";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ThemeProvider } from "@shared/providers/ThemeProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();

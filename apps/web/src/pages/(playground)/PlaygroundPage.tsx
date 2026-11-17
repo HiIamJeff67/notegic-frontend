@@ -1,7 +1,7 @@
 import { SidebarProvider } from "@shared/components/ui/sidebar";
 import AppCommand from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommand";
 import AppSidebarInset from "@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { AppCommandProvider } from "@/providers/AppCommandProvider";
 import { ResizeSidebarProvider } from "@/providers/ResizeSidebarProvider";
 import { UserProvider } from "@/providers/UserProvider";

@@ -32,7 +32,7 @@ import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskReco
 import { ListFilter } from "lucide-react";
 import { useId } from "react";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 
 export interface RoutineRecordFiltersValue {

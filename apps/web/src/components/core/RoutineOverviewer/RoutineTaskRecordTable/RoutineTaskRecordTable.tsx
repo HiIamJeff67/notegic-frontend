@@ -30,7 +30,7 @@ import RoutineRecordFilters, {
 } from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 const RoutineTaskRecordTable = ({
   routineTaskIds = [],

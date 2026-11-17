@@ -11,8 +11,8 @@ import {
 } from "@widgets/basic/TimerWidget/setting/timerSetting";
 import { WidgetProps } from "@widgets/widget";
 import { useEffect, useState } from "react";
-import { useAnyTypeState } from "@/hooks/useAnyTypeState";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import EditTimerWidgetDialog from "./EditTimerWidgetDialog";
 
 const getDurationMs = (duration: TimerRecord["duration"]) => {

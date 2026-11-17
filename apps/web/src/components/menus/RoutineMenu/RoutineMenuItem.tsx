@@ -64,7 +64,7 @@ import {
   useShelfItem,
   useStationRoutine,
 } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 

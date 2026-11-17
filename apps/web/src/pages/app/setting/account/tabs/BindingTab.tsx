@@ -38,7 +38,7 @@ import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading, useUser } from "@/hooks";
 import { useNetwork } from "@shared/hooks/useNetwork";
 import { useOAuth } from "@/hooks/useOAuth";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface BindingTabProps {
   layout?: "panel" | "page";

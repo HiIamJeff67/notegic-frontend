@@ -11,7 +11,7 @@ import {
   getSizeValue,
   Widget,
 } from "@/components/widgets/widget";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@shared/hooks/useTheme";
 import PlaceableFrame from "./PlaceableFrame";
 
 interface PlaceableBackgroundProps {

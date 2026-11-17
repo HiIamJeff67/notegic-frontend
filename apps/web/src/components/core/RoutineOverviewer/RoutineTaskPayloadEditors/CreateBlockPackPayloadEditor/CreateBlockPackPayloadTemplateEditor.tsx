@@ -9,8 +9,8 @@ import {
   type PatternBlock,
   PatternToggleButton,
 } from "@/components/core/BlockPackEditor/PatternToggleButton";
-import { useTheme } from "@/hooks/useTheme";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTheme } from "@shared/hooks/useTheme";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import "@shared/styles/block-editor.css";
 
 interface CreateBlockPackPayloadTemplateEditorProps {

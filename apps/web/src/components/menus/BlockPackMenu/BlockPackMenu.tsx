@@ -8,7 +8,7 @@ import { Suspense, useCallback } from "react";
 import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuItem";
 import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPackMenuItemSkeleton";
 import { useLoading, useShelfItem } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface BlockPackMenuProps {
   parent: SubShelfNode;

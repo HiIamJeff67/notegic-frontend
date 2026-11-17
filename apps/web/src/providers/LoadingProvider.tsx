@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import AppLoadingCover from "@/components/covers/LoadingCover/AppLoadingCover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 type LoadingLevel = "strict" | "lax";
 type LoadingOperation<T> = (setLabel: (label: string) => void) => Promise<T>;

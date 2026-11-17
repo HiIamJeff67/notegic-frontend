@@ -9,7 +9,7 @@ import { cn } from "@shared/lib/classname/cn";
 import { Bookmark } from "lucide-react";
 import type { PointerEvent } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 
 const RoutineTrain = ({

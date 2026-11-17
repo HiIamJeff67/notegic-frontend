@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/components/ui/table";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RoutineTaskRecordDialogSkeletonProps {
   isOpen: boolean;

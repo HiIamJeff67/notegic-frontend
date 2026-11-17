@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";
 import { useSearchStationsLazyQuery } from "@/api/hooks/graphql/useSearchStations";
 import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface SearchOptionDetail {
   label: string;

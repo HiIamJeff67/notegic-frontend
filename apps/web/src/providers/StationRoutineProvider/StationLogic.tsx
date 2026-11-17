@@ -24,7 +24,7 @@ import {
   useTransferMyStationOwnership,
   useUpdateMyStationById,
 } from "@/api/hooks/station.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { StationNode } from "@/providers/StationRoutineProvider/stationNode.type";
 

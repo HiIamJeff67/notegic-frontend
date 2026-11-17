@@ -17,7 +17,7 @@ import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { useEffect, useState } from "react";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import TimezoneSelector from "@shared/components/commons/TimezoneSelector/TimezoneSelector";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";
 import { StationPicker } from "../PayloadSearchPickers";
 import TemplatePatternEditor, {

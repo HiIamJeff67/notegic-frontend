@@ -63,4 +63,4 @@ const LoadingIndicator = ({ label }: LoadingIndicatorProps) => {
 
 export default LoadingIndicator;
 
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";

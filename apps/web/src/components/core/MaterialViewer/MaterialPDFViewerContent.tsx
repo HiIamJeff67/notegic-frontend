@@ -49,7 +49,7 @@ import {
 } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";

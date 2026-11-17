@@ -17,7 +17,7 @@ import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { type FormEvent, useState } from "react";
 import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { Section } from "./PreferenceRows";
 
 interface FeedbackTabProps {

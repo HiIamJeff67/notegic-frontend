@@ -81,7 +81,7 @@ import {
   useStationRoutine,
 } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { type SettingsPage } from "@/providers/SettingsDisplayProvider";
 import ResizableSidebar from "../ResizableSidebar/ResizableSidebar";

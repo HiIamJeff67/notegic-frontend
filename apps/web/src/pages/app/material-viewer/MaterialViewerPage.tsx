@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import MaterialViewer from "@/components/core/MaterialViewer/MaterialViewer";
 import type { MaterialFileState } from "@/components/core/MaterialViewer/MaterialViewerFrame";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 
 interface MaterialViewerPageProps {

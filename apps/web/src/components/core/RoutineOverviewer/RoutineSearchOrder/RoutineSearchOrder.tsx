@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@shared/components/ui/dropdown-menu";
 import { ArrowDownUp } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RoutineSearchOrderProps<SortBy extends string> {
   label: string;

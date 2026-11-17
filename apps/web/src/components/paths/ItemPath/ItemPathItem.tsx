@@ -23,7 +23,7 @@ import {
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
 import { useAppRouter, useShelfItem } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface ItemPathItemProps {
   key?: any;

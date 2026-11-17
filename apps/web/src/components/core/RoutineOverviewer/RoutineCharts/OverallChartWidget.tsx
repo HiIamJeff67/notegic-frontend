@@ -1,7 +1,7 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import { useVisualizeMyTotalCount } from "@/api/hooks/station.hook";
 import { IntChart } from "@shared/components/charts";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { ChartWidgetFrame } from "./ChartWidgetFrame";
 import type { OverallChartType } from "./RoutineCharts";
 

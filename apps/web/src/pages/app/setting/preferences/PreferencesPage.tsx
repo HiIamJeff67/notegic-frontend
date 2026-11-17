@@ -32,8 +32,8 @@ import {
 } from "@/components/commons/Article/Article";
 import { useAppRouterActions, useScreen, useSettingsDisplay } from "@/hooks";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTranslation } from "@/hooks/useTranslation";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 import {
   AppearanceSettings,

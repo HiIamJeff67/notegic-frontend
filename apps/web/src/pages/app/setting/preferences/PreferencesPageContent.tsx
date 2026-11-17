@@ -24,7 +24,7 @@ import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import type {
   Density,

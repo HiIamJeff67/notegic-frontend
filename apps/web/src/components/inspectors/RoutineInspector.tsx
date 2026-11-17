@@ -30,7 +30,7 @@ import TimezoneSelector, {
 } from "@shared/components/commons/TimezoneSelector/TimezoneSelector";
 import WeekdayPicker from "@shared/components/commons/WeekdayPicker/WeekdayPicker";
 import { useStationRoutine } from "@/hooks";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";

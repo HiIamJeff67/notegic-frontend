@@ -20,7 +20,7 @@ import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton"
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading, useUser } from "@/hooks";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface SecurityTabProps {
   layout?: "panel" | "page";

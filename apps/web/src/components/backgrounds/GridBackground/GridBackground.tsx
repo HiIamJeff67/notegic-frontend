@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@shared/hooks/useTheme";
 
 interface GridBackgroundProps {
   className?: string;

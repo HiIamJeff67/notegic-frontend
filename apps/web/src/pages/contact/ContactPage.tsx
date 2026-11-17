@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { pageTitle } from "@/seo/pageTitle";
 import { publicFacts, publicPages } from "@/seo/publicPage";
 

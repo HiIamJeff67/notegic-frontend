@@ -26,7 +26,7 @@ import {
 } from "@/api/hooks/notification.hook";
 import { NotificationDialog } from "@/components/dialogs/NotificationDialog";
 import { NotificationDetailPopover } from "@/components/popovers/NotificationDetailPopover";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 export const NotificationPopover = ({
   mobile = false,
