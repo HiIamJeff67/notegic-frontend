@@ -16,7 +16,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useStateTrigger } from "@/hooks/useStateTrigger";
+import { useStateTrigger } from "@shared/hooks/useStateTrigger";
 import { useItemLogic } from "./ItemLogic";
 import { useRootShelfLogic } from "./RootShelfLogic";
 import { useSubShelfLogic } from "./SubShelfLogic";

@@ -1,0 +1,71 @@
+import { GetMyAccountResponseSchema } from "@shared/api/interfaces/userAccount.interface";
+import { GetMyQuotaResponseSchema } from "@shared/api/interfaces/userQuota.interface";
+
+describe("account and quota response contracts", () => {
+  test("decodes account fields separately from quota counters", () => {
+    const account = GetMyAccountResponseSchema.parse({
+      success: true,
+      data: {
+        countryCode: null,
+        phoneNumber: null,
+        googleBound: true,
+        githubBound: false,
+        xBound: false,
+        discordBound: false,
+        updatedAt: "2026-09-27T00:00:00.000Z",
+      },
+      embedded: { publicId: "00000000-0000-4000-8000-000000000001" },
+      exception: null,
+    });
+    const quota = GetMyQuotaResponseSchema.parse({
+      success: true,
+      data: {
+        rootShelfCount: 1,
+        blockPackCount: 2,
+        blockCount: 3,
+        materialCount: 4,
+        workflowCount: 5,
+        additionalItemCount: 6,
+        stationCount: 7,
+        routineCount: 8,
+        routineTagCount: 9,
+        routineTaskExecutionMinutesUsed: 10,
+        cycleStartedAt: "2026-09-01T00:00:00.000Z",
+        nextResetAt: "2026-10-01T00:00:00.000Z",
+        updatedAt: "2026-09-27T00:00:00.000Z",
+      },
+      embedded: { publicId: "00000000-0000-4000-8000-000000000001" },
+      exception: null,
+    });
+
+    expect(account.data).not.toHaveProperty("rootShelfCount");
+    expect(quota.data.routineTaskExecutionMinutesUsed).toBe(10);
+  });
+
+  test("decodes legacy account responses without retaining provider IDs", () => {
+    const account = GetMyAccountResponseSchema.parse({
+      success: true,
+      data: {
+        countryCode: null,
+        phoneNumber: null,
+        googleCredential: "google-user-id",
+        xCredential: "x-user-id",
+        discordCredential: null,
+        updatedAt: "2026-09-27T00:00:00.000Z",
+      },
+      embedded: { publicId: "00000000-0000-4000-8000-000000000001" },
+      exception: null,
+    });
+
+    expect(account.data).toEqual({
+      registeredAuthProviderType: undefined,
+      countryCode: null,
+      phoneNumber: null,
+      googleBound: true,
+      githubBound: false,
+      xBound: true,
+      discordBound: false,
+      updatedAt: new Date("2026-09-27T00:00:00.000Z"),
+    });
+  });
+});

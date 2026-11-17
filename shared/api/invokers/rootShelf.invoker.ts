@@ -1,0 +1,459 @@
+import { NotegicAPIError } from "@shared/api/exceptions";
+import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import { ValidationClientException } from "@shared/api/exceptions/client/validation.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import { NotegicValidationError } from "@shared/api/exceptions/errors/validation.error";
+import {
+  type CreateRootShelfRequest,
+  CreateRootShelfRequestSchema,
+  type CreateRootShelfResponse,
+  CreateRootShelfResponseSchema,
+  type CreateRootShelvesRequest,
+  CreateRootShelvesRequestSchema,
+  type CreateRootShelvesResponse,
+  CreateRootShelvesResponseSchema,
+  type DeleteMyRootShelfByIdRequest,
+  DeleteMyRootShelfByIdRequestSchema,
+  type DeleteMyRootShelfByIdResponse,
+  DeleteMyRootShelfByIdResponseSchema,
+  type DeleteMyRootShelvesByIdsRequest,
+  DeleteMyRootShelvesByIdsRequestSchema,
+  type DeleteMyRootShelvesByIdsResponse,
+  DeleteMyRootShelvesByIdsResponseSchema,
+  type DeleteRootShelfPermissionsRequest,
+  DeleteRootShelfPermissionsRequestSchema,
+  type DeleteRootShelfPermissionsResponse,
+  DeleteRootShelfPermissionsResponseSchema,
+  type GetMyRootShelfByIdRequest,
+  GetMyRootShelfByIdRequestSchema,
+  type GetMyRootShelfByIdResponse,
+  GetMyRootShelfByIdResponseSchema,
+  type HardDeleteMyRootShelvesByIdsRequest,
+  HardDeleteMyRootShelvesByIdsRequestSchema,
+  type HardDeleteMyRootShelvesByIdsResponse,
+  HardDeleteMyRootShelvesByIdsResponseSchema,
+  type LeaveMyRootShelfRequest,
+  LeaveMyRootShelfRequestSchema,
+  type LeaveMyRootShelfResponse,
+  LeaveMyRootShelfResponseSchema,
+  type RestoreMyRootShelfByIdRequest,
+  RestoreMyRootShelfByIdRequestSchema,
+  type RestoreMyRootShelfByIdResponse,
+  RestoreMyRootShelfByIdResponseSchema,
+  type RestoreMyRootShelvesByIdsRequest,
+  RestoreMyRootShelvesByIdsRequestSchema,
+  type RestoreMyRootShelvesByIdsResponse,
+  RestoreMyRootShelvesByIdsResponseSchema,
+  type TransferMyRootShelfOwnershipRequest,
+  TransferMyRootShelfOwnershipRequestSchema,
+  type TransferMyRootShelfOwnershipResponse,
+  TransferMyRootShelfOwnershipResponseSchema,
+  type UpdateMyRootShelfByIdRequest,
+  UpdateMyRootShelfByIdRequestSchema,
+  type UpdateMyRootShelfByIdResponse,
+  UpdateMyRootShelfByIdResponseSchema,
+  type UpdateMyRootShelvesByIdsRequest,
+  UpdateMyRootShelvesByIdsRequestSchema,
+  type UpdateMyRootShelvesByIdsResponse,
+  UpdateMyRootShelvesByIdsResponseSchema,
+  type UpsertRootShelfPermissionRequest,
+  UpsertRootShelfPermissionRequestSchema,
+  type UpsertRootShelfPermissionResponse,
+  UpsertRootShelfPermissionResponseSchema,
+} from "@shared/api/interfaces/rootShelf.interface";
+import { parse } from "@shared/api/validation";
+import { ZodError } from "zod";
+
+export const queryFnGetMyRootShelfById = async (
+  request: GetMyRootShelfByIdRequest,
+  func: (
+    request: GetMyRootShelfByIdRequest
+  ) => Promise<GetMyRootShelfByIdResponse>
+): Promise<GetMyRootShelfByIdResponse> => {
+  try {
+    const validatedRequest = GetMyRootShelfByIdRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return GetMyRootShelfByIdResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in queryFnGetMyRootShelfById", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(
+        FetchClientExceptions.MissingNetwork()
+      ).removePresentation();
+    }
+    throw error;
+  }
+};
+
+export const mutationFnCreateRootShelf = async (
+  request: CreateRootShelfRequest,
+  func: (request: CreateRootShelfRequest) => Promise<CreateRootShelfResponse>
+): Promise<CreateRootShelfResponse> => {
+  const validatedRequest = parse(CreateRootShelfRequestSchema, request);
+  try {
+    const response = await func(validatedRequest);
+    return CreateRootShelfResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in mutationFnCreateRootShelf", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnCreateRootShelves = async (
+  request: CreateRootShelvesRequest,
+  func: (
+    request: CreateRootShelvesRequest
+  ) => Promise<CreateRootShelvesResponse>
+): Promise<CreateRootShelvesResponse> => {
+  const validatedRequest = parse(CreateRootShelvesRequestSchema, request);
+  try {
+    const response = await func(validatedRequest);
+    return CreateRootShelvesResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in mutationFnCreateRootShelves", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnUpdateMyRootShelfById = async (
+  request: UpdateMyRootShelfByIdRequest,
+  func: (
+    request: UpdateMyRootShelfByIdRequest
+  ) => Promise<UpdateMyRootShelfByIdResponse>
+): Promise<UpdateMyRootShelfByIdResponse> => {
+  const validatedRequest = parse(UpdateMyRootShelfByIdRequestSchema, request);
+  try {
+    const response = await func(validatedRequest);
+    return UpdateMyRootShelfByIdResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in mutationFnUpdateMyRootShelfById", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnUpsertRootShelfPermission = async (
+  request: UpsertRootShelfPermissionRequest,
+  func: (
+    request: UpsertRootShelfPermissionRequest
+  ) => Promise<UpsertRootShelfPermissionResponse>
+): Promise<UpsertRootShelfPermissionResponse> => {
+  const validatedRequest = parse(
+    UpsertRootShelfPermissionRequestSchema,
+    request
+  );
+  try {
+    const response = await func(validatedRequest);
+    return UpsertRootShelfPermissionResponseSchema.parse(response);
+  } catch (error) {
+    console.error(
+      "error happening in mutationFnUpsertRootShelfPermission",
+      error
+    );
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnDeleteRootShelfPermissions = async (
+  request: DeleteRootShelfPermissionsRequest,
+  func: (
+    request: DeleteRootShelfPermissionsRequest
+  ) => Promise<DeleteRootShelfPermissionsResponse>
+): Promise<DeleteRootShelfPermissionsResponse> => {
+  try {
+    const validatedRequest =
+      DeleteRootShelfPermissionsRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return DeleteRootShelfPermissionsResponseSchema.parse(response);
+  } catch (error) {
+    console.error(
+      "error happening in mutationFnDeleteRootShelfPermissions",
+      error
+    );
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnTransferMyRootShelfOwnership = async (
+  request: TransferMyRootShelfOwnershipRequest,
+  func: (
+    request: TransferMyRootShelfOwnershipRequest
+  ) => Promise<TransferMyRootShelfOwnershipResponse>
+): Promise<TransferMyRootShelfOwnershipResponse> => {
+  try {
+    const response = await func(
+      TransferMyRootShelfOwnershipRequestSchema.parse(request)
+    );
+    return TransferMyRootShelfOwnershipResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError)
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    if (error instanceof TypeError)
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    throw error;
+  }
+};
+
+export const mutationFnLeaveMyRootShelf = async (
+  request: LeaveMyRootShelfRequest,
+  func: (request: LeaveMyRootShelfRequest) => Promise<LeaveMyRootShelfResponse>
+): Promise<LeaveMyRootShelfResponse> => {
+  try {
+    const response = await func(LeaveMyRootShelfRequestSchema.parse(request));
+    return LeaveMyRootShelfResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError)
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    if (error instanceof TypeError)
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    throw error;
+  }
+};
+
+export const mutationFnUpdateMyRootShelvesByIds = async (
+  request: UpdateMyRootShelvesByIdsRequest,
+  func: (
+    request: UpdateMyRootShelvesByIdsRequest
+  ) => Promise<UpdateMyRootShelvesByIdsResponse>
+): Promise<UpdateMyRootShelvesByIdsResponse> => {
+  const validatedRequest = parse(
+    UpdateMyRootShelvesByIdsRequestSchema,
+    request
+  );
+  try {
+    const response = await func(validatedRequest);
+    return UpdateMyRootShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    console.error(
+      "error happening in mutationFnUpdateMyRootShelvesByIds",
+      error
+    );
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      ).setPresentation("validation.invalidResponse");
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnRestoreMyRootShelfById = async (
+  request: RestoreMyRootShelfByIdRequest,
+  func: (
+    request: RestoreMyRootShelfByIdRequest
+  ) => Promise<RestoreMyRootShelfByIdResponse>
+): Promise<RestoreMyRootShelfByIdResponse> => {
+  try {
+    const validatedRequest = RestoreMyRootShelfByIdRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return RestoreMyRootShelfByIdResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in mutationFnRestoreMyRootShelfById", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnRestoreMyRootShelvesByIds = async (
+  request: RestoreMyRootShelvesByIdsRequest,
+  func: (
+    request: RestoreMyRootShelvesByIdsRequest
+  ) => Promise<RestoreMyRootShelvesByIdsResponse>
+): Promise<RestoreMyRootShelvesByIdsResponse> => {
+  try {
+    const validatedRequest =
+      RestoreMyRootShelvesByIdsRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return RestoreMyRootShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    console.error(
+      "error happening in mutationFnRestoreMyRootShelvesByIds",
+      error
+    );
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnDeleteMyRootShelfById = async (
+  request: DeleteMyRootShelfByIdRequest,
+  func: (
+    request: DeleteMyRootShelfByIdRequest
+  ) => Promise<DeleteMyRootShelfByIdResponse>
+): Promise<DeleteMyRootShelfByIdResponse> => {
+  try {
+    const validatedRequest = DeleteMyRootShelfByIdRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return DeleteMyRootShelfByIdResponseSchema.parse(response);
+  } catch (error) {
+    console.error("error happening in mutationFnDeleteMyRootShelfById", error);
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnDeleteMyRootShelvesByIds = async (
+  request: DeleteMyRootShelvesByIdsRequest,
+  func: (
+    request: DeleteMyRootShelvesByIdsRequest
+  ) => Promise<DeleteMyRootShelvesByIdsResponse>
+): Promise<DeleteMyRootShelvesByIdsResponse> => {
+  try {
+    const validatedRequest =
+      DeleteMyRootShelvesByIdsRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return DeleteMyRootShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    console.error(
+      "error happening in mutationFnDeleteMyRootShelvesByIds",
+      error
+    );
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    } else if (error instanceof NotegicAPIError) {
+      switch (error.unWrap.reason) {
+        default:
+          throw error;
+      }
+    } else if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};
+
+export const mutationFnHardDeleteMyRootShelvesByIds = async (
+  request: HardDeleteMyRootShelvesByIdsRequest,
+  func: (
+    request: HardDeleteMyRootShelvesByIdsRequest
+  ) => Promise<HardDeleteMyRootShelvesByIdsResponse>
+): Promise<HardDeleteMyRootShelvesByIdsResponse> => {
+  try {
+    const validatedRequest =
+      HardDeleteMyRootShelvesByIdsRequestSchema.parse(request);
+    const response = await func(validatedRequest);
+    return HardDeleteMyRootShelvesByIdsResponseSchema.parse(response);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new NotegicValidationError(
+        ValidationClientException.ZodParsingFailed(error)
+      );
+    }
+    if (error instanceof TypeError) {
+      throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
+    }
+    throw error;
+  }
+};

@@ -57,7 +57,7 @@ window.root.render(<Fixture />);
 
 const mocks: Record<string, string> = {
   "@/hooks/useTheme": `export const useTheme = () => ({ currentTheme: { isDark: true } });`,
-  "@/hooks/useTranslation": `export const useTranslation = () => ({ t: key => key });`,
+  "react-i18next": `export const useTranslation = () => ({ t: key => key });`,
 };
 
 describe("Turnstile container sizing in Chromium", () => {
@@ -75,9 +75,9 @@ describe("Turnstile container sizing in Chromium", () => {
       ].map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/styles/globals.css", "utf8"),
+      await readFile("shared/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/styles"),
+        base: path.resolve("shared/styles"),
         onDependency: () => {},
       }
     );

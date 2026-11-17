@@ -4,11 +4,12 @@ import type {
   GetMyQuotaRequest,
   GetMyQuotaResponse,
 } from "@shared/api/interfaces/userQuota.interface";
+import { queryFnGetMyQuota } from "@shared/api/invokers/userQuota.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { queryFnGetMyQuota } from "@/api/invokers/userQuota.invoker";
+import { GetMyQuota } from "@/api/functions/userQuota.serverFn";
 
 export const useGetMyQuota = (
   hookRequest?: GetMyQuotaRequest,
@@ -24,7 +25,7 @@ export const useGetMyQuota = (
         ValidationClientException.ReceivedUndefinedRequest()
       );
     }
-    const response = await queryFnGetMyQuota(request);
+    const response = await queryFnGetMyQuota(request, GetMyQuota);
     return response;
   };
 

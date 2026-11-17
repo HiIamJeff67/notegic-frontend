@@ -3,11 +3,12 @@ import type {
   GetMyRootShelfByIdRequest,
   GetMyRootShelfByIdResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
+import { queryFnGetMyRootShelfById } from "@shared/api/invokers/rootShelf.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
-import { queryFnGetMyRootShelfById } from "@/api/invokers/rootShelf.invoker";
+import { GetMyRootShelfById } from "@/api/functions/rootShelf.serverFn";
 
 export const fetchGetMyRootShelfById = async (
   fetchRequest: GetMyRootShelfByIdRequest,
@@ -20,7 +21,8 @@ export const fetchGetMyRootShelfById = async (
     queryKey: queryKeys.rootShelf.oneById(
       fetchRequest.param.rootShelfId as UUID
     ),
-    queryFn: async () => await queryFnGetMyRootShelfById(fetchRequest),
+    queryFn: async () =>
+      await queryFnGetMyRootShelfById(fetchRequest, GetMyRootShelfById),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });

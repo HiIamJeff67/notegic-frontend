@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 import { createServer, type ViteDevServer } from "vite";
+import { TryGetUserData } from "@/api/functions/user.serverFn";
 
 test.skip(
   process.env.E2E_PRODUCTION === "true",
@@ -317,9 +318,7 @@ for (const target of ["route", "preferences"] as const) {
         const { TryGetUserData } = await import(/* @vite-ignore */ path);
         // Empty isolated browser cookies must return false without any backend.
         return Promise.all(
-          Array.from({ length: 4 }, () =>
-            TryGetUserData({ data: { header: {} } })
-          )
+          Array.from({ length: 4 }, () => TryGetUserData({ header: {} }))
         );
       });
       const responses = Promise.all(

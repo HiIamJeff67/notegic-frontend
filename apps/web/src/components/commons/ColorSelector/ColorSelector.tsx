@@ -1,10 +1,12 @@
 import Closeable from "@shared/components/commons/Closeable/Closeable";
+import ColorPicker from "@shared/components/commons/ColorPicker/ColorPicker";
 import { Button } from "@shared/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@shared/components/ui/popover";
+import { useStateTrigger } from "@shared/hooks/useStateTrigger";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import {
@@ -22,9 +24,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUser } from "@/hooks";
-import { useStateTrigger } from "@/hooks/useStateTrigger";
 import { useTranslation } from "@/hooks/useTranslation";
-import ColorPicker from "../ColorPicker/ColorPicker";
 
 interface ColorSelectorProps {
   value: string;

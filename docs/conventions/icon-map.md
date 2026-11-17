@@ -314,12 +314,12 @@ assets or Docker services were removed. No commit or push was performed.
 [TimeRails]: ../../apps/web/src/components/core/RoutineOverviewer/TimeRails/TimeRails.tsx
 [CalendarBlockSpec]: ../../shared/lib/blockpack/specs/calendar.spec.tsx
 [BlockSuggestionMenu]: ../../apps/web/src/components/core/BlockPackEditor/SuggestionMenu.tsx
-[DatePicker]: ../../apps/web/src/components/commons/DatePicker/DatePicker.tsx
+[DatePicker]: ../../shared/components/commons/DatePicker/DatePicker.tsx
 [ProfileTab]: ../../apps/web/src/pages/app/setting/account/tabs/ProfileTab.tsx
 [RoutineCharts]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineCharts/RoutineCharts.tsx
 [RoutineScopeBar]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineScopeBar/RoutineScopeBar.tsx
 [Checkbox]: ../../shared/components/ui/checkbox.tsx
-[SupportedIconTable]: ../../apps/web/src/components/commons/SupportedIconTable/SupportedIconTable.tsx
+[SupportedIconTable]: ../../shared/components/commons/SupportedIconTable/SupportedIconTable.tsx
 [GuideWidget]: ../../apps/web/src/components/widgets/guide/GuideWidget.tsx
 [VersionCard]: ../../apps/web/src/components/commons/VersionCard/VersionCard.tsx
 [Select]: ../../shared/components/ui/select.tsx
@@ -328,10 +328,10 @@ assets or Docker services were removed. No commit or push was performed.
 [ItemPath]: ../../apps/web/src/components/paths/ItemPath/ItemPath.tsx
 [CreateRoutineTaskDialog]: ../../apps/web/src/components/dialogs/StationRoutineDialogs/CreateRoutineTaskDialog/CreateRoutineTaskDialog.tsx
 [DashboardPage]: ../../apps/web/src/pages/app/dashboard/DashboardPage.tsx
-[TimezoneSelector]: ../../apps/web/src/components/commons/TimezoneSelector/TimezoneSelector.tsx
+[TimezoneSelector]: ../../shared/components/commons/TimezoneSelector/TimezoneSelector.tsx
 [DropdownMenu]: ../../shared/components/ui/dropdown-menu.tsx
 [AboutTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/AboutTab.tsx
-[TimePicker]: ../../apps/web/src/components/commons/TimePicker/TimePicker.tsx
+[TimePicker]: ../../shared/components/commons/TimePicker/TimePicker.tsx
 [ArticleCommand]: ../../apps/web/src/components/commons/Article/ArticleCommand.tsx
 [RoutineTaskMenu]: ../../apps/web/src/components/menus/RoutineTaskMenu/RoutineTaskMenuItem.tsx
 [RootShelfMenu]: ../../apps/web/src/components/menus/RootShelfMenu/RootShelfMenuItem.tsx
@@ -389,7 +389,7 @@ assets or Docker services were removed. No commit or push was performed.
 [LoadingIndicator]: ../../apps/web/src/components/covers/LoadingCover/LoadingIndicator.tsx
 [Ring]: ../../shared/components/ui/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx
-[ChartFrame]: ../../apps/web/src/components/charts/ChartFrame/ChartFrame.tsx
+[ChartFrame]: ../../shared/components/charts/ChartFrame/ChartFrame.tsx
 
 [RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx
 

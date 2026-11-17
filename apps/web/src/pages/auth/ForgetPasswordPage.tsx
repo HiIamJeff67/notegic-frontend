@@ -17,7 +17,7 @@ import AuthPanel from "@/components/panels/AuthPanel/AuthPanel";
 import { useAppRouter } from "@/hooks";
 import { useAuthCode } from "@/hooks/useAuthCode";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";

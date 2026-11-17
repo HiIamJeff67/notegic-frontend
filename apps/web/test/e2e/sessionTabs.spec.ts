@@ -1,5 +1,6 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
+import { GetUserData } from "@/api/functions/user.serverFn";
 
 test.beforeEach(async ({ context }) => {
   await context.route("https://www.youtube-nocookie.com/embed/**", route =>
@@ -179,7 +180,7 @@ test("new tabs, session renewal and real graph conflicts preserve authentication
     const token = getClientCSRFToken();
     const rpcPath = "/src/api/functions/user.serverFn.ts";
     const { GetUserData } = await import(/* @vite-ignore */ rpcPath);
-    const response = await GetUserData({ data: { header: {}, body: {} } });
+    const response = await GetUserData({ header: {}, body: {} });
     return {
       success: response.success,
       changed: getClientCSRFToken() !== token,
@@ -189,7 +190,7 @@ test("new tabs, session renewal and real graph conflicts preserve authentication
   const secondRead = await second.evaluate(async () => {
     const rpcPath = "/src/api/functions/user.serverFn.ts";
     const { GetUserData } = await import(/* @vite-ignore */ rpcPath);
-    return (await GetUserData({ data: { header: {}, body: {} } })).success;
+    return (await GetUserData({ header: {}, body: {} })).success;
   });
   expect(secondRead).toBe(true);
   expect(authFailures).toEqual([]);

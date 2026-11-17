@@ -15,7 +15,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetUserData = createServerFn({ method: "GET" })
+const GetUserDataRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetUserDataRequest) => data)
   .handler(async ({ data: request }): Promise<GetUserDataResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -42,7 +42,10 @@ export const GetUserData = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const TryGetUserData = createServerFn({ method: "GET" })
+export const GetUserData = (request: GetUserDataRequest) =>
+  GetUserDataRpc({ data: request });
+
+const TryGetUserDataRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetUserDataRequest) => data)
   .handler(async ({ data: request }): Promise<boolean> => {
     try {
@@ -126,7 +129,10 @@ export const TryGetUserData = createServerFn({ method: "GET" })
     }
   });
 
-export const GetMe = createServerFn({ method: "GET" })
+export const TryGetUserData = (request: GetUserDataRequest) =>
+  TryGetUserDataRpc({ data: request });
+
+const GetMeRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMeRequest) => data)
   .handler(async ({ data: request }): Promise<GetMeResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -153,7 +159,9 @@ export const GetMe = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const UpdateMe = createServerFn({ method: "POST" })
+export const GetMe = (request: GetMeRequest) => GetMeRpc({ data: request });
+
+const UpdateMeRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMeRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMeResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -180,3 +188,6 @@ export const UpdateMe = createServerFn({ method: "POST" })
 
     return formattedResponse;
   });
+
+export const UpdateMe = (request: UpdateMeRequest) =>
+  UpdateMeRpc({ data: request });

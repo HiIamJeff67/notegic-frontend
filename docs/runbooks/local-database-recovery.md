@@ -153,7 +153,7 @@ restart the countdown; hiding/unmounting the notice cancels its animation.
 Run the following from the repository root:
 
 ```bash
-npm run test:unit -- apps/web/src/api/local/recovery.test.ts apps/web/src/api/local/migrator.test.ts apps/web/src/api/local/cleanup.test.ts
+npm run test:unit -- apps/web/test/api/local/recovery.test.ts apps/web/test/api/local/migrator.test.ts apps/web/test/api/local/cleanup.test.ts
 npm run typecheck
 npx playwright install chromium
 npm run test:e2e -- apps/web/test/e2e/localDatabaseStartup.spec.ts

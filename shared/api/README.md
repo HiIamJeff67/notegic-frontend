@@ -20,6 +20,7 @@ queryClient.ts       shared QueryClient defaults and getQueryClient()
 queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
+invokers/            request validation and error mapping; each call receives func
 ```
 
 `queryClient` decides whether one in-flight query or mutation runs again. It
@@ -69,8 +70,29 @@ performs the call stays in that app:
 | App | `api/functions/` |
 | --- | --- |
 | Web | TanStack Start server functions, cookies, and CSRF |
-| Desktop | TypeScript that calls a Tauri command, or a bearer request |
+| Desktop | TypeScript that calls the sidecar, which calls the remote API |
 | Mobile | That platform's request implementation |
 
 Only Web uses a server function. A server function is not a database
 connection for another app.
+
+Exported functions are PascalCase on every app: `GetUserData`, not
+`getUserData`. A shared invoker receives that function as `func` and calls
+`func(request)`. When an operation can be cancelled, every app's function
+accepts `signal` as its second argument and the invoker forwards it. Web keeps
+TanStack Start's `{ data: request }` inside the server file:
+
+```ts
+const GetUserDataRpc = createServerFn({ method: "GET" })
+  .inputValidator((data: GetUserDataRequest) => data)
+  .handler(async ({ data: request }) => {
+    // cookie, CSRF, and the upstream fetch stay here
+  });
+
+export const GetUserData = (request: GetUserDataRequest) =>
+  GetUserDataRpc({ data: request });
+```
+
+One blank line separates the Rpc from its export. One blank line separates
+that pair from the next Rpc. Desktop and Mobile export the same PascalCase
+function and do not import `GetUserDataRpc`.

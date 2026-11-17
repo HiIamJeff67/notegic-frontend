@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { useUser } from "@/hooks";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type PlanOption = {

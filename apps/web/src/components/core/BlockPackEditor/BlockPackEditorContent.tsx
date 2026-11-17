@@ -26,7 +26,7 @@ import {
   convertBlocksToPlainText,
   FileContentType,
 } from "@shared/lib/blockpack/conversions";
-import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
+import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
 import BlockPackParticipantsDropdown from "@/components/core/BlockPackEditor/BlockPackParticipantsDropdown";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import { SuggestionMenu } from "@/components/core/BlockPackEditor/SuggestionMenu";
@@ -48,7 +48,7 @@ import type { CSSProperties, Dispatch } from "react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTheme } from "@/hooks/useTheme";
-import "@/styles/block-editor.css";
+import "@shared/styles/block-editor.css";
 
 interface BlockPackEditorContentProps {
   blockPackMeta: BlockPackMeta;

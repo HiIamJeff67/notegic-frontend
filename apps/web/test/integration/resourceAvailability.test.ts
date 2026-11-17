@@ -1,35 +1,35 @@
 import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
-import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
 import { FetchClientExceptions } from "@shared/api/exceptions/client/fetch.exception";
+import { NotegicFetchError } from "@shared/api/exceptions/errors/fetch.error";
+import * as blockPackInvoker from "@shared/api/invokers/blockPack.invoker";
+import * as materialInvoker from "@shared/api/invokers/material.invoker";
+import * as routineInvoker from "@shared/api/invokers/routine.invoker";
+import * as taskInvoker from "@shared/api/invokers/routineTask.invoker";
 import { queryKeys } from "@shared/api/queryKeys";
 import {
-  useHardDeleteMyBlockPacksByIds,
   useDeleteMyBlockPackById,
   useDeleteMyBlockPacksByIds,
   useGetMyBlockPackById,
+  useHardDeleteMyBlockPacksByIds,
 } from "@/api/hooks/blockPack.hook";
 import {
-  useHardDeleteMyMaterialsByIds,
   useDeleteMyMaterialById,
   useDeleteMyMaterialsByIds,
   useGetMyMaterialAndItsParentById,
+  useHardDeleteMyMaterialsByIds,
 } from "@/api/hooks/material.hook";
 import {
-  useHardDeleteMyRoutineById,
-  useHardDeleteMyRoutinesByIds,
   useDeleteMyRoutineById,
   useDeleteMyRoutinesByIds,
   useGetMyRoutineById,
+  useHardDeleteMyRoutineById,
+  useHardDeleteMyRoutinesByIds,
 } from "@/api/hooks/routine.hook";
 import {
-  useHardDeleteMyRoutineTasksByIds,
-  useHardDeleteMyRoutineTaskById,
   useGetMyRoutineTaskById,
+  useHardDeleteMyRoutineTaskById,
+  useHardDeleteMyRoutineTasksByIds,
 } from "@/api/hooks/routineTask.hook";
-import * as blockPackInvoker from "@/api/invokers/blockPack.invoker";
-import * as materialInvoker from "@/api/invokers/material.invoker";
-import * as routineInvoker from "@/api/invokers/routine.invoker";
-import * as taskInvoker from "@/api/invokers/routineTask.invoker";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
@@ -59,22 +59,24 @@ jest.mock("@tanstack/react-query", () => ({
 jest.mock("@shared/api/queryClient", () => ({
   getQueryClient: () => mockClient,
 }));
-jest.mock("@/api/functions/helpers/availability", () => ({ isRemoteUnavailable: () => false }));
+jest.mock("@/api/functions/helpers/availability", () => ({
+  isRemoteUnavailable: () => false,
+}));
 jest.mock("@apollo/client/react", () => ({
   useApolloClient: () => ({
     cache: { modify: jest.fn(), gc: jest.fn(), evict: jest.fn() },
   }),
 }));
-jest.mock("@/api/invokers/blockPack.invoker", () => ({
+jest.mock("@shared/api/invokers/blockPack.invoker", () => ({
   queryFnGetMyBlockPackById: jest.fn(),
 }));
-jest.mock("@/api/invokers/material.invoker", () => ({
+jest.mock("@shared/api/invokers/material.invoker", () => ({
   queryFnGetMyMaterialAndItsParentById: jest.fn(),
 }));
-jest.mock("@/api/invokers/routine.invoker", () => ({
+jest.mock("@shared/api/invokers/routine.invoker", () => ({
   queryFnGetMyRoutineById: jest.fn(),
 }));
-jest.mock("@/api/invokers/routineTask.invoker", () => ({
+jest.mock("@shared/api/invokers/routineTask.invoker", () => ({
   queryFnGetMyRoutineTaskById: jest.fn(),
 }));
 jest.mock("@/api/local/simulators/blockPack.simulator", () => ({

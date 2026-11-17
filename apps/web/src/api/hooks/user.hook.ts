@@ -6,6 +6,11 @@ import type {
   GetUserDataRequest,
   GetUserDataResponse,
 } from "@shared/api/interfaces/user.interface";
+import {
+  mutationFnUpdateMe,
+  queryFnGetMe,
+  queryFnGetUserData,
+} from "@shared/api/invokers/user.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import {
   PresignedObjectURLStaleTime,
@@ -17,11 +22,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import {
-  mutationFnUpdateMe,
-  queryFnGetMe,
-  queryFnGetUserData,
-} from "@/api/invokers/user.invoker";
+import { GetMe, GetUserData, UpdateMe } from "@/api/functions/user.serverFn";
 import { UserLocalSynchronizer } from "@/api/local/synchronizers/user.synchronizer";
 
 export const useGetUserData = (
@@ -40,7 +41,7 @@ export const useGetUserData = (
         );
       }
 
-      const response = await queryFnGetUserData(request);
+      const response = await queryFnGetUserData(request, GetUserData);
       await UserLocalSynchronizer.syncGetUserData(response);
       return response;
     } catch (error) {
@@ -86,7 +87,7 @@ export const useGetMe = (
         );
       }
 
-      const response = await queryFnGetMe(request);
+      const response = await queryFnGetMe(request, GetMe);
       await UserLocalSynchronizer.syncGetMe(response);
       return response;
     } catch (error) {
@@ -122,7 +123,8 @@ export const useUpdateMe = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnUpdateMe,
+    mutationFn: (request: Parameters<typeof mutationFnUpdateMe>[0]) =>
+      mutationFnUpdateMe(request, UpdateMe),
     onSuccess: (response, request) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },

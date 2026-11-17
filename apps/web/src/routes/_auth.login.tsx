@@ -1,7 +1,7 @@
 import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
-import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { fetchGetUserData } from "@/api/fetches/user.fetch";
 import { HasAuthCookies } from "@/api/functions/auth.serverFn";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import LoginPage from "@/pages/auth/LoginPage";
 import { pageTitle } from "@/seo/pageTitle";
 

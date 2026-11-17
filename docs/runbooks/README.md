@@ -118,7 +118,7 @@ When changing the local schema:
    and refresh the complete bootstrap export.
 3. Review the generated SQL, migration journal, and bootstrap diff. Do not
    rewrite or delete an incremental migration that has shipped.
-4. Run `npm run test:unit -- apps/web/src/api/local/migrator.test.ts`,
+4. Run `npm run test:unit -- apps/web/test/api/local/migrator.test.ts`,
    `npm run typecheck`, and `npm run lint`.
 5. Test an existing database upgrade and a fresh database bootstrap before
    deployment.

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
+import { Login } from "@/api/functions/auth.serverFn";
 
 const apiURL = process.env.E2E_ROUTINE_API_URL;
 const database = process.env.E2E_ROUTINE_DATABASE;

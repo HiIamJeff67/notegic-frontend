@@ -41,7 +41,7 @@ Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity.
 
 ## Images and media
 
-- Prefer `Image` from `@/components/commons/Image/Image` for product images,
+- Prefer `Image` from `@shared/components/commons/Image/Image` for product images,
   particularly large images, previews and images that should load lazily. Article,
   profile avatars/covers, background pickers, page headers and Material image
   previews share this owner. Do not duplicate load state or blur animations in
@@ -97,7 +97,7 @@ with the browser; do not treat the status callback as download progress.
 ```tsx
 import Image, {
   type ImageLoadingStatus,
-} from "@/components/commons/Image/Image";
+} from "@shared/components/commons/Image/Image";
 import { useState } from "react";
 
 const CoverPreview = ({ coverURL }: { coverURL: string }) => {

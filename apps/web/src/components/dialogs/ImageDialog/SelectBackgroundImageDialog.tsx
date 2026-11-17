@@ -16,7 +16,7 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useTranslation } from "@/hooks/useTranslation";

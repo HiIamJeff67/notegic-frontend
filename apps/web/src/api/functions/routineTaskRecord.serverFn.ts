@@ -18,7 +18,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
+const VisualizeMyRoutineTaskRecordStatusCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -33,9 +33,9 @@ export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
           .visualizeMyRoutineTaskRecordStatusCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -81,7 +81,11 @@ export const VisualizeMyRoutineTaskRecordStatusCount = createServerFn({
     }
   );
 
-export const VisualizeMyRoutineTaskRecordPurposeCount = createServerFn({
+export const VisualizeMyRoutineTaskRecordStatusCount = (
+  request: VisualizeMyRoutineTaskRecordStatusCountRequest
+) => VisualizeMyRoutineTaskRecordStatusCountRpc({ data: request });
+
+const VisualizeMyRoutineTaskRecordPurposeCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -96,9 +100,9 @@ export const VisualizeMyRoutineTaskRecordPurposeCount = createServerFn({
           .visualizeMyRoutineTaskRecordPurposeCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -144,7 +148,11 @@ export const VisualizeMyRoutineTaskRecordPurposeCount = createServerFn({
     }
   );
 
-export const VisualizeMyRoutineTaskRecordScheduledAtCount = createServerFn({
+export const VisualizeMyRoutineTaskRecordPurposeCount = (
+  request: VisualizeMyRoutineTaskRecordPurposeCountRequest
+) => VisualizeMyRoutineTaskRecordPurposeCountRpc({ data: request });
+
+const VisualizeMyRoutineTaskRecordScheduledAtCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -159,9 +167,9 @@ export const VisualizeMyRoutineTaskRecordScheduledAtCount = createServerFn({
           .visualizeMyRoutineTaskRecordScheduledAtCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -207,7 +215,11 @@ export const VisualizeMyRoutineTaskRecordScheduledAtCount = createServerFn({
     }
   );
 
-export const VisualizeMyRoutineTaskRecordActualStartedAtCount = createServerFn({
+export const VisualizeMyRoutineTaskRecordScheduledAtCount = (
+  request: VisualizeMyRoutineTaskRecordScheduledAtCountRequest
+) => VisualizeMyRoutineTaskRecordScheduledAtCountRpc({ data: request });
+
+const VisualizeMyRoutineTaskRecordActualStartedAtCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -222,9 +234,9 @@ export const VisualizeMyRoutineTaskRecordActualStartedAtCount = createServerFn({
           .visualizeMyRoutineTaskRecordActualStartedAtCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -270,7 +282,11 @@ export const VisualizeMyRoutineTaskRecordActualStartedAtCount = createServerFn({
     }
   );
 
-export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
+export const VisualizeMyRoutineTaskRecordActualStartedAtCount = (
+  request: VisualizeMyRoutineTaskRecordActualStartedAtCountRequest
+) => VisualizeMyRoutineTaskRecordActualStartedAtCountRpc({ data: request });
+
+const VisualizeMyRoutineTaskRecordActualEndedAtCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -285,9 +301,9 @@ export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
           .visualizeMyRoutineTaskRecordActualEndedAtCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -333,7 +349,11 @@ export const VisualizeMyRoutineTaskRecordActualEndedAtCount = createServerFn({
     }
   );
 
-export const GetMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
+export const VisualizeMyRoutineTaskRecordActualEndedAtCount = (
+  request: VisualizeMyRoutineTaskRecordActualEndedAtCountRequest
+) => VisualizeMyRoutineTaskRecordActualEndedAtCountRpc({ data: request });
+
+const GetMyRoutineTaskRecordsByRoutineTaskIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyRoutineTaskRecordsByRoutineTaskIdRequest) => data)
@@ -380,3 +400,7 @@ export const GetMyRoutineTaskRecordsByRoutineTaskId = createServerFn({
       return formattedResponse;
     }
   );
+
+export const GetMyRoutineTaskRecordsByRoutineTaskId = (
+  request: GetMyRoutineTaskRecordsByRoutineTaskIdRequest
+) => GetMyRoutineTaskRecordsByRoutineTaskIdRpc({ data: request });

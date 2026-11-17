@@ -39,16 +39,16 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const VisualizeMyTotalCount = createServerFn({ method: "GET" })
+const VisualizeMyTotalCountRpc = createServerFn({ method: "GET" })
   .inputValidator((data: VisualizeMyTotalCountRequest) => data)
   .handler(
     async ({ data: request }): Promise<VisualizeMyTotalCountResponse> => {
       const path = APIURLPathDictionary.station.visualizeMyTotalCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -92,7 +92,10 @@ export const VisualizeMyTotalCount = createServerFn({ method: "GET" })
     }
   );
 
-export const TransferMyStationOwnership = createServerFn({ method: "POST" })
+export const VisualizeMyTotalCount = (request: VisualizeMyTotalCountRequest) =>
+  VisualizeMyTotalCountRpc({ data: request });
+
+const TransferMyStationOwnershipRpc = createServerFn({ method: "POST" })
   .inputValidator((data: TransferMyStationOwnershipRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -118,7 +121,11 @@ export const TransferMyStationOwnership = createServerFn({ method: "POST" })
     return (await format(response)) as TransferMyStationOwnershipResponse;
   });
 
-export const LeaveMyStation = createServerFn({ method: "POST" })
+export const TransferMyStationOwnership = (
+  request: TransferMyStationOwnershipRequest
+) => TransferMyStationOwnershipRpc({ data: request });
+
+const LeaveMyStationRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LeaveMyStationRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -144,7 +151,10 @@ export const LeaveMyStation = createServerFn({ method: "POST" })
     return (await format(response)) as LeaveMyStationResponse;
   });
 
-export const GetMyStationById = createServerFn({ method: "GET" })
+export const LeaveMyStation = (request: LeaveMyStationRequest) =>
+  LeaveMyStationRpc({ data: request });
+
+const GetMyStationByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyStationByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyStationByIdResponse> => {
     const params = new URLSearchParams(
@@ -192,7 +202,10 @@ export const GetMyStationById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetAllMyStations = createServerFn({ method: "GET" })
+export const GetMyStationById = (request: GetMyStationByIdRequest) =>
+  GetMyStationByIdRpc({ data: request });
+
+const GetAllMyStationsRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetAllMyStationsRequest) => data)
   .handler(async ({ data: request }): Promise<GetAllMyStationsResponse> => {
     const params = new URLSearchParams();
@@ -227,7 +240,10 @@ export const GetAllMyStations = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const CreateStation = createServerFn({ method: "POST" })
+export const GetAllMyStations = (request: GetAllMyStationsRequest) =>
+  GetAllMyStationsRpc({ data: request });
+
+const CreateStationRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateStationRequest) => data)
   .handler(async ({ data: request }): Promise<CreateStationResponse> => {
     const url =
@@ -258,7 +274,10 @@ export const CreateStation = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const CreateStations = createServerFn({ method: "POST" })
+export const CreateStation = (request: CreateStationRequest) =>
+  CreateStationRpc({ data: request });
+
+const CreateStationsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateStationsRequest) => data)
   .handler(async ({ data: request }): Promise<CreateStationsResponse> => {
     const url =
@@ -291,7 +310,10 @@ export const CreateStations = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyStationById = createServerFn({ method: "POST" })
+export const CreateStations = (request: CreateStationsRequest) =>
+  CreateStationsRpc({ data: request });
+
+const UpdateMyStationByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyStationByIdRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMyStationByIdResponse> => {
     const url =
@@ -324,7 +346,10 @@ export const UpdateMyStationById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyStationsByIds = createServerFn({ method: "POST" })
+export const UpdateMyStationById = (request: UpdateMyStationByIdRequest) =>
+  UpdateMyStationByIdRpc({ data: request });
+
+const UpdateMyStationsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyStationsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyStationsByIdsResponse> => {
@@ -361,7 +386,10 @@ export const UpdateMyStationsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMyStationById = createServerFn({ method: "POST" })
+export const UpdateMyStationsByIds = (request: UpdateMyStationsByIdsRequest) =>
+  UpdateMyStationsByIdsRpc({ data: request });
+
+const RestoreMyStationByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyStationByIdRequest) => data)
   .handler(async ({ data: request }): Promise<RestoreMyStationByIdResponse> => {
     const url =
@@ -394,7 +422,10 @@ export const RestoreMyStationById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RestoreMyStationsByIds = createServerFn({ method: "POST" })
+export const RestoreMyStationById = (request: RestoreMyStationByIdRequest) =>
+  RestoreMyStationByIdRpc({ data: request });
+
+const RestoreMyStationsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyStationsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMyStationsByIdsResponse> => {
@@ -431,7 +462,11 @@ export const RestoreMyStationsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const DeleteMyStationById = createServerFn({ method: "POST" })
+export const RestoreMyStationsByIds = (
+  request: RestoreMyStationsByIdsRequest
+) => RestoreMyStationsByIdsRpc({ data: request });
+
+const DeleteMyStationByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyStationByIdRequest) => data)
   .handler(async ({ data: request }): Promise<DeleteMyStationByIdResponse> => {
     const url =
@@ -464,7 +499,10 @@ export const DeleteMyStationById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const DeleteMyStationsByIds = createServerFn({ method: "POST" })
+export const DeleteMyStationById = (request: DeleteMyStationByIdRequest) =>
+  DeleteMyStationByIdRpc({ data: request });
+
+const DeleteMyStationsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyStationsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteMyStationsByIdsResponse> => {
@@ -501,7 +539,10 @@ export const DeleteMyStationsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyStationById = createServerFn({ method: "POST" })
+export const DeleteMyStationsByIds = (request: DeleteMyStationsByIdsRequest) =>
+  DeleteMyStationsByIdsRpc({ data: request });
+
+const HardDeleteMyStationByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyStationByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyStationByIdResponse> => {
@@ -540,7 +581,11 @@ export const HardDeleteMyStationById = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyStationsByIds = createServerFn({ method: "POST" })
+export const HardDeleteMyStationById = (
+  request: HardDeleteMyStationByIdRequest
+) => HardDeleteMyStationByIdRpc({ data: request });
+
+const HardDeleteMyStationsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyStationsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyStationsByIdsResponse> => {
@@ -576,3 +621,7 @@ export const HardDeleteMyStationsByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyStationsByIds = (
+  request: HardDeleteMyStationsByIdsRequest
+) => HardDeleteMyStationsByIdsRpc({ data: request });

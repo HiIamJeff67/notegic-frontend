@@ -19,11 +19,6 @@ import type {
   VisualizeMyRoutineTaskRecordStatusCountRequest,
   VisualizeMyRoutineTaskRecordStatusCountResponse,
 } from "@shared/api/interfaces/routineTaskRecord.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   queryFnGetMyRoutineTaskRecordsByRoutineTaskId,
   queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
@@ -31,7 +26,20 @@ import {
   queryFnVisualizeMyRoutineTaskRecordPurposeCount,
   queryFnVisualizeMyRoutineTaskRecordScheduledAtCount,
   queryFnVisualizeMyRoutineTaskRecordStatusCount,
-} from "@/api/invokers/routineTaskRecord.invoker";
+} from "@shared/api/invokers/routineTaskRecord.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  GetMyRoutineTaskRecordsByRoutineTaskId,
+  VisualizeMyRoutineTaskRecordActualEndedAtCount,
+  VisualizeMyRoutineTaskRecordActualStartedAtCount,
+  VisualizeMyRoutineTaskRecordPurposeCount,
+  VisualizeMyRoutineTaskRecordScheduledAtCount,
+  VisualizeMyRoutineTaskRecordStatusCount,
+} from "@/api/functions/routineTaskRecord.serverFn";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineTaskRecordStatusCount = (
@@ -47,7 +55,11 @@ export const useVisualizeMyRoutineTaskRecordStatusCount = (
         currentRequest?.param.permission,
         currentRequest?.param.routineTaskIds as UUID[] | undefined
       ),
-    queryFnVisualizeMyRoutineTaskRecordStatusCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskRecordStatusCount(
+        request,
+        VisualizeMyRoutineTaskRecordStatusCount
+      ),
     options
   );
 
@@ -64,7 +76,11 @@ export const useVisualizeMyRoutineTaskRecordPurposeCount = (
         currentRequest?.param.permission,
         currentRequest?.param.routineTaskIds as UUID[] | undefined
       ),
-    queryFnVisualizeMyRoutineTaskRecordPurposeCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskRecordPurposeCount(
+        request,
+        VisualizeMyRoutineTaskRecordPurposeCount
+      ),
     options
   );
 
@@ -84,7 +100,11 @@ export const useVisualizeMyRoutineTaskRecordScheduledAtCount = (
         currentRequest?.param.queryRangeEndedAt,
         currentRequest?.param.routineTaskIds as UUID[] | undefined
       ),
-    queryFnVisualizeMyRoutineTaskRecordScheduledAtCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskRecordScheduledAtCount(
+        request,
+        VisualizeMyRoutineTaskRecordScheduledAtCount
+      ),
     options
   );
 
@@ -107,7 +127,11 @@ export const useVisualizeMyRoutineTaskRecordActualStartedAtCount = (
         currentRequest?.param.queryRangeEndedAt,
         currentRequest?.param.routineTaskIds as UUID[] | undefined
       ),
-    queryFnVisualizeMyRoutineTaskRecordActualStartedAtCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskRecordActualStartedAtCount(
+        request,
+        VisualizeMyRoutineTaskRecordActualStartedAtCount
+      ),
     options
   );
 
@@ -130,7 +154,11 @@ export const useVisualizeMyRoutineTaskRecordActualEndedAtCount = (
         currentRequest?.param.queryRangeEndedAt,
         currentRequest?.param.routineTaskIds as UUID[] | undefined
       ),
-    queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskRecordActualEndedAtCount(
+        request,
+        VisualizeMyRoutineTaskRecordActualEndedAtCount
+      ),
     options
   );
 
@@ -156,8 +184,10 @@ export const useGetMyRoutineTaskRecordsByRoutineTaskId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response =
-        await queryFnGetMyRoutineTaskRecordsByRoutineTaskId(request);
+      const response = await queryFnGetMyRoutineTaskRecordsByRoutineTaskId(
+        request,
+        GetMyRoutineTaskRecordsByRoutineTaskId
+      );
       return response;
     } catch (error) {
       if (

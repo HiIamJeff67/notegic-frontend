@@ -2,10 +2,11 @@ import type {
   GetMyQuotaRequest,
   GetMyQuotaResponse,
 } from "@shared/api/interfaces/userQuota.interface";
+import { queryFnGetMyQuota } from "@shared/api/invokers/userQuota.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { QueryClient } from "@tanstack/react-query";
-import { queryFnGetMyQuota } from "@/api/invokers/userQuota.invoker";
+import { GetMyQuota } from "@/api/functions/userQuota.serverFn";
 
 export const fetchGetMyQuota = async (
   fetchRequest: GetMyQuotaRequest,
@@ -15,7 +16,7 @@ export const fetchGetMyQuota = async (
 
   return queryClient.fetchQuery({
     queryKey: queryKeys.userQuota.my(),
-    queryFn: async () => await queryFnGetMyQuota(fetchRequest),
+    queryFn: async () => await queryFnGetMyQuota(fetchRequest, GetMyQuota),
     staleTime: 0,
   });
 };

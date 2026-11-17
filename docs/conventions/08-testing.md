@@ -1,17 +1,23 @@
 # Test location conventions
 
-- Put a unit test beside the source file it verifies. Use `*.test.ts` or
-  `*.test.tsx`, retaining the source basename and capitalization, for example
-  `ScreenProvider.tsx` → `ScreenProvider.test.ts` and
-  `searchPage.ts` → `searchPage.test.ts`. Do not add a `unit` suffix.
+- Put a Web unit test under `apps/web/test/`, mirroring the path under
+  `apps/web/src/`. Retain the source basename and capitalization, for example
+  `apps/web/src/seo/pageTitle.ts` → `apps/web/test/seo/pageTitle.test.ts`.
+  Do not add a `unit` suffix, and do not leave `*.test.ts(x)` beside production
+  source.
+- Put a Desktop unit test under `apps/desktop/test/`, mirroring the path under
+  `apps/desktop/src/`. A sidecar test lives under `apps/desktop/test/sidecar/`.
+- Put a shared, cross-application, or cross-platform test under the repository
+  `test/` directory, mirroring the path under `shared/`. For example,
+  `shared/lib/search/searchPage.ts` → `test/lib/search/searchPage.test.ts`.
 - Put Web-only integration tests in `apps/web/test/integration/`.
-- Put integration tests that span shared packages or future applications in
+- Put integration tests that span shared packages or applications in
   `test/integration/` at the repository root.
 - Integration tests use descriptive smallCamelCase names followed by
   `.test.ts(x)`; their directory already expresses the category. Do not add an
   `integration` suffix. Classify tests by the actual boundary, not the runner:
   browser-mounted Provider/context/session flows belong in Web integration;
-  isolated pure functions remain beside their owner.
+  isolated shared functions belong under `test/`.
 - Put Web browser E2E suites in `apps/web/test/e2e/`; run them with
   `npm run test:e2e`. Keep them independent of live user credentials.
 
@@ -196,7 +202,7 @@ including deletions that do not advance a state vector. No cache is cleared by
 temporary worker recovery.
 
 Run `npm run test:e2e -- realtimeClient.spec.ts --workers=1` and
-`npm run test:unit -- shared/lib/blockpack/blockPackYjsCoordinator.test.ts shared/lib/blockpack/localYjsDocumentStore.test.ts`
+`npm run test:unit -- test/lib/blockpack/blockPackYjsCoordinator.test.ts test/lib/blockpack/localYjsDocumentStore.test.ts`
 locally. These cover the production client/provider with isolated browser
 storage and controlled worker failures, plus document retention, replay and
 read-only boundaries. They do not stop the normal development worker and are
@@ -271,7 +277,7 @@ the isolated fixture signing key; this is not a multi-hour browser soak.
 
 The same local verification passed `npm run format:check`, `npm run lint`,
 `npm run typecheck` and the 22 tests selected by
-`npm run test:unit -- apps/web/src/api/clientHeaders.test.ts apps/web/src/api/policies/searchPagination.policy.test.ts`.
+`npm run test:unit -- apps/web/test/api/functions/headers/clientHeaders.test.ts apps/web/test/api/hooks/graphql/policies/searchPagination.policy.test.ts`.
 No schemas or generated sources changed for the Apollo fix; code generation
 and deployment builds were not rerun. Original development record counts and
 the retained manual development server were checked separately after E2E.

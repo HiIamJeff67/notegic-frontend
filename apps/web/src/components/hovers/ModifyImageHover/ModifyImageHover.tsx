@@ -1,4 +1,4 @@
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 
 interface ModifyImageHoverProps {
   imageSrc?: string;

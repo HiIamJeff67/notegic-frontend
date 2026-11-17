@@ -3,12 +3,6 @@ import {
   type PrepareOAuthOperationRequest,
   PrepareOAuthOperationRequestSchema,
 } from "@shared/api/interfaces/userAccount.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PrepareOAuthOperation } from "@/api/functions/userAccount.serverFn";
 import {
   mutationFnBindDiscordAccount,
   mutationFnBindGithubAccount,
@@ -20,21 +14,37 @@ import {
   mutationFnUnbindXAccount,
   mutationFnUpdateMyAccount,
   queryFnGetMyAccount,
-} from "@/api/invokers/userAccount.invoker";
+} from "@shared/api/invokers/userAccount.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  BindDiscordAccount,
+  BindGithubAccount,
+  BindGoogleAccount,
+  BindXAccount,
+  GetMyAccount,
+  PrepareOAuthOperation,
+  UnbindDiscordAccount,
+  UnbindGithubAccount,
+  UnbindGoogleAccount,
+  UnbindXAccount,
+  UpdateMyAccount,
+} from "@/api/functions/userAccount.serverFn";
 
 export const usePrepareOAuthOperation = () =>
   useMutation({
     mutationFn: (request: PrepareOAuthOperationRequest) =>
-      PrepareOAuthOperation({
-        data: parse(PrepareOAuthOperationRequestSchema, request),
-      }),
+      PrepareOAuthOperation(parse(PrepareOAuthOperationRequestSchema, request)),
     retry: false,
   });
 
 export const useGetMyAccount = () =>
   useQuery({
     queryKey: queryKeys.userAccount.my(),
-    queryFn: queryFnGetMyAccount,
+    queryFn: () => queryFnGetMyAccount(GetMyAccount),
     staleTime: 0,
     networkMode: "online",
     refetchOnReconnect: true,
@@ -46,7 +56,8 @@ export const useUpdateMyAccount = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnUpdateMyAccount,
+    mutationFn: (request: Parameters<typeof mutationFnUpdateMyAccount>[0]) =>
+      mutationFnUpdateMyAccount(request, UpdateMyAccount),
     onSuccess: async ({ data: { backupEmail, countryCode, phoneNumber } }) => {
       const queryKey = queryKeys.userAccount.my();
       if (
@@ -89,7 +100,8 @@ export const useBindGoogleAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnBindGoogleAccount,
+    mutationFn: (request: Parameters<typeof mutationFnBindGoogleAccount>[0]) =>
+      mutationFnBindGoogleAccount(request, BindGoogleAccount),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.userAccount.my(),
@@ -104,7 +116,8 @@ export const useBindGithubAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnBindGithubAccount,
+    mutationFn: (request: Parameters<typeof mutationFnBindGithubAccount>[0]) =>
+      mutationFnBindGithubAccount(request, BindGithubAccount),
     retry: false,
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -120,7 +133,8 @@ export const useBindXAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnBindXAccount,
+    mutationFn: (request: Parameters<typeof mutationFnBindXAccount>[0]) =>
+      mutationFnBindXAccount(request, BindXAccount),
     retry: false,
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -136,7 +150,8 @@ export const useBindDiscordAccount = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnBindDiscordAccount,
+    mutationFn: (request: Parameters<typeof mutationFnBindDiscordAccount>[0]) =>
+      mutationFnBindDiscordAccount(request, BindDiscordAccount),
     retry: false,
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -150,24 +165,31 @@ export const useBindDiscordAccount = () => {
 
 export const useUnbindGoogleAccount = () =>
   useMutation({
-    mutationFn: mutationFnUnbindGoogleAccount,
+    mutationFn: (
+      request: Parameters<typeof mutationFnUnbindGoogleAccount>[0]
+    ) => mutationFnUnbindGoogleAccount(request, UnbindGoogleAccount),
     retry: false,
   });
 
 export const useUnbindGithubAccount = () =>
   useMutation({
-    mutationFn: mutationFnUnbindGithubAccount,
+    mutationFn: (
+      request: Parameters<typeof mutationFnUnbindGithubAccount>[0]
+    ) => mutationFnUnbindGithubAccount(request, UnbindGithubAccount),
     retry: false,
   });
 
 export const useUnbindXAccount = () =>
   useMutation({
-    mutationFn: mutationFnUnbindXAccount,
+    mutationFn: (request: Parameters<typeof mutationFnUnbindXAccount>[0]) =>
+      mutationFnUnbindXAccount(request, UnbindXAccount),
     retry: false,
   });
 
 export const useUnbindDiscordAccount = () =>
   useMutation({
-    mutationFn: mutationFnUnbindDiscordAccount,
+    mutationFn: (
+      request: Parameters<typeof mutationFnUnbindDiscordAccount>[0]
+    ) => mutationFnUnbindDiscordAccount(request, UnbindDiscordAccount),
     retry: false,
   });

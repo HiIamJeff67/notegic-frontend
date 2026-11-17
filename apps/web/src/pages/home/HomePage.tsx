@@ -57,9 +57,7 @@ export const HomePage = () => {
 
     try {
       const hasValidSession = await TryGetUserData({
-        data: {
-          header: getClientRequestHeaders(navigator.userAgent),
-        },
+        header: getClientRequestHeaders(navigator.userAgent),
       });
 
       if (hasValidSession) {

@@ -7,15 +7,20 @@ import type {
   GetMyBlockPacksByRootShelfIdRequest,
   GetMyBlockPacksByRootShelfIdResponse,
 } from "@shared/api/interfaces/blockPack.interface";
+import {
+  queryFnGetMyBlockPackById,
+  queryFnGetMyBlockPacksByParentSubShelfId,
+  queryFnGetMyBlockPacksByRootShelfId,
+} from "@shared/api/invokers/blockPack.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
 import {
-  queryFnGetMyBlockPackById,
-  queryFnGetMyBlockPacksByParentSubShelfId,
-  queryFnGetMyBlockPacksByRootShelfId,
-} from "@/api/invokers/blockPack.invoker";
+  GetMyBlockPackById,
+  GetMyBlockPacksByParentSubShelfId,
+  GetMyBlockPacksByRootShelfId,
+} from "@/api/functions/blockPack.serverFn";
 
 export const fetchGetMyBlockPackById = async (
   fetchRequest: GetMyBlockPackByIdRequest,
@@ -29,7 +34,8 @@ export const fetchGetMyBlockPackById = async (
       fetchRequest.param.blockPackId as UUID,
       fetchRequest.param.isDeleted ?? false
     ),
-    queryFn: async () => await queryFnGetMyBlockPackById(fetchRequest),
+    queryFn: async () =>
+      await queryFnGetMyBlockPackById(fetchRequest, GetMyBlockPackById),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -49,7 +55,10 @@ export const fetchGetMyBlockPacksByParentSubShelfId = async (
       fetchRequest.param.parentSubShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMyBlockPacksByParentSubShelfId(fetchRequest),
+      await queryFnGetMyBlockPacksByParentSubShelfId(
+        fetchRequest,
+        GetMyBlockPacksByParentSubShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -69,7 +78,10 @@ export const fetchGetMyBlockPacksByRootShelfId = async (
       fetchRequest.param.rootShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMyBlockPacksByRootShelfId(fetchRequest),
+      await queryFnGetMyBlockPacksByRootShelfId(
+        fetchRequest,
+        GetMyBlockPacksByRootShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });

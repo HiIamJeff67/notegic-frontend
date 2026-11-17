@@ -3,16 +3,21 @@ import {
   GetMySubShelvesByPrevSubShelfIdRequest,
   GetMySubShelvesByRootShelfIdRequest,
 } from "@shared/api/interfaces/subShelf.interface";
+import {
+  queryFnGetMySubShelfById,
+  queryFnGetMySubShelvesByPrevSubShelfId,
+  queryFnGetMySubShelvesByRootShelfId,
+} from "@shared/api/invokers/subShelf.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { PrefetchQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { QueryClient } from "@tanstack/react-query";
 import type { UUID } from "crypto";
 import {
-  queryFnGetMySubShelfById,
-  queryFnGetMySubShelvesByPrevSubShelfId,
-  queryFnGetMySubShelvesByRootShelfId,
-} from "@/api/invokers/subShelf.invoker";
+  GetMySubShelfById,
+  GetMySubShelvesByPrevSubShelfId,
+  GetMySubShelvesByRootShelfId,
+} from "@/api/functions/subShelf.serverFn";
 
 export const prefetchGetMySubShelfById = (initialQueryClient?: QueryClient) => {
   const queryClient = initialQueryClient ?? getQueryClient();
@@ -25,7 +30,8 @@ export const prefetchGetMySubShelfById = (initialQueryClient?: QueryClient) => {
         prefetchRequest.param.subShelfId as UUID,
         prefetchRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => await queryFnGetMySubShelfById(prefetchRequest),
+      queryFn: async () =>
+        await queryFnGetMySubShelfById(prefetchRequest, GetMySubShelfById),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };
@@ -51,7 +57,10 @@ export const prefetchGetMySubShelvesByPrevSubShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetMySubShelvesByPrevSubShelfId(prefetchRequest),
+        await queryFnGetMySubShelvesByPrevSubShelfId(
+          prefetchRequest,
+          GetMySubShelvesByPrevSubShelfId
+        ),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };
@@ -77,7 +86,10 @@ export const prefetchGetMySubShelvesByRootShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetMySubShelvesByRootShelfId(prefetchRequest),
+        await queryFnGetMySubShelvesByRootShelfId(
+          prefetchRequest,
+          GetMySubShelvesByRootShelfId
+        ),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };

@@ -28,7 +28,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const PrepareOAuthOperation = createServerFn({ method: "POST" })
+const PrepareOAuthOperationRpc = createServerFn({ method: "POST" })
   .inputValidator((data: PrepareOAuthOperationRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -54,7 +54,10 @@ export const PrepareOAuthOperation = createServerFn({ method: "POST" })
     return PrepareOAuthOperationResponseSchema.parse(await format(response));
   });
 
-export const GetMyAccount = createServerFn({ method: "GET" }).handler(
+export const PrepareOAuthOperation = (request: PrepareOAuthOperationRequest) =>
+  PrepareOAuthOperationRpc({ data: request });
+
+const GetMyAccountRpc = createServerFn({ method: "GET" }).handler(
   async (): Promise<GetMyAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
     const response = await fetch(
@@ -76,7 +79,9 @@ export const GetMyAccount = createServerFn({ method: "GET" }).handler(
   }
 );
 
-export const UpdateMyAccount = createServerFn({ method: "POST" })
+export const GetMyAccount = () => GetMyAccountRpc();
+
+const UpdateMyAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMyAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -106,7 +111,10 @@ export const UpdateMyAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const BindGoogleAccount = createServerFn({ method: "POST" })
+export const UpdateMyAccount = (request: UpdateMyAccountRequest) =>
+  UpdateMyAccountRpc({ data: request });
+
+const BindGoogleAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: BindGoogleAccountRequest) => data)
   .handler(async ({ data: request }): Promise<BindGoogleAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -136,7 +144,10 @@ export const BindGoogleAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const BindGithubAccount = createServerFn({ method: "POST" })
+export const BindGoogleAccount = (request: BindGoogleAccountRequest) =>
+  BindGoogleAccountRpc({ data: request });
+
+const BindGithubAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: BindGithubAccountRequest) => data)
   .handler(async ({ data: request }): Promise<BindGithubAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -166,7 +177,10 @@ export const BindGithubAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const BindXAccount = createServerFn({ method: "POST" })
+export const BindGithubAccount = (request: BindGithubAccountRequest) =>
+  BindGithubAccountRpc({ data: request });
+
+const BindXAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: BindXAccountRequest) => data)
   .handler(async ({ data: request }): Promise<BindXAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -194,7 +208,10 @@ export const BindXAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const BindDiscordAccount = createServerFn({ method: "POST" })
+export const BindXAccount = (request: BindXAccountRequest) =>
+  BindXAccountRpc({ data: request });
+
+const BindDiscordAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: BindDiscordAccountRequest) => data)
   .handler(async ({ data: request }): Promise<BindDiscordAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -224,7 +241,10 @@ export const BindDiscordAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UnbindGoogleAccount = createServerFn({ method: "POST" })
+export const BindDiscordAccount = (request: BindDiscordAccountRequest) =>
+  BindDiscordAccountRpc({ data: request });
+
+const UnbindGoogleAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindGoogleAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindGoogleAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -254,7 +274,10 @@ export const UnbindGoogleAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UnbindGithubAccount = createServerFn({ method: "POST" })
+export const UnbindGoogleAccount = (request: UnbindGoogleAccountRequest) =>
+  UnbindGoogleAccountRpc({ data: request });
+
+const UnbindGithubAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindGithubAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindGithubAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -284,7 +307,10 @@ export const UnbindGithubAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UnbindXAccount = createServerFn({ method: "POST" })
+export const UnbindGithubAccount = (request: UnbindGithubAccountRequest) =>
+  UnbindGithubAccountRpc({ data: request });
+
+const UnbindXAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindXAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindXAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -314,7 +340,10 @@ export const UnbindXAccount = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UnbindDiscordAccount = createServerFn({ method: "POST" })
+export const UnbindXAccount = (request: UnbindXAccountRequest) =>
+  UnbindXAccountRpc({ data: request });
+
+const UnbindDiscordAccountRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UnbindDiscordAccountRequest) => data)
   .handler(async ({ data: request }): Promise<UnbindDiscordAccountResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -343,3 +372,6 @@ export const UnbindDiscordAccount = createServerFn({ method: "POST" })
 
     return formattedResponse;
   });
+
+export const UnbindDiscordAccount = (request: UnbindDiscordAccountRequest) =>
+  UnbindDiscordAccountRpc({ data: request });

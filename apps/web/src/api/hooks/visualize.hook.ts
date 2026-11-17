@@ -9,8 +9,8 @@ import {
   type UseQueryOptions,
   useQuery,
 } from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 
 interface VisualizeResponseEnvelope {
   refreshableTokens?: {

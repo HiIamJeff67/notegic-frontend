@@ -7,7 +7,7 @@ import { build } from "esbuild";
 test("an open BlockPack tracks deletion, while background reads retain mounted edits", async () => {
   const mocks: Record<string, string> = {
     "@tanstack/react-router": `export const createFileRoute = () => options => options; export const useLoaderData = () => ({ blockPackId: '12345678-1234-4234-8234-123456789abc' });`,
-    "@/api/invokers/blockPack.invoker": Array.from(
+    "@shared/api/invokers/blockPack.invoker": Array.from(
       readFileSync(
         "apps/web/src/api/invokers/blockPack.invoker.ts",
         "utf8"

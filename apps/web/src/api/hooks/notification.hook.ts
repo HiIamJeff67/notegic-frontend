@@ -8,6 +8,12 @@ import type {
   MarkNotificationsReadRequest,
   MarkNotificationsReadResponse,
 } from "@shared/api/interfaces/notification.interface";
+import {
+  mutationFnDeleteNotifications,
+  mutationFnMarkNotificationsRead,
+  queryFnGetUnreadNotificationCount,
+  queryFnListNotifications,
+} from "@shared/api/invokers/notification.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { InfiniteData } from "@tanstack/react-query";
@@ -17,11 +23,11 @@ import {
   getClientRequestHeaders,
 } from "@/api/functions/headers/clientHeaders";
 import {
-  mutationFnDeleteNotifications,
-  mutationFnMarkNotificationsRead,
-  queryFnGetUnreadNotificationCount,
-  queryFnListNotifications,
-} from "@/api/invokers/notification.invoker";
+  DeleteNotifications,
+  GetUnreadNotificationCount,
+  ListNotifications,
+  MarkNotificationsRead,
+} from "@/api/functions/notification.serverFn";
 
 export const useNotifications = (enabled = true) =>
   useInfiniteQuery<
@@ -38,7 +44,7 @@ export const useNotifications = (enabled = true) =>
         header: getClientRequestHeaders(),
         param: { first: 20, ...(pageParam ? { after: pageParam } : {}) },
       };
-      return queryFnListNotifications(request);
+      return queryFnListNotifications(request, ListNotifications);
     },
     getNextPageParam: lastPage =>
       lastPage.data.searchPageInfo.hasNextPage
@@ -59,9 +65,12 @@ export const useUnreadNotificationCount = (enabled = true) =>
   useQuery<GetUnreadNotificationCountResponse, Error>({
     queryKey: queryKeys.notification.unreadCount(),
     queryFn: () =>
-      queryFnGetUnreadNotificationCount({
-        header: getClientRequestHeaders(),
-      }),
+      queryFnGetUnreadNotificationCount(
+        {
+          header: getClientRequestHeaders(),
+        },
+        GetUnreadNotificationCount
+      ),
     staleTime: 6 * 60 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -81,10 +90,13 @@ export const useMarkNotificationsRead = () => {
     Omit<MarkNotificationsReadRequest, "header">
   >({
     mutationFn: request =>
-      mutationFnMarkNotificationsRead({
-        ...request,
-        header: getClientMutationHeaders(),
-      }),
+      mutationFnMarkNotificationsRead(
+        {
+          ...request,
+          header: getClientMutationHeaders(),
+        },
+        MarkNotificationsRead
+      ),
     onSuccess: response => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),
@@ -108,10 +120,13 @@ export const useDeleteNotifications = () => {
     Omit<DeleteNotificationsRequest, "header">
   >({
     mutationFn: request =>
-      mutationFnDeleteNotifications({
-        ...request,
-        header: getClientMutationHeaders(),
-      }),
+      mutationFnDeleteNotifications(
+        {
+          ...request,
+          header: getClientMutationHeaders(),
+        },
+        DeleteNotifications
+      ),
     onSuccess: response => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.notification.list(),

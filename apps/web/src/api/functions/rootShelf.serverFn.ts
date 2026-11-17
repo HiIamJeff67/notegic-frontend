@@ -36,7 +36,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyRootShelfById = createServerFn({ method: "GET" })
+const GetMyRootShelfByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRootShelfByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyRootShelfByIdResponse> => {
     const { rootShelfId, isDeleted = false } = request.param;
@@ -65,7 +65,10 @@ export const GetMyRootShelfById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const CreateRootShelf = createServerFn({ method: "POST" })
+export const GetMyRootShelfById = (request: GetMyRootShelfByIdRequest) =>
+  GetMyRootShelfByIdRpc({ data: request });
+
+const CreateRootShelfRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRootShelfRequest) => data)
   .handler(async ({ data: request }): Promise<CreateRootShelfResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -95,7 +98,10 @@ export const CreateRootShelf = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const CreateRootShelves = createServerFn({ method: "POST" })
+export const CreateRootShelf = (request: CreateRootShelfRequest) =>
+  CreateRootShelfRpc({ data: request });
+
+const CreateRootShelvesRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRootShelvesRequest) => data)
   .handler(async ({ data: request }): Promise<CreateRootShelvesResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -125,7 +131,10 @@ export const CreateRootShelves = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
+export const CreateRootShelves = (request: CreateRootShelvesRequest) =>
+  CreateRootShelvesRpc({ data: request });
+
+const UpsertRootShelfPermissionRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpsertRootShelfPermissionRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpsertRootShelfPermissionResponse> => {
@@ -164,7 +173,11 @@ export const UpsertRootShelfPermission = createServerFn({ method: "POST" })
     }
   );
 
-export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
+export const UpsertRootShelfPermission = (
+  request: UpsertRootShelfPermissionRequest
+) => UpsertRootShelfPermissionRpc({ data: request });
+
+const DeleteRootShelfPermissionsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteRootShelfPermissionsRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteRootShelfPermissionsResponse> => {
@@ -203,7 +216,11 @@ export const DeleteRootShelfPermissions = createServerFn({ method: "POST" })
     }
   );
 
-export const TransferMyRootShelfOwnership = createServerFn({ method: "POST" })
+export const DeleteRootShelfPermissions = (
+  request: DeleteRootShelfPermissionsRequest
+) => DeleteRootShelfPermissionsRpc({ data: request });
+
+const TransferMyRootShelfOwnershipRpc = createServerFn({ method: "POST" })
   .inputValidator((data: TransferMyRootShelfOwnershipRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -229,7 +246,11 @@ export const TransferMyRootShelfOwnership = createServerFn({ method: "POST" })
     return (await format(response)) as TransferMyRootShelfOwnershipResponse;
   });
 
-export const LeaveMyRootShelf = createServerFn({ method: "POST" })
+export const TransferMyRootShelfOwnership = (
+  request: TransferMyRootShelfOwnershipRequest
+) => TransferMyRootShelfOwnershipRpc({ data: request });
+
+const LeaveMyRootShelfRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LeaveMyRootShelfRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -257,7 +278,10 @@ export const LeaveMyRootShelf = createServerFn({ method: "POST" })
     return (await format(response)) as LeaveMyRootShelfResponse;
   });
 
-export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
+export const LeaveMyRootShelf = (request: LeaveMyRootShelfRequest) =>
+  LeaveMyRootShelfRpc({ data: request });
+
+const UpdateMyRootShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRootShelfByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyRootShelfByIdResponse> => {
@@ -293,7 +317,10 @@ export const UpdateMyRootShelfById = createServerFn({ method: "POST" })
     }
   );
 
-export const UpdateMyRootShelvesByIds = createServerFn({
+export const UpdateMyRootShelfById = (request: UpdateMyRootShelfByIdRequest) =>
+  UpdateMyRootShelfByIdRpc({ data: request });
+
+const UpdateMyRootShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: UpdateMyRootShelvesByIdsRequest) => data)
@@ -331,7 +358,11 @@ export const UpdateMyRootShelvesByIds = createServerFn({
     }
   );
 
-export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
+export const UpdateMyRootShelvesByIds = (
+  request: UpdateMyRootShelvesByIdsRequest
+) => UpdateMyRootShelvesByIdsRpc({ data: request });
+
+const RestoreMyRootShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyRootShelfByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMyRootShelfByIdResponse> => {
@@ -367,7 +398,11 @@ export const RestoreMyRootShelfById = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMyRootShelvesByIds = createServerFn({
+export const RestoreMyRootShelfById = (
+  request: RestoreMyRootShelfByIdRequest
+) => RestoreMyRootShelfByIdRpc({ data: request });
+
+const RestoreMyRootShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: RestoreMyRootShelvesByIdsRequest) => data)
@@ -405,7 +440,11 @@ export const RestoreMyRootShelvesByIds = createServerFn({
     }
   );
 
-export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
+export const RestoreMyRootShelvesByIds = (
+  request: RestoreMyRootShelvesByIdsRequest
+) => RestoreMyRootShelvesByIdsRpc({ data: request });
+
+const DeleteMyRootShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyRootShelfByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteMyRootShelfByIdResponse> => {
@@ -441,7 +480,10 @@ export const DeleteMyRootShelfById = createServerFn({ method: "POST" })
     }
   );
 
-export const DeleteMyRootShelvesByIds = createServerFn({
+export const DeleteMyRootShelfById = (request: DeleteMyRootShelfByIdRequest) =>
+  DeleteMyRootShelfByIdRpc({ data: request });
+
+const DeleteMyRootShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: DeleteMyRootShelvesByIdsRequest) => data)
@@ -479,7 +521,11 @@ export const DeleteMyRootShelvesByIds = createServerFn({
     }
   );
 
-export const HardDeleteMyRootShelvesByIds = createServerFn({ method: "POST" })
+export const DeleteMyRootShelvesByIds = (
+  request: DeleteMyRootShelvesByIdsRequest
+) => DeleteMyRootShelvesByIdsRpc({ data: request });
+
+const HardDeleteMyRootShelvesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRootShelvesByIdsRequest) => data)
   .handler(
     async ({
@@ -516,3 +562,7 @@ export const HardDeleteMyRootShelvesByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyRootShelvesByIds = (
+  request: HardDeleteMyRootShelvesByIdsRequest
+) => HardDeleteMyRootShelvesByIdsRpc({ data: request });

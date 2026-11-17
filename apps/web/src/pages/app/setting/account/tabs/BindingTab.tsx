@@ -36,7 +36,7 @@ import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading, useUser } from "@/hooks";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useOAuth } from "@/hooks/useOAuth";
 import { useTranslation } from "@/hooks/useTranslation";
 

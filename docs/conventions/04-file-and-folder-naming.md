@@ -64,7 +64,7 @@ below reflect the current repository and are the default for new files.
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
-| Unit tests beside their source | `<source basename>.test.ts(x)` | `ScreenProvider.test.ts`, `searchPage.test.ts` |
+| Unit tests in the owning test tree | `<source basename>.test.ts(x)` | `apps/web/test/seo/pageTitle.test.ts`, `test/lib/search/searchPage.test.ts` |
 | Integration tests in the integration directory | `name.test.ts(x)` | `userProvider.test.ts` |
 | Browser E2E tests | `name.spec.ts` | `articleNavigation.spec.ts` |
 | Performance tests | `name.performance.test.ts` | `shelfNode.performance.test.ts` |
@@ -130,17 +130,18 @@ directly from the module that owns them.
 
 Shared conversion operations live in `shared/lib/conversions/`; entity
 comparators and their owned input types live in `shared/lib/comparisons/`.
-Keep their tests beside the implementation, without splitting a comparator's
+Keep their tests under `test/lib/comparisons/`, without splitting a comparator's
 private input shape into a general shared type file.
 BlockPack import/export file types live directly in
 `shared/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
 portable package's file-format contract a Web UI type.
 
 Reusable editor code lives under `shared/lib/blockpack/`.
-Web chart renderers live under `apps/web/src/components/charts/`, with one
-component folder per chart kind. A renderer that uses app copy stays there.
-Pure chart models, scales, ticks, defaults, and their tests live in
-`shared/components/charts/`. Dimensional input types stay beside `BaseChart`
+Chart renderers live under `shared/components/charts/`, with one component
+folder per chart kind. A renderer that imports an app hook, API, or product
+screen stays in `apps/web/src/components/charts/`. Pure chart models, scales,
+ticks, defaults, and their tests live in `shared/components/charts/`.
+Dimensional input types stay beside `BaseChart`
 in that folder. Several components within one feature are callers of the same
 owner, not independent owners. Do not move those chart models to `shared/types/`.
 Independent shared type definitions without a dedicated
@@ -168,19 +169,19 @@ specs that currently contain no JSX. Here the suffix identifies a production blo
 Jest excludes this directory, and its behavior is verified through editor tests.
 
 Group `shared/lib/` by the responsibility that owns the implementation. Keep
-the implementation, its tests and its intrinsic types/operations together;
-import the owner directly instead of keeping a compatibility file at the old
-root path. Use an existing group before adding another folder.
+the implementation and its intrinsic types/operations together. Put the test
+under `test/`, mirroring that path, for example `test/lib/queue/deque.test.ts`
+and `test/lib/storage/indexedDB.test.ts`. Import the owner directly instead of
+keeping a compatibility file at the old root path. Use an existing group before
+adding another folder.
 
 ```text
 shared/lib/
   queue/deque.ts
-  queue/deque.test.ts
   url/getURL.ts
   storage/localStorage.ts
   storage/sessionStorage.ts
   storage/indexedDB.ts
-  storage/indexedDB.test.ts
   storage/materialAttachmentCache.type.ts
   shelf/rootShelf.ts
   shelf/subShelf.ts
@@ -207,9 +208,10 @@ Keep their validation and pure operations together when moving them.
 
 The Shelf node/summary types remain separate files beside the tree operations.
 Station/Routine UI node models and their factories belong in
-`apps/web/src/providers/StationRoutineProvider/`; screen types and breakpoint
-conversion belong to `ScreenProvider.tsx`. Provider filenames retain their
-`Provider` suffix. Do not make shared libraries depend on these Web models.
+`apps/web/src/providers/StationRoutineProvider/`. Screen types and breakpoint
+conversion belong to `shared/providers/ScreenProvider.tsx`. Provider filenames
+retain their `Provider` suffix. Do not make shared libraries depend on the
+Station/Routine Web models.
 
 Storage key catalogs live with their storage modules. Yjs persisted document
 types live with `shared/lib/blockpack/localYjsDocumentStore.ts`; attachment payload
@@ -288,10 +290,20 @@ Group cross-feature API modules by responsibility and retain the
 - `bridges/`: coordination between API/runtime boundaries, such as
   `cookie.bridge.ts` and `searchLocal.bridge.ts`.
 
-Keep unit tests beside their owner as `domain.role.test.ts`. Import the
+Keep a unit test's basename aligned with its owner as `domain.role.test.ts`,
+under `apps/web/test/` or `test/` rather than beside the module. Import the
 owning module directly; do not leave compatibility re-export files at the API
 root. Storage-specific policies remain under `api/local/`; these categories
 do not override narrower ownership or server/client runtime boundaries.
+
+Exported API functions use PascalCase, such as `GetUserData`, in
+`apps/web/src/api/functions/`, `apps/desktop/src/api/functions/`, and the
+future mobile `api/functions/`. A private TanStack Start binding in the same
+file uses the same name plus `Rpc`, such as `GetUserDataRpc`, and the exported
+function passes `{ data: request }` to it. One blank line separates the Rpc
+from that export. Invokers name the injected function parameter `func`. The invoker modules
+live in `shared/api/invokers/` because they do not import an app. Web hooks
+pass that app's function in.
 
 ### `apps/web/src/pages/`
 

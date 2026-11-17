@@ -2,7 +2,7 @@ import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { useTranslation } from "@/hooks/useTranslation";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import { useEffect, useState } from "react";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";

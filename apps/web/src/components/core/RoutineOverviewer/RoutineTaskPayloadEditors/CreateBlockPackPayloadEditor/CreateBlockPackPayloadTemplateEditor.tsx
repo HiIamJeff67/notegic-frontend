@@ -11,7 +11,7 @@ import {
 } from "@/components/core/BlockPackEditor/PatternToggleButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "@/hooks/useTranslation";
-import "@/styles/block-editor.css";
+import "@shared/styles/block-editor.css";
 
 interface CreateBlockPackPayloadTemplateEditorProps {
   editor: BlockNoteEditor<any, any, any>;

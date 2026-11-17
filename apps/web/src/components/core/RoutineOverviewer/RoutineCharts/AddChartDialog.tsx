@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@shared/components/ui/dialog";
 import { cn } from "@shared/lib/classname/cn";
-import { IntChart } from "@/components/charts";
+import { IntChart } from "@shared/components/charts";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   CHART_DEFINITIONS,

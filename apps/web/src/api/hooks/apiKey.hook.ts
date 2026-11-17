@@ -7,23 +7,31 @@ import type {
   RevokeMyAPIKeyRequest,
   RevokeMyAPIKeyResponse,
 } from "@shared/api/interfaces/apiKey.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { queryKeys } from "@shared/api/queryKeys";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import {
   mutationFnCreateMyAPIKey,
   mutationFnRevokeMyAPIKey,
   queryFnListMyAPIKeys,
-} from "@/api/invokers/apiKey.invoker";
+} from "@shared/api/invokers/apiKey.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  CreateMyAPIKey,
+  ListMyAPIKeys,
+  RevokeMyAPIKey,
+} from "@/api/functions/apiKey.serverFn";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 
 export const useMyAPIKeys = (enabled = true) =>
   useQuery<ListMyAPIKeysResponse, Error>({
     queryKey: queryKeys.apiKey.my(),
     queryFn: () =>
-      queryFnListMyAPIKeys({
-        header: getClientRequestHeaders(),
-      } satisfies ListMyAPIKeysRequest),
+      queryFnListMyAPIKeys(
+        {
+          header: getClientRequestHeaders(),
+        } satisfies ListMyAPIKeysRequest,
+        ListMyAPIKeys
+      ),
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -44,10 +52,13 @@ export const useCreateMyAPIKey = () => {
   >({
     mutationFn: request => {
       const header = getClientRequestHeaders();
-      return mutationFnCreateMyAPIKey({
-        ...request,
-        header: { ...header, csrfToken: header.csrfToken ?? "" },
-      });
+      return mutationFnCreateMyAPIKey(
+        {
+          ...request,
+          header: { ...header, csrfToken: header.csrfToken ?? "" },
+        },
+        CreateMyAPIKey
+      );
     },
     onSuccess: response => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });
@@ -68,10 +79,13 @@ export const useRevokeMyAPIKey = () => {
   >({
     mutationFn: request => {
       const header = getClientRequestHeaders();
-      return mutationFnRevokeMyAPIKey({
-        ...request,
-        header: { ...header, csrfToken: header.csrfToken ?? "" },
-      });
+      return mutationFnRevokeMyAPIKey(
+        {
+          ...request,
+          header: { ...header, csrfToken: header.csrfToken ?? "" },
+        },
+        RevokeMyAPIKey
+      );
     },
     onSuccess: response => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.apiKey.my() });

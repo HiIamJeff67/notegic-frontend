@@ -1,6 +1,12 @@
 import { createServer, type Server } from "node:http";
 import { expect, test } from "@playwright/test";
 import { resources, supportedLanguages } from "@shared/i18n";
+import {
+  CreateBlockPack,
+  CreateBlockPacks,
+} from "@/api/functions/blockPack.serverFn";
+import { UpdateMyRoutineById } from "@/api/functions/routine.serverFn";
+import { UpdateMyRoutineTaskById } from "@/api/functions/routineTask.serverFn";
 
 let upstream: Server;
 let writes = 0;
@@ -360,13 +366,16 @@ test("real server-function conflicts retain their API type, translation and no-r
         .getMutationCache()
         .build(client, {
           mutationFn: () =>
-            mutationFnUpdateMyRoutineTaskById({
-              body: {
-                routineTaskId: "42345678-1234-4234-8234-123456789abc",
-                values: { x: 120, y: 80 },
-                expectedDefinitionVersion: 7,
+            mutationFnUpdateMyRoutineTaskById(
+              {
+                body: {
+                  routineTaskId: "42345678-1234-4234-8234-123456789abc",
+                  values: { x: 120, y: 80 },
+                  expectedDefinitionVersion: 7,
+                },
               },
-            }),
+              UpdateMyRoutineTaskById
+            ),
         })
         .execute(undefined);
       return { succeeded: true };
@@ -423,12 +432,15 @@ test("real Routine activation rejection retains its translation without retrying
         .getMutationCache()
         .build(client, {
           mutationFn: () =>
-            mutationFnUpdateMyRoutineById({
-              body: {
-                routineId: "12345678-1234-4234-8234-123456789abc",
-                values: { isActive: true },
+            mutationFnUpdateMyRoutineById(
+              {
+                body: {
+                  routineId: "12345678-1234-4234-8234-123456789abc",
+                  values: { isActive: true },
+                },
               },
-            }),
+              UpdateMyRoutineById
+            ),
         })
         .execute(undefined);
       return { succeeded: true };
@@ -508,17 +520,23 @@ for (const batch of [false, true]) {
             .build(client, {
               mutationFn: () =>
                 batch
-                  ? mutationFnCreateBlockPacks({
-                      body: { createdBlockPacks: [blockPack] },
-                      affected: {
-                        rootShelfIds: [rootShelfId],
-                        parentSubShelfIds: [parentSubShelfId],
+                  ? mutationFnCreateBlockPacks(
+                      {
+                        body: { createdBlockPacks: [blockPack] },
+                        affected: {
+                          rootShelfIds: [rootShelfId],
+                          parentSubShelfIds: [parentSubShelfId],
+                        },
                       },
-                    })
-                  : mutationFnCreateBlockPack({
-                      body: blockPack,
-                      affected: { rootShelfId, parentSubShelfId },
-                    }),
+                      CreateBlockPacks
+                    )
+                  : mutationFnCreateBlockPack(
+                      {
+                        body: blockPack,
+                        affected: { rootShelfId, parentSubShelfId },
+                      },
+                      CreateBlockPack
+                    ),
             })
             .execute(undefined);
           return { succeeded: true };

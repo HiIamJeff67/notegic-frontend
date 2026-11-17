@@ -35,7 +35,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
 import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
-import { useDebounceValue } from "@/hooks/useDebounce";
+import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";

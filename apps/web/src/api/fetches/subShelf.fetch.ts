@@ -9,16 +9,22 @@ import type {
   GetMySubShelvesByRootShelfIdRequest,
   GetMySubShelvesByRootShelfIdResponse,
 } from "@shared/api/interfaces/subShelf.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
 import {
   queryFnGetMySubShelfById,
   queryFnGetMySubShelvesAndItemsByPrevSubShelfId,
   queryFnGetMySubShelvesByPrevSubShelfId,
   queryFnGetMySubShelvesByRootShelfId,
-} from "@/api/invokers/subShelf.invoker";
+} from "@shared/api/invokers/subShelf.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
+import {
+  GetMySubShelfById,
+  GetMySubShelvesAndItemsByPrevSubShelfId,
+  GetMySubShelvesByPrevSubShelfId,
+  GetMySubShelvesByRootShelfId,
+} from "@/api/functions/subShelf.serverFn";
 
 export const fetchGetMySubShelfById = async (
   fetchRequest: GetMySubShelfByIdRequest,
@@ -29,7 +35,8 @@ export const fetchGetMySubShelfById = async (
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.subShelf.oneById(fetchRequest.param.subShelfId as UUID),
-    queryFn: async () => await queryFnGetMySubShelfById(fetchRequest),
+    queryFn: async () =>
+      await queryFnGetMySubShelfById(fetchRequest, GetMySubShelfById),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -49,7 +56,10 @@ export const fetchGetMySubShelvesByPrevSubShelfId = async (
       fetchRequest.param.prevSubShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMySubShelvesByPrevSubShelfId(fetchRequest),
+      await queryFnGetMySubShelvesByPrevSubShelfId(
+        fetchRequest,
+        GetMySubShelvesByPrevSubShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -69,7 +79,10 @@ export const fetchGetMySubShelvesByRootShelfId = async (
       fetchRequest.param.rootShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMySubShelvesByRootShelfId(fetchRequest),
+      await queryFnGetMySubShelvesByRootShelfId(
+        fetchRequest,
+        GetMySubShelvesByRootShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -89,7 +102,10 @@ export const fetchGetMySubShelvesAndItemsByPrevSubShelfId = async (
       fetchRequest.param.prevSubShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMySubShelvesAndItemsByPrevSubShelfId(fetchRequest),
+      await queryFnGetMySubShelvesAndItemsByPrevSubShelfId(
+        fetchRequest,
+        GetMySubShelvesAndItemsByPrevSubShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });

@@ -29,10 +29,10 @@ import {
   useMyAPIKeys,
   useRevokeMyAPIKey,
 } from "@/api/hooks/apiKey.hook";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface ApiKeysTabProps {

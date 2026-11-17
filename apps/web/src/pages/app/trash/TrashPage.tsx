@@ -34,7 +34,7 @@ import {
   StationIcon,
   SubShelfIcon,
 } from "@/components/icons/WorkspaceEntityIcons";
-import { useDebounceValue } from "@/hooks/useDebounce";
+import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";

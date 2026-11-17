@@ -40,23 +40,6 @@ import {
   UpdateMyRootShelfByIdRequestSchema,
   UpdateMyRootShelvesByIdsRequestSchema,
 } from "@shared/api/interfaces/rootShelf.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import {
-  type QueryKey,
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import {
-  clearSearchRootShelves,
-  prependMissingSearchRootShelves,
-  prependSearchRootShelves,
-  removeSearchRootShelves,
-} from "@/api/hooks/graphql/policies/searchRootShelves.policy";
 import {
   mutationFnCreateRootShelf,
   mutationFnCreateRootShelves,
@@ -72,7 +55,40 @@ import {
   mutationFnUpdateMyRootShelvesByIds,
   mutationFnUpsertRootShelfPermission,
   queryFnGetMyRootShelfById,
-} from "@/api/invokers/rootShelf.invoker";
+} from "@shared/api/invokers/rootShelf.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateRootShelf,
+  CreateRootShelves,
+  DeleteMyRootShelfById,
+  DeleteMyRootShelvesByIds,
+  DeleteRootShelfPermissions,
+  GetMyRootShelfById,
+  HardDeleteMyRootShelvesByIds,
+  LeaveMyRootShelf,
+  RestoreMyRootShelfById,
+  RestoreMyRootShelvesByIds,
+  TransferMyRootShelfOwnership,
+  UpdateMyRootShelfById,
+  UpdateMyRootShelvesByIds,
+  UpsertRootShelfPermission,
+} from "@/api/functions/rootShelf.serverFn";
+import {
+  clearSearchRootShelves,
+  prependMissingSearchRootShelves,
+  prependSearchRootShelves,
+  removeSearchRootShelves,
+} from "@/api/hooks/graphql/policies/searchRootShelves.policy";
 import { RootShelfLocalSimulator } from "@/api/local/simulators/rootShelf.simulator";
 import { RootShelfLocalSynchronizer } from "@/api/local/synchronizers/rootShelf.synchronizer";
 
@@ -96,7 +112,10 @@ export const useGetMyRootShelfById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRootShelfById(request);
+      const response = await queryFnGetMyRootShelfById(
+        request,
+        GetMyRootShelfById
+      );
       await RootShelfLocalSynchronizer.syncGetMyRootShelfById(response);
       return response;
     } catch (error) {
@@ -170,7 +189,7 @@ export const useCreateRootShelf = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRootShelf(request);
+      return await mutationFnCreateRootShelf(request, CreateRootShelf);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -237,7 +256,7 @@ export const useCreateRootShelves = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRootShelves(request);
+      return await mutationFnCreateRootShelves(request, CreateRootShelves);
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await RootShelfLocalSimulator.simulateCreateRootShelves(request);
@@ -315,7 +334,10 @@ export const useUpdateMyRootShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyRootShelfById(request);
+      return await mutationFnUpdateMyRootShelfById(
+        request,
+        UpdateMyRootShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await RootShelfLocalSimulator.simulateUpdateMyRootShelfById(request);
@@ -371,7 +393,10 @@ export const useUpsertRootShelfPermission = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpsertRootShelfPermission(request);
+      return await mutationFnUpsertRootShelfPermission(
+        request,
+        UpsertRootShelfPermission
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -439,7 +464,10 @@ export const useDeleteRootShelfPermissions = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteRootShelfPermissions(request);
+      return await mutationFnDeleteRootShelfPermissions(
+        request,
+        DeleteRootShelfPermissions
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -502,7 +530,10 @@ export const useUpdateMyRootShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyRootShelvesByIds(request);
+      return await mutationFnUpdateMyRootShelvesByIds(
+        request,
+        UpdateMyRootShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -563,7 +594,10 @@ export const useRestoreMyRootShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyRootShelfById(request);
+      return await mutationFnRestoreMyRootShelfById(
+        request,
+        RestoreMyRootShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await RootShelfLocalSimulator.simulateRestoreMyRootShelfById(request);
@@ -618,7 +652,10 @@ export const useRestoreMyRootShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyRootShelvesByIds(request);
+      return await mutationFnRestoreMyRootShelvesByIds(
+        request,
+        RestoreMyRootShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -706,7 +743,10 @@ export const useDeleteMyRootShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyRootShelfById(request);
+      return await mutationFnDeleteMyRootShelfById(
+        request,
+        DeleteMyRootShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await RootShelfLocalSimulator.simulateDeleteMyRootShelfById(request);
@@ -769,7 +809,10 @@ export const useDeleteMyRootShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyRootShelvesByIds(request);
+      return await mutationFnDeleteMyRootShelvesByIds(
+        request,
+        DeleteMyRootShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -829,7 +872,10 @@ export const useTransferMyRootShelfOwnership = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnTransferMyRootShelfOwnership(request);
+        return await mutationFnTransferMyRootShelfOwnership(
+          request,
+          TransferMyRootShelfOwnership
+        );
       } catch (error) {
         if (
           options.offlineFallback === false ||
@@ -875,7 +921,7 @@ export const useLeaveMyRootShelf = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnLeaveMyRootShelf(request);
+        return await mutationFnLeaveMyRootShelf(request, LeaveMyRootShelf);
       } catch (error) {
         if (
           options.offlineFallback === false ||
@@ -917,7 +963,10 @@ export const useHardDeleteMyRootShelvesByIds = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnHardDeleteMyRootShelvesByIds(request);
+        return await mutationFnHardDeleteMyRootShelvesByIds(
+          request,
+          HardDeleteMyRootShelvesByIds
+        );
       } catch (error) {
         if (
           options.offlineFallback === false ||

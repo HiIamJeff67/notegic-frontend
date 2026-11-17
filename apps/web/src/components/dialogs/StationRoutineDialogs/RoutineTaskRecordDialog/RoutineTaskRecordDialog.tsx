@@ -35,7 +35,7 @@ import RoutineRecordFilters, {
   type RoutineRecordFiltersValue,
 } from "@/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters";
 import { useStationRoutine } from "@/hooks";
-import { useDebounceValue } from "@/hooks/useDebounce";
+import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 

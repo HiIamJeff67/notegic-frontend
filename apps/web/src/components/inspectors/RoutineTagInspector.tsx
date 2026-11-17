@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutineTagById } from "@/api/hooks/routineTag.hook";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
-import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
+import SupportedIconTable from "@shared/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";

@@ -15,8 +15,8 @@ import {
 import { Textarea } from "@shared/components/ui/textarea";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { useEffect, useState } from "react";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
-import TimezoneSelector from "@/components/commons/TimezoneSelector/TimezoneSelector";
+import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
+import TimezoneSelector from "@shared/components/commons/TimezoneSelector/TimezoneSelector";
 import { useTranslation } from "@/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";
 import TemplatePatternEditor, {

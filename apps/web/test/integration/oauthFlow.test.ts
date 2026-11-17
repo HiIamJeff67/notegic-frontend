@@ -100,7 +100,7 @@ window.renderDestinationLocation = () => {
 `;
 
 const mocks: Record<string, string> = {
-  "@/hooks/useTranslation": `const t = (key, options) => {
+  "react-i18next": `const t = (key, options) => {
     if (key === 'settingsPage.account.binding.currentBackupEmail') return 'Current backup email: ' + options.email;
     if (key === 'settingsPage.account.binding.currentPhoneNumber') return 'Current phone number: ' + options.phone;
     if (key === 'settingsPage.account.modification.currentEmail') return 'Current email: ' + options.email;
@@ -1198,7 +1198,7 @@ describe("OAuth state in the real entry and callback components", () => {
     "cancel",
   ] as const)("X %s keeps one animated cover mounted until navigation finishes", async result => {
     await page.addStyleTag({
-      path: "apps/web/src/styles/loading.css",
+      path: "shared/styles/loading.css",
     });
     await page.evaluate(result => {
       const fixture = window as any;

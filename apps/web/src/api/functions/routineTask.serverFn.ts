@@ -25,7 +25,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const VisualizeMyRoutineTaskPurposeCount = createServerFn({
+const VisualizeMyRoutineTaskPurposeCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: VisualizeMyRoutineTaskPurposeCountRequest) => data)
@@ -37,9 +37,9 @@ export const VisualizeMyRoutineTaskPurposeCount = createServerFn({
         APIURLPathDictionary.routineTask.visualizeMyRoutineTaskPurposeCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -85,7 +85,11 @@ export const VisualizeMyRoutineTaskPurposeCount = createServerFn({
     }
   );
 
-export const GetMyRoutineTaskById = createServerFn({ method: "GET" })
+export const VisualizeMyRoutineTaskPurposeCount = (
+  request: VisualizeMyRoutineTaskPurposeCountRequest
+) => VisualizeMyRoutineTaskPurposeCountRpc({ data: request });
+
+const GetMyRoutineTaskByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineTaskByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyRoutineTaskByIdResponse> => {
     const params = new URLSearchParams(
@@ -135,7 +139,10 @@ export const GetMyRoutineTaskById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyRoutineTasksByRoutineId = createServerFn({
+export const GetMyRoutineTaskById = (request: GetMyRoutineTaskByIdRequest) =>
+  GetMyRoutineTaskByIdRpc({ data: request });
+
+const GetMyRoutineTasksByRoutineIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyRoutineTasksByRoutineIdRequest) => data)
@@ -182,7 +189,11 @@ export const GetMyRoutineTasksByRoutineId = createServerFn({
     }
   );
 
-export const GetAllMyRoutineTasks = createServerFn({
+export const GetMyRoutineTasksByRoutineId = (
+  request: GetMyRoutineTasksByRoutineIdRequest
+) => GetMyRoutineTasksByRoutineIdRpc({ data: request });
+
+const GetAllMyRoutineTasksRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetAllMyRoutineTasksRequest) => data)
@@ -221,7 +232,10 @@ export const GetAllMyRoutineTasks = createServerFn({
     return formattedResponse;
   });
 
-export const CreateRoutineTaskByRoutineId = createServerFn({ method: "POST" })
+export const GetAllMyRoutineTasks = (request: GetAllMyRoutineTasksRequest) =>
+  GetAllMyRoutineTasksRpc({ data: request });
+
+const CreateRoutineTaskByRoutineIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRoutineTaskByRoutineIdRequest) => data)
   .handler(
     async ({
@@ -262,7 +276,11 @@ export const CreateRoutineTaskByRoutineId = createServerFn({ method: "POST" })
     }
   );
 
-export const UpdateMyRoutineTaskById = createServerFn({ method: "POST" })
+export const CreateRoutineTaskByRoutineId = (
+  request: CreateRoutineTaskByRoutineIdRequest
+) => CreateRoutineTaskByRoutineIdRpc({ data: request });
+
+const UpdateMyRoutineTaskByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRoutineTaskByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyRoutineTaskByIdResponse> => {
@@ -301,7 +319,11 @@ export const UpdateMyRoutineTaskById = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutineTaskById = createServerFn({ method: "POST" })
+export const UpdateMyRoutineTaskById = (
+  request: UpdateMyRoutineTaskByIdRequest
+) => UpdateMyRoutineTaskByIdRpc({ data: request });
+
+const HardDeleteMyRoutineTaskByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutineTaskByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyRoutineTaskByIdResponse> => {
@@ -340,7 +362,11 @@ export const HardDeleteMyRoutineTaskById = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutineTasksByIds = createServerFn({ method: "POST" })
+export const HardDeleteMyRoutineTaskById = (
+  request: HardDeleteMyRoutineTaskByIdRequest
+) => HardDeleteMyRoutineTaskByIdRpc({ data: request });
+
+const HardDeleteMyRoutineTasksByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutineTasksByIdsRequest) => data)
   .handler(
     async ({
@@ -378,3 +404,7 @@ export const HardDeleteMyRoutineTasksByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyRoutineTasksByIds = (
+  request: HardDeleteMyRoutineTasksByIdsRequest
+) => HardDeleteMyRoutineTasksByIdsRpc({ data: request });

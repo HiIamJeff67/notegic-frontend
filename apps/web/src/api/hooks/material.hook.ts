@@ -30,21 +30,6 @@ import {
   SaveMyMaterialByIdResponseSchema,
   UpdateMyMaterialByIdRequestSchema,
 } from "@shared/api/interfaces/material.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import {
-  type QueryKey,
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { ZodError } from "zod";
-import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateMaterialObjectTicket,
   mutationFnCreateMyMaterial,
@@ -60,7 +45,38 @@ import {
   queryFnGetMyMaterialsByParentSubShelfId,
   queryFnGetMyMaterialsByRootShelfId,
   queryFnResolveMaterialObjectTicket,
-} from "@/api/invokers/material.invoker";
+} from "@shared/api/invokers/material.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { ZodError } from "zod";
+import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { SaveMyMaterialById } from "@/api/functions/material.clientFn";
+import {
+  CreateMaterialObjectTicket,
+  CreateMyMaterial,
+  DeleteMyMaterialById,
+  DeleteMyMaterialsByIds,
+  GetMyMaterialAndItsParentById,
+  GetMyMaterialById,
+  GetMyMaterialsByParentSubShelfId,
+  GetMyMaterialsByRootShelfId,
+  HardDeleteMyMaterialsByIds,
+  MoveMyMaterialById,
+  ResolveMaterialObjectTicket,
+  RestoreMyMaterialById,
+  RestoreMyMaterialsByIds,
+  UpdateMyMaterialById,
+} from "@/api/functions/material.serverFn";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { MaterialLocalSimulator } from "@/api/local/simulators/material.simulator";
 import { MaterialLocalSynchronizer } from "@/api/local/synchronizers/material.synchronizer";
 
@@ -72,7 +88,10 @@ export const useCreateMaterialObjectTicket = () =>
     Error,
     CreateMaterialObjectTicketRequest
   >({
-    mutationFn: mutationFnCreateMaterialObjectTicket,
+    mutationFn: (
+      request: Parameters<typeof mutationFnCreateMaterialObjectTicket>[0]
+    ) =>
+      mutationFnCreateMaterialObjectTicket(request, CreateMaterialObjectTicket),
     retry: false,
   });
 
@@ -84,10 +103,13 @@ export const useResolveMaterialObjectTicket = (
   const perform = async (): Promise<ResolveMaterialObjectTicketResponse> => {
     if (!objectTicket)
       throw new Error("Material object ticket is unavailable.");
-    const response = await queryFnResolveMaterialObjectTicket({
-      header: getClientRequestHeaders(),
-      body: { objectTicket },
-    });
+    const response = await queryFnResolveMaterialObjectTicket(
+      {
+        header: getClientRequestHeaders(),
+        body: { objectTicket },
+      },
+      ResolveMaterialObjectTicket
+    );
     return response;
   };
   const query = useQuery({
@@ -105,7 +127,11 @@ export const useResolveMaterialObjectTicket = (
       queryKey: queryKeys.material.objectTicket(
         callbackRequest.body.objectTicket
       ),
-      queryFn: () => queryFnResolveMaterialObjectTicket(callbackRequest),
+      queryFn: () =>
+        queryFnResolveMaterialObjectTicket(
+          callbackRequest,
+          ResolveMaterialObjectTicket
+        ),
       staleTime: materialObjectTicketStaleTime,
       retry: false,
       ...options,
@@ -135,7 +161,10 @@ export const useGetMyMaterialById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      const response = await queryFnGetMyMaterialById(request);
+      const response = await queryFnGetMyMaterialById(
+        request,
+        GetMyMaterialById
+      );
       signal?.throwIfAborted();
       await MaterialLocalSynchronizer.syncGetMyMaterialById(response);
       return response;
@@ -214,7 +243,10 @@ export const useGetMyMaterialAndItsParentById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      const response = await queryFnGetMyMaterialAndItsParentById(request);
+      const response = await queryFnGetMyMaterialAndItsParentById(
+        request,
+        GetMyMaterialAndItsParentById
+      );
       signal?.throwIfAborted();
       await MaterialLocalSynchronizer.syncGetMyMaterialAndItsParentById(
         response
@@ -296,7 +328,10 @@ export const useGetMyMaterialsByParentSubShelfId = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      const response = await queryFnGetMyMaterialsByParentSubShelfId(request);
+      const response = await queryFnGetMyMaterialsByParentSubShelfId(
+        request,
+        GetMyMaterialsByParentSubShelfId
+      );
       await MaterialLocalSynchronizer.syncGetMyMaterialsByParentSubShelfId(
         response
       );
@@ -379,7 +414,10 @@ export const useGetMyMaterialsByRootShelfId = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      const response = await queryFnGetMyMaterialsByRootShelfId(request);
+      const response = await queryFnGetMyMaterialsByRootShelfId(
+        request,
+        GetMyMaterialsByRootShelfId
+      );
       await MaterialLocalSynchronizer.syncGetMyMaterialsByRootShelfId(
         response,
         request.param.rootShelfId
@@ -457,7 +495,7 @@ export const useCreateMyMaterial = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateMyMaterial(request);
+      return await mutationFnCreateMyMaterial(request, CreateMyMaterial);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -514,7 +552,10 @@ export const useUpdateMyMaterialById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyMaterialById(request);
+      return await mutationFnUpdateMyMaterialById(
+        request,
+        UpdateMyMaterialById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -612,7 +653,7 @@ export const useMoveMyMaterialById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMyMaterialById(request);
+      return await mutationFnMoveMyMaterialById(request, MoveMyMaterialById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -670,7 +711,10 @@ export const useRestoreMyMaterialById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyMaterialById(request);
+      return await mutationFnRestoreMyMaterialById(
+        request,
+        RestoreMyMaterialById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -728,7 +772,10 @@ export const useRestoreMyMaterialsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyMaterialsByIds(request);
+      return await mutationFnRestoreMyMaterialsByIds(
+        request,
+        RestoreMyMaterialsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -797,7 +844,10 @@ export const useDeleteMyMaterialById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyMaterialById(request);
+      return await mutationFnDeleteMyMaterialById(
+        request,
+        DeleteMyMaterialById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -861,7 +911,10 @@ export const useDeleteMyMaterialsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyMaterialsByIds(request);
+      return await mutationFnDeleteMyMaterialsByIds(
+        request,
+        DeleteMyMaterialsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -936,7 +989,10 @@ export const useHardDeleteMyMaterialsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyMaterialsByIds(request);
+      return await mutationFnHardDeleteMyMaterialsByIds(
+        request,
+        HardDeleteMyMaterialsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||

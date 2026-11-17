@@ -9,6 +9,9 @@ import { NotegicAPIError, NotegicException } from "@shared/api/exceptions";
 import { makeSerovalPlugin } from "@tanstack/router-core";
 import { fromJSON, toCrossJSONAsync } from "seroval";
 import { apiErrorSerializationAdapter } from "@/adapters/apiErrorSerialization.adapter";
+import { GetMyRoutineById } from "@/api/functions/routine.serverFn";
+import { GetMyRoutineTasksByRoutineId } from "@/api/functions/routineTask.serverFn";
+import { GetRoutineTaskDependenciesByRoutineId } from "@/api/functions/routineTaskDependency.serverFn";
 
 // Include SQLocal reconnection and persisted reconciliation, not only RPC completion.
 const expect = playwrightExpect.configure({ timeout: 30_000 });

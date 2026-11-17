@@ -33,7 +33,7 @@ import {
 import { useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
-import DropFileZone from "@/components/commons/DropFileZone/DropFileZone";
+import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { MaterialIcon } from "@/components/icons/WorkspaceEntityIcons";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";

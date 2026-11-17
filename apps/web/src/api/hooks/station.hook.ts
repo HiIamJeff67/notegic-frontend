@@ -34,19 +34,6 @@ import {
   UpdateMyStationByIdRequestSchema,
   UpdateMyStationsByIdsRequestSchema,
 } from "@shared/api/interfaces/station.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
-import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
-import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import {
   mutationFnCreateStation,
   mutationFnCreateStations,
@@ -63,7 +50,37 @@ import {
   queryFnGetAllMyStations,
   queryFnGetMyStationById,
   queryFnVisualizeMyTotalCount,
-} from "@/api/invokers/station.invoker";
+} from "@shared/api/invokers/station.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateStation,
+  CreateStations,
+  DeleteMyStationById,
+  DeleteMyStationsByIds,
+  GetAllMyStations,
+  GetMyStationById,
+  HardDeleteMyStationById,
+  HardDeleteMyStationsByIds,
+  LeaveMyStation,
+  RestoreMyStationById,
+  RestoreMyStationsByIds,
+  TransferMyStationOwnership,
+  UpdateMyStationById,
+  UpdateMyStationsByIds,
+  VisualizeMyTotalCount,
+} from "@/api/functions/station.serverFn";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import { StationLocalSimulator } from "@/api/local/simulators/station.simulator";
 import { StationLocalSynchronizer } from "@/api/local/synchronizers/station.synchronizer";
 import { useVisualizeQuery } from "./visualize.hook";
@@ -76,7 +93,7 @@ export const useVisualizeMyTotalCount = (
     request,
     currentRequest =>
       queryKeys.station.visualizeMyTotalCount(currentRequest?.param.permission),
-    queryFnVisualizeMyTotalCount,
+    request => queryFnVisualizeMyTotalCount(request, VisualizeMyTotalCount),
     options
   );
 
@@ -101,7 +118,7 @@ export const useGetMyStationById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyStationById(request);
+      const response = await queryFnGetMyStationById(request, GetMyStationById);
       signal?.throwIfAborted();
       await StationLocalSynchronizer.syncGetMyStationById(response);
       return response;
@@ -176,7 +193,7 @@ export const useGetAllMyStations = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetAllMyStations(request);
+      const response = await queryFnGetAllMyStations(request, GetAllMyStations);
       await StationLocalSynchronizer.syncGetAllMyStations(response);
       return response;
     } catch (error) {
@@ -245,7 +262,7 @@ export const useCreateStation = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateStation(request);
+      return await mutationFnCreateStation(request, CreateStation);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -302,7 +319,7 @@ export const useCreateStations = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateStations(request);
+      return await mutationFnCreateStations(request, CreateStations);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -359,7 +376,7 @@ export const useUpdateMyStationById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyStationById(request);
+      return await mutationFnUpdateMyStationById(request, UpdateMyStationById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -415,7 +432,10 @@ export const useUpdateMyStationsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyStationsByIds(request);
+      return await mutationFnUpdateMyStationsByIds(
+        request,
+        UpdateMyStationsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -475,7 +495,10 @@ export const useRestoreMyStationById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyStationById(request);
+      return await mutationFnRestoreMyStationById(
+        request,
+        RestoreMyStationById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -530,7 +553,10 @@ export const useRestoreMyStationsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyStationsByIds(request);
+      return await mutationFnRestoreMyStationsByIds(
+        request,
+        RestoreMyStationsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -590,7 +616,7 @@ export const useDeleteMyStationById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyStationById(request);
+      return await mutationFnDeleteMyStationById(request, DeleteMyStationById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -645,7 +671,10 @@ export const useDeleteMyStationsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyStationsByIds(request);
+      return await mutationFnDeleteMyStationsByIds(
+        request,
+        DeleteMyStationsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -705,7 +734,10 @@ export const useHardDeleteMyStationById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyStationById(request);
+      return await mutationFnHardDeleteMyStationById(
+        request,
+        HardDeleteMyStationById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -765,7 +797,10 @@ export const useHardDeleteMyStationsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyStationsByIds(request);
+      return await mutationFnHardDeleteMyStationsByIds(
+        request,
+        HardDeleteMyStationsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -825,7 +860,10 @@ export const useTransferMyStationOwnership = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnTransferMyStationOwnership(request);
+        return await mutationFnTransferMyStationOwnership(
+          request,
+          TransferMyStationOwnership
+        );
       } catch (error) {
         if (
           options.offlineFallback === false ||
@@ -867,7 +905,7 @@ export const useLeaveMyStation = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnLeaveMyStation(request);
+        return await mutationFnLeaveMyStation(request, LeaveMyStation);
       } catch (error) {
         if (
           options.offlineFallback === false ||

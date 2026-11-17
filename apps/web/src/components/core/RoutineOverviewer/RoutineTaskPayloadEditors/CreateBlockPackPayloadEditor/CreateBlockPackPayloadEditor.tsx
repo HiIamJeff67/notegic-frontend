@@ -24,6 +24,8 @@ import CreateBlockPackPayloadEditorSidebar from "./CreateBlockPackPayloadEditorS
 import CreateBlockPackPayloadTemplateEditor from "./CreateBlockPackPayloadTemplateEditor";
 // @ts-ignore allow side-effect import of BlockNote
 import "@blocknote/core/style.css";
+import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";
+
 
 interface CreateBlockPackPayloadEditorProps {
   isOpen: boolean;

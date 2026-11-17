@@ -5,7 +5,7 @@ import { cn } from "@shared/lib/classname/cn";
 import toast from "@shared/lib/toast/toast";
 import { type ComponentProps, useState } from "react";
 import { useAuthCode } from "@/hooks/useAuthCode";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface AuthCodeInputProps

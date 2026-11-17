@@ -1,6 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { createHmac, randomUUID } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
+import { CreateRoutineByStationId } from "@/api/functions/routine.serverFn";
+import { CreateRoutineTaskByRoutineId } from "@/api/functions/routineTask.serverFn";
+import { CreateStation } from "@/api/functions/station.serverFn";
 import {
   SearchRoutineRecordSortBy,
   SearchRoutineRecordsDocument,
@@ -475,7 +478,9 @@ test("real backend filters complete Routine history before cursor pagination", a
   await page.waitForLoadState("networkidle");
   const fixture = await page.evaluate(async () => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientRequestHeaders } = await load("/src/api/functions/headers/clientHeaders.ts");
+    const { getClientRequestHeaders } = await load(
+      "/src/api/functions/headers/clientHeaders.ts"
+    );
     const { CreateStation } = await load(
       "/src/api/functions/station.serverFn.ts"
     );
@@ -486,43 +491,37 @@ test("real backend filters complete Routine history before cursor pagination", a
       "/src/api/functions/routineTask.serverFn.ts"
     );
     const station = await CreateStation({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
-          name: "Record acceptance",
-          description: "Retained isolated records fixture",
-        },
+      header: getClientRequestHeaders(),
+      body: {
+        name: "Record acceptance",
+        description: "Retained isolated records fixture",
       },
     });
     const routine = await CreateRoutineByStationId({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
-          stationId: station.data.id,
-          title: "Inactive records acceptance",
-          description: "Never scheduled",
-          isActive: false,
-          timezone: "UTC",
-        },
+      header: getClientRequestHeaders(),
+      body: {
+        stationId: station.data.id,
+        title: "Inactive records acceptance",
+        description: "Never scheduled",
+        isActive: false,
+        timezone: "UTC",
       },
     });
     const task = await CreateRoutineTaskByRoutineId({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
+      header: getClientRequestHeaders(),
+      body: {
+        routineId: routine.data.id,
+        expectedDefinitionVersion: routine.data.definitionVersion ?? 1,
+        kind: "Action",
+        title: "Record acceptance action",
+        x: 0,
+        y: 0,
+        maxAttempts: 1,
+        priority: 0,
+        payload: {
+          schemaVersion: 1,
+          purpose: "GetRoutine",
           routineId: routine.data.id,
-          expectedDefinitionVersion: routine.data.definitionVersion ?? 1,
-          kind: "Action",
-          title: "Record acceptance action",
-          x: 0,
-          y: 0,
-          maxAttempts: 1,
-          priority: 0,
-          payload: {
-            schemaVersion: 1,
-            purpose: "GetRoutine",
-            routineId: routine.data.id,
-          },
         },
       },
     });

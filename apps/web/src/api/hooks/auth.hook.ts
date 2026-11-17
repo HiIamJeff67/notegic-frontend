@@ -1,23 +1,5 @@
 import { useApolloClient } from "@apollo/client/react";
 import type { GetMyAccountResponse } from "@shared/api/interfaces/userAccount.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { queryKeys } from "@shared/api/queryKeys";
-import {
-  type QueryClient,
-  type QueryKey,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import {
-  clearClientCSRFToken,
-  setClientCSRFToken,
-} from "@/api/functions/headers/csrfToken";
-import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
-import { clearSearchRootShelves } from "@/api/hooks/graphql/policies/searchRootShelves.policy";
-import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
-import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
-import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import {
   mutationFnDeleteMe,
   mutationFnForgetPassword,
@@ -36,25 +18,51 @@ import {
   mutationFnResetMe,
   mutationFnSendAuthCode,
   mutationFnValidateEmail,
-} from "@/api/invokers/auth.invoker";
+} from "@shared/api/invokers/auth.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  type QueryKey,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  DeleteMe,
+  ForgetPassword,
+  Login,
+  LoginViaDiscord,
+  LoginViaGithub,
+  LoginViaGoogle,
+  LoginViaX,
+  Logout,
+  Register,
+  RegisterViaDiscord,
+  RegisterViaGithub,
+  RegisterViaGoogle,
+  RegisterViaX,
+  ResetEmail,
+  ResetMe,
+  SendAuthCode,
+  ValidateEmail,
+} from "@/api/functions/auth.serverFn";
+import {
+  clearClientCSRFToken,
+  setClientCSRFToken,
+} from "@/api/functions/headers/csrfToken";
+import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
+import { clearSearchRootShelves } from "@/api/hooks/graphql/policies/searchRootShelves.policy";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
+import { clearSearchRoutineTasks } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
 import { AuthLocalSynchronizer } from "@/api/local/synchronizers/auth.synchronizer";
-
-const markAccountEmailVerified = async (queryClient: QueryClient) => {
-  const queryKey = queryKeys.userAccount.my();
-  await queryClient.cancelQueries({ queryKey });
-  queryClient.setQueryData<GetMyAccountResponse>(queryKey, current =>
-    current
-      ? { ...current, data: { ...current.data, emailVerified: true } }
-      : undefined
-  );
-  void queryClient.invalidateQueries({ queryKey });
-};
 
 export const useRegister = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegister,
+    mutationFn: (request: Parameters<typeof mutationFnRegister>[0]) =>
+      mutationFnRegister(request, Register),
     onSuccess: async (response, request) => {
       setClientCSRFToken(
         response.refreshableTokens?.newCSRFToken ?? response.data?.csrfToken
@@ -73,7 +81,8 @@ export const useRegisterViaGoogle = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegisterViaGoogle,
+    mutationFn: (request: Parameters<typeof mutationFnRegisterViaGoogle>[0]) =>
+      mutationFnRegisterViaGoogle(request, RegisterViaGoogle),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -93,7 +102,8 @@ export const useRegisterViaGithub = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegisterViaGithub,
+    mutationFn: (request: Parameters<typeof mutationFnRegisterViaGithub>[0]) =>
+      mutationFnRegisterViaGithub(request, RegisterViaGithub),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -113,7 +123,8 @@ export const useRegisterViaX = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegisterViaX,
+    mutationFn: (request: Parameters<typeof mutationFnRegisterViaX>[0]) =>
+      mutationFnRegisterViaX(request, RegisterViaX),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -133,7 +144,8 @@ export const useRegisterViaDiscord = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnRegisterViaDiscord,
+    mutationFn: (request: Parameters<typeof mutationFnRegisterViaDiscord>[0]) =>
+      mutationFnRegisterViaDiscord(request, RegisterViaDiscord),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -152,7 +164,8 @@ export const useLogin = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLogin,
+    mutationFn: (request: Parameters<typeof mutationFnLogin>[0]) =>
+      mutationFnLogin(request, Login),
     // Credentials and single-use verification tokens require an explicit retry.
     retry: false,
     onSuccess: async response => {
@@ -173,7 +186,8 @@ export const useLoginViaGoogle = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLoginViaGoogle,
+    mutationFn: (request: Parameters<typeof mutationFnLoginViaGoogle>[0]) =>
+      mutationFnLoginViaGoogle(request, LoginViaGoogle),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -193,7 +207,8 @@ export const useLoginViaGithub = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLoginViaGithub,
+    mutationFn: (request: Parameters<typeof mutationFnLoginViaGithub>[0]) =>
+      mutationFnLoginViaGithub(request, LoginViaGithub),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -213,7 +228,8 @@ export const useLoginViaX = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLoginViaX,
+    mutationFn: (request: Parameters<typeof mutationFnLoginViaX>[0]) =>
+      mutationFnLoginViaX(request, LoginViaX),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -233,7 +249,8 @@ export const useLoginViaDiscord = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLoginViaDiscord,
+    mutationFn: (request: Parameters<typeof mutationFnLoginViaDiscord>[0]) =>
+      mutationFnLoginViaDiscord(request, LoginViaDiscord),
     retry: false,
     onSuccess: async response => {
       setClientCSRFToken(
@@ -253,7 +270,8 @@ export const useLogout = () => {
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnLogout,
+    mutationFn: (request: Parameters<typeof mutationFnLogout>[0]) =>
+      mutationFnLogout(request, Logout),
     onSuccess: async (response, request) => {
       clearClientCSRFToken();
       await AuthLocalSynchronizer.syncLogout(response);
@@ -272,7 +290,8 @@ export const useLogout = () => {
 
 export const useSendAuthCode = () => {
   const mutation = useMutation({
-    mutationFn: mutationFnSendAuthCode,
+    mutationFn: (request: Parameters<typeof mutationFnSendAuthCode>[0]) =>
+      mutationFnSendAuthCode(request, SendAuthCode),
     onError: error => {},
   });
 
@@ -282,8 +301,18 @@ export const useSendAuthCode = () => {
 export const useValidateEmail = () => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: mutationFnValidateEmail,
-    onSuccess: () => markAccountEmailVerified(queryClient),
+    mutationFn: (request: Parameters<typeof mutationFnValidateEmail>[0]) =>
+      mutationFnValidateEmail(request, ValidateEmail),
+    onSuccess: async () => {
+      const queryKey = queryKeys.userAccount.my();
+      await queryClient.cancelQueries({ queryKey });
+      queryClient.setQueryData<GetMyAccountResponse>(queryKey, current =>
+        current
+          ? { ...current, data: { ...current.data, emailVerified: true } }
+          : undefined
+      );
+      void queryClient.invalidateQueries({ queryKey });
+    },
     onError: error => {},
   });
 
@@ -294,11 +323,19 @@ export const useResetEmail = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnResetEmail,
+    mutationFn: (request: Parameters<typeof mutationFnResetEmail>[0]) =>
+      mutationFnResetEmail(request, ResetEmail),
     onSuccess: async (response, request) => {
       if (response.data.verificationRequired) return;
       await AuthLocalSynchronizer.syncResetEmail(request, response);
-      await markAccountEmailVerified(queryClient);
+      const queryKey = queryKeys.userAccount.my();
+      await queryClient.cancelQueries({ queryKey });
+      queryClient.setQueryData<GetMyAccountResponse>(queryKey, current =>
+        current
+          ? { ...current, data: { ...current.data, emailVerified: true } }
+          : undefined
+      );
+      void queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me() });
     },
@@ -312,7 +349,8 @@ export const useForgetPassword = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnForgetPassword,
+    mutationFn: (request: Parameters<typeof mutationFnForgetPassword>[0]) =>
+      mutationFnForgetPassword(request, ForgetPassword),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userAccount.my() });
       queryClient.invalidateQueries({ queryKey: queryKeys.user.data() });
@@ -329,7 +367,8 @@ export const useResetMe = () => {
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnResetMe,
+    mutationFn: (request: Parameters<typeof mutationFnResetMe>[0]) =>
+      mutationFnResetMe(request, ResetMe),
     onSuccess: async response => {
       const targetKeys: QueryKey[] = [
         queryKeys.user.data(),
@@ -371,7 +410,8 @@ export const useDeleteMe = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnDeleteMe,
+    mutationFn: (request: Parameters<typeof mutationFnDeleteMe>[0]) =>
+      mutationFnDeleteMe(request, DeleteMe),
     onSuccess: async response => {
       await AuthLocalSynchronizer.syncDeleteMe(response);
       clearClientCSRFToken();

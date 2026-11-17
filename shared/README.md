@@ -6,9 +6,11 @@ generated contracts, or cross-platform invariants. It is not a reason to move
 every directory into a package.
 
 Reusable packages live under `lib/`, including `lib/blockpack/`.
-Web React charts belong to `apps/web/src/components/charts/`, including their
-models, conversions and defaults. Sharing a type between multiple chart kinds
-does not give it an owner outside Charts. Independent shared definitions without a dedicated owner use
+Chart renderers, models, conversions, and defaults belong to
+`shared/components/charts/`. Sharing a type between multiple chart kinds does
+not give it an owner outside Charts. DOM hooks with no app API live in
+`hooks/`, DOM providers with no app API live in `providers/`, and theme CSS
+both DOM apps load lives in `styles/`. Independent shared definitions without a dedicated owner use
 `types/<name>.type.ts`, whether
 they are enums, interfaces, structural types or aliases; there is no separate
 root `enums/` directory. Package-owned, component-owned and generated types

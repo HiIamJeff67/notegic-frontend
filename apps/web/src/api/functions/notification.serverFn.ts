@@ -14,7 +14,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const ListNotifications = createServerFn({ method: "GET" })
+const ListNotificationsRpc = createServerFn({ method: "GET" })
   .inputValidator((data: ListNotificationsRequest) => data)
   .handler(async ({ data: request }) => {
     const params = new URLSearchParams();
@@ -45,7 +45,10 @@ export const ListNotifications = createServerFn({ method: "GET" })
     return (await format(response)) as ListNotificationsResponse;
   });
 
-export const GetUnreadNotificationCount = createServerFn({ method: "GET" })
+export const ListNotifications = (request: ListNotificationsRequest) =>
+  ListNotificationsRpc({ data: request });
+
+const GetUnreadNotificationCountRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetUnreadNotificationCountRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -70,7 +73,11 @@ export const GetUnreadNotificationCount = createServerFn({ method: "GET" })
     return (await format(response)) as GetUnreadNotificationCountResponse;
   });
 
-export const MarkNotificationsRead = createServerFn({ method: "POST" })
+export const GetUnreadNotificationCount = (
+  request: GetUnreadNotificationCountRequest
+) => GetUnreadNotificationCountRpc({ data: request });
+
+const MarkNotificationsReadRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MarkNotificationsReadRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -96,7 +103,10 @@ export const MarkNotificationsRead = createServerFn({ method: "POST" })
     return (await format(response)) as MarkNotificationsReadResponse;
   });
 
-export const DeleteNotifications = createServerFn({ method: "POST" })
+export const MarkNotificationsRead = (request: MarkNotificationsReadRequest) =>
+  MarkNotificationsReadRpc({ data: request });
+
+const DeleteNotificationsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteNotificationsRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -121,3 +131,6 @@ export const DeleteNotifications = createServerFn({ method: "POST" })
     forwardUpstreamSetCookies(response);
     return (await format(response)) as DeleteNotificationsResponse;
   });
+
+export const DeleteNotifications = (request: DeleteNotificationsRequest) =>
+  DeleteNotificationsRpc({ data: request });

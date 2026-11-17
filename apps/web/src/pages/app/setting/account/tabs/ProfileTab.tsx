@@ -43,14 +43,14 @@ import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useUpdateMyInfo } from "@/api/hooks/userInfo.hook";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading } from "@/hooks";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 

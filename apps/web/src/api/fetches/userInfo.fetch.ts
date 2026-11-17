@@ -2,11 +2,12 @@ import type {
   GetMyInfoRequest,
   GetMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
+import { queryFnGetMyInfo } from "@shared/api/invokers/userInfo.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { PresignedObjectURLStaleTime } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
-import { queryFnGetMyInfo } from "@/api/invokers/userInfo.invoker";
+import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
 
 export const fetchGetMyInfo = async (
   fetchRequest: GetMyInfoRequest,
@@ -17,7 +18,7 @@ export const fetchGetMyInfo = async (
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.userInfo.my(),
-    queryFn: async () => await queryFnGetMyInfo(fetchRequest),
+    queryFn: async () => await queryFnGetMyInfo(fetchRequest, GetMyInfo),
     staleTime: PresignedObjectURLStaleTime,
     ...options,
   });

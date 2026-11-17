@@ -31,7 +31,7 @@ import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.t
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import { ListFilter } from "lucide-react";
 import { useId } from "react";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
+import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import { useTranslation } from "@/hooks/useTranslation";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 

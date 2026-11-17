@@ -53,11 +53,13 @@ const hasAuthSession = (cookieHeader: string | undefined) =>
     );
   });
 
-export const HasAuthCookies = createServerFn({ method: "GET" }).handler(() =>
+const HasAuthCookiesRpc = createServerFn({ method: "GET" }).handler(() =>
   hasAuthSession(getRequestHeader("cookie"))
 );
 
-export const Register = createServerFn({ method: "POST" })
+export const HasAuthCookies = () => HasAuthCookiesRpc();
+
+const RegisterRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -86,7 +88,10 @@ export const Register = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RegisterViaGoogle = createServerFn({ method: "POST" })
+export const Register = (request: RegisterRequest) =>
+  RegisterRpc({ data: request });
+
+const RegisterViaGoogleRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterViaGoogleRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterViaGoogleResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -117,7 +122,10 @@ export const RegisterViaGoogle = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RegisterViaGithub = createServerFn({ method: "POST" })
+export const RegisterViaGoogle = (request: RegisterViaGoogleRequest) =>
+  RegisterViaGoogleRpc({ data: request });
+
+const RegisterViaGithubRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterViaGithubRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterViaGithubResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -148,7 +156,10 @@ export const RegisterViaGithub = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RegisterViaX = createServerFn({ method: "POST" })
+export const RegisterViaGithub = (request: RegisterViaGithubRequest) =>
+  RegisterViaGithubRpc({ data: request });
+
+const RegisterViaXRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterViaXRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterViaXResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -177,7 +188,10 @@ export const RegisterViaX = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RegisterViaDiscord = createServerFn({ method: "POST" })
+export const RegisterViaX = (request: RegisterViaXRequest) =>
+  RegisterViaXRpc({ data: request });
+
+const RegisterViaDiscordRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RegisterViaDiscordRequest) => data)
   .handler(async ({ data: request }): Promise<RegisterViaDiscordResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -208,7 +222,10 @@ export const RegisterViaDiscord = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const Login = createServerFn({ method: "POST" })
+export const RegisterViaDiscord = (request: RegisterViaDiscordRequest) =>
+  RegisterViaDiscordRpc({ data: request });
+
+const LoginRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LoginRequest) => data)
   .handler(async ({ data: request }): Promise<LoginResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -237,7 +254,9 @@ export const Login = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LoginViaGoogle = createServerFn({ method: "POST" })
+export const Login = (request: LoginRequest) => LoginRpc({ data: request });
+
+const LoginViaGoogleRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LoginViaGoogleRequest) => data)
   .handler(async ({ data: request }): Promise<LoginViaGoogleResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -268,7 +287,10 @@ export const LoginViaGoogle = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LoginViaGithub = createServerFn({ method: "POST" })
+export const LoginViaGoogle = (request: LoginViaGoogleRequest) =>
+  LoginViaGoogleRpc({ data: request });
+
+const LoginViaGithubRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LoginViaGithubRequest) => data)
   .handler(async ({ data: request }): Promise<LoginViaGithubResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -299,7 +321,10 @@ export const LoginViaGithub = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LoginViaX = createServerFn({ method: "POST" })
+export const LoginViaGithub = (request: LoginViaGithubRequest) =>
+  LoginViaGithubRpc({ data: request });
+
+const LoginViaXRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LoginViaXRequest) => data)
   .handler(async ({ data: request }): Promise<LoginViaXResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -328,7 +353,10 @@ export const LoginViaX = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LoginViaDiscord = createServerFn({ method: "POST" })
+export const LoginViaX = (request: LoginViaXRequest) =>
+  LoginViaXRpc({ data: request });
+
+const LoginViaDiscordRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LoginViaDiscordRequest) => data)
   .handler(async ({ data: request }): Promise<LoginViaDiscordResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -359,7 +387,10 @@ export const LoginViaDiscord = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const Logout = createServerFn({ method: "POST" })
+export const LoginViaDiscord = (request: LoginViaDiscordRequest) =>
+  LoginViaDiscordRpc({ data: request });
+
+const LogoutRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LogoutRequest) => data)
   .handler(async ({ data: request }): Promise<LogoutResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -390,7 +421,9 @@ export const Logout = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const SendAuthCode = createServerFn({ method: "POST" })
+export const Logout = (request: LogoutRequest) => LogoutRpc({ data: request });
+
+const SendAuthCodeRpc = createServerFn({ method: "POST" })
   .inputValidator((data: SendAuthCodeRequest) => data)
   .handler(async ({ data: request }): Promise<SendAuthCodeResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -421,7 +454,10 @@ export const SendAuthCode = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const ValidateEmail = createServerFn({ method: "POST" })
+export const SendAuthCode = (request: SendAuthCodeRequest) =>
+  SendAuthCodeRpc({ data: request });
+
+const ValidateEmailRpc = createServerFn({ method: "POST" })
   .inputValidator((data: ValidateEmailRequest) => data)
   .handler(async ({ data: request }): Promise<ValidateEmailResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -449,7 +485,10 @@ export const ValidateEmail = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const ResetEmail = createServerFn({ method: "POST" })
+export const ValidateEmail = (request: ValidateEmailRequest) =>
+  ValidateEmailRpc({ data: request });
+
+const ResetEmailRpc = createServerFn({ method: "POST" })
   .inputValidator((data: ResetEmailRequest) => data)
   .handler(async ({ data: request }): Promise<ResetEmailResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -477,7 +516,10 @@ export const ResetEmail = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const ForgetPassword = createServerFn({ method: "POST" })
+export const ResetEmail = (request: ResetEmailRequest) =>
+  ResetEmailRpc({ data: request });
+
+const ForgetPasswordRpc = createServerFn({ method: "POST" })
   .inputValidator((data: ForgetPasswordRequest) => data)
   .handler(async ({ data: request }): Promise<ForgetPasswordResponse> => {
     const userAgent =
@@ -504,7 +546,10 @@ export const ForgetPassword = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const ResetMe = createServerFn({ method: "POST" })
+export const ForgetPassword = (request: ForgetPasswordRequest) =>
+  ForgetPasswordRpc({ data: request });
+
+const ResetMeRpc = createServerFn({ method: "POST" })
   .inputValidator((data: ResetMeRequest) => data)
   .handler(async ({ data: request }): Promise<ResetMeResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -532,7 +577,10 @@ export const ResetMe = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const DeleteMe = createServerFn({ method: "POST" })
+export const ResetMe = (request: ResetMeRequest) =>
+  ResetMeRpc({ data: request });
+
+const DeleteMeRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMeRequest) => data)
   .handler(async ({ data: request }): Promise<DeleteMeResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -558,3 +606,6 @@ export const DeleteMe = createServerFn({ method: "POST" })
 
     return formattedResponse;
   });
+
+export const DeleteMe = (request: DeleteMeRequest) =>
+  DeleteMeRpc({ data: request });

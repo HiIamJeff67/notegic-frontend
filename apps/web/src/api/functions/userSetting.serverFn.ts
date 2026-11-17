@@ -1,9 +1,11 @@
+import { UserSettingExceptions } from "@shared/api/exceptions/userSetting.exception";
 import {
   GetMySettingRequest,
   GetMySettingResponse,
   UpdateMySettingRequest,
   UpdateMySettingResponse,
 } from "@shared/api/interfaces/userSetting.interface";
+import { getRetryClient, minimumRetryDelayMs } from "@shared/api/retryClient";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
 import { createServerFn } from "@tanstack/react-start";
 import {
@@ -12,8 +14,9 @@ import {
 } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
+import { fetchServerFunction } from "@/api/functions/serverFn";
 
-export const GetMySetting = createServerFn({ method: "GET" })
+const GetMySettingRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMySettingRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -39,7 +42,24 @@ export const GetMySetting = createServerFn({ method: "GET" })
     return (await format(response)) as GetMySettingResponse;
   });
 
-export const UpdateMySetting = createServerFn({ method: "POST" })
+export const GetMySetting = (
+  request: GetMySettingRequest,
+  signal?: AbortSignal
+) =>
+  GetMySettingRpc({
+    data: request,
+    signal,
+    fetch: getRetryClient().createFetch({
+      scope: UserSettingExceptions.RetryScope,
+      fetch: fetchServerFunction,
+      minimumDelayMs: minimumRetryDelayMs,
+      paused: retryAt => {
+        throw UserSettingExceptions.TooManyRequests(retryAt);
+      },
+    }),
+  });
+
+const UpdateMySettingRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMySettingRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -64,4 +84,21 @@ export const UpdateMySetting = createServerFn({ method: "POST" })
     );
     forwardUpstreamSetCookies(response);
     return (await format(response)) as UpdateMySettingResponse;
+  });
+
+export const UpdateMySetting = (
+  request: UpdateMySettingRequest,
+  signal?: AbortSignal
+) =>
+  UpdateMySettingRpc({
+    data: request,
+    signal,
+    fetch: getRetryClient().createFetch({
+      scope: UserSettingExceptions.RetryScope,
+      fetch: fetchServerFunction,
+      minimumDelayMs: minimumRetryDelayMs,
+      paused: retryAt => {
+        throw UserSettingExceptions.TooManyRequests(retryAt);
+      },
+    }),
   });

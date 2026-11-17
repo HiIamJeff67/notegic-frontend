@@ -11,6 +11,10 @@ import type {
   ListNotificationsResponse,
   Notification,
 } from "@shared/api/interfaces/notification.interface";
+import {
+  mutationFnCreateMyBlockPackChannelTicket,
+  mutationFnCreateMyRealtimeConnectionTicket,
+} from "@shared/api/invokers/realtime.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import {
@@ -21,6 +25,7 @@ import {
   type RealtimeResourceEventFrame,
   type RealtimeRoutineTaskLifecycleFrame,
 } from "@shared/api/websocket";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import toast from "@shared/lib/toast/toast";
@@ -39,13 +44,12 @@ import type { z } from "zod";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { isVirtualMode } from "@/api/functions/helpers/availability";
 import {
-  mutationFnCreateMyBlockPackChannelTicket,
-  mutationFnCreateMyRealtimeConnectionTicket,
-} from "@/api/invokers/realtime.invoker";
+  CreateMyBlockPackChannelTicket,
+  CreateMyRealtimeConnectionTicket,
+} from "@/api/functions/realtime.serverFn";
 import { localDB } from "@/api/local/db";
 import { RealtimeClient } from "@/api/websocketClient";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useNetwork } from "@/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 
@@ -367,20 +371,26 @@ export const RealtimeProvider = ({
 
     const client = new RealtimeClient({
       getConnectionTicket: async () => {
-        const response = await mutationFnCreateMyRealtimeConnectionTicket({
-          header: getClientRequestHeaders(),
-          body: {},
-        });
+        const response = await mutationFnCreateMyRealtimeConnectionTicket(
+          {
+            header: getClientRequestHeaders(),
+            body: {},
+          },
+          CreateMyRealtimeConnectionTicket
+        );
         return response.data;
       },
       getBlockPackChannelTicket: async (blockPackId, permission) => {
-        const response = await mutationFnCreateMyBlockPackChannelTicket({
-          header: getClientRequestHeaders(),
-          body: {
-            blockPackId,
-            permission,
+        const response = await mutationFnCreateMyBlockPackChannelTicket(
+          {
+            header: getClientRequestHeaders(),
+            body: {
+              blockPackId,
+              permission,
+            },
           },
-        });
+          CreateMyBlockPackChannelTicket
+        );
         return response.data;
       },
       onState: setRootState,

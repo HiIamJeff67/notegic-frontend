@@ -26,7 +26,7 @@ import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuButton from "@/components/menus/SettingMenu/SettingMenuButton";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useAppRouter, useLoading, useStationRoutine, useUser } from "@/hooks";
-import { useNetwork } from "@/hooks/useNetwork";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface AccountModificationTabProps {

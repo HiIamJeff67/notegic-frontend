@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Response, test } from "@playwright/test";
 import { toJSON } from "seroval";
+import { CreateMyAPIKey } from "@/api/functions/apiKey.serverFn";
+import { CreateRoutineByStationId } from "@/api/functions/routine.serverFn";
+import { CreateRoutineTaskByRoutineId } from "@/api/functions/routineTask.serverFn";
+import { CreateStation } from "@/api/functions/station.serverFn";
 
 const userAgent =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36";
@@ -223,12 +227,10 @@ test("real login and protected writes retain both origin and backend token check
     );
     const header = getClientMutationHeaders();
     const response = await CreateStation({
-      data: {
-        header,
-        body: {
-          name: `CSRF ${suffix}`,
-          description: "Retained isolated CSRF fixture",
-        },
+      header,
+      body: {
+        name: `CSRF ${suffix}`,
+        description: "Retained isolated CSRF fixture",
       },
     });
     return { id: response.data.id, url: CreateStation.url, header };
@@ -251,52 +253,46 @@ test("real login and protected writes retain both origin and backend token check
       const scheduledStartAt = new Date(Date.now() + 3_600_000);
       scheduledStartAt.setSeconds(0, 0);
       const routine = await CreateRoutineByStationId({
-        data: {
-          header: getClientMutationHeaders(),
-          body: {
-            stationId,
-            title: `CSRF graph ${suffix}`,
-            description: "Retained inactive graph fixture",
-            isActive: false,
-            timeoutSeconds: 60,
-            timezone: "UTC",
-            scheduledStartAt: scheduledStartAt.toISOString(),
-            scheduledEndAt: new Date(
-              scheduledStartAt.getTime() + 3_600_000
-            ).toISOString(),
-          },
+        header: getClientMutationHeaders(),
+        body: {
+          stationId,
+          title: `CSRF graph ${suffix}`,
+          description: "Retained inactive graph fixture",
+          isActive: false,
+          timeoutSeconds: 60,
+          timezone: "UTC",
+          scheduledStartAt: scheduledStartAt.toISOString(),
+          scheduledEndAt: new Date(
+            scheduledStartAt.getTime() + 3_600_000
+          ).toISOString(),
         },
       });
       const start = await CreateRoutineTaskByRoutineId({
-        data: {
-          header: getClientMutationHeaders(),
-          body: {
-            routineId: routine.data.id,
-            kind: "Start",
-            title: "CSRF entry",
-            x: 0,
-            y: 0,
-            payload: { schemaVersion: 1, isActive: true, description: "" },
-            expectedDefinitionVersion: 1,
-          },
+        header: getClientMutationHeaders(),
+        body: {
+          routineId: routine.data.id,
+          kind: "Start",
+          title: "CSRF entry",
+          x: 0,
+          y: 0,
+          payload: { schemaVersion: 1, isActive: true, description: "" },
+          expectedDefinitionVersion: 1,
         },
       });
       const action = await CreateRoutineTaskByRoutineId({
-        data: {
-          header: getClientMutationHeaders(),
-          body: {
+        header: getClientMutationHeaders(),
+        body: {
+          routineId: routine.data.id,
+          kind: "Action",
+          title: "CSRF action",
+          x: 300,
+          y: 0,
+          payload: {
+            schemaVersion: 1,
+            purpose: "GetRoutine",
             routineId: routine.data.id,
-            kind: "Action",
-            title: "CSRF action",
-            x: 300,
-            y: 0,
-            payload: {
-              schemaVersion: 1,
-              purpose: "GetRoutine",
-              routineId: routine.data.id,
-            },
-            expectedDefinitionVersion: 2,
           },
+          expectedDefinitionVersion: 2,
         },
       });
       return {
@@ -368,9 +364,7 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/headers/clientHeaders.ts"
     );
     try {
-      await CreateStation({
-        data: { header: getClientMutationHeaders(), body },
-      });
+      await CreateStation({ header: getClientMutationHeaders(), body });
       throw new Error("Expected the invalid DTO to be rejected");
     } catch (error) {
       const exception = (
@@ -434,10 +428,8 @@ test("real login and protected writes retain both origin and backend token check
       "/src/api/functions/headers/clientHeaders.ts"
     );
     const response = await CreateMyAPIKey({
-      data: {
-        header: getClientMutationHeaders(),
-        body: { name: `CSRF ${suffix}` },
-      },
+      header: getClientMutationHeaders(),
+      body: { name: `CSRF ${suffix}` },
     });
     return response.data.secret;
   }, suffix);
@@ -476,15 +468,13 @@ test("real login and protected writes retain both origin and backend token check
     window.addEventListener("notegic:auth-required", onAuthRequired);
     try {
       await CreateStation({
-        data: {
-          header: {
-            ...getClientMutationHeaders(),
-            csrfToken: "invalid-csrf-fixture",
-          },
-          body: {
-            name: `Rejected browser ${suffix}`,
-            description: "Must never be created",
-          },
+        header: {
+          ...getClientMutationHeaders(),
+          csrfToken: "invalid-csrf-fixture",
+        },
+        body: {
+          name: `Rejected browser ${suffix}`,
+          description: "Must never be created",
         },
       });
       throw new Error("Expected invalid CSRF to be rejected");

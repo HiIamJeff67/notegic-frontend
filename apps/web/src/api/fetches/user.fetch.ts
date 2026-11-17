@@ -4,11 +4,15 @@ import type {
   GetUserDataRequest,
   GetUserDataResponse,
 } from "@shared/api/interfaces/user.interface";
+import {
+  queryFnGetMe,
+  queryFnGetUserData,
+} from "@shared/api/invokers/user.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
-import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
+import { GetMe, GetUserData } from "@/api/functions/user.serverFn";
 
 export const fetchGetUserData = async (
   fetchRequest: GetUserDataRequest,
@@ -19,7 +23,7 @@ export const fetchGetUserData = async (
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.user.data(true),
-    queryFn: async () => await queryFnGetUserData(fetchRequest),
+    queryFn: async () => await queryFnGetUserData(fetchRequest, GetUserData),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -36,7 +40,7 @@ export const fetchGetMe = async (
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.user.me(true),
-    queryFn: async () => await queryFnGetMe(fetchRequest),
+    queryFn: async () => await queryFnGetMe(fetchRequest, GetMe),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });

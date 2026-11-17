@@ -2,9 +2,10 @@ import type {
   SubmitFeedbackReportRequest,
   SubmitFeedbackReportResponse,
 } from "@shared/api/interfaces/feedback.interface";
+import { mutationFnSubmitFeedbackReport } from "@shared/api/invokers/feedback.invoker";
 import { useMutation } from "@tanstack/react-query";
+import { SubmitFeedbackReport } from "@/api/functions/feedback.serverFn";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { mutationFnSubmitFeedbackReport } from "@/api/invokers/feedback.invoker";
 
 export const useSubmitFeedbackReport = () =>
   useMutation<
@@ -18,11 +19,14 @@ export const useSubmitFeedbackReport = () =>
     }
   >({
     mutationFn: request =>
-      mutationFnSubmitFeedbackReport({
-        ...request,
-        header: {
-          ...getClientRequestHeaders(),
-          ...request.header,
+      mutationFnSubmitFeedbackReport(
+        {
+          ...request,
+          header: {
+            ...getClientRequestHeaders(),
+            ...request.header,
+          },
         },
-      }),
+        SubmitFeedbackReport
+      ),
   });

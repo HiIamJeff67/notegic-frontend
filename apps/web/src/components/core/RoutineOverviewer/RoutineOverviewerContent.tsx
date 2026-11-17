@@ -18,7 +18,7 @@ import React, {
 } from "react";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import { ProgressiveBackground } from "@/components/backgrounds/ProgressiveBackground/ProgressiveBackground";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import {
   useBackgroundImages,

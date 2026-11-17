@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import { useBackgroundImages } from "@/hooks/useBackgroundImages";
 
 interface LazyBackgroundProps extends React.HTMLAttributes<HTMLDivElement> {

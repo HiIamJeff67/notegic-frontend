@@ -55,7 +55,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const VisualizeMyRoutineStatusCount = createServerFn({ method: "GET" })
+const VisualizeMyRoutineStatusCountRpc = createServerFn({ method: "GET" })
   .inputValidator((data: VisualizeMyRoutineStatusCountRequest) => data)
   .handler(
     async ({
@@ -64,9 +64,9 @@ export const VisualizeMyRoutineStatusCount = createServerFn({ method: "GET" })
       const path = APIURLPathDictionary.routine.visualizeMyRoutineStatusCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -110,7 +110,11 @@ export const VisualizeMyRoutineStatusCount = createServerFn({ method: "GET" })
     }
   );
 
-export const VisualizeMyRoutinePeriodCount = createServerFn({ method: "GET" })
+export const VisualizeMyRoutineStatusCount = (
+  request: VisualizeMyRoutineStatusCountRequest
+) => VisualizeMyRoutineStatusCountRpc({ data: request });
+
+const VisualizeMyRoutinePeriodCountRpc = createServerFn({ method: "GET" })
   .inputValidator((data: VisualizeMyRoutinePeriodCountRequest) => data)
   .handler(
     async ({
@@ -119,9 +123,9 @@ export const VisualizeMyRoutinePeriodCount = createServerFn({ method: "GET" })
       const path = APIURLPathDictionary.routine.visualizeMyRoutinePeriodCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -165,7 +169,11 @@ export const VisualizeMyRoutinePeriodCount = createServerFn({ method: "GET" })
     }
   );
 
-export const VisualizeMyRoutineScheduledStartAtCount = createServerFn({
+export const VisualizeMyRoutinePeriodCount = (
+  request: VisualizeMyRoutinePeriodCountRequest
+) => VisualizeMyRoutinePeriodCountRpc({ data: request });
+
+const VisualizeMyRoutineScheduledStartAtCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -179,9 +187,9 @@ export const VisualizeMyRoutineScheduledStartAtCount = createServerFn({
         APIURLPathDictionary.routine.visualizeMyRoutineScheduledStartAtCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -227,7 +235,11 @@ export const VisualizeMyRoutineScheduledStartAtCount = createServerFn({
     }
   );
 
-export const VisualizeMyRoutineScheduledEndAtCount = createServerFn({
+export const VisualizeMyRoutineScheduledStartAtCount = (
+  request: VisualizeMyRoutineScheduledStartAtCountRequest
+) => VisualizeMyRoutineScheduledStartAtCountRpc({ data: request });
+
+const VisualizeMyRoutineScheduledEndAtCountRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: VisualizeMyRoutineScheduledEndAtCountRequest) => data)
@@ -239,9 +251,9 @@ export const VisualizeMyRoutineScheduledEndAtCount = createServerFn({
         APIURLPathDictionary.routine.visualizeMyRoutineScheduledEndAtCount;
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(request.param) as [
-      string,
-      unknown,
-    ][]) {
+        string,
+        unknown,
+      ][]) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
           for (const entry of value) {
@@ -287,7 +299,11 @@ export const VisualizeMyRoutineScheduledEndAtCount = createServerFn({
     }
   );
 
-export const GetMyRoutineById = createServerFn({ method: "GET" })
+export const VisualizeMyRoutineScheduledEndAtCount = (
+  request: VisualizeMyRoutineScheduledEndAtCountRequest
+) => VisualizeMyRoutineScheduledEndAtCountRpc({ data: request });
+
+const GetMyRoutineByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyRoutineByIdResponse> => {
     const params = new URLSearchParams(
@@ -335,7 +351,10 @@ export const GetMyRoutineById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyRoutinesByStationId = createServerFn({ method: "GET" })
+export const GetMyRoutineById = (request: GetMyRoutineByIdRequest) =>
+  GetMyRoutineByIdRpc({ data: request });
+
+const GetMyRoutinesByStationIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutinesByStationIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<GetMyRoutinesByStationIdResponse> => {
@@ -388,7 +407,11 @@ export const GetMyRoutinesByStationId = createServerFn({ method: "GET" })
     }
   );
 
-export const GetMyRoutinesByTimeRange = createServerFn({ method: "GET" })
+export const GetMyRoutinesByStationId = (
+  request: GetMyRoutinesByStationIdRequest
+) => GetMyRoutinesByStationIdRpc({ data: request });
+
+const GetMyRoutinesByTimeRangeRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutinesByTimeRangeRequest) => data)
   .handler(
     async ({ data: request }): Promise<GetMyRoutinesByTimeRangeResponse> => {
@@ -439,7 +462,11 @@ export const GetMyRoutinesByTimeRange = createServerFn({ method: "GET" })
     }
   );
 
-export const CreateRoutineByStationId = createServerFn({ method: "POST" })
+export const GetMyRoutinesByTimeRange = (
+  request: GetMyRoutinesByTimeRangeRequest
+) => GetMyRoutinesByTimeRangeRpc({ data: request });
+
+const CreateRoutineByStationIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRoutineByStationIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<CreateRoutineByStationIdResponse> => {
@@ -478,7 +505,11 @@ export const CreateRoutineByStationId = createServerFn({ method: "POST" })
     }
   );
 
-export const CreateRoutinesByStationIds = createServerFn({ method: "POST" })
+export const CreateRoutineByStationId = (
+  request: CreateRoutineByStationIdRequest
+) => CreateRoutineByStationIdRpc({ data: request });
+
+const CreateRoutinesByStationIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRoutinesByStationIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<CreateRoutinesByStationIdsResponse> => {
@@ -515,7 +546,11 @@ export const CreateRoutinesByStationIds = createServerFn({ method: "POST" })
     }
   );
 
-export const UpdateMyRoutineById = createServerFn({ method: "POST" })
+export const CreateRoutinesByStationIds = (
+  request: CreateRoutinesByStationIdsRequest
+) => CreateRoutinesByStationIdsRpc({ data: request });
+
+const UpdateMyRoutineByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRoutineByIdRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMyRoutineByIdResponse> => {
     const url =
@@ -548,7 +583,10 @@ export const UpdateMyRoutineById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyRoutinesByIds = createServerFn({ method: "POST" })
+export const UpdateMyRoutineById = (request: UpdateMyRoutineByIdRequest) =>
+  UpdateMyRoutineByIdRpc({ data: request });
+
+const UpdateMyRoutinesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRoutinesByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyRoutinesByIdsResponse> => {
@@ -585,7 +623,10 @@ export const UpdateMyRoutinesByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const LinkRoutineTagById = createServerFn({ method: "POST" })
+export const UpdateMyRoutinesByIds = (request: UpdateMyRoutinesByIdsRequest) =>
+  UpdateMyRoutinesByIdsRpc({ data: request });
+
+const LinkRoutineTagByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineTagByIdRequest) => data)
   .handler(async ({ data: request }): Promise<LinkRoutineTagByIdResponse> => {
     const url =
@@ -623,7 +664,10 @@ export const LinkRoutineTagById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LinkRoutineTagsByIds = createServerFn({ method: "POST" })
+export const LinkRoutineTagById = (request: LinkRoutineTagByIdRequest) =>
+  LinkRoutineTagByIdRpc({ data: request });
+
+const LinkRoutineTagsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineTagsByIdsRequest) => data)
   .handler(async ({ data: request }): Promise<LinkRoutineTagsByIdsResponse> => {
     const url =
@@ -656,7 +700,10 @@ export const LinkRoutineTagsByIds = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LinkRoutineTaskById = createServerFn({ method: "POST" })
+export const LinkRoutineTagsByIds = (request: LinkRoutineTagsByIdsRequest) =>
+  LinkRoutineTagsByIdsRpc({ data: request });
+
+const LinkRoutineTaskByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineTaskByIdRequest) => data)
   .handler(async ({ data: request }): Promise<LinkRoutineTaskByIdResponse> => {
     const url =
@@ -694,7 +741,10 @@ export const LinkRoutineTaskById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LinkRoutineTasksByIds = createServerFn({ method: "POST" })
+export const LinkRoutineTaskById = (request: LinkRoutineTaskByIdRequest) =>
+  LinkRoutineTaskByIdRpc({ data: request });
+
+const LinkRoutineTasksByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineTasksByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<LinkRoutineTasksByIdsResponse> => {
@@ -731,7 +781,10 @@ export const LinkRoutineTasksByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const LinkRoutineItemById = createServerFn({ method: "POST" })
+export const LinkRoutineTasksByIds = (request: LinkRoutineTasksByIdsRequest) =>
+  LinkRoutineTasksByIdsRpc({ data: request });
+
+const LinkRoutineItemByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineItemByIdRequest) => data)
   .handler(async ({ data: request }): Promise<LinkRoutineItemByIdResponse> => {
     const url =
@@ -769,7 +822,10 @@ export const LinkRoutineItemById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const LinkRoutineItemsByIds = createServerFn({ method: "POST" })
+export const LinkRoutineItemById = (request: LinkRoutineItemByIdRequest) =>
+  LinkRoutineItemByIdRpc({ data: request });
+
+const LinkRoutineItemsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: LinkRoutineItemsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<LinkRoutineItemsByIdsResponse> => {
@@ -806,7 +862,10 @@ export const LinkRoutineItemsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMyRoutineById = createServerFn({ method: "POST" })
+export const LinkRoutineItemsByIds = (request: LinkRoutineItemsByIdsRequest) =>
+  LinkRoutineItemsByIdsRpc({ data: request });
+
+const RestoreMyRoutineByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyRoutineByIdRequest) => data)
   .handler(async ({ data: request }): Promise<RestoreMyRoutineByIdResponse> => {
     const url =
@@ -839,7 +898,10 @@ export const RestoreMyRoutineById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RestoreMyRoutinesByIds = createServerFn({ method: "POST" })
+export const RestoreMyRoutineById = (request: RestoreMyRoutineByIdRequest) =>
+  RestoreMyRoutineByIdRpc({ data: request });
+
+const RestoreMyRoutinesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyRoutinesByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMyRoutinesByIdsResponse> => {
@@ -876,7 +938,11 @@ export const RestoreMyRoutinesByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const DeleteMyRoutineById = createServerFn({ method: "POST" })
+export const RestoreMyRoutinesByIds = (
+  request: RestoreMyRoutinesByIdsRequest
+) => RestoreMyRoutinesByIdsRpc({ data: request });
+
+const DeleteMyRoutineByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyRoutineByIdRequest) => data)
   .handler(async ({ data: request }): Promise<DeleteMyRoutineByIdResponse> => {
     const url =
@@ -909,7 +975,10 @@ export const DeleteMyRoutineById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const DeleteMyRoutinesByIds = createServerFn({ method: "POST" })
+export const DeleteMyRoutineById = (request: DeleteMyRoutineByIdRequest) =>
+  DeleteMyRoutineByIdRpc({ data: request });
+
+const DeleteMyRoutinesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyRoutinesByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteMyRoutinesByIdsResponse> => {
@@ -946,7 +1015,10 @@ export const DeleteMyRoutinesByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutineById = createServerFn({ method: "POST" })
+export const DeleteMyRoutinesByIds = (request: DeleteMyRoutinesByIdsRequest) =>
+  DeleteMyRoutinesByIdsRpc({ data: request });
+
+const HardDeleteMyRoutineByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutineByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyRoutineByIdResponse> => {
@@ -985,7 +1057,11 @@ export const HardDeleteMyRoutineById = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutinesByIds = createServerFn({ method: "POST" })
+export const HardDeleteMyRoutineById = (
+  request: HardDeleteMyRoutineByIdRequest
+) => HardDeleteMyRoutineByIdRpc({ data: request });
+
+const HardDeleteMyRoutinesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutinesByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyRoutinesByIdsResponse> => {
@@ -1021,3 +1097,7 @@ export const HardDeleteMyRoutinesByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyRoutinesByIds = (
+  request: HardDeleteMyRoutinesByIdsRequest
+) => HardDeleteMyRoutinesByIdsRpc({ data: request });

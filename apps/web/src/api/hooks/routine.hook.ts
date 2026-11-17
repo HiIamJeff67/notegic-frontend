@@ -47,28 +47,6 @@ import {
   UpdateMyRoutineByIdRequestSchema,
   UpdateMyRoutinesByIdsRequestSchema,
 } from "@shared/api/interfaces/routine.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import { matchesSearch } from "@shared/lib/search/searchPage";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
-import { readSearchFieldInput } from "@/api/hooks/graphql/policies/searchPagination.policy";
-import {
-  clearSearchRoutines,
-  placeSearchRoutine,
-  removeSearchRoutines,
-  routineSearchCursor,
-} from "@/api/hooks/graphql/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
-import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateRoutineByStationId,
   mutationFnCreateRoutinesByStationIds,
@@ -93,7 +71,54 @@ import {
   queryFnVisualizeMyRoutineScheduledEndAtCount,
   queryFnVisualizeMyRoutineScheduledStartAtCount,
   queryFnVisualizeMyRoutineStatusCount,
-} from "@/api/invokers/routine.invoker";
+} from "@shared/api/invokers/routine.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import { matchesSearch } from "@shared/lib/search/searchPage";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateRoutineByStationId,
+  CreateRoutinesByStationIds,
+  DeleteMyRoutineById,
+  DeleteMyRoutinesByIds,
+  GetMyRoutineById,
+  GetMyRoutinesByStationId,
+  GetMyRoutinesByTimeRange,
+  HardDeleteMyRoutineById,
+  HardDeleteMyRoutinesByIds,
+  LinkRoutineItemById,
+  LinkRoutineItemsByIds,
+  LinkRoutineTagById,
+  LinkRoutineTagsByIds,
+  LinkRoutineTaskById,
+  LinkRoutineTasksByIds,
+  RestoreMyRoutineById,
+  RestoreMyRoutinesByIds,
+  UpdateMyRoutineById,
+  UpdateMyRoutinesByIds,
+  VisualizeMyRoutinePeriodCount,
+  VisualizeMyRoutineScheduledEndAtCount,
+  VisualizeMyRoutineScheduledStartAtCount,
+  VisualizeMyRoutineStatusCount,
+} from "@/api/functions/routine.serverFn";
+import { clearSearchItems } from "@/api/hooks/graphql/policies/searchItems.policy";
+import { readSearchFieldInput } from "@/api/hooks/graphql/policies/searchPagination.policy";
+import {
+  clearSearchRoutines,
+  placeSearchRoutine,
+  removeSearchRoutines,
+  routineSearchCursor,
+} from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
+import { clearSearchStations } from "@/api/hooks/graphql/policies/searchStations.policy";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { RoutineLocalSimulator } from "@/api/local/simulators/routine.simulator";
 import { RoutineLocalSynchronizer } from "@/api/local/synchronizers/routine.synchronizer";
 import { useVisualizeQuery } from "./visualize.hook";
@@ -110,7 +135,11 @@ export const useVisualizeMyRoutineStatusCount = (
       queryKeys.routine.visualizeMyStatusCount(
         currentRequest?.param.permission
       ),
-    queryFnVisualizeMyRoutineStatusCount,
+    request =>
+      queryFnVisualizeMyRoutineStatusCount(
+        request,
+        VisualizeMyRoutineStatusCount
+      ),
     options
   );
 
@@ -126,7 +155,11 @@ export const useVisualizeMyRoutinePeriodCount = (
       queryKeys.routine.visualizeMyPeriodCount(
         currentRequest?.param.permission
       ),
-    queryFnVisualizeMyRoutinePeriodCount,
+    request =>
+      queryFnVisualizeMyRoutinePeriodCount(
+        request,
+        VisualizeMyRoutinePeriodCount
+      ),
     options
   );
 
@@ -145,7 +178,11 @@ export const useVisualizeMyRoutineScheduledStartAtCount = (
         currentRequest?.param.queryRangeStartedAt,
         currentRequest?.param.queryRangeEndedAt
       ),
-    queryFnVisualizeMyRoutineScheduledStartAtCount,
+    request =>
+      queryFnVisualizeMyRoutineScheduledStartAtCount(
+        request,
+        VisualizeMyRoutineScheduledStartAtCount
+      ),
     options
   );
 
@@ -164,7 +201,11 @@ export const useVisualizeMyRoutineScheduledEndAtCount = (
         currentRequest?.param.queryRangeStartedAt,
         currentRequest?.param.queryRangeEndedAt
       ),
-    queryFnVisualizeMyRoutineScheduledEndAtCount,
+    request =>
+      queryFnVisualizeMyRoutineScheduledEndAtCount(
+        request,
+        VisualizeMyRoutineScheduledEndAtCount
+      ),
     options
   );
 
@@ -189,7 +230,7 @@ export const useGetMyRoutineById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRoutineById(request);
+      const response = await queryFnGetMyRoutineById(request, GetMyRoutineById);
       signal?.throwIfAborted();
       await RoutineLocalSynchronizer.syncGetMyRoutineById(response);
       return response;
@@ -264,7 +305,10 @@ export const useGetMyRoutinesByStationId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRoutinesByStationId(request);
+      const response = await queryFnGetMyRoutinesByStationId(
+        request,
+        GetMyRoutinesByStationId
+      );
       await RoutineLocalSynchronizer.syncGetMyRoutinesByStationId(response);
       return response;
     } catch (error) {
@@ -345,7 +389,10 @@ export const useGetMyRoutinesByTimeRange = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRoutinesByTimeRange(request);
+      const response = await queryFnGetMyRoutinesByTimeRange(
+        request,
+        GetMyRoutinesByTimeRange
+      );
       await RoutineLocalSynchronizer.syncGetMyRoutinesByTimeRange(response);
       return response;
     } catch (error) {
@@ -470,7 +517,10 @@ export const useCreateRoutineByStationId = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRoutineByStationId(request);
+      return await mutationFnCreateRoutineByStationId(
+        request,
+        CreateRoutineByStationId
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -568,7 +618,10 @@ export const useCreateRoutinesByStationIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRoutinesByStationIds(request);
+      return await mutationFnCreateRoutinesByStationIds(
+        request,
+        CreateRoutinesByStationIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -673,7 +726,7 @@ export const useUpdateMyRoutineById = (allowOffline = true) => {
       parse(UpdateMyRoutineByIdRequestSchema, request);
       if (isRemoteUnavailable())
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
-      return await mutationFnUpdateMyRoutineById(request);
+      return await mutationFnUpdateMyRoutineById(request, UpdateMyRoutineById);
     } catch (error) {
       if (!allowOffline || !NetworkExceptions.isMissingNetworkError(error))
         throw error;
@@ -806,7 +859,10 @@ export const useUpdateMyRoutinesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyRoutinesByIds(request);
+      return await mutationFnUpdateMyRoutinesByIds(
+        request,
+        UpdateMyRoutinesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -935,7 +991,7 @@ export const useLinkRoutineTagById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineTagById(request);
+      return await mutationFnLinkRoutineTagById(request, LinkRoutineTagById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1091,7 +1147,10 @@ export const useLinkRoutineTagsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineTagsByIds(request);
+      return await mutationFnLinkRoutineTagsByIds(
+        request,
+        LinkRoutineTagsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1261,7 +1320,7 @@ export const useLinkRoutineTaskById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineTaskById(request);
+      return await mutationFnLinkRoutineTaskById(request, LinkRoutineTaskById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1437,7 +1496,10 @@ export const useLinkRoutineTasksByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineTasksByIds(request);
+      return await mutationFnLinkRoutineTasksByIds(
+        request,
+        LinkRoutineTasksByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1620,7 +1682,7 @@ export const useLinkRoutineItemById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineItemById(request);
+      return await mutationFnLinkRoutineItemById(request, LinkRoutineItemById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1776,7 +1838,10 @@ export const useLinkRoutineItemsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnLinkRoutineItemsByIds(request);
+      return await mutationFnLinkRoutineItemsByIds(
+        request,
+        LinkRoutineItemsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1941,7 +2006,10 @@ export const useRestoreMyRoutineById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyRoutineById(request);
+      return await mutationFnRestoreMyRoutineById(
+        request,
+        RestoreMyRoutineById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1996,7 +2064,10 @@ export const useRestoreMyRoutinesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyRoutinesByIds(request);
+      return await mutationFnRestoreMyRoutinesByIds(
+        request,
+        RestoreMyRoutinesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -2057,7 +2128,7 @@ export const useDeleteMyRoutineById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyRoutineById(request);
+      return await mutationFnDeleteMyRoutineById(request, DeleteMyRoutineById);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -2123,7 +2194,10 @@ export const useDeleteMyRoutinesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyRoutinesByIds(request);
+      return await mutationFnDeleteMyRoutinesByIds(
+        request,
+        DeleteMyRoutinesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -2194,7 +2268,10 @@ export const useHardDeleteMyRoutineById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyRoutineById(request);
+      return await mutationFnHardDeleteMyRoutineById(
+        request,
+        HardDeleteMyRoutineById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -2264,7 +2341,10 @@ export const useHardDeleteMyRoutinesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyRoutinesByIds(request);
+      return await mutationFnHardDeleteMyRoutinesByIds(
+        request,
+        HardDeleteMyRoutinesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||

@@ -23,7 +23,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyRoutineTagById = createServerFn({ method: "GET" })
+const GetMyRoutineTagByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyRoutineTagByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyRoutineTagByIdResponse> => {
     const params = new URLSearchParams(
@@ -73,7 +73,10 @@ export const GetMyRoutineTagById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
+export const GetMyRoutineTagById = (request: GetMyRoutineTagByIdRequest) =>
+  GetMyRoutineTagByIdRpc({ data: request });
+
+const GetAllMyRoutineTagsRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetAllMyRoutineTagsRequest) => data)
   .handler(async ({ data: request }): Promise<GetAllMyRoutineTagsResponse> => {
     const params = new URLSearchParams({
@@ -110,7 +113,10 @@ export const GetAllMyRoutineTags = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const CreateRoutineTag = createServerFn({ method: "POST" })
+export const GetAllMyRoutineTags = (request: GetAllMyRoutineTagsRequest) =>
+  GetAllMyRoutineTagsRpc({ data: request });
+
+const CreateRoutineTagRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRoutineTagRequest) => data)
   .handler(async ({ data: request }): Promise<CreateRoutineTagResponse> => {
     const url =
@@ -143,7 +149,10 @@ export const CreateRoutineTag = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const CreateRoutineTags = createServerFn({ method: "POST" })
+export const CreateRoutineTag = (request: CreateRoutineTagRequest) =>
+  CreateRoutineTagRpc({ data: request });
+
+const CreateRoutineTagsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateRoutineTagsRequest) => data)
   .handler(async ({ data: request }): Promise<CreateRoutineTagsResponse> => {
     const url =
@@ -176,7 +185,10 @@ export const CreateRoutineTags = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
+export const CreateRoutineTags = (request: CreateRoutineTagsRequest) =>
+  CreateRoutineTagsRpc({ data: request });
+
+const UpdateMyRoutineTagByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRoutineTagByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyRoutineTagByIdResponse> => {
@@ -215,7 +227,11 @@ export const UpdateMyRoutineTagById = createServerFn({ method: "POST" })
     }
   );
 
-export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
+export const UpdateMyRoutineTagById = (
+  request: UpdateMyRoutineTagByIdRequest
+) => UpdateMyRoutineTagByIdRpc({ data: request });
+
+const UpdateMyRoutineTagsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyRoutineTagsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyRoutineTagsByIdsResponse> => {
@@ -252,7 +268,11 @@ export const UpdateMyRoutineTagsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
+export const UpdateMyRoutineTagsByIds = (
+  request: UpdateMyRoutineTagsByIdsRequest
+) => UpdateMyRoutineTagsByIdsRpc({ data: request });
+
+const HardDeleteMyRoutineTagByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutineTagByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyRoutineTagByIdResponse> => {
@@ -291,7 +311,11 @@ export const HardDeleteMyRoutineTagById = createServerFn({ method: "POST" })
     }
   );
 
-export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
+export const HardDeleteMyRoutineTagById = (
+  request: HardDeleteMyRoutineTagByIdRequest
+) => HardDeleteMyRoutineTagByIdRpc({ data: request });
+
+const HardDeleteMyRoutineTagsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyRoutineTagsByIdsRequest) => data)
   .handler(
     async ({
@@ -329,3 +353,7 @@ export const HardDeleteMyRoutineTagsByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyRoutineTagsByIds = (
+  request: HardDeleteMyRoutineTagsByIdsRequest
+) => HardDeleteMyRoutineTagsByIdsRpc({ data: request });

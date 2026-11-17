@@ -9,6 +9,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { SidebarProvider } from "@shared/components/ui/sidebar";
 import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
+import { ScreenProvider } from "@shared/providers/ScreenProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { ContextType } from "react";
 import { searchPaginationPolicy } from "@/api/hooks/graphql/policies/searchPagination.policy";
@@ -23,7 +24,6 @@ import {
   LocalPreferencesContext,
 } from "@/providers/LocalPreferencesProvider";
 import { RoutineTaskDependencyGraphDraftProvider } from "@/providers/RoutineTaskDependencyGraphDraftProvider";
-import { ScreenProvider } from "@/providers/ScreenProvider";
 import { getDefaultRoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import { getDefaultRoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import { getDefaultRoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";

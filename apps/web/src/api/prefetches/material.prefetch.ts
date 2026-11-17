@@ -3,17 +3,23 @@ import {
   GetMyMaterialsByParentSubShelfIdRequest,
   GetMyMaterialsByRootShelfIdRequest,
 } from "@shared/api/interfaces/material.interface";
+import {
+  queryFnGetMyMaterialAndItsParentById,
+  queryFnGetMyMaterialById,
+  queryFnGetMyMaterialsByParentSubShelfId,
+  queryFnGetMyMaterialsByRootShelfId,
+} from "@shared/api/invokers/material.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { PrefetchQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { QueryClient } from "@tanstack/react-query";
 import type { UUID } from "crypto";
 import {
-  queryFnGetMyMaterialAndItsParentById,
-  queryFnGetMyMaterialById,
-  queryFnGetMyMaterialsByParentSubShelfId,
-  queryFnGetMyMaterialsByRootShelfId,
-} from "@/api/invokers/material.invoker";
+  GetMyMaterialAndItsParentById,
+  GetMyMaterialById,
+  GetMyMaterialsByParentSubShelfId,
+  GetMyMaterialsByRootShelfId,
+} from "@/api/functions/material.serverFn";
 
 export const prefetchGetMyMaterialById = (initialQueryClient?: QueryClient) => {
   const queryClient = initialQueryClient ?? getQueryClient();
@@ -27,7 +33,8 @@ export const prefetchGetMyMaterialById = (initialQueryClient?: QueryClient) => {
         false,
         prefetchRequest.param.isDeleted ?? false
       ),
-      queryFn: async () => await queryFnGetMyMaterialById(prefetchRequest),
+      queryFn: async () =>
+        await queryFnGetMyMaterialById(prefetchRequest, GetMyMaterialById),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };
@@ -54,7 +61,10 @@ export const prefetchGetMyMaterialAndItsParentById = (
         prefetchRequest.param.isDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetMyMaterialAndItsParentById(prefetchRequest),
+        await queryFnGetMyMaterialAndItsParentById(
+          prefetchRequest,
+          GetMyMaterialAndItsParentById
+        ),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };
@@ -80,7 +90,10 @@ export const prefetchGetMyMaterialsByParentSubShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetMyMaterialsByParentSubShelfId(prefetchRequest),
+        await queryFnGetMyMaterialsByParentSubShelfId(
+          prefetchRequest,
+          GetMyMaterialsByParentSubShelfId
+        ),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };
@@ -106,7 +119,10 @@ export const prefetchGetMyMaterialsByRootShelfId = (
         prefetchRequest.param.areDeleted ?? false
       ),
       queryFn: async () =>
-        await queryFnGetMyMaterialsByRootShelfId(prefetchRequest),
+        await queryFnGetMyMaterialsByRootShelfId(
+          prefetchRequest,
+          GetMyMaterialsByRootShelfId
+        ),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };

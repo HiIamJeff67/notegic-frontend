@@ -1,11 +1,11 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start";
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
+import appCSS from "@shared/styles/globals.css?url";
 import { createRootRouteWithContext, redirect } from "@tanstack/react-router";
-import appCSS from "@/styles/globals.css?url";
 import { RootDocument } from "@/pages/RootDocument";
 import { RootNotFoundPage } from "@/pages/RootNotFoundPage";
 // @ts-ignore: allow side-effect import of global CSS without declaration
-import "@/styles/globals.css";
+import "@shared/styles/globals.css";
 
 const isolatedDocument =
   typeof window === "undefined"

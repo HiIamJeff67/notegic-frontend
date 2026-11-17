@@ -14,6 +14,13 @@ import type {
   UpdateRoutineTaskDependencyByRoutineIdResponse,
   UpdateRoutineTaskGraphByRoutineIdRequest,
 } from "@shared/api/interfaces/routineTaskDependency.interface";
+import {
+  mutationFnCreateRoutineTaskDependencyByRoutineId,
+  mutationFnDeleteRoutineTaskDependencyByRoutineId,
+  mutationFnUpdateRoutineTaskDependencyByRoutineId,
+  mutationFnUpdateRoutineTaskGraphByRoutineId,
+  queryFnGetRoutineTaskDependenciesByRoutineId,
+} from "@shared/api/invokers/routineTaskDependency.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -21,12 +28,12 @@ import { type UseQueryOptions, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
-  mutationFnCreateRoutineTaskDependencyByRoutineId,
-  mutationFnDeleteRoutineTaskDependencyByRoutineId,
-  mutationFnUpdateRoutineTaskDependencyByRoutineId,
-  mutationFnUpdateRoutineTaskGraphByRoutineId,
-  queryFnGetRoutineTaskDependenciesByRoutineId,
-} from "@/api/invokers/routineTaskDependency.invoker";
+  CreateRoutineTaskDependencyByRoutineId,
+  DeleteRoutineTaskDependencyByRoutineId,
+  GetRoutineTaskDependenciesByRoutineId,
+  UpdateRoutineTaskDependencyByRoutineId,
+  UpdateRoutineTaskGraphByRoutineId,
+} from "@/api/functions/routineTaskDependency.serverFn";
 import { RoutineTaskDependencyLocalSimulator } from "@/api/local/simulators/routineTaskDependency.simulator";
 import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
 
@@ -46,8 +53,10 @@ export const useGetRoutineTaskDependenciesByRoutineId = (
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        const response =
-          await queryFnGetRoutineTaskDependenciesByRoutineId(request);
+        const response = await queryFnGetRoutineTaskDependenciesByRoutineId(
+          request,
+          GetRoutineTaskDependenciesByRoutineId
+        );
         await RoutineTaskDependencyLocalSynchronizer.syncGetRoutineTaskDependenciesByRoutineId(
           request,
           response
@@ -111,7 +120,10 @@ export const useCreateRoutineTaskDependencyByRoutineId = () => {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        return await mutationFnCreateRoutineTaskDependencyByRoutineId(request);
+        return await mutationFnCreateRoutineTaskDependencyByRoutineId(
+          request,
+          CreateRoutineTaskDependencyByRoutineId
+        );
       } catch (error) {
         if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 
@@ -155,8 +167,10 @@ export const useUpdateRoutineTaskGraphByRoutineId = () =>
       if (typeof navigator !== "undefined" && !navigator.onLine) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      const response =
-        await mutationFnUpdateRoutineTaskGraphByRoutineId(request);
+      const response = await mutationFnUpdateRoutineTaskGraphByRoutineId(
+        request,
+        UpdateRoutineTaskGraphByRoutineId
+      );
       return response;
     },
   });
@@ -173,7 +187,10 @@ export const useUpdateRoutineTaskDependencyByRoutineId = () => {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        return await mutationFnUpdateRoutineTaskDependencyByRoutineId(request);
+        return await mutationFnUpdateRoutineTaskDependencyByRoutineId(
+          request,
+          UpdateRoutineTaskDependencyByRoutineId
+        );
       } catch (error) {
         if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 
@@ -223,7 +240,10 @@ export const useDeleteRoutineTaskDependencyByRoutineId = () => {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        return await mutationFnDeleteRoutineTaskDependencyByRoutineId(request);
+        return await mutationFnDeleteRoutineTaskDependencyByRoutineId(
+          request,
+          DeleteRoutineTaskDependencyByRoutineId
+        );
       } catch (error) {
         if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
 

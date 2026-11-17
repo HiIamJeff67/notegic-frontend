@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import { IconProps } from "@/components/icons/iconProps.type";
 
 interface AvatarIconProps extends IconProps {

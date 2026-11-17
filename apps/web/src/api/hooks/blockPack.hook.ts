@@ -41,18 +41,6 @@ import {
   UpdateMyBlockPackByIdRequestSchema,
   UpdateMyBlockPacksByIdsRequestSchema,
 } from "@shared/api/interfaces/blockPack.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import {
-  type QueryKey,
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import {
   mutationFnCreateBlockPack,
   mutationFnCreateBlockPacks,
@@ -69,7 +57,36 @@ import {
   queryFnGetMyBlockPackById,
   queryFnGetMyBlockPacksByParentSubShelfId,
   queryFnGetMyBlockPacksByRootShelfId,
-} from "@/api/invokers/blockPack.invoker";
+} from "@shared/api/invokers/blockPack.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import {
+  CreateBlockPack,
+  CreateBlockPacks,
+  DeleteMyBlockPackById,
+  DeleteMyBlockPacksByIds,
+  GetMyBlockPackById,
+  GetMyBlockPacksByParentSubShelfId,
+  GetMyBlockPacksByRootShelfId,
+  HardDeleteMyBlockPacksByIds,
+  MoveMyBlockPackById,
+  MoveMyBlockPacksByParentSubShelfId,
+  MoveMyBlockPacksByParentSubShelfIds,
+  RestoreMyBlockPackById,
+  RestoreMyBlockPacksByIds,
+  UpdateMyBlockPackById,
+  UpdateMyBlockPacksByIds,
+} from "@/api/functions/blockPack.serverFn";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { BlockPackLocalSimulator } from "@/api/local/simulators/blockPack.simulator";
 import { BlockPackLocalSynchronizer } from "@/api/local/synchronizers/blockPack.synchronizer";
 
@@ -94,7 +111,10 @@ export const useGetMyBlockPackById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyBlockPackById(request);
+      const response = await queryFnGetMyBlockPackById(
+        request,
+        GetMyBlockPackById
+      );
       signal?.throwIfAborted();
       await BlockPackLocalSynchronizer.syncGetMyBlockPackById(response);
       return response;
@@ -180,7 +200,10 @@ export const useGetMyBlockPacksByParentSubShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyBlockPacksByParentSubShelfId(request);
+      const response = await queryFnGetMyBlockPacksByParentSubShelfId(
+        request,
+        GetMyBlockPacksByParentSubShelfId
+      );
       await BlockPackLocalSynchronizer.syncGetMyBlockPacksByParentSubShelfId(
         response
       );
@@ -267,7 +290,10 @@ export const useGetMyBlockPacksByRootShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyBlockPacksByRootShelfId(request);
+      const response = await queryFnGetMyBlockPacksByRootShelfId(
+        request,
+        GetMyBlockPacksByRootShelfId
+      );
       await BlockPackLocalSynchronizer.syncGetMyBlockPacksByRootShelfId(
         response
       );
@@ -343,7 +369,7 @@ export const useCreateBlockPack = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateBlockPack(request);
+      return await mutationFnCreateBlockPack(request, CreateBlockPack);
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateCreateBlockPack(request);
@@ -396,7 +422,7 @@ export const useCreateBlockPacks = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateBlockPacks(request);
+      return await mutationFnCreateBlockPacks(request, CreateBlockPacks);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -462,7 +488,10 @@ export const useUpdateMyBlockPackById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyBlockPackById(request);
+      return await mutationFnUpdateMyBlockPackById(
+        request,
+        UpdateMyBlockPackById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateUpdateMyBlockPackById(request);
@@ -515,7 +544,10 @@ export const useUpdateMyBlockPacksByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyBlockPacksByIds(request);
+      return await mutationFnUpdateMyBlockPacksByIds(
+        request,
+        UpdateMyBlockPacksByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -581,7 +613,7 @@ export const useMoveMyBlockPackById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMyBlockPackById(request);
+      return await mutationFnMoveMyBlockPackById(request, MoveMyBlockPackById);
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateMoveMyBlockPackById(request);
@@ -638,7 +670,10 @@ export const useMoveMyBlockPacksByParentSubShelfId = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMyBlockPacksByParentSubShelfId(request);
+      return await mutationFnMoveMyBlockPacksByParentSubShelfId(
+        request,
+        MoveMyBlockPacksByParentSubShelfId
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateMoveMyBlockPacksByParentSubShelfId(
@@ -708,7 +743,10 @@ export const useMoveMyBlockPacksByParentSubShelfIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMyBlockPacksByParentSubShelfIds(request);
+      return await mutationFnMoveMyBlockPacksByParentSubShelfIds(
+        request,
+        MoveMyBlockPacksByParentSubShelfIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -791,7 +829,10 @@ export const useRestoreMyBlockPackById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyBlockPackById(request);
+      return await mutationFnRestoreMyBlockPackById(
+        request,
+        RestoreMyBlockPackById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateRestoreMyBlockPackById(request);
@@ -847,7 +888,10 @@ export const useRestoreMyBlockPacksByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMyBlockPacksByIds(request);
+      return await mutationFnRestoreMyBlockPacksByIds(
+        request,
+        RestoreMyBlockPacksByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -919,7 +963,10 @@ export const useDeleteMyBlockPackById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyBlockPackById(request);
+      return await mutationFnDeleteMyBlockPackById(
+        request,
+        DeleteMyBlockPackById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await BlockPackLocalSimulator.simulateDeleteMyBlockPackById(request);
@@ -977,7 +1024,10 @@ export const useDeleteMyBlockPacksByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMyBlockPacksByIds(request);
+      return await mutationFnDeleteMyBlockPacksByIds(
+        request,
+        DeleteMyBlockPacksByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1055,7 +1105,10 @@ export const useHardDeleteMyBlockPacksByIds = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnHardDeleteMyBlockPacksByIds(request);
+        return await mutationFnHardDeleteMyBlockPacksByIds(
+          request,
+          HardDeleteMyBlockPacksByIds
+        );
       } catch (error) {
         if (
           options.offlineFallback === false ||

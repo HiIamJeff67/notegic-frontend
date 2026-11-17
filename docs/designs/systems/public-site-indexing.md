@@ -60,7 +60,7 @@ home page.
 
 ## Verification
 
-`apps/web/src/seo/publicPage.test.ts` checks the catalog, canonical host,
+`apps/web/test/seo/publicPage.test.ts` checks the catalog, canonical host,
 FAQ parity, sitemap membership, and the preview robots rule. A production
 check still has to request the deployed origin and confirm the SSR HTML,
 `robots.txt`, and `sitemap.xml`.

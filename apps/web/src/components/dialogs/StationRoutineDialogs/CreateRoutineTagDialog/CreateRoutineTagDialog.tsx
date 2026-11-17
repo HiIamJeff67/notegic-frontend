@@ -16,7 +16,7 @@ import toast from "@shared/lib/toast/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import ColorSelector from "@/components/commons/ColorSelector/ColorSelector";
-import SupportedIconTable from "@/components/commons/SupportedIconTable/SupportedIconTable";
+import SupportedIconTable from "@shared/components/commons/SupportedIconTable/SupportedIconTable";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";

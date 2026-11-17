@@ -17,7 +17,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const CreateMyRealtimeConnectionTicket = createServerFn({
+const CreateMyRealtimeConnectionTicketRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: CreateMyRealtimeConnectionTicketRequest) => data)
@@ -57,7 +57,11 @@ export const CreateMyRealtimeConnectionTicket = createServerFn({
     }
   );
 
-export const CreateMyBlockPackChannelTicket = createServerFn({
+export const CreateMyRealtimeConnectionTicket = (
+  request: CreateMyRealtimeConnectionTicketRequest
+) => CreateMyRealtimeConnectionTicketRpc({ data: request });
+
+const CreateMyBlockPackChannelTicketRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: CreateMyBlockPackChannelTicketRequest) => data)
@@ -97,7 +101,11 @@ export const CreateMyBlockPackChannelTicket = createServerFn({
     }
   );
 
-export const GetBlockPackParticipants = createServerFn({ method: "GET" })
+export const CreateMyBlockPackChannelTicket = (
+  request: CreateMyBlockPackChannelTicketRequest
+) => CreateMyBlockPackChannelTicketRpc({ data: request });
+
+const GetBlockPackParticipantsRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetBlockPackParticipantsRequest) => data)
   .handler(
     async ({ data: request }): Promise<GetBlockPackParticipantsResponse> => {
@@ -134,3 +142,7 @@ export const GetBlockPackParticipants = createServerFn({ method: "GET" })
       return formattedResponse;
     }
   );
+
+export const GetBlockPackParticipants = (
+  request: GetBlockPackParticipantsRequest
+) => GetBlockPackParticipantsRpc({ data: request });

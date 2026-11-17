@@ -1,6 +1,6 @@
 import { useTranslation } from "@/hooks/useTranslation";
 import { Dispatch, lazy, SetStateAction } from "react";
-import { DeferredSuspense } from "@/components/commons/DeferredSuspense/DeferredSuspense";
+import { DeferredSuspense } from "@shared/components/commons/DeferredSuspense/DeferredSuspense";
 import {
   EditWidgetDialog,
   EditWidgetDialogContentSkeleton,

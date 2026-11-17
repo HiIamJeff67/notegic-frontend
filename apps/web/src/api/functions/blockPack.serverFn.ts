@@ -37,7 +37,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyBlockPackById = createServerFn({ method: "GET" })
+const GetMyBlockPackByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlockPackByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyBlockPackByIdResponse> => {
     const { blockPackId, isDeleted = false } = request.param;
@@ -66,7 +66,10 @@ export const GetMyBlockPackById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyBlockPacksByParentSubShelfId = createServerFn({
+export const GetMyBlockPackById = (request: GetMyBlockPackByIdRequest) =>
+  GetMyBlockPackByIdRpc({ data: request });
+
+const GetMyBlockPacksByParentSubShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyBlockPacksByParentSubShelfIdRequest) => data)
@@ -103,7 +106,11 @@ export const GetMyBlockPacksByParentSubShelfId = createServerFn({
     }
   );
 
-export const GetMyBlockPacksByRootShelfId = createServerFn({
+export const GetMyBlockPacksByParentSubShelfId = (
+  request: GetMyBlockPacksByParentSubShelfIdRequest
+) => GetMyBlockPacksByParentSubShelfIdRpc({ data: request });
+
+const GetMyBlockPacksByRootShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyBlockPacksByRootShelfIdRequest) => data)
@@ -140,7 +147,11 @@ export const GetMyBlockPacksByRootShelfId = createServerFn({
     }
   );
 
-export const CreateBlockPack = createServerFn({ method: "POST" })
+export const GetMyBlockPacksByRootShelfId = (
+  request: GetMyBlockPacksByRootShelfIdRequest
+) => GetMyBlockPacksByRootShelfIdRpc({ data: request });
+
+const CreateBlockPackRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateBlockPackRequest) => data)
   .handler(async ({ data: request }): Promise<CreateBlockPackResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -172,7 +183,10 @@ export const CreateBlockPack = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const CreateBlockPacks = createServerFn({ method: "POST" })
+export const CreateBlockPack = (request: CreateBlockPackRequest) =>
+  CreateBlockPackRpc({ data: request });
+
+const CreateBlockPacksRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateBlockPacksRequest) => data)
   .handler(async ({ data: request }): Promise<CreateBlockPacksResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -202,7 +216,10 @@ export const CreateBlockPacks = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
+export const CreateBlockPacks = (request: CreateBlockPacksRequest) =>
+  CreateBlockPacksRpc({ data: request });
+
+const UpdateMyBlockPackByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyBlockPackByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<UpdateMyBlockPackByIdResponse> => {
@@ -238,7 +255,10 @@ export const UpdateMyBlockPackById = createServerFn({ method: "POST" })
     }
   );
 
-export const UpdateMyBlockPacksByIds = createServerFn({
+export const UpdateMyBlockPackById = (request: UpdateMyBlockPackByIdRequest) =>
+  UpdateMyBlockPackByIdRpc({ data: request });
+
+const UpdateMyBlockPacksByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: UpdateMyBlockPacksByIdsRequest) => data)
@@ -276,7 +296,11 @@ export const UpdateMyBlockPacksByIds = createServerFn({
     }
   );
 
-export const MoveMyBlockPackById = createServerFn({ method: "POST" })
+export const UpdateMyBlockPacksByIds = (
+  request: UpdateMyBlockPacksByIdsRequest
+) => UpdateMyBlockPacksByIdsRpc({ data: request });
+
+const MoveMyBlockPackByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMyBlockPackByIdRequest) => data)
   .handler(async ({ data: request }): Promise<MoveMyBlockPackByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -306,7 +330,10 @@ export const MoveMyBlockPackById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
+export const MoveMyBlockPackById = (request: MoveMyBlockPackByIdRequest) =>
+  MoveMyBlockPackByIdRpc({ data: request });
+
+const MoveMyBlockPacksByParentSubShelfIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: MoveMyBlockPacksByParentSubShelfIdRequest) => data)
@@ -346,7 +373,11 @@ export const MoveMyBlockPacksByParentSubShelfId = createServerFn({
     }
   );
 
-export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
+export const MoveMyBlockPacksByParentSubShelfId = (
+  request: MoveMyBlockPacksByParentSubShelfIdRequest
+) => MoveMyBlockPacksByParentSubShelfIdRpc({ data: request });
+
+const MoveMyBlockPacksByParentSubShelfIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: MoveMyBlockPacksByParentSubShelfIdsRequest) => data)
@@ -386,7 +417,11 @@ export const MoveMyBlockPacksByParentSubShelfIds = createServerFn({
     }
   );
 
-export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
+export const MoveMyBlockPacksByParentSubShelfIds = (
+  request: MoveMyBlockPacksByParentSubShelfIdsRequest
+) => MoveMyBlockPacksByParentSubShelfIdsRpc({ data: request });
+
+const RestoreMyBlockPackByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyBlockPackByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMyBlockPackByIdResponse> => {
@@ -422,7 +457,11 @@ export const RestoreMyBlockPackById = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMyBlockPacksByIds = createServerFn({
+export const RestoreMyBlockPackById = (
+  request: RestoreMyBlockPackByIdRequest
+) => RestoreMyBlockPackByIdRpc({ data: request });
+
+const RestoreMyBlockPacksByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: RestoreMyBlockPacksByIdsRequest) => data)
@@ -460,7 +499,11 @@ export const RestoreMyBlockPacksByIds = createServerFn({
     }
   );
 
-export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
+export const RestoreMyBlockPacksByIds = (
+  request: RestoreMyBlockPacksByIdsRequest
+) => RestoreMyBlockPacksByIdsRpc({ data: request });
+
+const DeleteMyBlockPackByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyBlockPackByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteMyBlockPackByIdResponse> => {
@@ -496,7 +539,10 @@ export const DeleteMyBlockPackById = createServerFn({ method: "POST" })
     }
   );
 
-export const DeleteMyBlockPacksByIds = createServerFn({
+export const DeleteMyBlockPackById = (request: DeleteMyBlockPackByIdRequest) =>
+  DeleteMyBlockPackByIdRpc({ data: request });
+
+const DeleteMyBlockPacksByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: DeleteMyBlockPacksByIdsRequest) => data)
@@ -534,7 +580,11 @@ export const DeleteMyBlockPacksByIds = createServerFn({
     }
   );
 
-export const HardDeleteMyBlockPacksByIds = createServerFn({ method: "POST" })
+export const DeleteMyBlockPacksByIds = (
+  request: DeleteMyBlockPacksByIdsRequest
+) => DeleteMyBlockPacksByIdsRpc({ data: request });
+
+const HardDeleteMyBlockPacksByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyBlockPacksByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyBlockPacksByIdsResponse> => {
@@ -569,3 +619,7 @@ export const HardDeleteMyBlockPacksByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyBlockPacksByIds = (
+  request: HardDeleteMyBlockPacksByIdsRequest
+) => HardDeleteMyBlockPacksByIdsRpc({ data: request });

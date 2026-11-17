@@ -4,6 +4,10 @@ import type {
   GetMyInfoRequest,
   GetMyInfoResponse,
 } from "@shared/api/interfaces/userInfo.interface";
+import {
+  mutationFnUpdateMyInfo,
+  queryFnGetMyInfo,
+} from "@shared/api/invokers/userInfo.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import {
   PresignedObjectURLStaleTime,
@@ -15,10 +19,8 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import {
-  mutationFnUpdateMyInfo,
-  queryFnGetMyInfo,
-} from "@/api/invokers/userInfo.invoker";
+import { UpdateMyInfo } from "@/api/functions/userInfo.clientFn";
+import { GetMyInfo } from "@/api/functions/userInfo.serverFn";
 
 export const useGetMyInfo = (
   hookRequest?: GetMyInfoRequest,
@@ -36,7 +38,7 @@ export const useGetMyInfo = (
         );
       }
 
-      const response = await queryFnGetMyInfo(request);
+      const response = await queryFnGetMyInfo(request, GetMyInfo);
       return response;
     } catch (error) {
       throw error;
@@ -71,7 +73,8 @@ export const useUpdateMyInfo = () => {
   const queryClient = getQueryClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnUpdateMyInfo,
+    mutationFn: (request: Parameters<typeof mutationFnUpdateMyInfo>[0]) =>
+      mutationFnUpdateMyInfo(request, UpdateMyInfo),
     onSuccess: (response, request) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userInfo.my() });
     },

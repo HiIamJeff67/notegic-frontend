@@ -11,7 +11,7 @@ import { build } from "esbuild";
 const fixture = `
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from 'react-i18next';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
 import { Toaster } from '@shared/components/ui/toaster';
@@ -77,7 +77,7 @@ const mocks: Record<string, string> = {
       });
     }};
     export const useSaveMyMaterialById = () => mutator;`,
-  "@/components/commons/DropFileZone/DropFileZone": `export default function DropFileZone({ onDrop }) {
+  "@shared/components/commons/DropFileZone/DropFileZone": `export default function DropFileZone({ onDrop }) {
     window.startImport = () => onDrop([new File(['note'], 'note.txt')]);
     return null;
   }`,

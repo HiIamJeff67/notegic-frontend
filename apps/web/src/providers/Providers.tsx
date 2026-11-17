@@ -8,7 +8,7 @@ import { ClipboardGuardProvider } from "@/providers/ClipboardGuardProvider";
 import { LoadingProvider } from "@/providers/LoadingProvider";
 import { LocalPreferencesProvider } from "@/providers/LocalPreferencesProvider";
 import { PerformanceProvider } from "@/providers/PerformanceProvider";
-import { ScreenProvider } from "@/providers/ScreenProvider";
+import { ScreenProvider } from "@shared/providers/ScreenProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {

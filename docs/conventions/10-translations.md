@@ -15,13 +15,14 @@ providers and custom hooks.
 | Web instance initialization | `apps/web/src/i18n.ts` (`@/i18n`) |
 | Account language restoration and persistence | `UserSettingsProvider` |
 
-Import `useTranslation` directly from the project module, not from
-`react-i18next`. Do not import the Web singleton just to translate inside React
-code. The React-specific adapter and its test live in `apps/web/src/hooks/`,
-outside the framework-neutral `shared/i18n/` package. Non-React desktop/mobile
-consumers use the i18n core without importing a Web hook. Shared code must not
-import `@/hooks/useTranslation`; React chart rendering belongs to Web's
-`components/charts/` and uses the Web hook there.
+Web components, providers, and hooks import `useTranslation` from
+`@/hooks/useTranslation`, not from `react-i18next`. Do not import the Web
+singleton just to translate inside React code. The React-specific adapter and
+its test live in `apps/web/src/hooks/`, outside the framework-neutral
+`shared/i18n/` package. Non-React desktop/mobile consumers use the i18n core
+without importing a Web hook. Shared React code, including charts and the
+controls in `shared/components/`, uses `useTranslation` from `react-i18next`
+and must not import `@/hooks/useTranslation`.
 
 ```tsx
 import { useTranslation } from "@/hooks/useTranslation";
@@ -154,7 +155,7 @@ silently diverge. UI prevalidation must keep the first issue's presentation too.
 ```ts
 const validatedRequest = parse(UpdateMeRequestSchema, request);
 try {
-  const response = await UpdateMe({ data: validatedRequest });
+  const response = await func(validatedRequest);
   return UpdateMeResponseSchema.parse(response);
 } catch (error) {
   if (error instanceof ZodError) {
@@ -259,7 +260,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 6. Verify with `npm run typecheck` and:
 
    ```sh
-   npm run test:unit -- apps/web/src/hooks/useTranslation.test.tsx shared/i18n/error.test.ts shared/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
+   npm run test:unit -- apps/web/test/hooks/useTranslation.test.tsx test/i18n/error.test.ts test/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
    ```
 
 The Chromium integration test uses an isolated browser and mocked API/storage

@@ -8,7 +8,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyInfo = createServerFn({ method: "GET" })
+const GetMyInfoRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyInfoRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyInfoResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -34,3 +34,6 @@ export const GetMyInfo = createServerFn({ method: "GET" })
 
     return formattedResponse;
   });
+
+export const GetMyInfo = (request: GetMyInfoRequest) =>
+  GetMyInfoRpc({ data: request });

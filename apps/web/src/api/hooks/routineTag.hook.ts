@@ -18,17 +18,6 @@ import type {
   UpdateMyRoutineTagByIdRequest,
   UpdateMyRoutineTagsByIdsRequest,
 } from "@shared/api/interfaces/routineTag.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
-import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
-import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
 import {
   mutationFnCreateRoutineTag,
   mutationFnCreateRoutineTags,
@@ -38,7 +27,28 @@ import {
   mutationFnUpdateMyRoutineTagsByIds,
   queryFnGetAllMyRoutineTags,
   queryFnGetMyRoutineTagById,
-} from "@/api/invokers/routineTag.invoker";
+} from "@shared/api/invokers/routineTag.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateRoutineTag,
+  CreateRoutineTags,
+  GetAllMyRoutineTags,
+  GetMyRoutineTagById,
+  HardDeleteMyRoutineTagById,
+  HardDeleteMyRoutineTagsByIds,
+  UpdateMyRoutineTagById,
+  UpdateMyRoutineTagsByIds,
+} from "@/api/functions/routineTag.serverFn";
+import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
+import { clearSearchRoutineTags } from "@/api/hooks/graphql/policies/searchRoutineTags.policy";
 import { RoutineTagLocalSimulator } from "@/api/local/simulators/routineTag.simulator";
 import { RoutineTagLocalSynchronizer } from "@/api/local/synchronizers/routineTag.synchronizer";
 
@@ -62,7 +72,10 @@ export const useGetMyRoutineTagById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRoutineTagById(request);
+      const response = await queryFnGetMyRoutineTagById(
+        request,
+        GetMyRoutineTagById
+      );
       await RoutineTagLocalSynchronizer.syncGetMyRoutineTagById(response);
       return response;
     } catch (error) {
@@ -143,7 +156,10 @@ export const useGetAllMyRoutineTags = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetAllMyRoutineTags(request);
+      const response = await queryFnGetAllMyRoutineTags(
+        request,
+        GetAllMyRoutineTags
+      );
       await RoutineTagLocalSynchronizer.syncGetAllMyRoutineTags(response);
       return response;
     } catch (error) {
@@ -213,7 +229,7 @@ export const useCreateRoutineTag = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRoutineTag(request);
+      return await mutationFnCreateRoutineTag(request, CreateRoutineTag);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -270,7 +286,7 @@ export const useCreateRoutineTags = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateRoutineTags(request);
+      return await mutationFnCreateRoutineTags(request, CreateRoutineTags);
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -328,7 +344,10 @@ export const useUpdateMyRoutineTagById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyRoutineTagById(request);
+      return await mutationFnUpdateMyRoutineTagById(
+        request,
+        UpdateMyRoutineTagById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -381,7 +400,10 @@ export const useUpdateMyRoutineTagsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMyRoutineTagsByIds(request);
+      return await mutationFnUpdateMyRoutineTagsByIds(
+        request,
+        UpdateMyRoutineTagsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -436,7 +458,10 @@ export const useHardDeleteMyRoutineTagById = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyRoutineTagById(request);
+      return await mutationFnHardDeleteMyRoutineTagById(
+        request,
+        HardDeleteMyRoutineTagById
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -491,7 +516,10 @@ export const useHardDeleteMyRoutineTagsByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnHardDeleteMyRoutineTagsByIds(request);
+      return await mutationFnHardDeleteMyRoutineTagsByIds(
+        request,
+        HardDeleteMyRoutineTagsByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||

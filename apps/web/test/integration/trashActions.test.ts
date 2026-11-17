@@ -143,7 +143,7 @@ describe("Trash actions in Chromium", () => {
       ]
         .map(
           ([, name]) =>
-            `export const ${name}=({data})=>window.api('${name}',data);`
+            `export const ${name}=request=>window.api('${name}',request);`
         )
         .join("\n");
       const name = domain[0].toUpperCase() + domain.slice(1);
@@ -195,9 +195,9 @@ describe("Trash actions in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/styles/globals.css", "utf8"),
+      await readFile("shared/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/styles"),
+        base: path.resolve("shared/styles"),
         onDependency: () => {},
       }
     );

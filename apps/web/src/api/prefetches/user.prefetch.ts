@@ -2,6 +2,10 @@ import {
   GetMeRequest,
   GetUserDataRequest,
 } from "@shared/api/interfaces/user.interface";
+import {
+  queryFnGetMe,
+  queryFnGetUserData,
+} from "@shared/api/invokers/user.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import {
   PrefetchQueryDefaultOptions,
@@ -9,7 +13,7 @@ import {
 } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
 import { QueryClient } from "@tanstack/react-query";
-import { queryFnGetMe, queryFnGetUserData } from "@/api/invokers/user.invoker";
+import { GetMe, GetUserData } from "@/api/functions/user.serverFn";
 
 export const prefetchGetUserData = (initialQueryClient?: QueryClient) => {
   const queryClient = initialQueryClient ?? getQueryClient();
@@ -19,7 +23,8 @@ export const prefetchGetUserData = (initialQueryClient?: QueryClient) => {
   ): Promise<void> => {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.user.data(true),
-      queryFn: async () => await queryFnGetUserData(prefetchRequest),
+      queryFn: async () =>
+        await queryFnGetUserData(prefetchRequest, GetUserData),
       staleTime: PresignedObjectURLStaleTime,
     });
   };
@@ -39,7 +44,7 @@ export const prefetchGetMe = (initialQueryClient?: QueryClient) => {
   ): Promise<void> => {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.user.me(true),
-      queryFn: async () => await queryFnGetMe(prefetchRequest),
+      queryFn: async () => await queryFnGetMe(prefetchRequest, GetMe),
       staleTime: PrefetchQueryDefaultOptions.staleTime as number,
     });
   };

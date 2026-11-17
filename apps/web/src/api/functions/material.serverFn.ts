@@ -37,7 +37,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyMaterialById = createServerFn({ method: "GET" })
+const GetMyMaterialByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyMaterialByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyMaterialByIdResponse> => {
     const { materialId, isDeleted = false } = request.param;
@@ -66,7 +66,10 @@ export const GetMyMaterialById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyMaterialAndItsParentById = createServerFn({
+export const GetMyMaterialById = (request: GetMyMaterialByIdRequest) =>
+  GetMyMaterialByIdRpc({ data: request });
+
+const GetMyMaterialAndItsParentByIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyMaterialAndItsParentByIdRequest) => data)
@@ -103,7 +106,11 @@ export const GetMyMaterialAndItsParentById = createServerFn({
     }
   );
 
-export const GetMyMaterialsByParentSubShelfId = createServerFn({
+export const GetMyMaterialAndItsParentById = (
+  request: GetMyMaterialAndItsParentByIdRequest
+) => GetMyMaterialAndItsParentByIdRpc({ data: request });
+
+const GetMyMaterialsByParentSubShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyMaterialsByParentSubShelfIdRequest) => data)
@@ -146,7 +153,11 @@ export const GetMyMaterialsByParentSubShelfId = createServerFn({
     }
   );
 
-export const GetMyMaterialsByRootShelfId = createServerFn({
+export const GetMyMaterialsByParentSubShelfId = (
+  request: GetMyMaterialsByParentSubShelfIdRequest
+) => GetMyMaterialsByParentSubShelfIdRpc({ data: request });
+
+const GetMyMaterialsByRootShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyMaterialsByRootShelfIdRequest) => data)
@@ -187,7 +198,11 @@ export const GetMyMaterialsByRootShelfId = createServerFn({
     }
   );
 
-export const CreateMyMaterial = createServerFn({ method: "POST" })
+export const GetMyMaterialsByRootShelfId = (
+  request: GetMyMaterialsByRootShelfIdRequest
+) => GetMyMaterialsByRootShelfIdRpc({ data: request });
+
+const CreateMyMaterialRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMyMaterialRequest) => data)
   .handler(async ({ data: request }): Promise<CreateMyMaterialResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -219,7 +234,10 @@ export const CreateMyMaterial = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMyMaterialById = createServerFn({ method: "POST" })
+export const CreateMyMaterial = (request: CreateMyMaterialRequest) =>
+  CreateMyMaterialRpc({ data: request });
+
+const UpdateMyMaterialByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMyMaterialByIdRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMyMaterialByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -249,7 +267,10 @@ export const UpdateMyMaterialById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const MoveMyMaterialById = createServerFn({ method: "POST" })
+export const UpdateMyMaterialById = (request: UpdateMyMaterialByIdRequest) =>
+  UpdateMyMaterialByIdRpc({ data: request });
+
+const MoveMyMaterialByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMyMaterialByIdRequest) => data)
   .handler(async ({ data: request }): Promise<MoveMyMaterialByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -279,7 +300,10 @@ export const MoveMyMaterialById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
+export const MoveMyMaterialById = (request: MoveMyMaterialByIdRequest) =>
+  MoveMyMaterialByIdRpc({ data: request });
+
+const MoveMyMaterialsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMyMaterialsByIdsRequest) => data)
   .handler(async ({ data: request }): Promise<MoveMyMaterialsByIdsResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -309,7 +333,10 @@ export const MoveMyMaterialsByIds = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const RestoreMyMaterialById = createServerFn({ method: "POST" })
+export const MoveMyMaterialsByIds = (request: MoveMyMaterialsByIdsRequest) =>
+  MoveMyMaterialsByIdsRpc({ data: request });
+
+const RestoreMyMaterialByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMyMaterialByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMyMaterialByIdResponse> => {
@@ -345,7 +372,10 @@ export const RestoreMyMaterialById = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMyMaterialsByIds = createServerFn({
+export const RestoreMyMaterialById = (request: RestoreMyMaterialByIdRequest) =>
+  RestoreMyMaterialByIdRpc({ data: request });
+
+const RestoreMyMaterialsByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: RestoreMyMaterialsByIdsRequest) => data)
@@ -383,7 +413,11 @@ export const RestoreMyMaterialsByIds = createServerFn({
     }
   );
 
-export const DeleteMyMaterialById = createServerFn({ method: "POST" })
+export const RestoreMyMaterialsByIds = (
+  request: RestoreMyMaterialsByIdsRequest
+) => RestoreMyMaterialsByIdsRpc({ data: request });
+
+const DeleteMyMaterialByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyMaterialByIdRequest) => data)
   .handler(async ({ data: request }): Promise<DeleteMyMaterialByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -413,7 +447,10 @@ export const DeleteMyMaterialById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
+export const DeleteMyMaterialById = (request: DeleteMyMaterialByIdRequest) =>
+  DeleteMyMaterialByIdRpc({ data: request });
+
+const DeleteMyMaterialsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMyMaterialsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<DeleteMyMaterialsByIdsResponse> => {
@@ -449,7 +486,11 @@ export const DeleteMyMaterialsByIds = createServerFn({ method: "POST" })
     }
   );
 
-export const CreateMaterialObjectTicket = createServerFn({ method: "POST" })
+export const DeleteMyMaterialsByIds = (
+  request: DeleteMyMaterialsByIdsRequest
+) => DeleteMyMaterialsByIdsRpc({ data: request });
+
+const CreateMaterialObjectTicketRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMaterialObjectTicketRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -475,7 +516,11 @@ export const CreateMaterialObjectTicket = createServerFn({ method: "POST" })
     return (await format(response)) as CreateMaterialObjectTicketResponse;
   });
 
-export const ResolveMaterialObjectTicket = createServerFn({ method: "POST" })
+export const CreateMaterialObjectTicket = (
+  request: CreateMaterialObjectTicketRequest
+) => CreateMaterialObjectTicketRpc({ data: request });
+
+const ResolveMaterialObjectTicketRpc = createServerFn({ method: "POST" })
   .inputValidator((data: ResolveMaterialObjectTicketRequest) => data)
   .handler(async ({ data: request }) => {
     const inboundCookie = getRequestHeader("cookie");
@@ -501,7 +546,11 @@ export const ResolveMaterialObjectTicket = createServerFn({ method: "POST" })
     return (await format(response)) as ResolveMaterialObjectTicketResponse;
   });
 
-export const HardDeleteMyMaterialsByIds = createServerFn({ method: "POST" })
+export const ResolveMaterialObjectTicket = (
+  request: ResolveMaterialObjectTicketRequest
+) => ResolveMaterialObjectTicketRpc({ data: request });
+
+const HardDeleteMyMaterialsByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMyMaterialsByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMyMaterialsByIdsResponse> => {
@@ -536,3 +585,7 @@ export const HardDeleteMyMaterialsByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMyMaterialsByIds = (
+  request: HardDeleteMyMaterialsByIdsRequest
+) => HardDeleteMyMaterialsByIdsRpc({ data: request });

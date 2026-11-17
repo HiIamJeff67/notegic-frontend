@@ -1,6 +1,6 @@
 import { Button } from "@shared/components/ui/button";
 import { useContext, useEffect, useRef, useState } from "react";
-import Image from "@/components/commons/Image/Image";
+import Image from "@shared/components/commons/Image/Image";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ArticleScrollContext } from "./ArticleContext";

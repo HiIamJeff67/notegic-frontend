@@ -16,7 +16,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
+const GetRoutineTaskDependenciesByRoutineIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetRoutineTaskDependenciesByRoutineIdRequest) => data)
@@ -57,7 +57,11 @@ export const GetRoutineTaskDependenciesByRoutineId = createServerFn({
     }
   );
 
-export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
+export const GetRoutineTaskDependenciesByRoutineId = (
+  request: GetRoutineTaskDependenciesByRoutineIdRequest
+) => GetRoutineTaskDependenciesByRoutineIdRpc({ data: request });
+
+const CreateRoutineTaskDependencyByRoutineIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: CreateRoutineTaskDependencyByRoutineIdRequest) => data)
@@ -99,7 +103,11 @@ export const CreateRoutineTaskDependencyByRoutineId = createServerFn({
     }
   );
 
-export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
+export const CreateRoutineTaskDependencyByRoutineId = (
+  request: CreateRoutineTaskDependencyByRoutineIdRequest
+) => CreateRoutineTaskDependencyByRoutineIdRpc({ data: request });
+
+const UpdateRoutineTaskGraphByRoutineIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: UpdateRoutineTaskGraphByRoutineIdRequest) => data)
@@ -138,7 +146,11 @@ export const UpdateRoutineTaskGraphByRoutineId = createServerFn({
     }
   );
 
-export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
+export const UpdateRoutineTaskGraphByRoutineId = (
+  request: UpdateRoutineTaskGraphByRoutineIdRequest
+) => UpdateRoutineTaskGraphByRoutineIdRpc({ data: request });
+
+const UpdateRoutineTaskDependencyByRoutineIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: UpdateRoutineTaskDependencyByRoutineIdRequest) => data)
@@ -180,7 +192,11 @@ export const UpdateRoutineTaskDependencyByRoutineId = createServerFn({
     }
   );
 
-export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
+export const UpdateRoutineTaskDependencyByRoutineId = (
+  request: UpdateRoutineTaskDependencyByRoutineIdRequest
+) => UpdateRoutineTaskDependencyByRoutineIdRpc({ data: request });
+
+const DeleteRoutineTaskDependencyByRoutineIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: DeleteRoutineTaskDependencyByRoutineIdRequest) => data)
@@ -221,3 +237,7 @@ export const DeleteRoutineTaskDependencyByRoutineId = createServerFn({
       return formattedResponse;
     }
   );
+
+export const DeleteRoutineTaskDependencyByRoutineId = (
+  request: DeleteRoutineTaskDependencyByRoutineIdRequest
+) => DeleteRoutineTaskDependencyByRoutineIdRpc({ data: request });

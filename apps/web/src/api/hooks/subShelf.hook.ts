@@ -43,17 +43,6 @@ import {
   UpdateMySubShelfByIdRequestSchema,
   UpdateMySubShelvesByIdsRequestSchema,
 } from "@shared/api/interfaces/subShelf.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import { parse } from "@shared/api/validation";
-import {
-  type QueryKey,
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
 import {
   mutationFnCreateSubShelfByRootShelfId,
   mutationFnCreateSubShelvesByRootShelfIds,
@@ -71,7 +60,36 @@ import {
   queryFnGetMySubShelvesAndItemsByPrevSubShelfId,
   queryFnGetMySubShelvesByPrevSubShelfId,
   queryFnGetMySubShelvesByRootShelfId,
-} from "@/api/invokers/subShelf.invoker";
+} from "@shared/api/invokers/subShelf.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import { parse } from "@shared/api/validation";
+import {
+  type QueryKey,
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateSubShelfByRootShelfId,
+  CreateSubShelvesByRootShelfIds,
+  DeleteMySubShelfById,
+  DeleteMySubShelvesByIds,
+  GetMySubShelfById,
+  GetMySubShelvesAndItemsByPrevSubShelfId,
+  GetMySubShelvesByPrevSubShelfId,
+  GetMySubShelvesByRootShelfId,
+  HardDeleteMySubShelvesByIds,
+  MoveMySubShelf,
+  MoveMySubShelvesByRootShelfId,
+  MoveMySubShelvesByRootShelfIds,
+  RestoreMySubShelfById,
+  RestoreMySubShelvesByIds,
+  UpdateMySubShelfById,
+  UpdateMySubShelvesByIds,
+} from "@/api/functions/subShelf.serverFn";
 import { SubShelfLocalSimulator } from "@/api/local/simulators/subShelf.simulator";
 import { SubShelfLocalSynchronizer } from "@/api/local/synchronizers/subShelf.synchronizer";
 
@@ -95,7 +113,10 @@ export const useGetMySubShelfById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMySubShelfById(request);
+      const response = await queryFnGetMySubShelfById(
+        request,
+        GetMySubShelfById
+      );
       await SubShelfLocalSynchronizer.syncGetMySubShelfById(response);
       return response;
     } catch (error) {
@@ -178,7 +199,10 @@ export const useGetMySubShelvesByPrevSubShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMySubShelvesByPrevSubShelfId(request);
+      const response = await queryFnGetMySubShelvesByPrevSubShelfId(
+        request,
+        GetMySubShelvesByPrevSubShelfId
+      );
       await SubShelfLocalSynchronizer.syncGetMySubShelvesByPrevSubShelfId(
         response
       );
@@ -265,7 +289,10 @@ export const useGetMySubShelvesByRootShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMySubShelvesByRootShelfId(request);
+      const response = await queryFnGetMySubShelvesByRootShelfId(
+        request,
+        GetMySubShelvesByRootShelfId
+      );
       await SubShelfLocalSynchronizer.syncGetMySubShelvesByRootShelfId(
         response
       );
@@ -352,8 +379,10 @@ export const useGetMySubShelvesAndItemsByPrevSubShelfId = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response =
-        await queryFnGetMySubShelvesAndItemsByPrevSubShelfId(request);
+      const response = await queryFnGetMySubShelvesAndItemsByPrevSubShelfId(
+        request,
+        GetMySubShelvesAndItemsByPrevSubShelfId
+      );
       await SubShelfLocalSynchronizer.syncGetMySubShelvesAndItemsByPrevSubShelfId(
         response
       );
@@ -432,7 +461,10 @@ export const useCreateSubShelfByRootShelfId = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateSubShelfByRootShelfId(request);
+      return await mutationFnCreateSubShelfByRootShelfId(
+        request,
+        CreateSubShelfByRootShelfId
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       try {
@@ -494,7 +526,10 @@ export const useCreateSubShelvesByRootShelfIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnCreateSubShelvesByRootShelfIds(request);
+      return await mutationFnCreateSubShelvesByRootShelfIds(
+        request,
+        CreateSubShelvesByRootShelfIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -559,7 +594,10 @@ export const useUpdateMySubShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMySubShelfById(request);
+      return await mutationFnUpdateMySubShelfById(
+        request,
+        UpdateMySubShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await SubShelfLocalSimulator.simulateUpdateMySubShelfById(request);
@@ -611,7 +649,10 @@ export const useUpdateMySubShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnUpdateMySubShelvesByIds(request);
+      return await mutationFnUpdateMySubShelvesByIds(
+        request,
+        UpdateMySubShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -669,7 +710,7 @@ export const useMoveMySubShelf = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMySubShelf(request);
+      return await mutationFnMoveMySubShelf(request, MoveMySubShelf);
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await SubShelfLocalSimulator.simulateMoveMySubShelf(request);
@@ -725,7 +766,10 @@ export const useMoveMySubShelvesByRootShelfId = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMySubShelvesByRootShelfId(request);
+      return await mutationFnMoveMySubShelvesByRootShelfId(
+        request,
+        MoveMySubShelvesByRootShelfId
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await SubShelfLocalSimulator.simulateMoveMySubShelvesByRootShelfId(
@@ -795,7 +839,10 @@ export const useMoveMySubShelvesByRootShelfIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnMoveMySubShelvesByRootShelfIds(request);
+      return await mutationFnMoveMySubShelvesByRootShelfIds(
+        request,
+        MoveMySubShelvesByRootShelfIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -873,7 +920,10 @@ export const useRestoreMySubShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMySubShelfById(request);
+      return await mutationFnRestoreMySubShelfById(
+        request,
+        RestoreMySubShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await SubShelfLocalSimulator.simulateRestoreMySubShelfById(request);
@@ -928,7 +978,10 @@ export const useRestoreMySubShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnRestoreMySubShelvesByIds(request);
+      return await mutationFnRestoreMySubShelvesByIds(
+        request,
+        RestoreMySubShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1001,7 +1054,10 @@ export const useDeleteMySubShelfById = () => {
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMySubShelfById(request);
+      return await mutationFnDeleteMySubShelfById(
+        request,
+        DeleteMySubShelfById
+      );
     } catch (error) {
       if (!NetworkExceptions.isMissingNetworkError(error)) throw error;
       await SubShelfLocalSimulator.simulateDeleteMySubShelfById(request);
@@ -1056,7 +1112,10 @@ export const useDeleteMySubShelvesByIds = (
       if (isRemoteUnavailable()) {
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
-      return await mutationFnDeleteMySubShelvesByIds(request);
+      return await mutationFnDeleteMySubShelvesByIds(
+        request,
+        DeleteMySubShelvesByIds
+      );
     } catch (error) {
       if (
         options.offlineFallback === false ||
@@ -1127,7 +1186,10 @@ export const useHardDeleteMySubShelvesByIds = (
         if (isRemoteUnavailable()) {
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
-        return await mutationFnHardDeleteMySubShelvesByIds(request);
+        return await mutationFnHardDeleteMySubShelvesByIds(
+          request,
+          HardDeleteMySubShelvesByIds
+        );
       } catch (error) {
         if (
           options.offlineFallback === false ||

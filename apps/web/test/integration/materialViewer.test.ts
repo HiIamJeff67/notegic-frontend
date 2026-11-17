@@ -165,7 +165,7 @@ const mocks: Record<string, string> = {
     export const useShelfItem = () => shelves;`,
   "@/pages/app/material-viewer/MaterialViewerNotFoundPage": `export default () => <p>Material not found</p>;`,
   "@/api/functions/material.clientFn": `export const SaveMyMaterialById = request => window.api.save(request);`,
-  "@/api/invokers/material.invoker": `
+  "@shared/api/invokers/material.invoker": `
     export const queryFnGetMyMaterialAndItsParentById = request => window.api.metadata(request);
     export const mutationFnCreateMaterialObjectTicket = request => window.api.ticket(request);
     export const queryFnResolveMaterialObjectTicket = request => window.api.resolve(request);
@@ -187,7 +187,7 @@ const mocks: Record<string, string> = {
           `export const ${name} = () => { throw new Error('Unexpected API call'); };`
       )
       .join("\n")}`,
-  "@/components/commons/DropFileZone/DropFileZone": `export default function DropFileZone({ onDrop }) {
+  "@shared/components/commons/DropFileZone/DropFileZone": `export default function DropFileZone({ onDrop }) {
     window.startImport = () => onDrop([new File(['replacement'], 'note.txt', { type: 'text/plain' })]);
     return null;
   }`,

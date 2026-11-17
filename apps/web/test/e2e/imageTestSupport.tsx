@@ -1,9 +1,9 @@
+import Image, {
+  type ImageLoadingStatus,
+} from "@shared/components/commons/Image/Image";
 import { Button } from "@shared/components/ui/button";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import Image, {
-  type ImageLoadingStatus,
-} from "@/components/commons/Image/Image";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
 import AvatarIcon from "@/components/icons/AvatarIcon";

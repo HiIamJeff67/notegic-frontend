@@ -13,7 +13,7 @@ import React, {
   useState,
 } from "react";
 import { useUser } from "@/hooks";
-import { useStateTrigger } from "@/hooks/useStateTrigger";
+import { useStateTrigger } from "@shared/hooks/useStateTrigger";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import type { RoutineTagNode } from "@/providers/StationRoutineProvider/routineTagNode.type";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";

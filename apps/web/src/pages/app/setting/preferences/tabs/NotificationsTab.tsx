@@ -3,7 +3,7 @@ import {
   dateToTimeString,
   timeStringToDate,
 } from "@shared/lib/time/timeString";
-import TimePicker from "@/components/commons/TimePicker/TimePicker";
+import TimePicker from "@shared/components/commons/TimePicker/TimePicker";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { Section, SettingRow, SwitchRow } from "./PreferenceRows";
 

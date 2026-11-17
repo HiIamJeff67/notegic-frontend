@@ -4,18 +4,19 @@ import { SideMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/core/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import {
   NotegicBlockPackEditor,
   notegicBlockPackSchema,
 } from "@shared/lib/blockpack";
 import { NOTEGIC_BLOCKNOTE_YJS_FRAGMENT_NAME } from "@shared/lib/blockpack/blockPackYjsCoordinator";
+import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
 import { createRoot, type Root } from "react-dom/client";
 import * as Y from "yjs";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import CreateBlockPackPayloadTemplateEditor from "@/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor";
 import { ThemeContext } from "@/providers/ThemeProvider";
-import "@/styles/block-editor.css";
+import "@shared/styles/block-editor.css";
+import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";
 
 export const editors: Record<
   string,

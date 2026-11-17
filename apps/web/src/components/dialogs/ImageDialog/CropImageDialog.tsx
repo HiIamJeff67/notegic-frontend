@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@shared/components/ui/dialog";
-import ImageCropper from "@/components/commons/ImageCropper/ImageCropper";
+import ImageCropper from "@shared/components/commons/ImageCropper/ImageCropper";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface CropImageDialogProps {

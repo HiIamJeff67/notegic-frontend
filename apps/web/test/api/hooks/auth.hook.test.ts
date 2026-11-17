@@ -1,0 +1,35 @@
+const mockUseMutation = jest.fn((options: { retry?: boolean }) => options);
+jest.mock("@tanstack/react-query", () => ({ useMutation: mockUseMutation }));
+jest.mock("@apollo/client/react", () => ({ useApolloClient: jest.fn() }));
+jest.mock("@shared/api/queryClient", () => ({ getQueryClient: jest.fn() }));
+jest.mock("@/api/functions/headers/csrfToken", () => ({
+  clearClientCSRFToken: jest.fn(),
+  setClientCSRFToken: jest.fn(),
+}));
+jest.mock("@shared/api/invokers/auth.invoker", () => ({
+  mutationFnLogin: jest.fn(),
+  mutationFnLoginViaGoogle: jest.fn(),
+}));
+jest.mock("@/api/local/synchronizers/auth.synchronizer", () => ({
+  AuthLocalSynchronizer: {},
+}));
+
+import {
+  useLogin,
+  useLoginViaGithub,
+  useLoginViaGoogle,
+  useRegisterViaGithub,
+} from "@/api/hooks/auth.hook";
+
+test.each([
+  useLogin,
+  useLoginViaGoogle,
+  useLoginViaGithub,
+  useRegisterViaGithub,
+])("login requires an explicit retry after any failure", useLoginMutation => {
+  mockUseMutation.mockClear();
+  useLoginMutation();
+  expect(mockUseMutation).toHaveBeenCalledWith(
+    expect.objectContaining({ retry: false })
+  );
+});

@@ -44,7 +44,7 @@ const mocks: Record<string, string> = {
     export const useGetUserData = () => querier; export const useGetMe = () => querier;`,
   "@/api/hooks/userInfo.hook": `export const useGetMyInfo = () => ({ fetch: async () => ({ data: {} }) });`,
   "@/api/hooks/userQuota.hook": `const querier = { fetch: async () => ({ data: {} }) }; export const useGetMyQuota = () => querier;`,
-  "@/hooks/useTranslation": `const t = key => key; export const useTranslation = () => ({ t });`,
+  "react-i18next": `const t = key => key; export const useTranslation = () => ({ t });`,
   "@shared/lib/toast/toast": `export default { error: message => window.state.messages.push(message) };`,
   "@/providers/MaterialAttachmentCacheProvider": `export const clearMaterialAttachmentCache = async () => { window.state.clears++; };`,
 };

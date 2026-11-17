@@ -3,6 +3,8 @@ import {
   UserSettingStartSurface,
 } from "@shared/api/interfaces/enums";
 import type { UserSetting } from "@shared/api/interfaces/userSetting.interface";
+import { queryFnGetMySetting } from "@shared/api/invokers/userSetting.invoker";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import {
   AllLanguageData,
   LanguageKeyMap,
@@ -12,13 +14,15 @@ import {
   timeToMinutes,
 } from "@shared/lib/time/timeString";
 import { useEffect, useRef } from "react";
-import { getClientMutationHeaders, getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { useUpdateMySetting } from "@/api/hooks/userSetting.hook";
-import { queryFnGetMySetting } from "@/api/invokers/userSetting.invoker";
-import { UserSettingLocalSynchronizer } from "@/api/local/synchronizers/userSetting.synchronizer";
+import {
+  getClientMutationHeaders,
+  getClientRequestHeaders,
+} from "@/api/functions/headers/clientHeaders";
 import { isVirtualMode } from "@/api/functions/helpers/availability";
+import { GetMySetting } from "@/api/functions/userSetting.serverFn";
+import { useUpdateMySetting } from "@/api/hooks/userSetting.hook";
+import { UserSettingLocalSynchronizer } from "@/api/local/synchronizers/userSetting.synchronizer";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useNetwork } from "@/hooks/useNetwork";
 import { useUser } from "@/hooks/useUser";
 import i18n from "@/i18n";
 import type {
@@ -195,6 +199,7 @@ export const UserSettingsProvider = ({
       try {
         const response = await queryFnGetMySetting(
           { header: getClientRequestHeaders() },
+          GetMySetting,
           controller.signal
         );
         if (cancelled || revision !== localRevision.current) return;

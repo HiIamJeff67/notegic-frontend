@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
+import { CreateRoutineByStationId } from "@/api/functions/routine.serverFn";
+import { CreateRoutineTaskByRoutineId } from "@/api/functions/routineTask.serverFn";
+import { CreateStation } from "@/api/functions/station.serverFn";
 
 declare global {
   interface Window {
@@ -65,7 +68,9 @@ test("local authenticated pages retain the session without CSRF failures", async
 
   const fixture = await page.evaluate(async suffix => {
     const load = (path: string) => import(/* @vite-ignore */ path);
-    const { getClientRequestHeaders } = await load("/src/api/functions/headers/clientHeaders.ts");
+    const { getClientRequestHeaders } = await load(
+      "/src/api/functions/headers/clientHeaders.ts"
+    );
     const { CreateStation } = await load(
       "/src/api/functions/station.serverFn.ts"
     );
@@ -76,38 +81,32 @@ test("local authenticated pages retain the session without CSRF failures", async
       "/src/api/functions/routineTask.serverFn.ts"
     );
     const station = await CreateStation({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
-          name: `Page fixture ${suffix}`,
-          description: "Retained isolated page acceptance",
-        },
+      header: getClientRequestHeaders(),
+      body: {
+        name: `Page fixture ${suffix}`,
+        description: "Retained isolated page acceptance",
       },
     });
     const routine = await CreateRoutineByStationId({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
-          stationId: station.data.id,
-          title: "Inactive page acceptance",
-          description: "Never scheduled",
-          isActive: false,
-          timezone: "UTC",
-        },
+      header: getClientRequestHeaders(),
+      body: {
+        stationId: station.data.id,
+        title: "Inactive page acceptance",
+        description: "Never scheduled",
+        isActive: false,
+        timezone: "UTC",
       },
     });
     await CreateRoutineTaskByRoutineId({
-      data: {
-        header: getClientRequestHeaders(),
-        body: {
-          routineId: routine.data.id,
-          expectedDefinitionVersion: 1,
-          kind: "Start",
-          title: "Page acceptance entry",
-          x: 0,
-          y: 0,
-          payload: { schemaVersion: 1, isActive: true, description: "" },
-        },
+      header: getClientRequestHeaders(),
+      body: {
+        routineId: routine.data.id,
+        expectedDefinitionVersion: 1,
+        kind: "Start",
+        title: "Page acceptance entry",
+        x: 0,
+        y: 0,
+        payload: { schemaVersion: 1, isActive: true, description: "" },
       },
     });
     localStorage.setItem(

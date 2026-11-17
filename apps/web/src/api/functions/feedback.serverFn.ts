@@ -9,7 +9,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const SubmitFeedbackReport = createServerFn({ method: "POST" })
+const SubmitFeedbackReportRpc = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
     SubmitFeedbackReportRequestSchema.parse(data)
   )
@@ -47,3 +47,6 @@ export const SubmitFeedbackReport = createServerFn({ method: "POST" })
 
     return SubmitFeedbackReportResponseSchema.parse(formattedResponse);
   });
+
+export const SubmitFeedbackReport = (request: unknown) =>
+  SubmitFeedbackReportRpc({ data: request });

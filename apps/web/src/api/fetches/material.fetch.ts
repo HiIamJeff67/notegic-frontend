@@ -9,16 +9,22 @@ import type {
   GetMyMaterialsByRootShelfIdRequest,
   GetMyMaterialsByRootShelfIdResponse,
 } from "@shared/api/interfaces/material.interface";
-import { getQueryClient } from "@shared/api/queryClient";
-import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
-import { queryKeys } from "@shared/api/queryKeys";
-import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
 import {
   queryFnGetMyMaterialAndItsParentById,
   queryFnGetMyMaterialById,
   queryFnGetMyMaterialsByParentSubShelfId,
   queryFnGetMyMaterialsByRootShelfId,
-} from "@/api/invokers/material.invoker";
+} from "@shared/api/invokers/material.invoker";
+import { getQueryClient } from "@shared/api/queryClient";
+import { QueryAsyncDefaultOptions } from "@shared/api/queryHookOptions";
+import { queryKeys } from "@shared/api/queryKeys";
+import type { FetchQueryOptions, QueryClient } from "@tanstack/react-query";
+import {
+  GetMyMaterialAndItsParentById,
+  GetMyMaterialById,
+  GetMyMaterialsByParentSubShelfId,
+  GetMyMaterialsByRootShelfId,
+} from "@/api/functions/material.serverFn";
 
 export const fetchGetMyMaterialById = async (
   fetchRequest: GetMyMaterialByIdRequest,
@@ -29,7 +35,8 @@ export const fetchGetMyMaterialById = async (
 
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.material.oneById(fetchRequest.param.materialId as UUID),
-    queryFn: async () => await queryFnGetMyMaterialById(fetchRequest),
+    queryFn: async () =>
+      await queryFnGetMyMaterialById(fetchRequest, GetMyMaterialById),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -47,7 +54,10 @@ export const fetchGetMyMaterialAndItsParentById = async (
   const response = await queryClient.fetchQuery({
     queryKey: queryKeys.material.oneById(fetchRequest.param.materialId as UUID),
     queryFn: async () =>
-      await queryFnGetMyMaterialAndItsParentById(fetchRequest),
+      await queryFnGetMyMaterialAndItsParentById(
+        fetchRequest,
+        GetMyMaterialAndItsParentById
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -67,7 +77,10 @@ export const fetchGetMyMaterialsByParentSubShelfId = async (
       fetchRequest.param.parentSubShelfId as UUID
     ),
     queryFn: async () =>
-      await queryFnGetMyMaterialsByParentSubShelfId(fetchRequest),
+      await queryFnGetMyMaterialsByParentSubShelfId(
+        fetchRequest,
+        GetMyMaterialsByParentSubShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });
@@ -86,7 +99,11 @@ export const fetchGetMyMaterialsByRootShelfId = async (
     queryKey: queryKeys.material.manyByRootShelfId(
       fetchRequest.param.rootShelfId as UUID
     ),
-    queryFn: async () => await queryFnGetMyMaterialsByRootShelfId(fetchRequest),
+    queryFn: async () =>
+      await queryFnGetMyMaterialsByRootShelfId(
+        fetchRequest,
+        GetMyMaterialsByRootShelfId
+      ),
     staleTime: QueryAsyncDefaultOptions.staleTime as number,
     ...options,
   });

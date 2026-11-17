@@ -149,9 +149,9 @@ describe("Routine overview responsive layout in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/styles/globals.css", "utf8"),
+      await readFile("shared/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/styles"),
+        base: path.resolve("shared/styles"),
         onDependency: () => {},
       }
     );

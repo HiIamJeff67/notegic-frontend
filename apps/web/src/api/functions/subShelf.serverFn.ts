@@ -39,7 +39,7 @@ import { withoutPathParams } from "@/api/functions/helpers/body";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMySubShelfById = createServerFn({ method: "GET" })
+const GetMySubShelfByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMySubShelfByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMySubShelfByIdResponse> => {
     const { subShelfId, isDeleted = false } = request.param;
@@ -68,7 +68,10 @@ export const GetMySubShelfById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMySubShelvesByPrevSubShelfId = createServerFn({
+export const GetMySubShelfById = (request: GetMySubShelfByIdRequest) =>
+  GetMySubShelfByIdRpc({ data: request });
+
+const GetMySubShelvesByPrevSubShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMySubShelvesByPrevSubShelfIdRequest) => data)
@@ -105,7 +108,11 @@ export const GetMySubShelvesByPrevSubShelfId = createServerFn({
     }
   );
 
-export const GetMySubShelvesByRootShelfId = createServerFn({
+export const GetMySubShelvesByPrevSubShelfId = (
+  request: GetMySubShelvesByPrevSubShelfIdRequest
+) => GetMySubShelvesByPrevSubShelfIdRpc({ data: request });
+
+const GetMySubShelvesByRootShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMySubShelvesByRootShelfIdRequest) => data)
@@ -142,7 +149,11 @@ export const GetMySubShelvesByRootShelfId = createServerFn({
     }
   );
 
-export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
+export const GetMySubShelvesByRootShelfId = (
+  request: GetMySubShelvesByRootShelfIdRequest
+) => GetMySubShelvesByRootShelfIdRpc({ data: request });
+
+const GetMySubShelvesAndItemsByPrevSubShelfIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator(
@@ -181,7 +192,11 @@ export const GetMySubShelvesAndItemsByPrevSubShelfId = createServerFn({
     }
   );
 
-export const CreateSubShelfByRootShelfId = createServerFn({
+export const GetMySubShelvesAndItemsByPrevSubShelfId = (
+  request: GetMySubShelvesAndItemsByPrevSubShelfIdRequest
+) => GetMySubShelvesAndItemsByPrevSubShelfIdRpc({ data: request });
+
+const CreateSubShelfByRootShelfIdRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: CreateSubShelfByRootShelfIdRequest) => data)
@@ -219,7 +234,11 @@ export const CreateSubShelfByRootShelfId = createServerFn({
     }
   );
 
-export const CreateSubShelvesByRootShelfIds = createServerFn({
+export const CreateSubShelfByRootShelfId = (
+  request: CreateSubShelfByRootShelfIdRequest
+) => CreateSubShelfByRootShelfIdRpc({ data: request });
+
+const CreateSubShelvesByRootShelfIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: CreateSubShelvesByRootShelfIdsRequest) => data)
@@ -259,7 +278,11 @@ export const CreateSubShelvesByRootShelfIds = createServerFn({
     }
   );
 
-export const UpdateMySubShelfById = createServerFn({ method: "POST" })
+export const CreateSubShelvesByRootShelfIds = (
+  request: CreateSubShelvesByRootShelfIdsRequest
+) => CreateSubShelvesByRootShelfIdsRpc({ data: request });
+
+const UpdateMySubShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: UpdateMySubShelfByIdRequest) => data)
   .handler(async ({ data: request }): Promise<UpdateMySubShelfByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -289,7 +312,10 @@ export const UpdateMySubShelfById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const UpdateMySubShelvesByIds = createServerFn({
+export const UpdateMySubShelfById = (request: UpdateMySubShelfByIdRequest) =>
+  UpdateMySubShelfByIdRpc({ data: request });
+
+const UpdateMySubShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: UpdateMySubShelvesByIdsRequest) => data)
@@ -327,7 +353,11 @@ export const UpdateMySubShelvesByIds = createServerFn({
     }
   );
 
-export const MoveMySubShelf = createServerFn({ method: "POST" })
+export const UpdateMySubShelvesByIds = (
+  request: UpdateMySubShelvesByIdsRequest
+) => UpdateMySubShelvesByIdsRpc({ data: request });
+
+const MoveMySubShelfRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMySubShelfRequest) => data)
   .handler(async ({ data: request }): Promise<MoveMySubShelfResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -359,7 +389,10 @@ export const MoveMySubShelf = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
+export const MoveMySubShelf = (request: MoveMySubShelfRequest) =>
+  MoveMySubShelfRpc({ data: request });
+
+const MoveMySubShelvesByRootShelfIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMySubShelvesByRootShelfIdRequest) => data)
   .handler(
     async ({
@@ -397,7 +430,11 @@ export const MoveMySubShelvesByRootShelfId = createServerFn({ method: "POST" })
     }
   );
 
-export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
+export const MoveMySubShelvesByRootShelfId = (
+  request: MoveMySubShelvesByRootShelfIdRequest
+) => MoveMySubShelvesByRootShelfIdRpc({ data: request });
+
+const MoveMySubShelvesByRootShelfIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: MoveMySubShelvesByRootShelfIdsRequest) => data)
   .handler(
     async ({
@@ -435,7 +472,11 @@ export const MoveMySubShelvesByRootShelfIds = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMySubShelfById = createServerFn({ method: "POST" })
+export const MoveMySubShelvesByRootShelfIds = (
+  request: MoveMySubShelvesByRootShelfIdsRequest
+) => MoveMySubShelvesByRootShelfIdsRpc({ data: request });
+
+const RestoreMySubShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RestoreMySubShelfByIdRequest) => data)
   .handler(
     async ({ data: request }): Promise<RestoreMySubShelfByIdResponse> => {
@@ -471,7 +512,10 @@ export const RestoreMySubShelfById = createServerFn({ method: "POST" })
     }
   );
 
-export const RestoreMySubShelvesByIds = createServerFn({
+export const RestoreMySubShelfById = (request: RestoreMySubShelfByIdRequest) =>
+  RestoreMySubShelfByIdRpc({ data: request });
+
+const RestoreMySubShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: RestoreMySubShelvesByIdsRequest) => data)
@@ -509,7 +553,11 @@ export const RestoreMySubShelvesByIds = createServerFn({
     }
   );
 
-export const DeleteMySubShelfById = createServerFn({ method: "POST" })
+export const RestoreMySubShelvesByIds = (
+  request: RestoreMySubShelvesByIdsRequest
+) => RestoreMySubShelvesByIdsRpc({ data: request });
+
+const DeleteMySubShelfByIdRpc = createServerFn({ method: "POST" })
   .inputValidator((data: DeleteMySubShelfByIdRequest) => data)
   .handler(async ({ data: request }): Promise<DeleteMySubShelfByIdResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -539,7 +587,10 @@ export const DeleteMySubShelfById = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const DeleteMySubShelvesByIds = createServerFn({
+export const DeleteMySubShelfById = (request: DeleteMySubShelfByIdRequest) =>
+  DeleteMySubShelfByIdRpc({ data: request });
+
+const DeleteMySubShelvesByIdsRpc = createServerFn({
   method: "POST",
 })
   .inputValidator((data: DeleteMySubShelvesByIdsRequest) => data)
@@ -577,7 +628,11 @@ export const DeleteMySubShelvesByIds = createServerFn({
     }
   );
 
-export const HardDeleteMySubShelvesByIds = createServerFn({ method: "POST" })
+export const DeleteMySubShelvesByIds = (
+  request: DeleteMySubShelvesByIdsRequest
+) => DeleteMySubShelvesByIdsRpc({ data: request });
+
+const HardDeleteMySubShelvesByIdsRpc = createServerFn({ method: "POST" })
   .inputValidator((data: HardDeleteMySubShelvesByIdsRequest) => data)
   .handler(
     async ({ data: request }): Promise<HardDeleteMySubShelvesByIdsResponse> => {
@@ -612,3 +667,7 @@ export const HardDeleteMySubShelvesByIds = createServerFn({ method: "POST" })
       return formattedResponse;
     }
   );
+
+export const HardDeleteMySubShelvesByIds = (
+  request: HardDeleteMySubShelvesByIdsRequest
+) => HardDeleteMySubShelvesByIdsRpc({ data: request });

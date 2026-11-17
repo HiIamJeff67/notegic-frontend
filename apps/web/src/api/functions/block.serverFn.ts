@@ -12,7 +12,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const GetMyBlockById = createServerFn({ method: "GET" })
+const GetMyBlockByIdRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlockByIdRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyBlockByIdResponse> => {
     const { blockId } = request.param;
@@ -41,7 +41,10 @@ export const GetMyBlockById = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyBlocksByIds = createServerFn({ method: "GET" })
+export const GetMyBlockById = (request: GetMyBlockByIdRequest) =>
+  GetMyBlockByIdRpc({ data: request });
+
+const GetMyBlocksByIdsRpc = createServerFn({ method: "GET" })
   .inputValidator((data: GetMyBlocksByIdsRequest) => data)
   .handler(async ({ data: request }): Promise<GetMyBlocksByIdsResponse> => {
     const { blockIds } = request.param;
@@ -73,7 +76,10 @@ export const GetMyBlocksByIds = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const GetMyBlocksByBlockPackId = createServerFn({
+export const GetMyBlocksByIds = (request: GetMyBlocksByIdsRequest) =>
+  GetMyBlocksByIdsRpc({ data: request });
+
+const GetMyBlocksByBlockPackIdRpc = createServerFn({
   method: "GET",
 })
   .inputValidator((data: GetMyBlocksByBlockPackIdRequest) => data)
@@ -107,3 +113,7 @@ export const GetMyBlocksByBlockPackId = createServerFn({
       return formattedResponse;
     }
   );
+
+export const GetMyBlocksByBlockPackId = (
+  request: GetMyBlocksByBlockPackIdRequest
+) => GetMyBlocksByBlockPackIdRpc({ data: request });

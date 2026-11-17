@@ -1,12 +1,11 @@
 import { readdirSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { basename, join } from "node:path";
 
 test("test filenames use their location and source owner without redundant categories", () => {
   const violations: string[] = [];
   for (const directory of [
-    "apps/web/src",
-    "shared",
     "apps/web/test",
+    "apps/desktop/test",
     "test",
     "scripts",
   ]) {
@@ -18,20 +17,22 @@ test("test filenames use their location and source owner without redundant categ
       if (!/\.test\.(?:tsx?|mjs)$/.test(file)) continue;
       if (/\.(?:unit|integration)\.test\./.test(file))
         violations.push(`${directory}/${file}`);
-      if (directory !== "apps/web/src" && directory !== "shared") continue;
-      const name = basename(file).replace(/\.test\.(?:tsx?|mjs)$/, "");
-      const neighbors = readdirSync(
-        join(process.cwd(), directory, dirname(file))
-      );
-      const owner = neighbors.find(
-        candidate =>
-          /\.(?:tsx?|mjs)$/.test(candidate) &&
-          candidate.replace(/\.(?:tsx?|mjs)$/, "").toLowerCase() ===
-            name.toLowerCase()
-      );
-      if (owner && owner.replace(/\.(?:tsx?|mjs)$/, "") !== name) {
-        violations.push(`${directory}/${file}: match ${owner}`);
-      }
+    }
+  }
+  for (const directory of [
+    "apps/web/src",
+    "apps/web/server",
+    "apps/desktop/src",
+    "apps/desktop/sidecar",
+    "shared",
+  ]) {
+    const files = readdirSync(join(process.cwd(), directory), {
+      recursive: true,
+      encoding: "utf8",
+    });
+    for (const file of files) {
+      if (/\.test\.(?:tsx?|mjs)$/.test(file))
+        violations.push(`${directory}/${file}`);
     }
   }
   expect(violations).toEqual([]);
@@ -42,6 +43,9 @@ test.each([
   "apps/web/src",
   "apps/web/server",
   "apps/web/test",
+  "apps/desktop/src",
+  "apps/desktop/test",
+  "apps/desktop/sidecar",
   "test",
   "scripts",
 ])("%s has no ungoverned kebab-case code filenames", directory => {
@@ -55,6 +59,7 @@ test.each([
       const fullPath = `${directory}/${file}`;
       if (
         /\/(?:generated|migrations)\//.test(fullPath) ||
+        fullPath.endsWith("/vite-env.d.ts") ||
         fullPath.startsWith("apps/web/src/routes/") ||
         fullPath.startsWith("shared/components/ui/") ||
         /\/i18n\/locales\/[^/]+\.zh-(?:CN|TW)\.ts$/.test(fullPath)
@@ -74,7 +79,6 @@ test("GraphQL query modules retain useSearch names", () => {
     files.filter(
       file =>
         file !== "localSearch.hook.ts" &&
-        file !== "localSearch.hook.test.ts" &&
         !/^useSearch[A-Z][a-zA-Z0-9]*\.ts$/.test(file)
     )
   ).toEqual([]);

@@ -2,7 +2,7 @@ import { cn } from "@shared/lib/classname/cn";
 import type { HTMLAttributes, RefObject } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useScreen } from "@/hooks/useScreen";
+import { useScreen } from "@shared/hooks/useScreen";
 import {
   ArticleDisplayContext,
   type ArticleDisplayMode,

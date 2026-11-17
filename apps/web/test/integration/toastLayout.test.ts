@@ -50,7 +50,7 @@ describe("shared Toast placement and duration in Chromium", () => {
       "@/hooks": `const userData={publicId:'fixture'};export const useUser=()=>({userData});`,
       "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage={getItemByKey:()=> '[]',setItem:()=>{}};`,
       "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets={};`,
-      "@/hooks/useTranslation": `export const useTranslation=()=>({t:key=>key});`,
+      "react-i18next": `export const useTranslation=()=>({t:key=>key});`,
     };
     const result = await build({
       stdin: { contents: fixture, resolveDir: process.cwd(), loader: "tsx" },
@@ -88,9 +88,9 @@ describe("shared Toast placement and duration in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("apps/web/src/styles/globals.css", "utf8"),
+      await readFile("shared/styles/globals.css", "utf8"),
       {
-        base: path.resolve("apps/web/src/styles"),
+        base: path.resolve("shared/styles"),
         onDependency: () => {},
       }
     );

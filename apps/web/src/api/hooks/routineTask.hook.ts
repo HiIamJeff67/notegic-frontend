@@ -23,6 +23,16 @@ import type {
   VisualizeMyRoutineTaskPurposeCountRequest,
   VisualizeMyRoutineTaskPurposeCountResponse,
 } from "@shared/api/interfaces/routineTask.interface";
+import {
+  mutationFnCreateRoutineTaskByRoutineId,
+  mutationFnHardDeleteMyRoutineTaskById,
+  mutationFnHardDeleteMyRoutineTasksByIds,
+  mutationFnUpdateMyRoutineTaskById,
+  queryFnGetAllMyRoutineTasks,
+  queryFnGetMyRoutineTaskById,
+  queryFnGetMyRoutineTasksByRoutineId,
+  queryFnVisualizeMyRoutineTaskPurposeCount,
+} from "@shared/api/invokers/routineTask.invoker";
 import { getQueryClient } from "@shared/api/queryClient";
 import { UseQueryDefaultOptions } from "@shared/api/queryHookOptions";
 import { queryKeys } from "@shared/api/queryKeys";
@@ -34,24 +44,24 @@ import {
 } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { isRemoteUnavailable } from "@/api/functions/helpers/availability";
+import {
+  CreateRoutineTaskByRoutineId,
+  GetAllMyRoutineTasks,
+  GetMyRoutineTaskById,
+  GetMyRoutineTasksByRoutineId,
+  HardDeleteMyRoutineTaskById,
+  HardDeleteMyRoutineTasksByIds,
+  UpdateMyRoutineTaskById,
+  VisualizeMyRoutineTaskPurposeCount,
+} from "@/api/functions/routineTask.serverFn";
 import { clearSearchRoutines } from "@/api/hooks/graphql/policies/searchRoutines.policy";
 import {
   clearSearchRoutineTasks,
   removeSearchRoutineTasks,
 } from "@/api/hooks/graphql/policies/searchRoutineTasks.policy";
-import {
-  mutationFnCreateRoutineTaskByRoutineId,
-  mutationFnHardDeleteMyRoutineTaskById,
-  mutationFnHardDeleteMyRoutineTasksByIds,
-  mutationFnUpdateMyRoutineTaskById,
-  queryFnGetAllMyRoutineTasks,
-  queryFnGetMyRoutineTaskById,
-  queryFnGetMyRoutineTasksByRoutineId,
-  queryFnVisualizeMyRoutineTaskPurposeCount,
-} from "@/api/invokers/routineTask.invoker";
+import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
 import { RoutineTaskLocalSynchronizer } from "@/api/local/synchronizers/routineTask.synchronizer";
-import { invalidateDeletedResources } from "@/api/hooks/policies/deleted.policy";
 import { useVisualizeQuery } from "./visualize.hook";
 
 export const useVisualizeMyRoutineTaskPurposeCount = (
@@ -66,7 +76,11 @@ export const useVisualizeMyRoutineTaskPurposeCount = (
       queryKeys.routineTask.visualizeMyPurposeCount(
         currentRequest?.param.permission
       ),
-    queryFnVisualizeMyRoutineTaskPurposeCount,
+    request =>
+      queryFnVisualizeMyRoutineTaskPurposeCount(
+        request,
+        VisualizeMyRoutineTaskPurposeCount
+      ),
     options
   );
 
@@ -91,7 +105,10 @@ export const useGetMyRoutineTaskById = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetMyRoutineTaskById(request);
+      const response = await queryFnGetMyRoutineTaskById(
+        request,
+        GetMyRoutineTaskById
+      );
       signal?.throwIfAborted();
       await RoutineTaskLocalSynchronizer.syncGetMyRoutineTaskById(response);
       return response;
@@ -169,7 +186,10 @@ export const useGetMyRoutineTasksByRoutineId = (
           throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
         }
 
-        const response = await queryFnGetMyRoutineTasksByRoutineId(request);
+        const response = await queryFnGetMyRoutineTasksByRoutineId(
+          request,
+          GetMyRoutineTasksByRoutineId
+        );
         await RoutineTaskLocalSynchronizer.syncGetMyRoutineTasksByRoutineId(
           response
         );
@@ -278,7 +298,10 @@ export const useGetAllMyRoutineTasks = (
         throw new NotegicFetchError(FetchClientExceptions.MissingNetwork());
       }
 
-      const response = await queryFnGetAllMyRoutineTasks(request);
+      const response = await queryFnGetAllMyRoutineTasks(
+        request,
+        GetAllMyRoutineTasks
+      );
       await RoutineTaskLocalSynchronizer.syncGetAllMyRoutineTasks(response);
       return response;
     } catch (error) {
@@ -347,7 +370,10 @@ export const useCreateRoutineTaskByRoutineId = (allowOffline = true) => {
     ): Promise<CreateRoutineTaskByRoutineIdResponse> => {
       request.body.id ??= generateUUID();
       try {
-        return await mutationFnCreateRoutineTaskByRoutineId(request);
+        return await mutationFnCreateRoutineTaskByRoutineId(
+          request,
+          CreateRoutineTaskByRoutineId
+        );
       } catch (error) {
         if (!allowOffline || !NetworkExceptions.isMissingNetworkError(error))
           throw error;
@@ -401,7 +427,10 @@ export const useUpdateMyRoutineTaskById = (allowOffline = true) => {
       request: UpdateMyRoutineTaskByIdRequest
     ): Promise<UpdateMyRoutineTaskByIdResponse> => {
       try {
-        return await mutationFnUpdateMyRoutineTaskById(request);
+        return await mutationFnUpdateMyRoutineTaskById(
+          request,
+          UpdateMyRoutineTaskById
+        );
       } catch (error) {
         if (!allowOffline || !NetworkExceptions.isMissingNetworkError(error))
           throw error;
@@ -453,7 +482,10 @@ export const useHardDeleteMyRoutineTaskById = (allowOffline = true) => {
       request: HardDeleteMyRoutineTaskByIdRequest
     ): Promise<HardDeleteMyRoutineTaskByIdResponse> => {
       try {
-        return await mutationFnHardDeleteMyRoutineTaskById(request);
+        return await mutationFnHardDeleteMyRoutineTaskById(
+          request,
+          HardDeleteMyRoutineTaskById
+        );
       } catch (error) {
         if (!allowOffline || !NetworkExceptions.isMissingNetworkError(error))
           throw error;
@@ -512,7 +544,13 @@ export const useHardDeleteMyRoutineTasksByIds = () => {
   const apolloClient = useApolloClient();
 
   const mutation = useMutation({
-    mutationFn: mutationFnHardDeleteMyRoutineTasksByIds,
+    mutationFn: (
+      request: Parameters<typeof mutationFnHardDeleteMyRoutineTasksByIds>[0]
+    ) =>
+      mutationFnHardDeleteMyRoutineTasksByIds(
+        request,
+        HardDeleteMyRoutineTasksByIds
+      ),
     onSuccess: async (
       response,
       request: HardDeleteMyRoutineTasksByIdsRequest

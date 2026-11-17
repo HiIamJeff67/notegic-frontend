@@ -12,7 +12,7 @@ import { getRequestHeader } from "@tanstack/start-server-core/request-response";
 import { forwardUpstreamSetCookies } from "@/api/functions/helpers/cookie";
 import { format } from "@/api/functions/helpers/format";
 
-export const CreateMyAPIKey = createServerFn({ method: "POST" })
+const CreateMyAPIKeyRpc = createServerFn({ method: "POST" })
   .inputValidator((data: CreateMyAPIKeyRequest) => data)
   .handler(async ({ data: request }): Promise<CreateMyAPIKeyResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -43,7 +43,10 @@ export const CreateMyAPIKey = createServerFn({ method: "POST" })
     return formattedResponse;
   });
 
-export const ListMyAPIKeys = createServerFn({ method: "GET" })
+export const CreateMyAPIKey = (request: CreateMyAPIKeyRequest) =>
+  CreateMyAPIKeyRpc({ data: request });
+
+const ListMyAPIKeysRpc = createServerFn({ method: "GET" })
   .inputValidator((data: ListMyAPIKeysRequest) => data)
   .handler(async ({ data: request }): Promise<ListMyAPIKeysResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -71,7 +74,10 @@ export const ListMyAPIKeys = createServerFn({ method: "GET" })
     return formattedResponse;
   });
 
-export const RevokeMyAPIKey = createServerFn({ method: "POST" })
+export const ListMyAPIKeys = (request: ListMyAPIKeysRequest) =>
+  ListMyAPIKeysRpc({ data: request });
+
+const RevokeMyAPIKeyRpc = createServerFn({ method: "POST" })
   .inputValidator((data: RevokeMyAPIKeyRequest) => data)
   .handler(async ({ data: request }): Promise<RevokeMyAPIKeyResponse> => {
     const inboundCookie = getRequestHeader("cookie");
@@ -100,3 +106,6 @@ export const RevokeMyAPIKey = createServerFn({ method: "POST" })
 
     return formattedResponse;
   });
+
+export const RevokeMyAPIKey = (request: RevokeMyAPIKeyRequest) =>
+  RevokeMyAPIKeyRpc({ data: request });

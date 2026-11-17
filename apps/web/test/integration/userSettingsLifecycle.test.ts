@@ -35,10 +35,10 @@ window.unmount = () => root.unmount();
 
 const mocks: Record<string, string> = {
   "@/hooks/useUser": `export const useUser = () => ({ userData: { publicId: window.state.userId } });`,
-  "@/hooks/useNetwork": `export const useNetwork = () => ({ isOnline: window.state.online });`,
+  "@shared/hooks/useNetwork": `export const useNetwork = () => ({ isOnline: window.state.online });`,
   "@/api/functions/headers/clientHeaders": `export const getClientRequestHeaders = () => ({}); export const getClientMutationHeaders = () => ({});`,
   "@/api/hooks/userSetting.hook": `const mutate = request => window.state.writes.push(request); export const useUpdateMySetting = () => ({ mutate });`,
-  "@/api/invokers/userSetting.invoker": `export const queryFnGetMySetting = async (_, signal) => {
+  "@shared/api/invokers/userSetting.invoker": `export const queryFnGetMySetting = async (_, signal) => {
     window.state.reads++; window.state.signals.push(signal);
     if (window.state.deferred) return new Promise(resolve => { window.resolveRemote = () => resolve({ data: {...window.setting} }); });
     if (window.state.fail) throw new Error('404');

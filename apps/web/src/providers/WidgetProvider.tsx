@@ -8,7 +8,7 @@ import { createContext, useCallback, useEffect, useRef } from "react";
 import { DashboardPreviewWidgets } from "@/components/widgets/basic/basic";
 import { toWidget, Widget } from "@/components/widgets/widget";
 import { useUser } from "@/hooks";
-import { useStateTrigger } from "@/hooks/useStateTrigger";
+import { useStateTrigger } from "@shared/hooks/useStateTrigger";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface WidgetContextType {

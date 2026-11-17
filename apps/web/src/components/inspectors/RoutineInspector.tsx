@@ -23,12 +23,12 @@ import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useGetMyRoutineById } from "@/api/hooks/routine.hook";
-import DatePicker from "@/components/commons/DatePicker/DatePicker";
-import TimePicker from "@/components/commons/TimePicker/TimePicker";
+import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
+import TimePicker from "@shared/components/commons/TimePicker/TimePicker";
 import TimezoneSelector, {
   SupportedTimezones,
-} from "@/components/commons/TimezoneSelector/TimezoneSelector";
-import WeekdayPicker from "@/components/commons/WeekdayPicker/WeekdayPicker";
+} from "@shared/components/commons/TimezoneSelector/TimezoneSelector";
+import WeekdayPicker from "@shared/components/commons/WeekdayPicker/WeekdayPicker";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
