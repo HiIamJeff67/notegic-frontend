@@ -21,6 +21,7 @@ queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
 invokers/            request validation and error mapping; each call receives func
+local/               sqlite-core tables, ordered SQL migrations, migrator, and migration catalog
 ```
 
 `queryClient` decides whether one in-flight query or mutation runs again. It
@@ -46,15 +47,15 @@ functions, the Web Apollo client, and the WebSocket lifecycle are under
 
 ## Next
 
-These paths are decided and are not in the tree yet.
+The per-app migration version cap is decided and is not in the tree yet.
 
 | Path | What lands there | Issue |
 | --- | --- | --- |
-| `local/` | Shared `sqlite-core` tables, one ordered SQL migration chain, the migrator, and the per-app version cap | [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration), after [NOT-155](https://linear.app/notegic/issue/NOT-155/open-native-sqlite-from-the-desktop-sidecar) opens the desktop file |
+| `local/` version cap | Each app build stops the shared migrator at its selected version | [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration) |
 
 Do not add `shared/local/`. An app applies migrations only through its build
 cap and cannot skip a number. The TypeScript schema that app compiles matches
-the cap. A desktop-only table stays beside `apps/desktop/sidecar/driver/`
+the cap. A desktop-only table stays beside `apps/desktop/sidecars/driver/`
 until Web raises its cap.
 
 [NOT-159](https://linear.app/notegic/issue/NOT-159/commit-shelf-changes-on-the-desktop-sidecar-before-remote-sync)

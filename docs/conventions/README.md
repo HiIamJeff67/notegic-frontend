@@ -27,7 +27,7 @@ recurring patterns into explicit rules for new work.
 | [05-helpers-and-abstractions.md](05-helpers-and-abstractions.md) | Helper functions, shared utilities, abstraction boundaries, and directness |
 | [06-react-hooks.md](06-react-hooks.md) | Hook ownership, lifecycle boundaries, local logic, and hook-specific reuse |
 | [07-version-control.md](07-version-control.md) | Commit messages and generated development logs |
-| [08-testing.md](08-testing.md) | Unit and integration test ownership |
+| [08-testing.md](08-testing.md) | Test location, category directories, and ownership |
 | [09-widgets.md](09-widgets.md) | Dashboard widget structure and local persistence |
 | [10-translations.md](10-translations.md) | Project translation hook, async notifications, errors, enum mappings, and language ownership |
 | [11-desktop-tauri.md](11-desktop-tauri.md) | Tauri layout, Rust names, commands, permissions, and sidecars for the desktop shell |

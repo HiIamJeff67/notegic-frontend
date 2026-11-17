@@ -19,11 +19,16 @@ Use local evidence before CI. Do not claim that local tests replace CI; choose t
 ## Workflow
 
 1. Inspect `git diff` and map changed files to unit, web integration, browser E2E, codegen, local persistence, or production-build coverage.
-   Follow the test-location runbook: Web tests live under `apps/web/test/`,
-   Desktop tests under `apps/desktop/test/`, and shared or cross-application
-   tests under `test/`. A test keeps the source basename plus `.test.ts(x)`.
-   Integration tests belong in integration directories without a redundant
-   category suffix. `test:unit` runs both Jest categories.
+   Follow the test-location runbook in `docs/conventions/08-testing.md`.
+   A unit test sits beside its source file as `<basename>.test.ts(x)`.
+   Every other test uses an allowed category directory directly under
+   `apps/web/test/`, `apps/desktop/test/`, `shared/test/`, or the repository
+   `test/`. The repository `test/` root is only for CI, cross-platform, or
+   platform-and-shared suites. Do not add a category suffix to the filename.
+   `test:unit` runs Jest unit tests and the Jest categories. Playwright owns
+   `e2e/`. Desktop Playwright artifacts go to `apps/desktop/test/results/`,
+   which is generated output and not a test category. Jest does not run
+   `performance/`.
 2. Start with the cheapest applicable checks: `npm run format:check`, `npm run lint`, `npm run typecheck`, and targeted `npm test`/Jest tests.
 3. For GraphQL sources, operations, or generated client types run `npm run codegen:check`; regenerate from source, never by hand.
 4. For browser, auth, routing, persistence, or cross-boundary behavior run targeted `npm run test:e2e` (use `CI=1 npm run test:e2e` when CI-like behavior matters). Keep tests independent of live credentials.

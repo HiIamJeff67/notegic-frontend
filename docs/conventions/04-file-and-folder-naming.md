@@ -64,11 +64,16 @@ below reflect the current repository and are the default for new files.
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
 | GraphQL documents | `some_thing.graphql` | `block_pack_fragment.graphql` |
 | Stylesheets | `some-thing.css` | `globals.css`, `panel.css` |
-| Unit tests in the owning test tree | `<source basename>.test.ts(x)` | `apps/web/test/seo/pageTitle.test.ts`, `test/lib/search/searchPage.test.ts` |
-| Integration tests in the integration directory | `name.test.ts(x)` | `userProvider.test.ts` |
-| Browser E2E tests | `name.spec.ts` | `articleNavigation.spec.ts` |
+| Unit tests beside their source | `<source basename>.test.ts(x)` | `pageTitle.test.ts`, `searchPage.test.ts` |
+| Tests in a category directory | `name.test.ts(x)` | `userProvider.test.ts`, `shell.test.ts`, `collectionValidation.test.ts` |
+| Playwright E2E tests | `name.spec.ts` | `articleNavigation.spec.ts`, `publicApi.spec.ts` |
 | Performance tests | `name.performance.test.ts` | `shelfNode.performance.test.ts` |
 | Desktop Tauri shell | [11-desktop-tauri.md](11-desktop-tauri.md) | `src-tauri/src/lib.rs`, `capabilities/default.json` |
+
+Category directories sit directly under `apps/web/test/`, `apps/desktop/test/`,
+`shared/test/`, or the repository `test/`. The allowed names and which root
+may hold a suite are in [08-testing.md](08-testing.md). Do not add a category
+outside that list without agreement.
 
 Keep established API role suffixes where they describe the module, such as
 `routine.hook.ts` and `searchLocal.adapter.ts`. Do not invent a suffix or rename
@@ -130,7 +135,7 @@ directly from the module that owns them.
 
 Shared conversion operations live in `shared/lib/conversions/`; entity
 comparators and their owned input types live in `shared/lib/comparisons/`.
-Keep their tests under `test/lib/comparisons/`, without splitting a comparator's
+Keep their tests beside the implementation, without splitting a comparator's
 private input shape into a general shared type file.
 BlockPack import/export file types live directly in
 `shared/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
@@ -169,19 +174,19 @@ specs that currently contain no JSX. Here the suffix identifies a production blo
 Jest excludes this directory, and its behavior is verified through editor tests.
 
 Group `shared/lib/` by the responsibility that owns the implementation. Keep
-the implementation and its intrinsic types/operations together. Put the test
-under `test/`, mirroring that path, for example `test/lib/queue/deque.test.ts`
-and `test/lib/storage/indexedDB.test.ts`. Import the owner directly instead of
-keeping a compatibility file at the old root path. Use an existing group before
-adding another folder.
+the implementation, its tests and its intrinsic types/operations together.
+Import the owner directly instead of keeping a compatibility file at the old
+root path. Use an existing group before adding another folder.
 
 ```text
 shared/lib/
   queue/deque.ts
+  queue/deque.test.ts
   url/getURL.ts
   storage/localStorage.ts
   storage/sessionStorage.ts
   storage/indexedDB.ts
+  storage/indexedDB.test.ts
   storage/materialAttachmentCache.type.ts
   shelf/rootShelf.ts
   shelf/subShelf.ts
@@ -290,15 +295,16 @@ Group cross-feature API modules by responsibility and retain the
 - `bridges/`: coordination between API/runtime boundaries, such as
   `cookie.bridge.ts` and `searchLocal.bridge.ts`.
 
-Keep a unit test's basename aligned with its owner as `domain.role.test.ts`,
-under `apps/web/test/` or `test/` rather than beside the module. Import the
+Keep unit tests beside their owner as `domain.role.test.ts`. Import the
 owning module directly; do not leave compatibility re-export files at the API
 root. Storage-specific policies remain under `api/local/`; these categories
 do not override narrower ownership or server/client runtime boundaries.
 
 Exported API functions use PascalCase, such as `GetUserData`, in
 `apps/web/src/api/functions/`, `apps/desktop/src/api/functions/`, and the
-future mobile `api/functions/`. A private TanStack Start binding in the same
+future mobile `api/functions/`. Web modules keep the TanStack role in the
+filename, such as `auth.serverFn.ts`. Desktop modules use `domain.function.ts`,
+such as `auth.function.ts`. A private TanStack Start binding in the same
 file uses the same name plus `Rpc`, such as `GetUserDataRpc`, and the exported
 function passes `{ data: request }` to it. One blank line separates the Rpc
 from that export. Invokers name the injected function parameter `func`. The invoker modules

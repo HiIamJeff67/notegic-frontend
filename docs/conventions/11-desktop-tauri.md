@@ -17,7 +17,7 @@ and [Shared application boundaries](../designs/systems/shared-application-bounda
 | --- | --- | --- |
 | `apps/desktop/src/` | React entry and the code router | `main.tsx`, `router.tsx` |
 | `apps/desktop/src/pages/` | Desktop screens | Web `pages/` naming. No `routes/` file tree |
-| `apps/desktop/src/api/functions/` | PascalCase API functions | Same role as Web `api/functions/` |
+| `apps/desktop/src/api/functions/` | PascalCase API functions in `domain.function.ts` | Same role as Web `api/functions/` |
 | `apps/desktop/src/api/local/` | Inert replacements for Web `api/local` | Not the native SQLite driver |
 | `apps/desktop/src/api/server/` | Inert Start server and `async_hooks` replacements | Delete when Web imports are gone |
 | `apps/desktop/src/api/tokens/` | Client-held tokens, including the in-memory access token | Same folder role as Web `api/tokens/` |
@@ -42,6 +42,11 @@ apps/desktop/
     styles.css
     pages/
   test/
+    boundary/
+    e2e/
+    results/
+  sidecars/
+    driver/
   src-tauri/
     Cargo.toml
     Cargo.lock
@@ -56,7 +61,8 @@ apps/desktop/
     gen/schemas/
 ```
 
-- `tauri.conf.json` is the marker the CLI uses to find the Rust project. The default format is JSON. A platform override is `tauri.macos.conf.json`, `tauri.windows.conf.json`, or `tauri.linux.conf.json`, merged with JSON Merge Patch. Arrays in an override replace the base array.
+- `test/` holds desktop-only suites in the category directories from [08-testing.md](08-testing.md). `release/` is available to desktop and a future mobile app. Create a category directory only when a suite needs it. `test/results/` is generated Playwright output and is not committed.
+- `tauri.conf.json` is the marker the CLI uses to find the Rust project. The default format is JSON. A platform override is `tauri.macos.conf.json`, `tauri.windows.conf.json`, or `tauri.linux.conf.json`, merged with JSON Merge Patch. Arrays in an override replace the base array. The window sets `dragDropEnabled` to false so widget drops stay in the webview. The native file-drop handler otherwise takes the drop, and the widget returns to where the drag started.
 - `build.rs` calls `tauri_build::build()` only.
 - `src/lib.rs` owns `run()` and `#[cfg_attr(mobile, tauri::mobile_entry_point)]`.
 - `src/main.rs` calls that `run()` and stays otherwise unchanged. The called name is `[lib] name` in `Cargo.toml`.
@@ -115,7 +121,7 @@ Reference that identifier from `capabilities/default.json`. Core and plugin perm
 
 A new sidecar is a packaged executable under `src-tauri/binaries/`. Configure it with `bundle.externalBin`, for example `binaries/notegic-sidecar`. Spawn it by the file name `notegic-sidecar`, not by the path configured in `externalBin`. Allow it with `shell:allow-execute` or `shell:allow-spawn` and `sidecar: true`. List accepted arguments in the capability, or set `args` explicitly.
 
-The current shell starts `sidecar/server.mjs` with a system `node` process. That process is the existing development sidecar. Do not copy it for another sidecar. Package a new sidecar as a binary.
+The current shell starts `sidecars/driver/server.ts` with a system `node` process. That process is the database sidecar. It opens the native SQLite file with Drizzle. Rust passes the app data directory path and does not open the database. Do not copy this process for another sidecar. Package a new sidecar as a binary.
 
 ## Frontend scripts
 

@@ -85,7 +85,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-11-03, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **132 referenced export names / 107 distinct
+imports and re-exports (excluding tests). There are **133 referenced export names / 108 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -154,6 +154,7 @@ The source column gives a representative existing consumer, not every call site.
 | `LibraryIcon` | Document Overview tab | [Overview] |
 | `Link2Icon` | Account bindings for backup contacts and external accounts | [AccountSettingsPage], [AppCommandItem] |
 | `LinkIcon` | Todo linked item | [TodoWidget] |
+| `LogIn` | Sign in when the desktop window has no session | [DesktopAppSidebar] |
 | `ListFilter` | Routine and record filter controls | [RecordFilters], [RoutineTable], [RoutineTaskTable] |
 | `Loader2Icon`, `LoaderCircle`, `LoaderCircleIcon` | Loading / pending work | [Spinner], [RoutineMenu], [HomePage] |
 | `LogOut`, `LogOutIcon` | Sign out / leave shared resource | [AppSidebar], [StationMenu], [RootShelfMenu] |
@@ -358,6 +359,7 @@ assets or Docker services were removed. No commit or push was performed.
 [AppCommand]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppCommand/AppCommand.tsx
 [AppCommandItem]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppCommand/AppCommandItem.tsx
 [AppSidebar]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx
+[DesktopAppSidebar]: ../../apps/desktop/src/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx
 [Spinner]: ../../shared/components/ui/spinner.tsx
 [GraphCanvas]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas.tsx
 [AccountSettingsPage]: ../../apps/web/src/pages/app/setting/account/AccountSettingsPage.tsx

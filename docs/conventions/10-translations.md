@@ -8,24 +8,21 @@ providers and custom hooks.
 
 | Responsibility | Entry point |
 | --- | --- |
-| React translation and language subscription | `@/hooks/useTranslation` |
+| React translation and language subscription | `@shared/hooks/useTranslation` |
 | Shared resources and supported languages | `@shared/i18n` |
 | Error presentation | `@shared/i18n/error` (`tError`) |
 | Enum-to-key mappings | `@shared/i18n/tKeys/<enumName>.tKey` |
 | Web instance initialization | `apps/web/src/i18n.ts` (`@/i18n`) |
 | Account language restoration and persistence | `UserSettingsProvider` |
 
-Web components, providers, and hooks import `useTranslation` from
-`@/hooks/useTranslation`, not from `react-i18next`. Do not import the Web
-singleton just to translate inside React code. The React-specific adapter and
-its test live in `apps/web/src/hooks/`, outside the framework-neutral
-`shared/i18n/` package. Non-React desktop/mobile consumers use the i18n core
-without importing a Web hook. Shared React code, including charts and the
-controls in `shared/components/`, uses `useTranslation` from `react-i18next`
-and must not import `@/hooks/useTranslation`.
+Web, Desktop, and shared React code import `useTranslation` from
+`@shared/hooks/useTranslation`, not from `react-i18next`. Do not import an app
+i18n singleton just to translate inside React code. The adapter and its test
+live in `shared/hooks/`, outside the framework-neutral `shared/i18n/` package.
+Non-React code uses the i18n core directly.
 
 ```tsx
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 function SaveButton() {
   const { t } = useTranslation();
@@ -69,7 +66,7 @@ renders with an unchanged translation snapshot retain the same reference.
 
 ```tsx
 import { useMemo } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 function SaveLabel() {
   const { t } = useTranslation();
@@ -99,7 +96,7 @@ reuse that string after the language may have changed.
 
 ```tsx
 import { tError } from "@shared/i18n/error";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import toast from "@shared/lib/toast/toast";
 
 function SaveAction({ save }: { save: () => Promise<void> }) {
@@ -211,7 +208,7 @@ Translate directly where the value is rendered:
 ```tsx
 import { RoutineTaskRecordStatus } from "@shared/api/interfaces/enums";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 function Status({ status }: { status: RoutineTaskRecordStatus }) {
   const { t } = useTranslation();
@@ -248,7 +245,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 
 ## Contributor and agent checklist
 
-1. Use `@/hooks/useTranslation` in every new React translation caller.
+1. Use `@shared/hooks/useTranslation` in every new React translation caller.
 2. Add or update keys in the appropriate shared resource group and all five
    locales. Preserve key/interpolation types; do not bypass them with `any`.
 3. Keep `tError` and enum-to-key mappings as the existing presentation helpers.
@@ -260,7 +257,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 6. Verify with `npm run typecheck` and:
 
    ```sh
-   npm run test:unit -- apps/web/test/hooks/useTranslation.test.tsx test/i18n/error.test.ts test/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
+   npm run test:unit -- shared/hooks/useTranslation.test.tsx shared/i18n/error.test.ts shared/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
    ```
 
 The Chromium integration test uses an isolated browser and mocked API/storage

@@ -7,7 +7,6 @@ export default {
     "<rootDir>/apps/web/src",
     "<rootDir>/apps/web/test",
     "<rootDir>/shared",
-    "<rootDir>/test",
   ],
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
@@ -17,9 +16,9 @@ export default {
   testPathIgnorePatterns: [
     // BlockNote block specifications are production modules, not test suites.
     "<rootDir>/shared/lib/blockpack/specs/",
-    "<rootDir>/test/performance/",
+    "/test/performance/",
     // Playwright suites run through `playwright test`, not Jest.
-    "<rootDir>/apps/web/test/e2e/",
+    "/test/e2e/",
   ],
   transform: {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],

@@ -51,7 +51,7 @@ apps/web/src/i18n.ts             Web i18n instance
 apps/desktop/src/api/functions/   desktop API callers
 apps/desktop/src/components/      desktop feature components
 apps/desktop/src/pages/
-apps/desktop/sidecar/driver/      native SQLite
+apps/desktop/sidecars/driver/   native SQLite
 apps/desktop/src-tauri/           window, process lifecycle, Rust commands
 
 apps/mobile/src/api/functions/    mobile API callers, when that app exists
@@ -109,7 +109,7 @@ versions from the same migration list.
 The TypeScript table definition that an app compiles must match its cap. A
 table or column that only a newer migration creates stays out of the shared
 schema module until every app that imports that module raises its cap. A
-desktop-only table can live beside `apps/desktop/sidecar/driver/` until Web
+desktop-only table can live beside `apps/desktop/sidecars/driver/` until Web
 adopts it.
 
 This cap is required before the desktop local-first engine writes through the
@@ -154,7 +154,9 @@ driver. Rust does not open the database.
 ## Current gap
 
 `apps/desktop/tsconfig.json` and `apps/desktop/vite.config.ts` map `@/` to
-`apps/web/src`. `apps/desktop/src/router.tsx` imports that tree.
+`apps/web/src`. The desktop route tree no longer imports Web pages. The alias
+remains because `apps/desktop/src/api/apolloClient.ts` and
+`apps/desktop/src/api/local/db.ts` still reference Web modules.
 `apps/desktop/src/styles.css` sources `apps/web/src`. Those imports
 are not a sharing mechanism. Web and Desktop share a file only after it lives
 in `shared/` and imports neither app.

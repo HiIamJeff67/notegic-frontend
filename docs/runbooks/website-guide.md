@@ -191,7 +191,7 @@ npm run generate:website-guide
 npm run format:check
 npm run lint
 npm run typecheck
-npm run test:unit -- apps/web/test/components/commons/Article/ArticleMedia.test.tsx apps/web/test/integration/iconConventions.test.ts
+npm run test:unit -- apps/web/src/components/commons/Article/ArticleMedia.test.tsx apps/web/test/integration/iconConventions.test.ts
 npm run test:e2e -- websiteGuide.spec.ts articleNavigation.spec.ts articleResponsive.spec.ts --workers=1
 npm run test:e2e -- crossOriginIsolation.spec.ts documentIsolation.spec.ts localDatabaseStartup.spec.ts --workers=1
 ```
