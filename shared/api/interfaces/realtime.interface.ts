@@ -3,17 +3,15 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { RealtimePermissionSchema } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { RealtimeProtocolVersion } from "@shared/api/websocket/version";
 import { z } from "zod";
 
+/* ============================== CreateMyRealtimeConnectionTicket ============================== */
+
 export const CreateMyRealtimeConnectionTicketRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({}).optional(),
   });
 
@@ -35,14 +33,11 @@ export type CreateMyRealtimeConnectionTicketResponse = z.infer<
   typeof CreateMyRealtimeConnectionTicketResponseSchema
 >;
 
+/* ============================== CreateMyBlockPackChannelTicket ============================== */
+
 export const CreateMyBlockPackChannelTicketRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       blockPackId: z.uuidv4(),
       permission: RealtimePermissionSchema,
@@ -77,14 +72,11 @@ export type CreateMyBlockPackChannelTicketResponse = z.infer<
   typeof CreateMyBlockPackChannelTicketResponseSchema
 >;
 
+/* ============================== GetBlockPackParticipants ============================== */
+
 export const GetBlockPackParticipantsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       blockPackId: z.uuidv4(),
     }),

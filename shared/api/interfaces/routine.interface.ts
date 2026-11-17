@@ -7,6 +7,7 @@ import {
   AllRoutinePeriods,
   AllRoutinePhases,
 } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 import {
   VisualizePermissionRequestSchema,
@@ -82,12 +83,7 @@ export type VisualizeMyRoutineScheduledEndAtCountResponse = z.infer<
 /* ============================== GetMyRoutineById ============================== */
 
 export const GetMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     routineId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -136,12 +132,7 @@ export type GetMyRoutineByIdResponse = z.infer<
 
 export const GetMyRoutinesByStationIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       stationId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -192,12 +183,7 @@ export type GetMyRoutinesByStationIdResponse = z.infer<
 
 export const GetMyRoutinesByTimeRangeRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       from: z.coerce.date({ error: "workspace.validation.invalidSchedule" }),
       to: z.coerce.date({ error: "workspace.validation.invalidSchedule" }),
@@ -250,12 +236,7 @@ export type GetMyRoutinesByTimeRangeResponse = z.infer<
 
 export const CreateRoutineByStationIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z
       .object({
         id: z.uuidv4().optional(),
@@ -307,12 +288,7 @@ export type CreateRoutineByStationIdResponse = z.infer<
 
 export const CreateRoutinesByStationIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       createdRoutines: z.array(
         z
@@ -367,12 +343,7 @@ export type CreateRoutinesByStationIdsResponse = z.infer<
 /* ============================== UpdateMyRoutineById ============================== */
 
 export const UpdateMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
     values: z
@@ -422,12 +393,7 @@ export type UpdateMyRoutineByIdResponse = z.infer<
 /* ============================== UpdateMyRoutinesByIds ============================== */
 
 export const UpdateMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     updatedRoutines: z.array(
       z.object({
@@ -477,12 +443,7 @@ export type UpdateMyRoutinesByIdsResponse = z.infer<
 /* ============================== LinkRoutineTagById ============================== */
 
 export const LinkRoutineTagByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
     routineTagId: z.uuidv4(),
@@ -508,12 +469,7 @@ export type LinkRoutineTagByIdResponse = z.infer<
 /* ============================== LinkRoutineTagsByIds ============================== */
 
 export const LinkRoutineTagsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     linkedRoutinesAndTags: z.array(
       z.object({
@@ -543,12 +499,7 @@ export type LinkRoutineTagsByIdsResponse = z.infer<
 /* ============================== LinkRoutineTaskById ============================== */
 
 export const LinkRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
     routineTaskId: z.uuidv4(),
@@ -576,12 +527,7 @@ export type LinkRoutineTaskByIdResponse = z.infer<
 /* ============================== LinkRoutineTasksByIds ============================== */
 
 export const LinkRoutineTasksByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     linkedRoutinesAndTasks: z.array(
       z.object({
@@ -615,12 +561,7 @@ export type LinkRoutineTasksByIdsResponse = z.infer<
 /* ============================== LinkRoutineItemById ============================== */
 
 export const LinkRoutineItemByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
     itemId: z.uuidv4(),
@@ -649,12 +590,7 @@ export type LinkRoutineItemByIdResponse = z.infer<
 /* ============================== LinkRoutineItemsByIds ============================== */
 
 export const LinkRoutineItemsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     linkedRoutinesAndItems: z.array(
       z.object({
@@ -689,12 +625,7 @@ export type LinkRoutineItemsByIdsResponse = z.infer<
 /* ============================== RestoreMyRoutineById ============================== */
 
 export const RestoreMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
   }),
@@ -738,12 +669,7 @@ export type RestoreMyRoutineByIdResponse = z.infer<
 /* ============================== RestoreMyRoutinesByIds ============================== */
 
 export const RestoreMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineIds: z.array(z.uuidv4()),
   }),
@@ -789,12 +715,7 @@ export type RestoreMyRoutinesByIdsResponse = z.infer<
 /* ============================== DeleteMyRoutineById ============================== */
 
 export const DeleteMyRoutineByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineId: z.uuidv4(),
   }),
@@ -820,12 +741,7 @@ export type DeleteMyRoutineByIdResponse = z.infer<
 /* ============================== DeleteMyRoutinesByIds ============================== */
 
 export const DeleteMyRoutinesByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineIds: z.array(z.uuidv4()),
   }),
@@ -854,12 +770,7 @@ export type DeleteMyRoutinesByIdsResponse = z.infer<
 
 export const HardDeleteMyRoutineByIdRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineId: z.uuidv4(),
     }),
@@ -888,12 +799,7 @@ export type HardDeleteMyRoutineByIdResponse = z.infer<
 
 export const HardDeleteMyRoutinesByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineIds: z
         .array(z.uuidv4())

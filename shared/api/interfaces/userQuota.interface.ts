@@ -1,3 +1,4 @@
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { UserQuotaSchema } from "@shared/api/interfaces/types/userQuota.type";
 import { z } from "zod";
 import {
@@ -5,13 +6,10 @@ import {
   NotegicResponseSchema,
 } from "./context.interface";
 
+/* ============================== GetMyQuota ============================== */
+
 export const GetMyQuotaRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type GetMyQuotaRequest = z.infer<typeof GetMyQuotaRequestSchema>;

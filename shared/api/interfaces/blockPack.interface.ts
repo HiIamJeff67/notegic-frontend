@@ -6,18 +6,14 @@ import {
   AllAccessControlPermissions,
   AllSupportedIcons,
 } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 import { ItemNameSchema } from "./workspaceInput.schema";
 
 /* ============================== GetMyBlockPackById ============================== */
 
 export const GetMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     blockPackId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -73,12 +69,7 @@ export type GetMyBlockPackByIdResponse = z.infer<
 
 export const GetMyBlockPacksByParentSubShelfIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       parentSubShelfId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -117,12 +108,7 @@ export type GetMyBlockPacksByParentSubShelfIdResponse = z.infer<
 
 export const GetMyBlockPacksByRootShelfIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       rootShelfId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -160,12 +146,7 @@ export type GetMyBlockPacksByRootShelfIdResponse = z.infer<
 /* ============================== CreateBlockPack ============================== */
 
 export const CreateBlockPackRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     id: z.uuidv4().optional(),
     parentSubShelfId: z.uuidv4(),
@@ -200,12 +181,7 @@ export type CreateBlockPackResponse = z.infer<
 /* ============================== CreateBlockPacks ============================== */
 
 export const CreateBlockPacksRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     createdBlockPacks: z.array(
       z.object({
@@ -244,12 +220,7 @@ export type CreateBlockPacksResponse = z.infer<
 /* ============================== UpdateMyBlockPackById ============================== */
 
 export const UpdateMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     blockPackId: z.uuidv4(),
     values: z
@@ -290,12 +261,7 @@ export type UpdateMyBlockPackByIdResponse = z.infer<
 
 export const UpdateMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       updatedBlockPacks: z.array(
         z.object({
@@ -339,12 +305,7 @@ export type UpdateMyBlockPacksByIdsResponse = z.infer<
 /* ============================== MoveMyBlockPackById ============================== */
 
 export const MoveMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     blockPackId: z.uuidv4(),
     destinationParentSubShelfId: z.uuidv4(),
@@ -376,12 +337,7 @@ export type MoveMyBlockPackByIdResponse = z.infer<
 
 export const MoveMyBlockPacksByParentSubShelfIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       blockPackIds: z.array(z.uuidv4()),
       destinationParentSubShelfId: z.uuidv4(),
@@ -414,12 +370,7 @@ export type MoveMyBlockPacksByParentSubShelfIdResponse = z.infer<
 
 export const MoveMyBlockPacksByParentSubShelfIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       movedBlockPacks: z.array(
         z.object({
@@ -455,12 +406,7 @@ export type MoveMyBlockPacksByParentSubShelfIdsResponse = z.infer<
 /* ============================== RestoreMyBlockPackById ============================== */
 
 export const RestoreMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     blockPackId: z.uuidv4(),
   }),
@@ -500,12 +446,7 @@ export type RestoreMyBlockPackByIdResponse = z.infer<
 
 export const RestoreMyBlockPacksByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       blockPackIds: z.array(z.uuidv4()),
     }),
@@ -546,12 +487,7 @@ export type RestoreMyBlockPacksByIdsResponse = z.infer<
 /* ============================== DeleteMyBlockPackById ============================== */
 
 export const DeleteMyBlockPackByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     blockPackId: z.uuidv4(),
   }),
@@ -584,12 +520,7 @@ export type DeleteMyBlockPackByIdResponse = z.infer<
 
 export const DeleteMyBlockPacksByIdsRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       blockPackIds: z.array(z.uuidv4()),
     }),
@@ -622,12 +553,7 @@ export type DeleteMyBlockPacksByIdsResponse = z.infer<
 
 export const HardDeleteMyBlockPacksByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       blockPackIds: z
         .array(z.uuidv4())

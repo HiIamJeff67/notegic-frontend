@@ -2,6 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 import {
   CreateRoutineTaskBodySchema,
@@ -27,16 +28,11 @@ const RoutineTaskDependencySchema = RoutineTaskDependencyIdentitySchema.extend({
 
 export type RoutineTaskDependency = z.infer<typeof RoutineTaskDependencySchema>;
 
-const RoutineTaskDependencyRequestHeaderSchema = z
-  .object({
-    userAgent: z.string().min(1).optional(),
-    csrfToken: z.string().optional(),
-  })
-  .optional();
+/* ============================== GetRoutineTaskDependenciesByRoutineId ============================== */
 
 export const GetRoutineTaskDependenciesByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: RoutineTaskDependencyRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       routineId: z.uuidv4(),
     }),
@@ -70,9 +66,11 @@ const UpdatableRoutineTaskDependencySchema =
 const DeletableRoutineTaskDependencySchema =
   RoutineTaskDependencyIdentitySchema;
 
+/* ============================== CreateRoutineTaskDependencyByRoutineId ============================== */
+
 export const CreateRoutineTaskDependencyByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: RoutineTaskDependencyRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     body: CreatableRoutineTaskDependencySchema,
     param: z.object({
       routineId: z.uuidv4(),
@@ -92,9 +90,11 @@ export type CreateRoutineTaskDependencyByRoutineIdResponse = z.infer<
   typeof CreateRoutineTaskDependencyByRoutineIdResponseSchema
 >;
 
+/* ============================== UpdateRoutineTaskDependencyByRoutineId ============================== */
+
 export const UpdateRoutineTaskDependencyByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: RoutineTaskDependencyRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     body: UpdatableRoutineTaskDependencySchema,
     param: z.object({
       routineId: z.uuidv4(),
@@ -114,9 +114,11 @@ export type UpdateRoutineTaskDependencyByRoutineIdResponse = z.infer<
   typeof UpdateRoutineTaskDependencyByRoutineIdResponseSchema
 >;
 
+/* ============================== DeleteRoutineTaskDependencyByRoutineId ============================== */
+
 export const DeleteRoutineTaskDependencyByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: RoutineTaskDependencyRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     body: DeletableRoutineTaskDependencySchema,
     param: z.object({
       routineId: z.uuidv4(),
@@ -138,9 +140,11 @@ export type DeleteRoutineTaskDependencyByRoutineIdResponse = z.infer<
   typeof DeleteRoutineTaskDependencyByRoutineIdResponseSchema
 >;
 
+/* ============================== UpdateRoutineTaskGraphByRoutineId ============================== */
+
 export const UpdateRoutineTaskGraphByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: RoutineTaskDependencyRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     param: z.object({ routineId: z.uuidv4() }),
     body: z.object({
       expectedDefinitionVersion: z.number().int().positive(),

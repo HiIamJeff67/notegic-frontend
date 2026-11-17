@@ -8,11 +8,9 @@ import {
   AllRoutineTaskRecordErrorCodes,
   AllRoutineTaskRecordStatuses,
 } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
-import {
-  TwoDimensionalDataSchema,
-  VisualizeRequestHeaderSchema,
-} from "./visualize.interface";
+import { TwoDimensionalDataSchema } from "./visualize.interface";
 
 const ExecutionItemStatuses = [
   "updated",
@@ -62,14 +60,11 @@ const RoutineTaskRecordSchema = z.object({
 
 export type RoutineTaskRecord = z.infer<typeof RoutineTaskRecordSchema>;
 
+/* ============================== GetMyRoutineTaskRecordsByRoutineTaskId ============================== */
+
 export const GetMyRoutineTaskRecordsByRoutineTaskIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       routineTaskId: z.uuidv4(),
       limit: z.number().int().min(1).max(500).optional(),
@@ -107,15 +102,19 @@ const RoutineTaskRecordVisualizeTimeBucketParamSchema =
     "queryRangeEndedAt must be after queryRangeStartedAt"
   );
 
+/* ============================== VisualizeMyRoutineTaskRecordCount ============================== */
+
 export const VisualizeMyRoutineTaskRecordCountRequestSchema =
   NotegicRequestSchema.extend({
-    header: VisualizeRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     param: RoutineTaskRecordVisualizeParamSchema,
   });
 
+/* ============================== VisualizeMyRoutineTaskRecordTimeCount ============================== */
+
 export const VisualizeMyRoutineTaskRecordTimeCountRequestSchema =
   NotegicRequestSchema.extend({
-    header: VisualizeRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     param: RoutineTaskRecordVisualizeTimeBucketParamSchema,
   });
 

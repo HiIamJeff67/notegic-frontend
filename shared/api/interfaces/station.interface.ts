@@ -6,6 +6,7 @@ import {
   AllAccessControlPermissions,
   AllSupportedIcons,
 } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 import {
   VisualizePermissionRequestSchema,
@@ -35,12 +36,7 @@ export type VisualizeMyTotalCountResponse = z.infer<
 /* ============================== GetMyStationById ============================== */
 
 export const GetMyStationByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     stationId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -76,12 +72,7 @@ export type GetMyStationByIdResponse = z.infer<
 /* ============================== GetAllMyStations ============================== */
 
 export const GetAllMyStationsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z
     .object({
       areDeleted: z.boolean().optional().default(false),
@@ -120,12 +111,7 @@ export type GetAllMyStationsResponse = z.infer<
 /* ============================== CreateStation ============================== */
 
 export const CreateStationRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     id: z.uuidv4().optional(),
     name: ItemNameSchema,
@@ -152,12 +138,7 @@ export type CreateStationResponse = z.infer<typeof CreateStationResponseSchema>;
 /* ============================== CreateStations ============================== */
 
 export const CreateStationsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     createdStations: z.array(
       z.object({
@@ -191,12 +172,7 @@ export type CreateStationsResponse = z.infer<
 
 export const TransferMyStationOwnershipRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({ stationId: z.uuidv4() }),
     body: z.object({ targetUserPublicId: z.uuidv4() }),
   });
@@ -217,12 +193,7 @@ export type TransferMyStationOwnershipResponse = z.infer<
 >;
 
 export const LeaveMyStationRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({ stationId: z.uuidv4() }),
   body: z
     .object({ targetUserPublicId: z.uuidv4().optional() })
@@ -240,12 +211,7 @@ export type LeaveMyStationResponse = z.infer<
 /* ============================== UpdateMyStationById ============================== */
 
 export const UpdateMyStationByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     stationId: z.uuidv4(),
     values: z
@@ -280,12 +246,7 @@ export type UpdateMyStationByIdResponse = z.infer<
 /* ============================== UpdateMyStationsByIds ============================== */
 
 export const UpdateMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     updatedStations: z.array(
       z.object({
@@ -326,12 +287,7 @@ export type UpdateMyStationsByIdsResponse = z.infer<
 /* ============================== RestoreMyStationById ============================== */
 
 export const RestoreMyStationByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     stationId: z.uuidv4(),
   }),
@@ -366,12 +322,7 @@ export type RestoreMyStationByIdResponse = z.infer<
 /* ============================== RestoreMyStationsByIds ============================== */
 
 export const RestoreMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     stationIds: z.array(z.uuidv4()),
   }),
@@ -409,12 +360,7 @@ export type RestoreMyStationsByIdsResponse = z.infer<
 /* ============================== DeleteMyStationById ============================== */
 
 export const DeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     stationId: z.uuidv4(),
   }),
@@ -440,12 +386,7 @@ export type DeleteMyStationByIdResponse = z.infer<
 /* ============================== DeleteMyStationsByIds ============================== */
 
 export const DeleteMyStationsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     stationIds: z.array(z.uuidv4()),
   }),
@@ -474,12 +415,7 @@ export type DeleteMyStationsByIdsResponse = z.infer<
 
 export const HardDeleteMyStationByIdRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       stationId: z.uuidv4(),
     }),
@@ -508,12 +444,7 @@ export type HardDeleteMyStationByIdResponse = z.infer<
 
 export const HardDeleteMyStationsByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       stationIds: z
         .array(z.uuidv4())

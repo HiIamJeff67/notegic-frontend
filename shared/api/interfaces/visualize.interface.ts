@@ -3,14 +3,8 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllAccessControlPermissions } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
-
-export const VisualizeRequestHeaderSchema = z
-  .object({
-    userAgent: z.string().min(1).optional(),
-    csrfToken: z.string().optional(),
-  })
-  .optional();
 
 export const VisualizePermissionParamSchema = z.object({
   permission: z.enum(AllAccessControlPermissions),
@@ -45,13 +39,17 @@ export const TwoDimensionalDataSchema = z.object({
   data: z.array(TwoDimensionalDatumSchema),
 });
 
+/* ============================== VisualizePermission ============================== */
+
 export const VisualizePermissionRequestSchema = NotegicRequestSchema.extend({
-  header: VisualizeRequestHeaderSchema,
+  header: RequestHeaderSchema.optional(),
   param: VisualizePermissionParamSchema,
 });
 
+/* ============================== VisualizeTimeBucket ============================== */
+
 export const VisualizeTimeBucketRequestSchema = NotegicRequestSchema.extend({
-  header: VisualizeRequestHeaderSchema,
+  header: RequestHeaderSchema.optional(),
   param: VisualizeTimeBucketParamSchema,
 });
 

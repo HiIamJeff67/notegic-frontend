@@ -2,6 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import z from "zod";
 
 export const PasswordSchema = z
@@ -216,12 +217,7 @@ export type LoginViaGoogleResponse = z.infer<
 /* ============================== Logout Context ============================== */
 
 export const LogoutRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type LogoutRequest = z.infer<typeof LogoutRequestSchema>;
@@ -322,12 +318,7 @@ export type ResetEmailResponse = z.infer<typeof ResetEmailResponseSchema>;
 /* ============================== ForgetPassword Context ============================== */
 
 export const ForgetPasswordRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     account: AccountSchema,
     newPassword: PasswordSchema,

@@ -3,19 +3,15 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllMaterialContentTypes } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import z from "zod";
 import { ItemNameSchema } from "./workspaceInput.schema";
 
-const MaterialObjectTicketRequestHeaderSchema = z
-  .object({
-    userAgent: z.string().min(1).optional(),
-    csrfToken: z.string().optional(),
-  })
-  .optional();
+/* ============================== CreateMaterialObjectTicket ============================== */
 
 export const CreateMaterialObjectTicketRequestSchema =
   NotegicRequestSchema.extend({
-    header: MaterialObjectTicketRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       objectKey: z.string().min(1).max(512),
     }),
@@ -37,9 +33,11 @@ export type CreateMaterialObjectTicketResponse = z.infer<
   typeof CreateMaterialObjectTicketResponseSchema
 >;
 
+/* ============================== ResolveMaterialObjectTicket ============================== */
+
 export const ResolveMaterialObjectTicketRequestSchema =
   NotegicRequestSchema.extend({
-    header: MaterialObjectTicketRequestHeaderSchema,
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       objectTicket: z.string().min(1),
     }),
@@ -64,12 +62,7 @@ export type ResolveMaterialObjectTicketResponse = z.infer<
 /* ============================== GetMyMaterialById ============================== */
 
 export const GetMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     materialId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -106,12 +99,7 @@ export type GetMyMaterialByIdResponse = z.infer<
 
 export const GetMyMaterialAndItsParentByIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       materialId: z.uuidv4(),
       isDeleted: z.boolean().optional().default(false),
@@ -156,12 +144,7 @@ export type GetMyMaterialAndItsParentByIdResponse = z.infer<
 
 export const GetMyMaterialsByParentSubShelfIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       parentSubShelfId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -201,12 +184,7 @@ export type GetMyMaterialsByParentSubShelfIdResponse = z.infer<
 
 export const GetMyMaterialsByRootShelfIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       rootShelfId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -245,12 +223,7 @@ export type GetMyMaterialsByRootShelfIdResponse = z.infer<
 /* ============================== CreateMyMaterial ============================== */
 
 export const CreateMyMaterialRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     parentSubShelfId: z.uuidv4(),
     name: ItemNameSchema,
@@ -282,12 +255,7 @@ export type CreateMyMaterialResponse = z.infer<
 /* ============================== UpdateMyMaterialById ============================== */
 
 export const UpdateMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialId: z.uuidv4(),
     values: z
@@ -323,12 +291,7 @@ export type UpdateMyMaterialByIdResponse = z.infer<
 /* ============================== SaveMyMaterialById ============================== */
 
 export const SaveMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialId: z.uuidv4(),
     contentFile: z.file(),
@@ -358,12 +321,7 @@ export type SaveMyMaterialByIdResponse = z.infer<
 /* ============================== MoveMyMaterialById ============================== */
 
 export const MoveMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialId: z.uuidv4(),
     destinationParentSubShelfId: z.uuidv4(),
@@ -394,12 +352,7 @@ export type MoveMyMaterialByIdResponse = z.infer<
 /* ============================== MoveMyMaterialsByIds ============================== */
 
 export const MoveMyMaterialsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialIds: z.array(z.uuidv4()).min(1).max(128),
     destinationParentSubShelfId: z.uuidv4(),
@@ -430,12 +383,7 @@ export type MoveMyMaterialsByIdsResponse = z.infer<
 /* ============================== RestoreMyMaterialById ============================== */
 
 export const RestoreMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialId: z.uuidv4(),
   }),
@@ -477,12 +425,7 @@ export type RestoreMyMaterialByIdResponse = z.infer<
 
 export const RestoreMyMaterialsByIdsRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       materialIds: z.array(z.uuidv4()).min(1).max(128),
     }),
@@ -525,12 +468,7 @@ export type RestoreMyMaterialsByIdsResponse = z.infer<
 /* ============================== DeleteMyMaterialById ============================== */
 
 export const DeleteMyMaterialByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialId: z.uuidv4(),
   }),
@@ -560,12 +498,7 @@ export type DeleteMyMaterialByIdResponse = z.infer<
 /* ============================== DeleteMyMaterialsByIds ============================== */
 
 export const DeleteMyMaterialsByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     materialIds: z.array(z.uuidv4()).min(1).max(128),
   }),
@@ -597,12 +530,7 @@ export type DeleteMyMaterialsByIdsResponse = z.infer<
 
 export const HardDeleteMyMaterialsByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       materialIds: z
         .array(z.uuidv4())

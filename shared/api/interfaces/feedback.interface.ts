@@ -2,6 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 
 export const FeedbackReportTypeSchema = z.enum([
@@ -19,10 +20,10 @@ export const FeedbackBrowserContextSchema = z.object({
   viewportHeight: z.number().int().min(0).max(10000),
 });
 
+/* ============================== SubmitFeedbackReport ============================== */
+
 export const SubmitFeedbackReportRequestSchema = NotegicRequestSchema.extend({
-  header: z.object({
-    userAgent: z.string().min(1).optional(),
-    csrfToken: z.string().optional(),
+  header: RequestHeaderSchema.extend({
     idempotencyKey: z.uuid(),
   }),
   body: z.object({

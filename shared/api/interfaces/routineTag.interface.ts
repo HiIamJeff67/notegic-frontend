@@ -3,17 +3,13 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllSupportedIcons } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 
 /* ============================== GetMyRoutineTagById ============================== */
 
 export const GetMyRoutineTagByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     routineTagId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -43,12 +39,7 @@ export type GetMyRoutineTagByIdResponse = z.infer<
 /* ============================== GetAllMyRoutineTags ============================== */
 
 export const GetAllMyRoutineTagsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z
     .object({
       areDeleted: z.boolean().optional().default(false),
@@ -82,12 +73,7 @@ export type GetAllMyRoutineTagsResponse = z.infer<
 /* ============================== CreateRoutineTag ============================== */
 
 export const CreateRoutineTagRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     id: z.uuidv4().optional(),
     name: z.string().min(1).max(128),
@@ -115,12 +101,7 @@ export type CreateRoutineTagResponse = z.infer<
 /* ============================== CreateRoutineTags ============================== */
 
 export const CreateRoutineTagsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     createdRoutineTags: z.array(
       z.object({
@@ -152,12 +133,7 @@ export type CreateRoutineTagsResponse = z.infer<
 /* ============================== UpdateMyRoutineTagById ============================== */
 
 export const UpdateMyRoutineTagByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     routineTagId: z.uuidv4(),
     values: z
@@ -191,12 +167,7 @@ export type UpdateMyRoutineTagByIdResponse = z.infer<
 
 export const UpdateMyRoutineTagsByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       updatedRoutineTags: z.array(
         z.object({
@@ -234,12 +205,7 @@ export type UpdateMyRoutineTagsByIdsResponse = z.infer<
 
 export const HardDeleteMyRoutineTagByIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineTagId: z.uuidv4(),
     }),
@@ -265,12 +231,7 @@ export type HardDeleteMyRoutineTagByIdResponse = z.infer<
 
 export const HardDeleteMyRoutineTagsByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineTagIds: z.array(z.uuidv4()),
     }),

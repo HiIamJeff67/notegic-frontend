@@ -3,6 +3,7 @@ import {
   UserSettingDensity,
   UserSettingStartSurface,
 } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 import {
   NotegicRequestSchema,
@@ -26,13 +27,10 @@ export const UserSettingSchema = z.object({
 
 export type UserSetting = z.infer<typeof UserSettingSchema>;
 
-const UserSettingHeaderSchema = z.object({
-  userAgent: z.string().min(1).optional(),
-  csrfToken: z.string().optional(),
-});
+/* ============================== GetMySetting ============================== */
 
 export const GetMySettingRequestSchema = NotegicRequestSchema.extend({
-  header: UserSettingHeaderSchema.optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type GetMySettingRequest = z.infer<typeof GetMySettingRequestSchema>;
@@ -44,8 +42,10 @@ export const GetMySettingResponseSchema = NotegicResponseSchema.extend({
 
 export type GetMySettingResponse = z.infer<typeof GetMySettingResponseSchema>;
 
+/* ============================== UpdateMySetting ============================== */
+
 export const UpdateMySettingRequestSchema = NotegicRequestSchema.extend({
-  header: UserSettingHeaderSchema.optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     values: UserSettingSchema.partial(),
     setNull: z.record(z.string(), z.boolean()).optional(),

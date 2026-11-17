@@ -1,4 +1,5 @@
 import { Country, UserGender } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { UserInfoSchema } from "@shared/api/interfaces/types/user.type";
 import { z } from "zod";
 import {
@@ -9,12 +10,7 @@ import {
 /* ============================== GetMyInfo ============================== */
 
 export const GetMyInfoRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type GetMyInfoRequest = z.infer<typeof GetMyInfoRequestSchema>;
@@ -31,12 +27,7 @@ export type GetMyInfoResponse = z.infer<typeof GetMyInfoResponseSchema>;
 /* ============================== UpdateMyInfo ============================== */
 
 export const UpdateMyInfoRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     values: z.object({
       header: z

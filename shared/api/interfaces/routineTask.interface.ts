@@ -3,6 +3,7 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { AllRoutineTaskPurposes } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { parse } from "@shared/api/validation";
 import { z } from "zod";
 import {
@@ -160,12 +161,7 @@ export type VisualizeMyRoutineTaskPurposeCountResponse = z.infer<
 /* ============================== GetMyRoutineTaskById ============================== */
 
 export const GetMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     routineTaskId: z.uuidv4(),
     isDeleted: z.boolean().optional().default(false),
@@ -191,12 +187,7 @@ export type GetMyRoutineTaskByIdResponse = z.infer<
 
 export const GetMyRoutineTasksByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       routineId: z.uuidv4(),
       areDeleted: z.boolean().optional().default(false),
@@ -223,12 +214,7 @@ export type GetMyRoutineTasksByRoutineIdResponse = z.infer<
 
 export const GetMyRoutineTasksByRoutineIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       routineIds: z.array(z.uuidv4()).min(1).max(1024),
       areDeleted: z.boolean().optional().default(false),
@@ -254,12 +240,7 @@ export type GetMyRoutineTasksByRoutineIdsResponse = z.infer<
 /* ============================== GetAllMyRoutineTasks ============================== */
 
 export const GetAllMyRoutineTasksRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z
     .object({
       areDeleted: z.boolean().optional().default(false),
@@ -287,12 +268,7 @@ export type GetAllMyRoutineTasksResponse = z.infer<
 
 export const CreateRoutineTaskByRoutineIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: CreateRoutineTaskBodySchema,
   });
 
@@ -320,12 +296,7 @@ export type CreateRoutineTaskByRoutineIdResponse = z.infer<
 
 export const UpdateMyRoutineTaskByIdRequestSchema = NotegicRequestSchema.extend(
   {
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineTaskId: z.uuidv4(),
       expectedDefinitionVersion: z.number().int().positive().optional(),
@@ -393,12 +364,7 @@ export type UpdateMyRoutineTaskByIdResponse = z.infer<
 
 export const HardDeleteMyRoutineTaskByIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineTaskId: z.uuidv4(),
       expectedDefinitionVersion: z.number().int().positive().optional(),
@@ -428,12 +394,7 @@ export type HardDeleteMyRoutineTaskByIdResponse = z.infer<
 
 export const HardDeleteMyRoutineTasksByIdsRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     body: z.object({
       routineTaskIds: z.array(z.uuidv4()),
     }),

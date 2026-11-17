@@ -3,6 +3,7 @@ import {
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
 import { CountryCode } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import z from "zod";
 import { AuthCodeSchema } from "./auth.interface";
 import { AuthProviderTypeSchema, UserAccountSchema } from "./types/user.type";
@@ -110,12 +111,7 @@ const OAuthOperationProviderSchema = AuthProviderTypeSchema.extract([
 const OAuthOperationStateSchema = z.string().regex(/^[0-9a-f]{64}$/);
 
 export const PrepareOAuthOperationRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     provider: OAuthOperationProviderSchema,
     authCode: AuthCodeSchema,
@@ -140,12 +136,7 @@ export type PrepareOAuthOperationResponse = z.infer<
 >;
 
 export const BindGoogleAccountRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     authorizationCode: z.string().min(1),
     state: OAuthOperationStateSchema,
@@ -172,12 +163,7 @@ export type BindGoogleAccountResponse = z.infer<
 /* ============================== UnbindGoogleAccount Context ============================== */
 
 export const UnbindGoogleAccountRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.union([
     z.object({
       authCode: AuthCodeSchema,

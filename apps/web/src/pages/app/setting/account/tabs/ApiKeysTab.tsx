@@ -1,7 +1,6 @@
-import type {
-  APIKeySummary,
-  CreateMyAPIKeyResponse,
-} from "@shared/api/interfaces/apiKey.interface";
+import type { CreateMyAPIKeyResponse } from "@shared/api/interfaces/apiKey.interface";
+import type { APIKeySummary } from "@shared/api/interfaces/types/apiKey.type";
+import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +19,7 @@ import {
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { Skeleton } from "@shared/components/ui/skeleton";
+import { useNetwork } from "@shared/hooks/useNetwork";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
@@ -29,11 +29,9 @@ import {
   useMyAPIKeys,
   useRevokeMyAPIKey,
 } from "@/api/hooks/apiKey.hook";
-import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import SettingMenu from "@/components/menus/SettingMenu/SettingMenu";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
-import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface ApiKeysTabProps {
   layout?: "panel" | "page";

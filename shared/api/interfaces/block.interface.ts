@@ -2,6 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 
 export const PrivateBlockSchema = z.object({
@@ -22,12 +23,7 @@ export type PrivateBlock = z.infer<typeof PrivateBlockSchema>;
 /* ============================== GetMyBlockById ============================== */
 
 export const GetMyBlockByIdRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     blockId: z.uuidv4(),
   }),
@@ -49,12 +45,7 @@ export type GetMyBlockByIdResponse = z.infer<
 /* ============================== GetMyBlocksByIds ============================== */
 
 export const GetMyBlocksByIdsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     blockIds: z.array(z.uuidv4()),
   }),
@@ -79,12 +70,7 @@ export type GetMyBlocksByIdsResponse = z.infer<
 
 export const GetMyBlocksByBlockPackIdRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
     param: z.object({
       blockPackId: z.uuidv4(),
     }),

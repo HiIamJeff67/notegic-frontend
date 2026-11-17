@@ -1,4 +1,5 @@
 import { UserStatus } from "@shared/api/interfaces/enums";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import {
   DisplayNameSchema,
   UserDataSchema,
@@ -13,12 +14,7 @@ import {
 /* ============================== GetUserData ============================== */
 
 export const GetUserDataRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type GetUserDataRequest = z.infer<typeof GetUserDataRequestSchema>;
@@ -35,12 +31,7 @@ export type GetUserDataResponse = z.infer<typeof GetUserDataResponseSchema>;
 /* ============================== GetMe ============================== */
 
 export const GetMeRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
 });
 
 export type GetMeRequest = z.infer<typeof GetMeRequestSchema>;
@@ -57,12 +48,7 @@ export type GetMeResponse = z.infer<typeof GetMeResponseSchema>;
 /* ============================== UpdateMe ============================== */
 
 export const UpdateMeRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   body: z.object({
     values: z
       .object({

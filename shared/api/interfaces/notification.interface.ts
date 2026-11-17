@@ -2,6 +2,7 @@ import {
   NotegicRequestSchema,
   NotegicResponseSchema,
 } from "@shared/api/interfaces/context.interface";
+import { RequestHeaderSchema } from "@shared/api/interfaces/types/requestHeader.type";
 import { z } from "zod";
 
 // Keep this open-ended so a future backend notification type does not break
@@ -52,13 +53,10 @@ export type NotificationSearchPageInfo = z.infer<
   typeof NotificationSearchPageInfoSchema
 >;
 
+/* ============================== ListNotifications ============================== */
+
 export const ListNotificationsRequestSchema = NotegicRequestSchema.extend({
-  header: z
-    .object({
-      userAgent: z.string().min(1).optional(),
-      csrfToken: z.string().optional(),
-    })
-    .optional(),
+  header: RequestHeaderSchema.optional(),
   param: z.object({
     first: z.number().int().min(1).max(100).optional(),
     after: z.string().min(1).optional(),
@@ -80,14 +78,11 @@ export type ListNotificationsResponse = z.infer<
   typeof ListNotificationsResponseSchema
 >;
 
+/* ============================== GetUnreadNotificationCount ============================== */
+
 export const GetUnreadNotificationCountRequestSchema =
   NotegicRequestSchema.extend({
-    header: z
-      .object({
-        userAgent: z.string().min(1).optional(),
-        csrfToken: z.string().optional(),
-      })
-      .optional(),
+    header: RequestHeaderSchema.optional(),
   });
 export type GetUnreadNotificationCountRequest = z.infer<
   typeof GetUnreadNotificationCountRequestSchema
@@ -106,6 +101,8 @@ const NotificationMutationHeaderSchema = z.object({
   csrfToken: z.string(),
 });
 
+/* ============================== MarkNotificationsRead ============================== */
+
 export const MarkNotificationsReadRequestSchema = NotegicRequestSchema.extend({
   header: NotificationMutationHeaderSchema,
   body: z.object({ notificationIds: z.array(z.uuid()).min(1) }),
@@ -122,6 +119,8 @@ export const MarkNotificationsReadResponseSchema = NotegicResponseSchema.extend(
 export type MarkNotificationsReadResponse = z.infer<
   typeof MarkNotificationsReadResponseSchema
 >;
+
+/* ============================== DeleteNotifications ============================== */
 
 export const DeleteNotificationsRequestSchema = NotegicRequestSchema.extend({
   header: NotificationMutationHeaderSchema,
