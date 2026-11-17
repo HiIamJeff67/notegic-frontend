@@ -1,5 +1,5 @@
-import { Button } from "@shared/components/ui/button";
-import { Switch } from "@shared/components/ui/switch";
+import { Button } from "@shared/components/shadcn/button";
+import { Switch } from "@shared/components/shadcn/switch";
 import { createContext, type ReactNode, useContext } from "react";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";
 

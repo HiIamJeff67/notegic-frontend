@@ -1,8 +1,8 @@
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Button } from "@shared/components/shadcn/button";
+import { Input } from "@shared/components/shadcn/input";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { Link } from "@tanstack/react-router";
 import { BookOpenIcon } from "lucide-react";
 import { useCallback, useState } from "react";

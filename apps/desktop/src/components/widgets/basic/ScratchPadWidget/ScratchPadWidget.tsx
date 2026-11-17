@@ -1,6 +1,6 @@
 // src/components/widgets/basic/ScratchPadWidget/ScratchPadWidget.tsx
 
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import DOMPurify from "dompurify";
 import { CheckIcon } from "lucide-react";
 import { marked } from "marked";

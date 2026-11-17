@@ -1,16 +1,16 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Slider } from "@shared/components/ui/slider";
+} from "@shared/components/shadcn/select";
+import { Slider } from "@shared/components/shadcn/slider";
 import { AllLanguageData } from "@shared/i18n/availableLanguages";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack";
 import { formatByteSize } from "@shared/lib/byte/byte.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { HardDriveIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ArticleSettingItem } from "@/components/commons/Article/Article";

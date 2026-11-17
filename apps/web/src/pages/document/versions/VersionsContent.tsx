@@ -1,6 +1,6 @@
 // Generated from apps/web/src/pages/document/versions/sources/versions.md; run npm run generate:document.
 
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { cn } from "@shared/lib/classname/cn";
 import {
   ArticleSubParagraph,

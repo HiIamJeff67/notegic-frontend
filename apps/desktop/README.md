@@ -1,12 +1,12 @@
 # Notegic Desktop
 
-The desktop shell is a Tauri 2 window. Its webview composes `shared/` and
+The desktop shell is a Tauri 2 window. Its webview composes `packages/` and
 desktop-owned screens through TanStack Router. It does not import `apps/web`,
 and it does not boot TanStack Start's server runtime, Nitro, or SQLocal.
 
 The current `@/` alias still points at `apps/web/src`. That import is a defect
 [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
-removes. Files both apps use move to `shared/` first. Account and data requests
+removes. Files both apps use move into `packages/` first. Account and data requests
 belong in `apps/desktop/src/api/functions/` and use a bearer token. The native
 SQLite sidecar is a later gate. A Node sidecar starts with the window and
 rejects a request that lacks its per-launch token.

@@ -353,12 +353,12 @@ test("real server-function conflicts retain their API type, translation and no-r
       "/src/api/invokers/routineTask.invoker.ts"
     );
     const { NotegicAPIError } = (await load(
-      `/@fs${repositoryRoot}/shared/api/exceptions/index.ts`
+      `/@fs${repositoryRoot}/packages/api/exceptions/index.ts`
     )) as typeof import("@shared/api/exceptions");
     const { createQueryClient } = await load(
-      `/@fs${repositoryRoot}/shared/api/queryClient.ts`
+      `/@fs${repositoryRoot}/packages/api/queryClient.ts`
     );
-    const { tError } = await load(`/@fs${repositoryRoot}/shared/i18n/error.ts`);
+    const { tError } = await load(`/@fs${repositoryRoot}/packages/i18n/error.ts`);
     const { default: i18n } = await load("/src/i18n.ts");
     const client = createQueryClient();
     try {
@@ -415,14 +415,14 @@ test("real Routine activation rejection retains its translation without retrying
       "/src/api/invokers/routine.invoker.ts"
     );
     const { NotegicAPIError } = (await load(
-      `/@fs${repositoryRoot}/shared/api/exceptions/index.ts`
+      `/@fs${repositoryRoot}/packages/api/exceptions/index.ts`
     )) as typeof import("@shared/api/exceptions");
     const { createQueryClient } = await load(
-      `/@fs${repositoryRoot}/shared/api/queryClient.ts`
+      `/@fs${repositoryRoot}/packages/api/queryClient.ts`
     );
-    const { tError } = await load(`/@fs${repositoryRoot}/shared/i18n/error.ts`);
+    const { tError } = await load(`/@fs${repositoryRoot}/packages/i18n/error.ts`);
     const { default: toast } = await load(
-      `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
+      `/@fs${repositoryRoot}/packages/ui/toast/toast.ts`
     );
     const { default: i18n } = await load("/src/i18n.ts");
     await i18n.changeLanguage("zh-TW");
@@ -485,16 +485,16 @@ for (const batch of [false, true]) {
         const { mutationFnCreateBlockPack, mutationFnCreateBlockPacks } =
           await load("/src/api/invokers/blockPack.invoker.ts");
         const { NotegicAPIError } = (await load(
-          `/@fs${repositoryRoot}/shared/api/exceptions/index.ts`
+          `/@fs${repositoryRoot}/packages/api/exceptions/index.ts`
         )) as typeof import("@shared/api/exceptions");
         const { createQueryClient } = await load(
-          `/@fs${repositoryRoot}/shared/api/queryClient.ts`
+          `/@fs${repositoryRoot}/packages/api/queryClient.ts`
         );
         const { tError } = await load(
-          `/@fs${repositoryRoot}/shared/i18n/error.ts`
+          `/@fs${repositoryRoot}/packages/i18n/error.ts`
         );
         const { default: toast } = await load(
-          `/@fs${repositoryRoot}/shared/lib/toast/toast.ts`
+          `/@fs${repositoryRoot}/packages/ui/toast/toast.ts`
         );
         const { default: i18n } = await load("/src/i18n.ts");
         await i18n.changeLanguage("zh-TW");

@@ -1,0 +1,25 @@
+{
+  "folders": [
+    { "name": "notegic-frontend", "path": "." },
+    { "name": "@notegic/web", "path": "apps/web" },
+    { "name": "@notegic/desktop", "path": "apps/desktop" },
+    { "name": "@notegic/desktop-driver", "path": "apps/desktop/sidecars/driver" },
+    { "name": "@notegic/api", "path": "packages/api" },
+    { "name": "@notegic/hooks", "path": "packages/hooks" },
+    { "name": "@notegic/i18n", "path": "packages/i18n" },
+    { "name": "@notegic/lib", "path": "packages/lib" },
+    { "name": "@notegic/ui", "path": "packages/ui" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "apps": true,
+      "packages": true
+    },
+    "search.exclude": {
+      "**/.output": true,
+      "**/.turbo": true,
+      "**/node_modules": true
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
+  }
+}

@@ -8,8 +8,8 @@ import { ClipboardGuardProvider } from "@/providers/ClipboardGuardProvider";
 import { LoadingProvider } from "@/providers/LoadingProvider";
 import { LocalPreferencesProvider } from "@/providers/LocalPreferencesProvider";
 import { PerformanceProvider } from "@/providers/PerformanceProvider";
-import { ScreenProvider } from "@shared/providers/ScreenProvider";
-import { ThemeProvider } from "@shared/providers/ThemeProvider";
+import { ScreenProvider } from "@shared/hooks/providers/ScreenProvider";
+import { ThemeProvider } from "@shared/hooks/providers/ThemeProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();

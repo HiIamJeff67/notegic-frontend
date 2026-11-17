@@ -1,18 +1,18 @@
 import {
   BreadcrumbItem,
   BreadcrumbSeparator,
-} from "@shared/components/ui/breadcrumb";
+} from "@shared/components/shadcn/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
+} from "@shared/components/shadcn/dropdown-menu";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { ChevronRightIcon } from "lucide-react";
 import { useCallback } from "react";

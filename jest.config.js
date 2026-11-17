@@ -6,7 +6,8 @@ export default {
     "<rootDir>/apps/desktop",
     "<rootDir>/apps/web/src",
     "<rootDir>/apps/web/test",
-    "<rootDir>/shared",
+    "<rootDir>/packages",
+    "<rootDir>/test",
   ],
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
@@ -15,7 +16,7 @@ export default {
   ],
   testPathIgnorePatterns: [
     // BlockNote block specifications are production modules, not test suites.
-    "<rootDir>/shared/lib/blockpack/specs/",
+    "<rootDir>/packages/lib/blockpack/specs/",
     "/test/performance/",
     // Playwright suites run through `playwright test`, not Jest.
     "/test/e2e/",
@@ -28,6 +29,14 @@ export default {
     "^marked$": "<rootDir>/node_modules/marked/lib/marked.umd.js",
     "^@/(.*)$": "<rootDir>/apps/web/src/$1",
     "^@assets/(.*)$": "<rootDir>/apps/web/assets/$1",
-    "^@shared/(.*)$": "<rootDir>/shared/$1",
+    "^@shared/api/(.*)$": "<rootDir>/packages/api/$1",
+    "^@shared/components/(.*)$": "<rootDir>/packages/ui/$1",
+    "^@shared/hooks/(.*)$": "<rootDir>/packages/hooks/$1",
+    "^@shared/i18n$": "<rootDir>/packages/i18n/index.ts",
+    "^@shared/i18n/(.*)$": "<rootDir>/packages/i18n/$1",
+    "^@shared/lib/(.*)$": "<rootDir>/packages/lib/$1",
+    "^@shared/reducers/(.*)$": "<rootDir>/packages/lib/reducers/$1",
+    "^@shared/styles/(.*)$": "<rootDir>/packages/ui/styles/$1",
+    "^@shared/types/(.*)$": "<rootDir>/packages/lib/types/$1",
   },
 };

@@ -7,7 +7,7 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import sqlocal from "sqlocal/vite";
 import { defineConfig, loadEnv, transformWithOxc } from "vite";
-import { getCrossOriginIsolationHeaders } from "../../shared/lib/browser/crossOriginIsolation";
+import { getCrossOriginIsolationHeaders } from "../../packages/lib/browser/crossOriginIsolation";
 
 export default defineConfig(({ command, mode }) => {
   const webRoot = dirname(fileURLToPath(import.meta.url));

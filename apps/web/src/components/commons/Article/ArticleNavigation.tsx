@@ -1,10 +1,10 @@
 import notegicLogo from "@assets/logo/transparent-background.svg";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
+} from "@shared/components/shadcn/hover-card";
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarSeparator,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { cn } from "@shared/lib/classname/cn";
 import { BookOpenIcon, CircleHelpIcon, MailIcon } from "lucide-react";
 import type { ComponentType, ReactNode, RefObject } from "react";

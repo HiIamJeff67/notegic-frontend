@@ -12,17 +12,17 @@ import {
   type SearchStationsQuery,
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
-import { Input } from "@shared/components/ui/input";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
-import { Spinner } from "@shared/components/ui/spinner";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
+import { Input } from "@shared/components/shadcn/input";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import {
   ToggleGroup,
   ToggleGroupItem,
-} from "@shared/components/ui/toggle-group";
+} from "@shared/components/shadcn/toggle-group";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { ArchiveRestoreIcon, SearchIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DeleteShelfItemDialog from "@/components/dialogs/ShelfItemDialogs/DeleteShelfItemDialog/DeleteShelfItemDialog";

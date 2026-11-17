@@ -1,4 +1,4 @@
-import { Spinner } from "@shared/components/ui/spinner";
+import { Spinner } from "@shared/components/shadcn/spinner";
 
 interface InspectorLoadingCoverProps {
   label: string;

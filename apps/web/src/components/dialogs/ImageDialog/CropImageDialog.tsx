@@ -4,7 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import ImageCropper from "@shared/components/commons/ImageCropper/ImageCropper";
 import { useTranslation } from "@shared/hooks/useTranslation";
 

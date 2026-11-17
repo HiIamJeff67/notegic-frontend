@@ -1,4 +1,4 @@
-import { AvatarImage } from "@shared/components/ui/avatar";
+import { AvatarImage } from "@shared/components/shadcn/avatar";
 import type { ComponentProps } from "react";
 
 interface PublicAvatarImageProps extends ComponentProps<typeof AvatarImage> {

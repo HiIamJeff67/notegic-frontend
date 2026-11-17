@@ -1,0 +1,103 @@
+# Shared API
+
+Portable API contracts and runtime-neutral helpers. Web, Desktop, and a future
+Mobile app may import this tree. It must not import `apps/*`.
+
+The product decision for what stays in an app is
+[Shared application boundaries](../../docs/designs/systems/shared-application-boundaries.md).
+This file is the map of `packages/api/` itself. Update it in the same change
+that adds, moves, or removes a folder or a root module here.
+
+## Now
+
+```text
+interfaces/          request and response contracts, enums, types, seeds
+graphql/             conversions and generated operations; do not hand-edit generated/
+websocket/           frame, ticket, and channel contracts
+exceptions/          NotegicException catalogs and NotegicError subclasses
+queryKeys.ts         TanStack Query keys
+queryClient.ts       shared QueryClient defaults and getQueryClient()
+queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
+retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
+validation.ts        parse(schema, request) before transport or a draft write
+invokers/            request validation and error mapping; each call receives func
+local/               sqlite-core tables, ordered SQL migrations, migrator, and migration catalog
+
+`local/` does not read browser storage. Whether a local preference is enabled
+lives in `packages/lib/storage/localPreference.ts`, so this package does not
+import `packages/lib`.
+```
+
+`queryClient` decides whether one in-flight query or mutation runs again. It
+does not retry HTTP 4xx, including 429. `getQueryClient()` keeps one client
+while `window` exists. Without `window` it returns a new client, so server
+rendering does not share cache across requests.
+
+`retryClient` is a different job. It remembers one deadline per API scope and
+refuses later calls until that time. It does not replay the failed call.
+`getRetryAt` converts `Retry-After` and lives in this file. A catalog does not
+import `RetryClient`. The invoker records the deadline, then throws the
+catalog error. See
+[Exceptions and errors](../../docs/conventions/12-exceptions-and-errors.md).
+
+`exceptions/client/` holds failures that start in the client, such as fetch,
+validation, and the local database. `exceptions/errors/` holds the thrown
+`NotegicError` subclasses. `RealtimeError` is an existing catalog that returns
+`NotegicException`. New catalogs use the `Exceptions` name.
+
+The connection that uses these contracts stays in the app: Web server
+functions, the Web Apollo client, and the WebSocket lifecycle are under
+`apps/web/src/api/`. Desktop and Mobile do not import those files.
+
+## Next
+
+The per-app migration version cap is decided and is not in the tree yet.
+
+| Path | What lands there | Issue |
+| --- | --- | --- |
+| `local/` version cap | Each app build stops the shared migrator at its selected version | [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration) |
+
+Do not add a second local-schema tree. An app applies migrations only through its build
+cap and cannot skip a number. The TypeScript schema that app compiles matches
+the cap. A desktop-only table stays beside `apps/desktop/sidecars/driver/`
+until Web raises its cap.
+
+[NOT-159](https://linear.app/notegic/issue/NOT-159/commit-shelf-changes-on-the-desktop-sidecar-before-remote-sync)
+writes shelf changes through that schema after the cap exists. Web keeps its
+current simulator and synchronizer path until that desktop path is trusted.
+Rust does not open the database.
+
+## Last call
+
+`packages/api` owns the contract, path, and validation. The function that
+performs the call stays in that app:
+
+| App | `api/functions/` |
+| --- | --- |
+| Web | TanStack Start server functions, cookies, and CSRF |
+| Desktop | TypeScript that calls the sidecar, which calls the remote API |
+| Mobile | That platform's request implementation |
+
+Only Web uses a server function. A server function is not a database
+connection for another app.
+
+Exported functions are PascalCase on every app: `GetUserData`, not
+`getUserData`. A shared invoker receives that function as `func` and calls
+`func(request)`. When an operation can be cancelled, every app's function
+accepts `signal` as its second argument and the invoker forwards it. Web keeps
+TanStack Start's `{ data: request }` inside the server file:
+
+```ts
+const GetUserDataRpc = createServerFn({ method: "GET" })
+  .inputValidator((data: GetUserDataRequest) => data)
+  .handler(async ({ data: request }) => {
+    // cookie, CSRF, and the upstream fetch stay here
+  });
+
+export const GetUserData = (request: GetUserDataRequest) =>
+  GetUserDataRpc({ data: request });
+```
+
+One blank line separates the Rpc from its export. One blank line separates
+that pair from the next Rpc. Desktop and Mobile export the same PascalCase
+function and do not import `GetUserDataRpc`.

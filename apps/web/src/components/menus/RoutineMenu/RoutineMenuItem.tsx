@@ -4,7 +4,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -17,20 +17,20 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@shared/components/ui/context-menu";
+} from "@shared/components/shadcn/context-menu";
 import {
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
+} from "@shared/components/shadcn/hover-card";
 import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { UUID } from "crypto";
 import {

@@ -1,10 +1,10 @@
 import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
+} from "@shared/components/shadcn/dropdown-menu";
 import {
   Menubar,
   MenubarContent,
@@ -23,7 +23,7 @@ import {
   MenubarMenu,
   MenubarSeparator,
   MenubarTrigger,
-} from "@shared/components/ui/menubar";
+} from "@shared/components/shadcn/menubar";
 import {
   SidebarContent,
   SidebarFooter,
@@ -40,13 +40,13 @@ import {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import {
   BookOpenIcon,

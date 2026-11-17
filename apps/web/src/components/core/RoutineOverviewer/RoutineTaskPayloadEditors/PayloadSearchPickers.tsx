@@ -5,14 +5,14 @@ import {
   SearchStationSortBy,
   SearchSubShelfSortBy,
 } from "@shared/api/graphql/generated/graphql";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+} from "@shared/components/shadcn/hover-card";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import type { UUID } from "crypto";

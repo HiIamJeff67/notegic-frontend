@@ -1,7 +1,7 @@
 import Image, {
   type ImageLoadingStatus,
 } from "@shared/components/commons/Image/Image";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";

@@ -58,7 +58,7 @@ below reflect the current repository and are the default for new files.
 | GraphQL query hooks | `useSearchSomething.ts` | `useSearchRoutineRecords.ts` |
 | UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |
-| General shared types, including enums | `domain.type.ts` in `shared/types/` | `range.type.ts` |
+| General shared types, including enums | `domain.type.ts` in `packages/lib/types/` | `range.type.ts` |
 | Constants | `domain.constant.ts` | `domain.constant.ts` |
 | Interface seeds | `domain.seed.ts` | `user.seed.ts`, `userInfo.seed.ts` |
 | Reducers | `domain.reducer.ts` | `blockPackMeta.reducer.ts` |
@@ -71,7 +71,7 @@ below reflect the current repository and are the default for new files.
 | Desktop Tauri shell | [11-desktop-tauri.md](11-desktop-tauri.md) | `src-tauri/src/lib.rs`, `capabilities/default.json` |
 
 Category directories sit directly under `apps/web/test/`, `apps/desktop/test/`,
-`shared/test/`, or the repository `test/`. The allowed names and which root
+`test/`, or the repository `test/`. The allowed names and which root
 may hold a suite are in [08-testing.md](08-testing.md). Do not add a category
 outside that list without agreement.
 
@@ -102,11 +102,11 @@ are:
 
 | Responsibility | Module and exported class |
 | --- | --- |
-| Local storage | `shared/lib/storage/localStorage.ts` — `LocalStorage` |
-| Session storage | `shared/lib/storage/sessionStorage.ts` — `SessionStorage` |
-| IndexedDB | `shared/lib/storage/indexedDB.ts` — `IndexedDB` |
-| Root-shelf operations | `shared/lib/shelf/rootShelf.ts` — `RootShelf` |
-| Sub-shelf operations | `shared/lib/shelf/subShelf.ts` — `SubShelf` |
+| Local storage | `packages/lib/storage/localStorage.ts` — `LocalStorage` |
+| Session storage | `packages/lib/storage/sessionStorage.ts` — `SessionStorage` |
+| IndexedDB | `packages/lib/storage/indexedDB.ts` — `IndexedDB` |
+| Root-shelf operations | `packages/lib/shelf/rootShelf.ts` — `RootShelf` |
+| Sub-shelf operations | `packages/lib/shelf/subShelf.ts` — `SubShelf` |
 
 Rename matching test files in the same scope, such as
 `indexedDBManipulator.test.ts` to `indexedDB.test.ts`. Update imports, dynamic
@@ -126,60 +126,60 @@ or documentation-only update does not authorize additional renames.
 
 ## Library folders and models
 
-Web path definitions live in `shared/lib/url/web.ts` beside existing URL
+Web path definitions live in `packages/lib/url/web.ts` beside existing URL
 operations. Approximate allocation costs used by Shelf analysis live in
-`shared/lib/byte/byte.type.ts`, beside byte units and formatting. Preserve their
+`packages/lib/byte/byte.type.ts`, beside byte units and formatting. Preserve their
 values during ownership changes; the estimates are not guarantees of actual
 JavaScript heap usage. Import these owners
 directly from the module that owns them.
 
-Shared conversion operations live in `shared/lib/conversions/`; entity
-comparators and their owned input types live in `shared/lib/comparisons/`.
+Shared conversion operations live in `packages/lib/conversions/`; entity
+comparators and their owned input types live in `packages/lib/comparisons/`.
 Keep their tests beside the implementation, without splitting a comparator's
 private input shape into a general shared type file.
 BlockPack import/export file types live directly in
-`shared/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
+`packages/lib/blockpack/conversions.ts` with the conversion operations. A current Web-only caller does not make a
 portable package's file-format contract a Web UI type.
 
-Reusable editor code lives under `shared/lib/blockpack/`.
-Chart renderers live under `shared/components/charts/`, with one component
+Reusable editor code lives under `packages/lib/blockpack/`.
+Chart renderers live under `packages/ui/charts/`, with one component
 folder per chart kind. A renderer that imports an app hook, API, or product
 screen stays in `apps/web/src/components/charts/`. Pure chart models, scales,
-ticks, defaults, and their tests live in `shared/components/charts/`.
+ticks, defaults, and their tests live in `packages/ui/charts/`.
 Dimensional input types stay beside `BaseChart`
 in that folder. Several components within one feature are callers of the same
-owner, not independent owners. Do not move those chart models to `shared/types/`.
+owner, not independent owners. Do not move those chart models to `packages/lib/types/`.
 Independent shared type definitions without a dedicated
 owner have one root home:
-`shared/types/`. Use `<name>.type.ts` there for enums, interfaces, structural
-types and aliases alike; do not recreate a root `shared/enums/` directory.
+`packages/lib/types/`. Use `<name>.type.ts` there for enums, interfaces, structural
+types and aliases alike; do not recreate a root `enums/` directory.
 Keep intrinsic validation, constructors and conversions beside their type.
 This root-directory rule does not relocate owner-specific or generated API
 types from their existing package boundaries. When multiple independent owners
 jointly define and use a contract without a narrower common owner, put it in
-`shared/types/`. Multiple callers within one domain do not create multiple
+`packages/lib/types/`. Multiple callers within one domain do not create multiple
 owners. For example, Web drag-and-drop types
 and their intrinsic operations live in
-`shared/components/commons/DNDable/dnd.type.ts`, not `shared/types/`.
+`packages/ui/commons/DNDable/dnd.type.ts`, not `packages/lib/types/`.
 Shelf analysis status belongs with the summary it describes in
-`shared/lib/shelf/summary.type.ts`. Prefer concise concept names such as
+`packages/lib/shelf/summary.type.ts`. Prefer concise concept names such as
 `summary.type.ts` and `dnd.type.ts` over repeating the folder or the word
 `Type`. Cohesive types and their intrinsic operations may share that file;
 reuse an existing concept file before adding one, without merging unrelated
 models or creating placeholders for hypothetical types.
 
-BlockNote block specifications live in `shared/lib/blockpack/specs/`, such as
+BlockNote block specifications live in `packages/lib/blockpack/specs/`, such as
 `codeBlock.spec.tsx`. Use `.spec.tsx` for every block specification, including
 specs that currently contain no JSX. Here the suffix identifies a production block specification;
 Jest excludes this directory, and its behavior is verified through editor tests.
 
-Group `shared/lib/` by the responsibility that owns the implementation. Keep
+Group `packages/lib/` by the responsibility that owns the implementation. Keep
 the implementation, its tests and its intrinsic types/operations together.
 Import the owner directly instead of keeping a compatibility file at the old
 root path. Use an existing group before adding another folder.
 
 ```text
-shared/lib/
+packages/lib/
   queue/deque.ts
   queue/deque.test.ts
   url/getURL.ts
@@ -206,40 +206,40 @@ remove their role suffixes. Do not recreate the removed OAuth storage helper:
 the login, registration, binding and callback components own those operations.
 
 Complete API object models and their schemas live under
-`shared/api/interfaces/types/`, including `user.type.ts` and
+`packages/api/interfaces/types/`, including `user.type.ts` and
 `userQuota.type.ts`. This is part of the API contract owner, distinct from
-`interfaces/enums/` and from the general-purpose `shared/types/` directory.
+`interfaces/enums/` and from the general-purpose `packages/lib/types/` directory.
 Keep their validation and pure operations together when moving them.
 
 The Shelf node/summary types remain separate files beside the tree operations.
 Station/Routine UI node models and their factories belong in
 `apps/web/src/providers/StationRoutineProvider/`. Screen types and breakpoint
-conversion belong to `shared/providers/ScreenProvider.tsx`. Provider filenames
+conversion belong to `packages/hooks/providers/ScreenProvider.tsx`. Provider filenames
 retain their `Provider` suffix. Do not make shared libraries depend on the
 Station/Routine Web models.
 
 Storage key catalogs live with their storage modules. Yjs persisted document
-types live with `shared/lib/blockpack/localYjsDocumentStore.ts`; attachment payload
+types live with `packages/lib/blockpack/localYjsDocumentStore.ts`; attachment payload
 types live in `storage/materialAttachmentCache.type.ts`. The storage catalog
 uses type-only imports for these payloads, without importing a Web Provider.
-Retain `shared/types/cord.ts` and `range.type.ts` as general concepts, and keep
+Retain `packages/lib/types/cord.ts` and `range.type.ts` as general concepts, and keep
 `imageInfo.type.ts` in place until its dependency boundary is explicitly migrated.
-Theme models live in `shared/lib/theme/theme.type.ts`; built-in theme metadata
-lives beside them in `shared/lib/theme/defaults.ts`. The ThemeProvider and theme
+Theme models live in `packages/lib/theme/theme.type.ts`; built-in theme metadata
+lives beside them in `packages/lib/theme/defaults.ts`. The ThemeProvider and theme
 store consume this runtime-neutral owner without moving React into shared.
 
 ## Constant ownership
 
-Language metadata lives in `shared/i18n/availableLanguages.ts`. Auth-code
-cooldowns live in `shared/lib/auth/oauthState.type.ts`, Shelf traversal limits in
-`shared/lib/shelf/limits.ts`, and search batch limits in
-`shared/lib/search/limits.ts`. Realtime wire version belongs to
-`shared/api/websocket/version.ts`. Preserve their values when relocating them.
+Language metadata lives in `packages/i18n/availableLanguages.ts`. Auth-code
+cooldowns live in `packages/lib/auth/oauthState.type.ts`, Shelf traversal limits in
+`packages/lib/shelf/limits.ts`, and search batch limits in
+`packages/lib/search/limits.ts`. Realtime wire version belongs to
+`packages/api/websocket/version.ts`. Preserve their values when relocating them.
 
-Account placeholders live in `shared/api/interfaces/seeds/user.seed.ts` and
-`shared/api/interfaces/seeds/userInfo.seed.ts`. The plan limitation model and
+Account placeholders live in `packages/api/interfaces/seeds/user.seed.ts` and
+`packages/api/interfaces/seeds/userInfo.seed.ts`. The plan limitation model and
 display values live together in
-`shared/api/interfaces/types/planLimitation.type.ts`; these values do not enforce
+`packages/api/interfaces/types/planLimitation.type.ts`; these values do not enforce
 backend quotas. Widget frame defaults and bounds live
 in `apps/web/src/components/widgets/layout.ts`. Import these owners directly.
 The render-trigger
@@ -252,7 +252,7 @@ counter stays inside `useStateTrigger` and is not a shared constant.
 - Do not create a new `types/`, `constants/`, or similarly generic folder for a
   single consumer.
 - Export reusable component, library, utility and provider types from their
-  owner even when they have multiple real consumers. Use `shared/types/` only
+  owner even when they have multiple real consumers. Use `packages/lib/types/` only
   when there is no narrower owner or a deliberately shared domain contract
   requires that boundary. See
   [Types and constants stay with their owner](05-helpers-and-abstractions.md#types-and-constants-stay-with-their-owner).
@@ -280,7 +280,7 @@ apps/web/src/components/dialogs/NotificationDialog/NotificationDialog.tsx
 apps/web/src/components/dialogs/NotificationDialog/NotificationDialogContent.tsx
 ```
 
-The `shared/components/ui/` directory is a shadcn-style primitive collection and
+The `packages/ui/shadcn/` directory is a shadcn-style primitive collection and
 uses kebab-case files. Do not make a new primitive there PascalCase merely to
 match feature components.
 
@@ -308,7 +308,7 @@ such as `auth.function.ts`. A private TanStack Start binding in the same
 file uses the same name plus `Rpc`, such as `GetUserDataRpc`, and the exported
 function passes `{ data: request }` to it. One blank line separates the Rpc
 from that export. Invokers name the injected function parameter `func`. The invoker modules
-live in `shared/api/invokers/` because they do not import an app. Web hooks
+live in `packages/api/invokers/` because they do not import an app. Web hooks
 pass that app's function in.
 
 ### `apps/web/src/pages/`
@@ -339,10 +339,11 @@ _auth.login.tsx
 
 Do not apply the component or generic-library naming rule to route filenames.
 
-### `shared/`
+### `packages/`
 
-Use lowercase category folders such as `api/`, `graphql/`, `constants/`,
-`enums/`, `lib/`, `types/`, and `util/`. Keep domain and role information in
+Each workspace package keeps its own responsibility: `api/`, `hooks/`,
+`i18n/`, `lib/`, and `ui/`. Shared types and reducers stay inside `lib/`.
+Shadcn primitives stay in `ui/shadcn/`. Keep domain and role information in
 the filename when the folder contains multiple responsibilities. GraphQL
 fragments, queries, and schema files retain snake_case because that is the
 existing GraphQL convention and is shared with the backend schema vocabulary.
@@ -401,15 +402,15 @@ Keep these checks local; a cleanup does not require adding hosted CI jobs.
 ## Application boundaries
 
 An app does not import another app. `apps/web`, `apps/desktop`, and
-`apps/mobile` import `shared/` and their own trees. The platform function that
+`apps/mobile` import `packages/` and their own trees. The platform function that
 performs an API call lives in that app's `api/functions/` directory. Web's
 files there are TanStack Start server functions. Desktop and Mobile use the
 same folder role and do not import those server functions.
 
-Shared UI primitives live in `shared/components/ui/`. Feature components and
+Shared UI primitives live in `packages/ui/shadcn/`. Feature components and
 pages stay in the owning app's `components/` and `pages/`. The shared local
-schema, ordered migrations, and version cap live in `shared/api/local/`.
+schema, ordered migrations, and version cap live in `packages/api/local/`.
 Those ownership rules are in
 [Shared application boundaries](../designs/systems/shared-application-boundaries.md).
-The current and planned contents of `shared/api/` are in
-[shared/api/README.md](../../shared/api/README.md).
+The current and planned contents of `packages/api/` are in
+[packages/api/README.md](../../packages/api/README.md).

@@ -1,1 +1,1 @@
-export { useMobile } from "@shared/components/ui/use-mobile";
+export { useMobile } from "@shared/components/shadcn/use-mobile";

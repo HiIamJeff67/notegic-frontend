@@ -10,7 +10,15 @@
     "types": ["node", "jest"],
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../../../../shared/*"]
+      "@shared/api/*": ["../../../../packages/api/*"],
+      "@shared/components/*": ["../../../../packages/ui/*"],
+      "@shared/hooks/*": ["../../../../packages/hooks/*"],
+      "@shared/i18n": ["../../../../packages/i18n/index.ts"],
+      "@shared/i18n/*": ["../../../../packages/i18n/*"],
+      "@shared/lib/*": ["../../../../packages/lib/*"],
+      "@shared/reducers/*": ["../../../../packages/lib/reducers/*"],
+      "@shared/styles/*": ["../../../../packages/ui/styles/*"],
+      "@shared/types/*": ["../../../../packages/lib/types/*"]
     }
   },
   "include": ["./**/*.ts"]

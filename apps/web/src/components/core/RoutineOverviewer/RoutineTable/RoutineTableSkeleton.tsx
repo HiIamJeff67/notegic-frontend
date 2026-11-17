@@ -1,4 +1,4 @@
-import { Skeleton } from "@shared/components/ui/skeleton";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 
 const RoutineTableSkeleton = () => (
   <section className="w-full min-w-0 rounded-md border border-border/60 bg-card">

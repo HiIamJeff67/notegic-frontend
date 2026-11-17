@@ -28,7 +28,7 @@ import {
 import { useNetwork } from "@shared/hooks/useNetwork";
 import { BlockPackYjsCoordinator } from "@shared/lib/blockpack";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { InfiniteData } from "@tanstack/react-query";
 import type { UUID } from "crypto";
 import {

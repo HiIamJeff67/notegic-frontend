@@ -1,4 +1,4 @@
-import { Input } from "@shared/components/ui/input";
+import { Input } from "@shared/components/shadcn/input";
 import { clamp } from "@shared/lib/math/clamp";
 import { useEffect, useState } from "react";
 import { useAnyTypeState } from "@shared/hooks/useAnyTypeState";

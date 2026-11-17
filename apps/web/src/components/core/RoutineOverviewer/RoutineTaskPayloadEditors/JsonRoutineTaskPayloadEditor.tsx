@@ -1,5 +1,5 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Label } from "@shared/components/ui/label";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/dialog";
+import { Label } from "@shared/components/shadcn/label";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";

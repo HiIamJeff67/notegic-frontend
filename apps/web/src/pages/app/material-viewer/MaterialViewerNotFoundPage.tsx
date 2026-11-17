@@ -1,4 +1,4 @@
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";

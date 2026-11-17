@@ -12,7 +12,7 @@ test("manual recovery keeps failed data until an exported, confirmed rebuild", a
   const journal = JSON.parse(
     await readFile(
       new URL(
-        "../../../../shared/api/local/migrations/meta/_journal.json",
+        "../../../../packages/api/local/migrations/meta/_journal.json",
         import.meta.url
       ),
       "utf8"

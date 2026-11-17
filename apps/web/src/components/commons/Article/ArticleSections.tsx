@@ -1,4 +1,4 @@
-import { Separator } from "@shared/components/ui/separator";
+import { Separator } from "@shared/components/shadcn/separator";
 import { cn } from "@shared/lib/classname/cn";
 import type { CSSProperties, HTMLAttributes } from "react";
 import { createContext, useContext } from "react";

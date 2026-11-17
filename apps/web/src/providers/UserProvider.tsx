@@ -8,7 +8,7 @@ import {
   UserInfo,
 } from "@shared/api/interfaces/types/user.type";
 import type { UserQuota } from "@shared/api/interfaces/types/userQuota.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import React, {
   createContext,

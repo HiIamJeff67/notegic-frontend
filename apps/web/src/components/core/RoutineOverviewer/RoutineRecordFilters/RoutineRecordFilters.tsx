@@ -11,21 +11,21 @@ import type {
   RoutineTaskPurpose as TaskPurpose,
   RoutineTaskRecordStatus as TaskStatus,
 } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { Button } from "@shared/components/shadcn/button";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import { routineRecordStatusTKeys } from "@shared/i18n/tKeys/routineRecordStatus.tKey";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";

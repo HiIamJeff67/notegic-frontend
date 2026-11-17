@@ -6,16 +6,16 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@shared/components/ui/context-menu";
+} from "@shared/components/shadcn/context-menu";
 import {
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
-import { SidebarMenuButton } from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/hover-card";
+import { SidebarMenuButton } from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import { MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { useCallback } from "react";

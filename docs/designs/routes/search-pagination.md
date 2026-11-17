@@ -8,11 +8,11 @@ or SQLite migration is needed for this update.
 
 ## Web ownership
 
-- `shared/lib/search/searchPage.ts` owns portable cursor context, keyset continuation,
+- `packages/lib/search/searchPage.ts` owns portable cursor context, keyset continuation,
   bounds, and PageInfo for the existing RootShelf, Station, Routine, and
   RoutineTag offline simulators. They filter authorized cached rows, order
   before slicing, and use the same primary key plus ID as the backend.
-- `shared/lib/string/compare.ts` matches PostgreSQL UTF-8 `COLLATE "C"` without
+- `packages/lib/string/compare.ts` matches PostgreSQL UTF-8 `COLLATE "C"` without
   locale-dependent ordering. The existing `compareEntityNames` UI utility
   reuses it; presentation sorting never reconstructs continuation cursors.
 - `apps/web/src/api/policies/searchPagination.policy.ts` separates all 14 Apollo search

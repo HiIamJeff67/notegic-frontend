@@ -84,7 +84,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 
 ## Lucide inventory
 
-Audit: 2026-11-03, current `apps/`, `shared/` and `scripts/` TypeScript/JavaScript
+Audit: 2026-11-03, current `apps/`, `packages/` and `scripts/` TypeScript/JavaScript
 imports and re-exports (excluding tests). There are **133 referenced export names / 108 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
@@ -297,12 +297,12 @@ assets or Docker services were removed. No commit or push was performed.
 [WorkspaceEntityIcons]: ../../apps/web/src/components/icons/WorkspaceEntityIcons.ts
 [RoutineTaskGraphNode]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode.tsx
 [RoutineTaskStatusDot]: ../../apps/web/src/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot.tsx
-[SupportedIcon]: ../../shared/api/interfaces/enums/supportedIcon.enum.ts
+[SupportedIcon]: ../../packages/api/interfaces/enums/supportedIcon.enum.ts
 [RoutineRecordTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordTable/RoutineRecordTable.tsx
 [NotificationPopover]: ../../apps/web/src/components/popovers/NotificationPopover.tsx
 [NotificationDialog]: ../../apps/web/src/components/dialogs/NotificationDialog.tsx
-[Toaster]: ../../shared/components/ui/toaster.tsx
-[Toast]: ../../shared/components/ui/toast.tsx
+[Toaster]: ../../packages/ui/shadcn/toaster.tsx
+[Toast]: ../../packages/ui/shadcn/toast.tsx
 [API]: ../../apps/web/src/pages/document/api/API.tsx
 [Overview]: ../../apps/web/src/pages/document/overview/Overview.tsx
 [Website]: ../../apps/web/src/pages/document/website/Website.tsx
@@ -311,28 +311,28 @@ assets or Docker services were removed. No commit or push was performed.
 [RoutineTable]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTable/RoutineTable.tsx
 [RoutineMenu]: ../../apps/web/src/components/menus/RoutineMenu/RoutineMenuItem.tsx
 [CodeExamplePanel]: ../../apps/web/src/components/panels/CodeExamplePanel/CodeExamplePanel.tsx
-[CodeBlock]: ../../shared/components/ui/code-block.tsx
+[CodeBlock]: ../../packages/ui/shadcn/code-block.tsx
 [TimeRails]: ../../apps/web/src/components/core/RoutineOverviewer/TimeRails/TimeRails.tsx
-[CalendarBlockSpec]: ../../shared/lib/blockpack/specs/calendar.spec.tsx
+[CalendarBlockSpec]: ../../packages/lib/blockpack/specs/calendar.spec.tsx
 [BlockSuggestionMenu]: ../../apps/web/src/components/core/BlockPackEditor/SuggestionMenu.tsx
-[DatePicker]: ../../shared/components/commons/DatePicker/DatePicker.tsx
+[DatePicker]: ../../packages/ui/commons/DatePicker/DatePicker.tsx
 [ProfileTab]: ../../apps/web/src/pages/app/setting/account/tabs/ProfileTab.tsx
 [RoutineCharts]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineCharts/RoutineCharts.tsx
 [RoutineScopeBar]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineScopeBar/RoutineScopeBar.tsx
-[Checkbox]: ../../shared/components/ui/checkbox.tsx
-[SupportedIconTable]: ../../shared/components/commons/SupportedIconTable/SupportedIconTable.tsx
+[Checkbox]: ../../packages/ui/shadcn/checkbox.tsx
+[SupportedIconTable]: ../../packages/ui/commons/SupportedIconTable/SupportedIconTable.tsx
 [GuideWidget]: ../../apps/web/src/components/widgets/guide/GuideWidget.tsx
 [VersionCard]: ../../apps/web/src/components/commons/VersionCard/VersionCard.tsx
-[Select]: ../../shared/components/ui/select.tsx
-[Calendar]: ../../shared/components/ui/calendar.tsx
-[ContextMenu]: ../../shared/components/ui/context-menu.tsx
+[Select]: ../../packages/ui/shadcn/select.tsx
+[Calendar]: ../../packages/ui/shadcn/calendar.tsx
+[ContextMenu]: ../../packages/ui/shadcn/context-menu.tsx
 [ItemPath]: ../../apps/web/src/components/paths/ItemPath/ItemPath.tsx
 [CreateRoutineTaskDialog]: ../../apps/web/src/components/dialogs/StationRoutineDialogs/CreateRoutineTaskDialog/CreateRoutineTaskDialog.tsx
 [DashboardPage]: ../../apps/web/src/pages/app/dashboard/DashboardPage.tsx
-[TimezoneSelector]: ../../shared/components/commons/TimezoneSelector/TimezoneSelector.tsx
-[DropdownMenu]: ../../shared/components/ui/dropdown-menu.tsx
+[TimezoneSelector]: ../../packages/ui/commons/TimezoneSelector/TimezoneSelector.tsx
+[DropdownMenu]: ../../packages/ui/shadcn/dropdown-menu.tsx
 [AboutTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/AboutTab.tsx
-[TimePicker]: ../../shared/components/commons/TimePicker/TimePicker.tsx
+[TimePicker]: ../../packages/ui/commons/TimePicker/TimePicker.tsx
 [ArticleCommand]: ../../apps/web/src/components/commons/Article/ArticleCommand.tsx
 [RoutineTaskMenu]: ../../apps/web/src/components/menus/RoutineTaskMenu/RoutineTaskMenuItem.tsx
 [RootShelfMenu]: ../../apps/web/src/components/menus/RootShelfMenu/RootShelfMenuItem.tsx
@@ -340,7 +340,7 @@ assets or Docker services were removed. No commit or push was performed.
 [UpgradeTab]: ../../apps/web/src/pages/app/setting/account/tabs/UpgradeTab.tsx
 [GraphToolbar]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphToolbar.tsx
 [MaterialPDFViewer]: ../../apps/web/src/components/core/MaterialViewer/MaterialPDFViewerContent.tsx
-[Extendable]: ../../shared/components/commons/Extendable/Extendable.tsx
+[Extendable]: ../../packages/ui/commons/Extendable/Extendable.tsx
 [MaterialMenu]: ../../apps/web/src/components/menus/MaterialMenu/MaterialMenuItem.tsx
 [PrivacyPolicySections]: ../../apps/web/src/pages/privacy-policy/PrivacyPolicySections.tsx
 [DocumentPrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicyContent.tsx
@@ -348,7 +348,7 @@ assets or Docker services were removed. No commit or push was performed.
 [SubShelfMenu]: ../../apps/web/src/components/menus/SubShelfMenu/SubShelfMenuItem.tsx
 [TemplateEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor.tsx
 [Versions]: ../../apps/web/src/pages/document/versions/Versions.tsx
-[Resizable]: ../../shared/components/ui/resizable.tsx
+[Resizable]: ../../packages/ui/shadcn/resizable.tsx
 [TodoWidget]: ../../apps/web/src/components/widgets/basic/TodoWidget/TodoWidget.tsx
 [PrivacyTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/PrivacyTab.tsx
 [PreferencesContent]: ../../apps/web/src/pages/app/setting/preferences/PreferencesPageContent.tsx
@@ -360,24 +360,24 @@ assets or Docker services were removed. No commit or push was performed.
 [AppCommandItem]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppCommand/AppCommandItem.tsx
 [AppSidebar]: ../../apps/web/src/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx
 [DesktopAppSidebar]: ../../apps/desktop/src/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar.tsx
-[Spinner]: ../../shared/components/ui/spinner.tsx
+[Spinner]: ../../packages/ui/shadcn/spinner.tsx
 [GraphCanvas]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskDependencyGraphCanvas.tsx
 [AccountSettingsPage]: ../../apps/web/src/pages/app/setting/account/AccountSettingsPage.tsx
 [PreferencesPage]: ../../apps/web/src/pages/app/setting/preferences/PreferencesPage.tsx
-[Breadcrumb]: ../../shared/components/ui/breadcrumb.tsx
+[Breadcrumb]: ../../packages/ui/shadcn/breadcrumb.tsx
 [ColorSelector]: ../../apps/web/src/components/commons/ColorSelector/ColorSelector.tsx
-[Sidebar]: ../../shared/components/ui/sidebar.tsx
-[Editable]: ../../shared/components/commons/Editable/Editable.tsx
+[Sidebar]: ../../packages/ui/shadcn/sidebar.tsx
+[Editable]: ../../packages/ui/commons/Editable/Editable.tsx
 [TemplatePatternEditor]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/TemplatePatternEditor.tsx
 [BrowserPermissionsTab]: ../../apps/web/src/pages/app/setting/preferences/tabs/BrowserPermissionsTab.tsx
-[Command]: ../../shared/components/ui/command.tsx
+[Command]: ../../packages/ui/shadcn/command.tsx
 [DataDeletion]: ../../apps/web/src/pages/document/data-deletion/DataDeletion.tsx
 [PrivacyPolicy]: ../../apps/web/src/pages/document/privacy-policy/PrivacyPolicy.tsx
 [TrashPage]: ../../apps/web/src/pages/app/trash/TrashPage.tsx
 [ParticipantsDropdown]: ../../apps/web/src/components/core/BlockPackEditor/BlockPackParticipantsDropdown.tsx
 [ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog.tsx
-[Closeable]: ../../shared/components/commons/Closeable/Closeable.tsx
-[Dialog]: ../../shared/components/ui/dialog.tsx
+[Closeable]: ../../packages/ui/commons/Closeable/Closeable.tsx
+[Dialog]: ../../packages/ui/shadcn/dialog.tsx
 [AvatarIcon]: ../../apps/web/src/components/icons/AvatarIcon.tsx
 [LanguageIcon]: ../../apps/web/src/components/icons/LanguageIcon.tsx
 [NoteIcon]: ../../apps/web/src/components/icons/NoteIcon.tsx
@@ -389,9 +389,9 @@ assets or Docker services were removed. No commit or push was performed.
 [ThemeIcon]: ../../apps/web/src/components/icons/ThemeIcon.tsx
 [TrainStationIcon]: ../../apps/web/src/components/icons/TrainStationIcon.tsx
 [LoadingIndicator]: ../../apps/web/src/components/covers/LoadingCover/LoadingIndicator.tsx
-[Ring]: ../../shared/components/ui/ring.tsx
+[Ring]: ../../packages/ui/shadcn/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx
-[ChartFrame]: ../../shared/components/charts/ChartFrame/ChartFrame.tsx
+[ChartFrame]: ../../packages/ui/charts/ChartFrame/ChartFrame.tsx
 
 [RecordFilters]: ../../apps/web/src/components/core/RoutineOverviewer/RoutineRecordFilters/RoutineRecordFilters.tsx
 

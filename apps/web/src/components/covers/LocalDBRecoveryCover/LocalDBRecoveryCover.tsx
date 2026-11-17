@@ -1,5 +1,5 @@
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -7,14 +7,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
-import { Progress } from "@shared/components/ui/progress";
+} from "@shared/components/shadcn/dropdown-menu";
+import { Progress } from "@shared/components/shadcn/progress";
 import type { TFunction } from "i18next";
 import {
   ChevronDownIcon,

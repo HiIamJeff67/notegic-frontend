@@ -92,7 +92,11 @@ const desktopRuntimeBoundary = (): Plugin => ({
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(({ mode }) => {
-  const applicationVersion = loadEnv(mode, desktopRoot, "").VITE_APPLICATION_VERSION;
+  const applicationVersion = loadEnv(
+    mode,
+    desktopRoot,
+    ""
+  ).VITE_APPLICATION_VERSION;
   return {
     clearScreen: false,
     plugins: [desktopRuntimeBoundary(), react(), tailwindcss()],
@@ -115,7 +119,14 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(desktopRoot, "../web/src"),
         "@assets": path.resolve(desktopRoot, "../web/assets"),
         "@widgets": path.resolve(desktopRoot, "src/components/widgets"),
-        "@shared": path.resolve(desktopRoot, "../../shared"),
+        "@shared/api": path.resolve(desktopRoot, "../../packages/api"),
+        "@shared/components": path.resolve(desktopRoot, "../../packages/ui"),
+        "@shared/hooks": path.resolve(desktopRoot, "../../packages/hooks"),
+        "@shared/i18n": path.resolve(desktopRoot, "../../packages/i18n"),
+        "@shared/lib": path.resolve(desktopRoot, "../../packages/lib"),
+        "@shared/reducers": path.resolve(desktopRoot, "../../packages/lib/reducers"),
+        "@shared/styles": path.resolve(desktopRoot, "../../packages/ui/styles"),
+        "@shared/types": path.resolve(desktopRoot, "../../packages/lib/types"),
         "node:async_hooks": asyncLocalStorageModule,
       },
     },

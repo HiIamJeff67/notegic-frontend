@@ -1,4 +1,4 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ArticleInlineText } from "@/components/commons/Article/Article";

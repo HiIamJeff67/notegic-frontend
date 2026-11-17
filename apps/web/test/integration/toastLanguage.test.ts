@@ -14,8 +14,8 @@ import { createRoot } from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { Toaster } from '@shared/components/ui/toaster';
-import { useToastManager } from '@shared/components/ui/toast';
+import { Toaster } from '@shared/components/shadcn/toaster';
+import { useToastManager } from '@shared/components/shadcn/toast';
 import MaterialViewerFrame from '@/components/core/MaterialViewer/MaterialViewerFrame';
 import { LoadingProvider } from '@/providers/LoadingProvider';
 import { MaterialContentType } from '@shared/api/interfaces/enums';
@@ -60,7 +60,7 @@ const mocks: Record<string, string> = {
     export const useUser = () => ({ userData });
     export const useAppRouter = () => router;
     export const useShelfItem = () => shelves;`,
-  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = {
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './packages/lib/storage/localStorage'; export const LocalStorage = {
     getItemByKey: () => { window.state.reads++; return '[]'; }, setItem: () => {},
   };`,
   "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets = {};`,
@@ -82,7 +82,7 @@ const mocks: Record<string, string> = {
     return null;
   }`,
   "@/components/paths/ItemPath/ItemPath": `export default () => null;`,
-  "@shared/components/ui/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
+  "@shared/components/shadcn/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
 };
 
 describe("toast language in Chromium", () => {

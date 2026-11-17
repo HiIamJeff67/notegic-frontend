@@ -1,4 +1,4 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -6,10 +6,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/dialog";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@shared/hooks/useTranslation";

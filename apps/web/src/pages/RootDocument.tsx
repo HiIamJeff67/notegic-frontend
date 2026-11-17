@@ -1,4 +1,4 @@
-import { Toaster } from "@shared/components/ui/toaster";
+import { Toaster } from "@shared/components/shadcn/toaster";
 import { HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { syncStoredLanguage } from "@/i18n";

@@ -1,11 +1,11 @@
 import Closeable from "@shared/components/commons/Closeable/Closeable";
 import ColorPicker from "@shared/components/commons/ColorPicker/ColorPicker";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import { useStateTrigger } from "@shared/hooks/useStateTrigger";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
@@ -14,7 +14,7 @@ import {
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
 import { isColor } from "@shared/lib/string/color";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import {
   CheckIcon,
   ChevronDownIcon,

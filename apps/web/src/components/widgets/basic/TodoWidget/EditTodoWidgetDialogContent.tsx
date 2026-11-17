@@ -1,4 +1,4 @@
-import { Slider } from "@shared/components/ui/slider";
+import { Slider } from "@shared/components/shadcn/slider";
 import { TodoSetting } from "@widgets/basic/TodoWidget/setting/todoSetting";
 import { Dispatch, SetStateAction } from "react";
 import {

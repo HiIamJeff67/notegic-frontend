@@ -4,7 +4,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@shared/components/ui/sheet";
+} from "@shared/components/shadcn/sheet";
 import { useSettingsDisplay } from "@/hooks";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import AccountSettingsPage from "@/pages/app/setting/account/AccountSettingsPage";

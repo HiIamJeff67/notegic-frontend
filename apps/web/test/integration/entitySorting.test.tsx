@@ -16,7 +16,7 @@ jest.mock("@/hooks", () => ({
   }),
   useStationRoutine: () => ({ getStationById: () => ({ id: "station" }) }),
 }));
-jest.mock("@shared/components/ui/sidebar", () => ({
+jest.mock("@shared/components/shadcn/sidebar", () => ({
   SidebarMenu: ({ children }: { children: React.ReactNode }) => (
     <ul>{children}</ul>
   ),

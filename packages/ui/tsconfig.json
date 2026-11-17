@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/api/*": ["../api/*"],
+      "@shared/components/*": ["./*"],
+      "@shared/hooks/*": ["../hooks/*"],
+      "@shared/lib/*": ["../lib/*"],
+      "@shared/styles/*": ["./styles/*"]
+    }
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
+}

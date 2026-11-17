@@ -1,4 +1,4 @@
-import { SidebarMenu } from "@shared/components/ui/sidebar";
+import { SidebarMenu } from "@shared/components/shadcn/sidebar";
 import { lazy, Suspense } from "react";
 import RoutineTagMenuItemSkeleton from "@/components/menus/RoutineTagMenu/RoutineTagMenuItemSkeleton";
 import { useStationRoutine } from "@/hooks";

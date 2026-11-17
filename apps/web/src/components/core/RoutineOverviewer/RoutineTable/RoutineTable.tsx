@@ -7,21 +7,21 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
 import type { RoutineAdmissionState } from "@shared/api/interfaces/routine.interface";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+} from "@shared/components/shadcn/hover-card";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
-import { Switch } from "@shared/components/ui/switch";
+} from "@shared/components/shadcn/popover";
+import { Switch } from "@shared/components/shadcn/switch";
 import {
   Table,
   TableBody,
@@ -29,12 +29,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { tError } from "@shared/i18n/error";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { and, eq } from "drizzle-orm";
 import { Bookmark, ListFilter, SquarePen } from "lucide-react";

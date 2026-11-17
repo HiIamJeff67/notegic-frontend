@@ -1,8 +1,8 @@
-import { SidebarMenuItem } from "@shared/components/ui/sidebar";
+import { SidebarMenuItem } from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { CheckIcon } from "lucide-react";
 import { Suspense, useCallback } from "react";
 import BlockPackMenuItem from "@/components/menus/BlockPackMenu/BlockPackMenuItem";

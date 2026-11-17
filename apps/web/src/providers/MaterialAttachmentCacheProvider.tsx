@@ -1,8 +1,8 @@
 import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
+import { isLocalPreferenceEnabled } from "@shared/lib/storage/localPreference";
 import { type MaterialAttachmentCacheContent } from "@shared/lib/storage/materialAttachmentCache.type";
 import type { UUID } from "crypto";
 import { createContext, type ReactNode } from "react";
-import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 
 export const loadMaterialAttachment = async (
   materialId: UUID,

@@ -1,15 +1,15 @@
 import Closeable from "@shared/components/commons/Closeable/Closeable";
 import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
 import Image from "@shared/components/commons/Image/Image";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/dialog";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 

@@ -12,7 +12,7 @@ import { CreateStationRequestSchema } from "@shared/api/interfaces/station.inter
 import { parse } from "@shared/api/validation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";

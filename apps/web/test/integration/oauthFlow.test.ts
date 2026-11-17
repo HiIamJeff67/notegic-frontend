@@ -108,7 +108,7 @@ const mocks: Record<string, string> = {
     return key.includes('.') ? key : options?.defaultValue ?? key;
   };
      export const useTranslation = () => ({ t });`,
-  "@shared/lib/toast/toast":
+  "@shared/components/toast/toast":
     "export default { error: message => window.events.errors.push(message), success: () => {} };",
   "@/hooks": `export const useAppRouter = () => window.router;
     export const useUser = () => window.user;
@@ -1198,7 +1198,7 @@ describe("OAuth state in the real entry and callback components", () => {
     "cancel",
   ] as const)("X %s keeps one animated cover mounted until navigation finishes", async result => {
     await page.addStyleTag({
-      path: "shared/styles/loading.css",
+      path: "packages/ui/styles/loading.css",
     });
     await page.evaluate(result => {
       const fixture = window as any;

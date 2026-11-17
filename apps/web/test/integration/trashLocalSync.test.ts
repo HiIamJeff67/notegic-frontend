@@ -55,7 +55,7 @@ const openFixture = () => {
   const db = new DatabaseSync(":memory:");
   db.exec(
     readFileSync(
-      resolve(process.cwd(), "shared/api/local/bootstrap.sql"),
+      resolve(process.cwd(), "packages/api/local/bootstrap.sql"),
       "utf8"
     )
   );

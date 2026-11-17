@@ -1,15 +1,15 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import { UserRole } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { useCallback, useState } from "react";
 import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";
 import { useValidateEmail } from "@/api/hooks/auth.hook";

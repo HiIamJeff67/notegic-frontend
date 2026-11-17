@@ -1,4 +1,4 @@
-import { Slider } from "@shared/components/ui/slider";
+import { Slider } from "@shared/components/shadcn/slider";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import {

@@ -1,4 +1,4 @@
-import { useSidebar } from "@shared/components/ui/sidebar";
+import { useSidebar } from "@shared/components/shadcn/sidebar";
 import { clamp } from "@shared/lib/math/clamp";
 import {
   LocalStorage,

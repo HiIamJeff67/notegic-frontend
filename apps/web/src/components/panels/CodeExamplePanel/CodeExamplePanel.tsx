@@ -3,7 +3,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@shared/components/ui/tabs";
+} from "@shared/components/shadcn/tabs";
 import { cn } from "@shared/lib/classname/cn";
 import { Braces, FileCode2, Globe2, Terminal } from "lucide-react";
 import { useState } from "react";

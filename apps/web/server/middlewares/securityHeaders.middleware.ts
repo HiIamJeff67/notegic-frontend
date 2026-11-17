@@ -1,5 +1,5 @@
 import { defineHandler } from "nitro/h3";
-import { getCrossOriginIsolationHeaders } from "../../../../shared/lib/browser/crossOriginIsolation";
+import { getCrossOriginIsolationHeaders } from "../../../../packages/lib/browser/crossOriginIsolation";
 
 /**
  * Public documentation embeds third-party players without the SQLite runtime.

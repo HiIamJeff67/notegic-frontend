@@ -1,5 +1,5 @@
 import { SearchSortOrder } from "@shared/api/graphql/generated/graphql";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
+} from "@shared/components/shadcn/dropdown-menu";
 import { ArrowDownUp } from "lucide-react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 

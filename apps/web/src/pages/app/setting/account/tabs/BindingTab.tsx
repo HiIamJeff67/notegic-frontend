@@ -1,6 +1,6 @@
 import { NotegicAPIError } from "@shared/api/exceptions";
 import { AllCountryCodes, CountryCode } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogClose,
@@ -9,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Select,
   SelectContent,
@@ -20,10 +20,10 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/select";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import { useCallback, useMemo, useState } from "react";
 import { getClientMutationHeaders } from "@/api/functions/headers/clientHeaders";

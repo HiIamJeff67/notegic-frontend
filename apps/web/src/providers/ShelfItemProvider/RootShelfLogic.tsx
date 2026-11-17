@@ -18,7 +18,7 @@ import {
   AnalysisStatus,
   ShelfTreeSummary,
 } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import {
   Dispatch,

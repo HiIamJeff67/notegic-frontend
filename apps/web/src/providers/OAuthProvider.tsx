@@ -20,7 +20,7 @@ import {
   SessionStorage,
   SessionStorageKey,
 } from "@shared/lib/storage/sessionStorage";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import {
@@ -30,7 +30,10 @@ import {
   useCallback,
   useRef,
 } from "react";
-import { getClientMutationHeaders, getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import {
+  getClientMutationHeaders,
+  getClientRequestHeaders,
+} from "@/api/functions/headers/clientHeaders";
 import {
   useLoginViaGithub,
   useLoginViaGoogle,

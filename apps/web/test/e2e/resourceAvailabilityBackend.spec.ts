@@ -84,7 +84,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
       {
         domain,
         id,
-        modulePath: `/@fs${process.cwd()}/shared/api/queryClient.ts`,
+        modulePath: `/@fs${process.cwd()}/packages/api/queryClient.ts`,
       }
     );
   const root = await callAPI("POST", "root-shelves/", { name });
@@ -207,7 +207,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
     },
     {
       id: task.id,
-      modulePath: `/@fs${process.cwd()}/shared/api/queryClient.ts`,
+      modulePath: `/@fs${process.cwd()}/packages/api/queryClient.ts`,
     }
   );
   await test.info().attach("persisted-task-detail-before-deletion", {
@@ -253,7 +253,7 @@ test("real deletion responses stop open viewers and inspectors without discardin
     },
     {
       id: task.id,
-      modulePath: `/@fs${process.cwd()}/shared/api/queryClient.ts`,
+      modulePath: `/@fs${process.cwd()}/packages/api/queryClient.ts`,
     }
   );
   expect(refreshedTask).toEqual({

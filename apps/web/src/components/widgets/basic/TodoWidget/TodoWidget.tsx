@@ -1,13 +1,13 @@
 import { generateDynamicDNDType } from "@shared/components/commons/DNDable/dnd.type";
 import { VerticalDNDable } from "@shared/components/commons/DNDable/VerticalDNDable";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
-import { Input } from "@shared/components/ui/input";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import { generateUUID } from "@shared/lib/uuid/uuidv4.type";
 import {
   getDefaultTodoData,

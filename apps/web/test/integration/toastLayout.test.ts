@@ -16,11 +16,11 @@ const activeToast =
 const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import toast from '@shared/lib/toast/toast';
-import { Toaster } from '@shared/components/ui/toaster';
+import toast from '@shared/components/toast/toast';
+import { Toaster } from '@shared/components/shadcn/toaster';
 import { WidgetProvider } from '@/providers/WidgetProvider';
 import { useWidget } from '@/hooks/useWidget';
-import { toastManager, useToastManager } from '@shared/components/ui/toast';
+import { toastManager, useToastManager } from '@shared/components/shadcn/toast';
 window.notify = toast;
 window.nativeNotify = toastManager.add;
 function Probe() {
@@ -48,7 +48,7 @@ describe("shared Toast placement and duration in Chromium", () => {
   beforeAll(async () => {
     const mocks: Record<string, string> = {
       "@/hooks": `const userData={publicId:'fixture'};export const useUser=()=>({userData});`,
-      "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage={getItemByKey:()=> '[]',setItem:()=>{}};`,
+      "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './packages/lib/storage/localStorage'; export const LocalStorage={getItemByKey:()=> '[]',setItem:()=>{}};`,
       "@/components/widgets/basic/basic": `export const DashboardPreviewWidgets={};`,
       "react-i18next": `export const useTranslation=()=>({t:key=>key});`,
     };
@@ -88,9 +88,9 @@ describe("shared Toast placement and duration in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("shared/styles/globals.css", "utf8"),
+      await readFile("packages/ui/styles/globals.css", "utf8"),
       {
-        base: path.resolve("shared/styles"),
+        base: path.resolve("packages/ui/styles"),
         onDependency: () => {},
       }
     );

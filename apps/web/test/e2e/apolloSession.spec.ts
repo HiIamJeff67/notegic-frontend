@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { parse } from "graphql";
-import { SearchRoutineRecordsDocument } from "../../../../shared/api/graphql/generated/graphql";
+import { SearchRoutineRecordsDocument } from "../../../../packages/api/graphql/generated/graphql";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://www.youtube-nocookie.com/embed/**", route =>

@@ -1,11 +1,11 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";

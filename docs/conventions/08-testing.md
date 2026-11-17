@@ -12,12 +12,9 @@ roots. Create the directory only when a test belongs in it.
 | --- | --- |
 | `apps/web/test/` | Web-only tests |
 | `apps/desktop/test/` | Desktop-only tests |
-| `shared/test/` | Shared tests that cover more than one module, including coupling between shared libraries |
-| `test/` | CI checks, tests that cross platforms, and tests that cross one platform with `shared/` |
+| `test/` | Cross-module package tests, CI checks, and tests that cross one platform with a package |
 
-The repository root `test/` does not exist until the first suite needs it.
-`format:check` and `format:all` omit that path while it is absent. The change
-that adds the first root suite adds `test` back to both scripts.
+The repository root `test/` is included in `format:check` and `format:all`.
 
 These are the only category directories. Adding another one needs agreement.
 
@@ -64,7 +61,7 @@ diff. Use `npm run test:unit -- <path>` for targeted Jest arguments, not
 `npm test -- <path>` now that `test` is the aggregate.
 
 Generated local migration metadata under
-`shared/api/local/migrations/meta/` is excluded from Biome formatting;
+`packages/api/local/migrations/meta/` is excluded from Biome formatting;
 Drizzle owns its serialization. Generated GraphQL output remains checked by
 `codegen:check`.
 
@@ -160,7 +157,7 @@ Nitro's default. Fixtures that create additional real Vite servers provide a
 temporary `nitro.buildDir` alongside their temporary optimizer cache. Sharing
 these files can break hydration when differently based servers run concurrently.
 
-`playwright.config.ts` sets the Node-only `NOTEGIC_VITE_CACHE_DIR` override to
+`apps/web/playwright.config.ts` sets the Node-only `NOTEGIC_VITE_CACHE_DIR` override to
 `node_modules/.vite-playwright`, resolved against `apps/web/`. Normal development
 leaves the override unset and retains Vite's default
 `apps/web/node_modules/.vite` cache. Both caches remain reusable across sequential
@@ -227,7 +224,7 @@ including deletions that do not advance a state vector. No cache is cleared by
 temporary worker recovery.
 
 Run `npm run test:e2e -- realtimeClient.spec.ts --workers=1` and
-`npm run test:unit -- shared/lib/blockpack/blockPackYjsCoordinator.test.ts shared/lib/blockpack/localYjsDocumentStore.test.ts`
+`npm run test:unit -- packages/lib/blockpack/blockPackYjsCoordinator.test.ts packages/lib/blockpack/localYjsDocumentStore.test.ts`
 locally. These cover the production client/provider with isolated browser
 storage and controlled worker failures, plus document retention, replay and
 read-only boundaries. They do not stop the normal development worker and are

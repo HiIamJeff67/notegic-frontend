@@ -1,6 +1,6 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
-import { Card, CardContent } from "@shared/components/ui/card";
+import { Button } from "@shared/components/shadcn/button";
+import { Card, CardContent } from "@shared/components/shadcn/card";
 import {
   Dialog,
   DialogContent,
@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Label } from "@shared/components/ui/label";
+} from "@shared/components/shadcn/dialog";
+import { Label } from "@shared/components/shadcn/label";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { cn } from "@shared/lib/classname/cn";
 import type { ReactNode } from "react";

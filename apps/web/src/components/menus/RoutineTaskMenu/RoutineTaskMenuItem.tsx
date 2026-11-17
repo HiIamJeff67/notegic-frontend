@@ -6,19 +6,19 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@shared/components/ui/context-menu";
+} from "@shared/components/shadcn/context-menu";
 import {
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
+} from "@shared/components/shadcn/hover-card";
 import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { Copy, HistoryIcon, SquarePen, Trash2 } from "lucide-react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useHardDeleteMyRoutineTaskById } from "@/api/hooks/routineTask.hook";

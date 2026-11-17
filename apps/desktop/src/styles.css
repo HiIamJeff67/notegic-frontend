@@ -1,4 +1,4 @@
-@import "../../../shared/styles/globals.css";
+@import "../../../packages/ui/styles/globals.css";
 @source ".";
 @source "../../web/src";
 @source "../../../shared";

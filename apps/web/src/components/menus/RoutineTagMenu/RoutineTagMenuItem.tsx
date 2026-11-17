@@ -2,7 +2,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -14,19 +14,19 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@shared/components/ui/context-menu";
+} from "@shared/components/shadcn/context-menu";
 import {
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
+} from "@shared/components/shadcn/hover-card";
 import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import {
   CheckIcon,
   ChevronDown,

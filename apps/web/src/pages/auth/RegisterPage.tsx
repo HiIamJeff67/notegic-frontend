@@ -1,6 +1,6 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";

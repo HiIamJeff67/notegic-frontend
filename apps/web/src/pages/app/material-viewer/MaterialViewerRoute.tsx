@@ -1,6 +1,6 @@
 import { queryKeys } from "@shared/api/queryKeys";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { isValidUUID } from "@shared/lib/uuid/uuidv4.type";
 import { useQuery } from "@tanstack/react-query";
 import { notFound, useLoaderData } from "@tanstack/react-router";

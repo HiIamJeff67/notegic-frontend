@@ -7,8 +7,8 @@ import {
   LocalDBMigrator,
   type MigrationEntry,
   splitSqlStatements,
-} from "../../../../shared/api/local/migrator";
-import * as schema from "../../../../shared/api/local/schemas";
+} from "../../../../packages/api/local/migrator";
+import * as schema from "../../../../packages/api/local/schemas";
 import {
   BlockPackDocument,
   ensureBlockPackDocumentTable,
@@ -90,7 +90,7 @@ export const openDatabase = async (
   filePath: string,
   migrationsDirectory = path.resolve(
     process.cwd(),
-    "shared/api/local/migrations"
+    "packages/api/local/migrations"
   )
 ) => {
   const sqlite = new Database(filePath);

@@ -4,15 +4,15 @@ import {
 } from "@shared/api/interfaces/enums";
 import type { GetMyRoutineTaskByIdResponse } from "@shared/api/interfaces/routineTask.interface";
 import ContainableSelect from "@shared/components/commons/ContainableSelect/ContainableSelect";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { Button } from "@shared/components/shadcn/button";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   SelectGroup,
   SelectItem,
   SelectLabel,
   SelectSeparator,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import {
   Sheet,
   SheetContent,
@@ -20,12 +20,12 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@shared/components/ui/sheet";
-import { Spinner } from "@shared/components/ui/spinner";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/sheet";
+import { Spinner } from "@shared/components/shadcn/spinner";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
@@ -39,7 +39,6 @@ import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineTaskNode } from "@/providers/StationRoutineProvider/routineTaskNode.type";
 import InspectorLoadingCover from "./InspectorLoadingCover";
 import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";
-
 
 const RoutineTaskPayloadEditor = lazy(
   () =>

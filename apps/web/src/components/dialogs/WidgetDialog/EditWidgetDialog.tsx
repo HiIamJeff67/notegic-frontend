@@ -3,8 +3,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Skeleton } from "@shared/components/ui/skeleton";
+} from "@shared/components/shadcn/dialog";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 import React, { CSSProperties, useEffect } from "react";
 import WrapPlaceholder from "@/components/holders/WrapPlaceholder";
 

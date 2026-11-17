@@ -1,13 +1,13 @@
 import { generateDynamicDNDType } from "@shared/components/commons/DNDable/dnd.type";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
+import { Button } from "@shared/components/shadcn/button";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { cn } from "@shared/lib/classname/cn";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";

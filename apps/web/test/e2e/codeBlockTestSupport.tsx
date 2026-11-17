@@ -14,7 +14,7 @@ import { createRoot, type Root } from "react-dom/client";
 import * as Y from "yjs";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import CreateBlockPackPayloadTemplateEditor from "@/components/core/RoutineOverviewer/RoutineTaskPayloadEditors/CreateBlockPackPayloadEditor/CreateBlockPackPayloadTemplateEditor";
-import { ThemeContext } from "@shared/providers/ThemeProvider";
+import { ThemeContext } from "@shared/hooks/providers/ThemeProvider";
 import "@shared/styles/block-editor.css";
 import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";
 

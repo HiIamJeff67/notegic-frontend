@@ -15,7 +15,7 @@ import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { SubShelf } from "@shared/lib/shelf/subShelf";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";

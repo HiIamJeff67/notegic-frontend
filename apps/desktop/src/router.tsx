@@ -1,5 +1,5 @@
-import { ScreenProvider } from "@shared/providers/ScreenProvider";
-import { Toaster } from "@shared/components/ui/toaster";
+import { ScreenProvider } from "@shared/hooks/providers/ScreenProvider";
+import { Toaster } from "@shared/components/shadcn/toaster";
 import {
   createRootRoute,
   createRoute,

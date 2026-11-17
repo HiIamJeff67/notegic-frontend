@@ -22,7 +22,7 @@ Use local evidence before CI. Do not claim that local tests replace CI; choose t
    Follow the test-location runbook in `docs/conventions/08-testing.md`.
    A unit test sits beside its source file as `<basename>.test.ts(x)`.
    Every other test uses an allowed category directory directly under
-   `apps/web/test/`, `apps/desktop/test/`, `shared/test/`, or the repository
+   `apps/web/test/`, `apps/desktop/test/`, `test/`, or the repository
    `test/`. The repository `test/` root is only for CI, cross-platform, or
    platform-and-shared suites. Do not add a category suffix to the filename.
    `test:unit` runs Jest unit tests and the Jest categories. Playwright owns

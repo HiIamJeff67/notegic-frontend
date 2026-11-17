@@ -386,7 +386,7 @@ Commands used for this scope (with the isolated live variables from the previous
 section when running authenticated cases):
 
 ```sh
-PLAYWRIGHT_CHANNEL=chrome npm run test:unit -- apps/web/test/integration/sidebarHoverCard.test.ts shared/providers/ScreenProvider.test.ts shared/hooks/useNetwork.test.tsx
+PLAYWRIGHT_CHANNEL=chrome npm run test:unit -- apps/web/test/integration/sidebarHoverCard.test.ts packages/hooks/providers/ScreenProvider.test.ts packages/hooks/useNetwork.test.tsx
 PLAYWRIGHT_CHANNEL=chrome npm run test:unit
 npm run test:e2e -- --config=/private/tmp/notegic-ui-followup.config.mjs authenticatedPages.spec.ts routineBackend.spec.ts sessionTabs.spec.ts resourceAvailabilityBackend.spec.ts viteStartup.spec.ts --grep 'new tabs|local authenticated pages|expired access|editing a new Routine|real deletion|live login|cold startup|HMR accepts|concurrent SSR' --workers=1
 npm run test:e2e -- --config=/private/tmp/notegic-ui-followup.config.mjs authenticatedPages.spec.ts --workers=1

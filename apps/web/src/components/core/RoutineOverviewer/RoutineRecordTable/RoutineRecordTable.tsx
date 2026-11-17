@@ -4,7 +4,7 @@ import {
   SearchRoutineRecordSortBy,
 } from "@shared/api/graphql/generated/graphql";
 import { RoutineRecordStatus } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Table,
   TableBody,
@@ -12,10 +12,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { tError } from "@shared/i18n/error";
 import { routineRecordStatusTKeys } from "@shared/i18n/tKeys/routineRecordStatus.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { Activity, Eye } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

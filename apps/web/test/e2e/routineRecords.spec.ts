@@ -8,7 +8,7 @@ import {
   SearchRoutineRecordSortBy,
   SearchRoutineRecordsDocument,
   SearchSortOrder,
-} from "../../../../shared/api/graphql/generated/graphql";
+} from "../../../../packages/api/graphql/generated/graphql";
 import type { createApolloClient } from "../../src/api/apolloClient";
 import type { mountRoutineRecords } from "./routineRecordsTestSupport";
 

@@ -4,7 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import { useEffect } from "react";
 import {
   BasicPreviewWidgets,

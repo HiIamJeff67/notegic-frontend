@@ -1,21 +1,21 @@
 import { PartialBlock } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
 import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
-import { Button } from "@shared/components/ui/button";
-import { ButtonGroup } from "@shared/components/ui/button-group";
+import { Button } from "@shared/components/shadcn/button";
+import { ButtonGroup } from "@shared/components/shadcn/button-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@shared/components/ui/tooltip";
+} from "@shared/components/shadcn/tooltip";
 import { tError } from "@shared/i18n/error";
 import {
   convertBlocksToDOCX,
@@ -38,7 +38,7 @@ import { useTranslation } from "@shared/hooks/useTranslation";
 import "@blocknote/core/style.css";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { cn } from "@shared/lib/classname/cn";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import {
   BlockPackMeta,
   BlockPackMetaAction,

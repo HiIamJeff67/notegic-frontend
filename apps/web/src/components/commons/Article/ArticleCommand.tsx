@@ -4,7 +4,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@shared/components/ui/command";
+} from "@shared/components/shadcn/command";
 import { defaultFilter } from "cmdk";
 import { BookOpenIcon, Code2Icon, GripHorizontalIcon } from "lucide-react";
 import {

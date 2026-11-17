@@ -1,4 +1,4 @@
-export * from "@shared/providers/ScreenProvider";
+export * from "@shared/hooks/providers/ScreenProvider";
 export * from "./AppRouterProvider";
 export * from "./BackgroundImagesProvider";
 export * from "./LoadingProvider";
@@ -11,6 +11,6 @@ export * from "./ResizeSidebarProvider";
 export * from "./RoutineTaskDependencyGraphDraftProvider";
 export * from "./ShelfItemProvider/ShelfItemProvider";
 export * from "./StationRoutineProvider/StationRoutineProvider";
-export * from "@shared/providers/ThemeProvider";
+export * from "@shared/hooks/providers/ThemeProvider";
 export * from "./UserProvider";
 export * from "./WidgetProvider";

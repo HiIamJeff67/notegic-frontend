@@ -29,15 +29,19 @@ apps/
   web/              Current browser application
   desktop/          Tauri 2 desktop shell
   mobile/           Future mobile application boundary
-shared/             Code and contracts shared by applications
+packages/
+  api/              Contracts, GraphQL inputs, and the client SDK
+  hooks/            DOM hooks and providers
+  i18n/             Translation resources
+  lib/              Libraries, shared types, and reducers
+  ui/               Components, shadcn primitives, and theme CSS
 docs/               Product, architecture, and operating documentation
 test/               Frontend verification
 scripts/            Repository tooling
 ```
 
 For application-specific setup, commands, technical decisions, and folder
-structure, start with the relevant README under `apps/`. Shared-code guidance
-is available in [shared/README.md](shared/README.md), and the broader
+structure, start with the relevant README under `apps/`. The broader
 documentation map is in [docs/README.md](docs/README.md).
 
 ## License

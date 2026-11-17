@@ -1,6 +1,6 @@
 // src/components/widgets/basic/ScratchPadWidget/ScratchPadWidget.tsx
 
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { getDefaultScratchPadData } from "@widgets/basic/ScratchPadWidget/data/scratchPadData";
 import { getDefaultScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import DOMPurify from "dompurify";

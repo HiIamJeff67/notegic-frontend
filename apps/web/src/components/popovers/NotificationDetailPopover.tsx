@@ -3,7 +3,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import { cn } from "@shared/lib/classname/cn";
 import type { ReactNode } from "react";
 

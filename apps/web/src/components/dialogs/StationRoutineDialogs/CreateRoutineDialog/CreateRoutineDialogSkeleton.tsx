@@ -1,4 +1,4 @@
-import { Skeleton } from "@shared/components/ui/skeleton";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 
 const CreateRoutineDialogSkeleton = () => (
   <div className="flex flex-col gap-4">

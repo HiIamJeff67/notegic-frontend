@@ -1,4 +1,4 @@
-import { SidebarInset, useSidebar } from "@shared/components/ui/sidebar";
+import { SidebarInset, useSidebar } from "@shared/components/shadcn/sidebar";
 import React from "react";
 import { useResizeSidebar } from "@/hooks";
 

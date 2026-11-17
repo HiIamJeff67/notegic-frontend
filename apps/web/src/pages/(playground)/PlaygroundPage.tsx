@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@shared/components/ui/sidebar";
+import { SidebarProvider } from "@shared/components/shadcn/sidebar";
 import AppCommand from "@/components/core/AppUtilitiesWrapper/AppCommand/AppCommand";
 import AppSidebarInset from "@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset";
 import { usePageTitle } from "@shared/hooks/usePageTitle";

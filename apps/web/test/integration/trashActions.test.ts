@@ -122,9 +122,9 @@ describe("Trash actions in Chromium", () => {
   beforeAll(async () => {
     const mocks: Record<string, string> = {
       "@tanstack/react-router": `export const createFileRoute=id=>options=>({...options,id,useSearch:()=>({query:window.query}),useLoaderData:()=>window.data,useNavigate:()=>window.navigate});export const useRouter=()=>window.router;`,
-      "@shared/components/ui/sidebar": `export const SidebarTrigger=()=>null;export const useSidebar=()=>({isMobile:false});`,
+      "@shared/components/shadcn/sidebar": `export const SidebarTrigger=()=>null;export const useSidebar=()=>({isMobile:false});`,
       "@/api/functions/material.clientFn": `export const SaveMyMaterialById=()=>{throw new Error('Unexpected save');};`,
-      "@shared/lib/toast/toast": `export default {success:message=>window.messages.push({kind:'success',message}),error:message=>window.messages.push({kind:'error',message})};`,
+      "@shared/components/toast/toast": `export default {success:message=>window.messages.push({kind:'success',message}),error:message=>window.messages.push({kind:'error',message})};`,
     };
     for (const domain of [
       "rootShelf",
@@ -195,9 +195,9 @@ describe("Trash actions in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("shared/styles/globals.css", "utf8"),
+      await readFile("packages/ui/styles/globals.css", "utf8"),
       {
-        base: path.resolve("shared/styles"),
+        base: path.resolve("packages/ui/styles"),
         onDependency: () => {},
       }
     );

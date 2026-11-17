@@ -1,4 +1,4 @@
-import { Input } from "@shared/components/ui/input";
+import { Input } from "@shared/components/shadcn/input";
 import React, { useEffect, useState } from "react";
 import { useDebounceCallback } from "@shared/hooks/useDebounce";
 

@@ -1,4 +1,4 @@
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import type { ReactNode } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import { WidgetProvider } from "../../../providers/WidgetProvider";

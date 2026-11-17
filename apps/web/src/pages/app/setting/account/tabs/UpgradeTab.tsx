@@ -3,7 +3,7 @@ import {
   type PlanLimitation,
   PlanLimitations,
 } from "@shared/api/interfaces/types/planLimitation.type";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { formatByteSize } from "@shared/lib/byte/byte.type";
 import {
   CheckIcon,

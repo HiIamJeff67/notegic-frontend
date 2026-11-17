@@ -8,7 +8,7 @@ import { build } from "esbuild";
 const fixture = `
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SidebarProvider, useSidebar } from '@shared/components/ui/sidebar';
+import { SidebarProvider, useSidebar } from '@shared/components/shadcn/sidebar';
 import { ResizeSidebarProvider } from '@/providers/ResizeSidebarProvider';
 import ResizableSidebar from '@/components/core/AppUtilitiesWrapper/ResizableSidebar/ResizableSidebar';
 import AppSidebarInset from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset';
@@ -67,7 +67,7 @@ const mocks: Record<string, string> = {
     export const useStationRoutine = () => manager;
     export const useModal = () => ({open:()=>{}});
   `,
-  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = {
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './packages/lib/storage/localStorage'; export const LocalStorage = {
     getItemByKey:()=>String(window.savedWidth ?? 384), setItem:()=>true,
   };`,
 };
@@ -149,9 +149,9 @@ describe("Routine overview responsive layout in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("shared/styles/globals.css", "utf8"),
+      await readFile("packages/ui/styles/globals.css", "utf8"),
       {
-        base: path.resolve("shared/styles"),
+        base: path.resolve("packages/ui/styles"),
         onDependency: () => {},
       }
     );

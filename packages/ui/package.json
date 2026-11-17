@@ -1,0 +1,14 @@
+{
+  "name": "@notegic/ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@notegic/api": "*",
+    "@notegic/hooks": "*",
+    "@notegic/lib": "*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

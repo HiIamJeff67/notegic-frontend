@@ -4,7 +4,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,21 +13,21 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@shared/components/ui/context-menu";
+} from "@shared/components/shadcn/context-menu";
 import {
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
+} from "@shared/components/shadcn/hover-card";
 import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { tError } from "@shared/i18n/error";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import {
   CheckIcon,

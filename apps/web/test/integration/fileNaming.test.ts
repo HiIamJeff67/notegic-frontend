@@ -18,7 +18,7 @@ test("test filenames use their location and source owner without redundant categ
   for (const directory of [
     "apps/web/test",
     "apps/desktop/test",
-    "shared/test",
+    "test",
     "test",
     "scripts",
   ]) {
@@ -44,13 +44,12 @@ test("test filenames use their location and source owner without redundant categ
         violations.push(`${directory}/${file}: performance`);
     }
   }
-  for (const directory of ["apps/web/src", "shared", "apps/desktop/src"]) {
+  for (const directory of ["apps/web/src", "packages", "apps/desktop/src"]) {
     const files = readdirSync(join(process.cwd(), directory), {
       recursive: true,
       encoding: "utf8",
     });
     for (const file of files) {
-      if (directory === "shared" && file.startsWith("test/")) continue;
       if (!/\.test\.(?:tsx?|mjs)$/.test(file)) continue;
       const name = basename(file).replace(/\.test\.(?:tsx?|mjs)$/, "");
       const neighbors = readdirSync(
@@ -72,7 +71,7 @@ test("test filenames use their location and source owner without redundant categ
 });
 
 test.each([
-  "shared",
+  "packages",
   "apps/web/src",
   "apps/web/server",
   "apps/web/test",
@@ -95,7 +94,7 @@ test.each([
         /\/(?:generated|migrations)\//.test(fullPath) ||
         fullPath.endsWith("/vite-env.d.ts") ||
         fullPath.startsWith("apps/web/src/routes/") ||
-        fullPath.startsWith("shared/components/ui/") ||
+        fullPath.startsWith("packages/ui/shadcn/") ||
         /\/i18n\/locales\/[^/]+\.zh-(?:CN|TW)\.ts$/.test(fullPath)
       )
         return false;

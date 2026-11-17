@@ -1,25 +1,25 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
 import SeparatableTable from "@shared/components/commons/SeparatableTable/SeparatableTable";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
-import { Separator } from "@shared/components/ui/separator";
+} from "@shared/components/shadcn/hover-card";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
+import { Separator } from "@shared/components/shadcn/separator";
 import {
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";

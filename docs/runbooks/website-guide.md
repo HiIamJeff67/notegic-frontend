@@ -135,7 +135,7 @@ so ordinary third-party iframes work in browsers such as Zen/Firefox without
 experimental `credentialless` iframe support. It retains
 `Cross-Origin-Opener-Policy: same-origin`. All other pages keep COEP
 `require-corp` and COOP `same-origin` for the SQLite/SharedArrayBuffer runtime.
-Vite and Nitro share the policy in `shared/lib/browser/crossOriginIsolation.ts`, including
+Vite and Nitro share the policy in `packages/lib/browser/crossOriginIsolation.ts`, including
 the configured application base path.
 
 This relaxes the documentation document's resource-embedding restriction; it

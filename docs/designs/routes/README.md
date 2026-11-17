@@ -11,13 +11,13 @@ It does not duplicate backend route definitions or server implementation.
 | `apps/web/src/api/functions/` | TanStack Start Web server/client adapter boundaries |
 | `apps/web/src/api/invokers/` | Web feature-level invocation wrappers |
 | `apps/web/src/api/hooks/` | Web React Query and feature hooks |
-| `shared/api/graphql/` | GraphQL documents, generated types, conversions, and client-neutral operations |
+| `packages/api/graphql/` | GraphQL documents, generated types, conversions, and client-neutral operations |
 | `apps/web/src/api/graphql/` | Web Apollo client, React GraphQL hooks, and local adapters |
-| `shared/api/websocket/` | WebSocket frame/type definitions |
+| `packages/api/websocket/` | WebSocket frame/type definitions |
 | `apps/web/src/api/websocketClient.ts` | WebSocket connection lifecycle |
-| `shared/api/interfaces/` | Current frontend request and domain interfaces |
+| `packages/api/interfaces/` | Current frontend request and domain interfaces |
 
-Keep portable contracts, requests, queries, and domain logic under `shared/`
+Keep portable contracts, requests, queries, and domain logic under `packages/`
 independent from the Web runtime adapters under `apps/web/src/api/`.
 
 ## Boundary and codegen decisions

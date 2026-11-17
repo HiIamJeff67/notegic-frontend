@@ -1,4 +1,4 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import { CopyIcon, RotateCcwIcon } from "lucide-react";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useTranslation } from "@shared/hooks/useTranslation";

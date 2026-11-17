@@ -392,7 +392,7 @@ isolation. Run both rather than treating an in-memory engine check as proof
 of browser worker behavior:
 
 ```sh
-npm run test:unit -- apps/web/test/integration/routineMigration.test.ts shared/api/local/migrator.test.ts
+npm run test:unit -- apps/web/test/integration/routineMigration.test.ts packages/api/local/migrator.test.ts
 npm run test:e2e -- localDatabaseStartup.spec.ts localDatabaseIsolation.spec.ts routineGraph.spec.ts --workers=1 --timeout=90000
 ```
 

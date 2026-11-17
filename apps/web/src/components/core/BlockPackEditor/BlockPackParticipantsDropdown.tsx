@@ -18,18 +18,18 @@ import {
   AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
-} from "@shared/components/ui/avatar";
-import { Button } from "@shared/components/ui/button";
+} from "@shared/components/shadcn/avatar";
+import { Button } from "@shared/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
+} from "@shared/components/shadcn/dropdown-menu";
 import { tError } from "@shared/i18n/error";
 import { cn } from "@shared/lib/classname/cn";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { Plus, UserPlusIcon, UsersIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchRootShelvesLazyQuery } from "@/api/hooks/graphql/useSearchShelves";

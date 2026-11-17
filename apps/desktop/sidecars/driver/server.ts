@@ -9,7 +9,7 @@ const databasePath = process.env.NOTEGIC_LOCAL_DATABASE_PATH;
 const driverDirectory = path.dirname(fileURLToPath(import.meta.url));
 const migrationsDirectory = path.resolve(
   driverDirectory,
-  "../../../../shared/api/local/migrations"
+  "../../../../packages/api/local/migrations"
 );
 
 const opened = databasePath

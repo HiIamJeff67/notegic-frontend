@@ -2,8 +2,8 @@ import {
   dashboardHeaderBackgroundImageNoneId,
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
-import { Button } from "@shared/components/ui/button";
-import { useSidebar } from "@shared/components/ui/sidebar";
+import { Button } from "@shared/components/shadcn/button";
+import { useSidebar } from "@shared/components/shadcn/sidebar";
 import {
   LocalStorage,
   LocalStorageKey,

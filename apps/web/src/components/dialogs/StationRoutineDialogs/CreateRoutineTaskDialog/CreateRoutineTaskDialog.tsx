@@ -3,7 +3,7 @@ import {
   RoutineTaskPurposeByAction,
 } from "@shared/api/interfaces/enums";
 import type { CreateRoutineTaskByRoutineIdRequest } from "@shared/api/interfaces/routineTask.interface";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Select,
   SelectContent,
@@ -23,11 +23,11 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/select";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import { tError } from "@shared/i18n/error";
 import { routineTaskPurposeTKeys } from "@shared/i18n/tKeys/routineTaskPurpose.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
@@ -36,7 +36,6 @@ import { useTranslation } from "@shared/hooks/useTranslation";
 import type { ModalProps } from "@/providers/ModalProvider";
 import CreateRoutineTaskDialogSkeleton from "./CreateRoutineTaskDialogSkeleton";
 import { CreateBlockPack } from "@/api/functions/blockPack.serverFn";
-
 
 const RoutineTaskPayloadEditor = lazy(
   () =>

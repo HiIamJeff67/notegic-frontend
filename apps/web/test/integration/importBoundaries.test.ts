@@ -20,9 +20,8 @@ test("project module imports and aliases stay inside the frontend repository", (
       "apps/web/src/**/*",
       "apps/web/server/**/*",
       "apps/web/test/**/*",
-      "shared/**/*",
+      "packages/**/*",
       "scripts/**/*",
-      "test/**/*",
       "*.ts",
       "*.mjs",
       "*.cjs",
@@ -95,7 +94,7 @@ test("project module imports and aliases stay inside the frontend repository", (
 
 test("shared i18n stays independent of React and Web hooks", () => {
   const files = ts.sys.readDirectory(
-    resolve(process.cwd(), "shared/i18n"),
+    resolve(process.cwd(), "packages/i18n"),
     [".ts", ".tsx"],
     ["**/*.test.ts", "**/*.test.tsx"]
   );

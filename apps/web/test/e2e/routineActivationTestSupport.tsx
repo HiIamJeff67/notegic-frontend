@@ -7,7 +7,7 @@ import { localDB } from "@/api/local/db";
 import { Station, User } from "@shared/api/local/schemas";
 import RoutineInspector from "@/components/inspectors/RoutineInspector";
 import { StationRoutineContext } from "@/providers/StationRoutineProvider/StationRoutineProvider";
-import { ThemeContext } from "@shared/providers/ThemeProvider";
+import { ThemeContext } from "@shared/hooks/providers/ThemeProvider";
 
 const routineId = "12345678-1234-4234-8234-123456789abc";
 const stationId = "22345678-1234-4234-8234-123456789abc";

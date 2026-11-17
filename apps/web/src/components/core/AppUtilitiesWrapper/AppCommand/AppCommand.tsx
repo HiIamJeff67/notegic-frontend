@@ -3,7 +3,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-} from "@shared/components/ui/command";
+} from "@shared/components/shadcn/command";
 import { defaultFilter } from "cmdk";
 import { GripHorizontalIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";

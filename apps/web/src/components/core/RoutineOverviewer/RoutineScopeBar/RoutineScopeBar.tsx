@@ -1,22 +1,22 @@
-import { Button } from "@shared/components/ui/button";
-import { ButtonGroup } from "@shared/components/ui/button-group";
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Button } from "@shared/components/shadcn/button";
+import { ButtonGroup } from "@shared/components/shadcn/button-group";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@shared/components/ui/hover-card";
-import { Separator } from "@shared/components/ui/separator";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/hover-card";
+import { Separator } from "@shared/components/shadcn/separator";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import {
   ToggleGroup,
   ToggleGroupItem,
-} from "@shared/components/ui/toggle-group";
+} from "@shared/components/shadcn/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@shared/components/ui/tooltip";
+} from "@shared/components/shadcn/tooltip";
 import { cn } from "@shared/lib/classname/cn";
 import { ChartNoAxesCombined, Tags } from "lucide-react";
 import {

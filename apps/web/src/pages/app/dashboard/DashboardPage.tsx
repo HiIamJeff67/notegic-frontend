@@ -5,8 +5,8 @@ import {
 import { DNDType } from "@shared/components/commons/DNDable/dnd.type";
 import Draggable from "@shared/components/commons/Draggable/Draggable";
 import Extendable from "@shared/components/commons/Extendable/Extendable";
-import { Button } from "@shared/components/ui/button";
-import { DropdownMenuItem } from "@shared/components/ui/dropdown-menu";
+import { Button } from "@shared/components/shadcn/button";
+import { DropdownMenuItem } from "@shared/components/shadcn/dropdown-menu";
 import { FrameCountPosition, FrameCountSize } from "@shared/types/cord";
 import type { UUID } from "crypto";
 import {

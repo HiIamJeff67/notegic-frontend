@@ -1,9 +1,9 @@
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import { GuideData, getDefaultGuideData } from "@widgets/guide/data/guideData";
 import { WidgetProps } from "@widgets/widget";
 import {

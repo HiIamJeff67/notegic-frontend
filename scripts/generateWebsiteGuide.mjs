@@ -363,7 +363,7 @@ destinations.push([
     ', ArticleVideo } from "@/components/commons/Article/Article";\n' +
     'import CodeExamplePanel from "@/components/panels/CodeExamplePanel/CodeExamplePanel";\n' +
     (content.includes("<Accordion")
-      ? 'import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@shared/components/ui/accordion";\n'
+      ? 'import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@shared/components/shadcn/accordion";\n'
       : "") +
     "\nconst " +
     name +

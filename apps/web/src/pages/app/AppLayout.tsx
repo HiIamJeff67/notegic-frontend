@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@shared/components/ui/sidebar";
+import { SidebarProvider } from "@shared/components/shadcn/sidebar";
 import { Outlet } from "@tanstack/react-router";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";

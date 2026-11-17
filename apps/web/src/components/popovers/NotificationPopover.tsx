@@ -1,13 +1,13 @@
 import type { Notification } from "@shared/api/interfaces/notification.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { Button } from "@shared/components/ui/button";
-import { MenubarMenu, MenubarTrigger } from "@shared/components/ui/menubar";
+import { Button } from "@shared/components/shadcn/button";
+import { MenubarMenu, MenubarTrigger } from "@shared/components/shadcn/menubar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import { cn } from "@shared/lib/classname/cn";
 import {
   AlertCircleIcon,

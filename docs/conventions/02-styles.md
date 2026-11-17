@@ -7,18 +7,18 @@ change reaches the new interface without a new palette.
 
 ## Tokens and global CSS
 
-- `shared/styles/globals.css` is the global entrypoint. It imports Tailwind, animation, scrollbar, loading, and sidebar styles and defines theme and density tokens. Web feature styles stay in `apps/web/src/styles/` and are imported by the screen that owns them.
+- `packages/ui/styles/globals.css` is the global entrypoint. It imports Tailwind, animation, scrollbar, loading, and sidebar styles and defines theme and density tokens. Web feature styles stay in `apps/web/src/styles/` and are imported by the screen that owns them.
 - Use semantic Tailwind tokens (`bg-canvas`, `bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-sidebar`) instead of raw colour values in feature code.
 - Add a new global rule only for a cross-application contract such as a theme token, density, reduced motion or a third-party editor override. Keep feature-specific styling beside its component.
 - `panel.css` is imported only by `AuthPanel`; it is not an application-wide stylesheet.
 
-`shared/styles/globals.css` is the running theme. It has no `@config`. The Vite plugin is
+`packages/ui/styles/globals.css` is the running theme. It has no `@config`. The Vite plugin is
 `@tailwindcss/vite`. `apps/web/tailwind.config.ts` is leftover and is not
-loaded. `apps/web/components.json` points `css` at `shared/styles/globals.css`
+loaded. `apps/web/components.json` points `css` at `packages/ui/styles/globals.css`
 and leaves `tailwind.config` empty so `shadcn add` does not write tokens or
 keyframes into that file. Add a new shadcn primitive from `apps/web`, where
 that config's `aliases.utils` is `@shared/lib/classname/cn` and `aliases.ui` is
-`@shared/components/ui`. Animation keyframes belong in `globals.css`. Do not
+`@shared/components/shadcn`. Animation keyframes belong in `globals.css`. Do not
 add `prose` classes. The app does not use `@tailwindcss/typography`.
 
 Join classes with `cn` from `@shared/lib/classname/cn`. Primitive variants use
@@ -31,12 +31,12 @@ existing slot or extends the `html[data-density]` rule in `globals.css`.
 
 | Stylesheet | Loaded by | Use it for |
 | --- | --- | --- |
-| `shared/styles/globals.css` | Application entry | Tailwind, tokens, themes, density, reduced motion, base caret and cursor, number-input spin removal, switch thumb. |
-| `shared/styles/scrollbar.css` | `globals.css` | Thin scrollbars and `.hide-scrollbar`. |
-| `shared/styles/loading.css` | `globals.css` | Loading-logo animation. |
-| `shared/styles/sidebar.css` | `globals.css` | Sidebar group animation and the density height that must beat a utility `h-*`. |
-| `shared/styles/block-editor.css` | Block pack editor and the block-pack payload editor | BlockNote menus and the language picker. |
-| `shared/styles/image.css` | `Image` | Blur reveal after load. |
+| `packages/ui/styles/globals.css` | Application entry | Tailwind, tokens, themes, density, reduced motion, base caret and cursor, number-input spin removal, switch thumb. |
+| `packages/ui/styles/scrollbar.css` | `globals.css` | Thin scrollbars and `.hide-scrollbar`. |
+| `packages/ui/styles/loading.css` | `globals.css` | Loading-logo animation. |
+| `packages/ui/styles/sidebar.css` | `globals.css` | Sidebar group animation and the density height that must beat a utility `h-*`. |
+| `packages/ui/styles/block-editor.css` | Block pack editor and the block-pack payload editor | BlockNote menus and the language picker. |
+| `packages/ui/styles/image.css` | `Image` | Blur reveal after load. |
 | `apps/web/src/styles/panel.css` | `AuthPanel` only | The public auth panel's gradient, texture, and glow. |
 | `apps/web/src/styles/article.css` | `ArticleNavigation` | Wrapped article-sidebar labels. |
 | `apps/web/src/styles/inspector.css` | `StationRoutineInspectorHost` | Inspector controls stay on `--background`. |

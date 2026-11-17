@@ -1,12 +1,12 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-} from "@shared/components/ui/card";
-import { Progress } from "@shared/components/ui/progress";
-import { Ring } from "@shared/components/ui/ring";
+} from "@shared/components/shadcn/card";
+import { Progress } from "@shared/components/shadcn/progress";
+import { Ring } from "@shared/components/shadcn/ring";
 import { cn } from "@shared/lib/classname/cn";
 import {
   CheckCircle2Icon,

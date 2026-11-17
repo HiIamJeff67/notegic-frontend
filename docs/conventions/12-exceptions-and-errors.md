@@ -2,26 +2,26 @@
 
 Frontend domain failures use one pair of types. An exception is the data. An
 error is the thrown object that carries that data and, when needed, a
-translation key. Both owners live under `shared/api/exceptions/`.
+translation key. Both owners live under `packages/api/exceptions/`.
 
 ## Ownership
 
 Declare a new exception catalog or a new `NotegicError` subclass only inside
-`shared/api/exceptions/`. Do not add one under `apps/`, `shared/lib/`,
-`shared/api/retryClient.ts`, or a feature folder. Where that folder sits in
-`shared/api/` is in [shared/api/README.md](../../shared/api/README.md).
+`packages/api/exceptions/`. Do not add one under `apps/`, `packages/lib/`,
+`packages/api/retryClient.ts`, or a feature folder. Where that folder sits in
+`packages/api/` is in [packages/api/README.md](../../packages/api/README.md).
 
 | Kind | Owner | What it is |
 | --- | --- | --- |
-| Exception value | `NotegicException` in `shared/api/exceptions/index.ts` | `code`, `prefix`, `reason`, `message`, `status`, optional `details`, `origin`, and `retryable`. It does not extend `Error`. |
+| Exception value | `NotegicException` in `packages/api/exceptions/index.ts` | `code`, `prefix`, `reason`, `message`, `status`, optional `details`, `origin`, and `retryable`. It does not extend `Error`. |
 | Reason strings | `ExceptionReasonDictionary` in the same file | The `reason` a catalog may use. Add the string here, then reference it from the catalog. |
-| Domain catalog | `shared/api/exceptions/<domain>.exception.ts` | Static factories that return `NotegicException`. `AuthExceptions` and `UserSettingExceptions` extend `DatabaseException`. |
-| Client catalog | `shared/api/exceptions/client/<domain>.exception.ts` | Same factories for failures that originate in the client, such as fetch, validation, and the local database. |
-| Thrown base | `NotegicError` in `shared/api/exceptions/errors/index.ts` | Extends `Error`. Owns `setPresentation`, `getPresentation`, and `consumePresentation`. |
-| Thrown API error | `NotegicAPIError` in `shared/api/exceptions/index.ts` | Wraps one `NotegicException`. `unWrap` returns it. `instanceof` works across server and client bundles. |
-| Other thrown errors | `shared/api/exceptions/errors/<domain>.error.ts` | `NotegicFetchError`, `NotegicValidationError`, and `NotegicLocalDatabaseError`. Each wraps one `NotegicException` and exposes `unWrap`. |
+| Domain catalog | `packages/api/exceptions/<domain>.exception.ts` | Static factories that return `NotegicException`. `AuthExceptions` and `UserSettingExceptions` extend `DatabaseException`. |
+| Client catalog | `packages/api/exceptions/client/<domain>.exception.ts` | Same factories for failures that originate in the client, such as fetch, validation, and the local database. |
+| Thrown base | `NotegicError` in `packages/api/exceptions/errors/index.ts` | Extends `Error`. Owns `setPresentation`, `getPresentation`, and `consumePresentation`. |
+| Thrown API error | `NotegicAPIError` in `packages/api/exceptions/index.ts` | Wraps one `NotegicException`. `unWrap` returns it. `instanceof` works across server and client bundles. |
+| Other thrown errors | `packages/api/exceptions/errors/<domain>.error.ts` | `NotegicFetchError`, `NotegicValidationError`, and `NotegicLocalDatabaseError`. Each wraps one `NotegicException` and exposes `unWrap`. |
 
-WebSocket frame shapes under `shared/api/websocket/types/` are protocol
+WebSocket frame shapes under `packages/api/websocket/types/` are protocol
 payloads. They are not this error system. Do not add a second error class for
 a frame.
 

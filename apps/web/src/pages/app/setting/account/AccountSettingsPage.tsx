@@ -1,5 +1,5 @@
-import { Button } from "@shared/components/ui/button";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { Button } from "@shared/components/shadcn/button";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,

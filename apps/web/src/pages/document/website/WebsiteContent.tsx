@@ -30,7 +30,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@shared/components/ui/accordion";
+} from "@shared/components/shadcn/accordion";
 import {
   ArticleImage,
   ArticleLink,

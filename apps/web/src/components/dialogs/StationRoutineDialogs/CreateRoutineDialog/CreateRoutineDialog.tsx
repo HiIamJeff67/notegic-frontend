@@ -1,8 +1,8 @@
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { AllRoutinePeriods, RoutinePeriod } from "@shared/api/interfaces/enums";
 import MonthlyDayPicker from "@shared/components/commons/MonthlyDayPicker/MonthlyDayPicker";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -10,22 +10,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Spinner } from "@shared/components/ui/spinner";
-import { Switch } from "@shared/components/ui/switch";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/select";
+import { Spinner } from "@shared/components/shadcn/spinner";
+import { Switch } from "@shared/components/shadcn/switch";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { useEffect, useState } from "react";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";

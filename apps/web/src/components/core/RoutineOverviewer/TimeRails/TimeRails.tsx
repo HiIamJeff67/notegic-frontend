@@ -1,11 +1,11 @@
 import { RoutinePeriod } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
-import { Calendar } from "@shared/components/ui/calendar";
+import { Button } from "@shared/components/shadcn/button";
+import { Calendar } from "@shared/components/shadcn/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import { cn } from "@shared/lib/classname/cn";
 import {
   LocalStorage,

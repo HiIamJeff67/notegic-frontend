@@ -10,9 +10,9 @@
     "includes": [
       "**",
       "!apps/web/src/routeTree.gen.ts",
-      "!shared/api/graphql/generated/**",
+      "!packages/api/graphql/generated/**",
       "!apps/web/src/pages/document/api/sources/**",
-      "!shared/api/local/migrations/meta/**",
+      "!packages/api/local/migrations/meta/**",
       "!apps/desktop/src-tauri/**"
     ]
   },

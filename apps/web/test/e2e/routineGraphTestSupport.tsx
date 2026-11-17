@@ -7,9 +7,9 @@ import {
 import { ApolloProvider } from "@apollo/client/react";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { SidebarProvider } from "@shared/components/ui/sidebar";
+import { SidebarProvider } from "@shared/components/shadcn/sidebar";
 import { DefaultStandardTheme } from "@shared/lib/theme/defaults";
-import { ScreenProvider } from "@shared/providers/ScreenProvider";
+import { ScreenProvider } from "@shared/hooks/providers/ScreenProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { ContextType } from "react";
 import { searchPaginationPolicy } from "@/api/hooks/graphql/policies/searchPagination.policy";
@@ -32,7 +32,7 @@ import {
   StationRoutineProvider,
 } from "@/providers/StationRoutineProvider/StationRoutineProvider";
 import { getDefaultStationNode } from "@/providers/StationRoutineProvider/stationNode.type";
-import { ThemeContext } from "@shared/providers/ThemeProvider";
+import { ThemeContext } from "@shared/hooks/providers/ThemeProvider";
 import { TransactionSynchronizerProvider } from "@/providers/TransactionSynchronizerProvider/TransactionSynchronizerProvider";
 import "@xyflow/react/dist/style.css";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";

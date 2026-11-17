@@ -73,15 +73,15 @@ implementations stay in the private frontend repository.
 
 ## What the checks use
 
-The current editor schema lives in `shared/lib/blockpack/editor.ts`: code,
+The current editor schema lives in `packages/lib/blockpack/editor.ts`: code,
 math, diagram, calendar, and Yjs collaboration. Block bytes for the web app
 are cached in IndexedDB through `LocalYjsDocumentStore`.
 
 The web app's local database is SQLocal (WASM SQLite in a worker, stored in
 OPFS) with Drizzle over `drizzle-orm/sqlite-proxy`. Table definitions currently
-use `drizzle-orm/sqlite-core` under `shared/api/local/schemas/`.
+use `drizzle-orm/sqlite-core` under `packages/api/local/schemas/`.
 [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration)
-moves that schema to `shared/api/local/`. The sidecar opens the shared schema.
+moves that schema to `packages/api/local/`. The sidecar opens the shared schema.
 It does not import `apps/web`. The web worker, OPFS, and cross-origin isolation
 stay on the web app.
 
@@ -125,7 +125,7 @@ Windows must pass Gate 1 before the shell is treated as proven.
 What the apps may share after the shell exists, including the local schema
 version cap and the per-app `api/functions/` call site, is in
 [Shared application boundaries](shared-application-boundaries.md). Desktop
-reaches that code through `shared/`. It does not import `apps/web`. The
+reaches that code through `packages/`. It does not import `apps/web`. The
 current desktop imports of `apps/web` violate that rule.
 [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
 removes them.

@@ -42,10 +42,10 @@ try {
     join(repository, "apps/web/vite.config.ts"),
     join(root, "vite.config.ts")
   );
-  await mkdir(join(temporary, "shared/lib/browser"), { recursive: true });
+  await mkdir(join(temporary, "packages/lib/browser"), { recursive: true });
   await copyFile(
-    join(repository, "shared/lib/browser/crossOriginIsolation.ts"),
-    join(temporary, "shared/lib/browser/crossOriginIsolation.ts")
+    join(repository, "packages/lib/browser/crossOriginIsolation.ts"),
+    join(temporary, "packages/lib/browser/crossOriginIsolation.ts")
   );
 
   delete process.env.NOTEGIC_VITE_CACHE_DIR;
@@ -55,7 +55,7 @@ try {
   const playwright = (
     await loadConfigFromFile(
       configEnv,
-      join(repository, "playwright.config.ts")
+      join(repository, "apps/web/playwright.config.ts")
     )
   ).config;
   const override = playwright.webServer.env.NOTEGIC_VITE_CACHE_DIR;

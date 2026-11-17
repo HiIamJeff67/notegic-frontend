@@ -1,27 +1,27 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
-import { ButtonGroup } from "@shared/components/ui/button-group";
+import { Button } from "@shared/components/shadcn/button";
+import { ButtonGroup } from "@shared/components/shadcn/button-group";
 import {
   DropdownMenuItem,
   DropdownMenuShortcut,
-} from "@shared/components/ui/dropdown-menu";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/dropdown-menu";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import {
   ToggleGroup,
   ToggleGroupItem,
-} from "@shared/components/ui/toggle-group";
+} from "@shared/components/shadcn/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@shared/components/ui/tooltip";
+} from "@shared/components/shadcn/tooltip";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
 import {
   ChevronLeftIcon,

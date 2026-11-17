@@ -2,17 +2,17 @@ import {
   AllRoutinePeriods,
   RoutineTaskPurpose,
 } from "@shared/api/interfaces/enums";
-import { Checkbox } from "@shared/components/ui/checkbox";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/select";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { useEffect, useState } from "react";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";

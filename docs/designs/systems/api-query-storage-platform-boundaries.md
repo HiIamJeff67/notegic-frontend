@@ -5,13 +5,14 @@ adapters. The lowest common API boundary is an HTTP request/response contract.
 Only Web uses TanStack Start server functions. Desktop and Mobile keep the
 same `api/functions/` role with their own implementations. See
 [Shared application boundaries](shared-application-boundaries.md). The
-`shared/api/` tree those apps import is mapped in
-[shared/api/README.md](../../../shared/api/README.md).
+`packages/api/` tree those apps import is mapped in
+[packages/api/README.md](../../../packages/api/README.md).
 
 ## Boundary map
 
 ```text
-shared/
+packages/
+  api, hooks, i18n, lib, ui
   contracts, request schemas, GraphQL, query/cache definitions,
   realtime frames/channels, mappings, portable domain rules
         │
@@ -135,7 +136,7 @@ the gateway. Language hydration tracks pending changes so asynchronous
 
 Settings mutations explicitly disable automatic retries. The user-setting
 server functions throw the upstream API error. They do not calculate a retry
-deadline. The invoker gives an HTTP 429 to `shared/api/retryClient.ts`, which
+deadline. The invoker gives an HTTP 429 to `packages/api/retryClient.ts`, which
 stores one deadline per API scope in the current browser. A raw HTTP 429 seen
 by that client uses `Retry-After`. User setting reads and
 writes share `UserSettingExceptions.RetryScope`. Another API uses the client
@@ -197,13 +198,13 @@ or write database state for another runtime.
 
 ## i18n and reducers
 
-`shared/i18n/language.ts` owns supported-language types and checks.
-`shared/i18n/index.ts` owns shared resources and pure helpers. Each app owns
+`packages/i18n/language.ts` owns supported-language types and checks.
+`packages/i18n/index.ts` owns shared resources and pure helpers. Each app owns
 stored-language synchronization and supplies its own storage/lifecycle adapter.
-React consumers use the explicit `shared/hooks/useTranslation.ts` adapter; it
+React consumers use the explicit `packages/hooks/useTranslation.ts` adapter; it
 does not initialize i18next or access storage. See
 [Translation entry points](../../conventions/10-translations.md).
-Portable reducers can move to `shared/reducers/`; reducers that depend on an
+Portable reducers can move to `packages/lib/reducers/`; reducers that depend on an
 editor-specific type remain behind an explicit editor boundary until that
 dependency is intentionally shared.
 

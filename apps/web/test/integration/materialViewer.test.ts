@@ -192,7 +192,7 @@ const mocks: Record<string, string> = {
     return null;
   }`,
   "@/components/paths/ItemPath/ItemPath": `export default () => null;`,
-  "@shared/components/ui/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
+  "@shared/components/shadcn/sidebar": `export const SidebarTrigger = () => null; export const useSidebar = () => ({ isMobile: false });`,
   "pdfjs-dist": `
     export const GlobalWorkerOptions = {};
     export const getDocument = ({ url }) => ({ promise: window.api.pdf(url), destroy: async () => {} });`,

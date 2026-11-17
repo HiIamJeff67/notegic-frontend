@@ -1,4 +1,4 @@
-import { Skeleton } from "@shared/components/ui/skeleton";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import RoutineChartsSkeleton from "./RoutineCharts/RoutineChartsSkeleton";
 import RoutineScopeBarSkeleton from "./RoutineScopeBar/RoutineScopeBarSkeleton";

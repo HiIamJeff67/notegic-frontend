@@ -4,12 +4,15 @@ import {
 } from "@shared/api/exceptions";
 import { NotegicError } from "@shared/api/exceptions/errors";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useForgetPassword } from "@/api/hooks/auth.hook";
-import { clearTurnstileToken, isTurnstileEnabled } from "@/api/tokens/turnstile";
+import {
+  clearTurnstileToken,
+  isTurnstileEnabled,
+} from "@/api/tokens/turnstile";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";
 import CloudflareTurnstile from "@/components/commons/CloudflareTurnstile/CloudflareTurnstile";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";

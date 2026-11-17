@@ -1,7 +1,7 @@
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
-import { Textarea } from "@shared/components/ui/textarea";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import FormPayloadEditor from "../FormPayloadEditor";

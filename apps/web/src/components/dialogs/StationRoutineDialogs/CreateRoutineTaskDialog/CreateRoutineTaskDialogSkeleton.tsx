@@ -1,4 +1,4 @@
-import { Skeleton } from "@shared/components/ui/skeleton";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 
 const CreateRoutineTaskDialogSkeleton = () => (
   <div className="flex max-h-[calc(90vh-112px)] flex-col gap-4 overflow-y-auto px-1 pb-4">

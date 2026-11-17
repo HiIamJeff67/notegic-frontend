@@ -10,7 +10,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 import { useNavigate } from "@tanstack/react-router";
 import { LayoutDashboardIcon, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";

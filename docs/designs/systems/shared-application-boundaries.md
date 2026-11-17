@@ -1,15 +1,15 @@
 # Shared application boundaries
 
 What Web, Desktop, and a future Mobile app may share, and what stays inside
-one app. Apps do not import one another. `shared/` is the only code they may
+one app. Apps do not import one another. `packages/` is the only code they may
 all import.
 
 The current desktop window still aliases `@/` to `apps/web/src`. That alias
 violates this rule. [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
-removes it. A file both apps use moves to `shared/` first.
+removes it. A file both apps use moves into `packages/` first.
 
-The folder map for `shared/api/`, including paths that are decided and not
-created yet, is [shared/api/README.md](../../../shared/api/README.md). Update
+The folder map for `packages/api/`, including paths that are decided and not
+created yet, is [packages/api/README.md](../../../packages/api/README.md). Update
 that file when this boundary adds or removes a module there.
 
 ## Goal
@@ -19,7 +19,7 @@ the other app's UI to take that feature in the same change.
 
 ## Non-goals
 
-- Moving every reusable-looking component into `shared/`.
+- Moving every reusable-looking component into `packages/`.
 - Sharing pages, feature screens, or platform API callers.
 - Replacing the Web simulator and synchronizer path in this decision.
 - Opening SQLite from Rust or from a Tauri filesystem command.
@@ -27,18 +27,19 @@ the other app's UI to take that feature in the same change.
 ## Ownership
 
 ```text
-shared/api/                  contracts, payloads, query keys
-shared/api/local/            shared sqlite-core schema, ordered SQL, version cap
-shared/components/ui/        shadcn primitives with no product data
-shared/components/commons/   a file moves here only after it has no app API
-shared/components/charts/    chart parts with no product screen
-shared/components/widgets/   self-contained widgets with no account data
-shared/hooks/                DOM hooks with no app API or product provider
-shared/providers/            DOM providers with no app API
-shared/styles/               theme and editor CSS both DOM apps load
-shared/lib/                  platform-neutral libraries already owned here
-shared/i18n/                 strings and pure language checks
-shared/reducers/
+packages/api/                 contracts, payloads, query keys
+packages/api/local/           sqlite-core schema, ordered SQL, version cap
+packages/ui/shadcn/           shadcn primitives with no product data
+packages/ui/commons/          a file moves here only after it has no app API
+packages/ui/charts/           chart parts with no product screen
+packages/ui/widgets/          self-contained widgets with no account data
+packages/ui/styles/           theme and editor CSS both DOM apps load
+packages/hooks/               DOM hooks with no app API or product provider
+packages/hooks/providers/     DOM providers with no app API
+packages/lib/                 platform-neutral libraries
+packages/lib/types/           shared types without a narrower owner
+packages/lib/reducers/        portable metadata reducers
+packages/i18n/                strings and pure language checks
 
 apps/web/src/api/functions/       TanStack Start server functions
 apps/web/src/api/local/           SQLocal driver and the current Web sync path
@@ -58,7 +59,7 @@ apps/mobile/src/api/functions/    mobile API callers, when that app exists
 apps/mobile/src/local/driver/     React Native SQLite, when that app exists
 ```
 
-Each app keeps `components/` and `pages/`. `shared/components/` holds only the
+Each app keeps `components/` and `pages/`. `packages/ui/` holds only the
 pieces that have no app import. A file that imports an app hook, a server
 function, or a local driver stays in that app.
 
@@ -68,7 +69,7 @@ function, or a local driver stays in that app.
 
 `apps/web`, `apps/desktop`, and `apps/mobile` are separate application
 boundaries. An import from one `apps/*` tree into another is not allowed.
-`shared/` may be imported by every app. Shared code must not import `apps/*`.
+`packages/` may be imported by every app. Package code must not import `apps/*`.
 
 The desktop webview boundaries live beside the Web modules they replace:
 `api/local/db.ts`, `api/local/worker.ts`, `api/local/package.ts`,
@@ -79,10 +80,10 @@ database driver. When those Web imports are gone, delete the boundaries.
 ### Share primitives, not product UI
 
 Share a component only when every consumer ships that change together and the
-file has no platform or product data. `components/ui/` meets that bar.
+file has no platform or product data. `packages/ui/shadcn/` meets that bar.
 `charts/`, `commons/`, and `widgets/` are reviewed file by file. Theme tokens,
 scrollbar, loading, sidebar, image, and BlockNote editor styles live in
-`shared/styles/`. Auth panel, article, inspector, and command-palette styles
+`packages/ui/styles/`. Auth panel, article, inspector, and command-palette styles
 stay with the Web screens that import them.
 
 Pages stay in the owning app. Feature screens, menus, and dialogs that know
@@ -90,13 +91,13 @@ about shelves, routines, or an agent stay in the owning app. A desktop-only
 feature must be able to ship without editing a shared screen that Web renders.
 
 Copy is the wrong fix for a screen both apps need. If the screen must stay
-identical and ship together, move that one file to `shared/components/`.
-Until then, each app composes `shared/components/ui` into its own pages.
+identical and ship together, move that one file to `packages/ui/`.
+Until then, each app composes `packages/ui/shadcn` into its own pages.
 
-### Local schema lives under `shared/api/local`
+### Local schema lives under `packages/api/local`
 
 Put the shared Drizzle `sqlite-core` tables, the ordered SQL migrations, and
-the migrator in `shared/api/local/`. Do not add a second `shared/local/` tree.
+the migrator in `packages/api/local/`. Do not add a second local-schema tree.
 
 Migrations are one chain. An app cannot skip a number. A desktop-only change
 is appended. Web adopts it later by raising its cap, which runs every
@@ -117,7 +118,7 @@ shared schema.
 
 ### The last API call stays in the app
 
-`shared/api` owns the contract, path, and validation. The function that
+`packages/api` owns the contract, path, and validation. The function that
 performs the call stays in that app's `api/functions/` directory.
 
 | App | Implementation |
@@ -159,7 +160,7 @@ remains because `apps/desktop/src/api/apolloClient.ts` and
 `apps/desktop/src/api/local/db.ts` still reference Web modules.
 `apps/desktop/src/styles.css` sources `apps/web/src`. Those imports
 are not a sharing mechanism. Web and Desktop share a file only after it lives
-in `shared/` and imports neither app.
+in `packages/` and imports neither app.
 
 Until [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
 removes that alias, `desktopRuntimeBoundary` in `apps/desktop/vite.config.ts`

@@ -13,7 +13,7 @@ import { build, transform } from "esbuild";
 const fixture = `
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SidebarProvider } from '@shared/components/ui/sidebar';
+import { SidebarProvider } from '@shared/components/shadcn/sidebar';
 import { AppSidebar } from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebar';
 import AppSidebarInset from '@/components/core/AppUtilitiesWrapper/AppSidebar/AppSidebarInset';
 import BlockPackEditorContent from '@/components/core/BlockPackEditor/BlockPackEditorContent';
@@ -111,7 +111,7 @@ describe("editor chrome in Chromium", () => {
 
   beforeAll(async () => {
     const conversionSource = await readFile(
-      "shared/lib/blockpack/conversions.ts",
+      "packages/lib/blockpack/conversions.ts",
       "utf8"
     );
     const enumSource = conversionSource.match(
@@ -168,9 +168,9 @@ describe("editor chrome in Chromium", () => {
         .map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("shared/styles/globals.css", "utf8"),
+      await readFile("packages/ui/styles/globals.css", "utf8"),
       {
-        base: path.resolve("shared/styles"),
+        base: path.resolve("packages/ui/styles"),
         onDependency: () => {},
       }
     );

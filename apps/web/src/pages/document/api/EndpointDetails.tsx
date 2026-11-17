@@ -1,9 +1,9 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@shared/components/ui/collapsible";
+} from "@shared/components/shadcn/collapsible";
 import { cn } from "@shared/lib/classname/cn";
 import { ChevronRight } from "lucide-react";
 import {

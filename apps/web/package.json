@@ -2,6 +2,13 @@
   "name": "@notegic/web",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "@notegic/api": "*",
+    "@notegic/hooks": "*",
+    "@notegic/i18n": "*",
+    "@notegic/lib": "*",
+    "@notegic/ui": "*"
+  },
   "scripts": {
     "dev": "vite dev",
     "dev:virtual": "vite dev --mode virtual",

@@ -1,8 +1,8 @@
 import { useLazyQuery, useQuery } from "@apollo/client/react";
 import { NetworkExceptions } from "@shared/api/exceptions/network.exception";
+import { isLocalPreferenceEnabled } from "@shared/lib/storage/localPreference";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { isVirtualMode } from "@/api/functions/helpers/availability";
-import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import type { SearchLocalAdapter } from "./adapters/adapter.type";
 
 export const useLocalSearchLazyQuery = <TData, TVariables extends object>(

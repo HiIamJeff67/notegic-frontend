@@ -1,7 +1,7 @@
 import {
   SidebarMenuItem,
   SidebarMenuSkeleton,
-} from "@shared/components/ui/sidebar";
+} from "@shared/components/shadcn/sidebar";
 
 const RoutineTagMenuItemSkeleton = ({ number = 1 }: { number?: number }) => (
   <>

@@ -13,7 +13,7 @@ import type { RealtimeRoutineTaskLifecycleFrame } from "@shared/api/websocket";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { type RefObject, useCallback, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";

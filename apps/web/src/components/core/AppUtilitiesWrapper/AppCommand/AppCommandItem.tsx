@@ -1,4 +1,4 @@
-import { CommandItem } from "@shared/components/ui/command";
+import { CommandItem } from "@shared/components/shadcn/command";
 import {
   AppWindowIcon,
   BellIcon,

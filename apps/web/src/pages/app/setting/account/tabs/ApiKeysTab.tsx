@@ -6,8 +6,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@shared/components/ui/accordion";
-import { Button } from "@shared/components/ui/button";
+} from "@shared/components/shadcn/accordion";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -15,13 +15,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
-import { Skeleton } from "@shared/components/ui/skeleton";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 import { useNetwork } from "@shared/hooks/useNetwork";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { CheckIcon, CopyIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {

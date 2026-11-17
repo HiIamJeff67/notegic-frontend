@@ -18,22 +18,21 @@ lockfile. See the [document source inventory](../../runbooks/website-guide.md#co
 The current frontend paths are:
 
 ```text
-shared/graphql/
+packages/api/graphql/
   schemas/                 GraphQL schema inputs and enums
   fragments/               reusable fragments
   queries/                 operation documents
-shared/api/graphql/generated/  generated client types and operations
+packages/api/graphql/generated/  generated client types and operations
 ```
 
-During Phase 2, public generated API types may be grouped under
-`shared/contracts/`; the current paths remain the source-compatible locations
-until that migration. GraphQL documents and generated output remain shared
+Generated client types stay in `packages/api/graphql/generated/`. GraphQL
+documents and generated output remain in that package
 because they describe a client-facing contract rather than a Web-only view.
 
 ## Code generation workflow
 
-The root `codegen.ts` currently reads the frontend schema inputs and documents
-and writes to `shared/api/graphql/generated/`.
+`packages/api/codegen.ts` currently reads the frontend schema inputs and documents
+and writes to `packages/api/graphql/generated/`.
 
 1. Change or synchronize the relevant backend public contract.
 2. Update the frontend schema mirror or operation document.
@@ -47,7 +46,7 @@ consumer artifacts and must never be edited by hand. Phase 3 adds CI checks
 for drift and reproducible generation.
 
 Generated GraphQL types, operation definitions, conversions, and schema
-helpers remain under `shared/api/graphql/` and must stay portable: they must
+helpers remain under `packages/api/graphql/` and must stay portable: they must
 not import TanStack Start, browser globals, Cloudflare bindings, Web CSS, or
 app-specific storage. Web Apollo and local-search adapters live under
 `apps/web/src/api/`.

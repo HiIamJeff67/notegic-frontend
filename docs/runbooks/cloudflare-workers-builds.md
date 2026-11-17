@@ -17,19 +17,19 @@ Create a Worker from this frontend GitHub repository and use these values:
 | Node version | `22.16.0` (also committed in `.nvmrc`) |
 | Production branch | `main` |
 
-The root is intentional: `package-lock.json`, `shared/`, `codegen.ts`, and
-`apps/web/` are all part of the Web build. The generated Wrangler file is
+The root is intentional: `package-lock.json`, `packages/`, and `apps/web/`
+are all part of the Web build. The generated Wrangler file is
 created by Nitro and must be deployed from the repository root using its
 generated path.
 
-Configure these build watch paths so shared changes rebuild Web:
+Configure these build watch paths so package changes rebuild Web:
 
 ```text
 apps/web/*
-shared/*
+packages/*
 package.json
 package-lock.json
-codegen.ts
+packages/api/codegen.ts
 tsconfig.json
 biome.json
 .nvmrc

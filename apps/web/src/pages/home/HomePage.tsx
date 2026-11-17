@@ -4,8 +4,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@shared/components/ui/accordion";
-import { Button } from "@shared/components/ui/button";
+} from "@shared/components/shadcn/accordion";
+import { Button } from "@shared/components/shadcn/button";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BookOpenIcon, LoaderCircleIcon } from "lucide-react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";

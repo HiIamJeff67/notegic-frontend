@@ -5,7 +5,7 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "../../shared/styles/globals.css",
+    "css": "../../packages/ui/styles/globals.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
@@ -13,7 +13,7 @@
   "aliases": {
     "components": "@/components",
     "utils": "@shared/lib/classname/cn",
-    "ui": "@shared/components/ui",
+    "ui": "@shared/components/shadcn",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

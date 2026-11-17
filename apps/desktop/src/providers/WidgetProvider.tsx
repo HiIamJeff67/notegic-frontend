@@ -4,7 +4,7 @@ import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { createContext, useCallback, useEffect, useRef } from "react";
 import { DashboardPreviewWidgets } from "../components/widgets/basic/basic";
 import { toWidget, Widget } from "../components/widgets/widget";

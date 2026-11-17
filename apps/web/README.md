@@ -22,7 +22,7 @@ receiving updates from collaborators.
 ## Technical overview
 
 The app is a React application built with TanStack Start, Vite, and Nitro. It
-uses GraphQL and HTTP contracts from `shared/`, browser-side persistence for
+uses GraphQL and HTTP contracts from `packages/`, browser-side persistence for
 local preferences and offline data, and a WebSocket connection for realtime
 updates. Styling and editor-specific assets remain Web-owned.
 
@@ -93,7 +93,7 @@ Return to backend-backed development by stopping that process and running
 | `npm run deploy:web:cloudflare` | Build and deploy the Worker. |
 
 Use `npm run codegen` after changing GraphQL schemas or documents. Do not
-hand-edit `shared/api/graphql/generated/` or `src/routeTree.gen.ts`.
+hand-edit `packages/api/graphql/generated/` or `src/routeTree.gen.ts`.
 
 ## Structure
 
@@ -111,7 +111,7 @@ public/             Browser metadata and public files
 vite.config.ts      Web build and deployment configuration
 ```
 
-`shared/` is for portable code with real multi-application consumers.
+`packages/` holds portable code with real multi-application consumers.
 Browser-only APIs, CSS, Web assets, and route/UI code belong here under
 `apps/web/`.
 

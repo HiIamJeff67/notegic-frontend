@@ -29,7 +29,7 @@ import {
   type SearchSubShelvesQuery,
 } from "@shared/api/graphql/generated/graphql";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import {
   useLoaderData,
   useNavigate,

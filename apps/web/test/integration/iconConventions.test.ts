@@ -74,7 +74,7 @@ describe("application icon conventions", () => {
 
   test.each([
     ["pages/app/dashboard/DashboardPage.tsx", "SquarePen"],
-    ["shared/components/commons/Editable/Editable.tsx", "SquarePen"],
+    ["packages/ui/commons/Editable/Editable.tsx", "SquarePen"],
     [
       "components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode.tsx",
       "SquarePen",

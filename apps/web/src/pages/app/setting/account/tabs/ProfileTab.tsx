@@ -6,8 +6,8 @@ import {
   UserInfoSchema,
 } from "@shared/api/interfaces/types/user.type";
 import { UpdateMyInfoRequestSchema } from "@shared/api/interfaces/userInfo.interface";
-import { Button } from "@shared/components/ui/button";
-import { Calendar } from "@shared/components/ui/calendar";
+import { Button } from "@shared/components/shadcn/button";
+import { Calendar } from "@shared/components/shadcn/calendar";
 import {
   Form,
   FormControl,
@@ -15,13 +15,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@shared/components/ui/form";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/form";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@shared/components/ui/popover";
+} from "@shared/components/shadcn/popover";
 import {
   Select,
   SelectContent,
@@ -31,10 +31,10 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/select";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";

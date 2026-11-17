@@ -3,15 +3,15 @@ import { AllUserStatus } from "@shared/api/interfaces/enums";
 import { FakeUser } from "@shared/api/interfaces/seeds/user.seed";
 import { User, UserSchema } from "@shared/api/interfaces/types/user.type";
 import { UpdateMeRequestSchema } from "@shared/api/interfaces/user.interface";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@shared/components/ui/form";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/form";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Select,
   SelectContent,
@@ -21,9 +21,9 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";

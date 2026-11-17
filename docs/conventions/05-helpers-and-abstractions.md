@@ -140,11 +140,10 @@ Use the narrowest ownership boundary that satisfies the real callers:
    use it.
 3. Move it to a category-level module only when multiple neighboring features
    use the same concept.
-4. Use `shared/lib/` only for genuinely cross-feature, runtime-neutral logic.
-5. Use `shared/util/` for application-facing utilities only when their broader
-   ownership is explicit and justified.
+4. Use `packages/lib/` only for genuinely cross-feature, runtime-neutral logic
+   whose broader ownership is explicit and justified.
 
-Do not move feature business rules into `shared/lib/` or `shared/util/` just to
+Do not move feature business rules into `packages/lib/` just to
 make a file appear reusable. Existing modules that do not yet match this
 boundary are preserved unless a scoped migration explicitly owns the change.
 
@@ -177,7 +176,7 @@ For UI and heavy loading specifically, follow
 Before writing a helper:
 
 - search the nearest feature and its adjacent modules for an existing concept;
-- check `shared/lib/`, `shared/util/`, and the relevant API modules;
+- check `packages/lib/` and the relevant API modules;
 - prefer the existing implementation when its behavior and ownership match;
 - extend an existing utility with the smallest domain-neutral capability when
   the need is truly shared;
@@ -231,12 +230,12 @@ second registry.
   page into a shared package.
 - Do not split a local definition into `types/`, `constants/`, `models/`, or a
   helper file merely because its category has a familiar name.
-- Reserve `shared/types/` for runtime-neutral concepts without a narrower
+- Reserve `packages/lib/types/` for runtime-neutral concepts without a narrower
   owner, such as general coordinates in `cord.ts`, or deliberately shared
   domain contracts whose boundary spans existing owners. Public visibility or
   multiple imports alone are not reasons to place a definition there.
 - A contract jointly owned by several independent domains belongs in
-  `shared/types/` when no narrower common owner exists. Distinguish independent
+  `packages/lib/types/` when no narrower common owner exists. Distinguish independent
   ownership from multiple callers inside the same feature. Use concise concept
   filenames and group closely related definitions and intrinsic operations in
   an existing concept file rather than requiring one file per declaration.
@@ -248,7 +247,7 @@ second registry.
   the storage wrapper the owner of every domain model. Resolve the catalog's
   dependency direction before moving provider-owned payload types.
 - Trace producers, consumers and dependencies before relocating a type. Do not
-  make `shared/` import Web providers/components, including through type-only
+  make `packages/` import Web providers/components, including through type-only
   imports, or introduce runtime cycles when a schema, enum or default factory
   moves alongside a type. If no safe narrower owner exists yet, retain the
   shared contract until the owning boundary is deliberately changed.

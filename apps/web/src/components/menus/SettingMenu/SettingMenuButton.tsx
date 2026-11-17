@@ -1,4 +1,4 @@
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 
 interface SettingMenuButtonProps {
   children: React.ReactNode;

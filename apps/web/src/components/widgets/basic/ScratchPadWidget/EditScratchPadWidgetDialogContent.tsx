@@ -1,4 +1,4 @@
-import { Slider } from "@shared/components/ui/slider";
+import { Slider } from "@shared/components/shadcn/slider";
 import { ScratchPadSetting } from "@widgets/basic/ScratchPadWidget/setting/scratchPadSetting";
 import { Dispatch, SetStateAction } from "react";
 import {

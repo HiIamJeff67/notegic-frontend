@@ -6,7 +6,7 @@ import {
   CodeBlockHeader,
   CodeBlockLine,
   CodeBlockTitle,
-} from "@shared/components/ui/code-block";
+} from "@shared/components/shadcn/code-block";
 import type { CSSProperties } from "react";
 import { useHighlightedCode } from "@/hooks/useHighlightedCode";
 

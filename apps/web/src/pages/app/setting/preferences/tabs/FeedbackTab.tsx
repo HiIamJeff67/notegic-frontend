@@ -2,19 +2,19 @@ import type {
   FeedbackReportType,
   SubmitFeedbackReportRequest,
 } from "@shared/api/interfaces/feedback.interface";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { Button } from "@shared/components/shadcn/button";
+import { Input } from "@shared/components/shadcn/input";
+import { Label } from "@shared/components/shadcn/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Textarea } from "@shared/components/ui/textarea";
+} from "@shared/components/shadcn/select";
+import { Textarea } from "@shared/components/shadcn/textarea";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { type FormEvent, useState } from "react";
 import { useSubmitFeedbackReport } from "@/api/hooks/feedback.hook";
 import { useTranslation } from "@shared/hooks/useTranslation";

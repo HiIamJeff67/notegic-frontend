@@ -75,9 +75,9 @@ describe("Turnstile container sizing in Chromium", () => {
       ].map(file => readFile(file, "utf8"))
     );
     const compiler = await compile(
-      await readFile("shared/styles/globals.css", "utf8"),
+      await readFile("packages/ui/styles/globals.css", "utf8"),
       {
-        base: path.resolve("shared/styles"),
+        base: path.resolve("packages/ui/styles"),
         onDependency: () => {},
       }
     );

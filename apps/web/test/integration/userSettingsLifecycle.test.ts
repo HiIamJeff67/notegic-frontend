@@ -52,7 +52,7 @@ const mocks: Record<string, string> = {
     language: 'en', on: (_, fn) => listeners.add(fn), off: (_, fn) => listeners.delete(fn),
     changeLanguage: async language => { i18n.language = language; listeners.forEach(fn => fn(language)); },
   }; window.i18n = i18n; export default i18n;`,
-  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './shared/lib/storage/localStorage'; export const LocalStorage = { getItemByKey: () => null, setItem: () => {} };`,
+  "@shared/lib/storage/localStorage": `export { LocalStorageKey } from './packages/lib/storage/localStorage'; export const LocalStorage = { getItemByKey: () => null, setItem: () => {} };`,
   "@/api/local/cleanup": `export const cleanupLocalData = async () => {};`,
   "@/providers/MaterialAttachmentCacheProvider": `export const clearMaterialAttachmentCache = async () => {};`,
 };

@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import { cn } from "@shared/lib/classname/cn";
 import { IntChart } from "@shared/components/charts";
 import { useTranslation } from "@shared/hooks/useTranslation";

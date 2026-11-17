@@ -1,17 +1,17 @@
-import { Button } from "@shared/components/ui/button";
-import { ButtonGroup } from "@shared/components/ui/button-group";
+import { Button } from "@shared/components/shadcn/button";
+import { ButtonGroup } from "@shared/components/shadcn/button-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/dropdown-menu";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@shared/components/ui/tooltip";
+} from "@shared/components/shadcn/tooltip";
 import {
   Download,
   Plus,

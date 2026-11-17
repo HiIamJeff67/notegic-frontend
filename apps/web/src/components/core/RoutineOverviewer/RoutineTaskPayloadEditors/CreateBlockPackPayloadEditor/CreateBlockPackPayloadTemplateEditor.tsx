@@ -2,8 +2,8 @@ import type { BlockNoteEditor } from "@blocknote/core";
 import { SideMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { RoutineTaskPurpose } from "@shared/api/interfaces/enums";
-import { Button } from "@shared/components/ui/button";
-import { DialogFooter } from "@shared/components/ui/dialog";
+import { Button } from "@shared/components/shadcn/button";
+import { DialogFooter } from "@shared/components/shadcn/dialog";
 import BlockSideMenu from "@/components/core/BlockPackEditor/BlockSideMenu";
 import {
   type PatternBlock,

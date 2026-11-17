@@ -18,7 +18,7 @@ providers and custom hooks.
 Web, Desktop, and shared React code import `useTranslation` from
 `@shared/hooks/useTranslation`, not from `react-i18next`. Do not import an app
 i18n singleton just to translate inside React code. The adapter and its test
-live in `shared/hooks/`, outside the framework-neutral `shared/i18n/` package.
+live in `packages/hooks/`, outside the framework-neutral `packages/i18n/` package.
 Non-React code uses the i18n core directly.
 
 ```tsx
@@ -97,7 +97,7 @@ reuse that string after the language may have changed.
 ```tsx
 import { tError } from "@shared/i18n/error";
 import { useTranslation } from "@shared/hooks/useTranslation";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 
 function SaveAction({ save }: { save: () => Promise<void> }) {
   const { t } = useTranslation();
@@ -134,7 +134,7 @@ Keep one frontend owner for each editable rule: the request field schema.
 Reuse request fields in form resolvers through `.shape`, `.pick()` or `.extend()`;
 do not reuse a response schema's field constraints as an independent form policy.
 Read-only response/storage fields remain locale-neutral. Shared workspace input
-rules live in `shared/api/interfaces/workspaceInput.schema.ts`; auth, user and
+rules live in `packages/api/interfaces/workspaceInput.schema.ts`; auth, user and
 RoutineTask-specific rules stay with their owning interface.
 
 Schemas emit translation keys in Zod's `error` option. Keys live under
@@ -182,7 +182,7 @@ types and accessibility attributes. `FormMessage` translates field keys at
 render time. Existing callbacks use `toast.error(tError(error, t))` after failure.
 Confirmation mismatches use `NotegicError.setPresentation(key)`, never
 `new Error(t(key))`. The error classes themselves stay in
-`shared/api/exceptions/`, as described in
+`packages/api/exceptions/`, as described in
 [Exceptions and errors](12-exceptions-and-errors.md). JSON syntax errors keep their existing translated feedback;
 structural payload issues flow through Zod.
 
@@ -257,7 +257,7 @@ Shared resources are bundled for `en`, `zh-TW`, `zh-CN`, `ja`, and `ko`.
 6. Verify with `npm run typecheck` and:
 
    ```sh
-   npm run test:unit -- shared/hooks/useTranslation.test.tsx shared/i18n/error.test.ts shared/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
+   npm run test:unit -- packages/hooks/useTranslation.test.tsx packages/i18n/error.test.ts packages/i18n/index.test.ts apps/web/test/integration/toastLanguage.test.ts apps/web/test/integration/userSettingsLifecycle.test.ts
    ```
 
 The Chromium integration test uses an isolated browser and mocked API/storage

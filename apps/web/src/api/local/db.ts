@@ -6,7 +6,6 @@ import {
 } from "@shared/api/local/diagnostics";
 import { getOrderedMigrations } from "@shared/api/local/migrationCatalog";
 import { LocalDBMigrator } from "@shared/api/local/migrator";
-import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import {
   classifyLocalDBError,
   createLocalDataExport,
@@ -18,6 +17,7 @@ import * as schema from "@shared/api/local/schemas";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
 import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
+import { isLocalPreferenceEnabled } from "@shared/lib/storage/localPreference";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";

@@ -1,4 +1,4 @@
-import { CommandList } from "@shared/components/ui/command";
+import { CommandList } from "@shared/components/shadcn/command";
 import type { ReactNode } from "react";
 
 const AppCommandContent = ({ children }: { children: ReactNode }) => {

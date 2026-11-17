@@ -1,4 +1,4 @@
-import { SidebarInset } from "@shared/components/ui/sidebar";
+import { SidebarInset } from "@shared/components/shadcn/sidebar";
 import type { ReactNode } from "react";
 
 const AppSidebarInset = ({ children }: { children: ReactNode }) => {

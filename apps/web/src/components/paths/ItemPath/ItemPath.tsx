@@ -3,13 +3,13 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@shared/components/ui/breadcrumb";
+} from "@shared/components/shadcn/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
+} from "@shared/components/shadcn/dropdown-menu";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { ItemType } from "@shared/lib/shelf/itemNodes.type";
 import { SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";

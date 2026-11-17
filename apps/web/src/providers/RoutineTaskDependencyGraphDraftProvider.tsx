@@ -20,7 +20,7 @@ import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { replaceEqualDeep } from "@tanstack/react-query";
 import {
   type Connection,

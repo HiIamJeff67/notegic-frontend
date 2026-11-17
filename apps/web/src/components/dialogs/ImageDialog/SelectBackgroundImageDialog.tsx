@@ -3,16 +3,16 @@ import {
   dashboardHeaderBackgroundImageOptions,
 } from "@assets/backgrounds";
 import Closeable from "@shared/components/commons/Closeable/Closeable";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import { tError } from "@shared/i18n/error";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import GridBackground from "@/components/backgrounds/GridBackground/GridBackground";

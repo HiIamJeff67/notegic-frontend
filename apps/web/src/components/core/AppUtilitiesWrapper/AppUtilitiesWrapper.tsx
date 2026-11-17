@@ -1,4 +1,4 @@
-import { ContextMenuProvider } from "@shared/components/ui/context-menu";
+import { ContextMenuProvider } from "@shared/components/shadcn/context-menu";
 import type { ReactNode } from "react";
 import { AppCommandProvider } from "@/providers/AppCommandProvider";
 import { ResizeSidebarProvider } from "@/providers/ResizeSidebarProvider";

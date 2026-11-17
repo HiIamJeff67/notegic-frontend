@@ -1,4 +1,4 @@
-import { SidebarMenu, SidebarMenuItem } from "@shared/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem } from "@shared/components/shadcn/sidebar";
 import { compareEntityNames } from "@shared/lib/comparisons/compareEntityNames";
 import { RootShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";

@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "@shared/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@shared/components/shadcn/sidebar";
 import { useRef } from "react";
 import {
   Article,

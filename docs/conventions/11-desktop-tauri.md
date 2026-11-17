@@ -6,7 +6,7 @@ command names, permission identifiers, and sidecar layout published at
 follows ordinary Rust naming and `rustfmt`.
 
 The webview under `apps/desktop/src/` stays on the TypeScript, React, and test
-conventions in this directory. It imports `shared/` and its own tree. It does
+conventions in this directory. It imports `packages/` and its own tree. It does
 not import `apps/web`. Product boundaries for that webview stay in
 [Desktop application preparation](../designs/systems/desktop-application-preparation.md)
 and [Shared application boundaries](../designs/systems/shared-application-boundaries.md).
@@ -23,10 +23,10 @@ and [Shared application boundaries](../designs/systems/shared-application-bounda
 | `apps/desktop/src/api/tokens/` | Client-held tokens, including the in-memory access token | Same folder role as Web `api/tokens/` |
 | `apps/desktop/src-tauri/` | Window, capabilities, permissions, and process lifecycle | This document |
 | `apps/desktop/package.json` | Frontend `dev`, `build`, and `tauri` scripts | This document |
-| `shared/` | Portable TypeScript contracts | Existing shared ownership |
+| `packages/` | Portable TypeScript contracts | Existing package ownership |
 
 Do not rename a Tauri-owned file so that it matches a TypeScript role suffix.
-Do not apply these Rust names to `apps/web/` or `shared/`.
+Do not apply these Rust names to `apps/web/` or `packages/`.
 
 ## Project layout
 

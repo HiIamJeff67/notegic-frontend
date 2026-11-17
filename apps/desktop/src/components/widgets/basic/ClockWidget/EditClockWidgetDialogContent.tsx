@@ -4,9 +4,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
-import { Slider } from "@shared/components/ui/slider";
-import { Switch } from "@shared/components/ui/switch";
+} from "@shared/components/shadcn/select";
+import { Slider } from "@shared/components/shadcn/slider";
+import { Switch } from "@shared/components/shadcn/switch";
 import { formatTimezone } from "@shared/lib/time/timezone";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";

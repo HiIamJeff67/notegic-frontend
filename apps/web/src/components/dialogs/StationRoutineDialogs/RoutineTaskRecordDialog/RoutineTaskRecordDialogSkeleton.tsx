@@ -4,8 +4,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Skeleton } from "@shared/components/ui/skeleton";
+} from "@shared/components/shadcn/dialog";
+import { Skeleton } from "@shared/components/shadcn/skeleton";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RoutineTaskRecordDialogSkeletonProps {

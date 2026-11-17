@@ -2,17 +2,17 @@ import {
   Avatar,
   AvatarBadge,
   AvatarFallback,
-} from "@shared/components/ui/avatar";
-import { Button } from "@shared/components/ui/button";
-import { Checkbox } from "@shared/components/ui/checkbox";
+} from "@shared/components/shadcn/avatar";
+import { Button } from "@shared/components/shadcn/button";
+import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/ui/table";
+} from "@shared/components/shadcn/table";
 import { SearchIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import PublicAvatarImage from "@/components/icons/PublicAvatarImage";
 import { useTranslation } from "@shared/hooks/useTranslation";

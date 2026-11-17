@@ -3,12 +3,12 @@ import { tError } from "@shared/i18n/error";
 import { routinePeriodTKeys } from "@shared/i18n/tKeys/routinePeriod.tKey";
 import { routinePhaseTKeys } from "@shared/i18n/tKeys/routinePhase.tKey";
 import { routineTaskRecordStatusTKeys } from "@shared/i18n/tKeys/routineTaskRecordStatus.tKey";
-import toast from "@shared/lib/toast/toast";
+import toast from "@shared/components/toast/toast";
 import { type Edge, type ReactFlowInstance } from "@xyflow/react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import "@xyflow/react/dist/style.css";
 import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
+} from "@shared/components/shadcn/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,9 +24,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
-import { Spinner } from "@shared/components/ui/spinner";
+} from "@shared/components/shadcn/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
+import { Spinner } from "@shared/components/shadcn/spinner";
 import type { UUID } from "crypto";
 import { ChevronDownIcon, SquarePen, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";

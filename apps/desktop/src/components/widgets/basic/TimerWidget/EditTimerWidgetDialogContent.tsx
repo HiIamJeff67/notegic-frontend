@@ -1,5 +1,5 @@
-import { Slider } from "@shared/components/ui/slider";
-import { Switch } from "@shared/components/ui/switch";
+import { Slider } from "@shared/components/shadcn/slider";
+import { Switch } from "@shared/components/shadcn/switch";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import {

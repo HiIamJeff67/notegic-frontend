@@ -5,7 +5,7 @@ to choose and reuse an existing owner. What the result should look like is in
 the [UI appearance](../designs/ui/appearance.md). Icons stay in the
 [Icon map](icon-map.md).
 
-Primitives live in `shared/components/ui/` and own Radix or Base UI
+Primitives live in `packages/ui/shadcn/` and own Radix or Base UI
 behavior plus `data-slot`. Feature code imports those files. Add a primitive
 there only when the control does not exist yet.
 
@@ -30,7 +30,7 @@ there only when the control does not exist yet.
 | Menus | `ui/dropdown-menu`, `ui/context-menu`, `ui/menubar` | Use the item wrappers so keyboard behavior and density stay intact. |
 | Command rows | `ui/command` | App and article command palettes. |
 | Small floating surface | `ui/popover`, `ui/hover-card`, `ui/tooltip` | Entity detail uses `HoverDetailCard`. |
-| Toast | `@shared/lib/toast/toast` | `toast.success` and `toast.error`. One provider in the root. See [Toast feedback](01-ui.md#toast-feedback). |
+| Toast | `@shared/components/toast/toast` | `toast.success` and `toast.error`. One provider in the root. See [Toast feedback](01-ui.md#toast-feedback). |
 | Card, table | `ui/card`, `ui/table` | Column dividers use `SeparatableTable`. |
 | Divider | `ui/separator`, `ui/marker` | `Marker` variants: `default`, `separator`, `border`. |
 | Disclosure | `ui/accordion` | One column at the width of its parent. Do not give it a fixed width. |

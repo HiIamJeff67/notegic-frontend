@@ -1,4 +1,4 @@
-import { SidebarTrigger, useSidebar } from "@shared/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@shared/components/shadcn/sidebar";
 import React, { Suspense } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useTranslation } from "@shared/hooks/useTranslation";

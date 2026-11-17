@@ -1,5 +1,5 @@
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
-import { Button } from "@shared/components/ui/button";
+import { Button } from "@shared/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -7,15 +7,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@shared/components/ui/dialog";
-import { Input } from "@shared/components/ui/input";
+} from "@shared/components/shadcn/dialog";
+import { Input } from "@shared/components/shadcn/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/components/ui/select";
+} from "@shared/components/shadcn/select";
 import type { UUID } from "crypto";
 import { useTranslation } from "@shared/hooks/useTranslation";
 
