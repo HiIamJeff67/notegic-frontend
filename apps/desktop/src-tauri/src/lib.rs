@@ -35,13 +35,17 @@ fn free_port() -> u16 {
     listener.local_addr().expect("sidecar port").port()
 }
 
-fn start_sidecar(token: &str, port: u16) -> Child {
-    let server =
-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../sidecar/server.mjs");
+fn start_sidecar(token: &str, port: u16, database_path: &str) -> Child {
+    let driver = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../sidecars/driver");
+    let server = driver.join("server.ts");
     let mut child = Command::new("node")
+        .current_dir(&driver)
+        .arg("--import")
+        .arg("tsx")
         .arg(&server)
         .env("NOTEGIC_SIDECAR_TOKEN", token)
         .env("NOTEGIC_SIDECAR_PORT", port.to_string())
+        .env("NOTEGIC_LOCAL_DATABASE_PATH", database_path)
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
         .spawn()
@@ -71,15 +75,21 @@ fn stop_sidecar(app: &tauri::AppHandle) {
 pub fn run() {
     let token = launch_token();
     let port = free_port();
-    let child = start_sidecar(&token, port);
 
     tauri::Builder::default()
-        .manage(Sidecar {
-            token,
-            port,
-            child: Mutex::new(Some(child)),
-        })
         .invoke_handler(tauri::generate_handler![sidecar_session])
+        .setup(move |app| {
+            let directory = app.path().app_data_dir().expect("app data directory");
+            std::fs::create_dir_all(&directory).expect("app data directory");
+            let database_path = directory.join("notegic.sqlite");
+            let child = start_sidecar(&token, port, database_path.to_str().expect("database path"));
+            app.manage(Sidecar {
+                token,
+                port,
+                child: Mutex::new(Some(child)),
+            });
+            Ok(())
+        })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app, event| {
