@@ -11,8 +11,9 @@ belong in `apps/desktop/src/api/functions/` and use a bearer token. The native
 SQLite sidecar is a later gate. A Node sidecar starts with the window and
 rejects a request that lacks its per-launch token.
 
-The files that stay out of the desktop runtime are listed in
-[webview-source-skips.md](webview-source-skips.md).
+The Web runtimes the desktop bundle replaces, and the Web client behavior it
+still mounts, are the current gap in
+[Shared application boundaries](../../docs/designs/systems/shared-application-boundaries.md).
 
 [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
 owns this shell. The editor and SQLite gates remain in

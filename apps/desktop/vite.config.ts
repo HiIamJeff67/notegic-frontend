@@ -7,16 +7,22 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, type Plugin } from "vite";
 
 const desktopRoot = path.dirname(fileURLToPath(import.meta.url));
-const localDatabaseModule = path.resolve(desktopRoot, "src/localDatabase.ts");
-const databaseWorkerModule = path.resolve(desktopRoot, "src/databaseWorker.ts");
+const localDatabaseModule = path.resolve(desktopRoot, "src/api/local/db.ts");
+const databaseWorkerModule = path.resolve(
+  desktopRoot,
+  "src/api/local/worker.ts"
+);
 const databasePackageModule = path.resolve(
   desktopRoot,
-  "src/databasePackage.ts"
+  "src/api/local/package.ts"
 );
-const serverRequestModule = path.resolve(desktopRoot, "src/serverRequest.ts");
+const serverRequestModule = path.resolve(
+  desktopRoot,
+  "src/api/server/request.ts"
+);
 const asyncLocalStorageModule = path.resolve(
   desktopRoot,
-  "src/asyncLocalStorage.ts"
+  "src/api/server/asyncLocalStorage.ts"
 );
 
 const serverFunctionPrefix = "\0desktop-server-fn:";
@@ -49,7 +55,10 @@ const desktopRuntimeBoundary = (): Plugin => ({
     });
     if (!resolved) return null;
     const file = resolved.id.split("?")[0];
-    if (file.endsWith(`${path.sep}api${path.sep}local${path.sep}db.ts`)) {
+    if (
+      file.endsWith(`${path.sep}api${path.sep}local${path.sep}db.ts`) &&
+      file !== localDatabaseModule
+    ) {
       return localDatabaseModule;
     }
     if (file.endsWith(`${path.sep}sqlocal.worker.ts`)) {
@@ -83,11 +92,7 @@ const desktopRuntimeBoundary = (): Plugin => ({
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(({ mode }) => {
-  const applicationVersion = loadEnv(
-    mode,
-    path.resolve(desktopRoot, "../web"),
-    ""
-  ).VITE_APPLICATION_VERSION;
+  const applicationVersion = loadEnv(mode, desktopRoot, "").VITE_APPLICATION_VERSION;
   return {
     clearScreen: false,
     plugins: [desktopRuntimeBoundary(), react(), tailwindcss()],

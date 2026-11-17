@@ -1,4 +1,4 @@
-import { localDB } from "./localDatabase";
+import { localDB } from "../../../src/api/local/db";
 
 describe("desktop local database boundary", () => {
   it("stays disabled and does not open a database worker", async () => {

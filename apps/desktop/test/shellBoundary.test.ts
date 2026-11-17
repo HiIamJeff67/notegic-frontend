@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
-const sourceRoot = path.join(__dirname);
+const sourceRoot = path.resolve(__dirname, "../src");
 
 const sourceFiles = (directory: string): string[] =>
   readdirSync(directory).flatMap(entry => {

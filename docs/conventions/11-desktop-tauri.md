@@ -15,7 +15,12 @@ and [Shared application boundaries](../designs/systems/shared-application-bounda
 
 | Path | Owns | Follow |
 | --- | --- | --- |
-| `apps/desktop/src/` | React entry, routes, and webview UI | TypeScript conventions in this directory |
+| `apps/desktop/src/` | React entry and the code router | `main.tsx`, `router.tsx` |
+| `apps/desktop/src/pages/` | Desktop screens | Web `pages/` naming. No `routes/` file tree |
+| `apps/desktop/src/api/functions/` | PascalCase API functions | Same role as Web `api/functions/` |
+| `apps/desktop/src/api/local/` | Inert replacements for Web `api/local` | Not the native SQLite driver |
+| `apps/desktop/src/api/server/` | Inert Start server and `async_hooks` replacements | Delete when Web imports are gone |
+| `apps/desktop/src/api/tokens/` | Client-held tokens, including the in-memory access token | Same folder role as Web `api/tokens/` |
 | `apps/desktop/src-tauri/` | Window, capabilities, permissions, and process lifecycle | This document |
 | `apps/desktop/package.json` | Frontend `dev`, `build`, and `tauri` scripts | This document |
 | `shared/` | Portable TypeScript contracts | Existing shared ownership |
@@ -32,6 +37,11 @@ apps/desktop/
   package.json
   index.html
   src/
+    main.tsx
+    router.tsx
+    styles.css
+    pages/
+  test/
   src-tauri/
     Cargo.toml
     Cargo.lock

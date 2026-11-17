@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import "@blocknote/core/style.css";
-import { getMyAccount } from "./api/account";
-import { getAccessToken, setAccessToken } from "./session";
+import { GetMyAccount } from "../../api/functions/userAccount";
+import { getAccessToken, setAccessToken } from "../../api/tokens/accessToken";
 
 type SidecarSession = {
   token: string;
@@ -18,13 +18,13 @@ type SidecarProbe = {
   accepted: number;
 };
 
-export const DesktopShell = () => {
+export const DesktopProbePage = () => {
   const editor = useMemo(() => NotegicBlockPackEditor.create({}), []);
   const [draftToken, setDraftToken] = useState("");
   const [sidecar, setSidecar] = useState<SidecarProbe | null>(null);
   const account = useQuery({
     queryKey: queryKeys.userAccount.my(),
-    queryFn: getMyAccount,
+    queryFn: GetMyAccount,
     enabled: false,
     retry: false,
   });

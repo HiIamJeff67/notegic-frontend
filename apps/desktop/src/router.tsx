@@ -7,7 +7,6 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect } from "react";
-import { createApolloClient } from "@/api/apolloClient";
 import { syncStoredLanguage } from "@/i18n";
 import PlaygroundPage from "@/pages/(playground)/PlaygroundPage";
 import AppLayout from "@/pages/app/AppLayout";
@@ -56,6 +55,7 @@ import { HomePage } from "@/pages/home/HomePage";
 import PrivacyPolicyPage from "@/pages/privacy-policy/PrivacyPolicyPage";
 import { RootNotFoundPage } from "@/pages/RootNotFoundPage";
 import Providers from "@/providers/Providers";
+import { createApolloClient } from "./api/apolloClient";
 
 const apolloClient = createApolloClient();
 

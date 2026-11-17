@@ -1,4 +1,5 @@
 import { type ChildProcess, spawn } from "node:child_process";
+import path from "node:path";
 
 const token = "desktop-launch-token";
 
@@ -7,7 +8,7 @@ const startSidecar = async (): Promise<{
   port: number;
 }> => {
   const child = spawn(process.execPath, ["server.mjs"], {
-    cwd: __dirname,
+    cwd: path.resolve(__dirname, "../../sidecar"),
     env: {
       ...process.env,
       NOTEGIC_SIDECAR_TOKEN: token,

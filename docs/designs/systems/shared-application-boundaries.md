@@ -33,6 +33,9 @@ shared/components/ui/        shadcn primitives with no product data
 shared/components/commons/   a file moves here only after it has no app API
 shared/components/charts/    chart parts with no product screen
 shared/components/widgets/   self-contained widgets with no account data
+shared/hooks/                DOM hooks with no app API or product provider
+shared/providers/            DOM providers with no app API
+shared/styles/               theme and editor CSS both DOM apps load
 shared/lib/                  platform-neutral libraries already owned here
 shared/i18n/                 strings and pure language checks
 shared/reducers/
@@ -42,7 +45,7 @@ apps/web/src/api/local/           SQLocal driver and the current Web sync path
 apps/web/src/components/          Web feature components
 apps/web/src/pages/
 apps/web/src/routes/
-apps/web/src/styles/             theme CSS; share candidate for Desktop
+apps/web/src/styles/             Web screen styles: auth panel, article, inspector, command palette
 apps/web/src/i18n.ts             Web i18n instance
 
 apps/desktop/src/api/functions/   desktop API callers
@@ -67,19 +70,20 @@ function, or a local driver stays in that app.
 boundaries. An import from one `apps/*` tree into another is not allowed.
 `shared/` may be imported by every app. Shared code must not import `apps/*`.
 
-The desktop webview boundaries (`localDatabase.ts`, `databaseWorker.ts`,
-`databasePackage.ts`, `serverRequest.ts`, `asyncLocalStorage.ts`) exist only
-because the current desktop bundle imports Web modules. They are not a
+The desktop webview boundaries live beside the Web modules they replace:
+`api/local/db.ts`, `api/local/worker.ts`, `api/local/package.ts`,
+`api/server/request.ts`, and `api/server/asyncLocalStorage.ts`. They exist
+only because the current desktop bundle imports Web modules. They are not a
 database driver. When those Web imports are gone, delete the boundaries.
 
 ### Share primitives, not product UI
 
 Share a component only when every consumer ships that change together and the
 file has no platform or product data. `components/ui/` meets that bar.
-`charts/`, `commons/`, `widgets/`, and `apps/web/src/styles/` are
-candidates, reviewed file by file. Those stylesheets are theme tokens and
-editor overrides with no product data. They stay in Web until Desktop stops
-importing `apps/web`.
+`charts/`, `commons/`, and `widgets/` are reviewed file by file. Theme tokens,
+scrollbar, loading, sidebar, image, and BlockNote editor styles live in
+`shared/styles/`. Auth panel, article, inspector, and command-palette styles
+stay with the Web screens that import them.
 
 Pages stay in the owning app. Feature screens, menus, and dialogs that know
 about shelves, routines, or an agent stay in the owning app. A desktop-only
@@ -126,6 +130,16 @@ The three folders use the same role and the same `api/functions/` path. They
 do not share an implementation. Server functions, cookie CSRF, and Start
 middleware stay in `apps/web`.
 
+Every exported function uses PascalCase, such as `GetUserData`, in Web,
+Desktop, and Mobile TypeScript. The shared invoker calls it as
+`(request) => Promise<response>`. Its parameter name is `func`. An operation
+that must cancel accepts `signal` as the second argument on every app's
+function, and the invoker passes that signal through. Web's
+`createServerFn` client still receives `{ data: request }` from a private
+`GetUserDataRpc` in the same file. One blank line separates that Rpc from
+`export const GetUserData`, and one blank line separates the next Rpc pair.
+Desktop and Mobile do not import the Rpc.
+
 The SQLite driver is the same kind of boundary. Web keeps SQLocal. Desktop
 opens native SQLite in the sidecar. Mobile will use a React Native SQLite
 driver. Rust does not open the database.
@@ -140,10 +154,46 @@ driver. Rust does not open the database.
 ## Current gap
 
 `apps/desktop/tsconfig.json` and `apps/desktop/vite.config.ts` map `@/` to
-`apps/web/src`. `apps/desktop/src/router.tsx` and
-`apps/desktop/src/existingWebviewSource.ts` import that tree.
-`apps/desktop/src/styles.css` imports the Web global stylesheet. Those imports
+`apps/web/src`. `apps/desktop/src/router.tsx` imports that tree.
+`apps/desktop/src/styles.css` sources `apps/web/src`. Those imports
 are not a sharing mechanism. Web and Desktop share a file only after it lives
-in `shared/` and imports neither app. [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
-removes the alias, the Web imports, and the webview shims that exist only to
-keep those imports from booting SQLocal and TanStack Start.
+in `shared/` and imports neither app.
+
+Until [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
+removes that alias, `desktopRuntimeBoundary` in `apps/desktop/vite.config.ts`
+replaces Web-only runtimes before they execute. The replacements are inert.
+They are not a native database, a bearer client, or a sharing layer. Delete
+them with the alias.
+
+| Import the Web graph reaches | Module the desktop bundle evaluates |
+| --- | --- |
+| Web `api/local/db.ts` | `apps/desktop/src/api/local/db.ts`, which reports the database disabled and read-only |
+| `sqlocal.worker.ts` | `apps/desktop/src/api/local/worker.ts` |
+| `sqlocal` and `sqlocal/drizzle` | `apps/desktop/src/api/local/package.ts` |
+| `@tanstack/start-server-core` | `apps/desktop/src/api/server/request.ts` |
+| `node:async_hooks` | `apps/desktop/src/api/server/asyncLocalStorage.ts` |
+| `apps/web/src/api/functions/*.serverFn.ts` | Functions that reject. The handler bodies are not bundled |
+
+Desktop does not import the TanStack Start route tree: `apps/web/src/start.ts`,
+`apps/web/src/router.tsx`, `apps/web/src/routeTree.gen.ts`, and
+`apps/web/src/routes/`. `apps/web/src/api/functions/helpers/cookie.ts` is only
+imported by those server functions, so the desktop graph does not load it.
+Screen behavior both trees use lives in the page modules that
+`apps/desktop/src/router.tsx` imports. Desktop login does not run the Web
+login loader. Route `head()` metadata is not applied. Pages that call
+`usePageTitle` still set `document.title`.
+
+The desktop router uses `apps/desktop/src/api/apolloClient.ts`. That client
+sends the bearer token and does not send cookies or `X-CSRF-Token`. Web
+`apolloClient.ts` remains the cookie client. Mounting the Web pages still
+mounts the hooks they call.
+`apps/web/src/api/functions/headers/csrfToken.ts` reads and writes that cookie.
+Web client functions and the invokers that call them still run. Local
+synchronizers and simulators still import the database boundary. With that
+boundary disabled they do not open SQLocal or native SQLite. Opening `/app`
+without a session follows `UserProvider`: the account request fails, the
+provider ends the session, and the window returns to `/login`.
+
+Still absent: native SQLite through the sidecar, a bearer-token API client in
+place of server functions, and an OS keychain session in place of the browser
+cookie. `apps/desktop/src/pages/(playground)/DesktopProbePage.tsx` is an unmounted probe, not the signed-in layout.

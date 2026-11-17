@@ -3,14 +3,14 @@ import {
   GetMyAccountResponseSchema,
 } from "@shared/api/interfaces/userAccount.interface";
 import { APIURLPathDictionary, CurrentAPIBaseURL } from "@shared/lib/url/api";
-import { getAccessToken } from "../session";
+import { getAccessToken } from "../tokens/accessToken";
 
-export const getMyAccount = async (): Promise<GetMyAccountResponse> => {
-  const domain = import.meta.env.VITE_API_DOMAIN_URL || "http://localhost";
+export const GetMyAccount = async (): Promise<GetMyAccountResponse> => {
   const response = await fetch(
-    `${domain}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
+    `${APIURLPathDictionary.origin()}/${CurrentAPIBaseURL}/${APIURLPathDictionary.userAccount.getMyAccount}`,
     {
       method: "GET",
+      credentials: "omit",
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${getAccessToken()}`,
