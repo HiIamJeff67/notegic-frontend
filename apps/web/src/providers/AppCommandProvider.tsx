@@ -42,13 +42,13 @@ import { useSearchStationsLazyQuery } from "@/api/hooks/graphql/useSearchStation
 import { useSearchSubShelvesLazyQuery } from "@/api/hooks/graphql/useSearchSubShelves";
 import { useUpdateMe } from "@/api/hooks/user.hook";
 import { localDB } from "@/api/local/db";
-import { RootShelf, SubShelf, UsersToShelves } from "@/api/local/schemas";
+import { RootShelf, SubShelf, UsersToShelves } from "@shared/api/local/schemas";
 import { ItemLocalSimulator } from "@/api/local/simulators/item.simulator";
 import { useAppRouter } from "@/hooks/useAppRouter";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useNetwork } from "@shared/hooks/useNetwork";
-import { useTheme } from "@/hooks/useTheme";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTheme } from "@shared/hooks/useTheme";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { LoadingContext } from "@/providers/LoadingProvider";
 import {

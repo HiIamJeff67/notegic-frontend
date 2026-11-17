@@ -29,9 +29,9 @@ import { type LocalDBRebuildPreflight, localDB } from "@/api/local/db";
 import type {
   LocalDBDiagnostics,
   LocalDBResult,
-} from "@/api/local/diagnostics";
+} from "@shared/api/local/diagnostics";
 import { useLoading } from "@/hooks/useLoading";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 
 const recoveryPhases = new Set([
   "failed",

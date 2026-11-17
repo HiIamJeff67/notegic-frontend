@@ -8,8 +8,8 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
-import { RootShelf } from "@/api/local/schemas/rootShelf.schema";
-import { User } from "@/api/local/schemas/user.schema";
+import { RootShelf } from "./rootShelf.schema";
+import { User } from "./user.schema";
 
 export const UsersToShelves = sqliteTable(
   "UsersToShelvesTable",

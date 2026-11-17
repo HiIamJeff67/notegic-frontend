@@ -20,7 +20,7 @@ import {
   RoutineTaskDependency,
   RoutineTaskDependencyGraphDraft,
   Transaction,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 export class RoutineTaskDependencyLocalSynchronizer {
   static syncUpdateRoutineTaskGraphByRoutineId = async (

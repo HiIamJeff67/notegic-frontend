@@ -14,7 +14,7 @@ import {
   Station,
   User,
   UsersToStations,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 export class RoutineTaskDependencyLocalSimulator {
   private static getPassPermissionCheckSQL = (userPublicId: string) =>

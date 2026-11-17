@@ -151,7 +151,7 @@ export class LocalDBMigrator {
     return { appliedTags: [tag], finalVersion: safeTargetVersion };
   };
 
-  // get the largest migration number from the migration files in apps/web/src/api/local/migrations/
+  // get the largest migration number from the migration files in shared/api/local/migrations/
   // but return the largest migration number + 1 as the latest version since the user_version from SQLite PRAGMA forced to start from 0
   public getLatestMigrationVersion = (): number => {
     const orderedMigrations = this.migrations ?? [];

@@ -7,7 +7,7 @@ import {
   sqliteTable,
   text,
 } from "drizzle-orm/sqlite-core";
-import { BlockPack, RootShelf } from "@/api/local/schemas";
+import { BlockPack, RootShelf } from ".";
 
 // the same schemas as the subShelf in api interface
 export const SubShelf = sqliteTable(

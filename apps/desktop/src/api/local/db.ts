@@ -1,4 +1,4 @@
-import type { LocalDBDiagnostics } from "@/api/local/diagnostics";
+import type { LocalDBDiagnostics } from "@shared/api/local/diagnostics";
 
 const disabledDiagnostics: LocalDBDiagnostics = {
   phase: "disabled",

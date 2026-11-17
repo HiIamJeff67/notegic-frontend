@@ -3,7 +3,7 @@ import {
   type LocalDBMigratorClient,
   type MigrationEntry,
   splitSqlStatements,
-} from "@/api/local/migrator";
+} from "@shared/api/local/migrator";
 
 const migration = (
   versionNumber: number,

@@ -1,37 +1,62 @@
 # Test location conventions
 
-- Put a Web unit test under `apps/web/test/`, mirroring the path under
-  `apps/web/src/`. Retain the source basename and capitalization, for example
-  `apps/web/src/seo/pageTitle.ts` → `apps/web/test/seo/pageTitle.test.ts`.
-  Do not add a `unit` suffix, and do not leave `*.test.ts(x)` beside production
-  source.
-- Put a Desktop unit test under `apps/desktop/test/`, mirroring the path under
-  `apps/desktop/src/`. A sidecar test lives under `apps/desktop/test/sidecar/`.
-- Put a shared, cross-application, or cross-platform test under the repository
-  `test/` directory, mirroring the path under `shared/`. For example,
-  `shared/lib/search/searchPage.ts` → `test/lib/search/searchPage.test.ts`.
-- Put Web-only integration tests in `apps/web/test/integration/`.
-- Put integration tests that span shared packages or applications in
-  `test/integration/` at the repository root.
-- Integration tests use descriptive smallCamelCase names followed by
-  `.test.ts(x)`; their directory already expresses the category. Do not add an
-  `integration` suffix. Classify tests by the actual boundary, not the runner:
-  browser-mounted Provider/context/session flows belong in Web integration;
-  isolated shared functions belong under `test/`.
-- Put Web browser E2E suites in `apps/web/test/e2e/`; run them with
-  `npm run test:e2e`. Keep them independent of live user credentials.
+A unit test sits beside the source file it verifies. Use `*.test.ts` or
+`*.test.tsx`, retaining the source basename and capitalization, for example
+`pageTitle.ts` → `pageTitle.test.ts` in the same folder. Do not add a `unit`
+suffix.
 
-Performance tests retain `.performance.test.ts` under `test/performance/`.
+Every other test lives in a category directory directly under one of these
+roots. Create the directory only when a test belongs in it.
+
+| Root | What belongs there |
+| --- | --- |
+| `apps/web/test/` | Web-only tests |
+| `apps/desktop/test/` | Desktop-only tests |
+| `shared/test/` | Shared tests that cover more than one module, including coupling between shared libraries |
+| `test/` | CI checks, tests that cross platforms, and tests that cross one platform with `shared/` |
+
+The repository root `test/` does not exist until the first suite needs it.
+`format:check` and `format:all` omit that path while it is absent. The change
+that adds the first root suite adds `test` back to both scripts.
+
+These are the only category directories. Adding another one needs agreement.
+
+| Category | What it holds |
+| --- | --- |
+| `architecture` | Source ownership, module shape, and repository structure |
+| `boundary` | Scans that keep a runtime or package on its side of a boundary |
+| `compatibility` | Behavior that must survive a dependency, protocol, or data-shape change |
+| `integration` | Flows that cross modules and are not one of the categories above |
+| `load` | Websocket capacity and other load |
+| `release` | Packaged desktop or mobile release checks. Web and shared do not use this category |
+| `smoke` | A short live-path check, added only when a suite needs one |
+| `e2e` | Browser or API suites run by Playwright |
+| `performance` | Timing or capacity measurements. Jest does not run this category |
+
+Use a descriptive smallCamelCase name. Jest suites use `.test.ts(x)`.
+Playwright suites use `.spec.ts`. Performance files keep the
+`.performance.test.ts` suffix. The directory already states the category. Do
+not add `unit`, `integration`, or another category suffix.
+
+Web browser E2E stays in `apps/web/test/e2e/` and runs with `npm run test:e2e`.
+Desktop API and browser E2E stays in `apps/desktop/test/e2e/` and runs with
+`npx playwright test --config apps/desktop/playwright.config.ts`. Desktop E2E
+does not start the Web app. Playwright writes that run's artifacts to
+`apps/desktop/test/results/`. The directory is generated output, not a test
+category, and it is gitignored. Keep E2E independent of live user credentials.
+Browser-mounted Provider, context, and session flows stay in Web
+`integration/`. An isolated function stays beside its owner.
+
 BlockNote's production `specs/*.spec.ts(x)` are block specifications, not tests;
-keep their Jest exclusion. The existing `test:unit` script runs Jest unit and
-integration suites; its command name does not classify individual files.
+keep their Jest exclusion. `npm run test:unit` runs Jest across unit tests and
+the Jest categories above. Its command name does not classify individual files.
 
 ## Local entry point and CI split
 
 Use Node from `.nvmrc`, install dependencies with `npm ci`, then install the
 test browser once with `npx playwright install chromium --only-shell`.
 Run `npm run test` before pushing: formatting, lint, typecheck, generated
-GraphQL drift, Jest unit/integration tests, development browser E2E, then the
+GraphQL drift, Jest unit and category tests, development browser E2E, then the
 production dependency audit.
 The command stops on the first failure; it never formats or installs packages
 automatically. `codegen:check` regenerates artifacts, so inspect any resulting
@@ -39,7 +64,7 @@ diff. Use `npm run test:unit -- <path>` for targeted Jest arguments, not
 `npm test -- <path>` now that `test` is the aggregate.
 
 Generated local migration metadata under
-`apps/web/src/api/local/migrations/meta/` is excluded from Biome formatting;
+`shared/api/local/migrations/meta/` is excluded from Biome formatting;
 Drizzle owns its serialization. Generated GraphQL output remains checked by
 `codegen:check`.
 
@@ -202,7 +227,7 @@ including deletions that do not advance a state vector. No cache is cleared by
 temporary worker recovery.
 
 Run `npm run test:e2e -- realtimeClient.spec.ts --workers=1` and
-`npm run test:unit -- test/lib/blockpack/blockPackYjsCoordinator.test.ts test/lib/blockpack/localYjsDocumentStore.test.ts`
+`npm run test:unit -- shared/lib/blockpack/blockPackYjsCoordinator.test.ts shared/lib/blockpack/localYjsDocumentStore.test.ts`
 locally. These cover the production client/provider with isolated browser
 storage and controlled worker failures, plus document retention, replay and
 read-only boundaries. They do not stop the normal development worker and are
@@ -277,7 +302,7 @@ the isolated fixture signing key; this is not a multi-hour browser soak.
 
 The same local verification passed `npm run format:check`, `npm run lint`,
 `npm run typecheck` and the 22 tests selected by
-`npm run test:unit -- apps/web/test/api/functions/headers/clientHeaders.test.ts apps/web/test/api/hooks/graphql/policies/searchPagination.policy.test.ts`.
+`npm run test:unit -- apps/web/src/api/functions/headers/clientHeaders.test.ts apps/web/src/api/hooks/graphql/policies/searchPagination.policy.test.ts`.
 No schemas or generated sources changed for the Apollo fix; code generation
 and deployment builds were not rerun. Original development record counts and
 the retained manual development server were checked separately after E2E.

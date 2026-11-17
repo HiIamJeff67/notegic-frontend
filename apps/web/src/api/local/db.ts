@@ -1,26 +1,26 @@
-import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
-import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
-import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/sqlite-proxy";
-import { SQLocalDrizzle } from "sqlocal/drizzle";
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
-import currentLocalSchemaSql from "./bootstrap.sql?raw";
+import currentLocalSchemaSql from "@shared/api/local/bootstrap.sql?raw";
 import {
   createLocalDBDiagnostics,
   isLocalDBWorkerDiagnosticMessage,
   type LocalDBDiagnostics,
-} from "./diagnostics";
-import { getOrderedMigrations } from "./migrationCatalog";
-import { LocalDBMigrator } from "./migrator";
+} from "@shared/api/local/diagnostics";
+import { getOrderedMigrations } from "@shared/api/local/migrationCatalog";
+import { LocalDBMigrator } from "@shared/api/local/migrator";
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import {
   classifyLocalDBError,
   createLocalDataExport,
   createLocalDBDiagnosticsExport,
   downloadTextFile,
   isOPFSMissingFileError,
-} from "./recovery";
-import * as schema from "./schemas";
+} from "@shared/api/local/recovery";
+import * as schema from "@shared/api/local/schemas";
+import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
+import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
+import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/sqlite-proxy";
+import { SQLocalDrizzle } from "sqlocal/drizzle";
 
 const isLocalRuntime =
   typeof window !== "undefined" &&

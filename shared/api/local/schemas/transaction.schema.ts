@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { User } from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { User } from ".";
+import { TransactionActionType } from "./enums/transaction_action_type.enum";
+import { TransactionEntityType } from "./enums/transaction_entity_type.enum";
 
 export const Transaction = sqliteTable(
   "TransactionTable",

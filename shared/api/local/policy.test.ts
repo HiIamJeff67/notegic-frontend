@@ -5,8 +5,8 @@ jest.mock("@shared/lib/storage/localStorage", () => ({
   },
 }));
 
+import { isLocalPreferenceEnabled } from "@shared/api/local/policy";
 import { LocalStorage } from "@shared/lib/storage/localStorage";
-import { isLocalPreferenceEnabled } from "@/api/local/policy";
 
 const getItemByKey = jest.mocked(LocalStorage.getItemByKey);
 

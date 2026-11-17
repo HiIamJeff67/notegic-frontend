@@ -6,7 +6,7 @@ import type {
 } from "@shared/api/interfaces/user.interface";
 import { asc, eq } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { User } from "@/api/local/schemas/user.schema";
+import { User } from "@shared/api/local/schemas/user.schema";
 
 const virtualUserPublicId = "00000000-0000-4000-8000-0000000000a1";
 

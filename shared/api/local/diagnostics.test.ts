@@ -1,7 +1,7 @@
 import {
   createLocalDBDiagnostics,
   type LocalDBDiagnostics,
-} from "@/api/local/diagnostics";
+} from "@shared/api/local/diagnostics";
 
 const createStorage = () => {
   const values = new Map<string, string>();

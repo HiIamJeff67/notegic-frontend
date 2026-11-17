@@ -4,7 +4,7 @@ import type {
 } from "@shared/api/interfaces/userSetting.interface";
 import { eq } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { UserSetting } from "@/api/local/schemas";
+import { UserSetting } from "@shared/api/local/schemas";
 
 export class UserSettingLocalSynchronizer {
   static getMySetting = async (

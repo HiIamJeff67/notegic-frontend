@@ -17,7 +17,7 @@ import {
   RoutinesToItems,
   SubShelf,
   Transaction,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 // Only rewrite entity references, never matching names, URLs or other user content.
 export const replaceMaterialId = <T>(

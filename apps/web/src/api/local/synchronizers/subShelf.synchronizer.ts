@@ -39,7 +39,7 @@ import {
   RoutinesToItems,
   SubShelf,
   UsersToShelves,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 export class SubShelfLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

@@ -19,9 +19,9 @@ import {
   UpdateMySubShelvesByIdsRequestSchema,
 } from "@shared/api/interfaces/subShelf.interface";
 import { InferSelectModel } from "drizzle-orm";
-import { Transaction } from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { Transaction } from "@shared/api/local/schemas";
+import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import {
   dropEntityPendingOperations,
   EntityState,

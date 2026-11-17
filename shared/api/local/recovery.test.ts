@@ -3,7 +3,7 @@ import {
   createLocalDataExport,
   createLocalDBDiagnosticsExport,
   isOPFSMissingFileError,
-} from "@/api/local/recovery";
+} from "@shared/api/local/recovery";
 
 describe("local database recovery policy", () => {
   it("recognizes missing OPFS database files through wrapped errors", () => {

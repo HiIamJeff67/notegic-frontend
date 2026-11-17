@@ -12,7 +12,7 @@
       "!apps/web/src/routeTree.gen.ts",
       "!shared/api/graphql/generated/**",
       "!apps/web/src/pages/document/api/sources/**",
-      "!apps/web/src/api/local/migrations/meta/**",
+      "!shared/api/local/migrations/meta/**",
       "!apps/desktop/src-tauri/**"
     ]
   },

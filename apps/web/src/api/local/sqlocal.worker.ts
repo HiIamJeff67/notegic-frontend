@@ -1,8 +1,8 @@
-import { SQLiteOpfsDriver, SQLocalProcessor } from "sqlocal";
 import {
   type LocalDBWorkerDiagnostic,
   localDBWorkerDiagnosticMessageType,
-} from "./diagnostics";
+} from "@shared/api/local/diagnostics";
+import { SQLiteOpfsDriver, SQLocalProcessor } from "sqlocal";
 
 const workerScope = self as typeof self & {
   postMessage: (message: unknown, transfer?: Transferable[]) => void;

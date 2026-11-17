@@ -5,7 +5,7 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
-import { RootShelf, Transaction, UsersToShelves } from "@/api/local/schemas";
+import { RootShelf, Transaction, UsersToShelves } from ".";
 import { UsersToStations } from "./usersToStations.schema";
 
 // the same schemas as the user in api interface and shard type

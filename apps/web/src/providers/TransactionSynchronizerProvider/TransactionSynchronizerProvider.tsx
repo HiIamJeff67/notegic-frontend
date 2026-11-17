@@ -86,9 +86,9 @@ import {
   useUpdateMySubShelvesByIds,
 } from "@/api/hooks/subShelf.hook";
 import { localDB } from "@/api/local/db";
-import { Transaction, User } from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { Transaction, User } from "@shared/api/local/schemas";
+import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import {
   MaterialLocalSynchronizer,
   replaceMaterialId,

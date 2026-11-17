@@ -35,9 +35,9 @@ import {
   Transaction,
   User,
   UsersToShelves,
-} from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+} from "@shared/api/local/schemas";
+import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 
 export class BlockPackLocalSimulator {
   private static getPassPermissionCheckSQL = (

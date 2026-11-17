@@ -24,8 +24,8 @@ import {
   Station,
   UsersToShelves,
   UsersToStations,
-} from "@/api/local/schemas";
-import { User } from "@/api/local/schemas/user.schema";
+} from "@shared/api/local/schemas";
+import { User } from "@shared/api/local/schemas/user.schema";
 
 export class AuthLocalSynchronizer {
   static async syncRegister(

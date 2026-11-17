@@ -43,15 +43,15 @@ import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSearchRoutinesQuery } from "@/api/hooks/graphql/useSearchRoutines";
 import { useUpdateMyRoutineById } from "@/api/hooks/routine.hook";
 import { localDB } from "@/api/local/db";
-import { Transaction, User } from "@/api/local/schemas";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+import { Transaction, User } from "@shared/api/local/schemas";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
 import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { RoutineNode } from "@/providers/StationRoutineProvider/routineNode.type";
 import RoutineSearchOrder from "../RoutineSearchOrder/RoutineSearchOrder";
 

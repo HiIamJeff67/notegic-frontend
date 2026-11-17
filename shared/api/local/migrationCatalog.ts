@@ -36,7 +36,7 @@ export const getOrderedMigrations = (): MigrationEntry[] => {
       const sqlContent = sqlByTag.get(entry.tag);
       if (!sqlContent) {
         throw new Error(
-          `missing local migration SQL file for tag "${entry.tag}" in apps/web/src/api/local/migrations`
+          `missing local migration SQL file for tag "${entry.tag}" in shared/api/local/migrations`
         );
       }
 

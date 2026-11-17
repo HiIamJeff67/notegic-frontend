@@ -1,3 +1,4 @@
+import { User } from "@shared/api/local/schemas";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import { IndexedDB, IndexedDBKey } from "@shared/lib/storage/indexedDB";
 import type {
@@ -6,7 +7,6 @@ import type {
 } from "@shared/types/imageInfo.type";
 import { eq } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { User } from "@/api/local/schemas";
 import { cleanupMaterialAttachmentCache } from "@/providers/MaterialAttachmentCacheProvider";
 
 const getStoredTime = (value: Date | undefined, fallback = 0): number => {

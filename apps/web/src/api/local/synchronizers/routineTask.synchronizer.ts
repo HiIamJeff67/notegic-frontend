@@ -20,8 +20,8 @@ import {
   RoutineTaskDependency,
   RoutineTaskDependencyGraphDraft,
   Transaction,
-} from "@/api/local/schemas";
-import { TransactionEntityType } from "@/api/local/schemas/enums/transaction_entity_type.enum";
+} from "@shared/api/local/schemas";
+import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import { RoutineTaskLocalSimulator } from "@/api/local/simulators/routineTask.simulator";
 
 export class RoutineTaskLocalSynchronizer {

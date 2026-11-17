@@ -28,7 +28,7 @@ import {
   RoutinesToItems,
   User,
   UsersToShelves,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 export class RootShelfLocalSynchronizer {
   private static getPassPermissionCheckSQL = (

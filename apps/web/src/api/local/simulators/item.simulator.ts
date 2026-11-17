@@ -14,7 +14,7 @@ import {
   SubShelf,
   User,
   UsersToShelves,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 
 type SearchedItem = {
   id: string;

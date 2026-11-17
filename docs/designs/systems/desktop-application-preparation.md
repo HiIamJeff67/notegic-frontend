@@ -79,7 +79,7 @@ are cached in IndexedDB through `LocalYjsDocumentStore`.
 
 The web app's local database is SQLocal (WASM SQLite in a worker, stored in
 OPFS) with Drizzle over `drizzle-orm/sqlite-proxy`. Table definitions currently
-use `drizzle-orm/sqlite-core` under `apps/web/src/api/local/schemas/`.
+use `drizzle-orm/sqlite-core` under `shared/api/local/schemas/`.
 [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration)
 moves that schema to `shared/api/local/`. The sidecar opens the shared schema.
 It does not import `apps/web`. The web worker, OPFS, and cross-origin isolation

@@ -50,9 +50,9 @@ passing local checks, failed browser assertions and unproven live-backend gates.
 
 The local SQLite schema uses two generated artifacts:
 
-- `apps/web/src/api/local/migrations/` contains the immutable, incremental
+- `shared/api/local/migrations/` contains the immutable, incremental
   Drizzle migrations. Never rewrite or delete a migration that has shipped.
-- `apps/web/src/api/local/bootstrap.sql` contains the complete current schema
+- `shared/api/local/bootstrap.sql` contains the complete current schema
   exported by `drizzle-kit export`. Fresh databases use this file to reach the
   current version directly.
 
@@ -118,7 +118,7 @@ When changing the local schema:
    and refresh the complete bootstrap export.
 3. Review the generated SQL, migration journal, and bootstrap diff. Do not
    rewrite or delete an incremental migration that has shipped.
-4. Run `npm run test:unit -- apps/web/test/api/local/migrator.test.ts`,
+4. Run `npm run test:unit -- shared/api/local/migrator.test.ts`,
    `npm run typecheck`, and `npm run lint`.
 5. Test an existing database upgrade and a fresh database bootstrap before
    deployment.

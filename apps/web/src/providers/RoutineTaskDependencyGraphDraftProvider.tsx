@@ -18,7 +18,7 @@ import type {
 import { UpdateRoutineTaskGraphByRoutineIdResponseSchema } from "@shared/api/interfaces/routineTaskDependency.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import toast from "@shared/lib/toast/toast";
 import { replaceEqualDeep } from "@tanstack/react-query";
@@ -59,7 +59,7 @@ import {
   type RoutineTaskDependencyGraphDraftEdge,
   type RoutineTaskDependencyGraphDraftNode,
   Transaction,
-} from "@/api/local/schemas";
+} from "@shared/api/local/schemas";
 import { RoutineTaskDependencyLocalSynchronizer } from "@/api/local/synchronizers/routineTaskDependency.synchronizer";
 import { useLoading } from "@/hooks/useLoading";
 import { useStationRoutine } from "@/hooks/useStationRoutine";

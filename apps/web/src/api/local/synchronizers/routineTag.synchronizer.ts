@@ -17,7 +17,7 @@ import type {
 } from "@shared/api/interfaces/routineTag.interface";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { localDB } from "@/api/local/db";
-import { RoutinesToTags, RoutineTag, User } from "@/api/local/schemas";
+import { RoutinesToTags, RoutineTag, User } from "@shared/api/local/schemas";
 
 export class RoutineTagLocalSynchronizer {
   static syncGetMyRoutineTagById = async (

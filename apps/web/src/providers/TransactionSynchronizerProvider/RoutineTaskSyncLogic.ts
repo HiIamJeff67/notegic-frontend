@@ -7,8 +7,8 @@ import {
   UpdateMyRoutineTaskByIdRequestSchema,
 } from "@shared/api/interfaces/routineTask.interface";
 import type { InferSelectModel } from "drizzle-orm";
-import { Transaction } from "@/api/local/schemas";
-import { TransactionActionType } from "@/api/local/schemas/enums/transaction_action_type.enum";
+import { Transaction } from "@shared/api/local/schemas";
+import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import type {
   PreparedSyncJobsResult,
   SyncHeader,
