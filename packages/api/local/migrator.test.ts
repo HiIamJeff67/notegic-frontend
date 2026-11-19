@@ -1,8 +1,7 @@
 import {
-  LocalDBMigrator,
-  type LocalDBMigratorClient,
   type MigrationEntry,
-  splitSqlStatements,
+  Migrator,
+  type MigratorClient,
 } from "@shared/api/local/migrator";
 
 const migration = (
@@ -24,7 +23,7 @@ const createTransactionalClient = () => {
   let reportedVersion: number | null = null;
   let persistedVersion = 0;
 
-  const client: LocalDBMigratorClient = {
+  const client: MigratorClient = {
     transaction: async operation => {
       pendingQueries = [];
       let pendingVersion = persistedVersion;
@@ -72,7 +71,7 @@ const createTransactionalClient = () => {
   };
 };
 
-describe("LocalDBMigrator", () => {
+describe("Migrator", () => {
   it("rolls back one version and its schema changes atomically", async () => {
     const database = createTransactionalClient();
     database.startVersion(3);
@@ -82,7 +81,7 @@ describe("LocalDBMigrator", () => {
       "ALTER TABLE Routine ADD timeout;"
     );
     latest.downStatements = ["ALTER TABLE Routine DROP COLUMN timeout"];
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE Routine;"),
       migration(1, "0001_next", "ALTER TABLE Routine ADD title;"),
       latest,
@@ -109,7 +108,7 @@ describe("LocalDBMigrator", () => {
       "ALTER TABLE Routine ADD timeout;"
     );
     latest.downStatements = ["ALTER TABLE Routine DROP COLUMN timeout"];
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE Routine;"),
       migration(1, "0001_next", "ALTER TABLE Routine ADD title;"),
       latest,
@@ -123,13 +122,13 @@ describe("LocalDBMigrator", () => {
 
   it("commits each migration and its version flag together", async () => {
     const database = createTransactionalClient();
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
       migration(1, "0001_next", "ALTER TABLE initial ADD COLUMN name;"),
     ]);
 
     await expect(
-      migrator.ensureMigrated({ currentVersion: 0, targetVersion: 2 })
+      migrator.ensure({ currentVersion: 0, targetVersion: 2 })
     ).resolves.toEqual({
       appliedTags: ["0000_initial", "0001_next"],
       finalVersion: 2,
@@ -148,13 +147,13 @@ describe("LocalDBMigrator", () => {
   it("does not commit the failed migration or its version flag", async () => {
     const database = createTransactionalClient();
     database.failOnQuery("ALTER TABLE initial ADD COLUMN name");
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
       migration(1, "0001_next", "ALTER TABLE initial ADD COLUMN name;"),
     ]);
 
     await expect(
-      migrator.ensureMigrated({ currentVersion: 0, targetVersion: 2 })
+      migrator.ensure({ currentVersion: 0, targetVersion: 2 })
     ).rejects.toThrow("migration failed");
 
     expect(database.committedQueries).toEqual([
@@ -167,18 +166,18 @@ describe("LocalDBMigrator", () => {
   it("can retry a failed migration from the unchanged version", async () => {
     const database = createTransactionalClient();
     database.failOnQuery("ALTER TABLE initial ADD COLUMN name");
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
       migration(1, "0001_next", "ALTER TABLE initial ADD COLUMN name;"),
     ]);
 
     await expect(
-      migrator.ensureMigrated({ currentVersion: 0, targetVersion: 2 })
+      migrator.ensure({ currentVersion: 0, targetVersion: 2 })
     ).rejects.toThrow("migration failed");
 
     database.failOnQuery(null);
     await expect(
-      migrator.ensureMigrated({ currentVersion: 1, targetVersion: 2 })
+      migrator.ensure({ currentVersion: 1, targetVersion: 2 })
     ).resolves.toEqual({
       appliedTags: ["0001_next"],
       finalVersion: 2,
@@ -195,7 +194,7 @@ describe("LocalDBMigrator", () => {
 
   it("bootstraps a fresh database directly to the current version", async () => {
     const database = createTransactionalClient();
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
       migration(1, "0001_next", "ALTER TABLE initial ADD COLUMN name;"),
     ]);
@@ -221,7 +220,7 @@ describe("LocalDBMigrator", () => {
   it("rolls back when the version flag does not persist", async () => {
     const database = createTransactionalClient();
     database.reportVersion(0);
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
     ]);
 
@@ -233,7 +232,7 @@ describe("LocalDBMigrator", () => {
 
   it("splits bootstrap SQL without splitting semicolons inside quoted values", () => {
     expect(
-      splitSqlStatements(
+      Migrator.splitSqlStatements(
         "CREATE TABLE example (value TEXT DEFAULT 'a;b'); CREATE INDEX example_idx ON example(value);"
       )
     ).toEqual([
@@ -244,13 +243,36 @@ describe("LocalDBMigrator", () => {
 
   it("rejects a database version newer than the migration target", async () => {
     const database = createTransactionalClient();
-    const migrator = new LocalDBMigrator(database.client, [
+    const migrator = new Migrator(database.client, [
       migration(0, "0000_initial", "CREATE TABLE initial;"),
     ]);
 
     await expect(
-      migrator.ensureMigrated({ currentVersion: 2, targetVersion: 1 })
+      migrator.ensure({ currentVersion: 2, targetVersion: 1 })
     ).rejects.toThrow("newer than target version");
     expect(database.committedQueries).toEqual([]);
+  });
+
+  it("stops at the cap and continues in order when the cap is raised", async () => {
+    const database = createTransactionalClient();
+    const migrations = [
+      migration(0, "0000_initial", "CREATE TABLE initial;"),
+      migration(1, "0001_next", "ALTER TABLE initial ADD COLUMN name;"),
+      migration(2, "0002_later", "ALTER TABLE initial ADD COLUMN note;"),
+    ];
+    const migrator = new Migrator(database.client, migrations);
+
+    await expect(
+      migrator.ensure({ currentVersion: 0, targetVersion: 1 })
+    ).resolves.toEqual({
+      appliedTags: ["0000_initial"],
+      finalVersion: 1,
+    });
+    await expect(
+      migrator.ensure({ currentVersion: 1, targetVersion: 3 })
+    ).resolves.toEqual({
+      appliedTags: ["0001_next", "0002_later"],
+      finalVersion: 3,
+    });
   });
 });

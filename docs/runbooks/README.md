@@ -118,9 +118,12 @@ When changing the local schema:
    and refresh the complete bootstrap export.
 3. Review the generated SQL, migration journal, and bootstrap diff. Do not
    rewrite or delete an incremental migration that has shipped.
-4. Run `npm run test:unit -- packages/api/local/migrator.test.ts`,
+4. Run `npm run local-schema-version -- --write-head --set=web,desktop` for
+   each app that should adopt the new head. Leave an app's `schemaVersion.ts`
+   unchanged when that app must stay on the older schema.
+5. Run `npm run test:unit -- packages/api/local/migrator.test.ts`,
    `npm run typecheck`, and `npm run lint`.
-5. Test an existing database upgrade and a fresh database bootstrap before
+6. Test an existing database upgrade and a fresh database bootstrap before
    deployment.
 
 If initialization remains failed after a code fix, inspect the persisted local

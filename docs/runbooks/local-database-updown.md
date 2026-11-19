@@ -62,7 +62,7 @@ tag is included in this delivery.
 ## Upgrade
 
 Deploy compatible backend contracts and PostgreSQL migration before the web
-bundle. `LocalDBMigrator.ensureMigrated` runs each migration and its version
+bundle. `Migrator.ensure` runs each migration and its version
 flag in one transaction. Fresh databases use generated `bootstrap.sql` at
 version 5. Edit schema source and run `npm run generate-local-migrations`
 to generate snapshots and bootstrap; never hand-edit those artifacts.
@@ -134,7 +134,7 @@ Stop writes and export origin storage first through
 `localDB.downloadLocalData()`; verify and retain the download. Close other tabs
 using the origin and stop background synchronization before changing its schema.
 While a compatible version-5 bundle remains loaded, call the configured
-`LocalDBMigrator` instance's `down(5)` against that database. This performs only
+`Migrator` instance's `down(5)` against that database. This performs only
 5→4, removes `has_custom_schedule`, and preserves concrete windows, rows,
 drafts and pending operations. Re-up marks all retained Routines custom; the
 removed choice cannot be reconstructed. Export it separately if that choice
@@ -383,7 +383,7 @@ first. Routine settings can turn Custom schedule off for legacy one-shot rows;
 periodic schedules always retain calendar scheduling. Activation uses the
 server-returned concrete window for workspace and SQLite reconciliation.
 
-The version-5 failure tests run the real up/down SQL through `LocalDBMigrator`
+The version-5 failure tests run the real up/down SQL through `Migrator`
 on SQLite. Injected failure after `PRAGMA user_version` changes must restore
 the previous schema, version, Routine/task rows, drafts and pending queue in
 the same transaction; retry then applies the transition successfully. The

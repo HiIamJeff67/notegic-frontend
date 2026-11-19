@@ -21,12 +21,20 @@ queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
 invokers/            request validation and error mapping; each call receives func
-local/               sqlite-core tables, ordered SQL migrations, migrator, and migration catalog
+local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, schemaHead.ts, phase.ts, and result.ts
 
 `local/` does not read browser storage. Whether a local preference is enabled
 lives in `packages/lib/storage/localPreference.ts`, so this package does not
 import `packages/lib`.
 ```
+
+`schemaHead.ts` is the latest version in the shared migration chain. Web and
+Desktop each keep `localSchemaVersion` in `schemaVersion.ts` beside their driver.
+The migrator stops at that version. Both are 7, the current head, so today's
+databases still migrate to the head. `npm run local-schema-version` prints
+the three numbers. `npm run local-schema-version -- --set=web,desktop`
+raises the selected app to the journal head. `--write-head` records that head
+in `schemaHead.ts`.
 
 `queryClient` decides whether one in-flight query or mutation runs again. It
 does not retry HTTP 4xx, including 429. `getQueryClient()` keeps one client
@@ -51,21 +59,10 @@ functions, the Web Apollo client, and the WebSocket lifecycle are under
 
 ## Next
 
-The per-app migration version cap is decided and is not in the tree yet.
-
-| Path | What lands there | Issue |
-| --- | --- | --- |
-| `local/` version cap | Each app build stops the shared migrator at its selected version | [NOT-160](https://linear.app/notegic/issue/NOT-160/cap-each-applications-local-schema-migration) |
-
-Do not add a second local-schema tree. An app applies migrations only through its build
-cap and cannot skip a number. The TypeScript schema that app compiles matches
-the cap. A desktop-only table stays beside `apps/desktop/sidecars/driver/`
-until Web raises its cap.
-
 [NOT-159](https://linear.app/notegic/issue/NOT-159/commit-shelf-changes-on-the-desktop-sidecar-before-remote-sync)
-writes shelf changes through that schema after the cap exists. Web keeps its
-current simulator and synchronizer path until that desktop path is trusted.
-Rust does not open the database.
+writes shelf changes through this schema. Web keeps its current simulator and
+synchronizer path until that desktop path is trusted. Rust does not open the
+database.
 
 ## Last call
 

@@ -1,6 +1,6 @@
 import {
-  createLocalDBDiagnostics,
-  type LocalDBDiagnostics,
+  DiagnosticManager,
+  type Diagnostics,
 } from "@shared/api/local/diagnostics";
 
 const createStorage = () => {
@@ -14,7 +14,7 @@ const createStorage = () => {
 describe("local database diagnostics", () => {
   it("persists the last phase for the next startup", () => {
     const storage = createStorage();
-    const firstRun = createLocalDBDiagnostics(
+    const firstRun = DiagnosticManager.create(
       storage,
       "diagnostics",
       "worker-connection-pending"
@@ -26,12 +26,12 @@ describe("local database diagnostics", () => {
       targetVersion: 4,
     });
 
-    const nextRun = createLocalDBDiagnostics(
+    const nextRun = DiagnosticManager.create(
       storage,
       "diagnostics",
       "worker-connection-pending"
     );
-    const state: LocalDBDiagnostics = nextRun.getState();
+    const state: Diagnostics = nextRun.getState();
 
     expect(state.phase).toBe("worker-connection-pending");
     expect(state.previousPhase).toBe("migrating");
@@ -43,9 +43,9 @@ describe("local database diagnostics", () => {
 
   it("retains the recovery follow-up across reload and clears it on dismissal", () => {
     const storage = createStorage();
-    const firstRun = createLocalDBDiagnostics(storage, "diagnostics", "failed");
+    const firstRun = DiagnosticManager.create(storage, "diagnostics", "failed");
     firstRun.transition("bootstrapping", { rebuildAttemptedAt: 123 });
-    const nextRun = createLocalDBDiagnostics(
+    const nextRun = DiagnosticManager.create(
       storage,
       "diagnostics",
       "worker-connection-pending"
@@ -53,7 +53,7 @@ describe("local database diagnostics", () => {
     expect(nextRun.getState().rebuildAttemptedAt).toBe(123);
     nextRun.transition("ready", { rebuildAttemptedAt: null });
     expect(
-      createLocalDBDiagnostics(
+      DiagnosticManager.create(
         storage,
         "diagnostics",
         "worker-connection-pending"
@@ -62,7 +62,7 @@ describe("local database diagnostics", () => {
   });
 
   it("provides a stable external-store snapshot until a transition", () => {
-    const diagnostics = createLocalDBDiagnostics(null, "diagnostics", "failed");
+    const diagnostics = DiagnosticManager.create(null, "diagnostics", "failed");
     const before = diagnostics.getState();
     expect(diagnostics.getState()).toBe(before);
     diagnostics.transition("ready");
@@ -71,7 +71,7 @@ describe("local database diagnostics", () => {
   });
 
   it("keeps the latest worker events for failure diagnosis", () => {
-    const diagnostics = createLocalDBDiagnostics(
+    const diagnostics = DiagnosticManager.create(
       createStorage(),
       "diagnostics",
       "worker-connection-pending"
@@ -93,7 +93,7 @@ describe("local database diagnostics", () => {
   });
 
   it("notifies subscribers when a phase changes", () => {
-    const diagnostics = createLocalDBDiagnostics(
+    const diagnostics = DiagnosticManager.create(
       createStorage(),
       "diagnostics",
       "worker-connection-pending"

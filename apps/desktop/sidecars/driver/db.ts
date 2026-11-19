@@ -4,22 +4,24 @@ import Database from "better-sqlite3";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import {
-  LocalDBMigrator,
   type MigrationEntry,
-  splitSqlStatements,
+  Migrator,
 } from "../../../../packages/api/local/migrator";
-import * as schema from "../../../../packages/api/local/schemas";
+import * as schemas from "../../../../packages/api/local/schemas";
 import {
   BlockPackDocument,
   ensureBlockPackDocumentTable,
 } from "./blockPackDocument";
+import { localSchemaVersion } from "./schemaVersion";
 
-export const sharedSchema = {
-  ...schema,
+export const SharedSchemaWithBlockPackDocument = {
+  ...schemas,
   BlockPackDocument,
 };
 
-export type DriverDatabase = ReturnType<typeof drizzle<typeof sharedSchema>>;
+export type DriverDatabase = ReturnType<
+  typeof drizzle<typeof SharedSchemaWithBlockPackDocument>
+>;
 
 const readMigrations = (migrationsDirectory: string): MigrationEntry[] => {
   const journal = JSON.parse(
@@ -51,9 +53,9 @@ const readMigrations = (migrationsDirectory: string): MigrationEntry[] => {
         tag: entry.tag,
         versionNumber: Number(prefix),
         sqlContent,
-        statements: splitSqlStatements(sqlContent),
+        statements: Migrator.splitSqlStatements(sqlContent),
         downStatements: downSql.has(entry.tag)
-          ? splitSqlStatements(downSql.get(entry.tag) ?? "")
+          ? Migrator.splitSqlStatements(downSql.get(entry.tag) ?? "")
           : undefined,
       };
     });
@@ -86,7 +88,7 @@ const migrationClient = (sqlite: Database.Database) => ({
   },
 });
 
-export const openDatabase = async (
+export const initialize = async (
   filePath: string,
   migrationsDirectory = path.resolve(
     process.cwd(),
@@ -94,17 +96,22 @@ export const openDatabase = async (
   )
 ) => {
   const sqlite = new Database(filePath);
-  const migrator = new LocalDBMigrator(
+  const migrator = new Migrator(
     migrationClient(sqlite),
     readMigrations(migrationsDirectory)
   );
   const currentVersion = (
     sqlite.prepare("PRAGMA user_version").get() as { user_version: number }
   ).user_version;
-  await migrator.ensureMigrated({ currentVersion });
+  await migrator.ensure({
+    currentVersion,
+    targetVersion: localSchemaVersion,
+  });
   ensureBlockPackDocumentTable(sqlite);
   sqlite.pragma("foreign_keys = ON");
-  const database = drizzle(sqlite, { schema: sharedSchema });
+  const database = drizzle(sqlite, {
+    schema: SharedSchemaWithBlockPackDocument,
+  });
 
   return {
     database,
@@ -122,12 +129,12 @@ export const saveRootShelf = (
     lastAnalyzedAt: Date;
   }
 ) => {
-  database.insert(schema.RootShelf).values(shelf).run();
+  database.insert(schemas.RootShelf).values(shelf).run();
 };
 
 export const readRootShelf = (database: DriverDatabase, id: string) =>
   database
     .select()
-    .from(schema.RootShelf)
-    .where(eq(schema.RootShelf.id, id))
+    .from(schemas.RootShelf)
+    .where(eq(schemas.RootShelf.id, id))
     .get();

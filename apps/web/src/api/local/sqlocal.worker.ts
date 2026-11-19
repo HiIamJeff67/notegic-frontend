@@ -1,6 +1,6 @@
 import {
-  type LocalDBWorkerDiagnostic,
-  localDBWorkerDiagnosticMessageType,
+  type Diagnostic,
+  DiagnosticMessageType,
 } from "@shared/api/local/diagnostics";
 import { SQLiteOpfsDriver, SQLocalProcessor } from "sqlocal";
 
@@ -38,17 +38,17 @@ const getWorkerCapabilities = () => ({
 });
 
 const report = (
-  stage: LocalDBWorkerDiagnostic["stage"],
+  stage: Diagnostic["stage"],
   details?: Record<string, unknown>
 ) => {
-  const event: LocalDBWorkerDiagnostic = {
+  const event: Diagnostic = {
     stage,
     details,
     updatedAt: Date.now(),
   };
 
   workerScope.postMessage({
-    type: localDBWorkerDiagnosticMessageType,
+    type: DiagnosticMessageType,
     event,
   });
 };

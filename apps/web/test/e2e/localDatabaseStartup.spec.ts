@@ -420,9 +420,8 @@ test("upgrades a freshly created database after a local down migration", async (
   await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
-    const { getOrderedMigrations } = await importModule(
-      "/test/e2e/localDatabaseModules.ts"
-    );
+    const { Migrator, migrationJournal, migrationSqlModules } =
+      await importModule("/test/e2e/localDatabaseModules.ts");
     const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine, Station } = await importModule(
       "/test/e2e/localDatabaseModules.ts"
@@ -439,7 +438,10 @@ test("upgrades a freshly created database after a local down migration", async (
       timeoutSeconds: 600,
     });
 
-    const migrations = getOrderedMigrations();
+    const migrations = Migrator.getOrderedMigrations(
+      migrationJournal,
+      migrationSqlModules
+    );
     const routineIndex = migrations.findIndex(
       (migration: { tag: string }) =>
         migration.tag === "0004_routine_activation_schedule"
@@ -469,9 +471,8 @@ test("upgrades a freshly created database after a local down migration", async (
   const result = await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
-    const { getOrderedMigrations } = await importModule(
-      "/test/e2e/localDatabaseModules.ts"
-    );
+    const { Migrator, migrationJournal, migrationSqlModules } =
+      await importModule("/test/e2e/localDatabaseModules.ts");
     const { eq } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
     const { Routine } = await importModule("/test/e2e/localDatabaseModules.ts");
     await localDB.ensureReady();
@@ -480,7 +481,10 @@ test("upgrades a freshly created database after a local down migration", async (
     });
     return {
       version: await localDB.getVersion(),
-      target: getOrderedMigrations().length,
+      target: Migrator.getOrderedMigrations(
+        migrationJournal,
+        migrationSqlModules
+      ).length,
       timeoutSeconds: routine?.timeoutSeconds,
     };
   });

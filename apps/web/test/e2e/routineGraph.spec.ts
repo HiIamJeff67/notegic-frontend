@@ -1458,15 +1458,15 @@ test("SQLocal preserves a populated Routine graph, queue and draft across down/u
   const result = await page.evaluate(async () => {
     const importModule = (path: string) => import(/* @vite-ignore */ path);
     const { localDB } = await importModule("/src/api/local/db.ts");
-    const { LocalDBMigrator } = await importModule(
-      "/test/e2e/localDatabaseModules.ts"
-    );
-    const { getOrderedMigrations } = await importModule(
-      "/test/e2e/localDatabaseModules.ts"
+    const { Migrator, migrationJournal, migrationSqlModules } =
+      await importModule("/test/e2e/localDatabaseModules.ts");
+    const migrations = Migrator.getOrderedMigrations(
+      migrationJournal,
+      migrationSqlModules
     );
     await localDB.ensureReady();
     const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
-    const migrator = new LocalDBMigrator(
+    const migrator = new Migrator(
       {
         transaction: (
           operation: (client: {
@@ -1489,9 +1489,9 @@ test("SQLocal preserves a populated Routine graph, queue and draft across down/u
               })
           ),
       },
-      getOrderedMigrations()
+      migrations
     );
-    for (let version = getOrderedMigrations().length; version > 3; version--)
+    for (let version = migrations.length; version > 3; version--)
       await migrator.down(version);
     await localDB.run(
       "INSERT INTO StationTable (id,name) VALUES ('graph-station','Graph station')"
@@ -1511,16 +1511,16 @@ test("SQLocal preserves a populated Routine graph, queue and draft across down/u
     await localDB.run(
       `INSERT INTO TransactionTable (owner_public_id,entity_type,action_type,body) VALUES ('graph-user','Routine','UPDATE','{"values":{"title":"Pending"}}')`
     );
-    await migrator.ensureMigrated({ currentVersion: 3 });
+    await migrator.ensure({ currentVersion: 3 });
     const before = await localDB.all(
       "SELECT id,kind,x,y,payload FROM RoutineTaskTable ORDER BY id"
     );
-    for (let version = getOrderedMigrations().length; version > 3; version--)
+    for (let version = migrations.length; version > 3; version--)
       await migrator.down(version);
-    await migrator.ensureMigrated({ currentVersion: 3 });
+    await migrator.ensure({ currentVersion: 3 });
     return {
       before,
-      expectedVersion: getOrderedMigrations().length,
+      expectedVersion: migrations.length,
       after: await localDB.all(
         "SELECT id,kind,x,y,payload FROM RoutineTaskTable ORDER BY id"
       ),

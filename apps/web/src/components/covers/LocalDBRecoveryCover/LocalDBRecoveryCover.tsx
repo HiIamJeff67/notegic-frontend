@@ -1,3 +1,5 @@
+import type { Diagnostics } from "@shared/api/local/diagnostics";
+import type { Result } from "@shared/api/local/result";
 import { Button } from "@shared/components/shadcn/button";
 import { Checkbox } from "@shared/components/shadcn/checkbox";
 import {
@@ -15,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@shared/components/shadcn/dropdown-menu";
 import { Progress } from "@shared/components/shadcn/progress";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import type { TFunction } from "i18next";
 import {
   ChevronDownIcon,
@@ -26,12 +29,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { type LocalDBRebuildPreflight, localDB } from "@/api/local/db";
-import type {
-  LocalDBDiagnostics,
-  LocalDBResult,
-} from "@shared/api/local/diagnostics";
 import { useLoading } from "@/hooks/useLoading";
-import { useTranslation } from "@shared/hooks/useTranslation";
 
 const recoveryPhases = new Set([
   "failed",
@@ -41,10 +39,7 @@ const recoveryPhases = new Set([
 ]);
 const RECOVERY_NOTICE_TIMEOUT_MS = 30_000;
 
-const getPhaseLabel = (
-  phase: LocalDBDiagnostics["phase"],
-  t: TFunction
-): string => {
+const getPhaseLabel = (phase: Diagnostics["phase"], t: TFunction): string => {
   switch (phase) {
     case "worker-connection-pending":
       return t("localDBRecovery.phases.workerConnectionPending");
@@ -93,7 +88,7 @@ const getPhaseLabel = (
   }
 };
 
-const getResultLabel = (result: LocalDBResult, t: TFunction): string => {
+const getResultLabel = (result: Result, t: TFunction): string => {
   switch (result) {
     case "success":
       return t("localDBRecovery.results.success");

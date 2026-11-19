@@ -5,7 +5,7 @@ import {
   readBlockPackDocument,
   saveBlockPackDocument,
 } from "./blockPackDocument";
-import { openDatabase } from "./database";
+import { initialize } from "./db";
 
 const timestamp = new Date("2026-01-01T00:00:00.000Z");
 const blockPackId = "22222222-2222-4222-8222-222222222222";
@@ -16,7 +16,7 @@ describe("block pack document", () => {
     const filePath = path.join(directory, "notegic.sqlite");
     const update = Uint8Array.from([1, 2, 3, 4]);
     const stateVector = Uint8Array.from([9, 8]);
-    const opened = await openDatabase(filePath);
+    const opened = await initialize(filePath);
     saveBlockPackDocument(opened.database, {
       blockPackId,
       update,
@@ -26,7 +26,7 @@ describe("block pack document", () => {
     });
     opened.close();
 
-    const reopened = await openDatabase(filePath);
+    const reopened = await initialize(filePath);
     const document = readBlockPackDocument(reopened.database, blockPackId);
     reopened.close();
 

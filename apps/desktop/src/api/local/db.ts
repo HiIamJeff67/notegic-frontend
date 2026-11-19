@@ -1,6 +1,6 @@
-import type { LocalDBDiagnostics } from "@shared/api/local/diagnostics";
+import type { Diagnostics } from "@shared/api/local/diagnostics";
 
-const disabledDiagnostics: LocalDBDiagnostics = {
+const disabledDiagnostics: Diagnostics = {
   phase: "disabled",
   previousPhase: null,
   result: "success",

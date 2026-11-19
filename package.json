@@ -33,6 +33,7 @@
     "test:security": "npm audit --omit=dev --audit-level=high",
     "generate-local-bootstrap": "npx drizzle-kit export --config packages/api/local/drizzle.config.ts > packages/api/local/bootstrap.sql",
     "generate-local-migrations": "npx drizzle-kit generate --config packages/api/local/drizzle.config.ts && npm run generate-local-bootstrap",
+    "local-schema-version": "node scripts/localSchemaVersion.mjs",
     "clear-local-migrations": "rm -rf packages/api/local/migrations/**",
     "codegen": "graphql-codegen --config packages/api/codegen.ts",
     "codegen:watch": "graphql-codegen --config packages/api/codegen.ts --watch",

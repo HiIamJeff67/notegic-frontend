@@ -12,10 +12,7 @@ const { DatabaseSync } = process.getBuiltinModule("node:sqlite") as {
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  LocalDBMigrator,
-  splitSqlStatements,
-} from "@shared/api/local/migrator";
+import { Migrator } from "@shared/api/local/migrator";
 
 const migrationDirectory = resolve(
   process.cwd(),
@@ -26,7 +23,8 @@ const readMigration = (name: string) =>
 const apply = (db: DatabaseSync, sql: string, version: number) => {
   db.exec("BEGIN");
   try {
-    for (const statement of splitSqlStatements(sql)) db.exec(statement);
+    for (const statement of Migrator.splitSqlStatements(sql))
+      db.exec(statement);
     db.exec(`PRAGMA user_version = ${version}`);
     db.exec("COMMIT");
   } catch (error) {
@@ -241,13 +239,15 @@ describe("Routine activation schedule SQLite transition", () => {
         versionNumber: idx,
         sqlContent: idx === 4 ? activationUp : "",
         statements:
-          idx === 4 ? [...splitSqlStatements(activationUp), ...mutations] : [],
+          idx === 4
+            ? [...Migrator.splitSqlStatements(activationUp), ...mutations]
+            : [],
         downStatements:
           idx === 4
-            ? [...splitSqlStatements(activationDown), ...mutations]
+            ? [...Migrator.splitSqlStatements(activationDown), ...mutations]
             : [],
       }));
-      const migrator = new LocalDBMigrator(
+      const migrator = new Migrator(
         {
           transaction: async operation => {
             db.exec("BEGIN");
@@ -279,7 +279,7 @@ describe("Routine activation schedule SQLite transition", () => {
       );
       await expect(
         direction === "up"
-          ? migrator.ensureMigrated({ currentVersion: 4, targetVersion: 5 })
+          ? migrator.ensure({ currentVersion: 4, targetVersion: 5 })
           : migrator.down(5)
       ).rejects.toThrow("controlled failure");
       expect({
@@ -295,7 +295,7 @@ describe("Routine activation schedule SQLite transition", () => {
       injectFailure = false;
       await expect(
         direction === "up"
-          ? migrator.ensureMigrated({ currentVersion: 4, targetVersion: 5 })
+          ? migrator.ensure({ currentVersion: 4, targetVersion: 5 })
           : migrator.down(5)
       ).resolves.toMatchObject({ finalVersion: direction === "up" ? 5 : 4 });
     } finally {

@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { openDatabase } from "./database";
+import { initialize } from "./db";
 
 const token = process.env.NOTEGIC_SIDECAR_TOKEN ?? "";
 const port = Number(process.env.NOTEGIC_SIDECAR_PORT ?? "0");
@@ -13,7 +13,7 @@ const migrationsDirectory = path.resolve(
 );
 
 const opened = databasePath
-  ? await openDatabase(databasePath, migrationsDirectory)
+  ? await initialize(databasePath, migrationsDirectory)
   : undefined;
 
 const server = createServer((request, response) => {

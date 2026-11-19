@@ -1,18 +1,18 @@
 import currentLocalSchemaSql from "@shared/api/local/bootstrap.sql?raw";
 import {
-  createLocalDBDiagnostics,
-  isLocalDBWorkerDiagnosticMessage,
-  type LocalDBDiagnostics,
+  DiagnosticManager,
+  type Diagnostics,
+  type DiagnosticTransition,
+  isDiagnosticMessage,
 } from "@shared/api/local/diagnostics";
-import { getOrderedMigrations } from "@shared/api/local/migrationCatalog";
-import { LocalDBMigrator } from "@shared/api/local/migrator";
 import {
-  classifyLocalDBError,
-  createLocalDataExport,
-  createLocalDBDiagnosticsExport,
-  downloadTextFile,
-  isOPFSMissingFileError,
-} from "@shared/api/local/recovery";
+  migrationJournal,
+  migrationSqlModules,
+} from "@shared/api/local/migrationCatalog";
+import { Migrator } from "@shared/api/local/migrator";
+import type { Phase } from "@shared/api/local/phase";
+import { RecoveryManager } from "@shared/api/local/recovery";
+import type { Result } from "@shared/api/local/result";
 import * as schema from "@shared/api/local/schemas";
 import { LocalYjsDocumentStore } from "@shared/lib/blockpack/localYjsDocumentStore";
 import { requiresCrossOriginIsolation } from "@shared/lib/browser/crossOriginIsolation";
@@ -21,6 +21,7 @@ import { isLocalPreferenceEnabled } from "@shared/lib/storage/localPreference";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { SQLocalDrizzle } from "sqlocal/drizzle";
+import { localSchemaVersion } from "./schemaVersion";
 
 const isLocalRuntime =
   typeof window !== "undefined" &&
@@ -40,7 +41,10 @@ const localDBDiagnosticsStorage = (() => {
     return null;
   }
 })();
-const localDBDiagnostics = createLocalDBDiagnostics(
+const phaseForClassifiedFailure = (result: Result): Phase =>
+  result === "needs-action" || result === "manual-recovery" ? result : "failed";
+
+const localDBDiagnostics = DiagnosticManager.create(
   localDBDiagnosticsStorage,
   localDBDiagnosticsStorageKey,
   isLocalRuntime ? "worker-connection-pending" : "disabled"
@@ -104,7 +108,7 @@ const failSQLocalConnection = (error: unknown) => {
     error instanceof Error
       ? error
       : new Error(`SQLocal worker failed to initialize: ${String(error)}`);
-  const classification = classifyLocalDBError(connectionError, "worker");
+  const classification = RecoveryManager.classify(connectionError, "worker");
   localDBDiagnostics.transition("failed", {
     result: classification.result,
     recoverability: classification.result,
@@ -116,7 +120,7 @@ const failSQLocalConnection = (error: unknown) => {
   rejectSQLocalConnectionReady(connectionError);
 };
 const handleSQLocalWorkerMessage = (event: MessageEvent<unknown>) => {
-  if (!isLocalDBWorkerDiagnosticMessage(event.data)) return;
+  if (!isDiagnosticMessage(event.data)) return;
   localDBDiagnostics.recordWorkerEvent(event.data.event);
 };
 const markSQLocalConnectionReady = () => {
@@ -333,7 +337,10 @@ const recoverableRun = async <T>(operation: () => Promise<T>) => {
     return await operation();
   } catch (error) {
     if (
-      !isOPFSMissingFileError(error, import.meta.env.VITE_LOCAL_DATABASE_PATH)
+      !RecoveryManager.isOPFSMissingFileError(
+        error,
+        import.meta.env.VITE_LOCAL_DATABASE_PATH
+      )
     ) {
       throw error;
     }
@@ -349,7 +356,7 @@ const recoverableRun = async <T>(operation: () => Promise<T>) => {
       return await operation();
     } catch (retryError) {
       if (
-        !isOPFSMissingFileError(
+        !RecoveryManager.isOPFSMissingFileError(
           retryError,
           import.meta.env.VITE_LOCAL_DATABASE_PATH
         )
@@ -462,7 +469,7 @@ const wrappedTransaction = (async (
           }
         }, "nonRecoverable")) as typeof rawTransaction;
 
-const localDBMigrator = new LocalDBMigrator(
+const localDBMigrator = new Migrator(
   {
     transaction: async operation =>
       await runOperations(
@@ -485,7 +492,7 @@ const localDBMigrator = new LocalDBMigrator(
         "nonRecoverable"
       ),
   },
-  getOrderedMigrations()
+  Migrator.getOrderedMigrations(migrationJournal, migrationSqlModules)
 );
 
 let isMigrated = false;
@@ -519,19 +526,19 @@ type LocalDB = typeof drizzleDB & {
   readonly isEnabled: boolean;
   readonly isReady: boolean;
   readonly migrationError: unknown | null;
-  getDiagnostics: () => LocalDBDiagnostics;
+  getDiagnostics: () => Diagnostics;
   subscribeToDiagnostics: (listener: () => void) => () => void;
   transitionDiagnostics: (
-    phase: LocalDBDiagnostics["phase"],
-    details?: Partial<LocalDBDiagnostics>
-  ) => LocalDBDiagnostics;
+    phase: Phase,
+    details?: DiagnosticTransition
+  ) => Diagnostics;
   getLatestMigrationVersion: () => number;
   ensureMigrated: (
-    options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
-  ) => ReturnType<LocalDBMigrator["ensureMigrated"]>;
+    options?: Parameters<Migrator["ensure"]>[0]
+  ) => ReturnType<Migrator["ensure"]>;
   ensureReady: (
-    options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
-  ) => ReturnType<LocalDBMigrator["ensureMigrated"]>;
+    options?: Parameters<Migrator["ensure"]>[0]
+  ) => ReturnType<Migrator["ensure"]>;
   getVersion: () => Promise<number>;
   download: () => Promise<File>;
   downloadLocalData: () => Promise<void>;
@@ -569,8 +576,13 @@ const getVersion = async (): Promise<number> => {
   return version;
 };
 
+const cappedSchemaVersion = (requested?: number | null) =>
+  requested == null
+    ? localSchemaVersion
+    : Math.min(requested, localSchemaVersion);
+
 const verifyMigrationVersion = async (
-  migrationResult: Awaited<ReturnType<LocalDBMigrator["ensureMigrated"]>>,
+  migrationResult: Awaited<ReturnType<Migrator["ensure"]>>,
   targetVersion: number
 ) => {
   const verifiedVersion = await getVersion();
@@ -583,8 +595,8 @@ const verifyMigrationVersion = async (
 };
 
 const ensureMigrated = async (
-  options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
-): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
+  options?: Parameters<Migrator["ensure"]>[0]
+): ReturnType<Migrator["ensure"]> => {
   if (!isLocalRuntime || !isLocalPreferenceEnabled("localVault")) {
     localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
@@ -608,8 +620,7 @@ const ensureMigrated = async (
     // Opening OPFS shares the migration lock; connect before acquiring it.
     await sqlocalConnectionReady;
     const migrationResult = await runWithMigrationLock(async () => {
-      const targetVersion =
-        options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
+      const targetVersion = cappedSchemaVersion(options?.targetVersion);
       localDBDiagnostics.transition("reading-version", {
         currentVersion: null,
         targetVersion,
@@ -652,7 +663,7 @@ const ensureMigrated = async (
         { currentVersion, targetVersion, error: null }
       );
       return await verifyMigrationVersion(
-        await localDBMigrator.ensureMigrated({
+        await localDBMigrator.ensure({
           currentVersion,
           targetVersion,
         }),
@@ -661,13 +672,12 @@ const ensureMigrated = async (
     });
     isMigrated =
       migrationResult.finalVersion ===
-      localDBMigrator.getLatestMigrationVersion();
+      cappedSchemaVersion(options?.targetVersion);
     localDBDiagnostics.transition("verifying", {
       result: "success",
       recoverability: "success",
       currentVersion: migrationResult.finalVersion,
-      targetVersion:
-        options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion(),
+      targetVersion: cappedSchemaVersion(options?.targetVersion),
       error: null,
     });
     migrationError = null;
@@ -676,16 +686,12 @@ const ensureMigrated = async (
     isMigrated = false;
     isReady = false;
     migrationError = error;
-    const classification = classifyLocalDBError(
+    const classification = RecoveryManager.classify(
       error,
       localDBDiagnostics.getState().phase
     );
     localDBDiagnostics.transition(
-      classification.result === "needs-action"
-        ? "needs-action"
-        : classification.result === "manual-recovery"
-          ? "manual-recovery"
-          : "failed",
+      phaseForClassifiedFailure(classification.result),
       {
         result: classification.result,
         recoverability: classification.result,
@@ -699,15 +705,14 @@ const ensureMigrated = async (
 };
 
 const ensureReady = async (
-  options?: Parameters<LocalDBMigrator["ensureMigrated"]>[0]
-): ReturnType<LocalDBMigrator["ensureMigrated"]> => {
+  options?: Parameters<Migrator["ensure"]>[0]
+): ReturnType<Migrator["ensure"]> => {
   if (!isLocalRuntime || !isLocalPreferenceEnabled("localVault")) {
     localDBDiagnostics.transition("disabled");
     return { appliedTags: [], finalVersion: 0 };
   }
 
-  const targetVersion =
-    options?.targetVersion ?? localDBMigrator.getLatestMigrationVersion();
+  const targetVersion = cappedSchemaVersion(options?.targetVersion);
 
   try {
     const migrationResult = await ensureMigrated({
@@ -731,16 +736,12 @@ const ensureReady = async (
     return migrationResult;
   } catch (error) {
     isReady = false;
-    const classification = classifyLocalDBError(
+    const classification = RecoveryManager.classify(
       error,
       localDBDiagnostics.getState().phase
     );
     localDBDiagnostics.transition(
-      classification.result === "needs-action"
-        ? "needs-action"
-        : classification.result === "manual-recovery"
-          ? "manual-recovery"
-          : "failed",
+      phaseForClassifiedFailure(classification.result),
       {
         result: classification.result,
         recoverability: classification.result,
@@ -779,19 +780,19 @@ const downloadLocalData = async (): Promise<void> => {
   }
 
   const databaseFile = await sqlocalDrizzle.getDatabaseFile();
-  const exportContents = await createLocalDataExport(
+  const exportContents = await RecoveryManager.createDataExport(
     databaseFile,
     await IndexedDB.getAllItems()
   );
-  downloadTextFile(
+  RecoveryManager.download(
     exportContents,
     `notegic-local-data-${new Date().toISOString()}.json`
   );
 };
 
 const downloadDiagnostics = (): void => {
-  downloadTextFile(
-    createLocalDBDiagnosticsExport(localDBDiagnostics.getState()),
+  RecoveryManager.download(
+    RecoveryManager.createDiagnosticExport(localDBDiagnostics.getState()),
     `notegic-local-db-diagnostics-${new Date().toISOString()}.json`
   );
 };
@@ -874,7 +875,7 @@ const getRebuildPreflight = async (options?: {
     };
     return result;
   } catch (error) {
-    const classification = classifyLocalDBError(
+    const classification = RecoveryManager.classify(
       error,
       "checking-rebuildability"
     );
@@ -975,7 +976,7 @@ const rebuild = async (options: {
           result: "success",
           recoverability: "success",
           currentVersion: 0,
-          targetVersion: localDBMigrator.getLatestMigrationVersion(),
+          targetVersion: localSchemaVersion,
           rebuildAttemptedAt: Date.now(),
           error: null,
           errorCode: null,
@@ -1041,7 +1042,7 @@ Object.defineProperties(localDB, {
     enumerable: true,
   },
   getLatestMigrationVersion: {
-    value: () => localDBMigrator.getLatestMigrationVersion(),
+    value: () => localSchemaVersion,
     writable: false,
     enumerable: true,
   },

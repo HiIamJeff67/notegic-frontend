@@ -1,25 +1,22 @@
-import {
-  classifyLocalDBError,
-  createLocalDataExport,
-  createLocalDBDiagnosticsExport,
-  isOPFSMissingFileError,
-} from "@shared/api/local/recovery";
+import { RecoveryManager } from "@shared/api/local/recovery";
 
 describe("local database recovery policy", () => {
   it("recognizes missing OPFS database files through wrapped errors", () => {
     expect(
-      isOPFSMissingFileError(
+      RecoveryManager.isOPFSMissingFileError(
         new Error("worker failed", {
           cause: new Error("SQLITE_CANTOPEN"),
         })
       )
     ).toBe(true);
-    expect(isOPFSMissingFileError(new Error("unrelated failure"))).toBe(false);
+    expect(
+      RecoveryManager.isOPFSMissingFileError(new Error("unrelated failure"))
+    ).toBe(false);
   });
 
   it("classifies transient worker failures as retryable", () => {
     expect(
-      classifyLocalDBError(
+      RecoveryManager.classify(
         new Error("SQLocal worker connection timed out"),
         "worker-connection-pending"
       )
@@ -31,7 +28,7 @@ describe("local database recovery policy", () => {
 
   it("classifies driver and storage failures as manual recovery", () => {
     expect(
-      classifyLocalDBError(
+      RecoveryManager.classify(
         new Error("Driver not initialized"),
         "reading-version"
       )
@@ -44,7 +41,7 @@ describe("local database recovery policy", () => {
   it("exports SQLite, attachments and Yjs byte slices without losing their contents", async () => {
     const bytes = new Uint8Array([99, 1, 2, 3, 99]);
     const exported = JSON.parse(
-      await createLocalDataExport(
+      await RecoveryManager.createDataExport(
         new File(["sqlite fixture"], "database.sqlite3", {
           type: "application/x-sqlite3",
         }),
@@ -72,7 +69,7 @@ describe("local database recovery policy", () => {
   });
 
   it("exports diagnostics without authentication material", () => {
-    const output = createLocalDBDiagnosticsExport({
+    const output = RecoveryManager.createDiagnosticExport({
       phase: "needs-action",
       previousPhase: "migrating",
       result: "needs-action",
