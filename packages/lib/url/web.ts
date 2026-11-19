@@ -7,6 +7,7 @@ export const WebURLPathDictionary = {
   notFound: "not-found",
   document: "document",
   privacyPolicy: "privacy-policy",
+  nativeAuthorize: "native/authorize",
   auth: {
     register: "register",
     login: "login",

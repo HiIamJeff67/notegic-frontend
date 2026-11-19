@@ -7,7 +7,13 @@ and it does not boot TanStack Start's server runtime, Nitro, or SQLocal.
 The current `@/` alias still points at `apps/web/src`. That import is a defect
 [NOT-153](https://linear.app/notegic/issue/NOT-153/initialize-the-tauri-desktop-shell)
 removes. Files both apps use move into `packages/` first. Account and data requests
-belong in `apps/desktop/src/api/functions/` and use a bearer token. The native
+belong in `apps/desktop/src/api/functions/` and use a bearer token. Log in opens
+the system browser. The Web page `/native/authorize` confirms the Web session
+and returns through `com.notegic.desktop:/callback`. Rust stores the refresh
+token in the OS credential store. The webview only keeps the access token in
+memory. That work is
+[NOT-161](https://linear.app/notegic/issue/NOT-161/sign-desktop-in-through-the-browser).
+The native
 SQLite sidecar is a later gate. A Node sidecar starts with the window and
 rejects a request that lacks its per-launch token.
 

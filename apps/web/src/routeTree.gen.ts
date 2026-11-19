@@ -28,6 +28,7 @@ import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppMaterialViewerRouteImport } from './routes/app.material-viewer'
 import { Route as AppRoutinesRouteImport } from './routes/app.routines'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
+import { Route as NativeAuthorizeRouteImport } from './routes/native.authorize'
 import { Route as AuthRedirectAppleRouteImport } from './routes/_auth.redirect.apple'
 import { Route as AuthRedirectDiscordRouteImport } from './routes/_auth.redirect.discord'
 import { Route as AuthRedirectGithubRouteImport } from './routes/_auth.redirect.github'
@@ -148,6 +149,11 @@ const AppTrashRoute = AppTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => AppRoute,
 } as any)
+const NativeAuthorizeRoute = NativeAuthorizeRouteImport.update({
+  id: '/native/authorize',
+  path: '/native/authorize',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRedirectAppleRoute = AuthRedirectAppleRouteImport.update({
   id: '/redirect/apple',
   path: '/redirect/apple',
@@ -248,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
+  '/native/authorize': typeof NativeAuthorizeRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
   '/redirect/discord': typeof AuthRedirectDiscordRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/app/trash': typeof AppTrashRoute
+  '/native/authorize': typeof NativeAuthorizeRoute
   '/redirect/apple': typeof AuthRedirectAppleRoute
   '/redirect/discord': typeof AuthRedirectDiscordRoute
   '/redirect/github': typeof AuthRedirectGithubRoute
@@ -320,6 +328,7 @@ export interface FileRoutesById {
   '/app/material-viewer': typeof AppMaterialViewerRouteWithChildren
   '/app/routines': typeof AppRoutinesRouteWithChildren
   '/app/trash': typeof AppTrashRoute
+  '/native/authorize': typeof NativeAuthorizeRoute
   '/_auth/redirect/apple': typeof AuthRedirectAppleRoute
   '/_auth/redirect/discord': typeof AuthRedirectDiscordRoute
   '/_auth/redirect/github': typeof AuthRedirectGithubRoute
@@ -359,6 +368,7 @@ export interface FileRouteTypes {
     | '/app/material-viewer'
     | '/app/routines'
     | '/app/trash'
+    | '/native/authorize'
     | '/redirect/apple'
     | '/redirect/discord'
     | '/redirect/github'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/app/trash'
+    | '/native/authorize'
     | '/redirect/apple'
     | '/redirect/discord'
     | '/redirect/github'
@@ -430,6 +441,7 @@ export interface FileRouteTypes {
     | '/app/material-viewer'
     | '/app/routines'
     | '/app/trash'
+    | '/native/authorize'
     | '/_auth/redirect/apple'
     | '/_auth/redirect/discord'
     | '/_auth/redirect/github'
@@ -461,6 +473,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   playgroundPlaygroundRoute: typeof playgroundPlaygroundRoute
+  NativeAuthorizeRoute: typeof NativeAuthorizeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -611,6 +624,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/trash'
       preLoaderRoute: typeof AppTrashRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/native/authorize': {
+      id: '/native/authorize'
+      path: '/native/authorize'
+      fullPath: '/native/authorize'
+      preLoaderRoute: typeof NativeAuthorizeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/redirect/apple': {
       id: '/_auth/redirect/apple'
@@ -835,6 +855,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   playgroundPlaygroundRoute: playgroundPlaygroundRoute,
+  NativeAuthorizeRoute: NativeAuthorizeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

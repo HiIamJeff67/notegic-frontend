@@ -3,5 +3,12 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:default", "allow-sidecar-session"]
+  "permissions": [
+    "core:default",
+    "allow-sidecar-session",
+    "allow-start-native-login",
+    "allow-native-session",
+    "allow-logout-native",
+    "deep-link:default"
+  ]
 }

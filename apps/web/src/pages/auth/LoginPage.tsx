@@ -1,9 +1,12 @@
-import { tError } from "@shared/i18n/error";
 import toast from "@shared/components/toast/toast";
+import { usePageTitle } from "@shared/hooks/usePageTitle";
+import { useTranslation } from "@shared/hooks/useTranslation";
+import { tError } from "@shared/i18n/error";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { Suspense, useCallback, useState, useTransition } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useLogin } from "@/api/hooks/auth.hook";
+import { nativeAuthorizeReturn } from "@/api/tokens/nativeAuthorization";
 import {
   clearTurnstileToken,
   isTurnstileEnabled,
@@ -17,8 +20,6 @@ import { useAppRouter, useUser } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
 import { useOAuth } from "@/hooks/useOAuth";
-import { usePageTitle } from "@shared/hooks/usePageTitle";
-import { useTranslation } from "@shared/hooks/useTranslation";
 import { pageTitle } from "@/seo/pageTitle";
 
 const LoginPage = () => {
@@ -81,7 +82,7 @@ const LoginPage = () => {
 
           setAccount("");
           setPassword("");
-          router.push(startPath);
+          router.push(nativeAuthorizeReturn() ?? startPath);
         } catch (error) {
           setPassword("");
           resetTurnstile();

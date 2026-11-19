@@ -9,6 +9,8 @@ import type {
 } from "@shared/api/interfaces/userAccount.interface";
 import { getQueryClient } from "@shared/api/queryClient";
 import { queryKeys } from "@shared/api/queryKeys";
+import toast from "@shared/components/toast/toast";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import {
   isPendingOAuthState,
@@ -20,7 +22,6 @@ import {
   SessionStorage,
   SessionStorageKey,
 } from "@shared/lib/storage/sessionStorage";
-import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import type { OAuthProviderType } from "@shared/types/oauthProvider.type";
 import {
@@ -35,26 +36,27 @@ import {
   getClientRequestHeaders,
 } from "@/api/functions/headers/clientHeaders";
 import {
+  useLoginViaDiscord,
   useLoginViaGithub,
   useLoginViaGoogle,
   useLoginViaX,
-  useLoginViaDiscord,
+  useRegisterViaDiscord,
   useRegisterViaGithub,
   useRegisterViaGoogle,
   useRegisterViaX,
-  useRegisterViaDiscord,
 } from "@/api/hooks/auth.hook";
 import {
+  useBindDiscordAccount,
   useBindGithubAccount,
   useBindGoogleAccount,
   useBindXAccount,
-  useBindDiscordAccount,
   usePrepareOAuthOperation,
+  useUnbindDiscordAccount,
   useUnbindGithubAccount,
   useUnbindGoogleAccount,
   useUnbindXAccount,
-  useUnbindDiscordAccount,
 } from "@/api/hooks/userAccount.hook";
+import { nativeAuthorizeReturn } from "@/api/tokens/nativeAuthorization";
 import {
   clearTurnstileToken,
   getTurnstileToken,
@@ -63,7 +65,6 @@ import {
 import { useAppRouter, useUser } from "@/hooks";
 import { useLoading } from "@/hooks/useLoading";
 import { useLocalPreferences } from "@/hooks/useLocalPreferences";
-import { useTranslation } from "@shared/hooks/useTranslation";
 
 const xLoopbackStatePrefix = "localhost.";
 
@@ -334,7 +335,7 @@ export const OAuthProvider = ({ children }: { children: ReactNode }) => {
           await router.replace(
             action === "binding"
               ? `${WebURLPathDictionary.app.setting.account}#binding`
-              : startPath
+              : (nativeAuthorizeReturn() ?? startPath)
           );
         } catch (error) {
           let message = tError(error, t);

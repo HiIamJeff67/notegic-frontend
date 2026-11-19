@@ -2,3 +2,18 @@
 identifier = "allow-sidecar-session"
 description = "Enables the sidecar_session command."
 commands.allow = ["sidecar_session"]
+
+[[permission]]
+identifier = "allow-start-native-login"
+description = "Enables the start_native_login command."
+commands.allow = ["start_native_login"]
+
+[[permission]]
+identifier = "allow-native-session"
+description = "Enables the native_session command."
+commands.allow = ["native_session"]
+
+[[permission]]
+identifier = "allow-logout-native"
+description = "Enables the logout_native command."
+commands.allow = ["logout_native"]

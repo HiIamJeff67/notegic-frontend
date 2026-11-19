@@ -12,8 +12,15 @@ import {
   useSidebar,
 } from "@shared/components/shadcn/sidebar";
 import { useNavigate } from "@tanstack/react-router";
+import { listen } from "@tauri-apps/api/event";
 import { LayoutDashboardIcon, LogIn } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  logoutNative,
+  startNativeLogin,
+} from "../../../../api/functions/nativeAuth.function";
+import { setAccessToken } from "../../../../api/tokens/accessToken";
 
 export function AppSidebar() {
   const { t } = useTranslation();
@@ -21,9 +28,24 @@ export function AppSidebar() {
   const sidebarManager = useSidebar();
   const isSidebarExpanded = sidebarManager.open || sidebarManager.isMobile;
   const loginLabel = t("auth.login");
+  const [displayName, setDisplayName] = useState("");
 
-  // Browser sign-in returns through a later desktop session handoff.
-  const openLogin = () => undefined;
+  useEffect(() => {
+    const subscription = listen<{ accessToken: string; displayName: string }>(
+      "native-session",
+      event => {
+        setAccessToken(event.payload.accessToken);
+        setDisplayName(event.payload.displayName);
+      }
+    );
+    return () => {
+      void subscription.then(unlisten => unlisten());
+    };
+  }, []);
+
+  const openLogin = () => {
+    void startNativeLogin();
+  };
 
   return (
     <Sidebar
@@ -69,13 +91,20 @@ export function AppSidebar() {
                 className={`flex w-full items-center select-none hover:bg-primary ${
                   isSidebarExpanded ? "justify-start" : "justify-center"
                 }`}
-                aria-label={loginLabel}
-                title={loginLabel}
-                onClick={openLogin}
+                aria-label={displayName || loginLabel}
+                title={displayName || loginLabel}
+                onClick={() => {
+                  if (displayName)
+                    void logoutNative().then(() => {
+                      setAccessToken("");
+                      setDisplayName("");
+                    });
+                  else openLogin();
+                }}
               >
                 <LogIn />
                 {isSidebarExpanded && (
-                  <span className="truncate">{loginLabel}</span>
+                  <span className="truncate">{displayName || loginLabel}</span>
                 )}
               </SidebarMenuButton>
             </SidebarMenuItem>

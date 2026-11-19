@@ -2,6 +2,7 @@ import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
 import { fetchGetUserData } from "@/api/fetches/user.fetch";
 import { HasAuthCookies } from "@/api/functions/auth.serverFn";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
+import { readNativeAuthorizationRequest } from "@/api/tokens/nativeAuthorization";
 import LoginPage from "@/pages/auth/LoginPage";
 import { pageTitle } from "@/seo/pageTitle";
 
@@ -24,7 +25,12 @@ export const Route = createFileRoute("/_auth/login")({
         { staleTime: 0 }
       );
       if (response && response.success) {
-        throw redirect({ to: "/app/dashboard", replace: true });
+        throw redirect({
+          to: readNativeAuthorizationRequest()
+            ? "/native/authorize"
+            : "/app/dashboard",
+          replace: true,
+        });
       }
       return {};
     } catch (error) {
