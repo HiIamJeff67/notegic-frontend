@@ -116,6 +116,35 @@ adopts it.
 This cap is required before the desktop local-first engine writes through the
 shared schema.
 
+### Local repositories
+
+Shared local writes live in `packages/api/local/repositories/`. A repository
+method is one database operation: `CreateOne`, `CreateMany`, `GetOne`,
+`GetMany`, `UpdateOne`, `UpdateMany`, `DeleteOne`, `DeleteMany`,
+`RestoreOne`, or `RestoreMany`. It receives the caller's `db` and one input,
+and returns one output. Inputs live in `repositories/inputs/`. Outputs live in
+`repositories/outputs/`. Files are `rootShelf.repository.ts`,
+`rootShelf.input.ts`, and `rootShelf.output.ts`.
+
+A `Many` method reads or writes each table once. It does not call the `One`
+method for each row. `One` calls `Many` with a single row. A permission set
+used by a write stays inside that method.
+
+The caller decides whether that `db` is the open connection or an open
+transaction. A method that writes several rows starts its own transaction, so
+one call stays atomic. When the caller passes an existing transaction, the
+inner transaction is a savepoint of that caller transaction.
+
+Hooks in `packages/api/hooks/` are the local-first call. A mutation writes
+through the open `db`, calls that app's `api/functions/` function, then
+settles the outbox row. The screen reads the local result from the mutation
+result. Web simulators and synchronizers stay until a later issue switches
+Web onto these hooks.
+
+`TransactionTable.status` is `pending`, `accepted`, `rejected`, or `unplaced`.
+`depends_on_sequence` ties a child operation to the local operation it needs.
+An unplaced row stays on the device. A later success must not delete it.
+
 ### The last API call stays in the app
 
 `packages/api` owns the contract, path, and validation. The function that

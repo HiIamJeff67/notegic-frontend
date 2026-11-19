@@ -20,6 +20,8 @@ const transaction = (
   affected: { routineId: parentId, kind: "Start" },
   retryCount: 0,
   lastError: null,
+  status: "pending",
+  dependsOnSequence: null,
   createdAt: new Date(0),
 });
 const createBody = {

@@ -17,7 +17,7 @@ describe("block pack document", () => {
     const update = Uint8Array.from([1, 2, 3, 4]);
     const stateVector = Uint8Array.from([9, 8]);
     const opened = await initialize(filePath);
-    saveBlockPackDocument(opened.database, {
+    saveBlockPackDocument(opened.db, {
       blockPackId,
       update,
       stateVector,
@@ -27,7 +27,7 @@ describe("block pack document", () => {
     opened.close();
 
     const reopened = await initialize(filePath);
-    const document = readBlockPackDocument(reopened.database, blockPackId);
+    const document = readBlockPackDocument(reopened.db, blockPackId);
     reopened.close();
 
     expect(document?.blockPackId).toBe(blockPackId);

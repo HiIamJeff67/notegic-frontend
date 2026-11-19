@@ -20,7 +20,7 @@ export type BlockPackDocumentRow = {
   updatedAt: Date;
 };
 
-type DocumentDatabase = BetterSQLite3Database<{
+type DocumentDB = BetterSQLite3Database<{
   BlockPackDocument: typeof BlockPackDocument;
 }>;
 
@@ -40,13 +40,12 @@ export const ensureBlockPackDocumentTable = (sqlite: Database.Database) => {
 };
 
 export const saveBlockPackDocument = (
-  database: DocumentDatabase,
+  db: DocumentDB,
   document: BlockPackDocumentRow
 ) => {
   const update = Buffer.from(document.update);
   const stateVector = Buffer.from(document.stateVector);
-  database
-    .insert(BlockPackDocument)
+  db.insert(BlockPackDocument)
     .values({
       blockPackId: document.blockPackId,
       update,
@@ -69,10 +68,10 @@ export const saveBlockPackDocument = (
 };
 
 export const readBlockPackDocument = (
-  database: DocumentDatabase,
+  db: DocumentDB,
   blockPackId: string
 ): BlockPackDocumentRow | undefined => {
-  const row = database
+  const row = db
     .select()
     .from(BlockPackDocument)
     .where(eq(BlockPackDocument.blockPackId, blockPackId))

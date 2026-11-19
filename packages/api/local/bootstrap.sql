@@ -201,6 +201,8 @@ CREATE TABLE `TransactionTable` (
 	`affected` text,
 	`retry_count` integer DEFAULT 0 NOT NULL,
 	`last_error` text,
+	`status` text DEFAULT 'pending' NOT NULL,
+	`depends_on_sequence` integer,
 	`created_at` integer DEFAULT '"2026-11-05T12:36:44.452Z"' NOT NULL,
 	FOREIGN KEY (`owner_public_id`) REFERENCES `UserTable`(`public_id`) ON UPDATE no action ON DELETE no action
 );

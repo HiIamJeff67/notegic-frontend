@@ -62,6 +62,8 @@ const transaction = (
   ownerPublicId: "user",
   retryCount: 0,
   lastError: null,
+  status: "pending",
+  dependsOnSequence: null,
   createdAt: new Date(0),
 });
 const response = {

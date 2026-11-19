@@ -38,4 +38,14 @@ export class LocalDatabaseClientExceptions {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
     });
   };
+
+  static NotPermitted = (): NotegicException => {
+    return new NotegicException({
+      code: this.BaseCode + 3,
+      prefix: this.Prefix,
+      reason: ExceptionReasonDictionary.client.localDatabase.notPermitted,
+      message: "Local database operation is not permitted",
+      status: StatusCodes.FORBIDDEN,
+    });
+  };
 }

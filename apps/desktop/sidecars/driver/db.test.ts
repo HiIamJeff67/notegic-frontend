@@ -11,7 +11,7 @@ describe("desktop sqlite driver", () => {
     const directory = mkdtempSync(path.join(tmpdir(), "notegic-driver-"));
     const filePath = path.join(directory, "notegic.sqlite");
     const opened = await initialize(filePath);
-    saveRootShelf(opened.database, {
+    saveRootShelf(opened.db, {
       id: shelfId,
       name: "Desk",
       createdAt: timestamp,
@@ -21,7 +21,7 @@ describe("desktop sqlite driver", () => {
     opened.close();
 
     const reopened = await initialize(filePath);
-    const shelf = readRootShelf(reopened.database, shelfId);
+    const shelf = readRootShelf(reopened.db, shelfId);
     reopened.close();
 
     expect(shelf).toMatchObject({

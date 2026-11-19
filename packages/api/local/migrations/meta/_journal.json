@@ -50,6 +50,13 @@
       "when": 1793882200568,
       "tag": "0006_outstanding_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1795087069095,
+      "tag": "0007_outbox_status",
+      "breakpoints": true
     }
   ]
 }

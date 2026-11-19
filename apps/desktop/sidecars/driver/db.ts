@@ -19,7 +19,7 @@ export const SharedSchemaWithBlockPackDocument = {
   BlockPackDocument,
 };
 
-export type DriverDatabase = ReturnType<
+export type DriverDB = ReturnType<
   typeof drizzle<typeof SharedSchemaWithBlockPackDocument>
 >;
 
@@ -109,18 +109,18 @@ export const initialize = async (
   });
   ensureBlockPackDocumentTable(sqlite);
   sqlite.pragma("foreign_keys = ON");
-  const database = drizzle(sqlite, {
+  const db = drizzle(sqlite, {
     schema: SharedSchemaWithBlockPackDocument,
   });
 
   return {
-    database,
+    db,
     close: () => sqlite.close(),
   };
 };
 
 export const saveRootShelf = (
-  database: DriverDatabase,
+  db: DriverDB,
   shelf: {
     id: string;
     name: string;
@@ -129,12 +129,8 @@ export const saveRootShelf = (
     lastAnalyzedAt: Date;
   }
 ) => {
-  database.insert(schemas.RootShelf).values(shelf).run();
+  db.insert(schemas.RootShelf).values(shelf).run();
 };
 
-export const readRootShelf = (database: DriverDatabase, id: string) =>
-  database
-    .select()
-    .from(schemas.RootShelf)
-    .where(eq(schemas.RootShelf.id, id))
-    .get();
+export const readRootShelf = (db: DriverDB, id: string) =>
+  db.select().from(schemas.RootShelf).where(eq(schemas.RootShelf.id, id)).get();

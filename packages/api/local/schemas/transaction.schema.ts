@@ -17,6 +17,8 @@ export const Transaction = sqliteTable(
     affected: text("affected", { mode: "json" }),
     retryCount: integer("retry_count").notNull().default(0),
     lastError: text("last_error"),
+    status: text("status").notNull().default("pending"),
+    dependsOnSequence: integer("depends_on_sequence"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(new Date()),

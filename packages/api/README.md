@@ -21,7 +21,8 @@ queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
 invokers/            request validation and error mapping; each call receives func
-local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, schemaHead.ts, phase.ts, and result.ts
+hooks/               TanStack Query hooks; a local-first mutation uses the open db, then the app function, then settles the outbox
+local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, repositories/, schemaHead.ts, phase.ts, and result.ts
 
 `local/` does not read browser storage. Whether a local preference is enabled
 lives in `packages/lib/storage/localPreference.ts`, so this package does not
@@ -30,7 +31,7 @@ import `packages/lib`.
 
 `schemaHead.ts` is the latest version in the shared migration chain. Web and
 Desktop each keep `localSchemaVersion` in `schemaVersion.ts` beside their driver.
-The migrator stops at that version. Both are 7, the current head, so today's
+The migrator stops at that version. Both are 8, the current head, so today's
 databases still migrate to the head. `npm run local-schema-version` prints
 the three numbers. `npm run local-schema-version -- --set=web,desktop`
 raises the selected app to the journal head. `--write-head` records that head

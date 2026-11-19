@@ -238,6 +238,7 @@ export const ExceptionReasonDictionary = {
     localDatabase: {
       localDatabaseUnavailable: "LocalDatabaseUnavailable",
       invalidLoggedInUser: "InvalidLoggedInUser",
+      notPermitted: "NotPermitted",
     },
     realtime: {
       missingWebSocketURL: "MissingWebSocketURL",

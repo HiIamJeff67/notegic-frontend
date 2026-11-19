@@ -1,5 +1,3 @@
-import { MigrationJournal } from "./migrationCatalog";
-
 export type MigrationEntry = {
   idx: number;
   tag: string;
@@ -7,6 +5,10 @@ export type MigrationEntry = {
   sqlContent: string;
   statements: string[];
   downStatements?: string[];
+};
+
+export type MigrationJournal = {
+  entries?: { idx: number; tag: string }[];
 };
 
 export type MigrationResult = {
