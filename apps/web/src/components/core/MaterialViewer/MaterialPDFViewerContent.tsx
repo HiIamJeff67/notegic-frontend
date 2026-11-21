@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import * as pdfjs from "pdfjs-dist";
+import pdfWorkerURL from "pdfjs-dist/build/pdf.worker.mjs?url";
 import {
   type FormEvent,
   type MouseEvent,
@@ -54,10 +55,7 @@ import MaterialViewerFrame, {
   type MaterialFileState,
 } from "./MaterialViewerFrame";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.mjs",
-  import.meta.url
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerURL;
 
 interface MaterialPDFViewerContentProps {
   meta: MaterialMeta;

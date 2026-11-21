@@ -137,6 +137,35 @@ Do not use the Cloudflare Worker runtime variable section for `VITE_*` values.
 Runtime bindings are available to Worker request handlers, but they are not
 automatically embedded into the browser bundle by Vite.
 
+## Browser-only PDF modules and SSR
+
+`ssr: false` controls route rendering; it does not prevent evaluation of static
+imports used by a route loader or search validator. Keep browser-only PDF.js
+behind the lazy import in `MaterialViewer`, using its existing Suspense cover.
+Do not statically import the PDF viewer from the shared route dependency graph.
+
+Import the PDF worker with Vite's `?url` asset suffix. The worker URL must point
+to an emitted public asset, rather than resolving a package path against
+`import.meta.url` in the Worker. Vite documents that the latter pattern does
+not support SSR: [Static asset handling](https://vite.dev/guide/assets#new-url-url-import-meta-url).
+
+After changing the viewer or its route dependencies, run:
+
+```sh
+npm run test:unit -- apps/web/src/components/core/MaterialViewer/MaterialViewer.test.tsx
+npm run test:e2e -- pdfViewer.spec.ts --workers=1
+npm run typecheck --workspace=@notegic/web
+npm run build:web:cloudflare
+```
+
+The unit test rejects eager evaluation of the PDF module during SSR. The E2E
+suite checks public SSR responses and renders a real PDF with the viewer's
+worker configuration, rejecting fake-worker fallback. The Cloudflare build
+must emit a separate PDF viewer module and a public `pdf.worker-*.mjs` asset.
+A successful build alone does not prove that requests work in the Cloudflare
+runtime; verify non-maintenance homepage, login and registration requests in
+that runtime before promoting a deployment.
+
 ## Local verification of build-time propagation
 
 Run this from the repository root after changing `turbo.json` or a Vite env

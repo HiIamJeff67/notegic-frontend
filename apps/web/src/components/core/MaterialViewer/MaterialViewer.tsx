@@ -1,15 +1,20 @@
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import { MaterialMeta } from "@shared/reducers/materialMeta.reducer";
-import { Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
 import { useShelfItem } from "@/hooks";
 import MaterialAudioViewerContent from "./MaterialAudioViewerContent";
 import MaterialImageViewerContent from "./MaterialImageViewerContent";
-import MaterialPDFViewerContent from "./MaterialPDFViewerContent";
 import MaterialTextViewerContent from "./MaterialTextViewerContent";
 import MaterialUnsupportedViewerContent from "./MaterialUnsupportedViewerContent";
 import MaterialVideoViewerContent from "./MaterialVideoViewerContent";
 import type { MaterialFileState } from "./MaterialViewerFrame";
+
+// Route loaders also import this module during SSR. Load browser-only PDF.js
+// only when the client actually renders a PDF.
+const MaterialPDFViewerContent = lazy(
+  () => import("./MaterialPDFViewerContent")
+);
 
 interface MaterialViewerProps {
   materialMeta: MaterialMeta;
