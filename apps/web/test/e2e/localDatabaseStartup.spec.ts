@@ -422,11 +422,20 @@ test("upgrades a freshly created database after a local down migration", async (
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { Migrator, migrationJournal, migrationSqlModules } =
       await importModule("/test/e2e/localDatabaseModules.ts");
-    const { sql } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
-    const { Routine, Station } = await importModule(
+    const { sql, LocalYjsDocumentStore } = await importModule(
+      "/test/e2e/localDatabaseTestSupport.ts"
+    );
+    const { Routine, Station, Transaction, User } = await importModule(
       "/test/e2e/localDatabaseModules.ts"
     );
 
+    await localDB.insert(User).values({
+      publicId: "e2e-updown-user",
+      name: "E2EUpdownUser",
+      displayName: "E2E Updown User",
+      email: "e2e-updown@example.com",
+      isLoggedIn: false,
+    });
     await localDB.insert(Station).values({
       id: "e2e-updown-station",
       name: "E2E Updown Station",
@@ -437,6 +446,20 @@ test("upgrades a freshly created database after a local down migration", async (
       title: "E2E Updown Routine",
       timeoutSeconds: 600,
     });
+    await localDB.insert(Transaction).values({
+      ownerPublicId: "e2e-updown-user",
+      entityType: "Routine",
+      actionType: "CREATE",
+      body: { id: "e2e-updown-routine" },
+      retryCount: 0,
+    });
+    await LocalYjsDocumentStore.save(
+      "e2e-updown-user",
+      "00000000-0000-4000-8000-000000000002",
+      new Uint8Array([1, 2, 3]),
+      new Uint8Array([4, 5]),
+      true
+    );
 
     const migrations = Migrator.getOrderedMigrations(
       migrationJournal,
@@ -473,12 +496,23 @@ test("upgrades a freshly created database after a local down migration", async (
     const { localDB } = await importModule("/src/api/local/db.ts");
     const { Migrator, migrationJournal, migrationSqlModules } =
       await importModule("/test/e2e/localDatabaseModules.ts");
-    const { eq } = await importModule("/test/e2e/localDatabaseTestSupport.ts");
-    const { Routine } = await importModule("/test/e2e/localDatabaseModules.ts");
+    const { eq, LocalYjsDocumentStore } = await importModule(
+      "/test/e2e/localDatabaseTestSupport.ts"
+    );
+    const { Routine, Transaction } = await importModule(
+      "/test/e2e/localDatabaseModules.ts"
+    );
     await localDB.ensureReady();
     const routine = await localDB.query.Routine.findFirst({
       where: eq(Routine.id, "e2e-updown-routine"),
     });
+    const transaction = await localDB.query.Transaction.findFirst({
+      where: eq(Transaction.ownerPublicId, "e2e-updown-user"),
+    });
+    const yjs = await LocalYjsDocumentStore.load(
+      "e2e-updown-user",
+      "00000000-0000-4000-8000-000000000002"
+    );
     return {
       version: await localDB.getVersion(),
       target: Migrator.getOrderedMigrations(
@@ -486,8 +520,20 @@ test("upgrades a freshly created database after a local down migration", async (
         migrationSqlModules
       ).length,
       timeoutSeconds: routine?.timeoutSeconds,
+      pendingBodyId:
+        transaction !== undefined &&
+        typeof transaction.body === "object" &&
+        transaction.body !== null &&
+        "id" in transaction.body
+          ? transaction.body.id
+          : null,
+      pendingRetryCount: transaction?.retryCount,
+      hasPendingYjs: yjs?.needsFlush === true,
     };
   });
   expect(result.version).toBe(result.target);
   expect(result.timeoutSeconds).toBe(600);
+  expect(result.pendingBodyId).toBe("e2e-updown-routine");
+  expect(result.pendingRetryCount).toBe(0);
+  expect(result.hasPendingYjs).toBe(true);
 });
