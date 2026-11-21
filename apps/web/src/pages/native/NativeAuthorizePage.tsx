@@ -8,6 +8,7 @@ import { HasAuthCookies } from "@/api/functions/auth.serverFn";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { AuthorizeNative } from "@/api/functions/nativeAuth.serverFn";
 import {
+  clearNativeAuthorizationRequest,
   desktopCallback,
   nativeCallbackUrl,
   readNativeAuthorizationRequest,
@@ -70,6 +71,7 @@ export default function NativeAuthorizePage() {
       if (response.data.redirectUri !== desktopCallback) {
         throw new Error("Unregistered desktop callback");
       }
+      clearNativeAuthorizationRequest();
       setGranted({
         href: nativeCallbackUrl(
           response.data.redirectUri,
@@ -82,6 +84,11 @@ export default function NativeAuthorizePage() {
     } finally {
       setPending(false);
     }
+  };
+
+  const cancel = () => {
+    clearNativeAuthorizationRequest();
+    router.push(`/${WebURLPathDictionary.home}`);
   };
 
   if (!requestId) {
@@ -116,6 +123,9 @@ export default function NativeAuthorizePage() {
           <Button disabled={pending} onClick={() => void confirm()}>
             {pending ? "Confirming" : "Continue"}
           </Button>
+          <Button variant="outline" onClick={cancel}>
+            Cancel
+          </Button>
         </>
       ) : (
         <>
@@ -131,6 +141,9 @@ export default function NativeAuthorizePage() {
             }
           >
             Register
+          </Button>
+          <Button variant="outline" onClick={cancel}>
+            Cancel
           </Button>
         </>
       )}
