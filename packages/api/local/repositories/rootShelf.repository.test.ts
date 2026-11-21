@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { NotegicLocalDatabaseError } from "@shared/api/exceptions/errors/localDatabase.error";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import { client } from "@shared/api/local/client";
 import { type MigrationEntry, Migrator } from "@shared/api/local/migrator";
 import { OutboxRepository } from "@shared/api/local/repositories/outbox.repository";
 import { RootShelfRepository } from "@shared/api/local/repositories/rootShelf.repository";
@@ -14,6 +15,7 @@ import {
   UsersToShelves,
 } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { getSQLiteDriver } from "@shared/api/local/driver";
 import Database from "better-sqlite3";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
@@ -90,6 +92,8 @@ const openFixture = async () => {
   sqlite.pragma("foreign_keys = ON");
   const opened = {
     db: drizzle(sqlite),
+    client: client(getSQLiteDriver(sqlite)),
+    sqlite,
     close: () => sqlite.close(),
   };
   opened.db
@@ -114,7 +118,7 @@ const readRootShelf = (db: ReturnType<typeof drizzle>, id: string) =>
 describe("root shelf repository", () => {
   it("writes the shelf and one pending outbox row without passing the schema version", async () => {
     const { opened, version } = await openFixture();
-    const committed = RootShelfRepository.CreateOne(opened.db, {
+    const committed = await RootShelfRepository.CreateOne(opened.client, {
       id: shelfId,
       name: "Desk",
       ownerPublicId,
@@ -143,12 +147,12 @@ describe("root shelf repository", () => {
   it("writes every shelf and outbox row in one insert per table", async () => {
     const { opened } = await openFixture();
     const statements: string[] = [];
-    const prepare = opened.db.$client.prepare.bind(opened.db.$client);
-    opened.db.$client.prepare = (source: string) => {
+    const prepare = opened.sqlite.prepare.bind(opened.sqlite);
+    opened.sqlite.prepare = ((source: string) => {
       statements.push(source);
       return prepare(source);
-    };
-    const committed = RootShelfRepository.CreateMany(opened.db, {
+    }) as typeof opened.sqlite.prepare;
+    const committed = await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         {
@@ -177,8 +181,8 @@ describe("root shelf repository", () => {
 
   it("rolls every shelf back when one owner does not exist", async () => {
     const { opened } = await openFixture();
-    expect(() =>
-      RootShelfRepository.CreateMany(opened.db, {
+    await expect(
+      RootShelfRepository.CreateMany(opened.client, {
         shelves: [
           { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
           {
@@ -189,7 +193,7 @@ describe("root shelf repository", () => {
           },
         ],
       })
-    ).toThrow();
+    ).rejects.toThrow();
     expect(readRootShelf(opened.db, shelfId)).toBeUndefined();
     expect(readRootShelf(opened.db, secondShelfId)).toBeUndefined();
     expect(opened.db.select().from(Transaction).all()).toEqual([]);
@@ -198,14 +202,14 @@ describe("root shelf repository", () => {
 
   it("rolls the shelf back when the outbox owner does not exist", async () => {
     const { opened } = await openFixture();
-    expect(() =>
-      RootShelfRepository.CreateOne(opened.db, {
+    await expect(
+      RootShelfRepository.CreateOne(opened.client, {
         id: shelfId,
         name: "Desk",
         ownerPublicId: "55555555-5555-4555-8555-555555555555",
         at: timestamp,
       })
-    ).toThrow();
+    ).rejects.toThrow();
     expect(readRootShelf(opened.db, shelfId)).toBeUndefined();
     expect(opened.db.select().from(Transaction).all()).toEqual([]);
     opened.close();
@@ -213,13 +217,13 @@ describe("root shelf repository", () => {
 
   it("renames the shelf and records one update outbox row", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateOne(opened.db, {
+    await RootShelfRepository.CreateOne(opened.client, {
       id: shelfId,
       name: "Desk",
       ownerPublicId,
       at: timestamp,
     });
-    const renamed = RootShelfRepository.UpdateOne(opened.db, {
+    const renamed = await RootShelfRepository.UpdateOne(opened.client, {
       id: shelfId,
       name: "Studio",
       ownerPublicId,
@@ -243,7 +247,7 @@ describe("root shelf repository", () => {
 
   it("does not rename a shelf the user cannot write", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateOne(opened.db, {
+    await RootShelfRepository.CreateOne(opened.client, {
       id: shelfId,
       name: "Desk",
       ownerPublicId,
@@ -260,13 +264,13 @@ describe("root shelf repository", () => {
         isLoggedIn: false,
       })
       .run();
-    expect(() =>
-      RootShelfRepository.UpdateOne(opened.db, {
+    await expect(
+      RootShelfRepository.UpdateOne(opened.client, {
         id: shelfId,
         name: "Studio",
         ownerPublicId: readerPublicId,
       })
-    ).toThrow(NotegicLocalDatabaseError);
+    ).rejects.toThrow(NotegicLocalDatabaseError);
     expect(readRootShelf(opened.db, shelfId)?.name).toBe("Desk");
     expect(opened.db.select().from(Transaction).all()).toHaveLength(1);
     opened.close();
@@ -274,13 +278,13 @@ describe("root shelf repository", () => {
 
   it("marks an outbox row unplaced without removing the shelf", async () => {
     const { opened } = await openFixture();
-    const committed = RootShelfRepository.CreateOne(opened.db, {
+    const committed = await RootShelfRepository.CreateOne(opened.client, {
       id: shelfId,
       name: "Desk",
       ownerPublicId,
       at: timestamp,
     });
-    OutboxRepository.Settle(opened.db, {
+    await OutboxRepository.Settle(opened.client, {
       sequence: committed.sequence,
       status: "unplaced",
       lastError: "parent was deleted",
@@ -300,19 +304,19 @@ describe("root shelf repository", () => {
 
   it("reads many shelves in one select", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateMany(opened.db, {
+    await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio", ownerPublicId, at: timestamp },
       ],
     });
     const statements: string[] = [];
-    const prepare = opened.db.$client.prepare.bind(opened.db.$client);
-    opened.db.$client.prepare = (source: string) => {
+    const prepare = opened.sqlite.prepare.bind(opened.sqlite);
+    opened.sqlite.prepare = ((source: string) => {
       statements.push(source);
       return prepare(source);
-    };
-    const read = RootShelfRepository.GetMany(opened.db, {
+    }) as typeof opened.sqlite.prepare;
+    const read = await RootShelfRepository.GetMany(opened.client, {
       ids: [secondShelfId, shelfId, "88888888-8888-4888-8888-888888888888"],
     });
     opened.close();
@@ -328,19 +332,19 @@ describe("root shelf repository", () => {
 
   it("renames every shelf in one update and one outbox insert", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateMany(opened.db, {
+    await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio", ownerPublicId, at: timestamp },
       ],
     });
     const statements: string[] = [];
-    const prepare = opened.db.$client.prepare.bind(opened.db.$client);
-    opened.db.$client.prepare = (source: string) => {
+    const prepare = opened.sqlite.prepare.bind(opened.sqlite);
+    opened.sqlite.prepare = ((source: string) => {
       statements.push(source);
       return prepare(source);
-    };
-    const renamed = RootShelfRepository.UpdateMany(opened.db, {
+    }) as typeof opened.sqlite.prepare;
+    const renamed = await RootShelfRepository.UpdateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk 2", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio 2", ownerPublicId, at: timestamp },
@@ -367,14 +371,14 @@ describe("root shelf repository", () => {
 
   it("rolls every rename back when one shelf is not writable", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateMany(opened.db, {
+    await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio", ownerPublicId, at: timestamp },
       ],
     });
-    expect(() =>
-      RootShelfRepository.UpdateMany(opened.db, {
+    await expect(
+      RootShelfRepository.UpdateMany(opened.client, {
         shelves: [
           { id: shelfId, name: "Desk 2", ownerPublicId, at: timestamp },
           {
@@ -385,7 +389,7 @@ describe("root shelf repository", () => {
           },
         ],
       })
-    ).toThrow(NotegicLocalDatabaseError);
+    ).rejects.toThrow(NotegicLocalDatabaseError);
     expect(readRootShelf(opened.db, shelfId)?.name).toBe("Desk");
     expect(readRootShelf(opened.db, secondShelfId)?.name).toBe("Studio");
     expect(opened.db.select().from(Transaction).all()).toHaveLength(2);
@@ -394,7 +398,7 @@ describe("root shelf repository", () => {
 
   it("soft-deletes every shelf in one update and refuses a writer", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateMany(opened.db, {
+    await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio", ownerPublicId, at: timestamp },
@@ -419,14 +423,14 @@ describe("root shelf repository", () => {
         permission: AccessControlPermission.Write,
       })
       .run();
-    expect(() =>
-      RootShelfRepository.DeleteOne(opened.db, {
+    await expect(
+      RootShelfRepository.DeleteOne(opened.client, {
         id: shelfId,
         ownerPublicId: writerPublicId,
         at: timestamp,
       })
-    ).toThrow(NotegicLocalDatabaseError);
-    const deleted = RootShelfRepository.DeleteMany(opened.db, {
+    ).rejects.toThrow(NotegicLocalDatabaseError);
+    const deleted = await RootShelfRepository.DeleteMany(opened.client, {
       shelves: [
         { id: shelfId, ownerPublicId, at: timestamp },
         { id: secondShelfId, ownerPublicId, at: timestamp },
@@ -449,20 +453,20 @@ describe("root shelf repository", () => {
 
   it("restores every deleted shelf in one update", async () => {
     const { opened } = await openFixture();
-    RootShelfRepository.CreateMany(opened.db, {
+    await RootShelfRepository.CreateMany(opened.client, {
       shelves: [
         { id: shelfId, name: "Desk", ownerPublicId, at: timestamp },
         { id: secondShelfId, name: "Studio", ownerPublicId, at: timestamp },
       ],
     });
-    RootShelfRepository.DeleteMany(opened.db, {
+    await RootShelfRepository.DeleteMany(opened.client, {
       shelves: [
         { id: shelfId, ownerPublicId, at: timestamp },
         { id: secondShelfId, ownerPublicId, at: timestamp },
       ],
     });
     const restoredAt = new Date("2026-01-03T00:00:00.000Z");
-    const restored = RootShelfRepository.RestoreMany(opened.db, {
+    const restored = await RootShelfRepository.RestoreMany(opened.client, {
       shelves: [
         { id: shelfId, ownerPublicId, at: restoredAt },
         { id: secondShelfId, ownerPublicId, at: restoredAt },

@@ -14,7 +14,8 @@ export type GetRootShelfInput = {
 };
 
 export type GetManyRootShelvesInput = {
-  ids: string[];
+  ids?: string[];
+  ownerPublicId?: string;
 };
 
 export type UpdateRootShelfInput = {

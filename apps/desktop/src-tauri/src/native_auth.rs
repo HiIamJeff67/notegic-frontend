@@ -363,7 +363,10 @@ impl NativeSession {
     }
 
     async fn account_name(api_base: &str, access_token: &str) -> Result<String, String> {
-        let response = reqwest::Client::new()
+        let response = reqwest::Client::builder()
+            .user_agent("NotegicDesktop/0.1")
+            .build()
+            .map_err(|error| error.to_string())?
             .get(format!("{api_base}/users/me"))
             .header("authorization", format!("Bearer {access_token}"))
             .send()
@@ -378,7 +381,10 @@ impl NativeSession {
     }
 
     async fn post_json(url: &str, body: serde_json::Value) -> Result<reqwest::Response, String> {
-        reqwest::Client::new()
+        reqwest::Client::builder()
+            .user_agent("NotegicDesktop/0.1")
+            .build()
+            .map_err(|error| error.to_string())?
             .post(url)
             .header("content-type", "application/json")
             .header("cache-control", "no-store")

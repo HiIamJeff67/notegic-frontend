@@ -1,28 +1,31 @@
 import type {
   CreateRootShelfRequest,
   CreateRootShelfResponse,
+  DeleteMyRootShelfByIdRequest,
+  DeleteMyRootShelfByIdResponse,
   UpdateMyRootShelfByIdRequest,
   UpdateMyRootShelfByIdResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
 import {
   mutationFnCreateRootShelf,
+  mutationFnDeleteMyRootShelfById,
   mutationFnUpdateMyRootShelfById,
 } from "@shared/api/invokers/rootShelf.invoker";
+import type { Client } from "@shared/api/local/client";
 import { OutboxStatus } from "@shared/api/local/repositories/inputs/outbox.input";
-import type { LocalDB } from "@shared/api/local/repositories/localDB";
 import { OutboxRepository } from "@shared/api/local/repositories/outbox.repository";
 import { RootShelfRepository } from "@shared/api/local/repositories/rootShelf.repository";
 import { useMutation } from "@tanstack/react-query";
 
 export const useCreateRootShelf = (
-  db: LocalDB,
+  client: Client,
   ownerPublicId: string,
   func: (request: CreateRootShelfRequest) => Promise<CreateRootShelfResponse>
 ) =>
   useMutation({
     mutationFn: async (request: CreateRootShelfRequest) => {
       const id = request.body.id ?? crypto.randomUUID();
-      const local = RootShelfRepository.CreateOne(db, {
+      const committed = await RootShelfRepository.CreateOne(client, {
         id,
         name: request.body.name,
         ownerPublicId,
@@ -33,18 +36,19 @@ export const useCreateRootShelf = (
       };
       try {
         const response = await mutationFnCreateRootShelf(shelfRequest, func);
-        const lastError = response.exception?.message;
-        OutboxRepository.Settle(db, {
-          sequence: local.sequence,
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
           status: response.success
             ? OutboxStatus.accepted
             : OutboxStatus.unplaced,
-          ...(typeof lastError === "string" ? { lastError } : {}),
+          ...(typeof response.exception?.message === "string"
+            ? { lastError: response.exception.message }
+            : {}),
         });
-        return { local, response };
+        return { local: committed, response };
       } catch (error) {
-        OutboxRepository.Settle(db, {
-          sequence: local.sequence,
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
           status: OutboxStatus.unplaced,
           ...(error instanceof Error ? { lastError: error.message } : {}),
         });
@@ -54,7 +58,7 @@ export const useCreateRootShelf = (
   });
 
 export const useUpdateMyRootShelfById = (
-  db: LocalDB,
+  client: Client,
   ownerPublicId: string,
   func: (
     request: UpdateMyRootShelfByIdRequest
@@ -69,25 +73,62 @@ export const useUpdateMyRootShelfById = (
           response: await mutationFnUpdateMyRootShelfById(request, func),
         };
       }
-      const local = RootShelfRepository.UpdateOne(db, {
+      const committed = await RootShelfRepository.UpdateOne(client, {
         id: request.body.rootShelfId,
         name,
         ownerPublicId,
       });
       try {
         const response = await mutationFnUpdateMyRootShelfById(request, func);
-        const lastError = response.exception?.message;
-        OutboxRepository.Settle(db, {
-          sequence: local.sequence,
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
           status: response.success
             ? OutboxStatus.accepted
             : OutboxStatus.unplaced,
-          ...(typeof lastError === "string" ? { lastError } : {}),
+          ...(typeof response.exception?.message === "string"
+            ? { lastError: response.exception.message }
+            : {}),
         });
-        return { local, response };
+        return { local: committed, response };
       } catch (error) {
-        OutboxRepository.Settle(db, {
-          sequence: local.sequence,
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
+          status: OutboxStatus.unplaced,
+          ...(error instanceof Error ? { lastError: error.message } : {}),
+        });
+        throw error;
+      }
+    },
+  });
+
+export const useDeleteMyRootShelfById = (
+  client: Client,
+  ownerPublicId: string,
+  func: (
+    request: DeleteMyRootShelfByIdRequest
+  ) => Promise<DeleteMyRootShelfByIdResponse>
+) =>
+  useMutation({
+    mutationFn: async (request: DeleteMyRootShelfByIdRequest) => {
+      const committed = await RootShelfRepository.DeleteOne(client, {
+        id: request.body.rootShelfId,
+        ownerPublicId,
+      });
+      try {
+        const response = await mutationFnDeleteMyRootShelfById(request, func);
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
+          status: response.success
+            ? OutboxStatus.accepted
+            : OutboxStatus.unplaced,
+          ...(typeof response.exception?.message === "string"
+            ? { lastError: response.exception.message }
+            : {}),
+        });
+        return { local: committed, response };
+      } catch (error) {
+        await OutboxRepository.Settle(client, {
+          sequence: committed.sequence,
           status: OutboxStatus.unplaced,
           ...(error instanceof Error ? { lastError: error.message } : {}),
         });

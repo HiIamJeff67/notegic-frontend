@@ -16,6 +16,7 @@
 # testing
 /coverage
 /test-results/
+/apps/web/test-results/
 /apps/desktop/test/results/
 
 # production

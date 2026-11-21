@@ -1,6 +1,7 @@
 import { LocalDatabaseClientExceptions } from "@shared/api/exceptions/client/localDatabase.exception";
 import { NotegicLocalDatabaseError } from "@shared/api/exceptions/errors/localDatabase.error";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+import type { Client } from "@shared/api/local/client";
 import {
   RootShelf,
   Transaction,
@@ -8,7 +9,7 @@ import {
 } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { OutboxStatus } from "./inputs/outbox.input";
 import type {
   CreateManyRootShelvesInput,
@@ -22,7 +23,6 @@ import type {
   UpdateManyRootShelvesInput,
   UpdateRootShelfInput,
 } from "./inputs/rootShelf.input";
-import type { LocalDB } from "./localDB";
 import type {
   CreateManyRootShelvesOutput,
   CreateRootShelfOutput,
@@ -37,17 +37,20 @@ import type {
 } from "./outputs/rootShelf.output";
 
 export class RootShelfRepository {
-  static CreateOne(
-    db: LocalDB,
+  static async CreateOne(
+    client: Client,
     input: CreateRootShelfInput
-  ): CreateRootShelfOutput {
-    return RootShelfRepository.CreateMany(db, { shelves: [input] }).shelves[0];
+  ): Promise<CreateRootShelfOutput> {
+    const created = await RootShelfRepository.CreateMany(client, {
+      shelves: [input],
+    });
+    return created.shelves[0];
   }
 
-  static CreateMany(
-    db: LocalDB,
+  static async CreateMany(
+    client: Client,
     input: CreateManyRootShelvesInput
-  ): CreateManyRootShelvesOutput {
+  ): Promise<CreateManyRootShelvesOutput> {
     if (input.shelves.length === 0) return { shelves: [] };
     const at = new Date();
     const shelves = input.shelves.map(shelf => ({
@@ -56,8 +59,9 @@ export class RootShelfRepository {
       ownerPublicId: shelf.ownerPublicId,
       at: shelf.at ?? at,
     }));
-    return db.transaction(tx => {
-      tx.insert(RootShelf)
+    return await client.transaction(async tx => {
+      await tx
+        .insert(RootShelf)
         .values(
           shelves.map(shelf => ({
             id: shelf.id,
@@ -68,7 +72,8 @@ export class RootShelfRepository {
           }))
         )
         .run();
-      tx.insert(UsersToShelves)
+      await tx
+        .insert(UsersToShelves)
         .values(
           shelves.map(shelf => ({
             userPublicId: shelf.ownerPublicId,
@@ -77,7 +82,7 @@ export class RootShelfRepository {
           }))
         )
         .run();
-      const outbox = tx
+      const outbox = await tx
         .insert(Transaction)
         .values(
           shelves.map(shelf => ({
@@ -99,16 +104,50 @@ export class RootShelfRepository {
     });
   }
 
-  static GetOne(db: LocalDB, input: GetRootShelfInput): GetRootShelfOutput {
-    return RootShelfRepository.GetMany(db, { ids: [input.id] }).shelves[0];
+  static async GetOne(
+    client: Client,
+    input: GetRootShelfInput
+  ): Promise<GetRootShelfOutput> {
+    const read = await RootShelfRepository.GetMany(client, { ids: [input.id] });
+    return read.shelves[0];
   }
 
-  static GetMany(
-    db: LocalDB,
+  static async GetMany(
+    client: Client,
     input: GetManyRootShelvesInput
-  ): GetManyRootShelvesOutput {
-    if (input.ids.length === 0) return { shelves: [] };
-    const rows = db
+  ): Promise<GetManyRootShelvesOutput> {
+    if (input.ownerPublicId !== undefined) {
+      const rows = await client
+        .select({
+          id: RootShelf.id,
+          name: RootShelf.name,
+          subShelfCount: RootShelf.subShelfCount,
+          itemCount: RootShelf.itemCount,
+          lastAnalyzedAt: RootShelf.lastAnalyzedAt,
+          deletedAt: RootShelf.deletedAt,
+          updatedAt: RootShelf.updatedAt,
+          createdAt: RootShelf.createdAt,
+        })
+        .from(RootShelf)
+        .innerJoin(
+          UsersToShelves,
+          and(
+            eq(UsersToShelves.rootShelfId, RootShelf.id),
+            eq(UsersToShelves.userPublicId, input.ownerPublicId)
+          )
+        )
+        .where(isNull(RootShelf.deletedAt))
+        .all();
+      return {
+        shelves: rows.map(row => ({
+          ...row,
+          deletedAt: row.deletedAt ?? null,
+        })),
+      };
+    }
+    if (input.ids === undefined || input.ids.length === 0)
+      return { shelves: [] };
+    const rows = await client
       .select({
         id: RootShelf.id,
         name: RootShelf.name,
@@ -132,17 +171,20 @@ export class RootShelfRepository {
     };
   }
 
-  static UpdateOne(
-    db: LocalDB,
+  static async UpdateOne(
+    client: Client,
     input: UpdateRootShelfInput
-  ): UpdateRootShelfOutput {
-    return RootShelfRepository.UpdateMany(db, { shelves: [input] }).shelves[0];
+  ): Promise<UpdateRootShelfOutput> {
+    const updated = await RootShelfRepository.UpdateMany(client, {
+      shelves: [input],
+    });
+    return updated.shelves[0];
   }
 
-  static UpdateMany(
-    db: LocalDB,
+  static async UpdateMany(
+    client: Client,
     input: UpdateManyRootShelvesInput
-  ): UpdateManyRootShelvesOutput {
+  ): Promise<UpdateManyRootShelvesOutput> {
     const allowedPermissions = new Set<string>([
       AccessControlPermission.Owner,
       AccessControlPermission.Admin,
@@ -156,8 +198,12 @@ export class RootShelfRepository {
       ownerPublicId: shelf.ownerPublicId,
       at: shelf.at ?? at,
     }));
-    return db.transaction(tx => {
-      RootShelfRepository.requirePermissions(tx, shelves, allowedPermissions);
+    return await client.transaction(async tx => {
+      await RootShelfRepository.requirePermissions(
+        tx,
+        shelves,
+        allowedPermissions
+      );
       const nameCase = sql.join(
         shelves.map(shelf => sql`when ${shelf.id} then ${shelf.name}`),
         sql` `
@@ -169,7 +215,7 @@ export class RootShelfRepository {
         ),
         sql` `
       );
-      const updated = tx
+      const updated = await tx
         .update(RootShelf)
         .set({
           name: sql`case ${RootShelf.id} ${nameCase} else ${RootShelf.name} end`,
@@ -188,7 +234,7 @@ export class RootShelfRepository {
           LocalDatabaseClientExceptions.NotPermitted()
         );
       }
-      const outbox = tx
+      const outbox = await tx
         .insert(Transaction)
         .values(
           shelves.map(shelf => ({
@@ -213,17 +259,20 @@ export class RootShelfRepository {
     });
   }
 
-  static DeleteOne(
-    db: LocalDB,
+  static async DeleteOne(
+    client: Client,
     input: DeleteRootShelfInput
-  ): DeleteRootShelfOutput {
-    return RootShelfRepository.DeleteMany(db, { shelves: [input] }).shelves[0];
+  ): Promise<DeleteRootShelfOutput> {
+    const deleted = await RootShelfRepository.DeleteMany(client, {
+      shelves: [input],
+    });
+    return deleted.shelves[0];
   }
 
-  static DeleteMany(
-    db: LocalDB,
+  static async DeleteMany(
+    client: Client,
     input: DeleteManyRootShelvesInput
-  ): DeleteManyRootShelvesOutput {
+  ): Promise<DeleteManyRootShelvesOutput> {
     const allowedPermissions = new Set<string>([
       AccessControlPermission.Owner,
       AccessControlPermission.Admin,
@@ -235,8 +284,12 @@ export class RootShelfRepository {
       ownerPublicId: shelf.ownerPublicId,
       at: shelf.at ?? at,
     }));
-    return db.transaction(tx => {
-      RootShelfRepository.requirePermissions(tx, shelves, allowedPermissions);
+    return await client.transaction(async tx => {
+      await RootShelfRepository.requirePermissions(
+        tx,
+        shelves,
+        allowedPermissions
+      );
       const deletedAtCase = sql.join(
         shelves.map(
           shelf =>
@@ -244,7 +297,7 @@ export class RootShelfRepository {
         ),
         sql` `
       );
-      const deleted = tx
+      const deleted = await tx
         .update(RootShelf)
         .set({
           deletedAt: sql`case ${RootShelf.id} ${deletedAtCase} else ${RootShelf.deletedAt} end`,
@@ -263,7 +316,7 @@ export class RootShelfRepository {
           LocalDatabaseClientExceptions.NotPermitted()
         );
       }
-      const outbox = tx
+      const outbox = await tx
         .insert(Transaction)
         .values(
           shelves.map(shelf => ({
@@ -285,17 +338,20 @@ export class RootShelfRepository {
     });
   }
 
-  static RestoreOne(
-    db: LocalDB,
+  static async RestoreOne(
+    client: Client,
     input: RestoreRootShelfInput
-  ): RestoreRootShelfOutput {
-    return RootShelfRepository.RestoreMany(db, { shelves: [input] }).shelves[0];
+  ): Promise<RestoreRootShelfOutput> {
+    const restored = await RootShelfRepository.RestoreMany(client, {
+      shelves: [input],
+    });
+    return restored.shelves[0];
   }
 
-  static RestoreMany(
-    db: LocalDB,
+  static async RestoreMany(
+    client: Client,
     input: RestoreManyRootShelvesInput
-  ): RestoreManyRootShelvesOutput {
+  ): Promise<RestoreManyRootShelvesOutput> {
     const allowedPermissions = new Set<string>([
       AccessControlPermission.Owner,
       AccessControlPermission.Admin,
@@ -308,8 +364,12 @@ export class RootShelfRepository {
       ownerPublicId: shelf.ownerPublicId,
       at: shelf.at ?? at,
     }));
-    return db.transaction(tx => {
-      RootShelfRepository.requirePermissions(tx, shelves, allowedPermissions);
+    return await client.transaction(async tx => {
+      await RootShelfRepository.requirePermissions(
+        tx,
+        shelves,
+        allowedPermissions
+      );
       const updatedAtCase = sql.join(
         shelves.map(
           shelf =>
@@ -317,7 +377,7 @@ export class RootShelfRepository {
         ),
         sql` `
       );
-      const restored = tx
+      const restored = await tx
         .update(RootShelf)
         .set({
           deletedAt: null,
@@ -336,7 +396,7 @@ export class RootShelfRepository {
           LocalDatabaseClientExceptions.NotPermitted()
         );
       }
-      const outbox = tx
+      const outbox = await tx
         .insert(Transaction)
         .values(
           shelves.map(shelf => ({
@@ -358,12 +418,12 @@ export class RootShelfRepository {
     });
   }
 
-  private static requirePermissions(
-    db: LocalDB,
+  private static async requirePermissions(
+    client: Client,
     shelves: { id: string; ownerPublicId: string }[],
     allowedPermissions: ReadonlySet<string>
   ) {
-    const memberships = db
+    const memberships = await client
       .select({
         rootShelfId: UsersToShelves.rootShelfId,
         userPublicId: UsersToShelves.userPublicId,

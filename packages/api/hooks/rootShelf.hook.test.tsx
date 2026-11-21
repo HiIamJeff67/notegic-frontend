@@ -5,10 +5,12 @@ import type {
   CreateRootShelfResponse,
   UpdateMyRootShelfByIdResponse,
 } from "@shared/api/interfaces/rootShelf.interface";
+import { client } from "@shared/api/local/client";
 import { type MigrationEntry, Migrator } from "@shared/api/local/migrator";
 import { localSchemaHead } from "@shared/api/local/schemaHead";
 import { RootShelf, Transaction, User } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
+import { getSQLiteDriver } from "@shared/api/local/driver";
 import { createQueryClient } from "@shared/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Database from "better-sqlite3";
@@ -95,6 +97,7 @@ const openFixture = async () => {
     .run();
   return {
     db,
+    client: client(getSQLiteDriver(sqlite)),
     close: () => sqlite.close(),
   };
 };
@@ -119,7 +122,7 @@ const renamedResponse = (): UpdateMyRootShelfByIdResponse => ({
 
 describe("root shelf hooks", () => {
   it("writes the shelf before the remote create and then settles it", async () => {
-    const { db, close } = await openFixture();
+    const { db, client: local, close } = await openFixture();
     const seen: string[] = [];
     const func = jest.fn(async () => {
       seen.push("remote");
@@ -132,7 +135,7 @@ describe("root shelf hooks", () => {
       | ReturnType<typeof useCreateRootShelf>["mutateAsync"]
       | undefined;
     function Harness() {
-      create = useCreateRootShelf(db, ownerPublicId, func).mutateAsync;
+      create = useCreateRootShelf(local, ownerPublicId, func).mutateAsync;
       return null;
     }
     renderToString(
@@ -157,7 +160,7 @@ describe("root shelf hooks", () => {
   });
 
   it("keeps the shelf and marks the outbox unplaced when the remote create fails", async () => {
-    const { db, close } = await openFixture();
+    const { db, client: local, close } = await openFixture();
     const func = jest.fn(async () => {
       throw new TypeError("network down");
     });
@@ -165,7 +168,7 @@ describe("root shelf hooks", () => {
       | ReturnType<typeof useCreateRootShelf>["mutateAsync"]
       | undefined;
     function Harness() {
-      create = useCreateRootShelf(db, ownerPublicId, func).mutateAsync;
+      create = useCreateRootShelf(local, ownerPublicId, func).mutateAsync;
       return null;
     }
     renderToString(
@@ -190,7 +193,7 @@ describe("root shelf hooks", () => {
   });
 
   it("renames the shelf before the remote update", async () => {
-    const { db, close } = await openFixture();
+    const { db, client: local, close } = await openFixture();
     let create:
       | ReturnType<typeof useCreateRootShelf>["mutateAsync"]
       | undefined;
@@ -198,10 +201,10 @@ describe("root shelf hooks", () => {
       | ReturnType<typeof useUpdateMyRootShelfById>["mutateAsync"]
       | undefined;
     function Harness() {
-      create = useCreateRootShelf(db, ownerPublicId, async () =>
+      create = useCreateRootShelf(local, ownerPublicId, async () =>
         createdResponse(shelfId)
       ).mutateAsync;
-      rename = useUpdateMyRootShelfById(db, ownerPublicId, async () => {
+      rename = useUpdateMyRootShelfById(local, ownerPublicId, async () => {
         expect(
           db.select().from(RootShelf).where(eq(RootShelf.id, shelfId)).get()
             ?.name

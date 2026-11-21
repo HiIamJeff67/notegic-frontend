@@ -94,6 +94,126 @@ describe("desktop driver sidecar", () => {
   });
 });
 
+const sql = (
+  port: number,
+  clientId: string,
+  statement: string,
+  params: unknown[] = [],
+  method = "run"
+) =>
+  fetch(`http://127.0.0.1:${port}/sql`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      clientId,
+      sql: statement,
+      params,
+      method,
+    }),
+  });
+
+describe("desktop driver sql", () => {
+  it("runs a statement on the open database", async () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "notegic-sql-"));
+    const filePath = path.join(directory, "notegic.sqlite");
+    const opened = await initialize(filePath);
+    opened.close();
+    const started = await startSidecar(filePath);
+    try {
+      const response = await sql(
+        started.port,
+        "reader",
+        "select 1 as value",
+        [],
+        "get"
+      );
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toEqual({ rows: [1] });
+    } finally {
+      await stopSidecar(started.child);
+    }
+  }, 60_000);
+
+  it("keeps another client's statement outside an open transaction", async () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "notegic-sql-tx-"));
+    const filePath = path.join(directory, "notegic.sqlite");
+    const opened = await initialize(filePath);
+    opened.close();
+    const started = await startSidecar(filePath);
+    const insert =
+      "insert into UserTable (public_id, name, display_name, email, is_logged_in) values (?, ?, ?, ?, 0)";
+    const aye = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    const bee = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    try {
+      expect((await sql(started.port, "a", "begin")).status).toBe(200);
+      const pending = sql(started.port, "b", insert, [
+        bee,
+        "bee",
+        "Bee",
+        "bee@example.invalid",
+      ]);
+      expect(
+        (
+          await sql(started.port, "a", insert, [
+            aye,
+            "aye",
+            "Aye",
+            "aye@example.invalid",
+          ])
+        ).status
+      ).toBe(200);
+      expect((await sql(started.port, "a", "rollback")).status).toBe(200);
+      expect((await pending).status).toBe(200);
+      const selected = await sql(
+        started.port,
+        "a",
+        "select public_id from UserTable order by public_id",
+        [],
+        "all"
+      );
+      await expect(selected.json()).resolves.toEqual({ rows: [[bee]] });
+    } finally {
+      await stopSidecar(started.child);
+    }
+  }, 60_000);
+
+  it("rolls an idle transaction back", async () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "notegic-sql-idle-"));
+    const filePath = path.join(directory, "notegic.sqlite");
+    const opened = await initialize(filePath);
+    opened.close();
+    const started = await startSidecar(filePath);
+    const aye = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+    try {
+      expect((await sql(started.port, "a", "begin")).status).toBe(200);
+      expect(
+        (
+          await sql(
+            started.port,
+            "a",
+            "insert into UserTable (public_id, name, display_name, email, is_logged_in) values (?, ?, ?, ?, 0)",
+            [aye, "cee", "Cee", "cee@example.invalid"]
+          )
+        ).status
+      ).toBe(200);
+      await new Promise(resolve => setTimeout(resolve, 5_500));
+      const selected = await sql(
+        started.port,
+        "a",
+        "select public_id from UserTable where public_id = ?",
+        [aye],
+        "all"
+      );
+      await expect(selected.json()).resolves.toEqual({ rows: [] });
+    } finally {
+      await stopSidecar(started.child);
+    }
+  }, 20_000);
+});
+
 describe("desktop driver sidecar restart", () => {
   it("keeps the shelf and document after the sidecar process is killed", async () => {
     const directory = mkdtempSync(path.join(tmpdir(), "notegic-sidecar-"));

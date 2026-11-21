@@ -21,13 +21,19 @@ queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
 invokers/            request validation and error mapping; each call receives func
-hooks/               TanStack Query hooks; a local-first mutation uses the open db, then the app function, then settles the outbox
-local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, repositories/, schemaHead.ts, phase.ts, and result.ts
+hooks/               TanStack Query hooks; a local-first mutation uses the client, then the app function, then settles the outbox
+hooks/react/         shelf interaction state for Web, Desktop, and Mobile; it calls hooks/ and does not import an app
+local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, client.ts, repositories/, schemaHead.ts, phase.ts, and result.ts
+```
+
+`client(driver)` composes SQL and does not open a database file. `defaultClient`
+is that client for the running app. The app connects its own driver before
+use. Desktop connects the sidecar driver. Web still uses its SQLocal database
+until it connects the same client.
 
 `local/` does not read browser storage. Whether a local preference is enabled
 lives in `packages/lib/storage/localPreference.ts`, so this package does not
 import `packages/lib`.
-```
 
 `schemaHead.ts` is the latest version in the shared migration chain. Web and
 Desktop each keep `localSchemaVersion` in `schemaVersion.ts` beside their driver.

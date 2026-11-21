@@ -31,12 +31,16 @@ export default function NativeAuthorizePage() {
   useEffect(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
     const fromFragment = fragment.get("requestId")?.trim();
+    const start = new URLSearchParams(window.location.search).get("start");
     if (fromFragment) {
       storeNativeAuthorizationRequest(fromFragment);
       window.history.replaceState(null, "", window.location.pathname);
+      if (start === "register") {
+        router.push(`/${WebURLPathDictionary.auth.register}`);
+      }
     }
     setRequestId(fromFragment || readNativeAuthorizationRequest());
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!requestId) return;
@@ -114,11 +118,21 @@ export default function NativeAuthorizePage() {
           </Button>
         </>
       ) : (
-        <Button
-          onClick={() => router.push(`/${WebURLPathDictionary.auth.login}`)}
-        >
-          Log in
-        </Button>
+        <>
+          <Button
+            onClick={() => router.push(`/${WebURLPathDictionary.auth.login}`)}
+          >
+            Log in
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              router.push(`/${WebURLPathDictionary.auth.register}`)
+            }
+          >
+            Register
+          </Button>
+        </>
       )}
       {error ? <p role="alert">{error}</p> : null}
     </main>

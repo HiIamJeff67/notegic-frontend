@@ -121,25 +121,33 @@ shared schema.
 Shared local writes live in `packages/api/local/repositories/`. A repository
 method is one database operation: `CreateOne`, `CreateMany`, `GetOne`,
 `GetMany`, `UpdateOne`, `UpdateMany`, `DeleteOne`, `DeleteMany`,
-`RestoreOne`, or `RestoreMany`. It receives the caller's `db` and one input,
+`RestoreOne`, or `RestoreMany`. It receives the caller's `client` and one input,
 and returns one output. Inputs live in `repositories/inputs/`. Outputs live in
 `repositories/outputs/`. Files are `rootShelf.repository.ts`,
-`rootShelf.input.ts`, and `rootShelf.output.ts`.
+`rootShelf.input.ts`, and `rootShelf.output.ts`. `client(driver)` in
+`packages/api/local/client.ts` turns Drizzle statements into SQL. `defaultClient`
+is the shared client. The app connects its driver before use, and that driver
+talks to the SQLite instance the platform already opened. Desktop connects the
+sidecar driver. Web still executes through SQLocal until a later change.
 
 A `Many` method reads or writes each table once. It does not call the `One`
 method for each row. `One` calls `Many` with a single row. A permission set
 used by a write stays inside that method.
 
-The caller decides whether that `db` is the open connection or an open
-transaction. A method that writes several rows starts its own transaction, so
-one call stays atomic. When the caller passes an existing transaction, the
-inner transaction is a savepoint of that caller transaction.
+The caller passes the `client`. A method that writes several rows starts its
+own transaction, so one call stays atomic. When the caller passes an existing
+transaction, the inner transaction is a savepoint of that caller transaction.
+The desktop sidecar keeps the only SQLite connection, closes it when the
+process exits, and holds a transaction for the client that opened it until
+`COMMIT`, `ROLLBACK`, or five idle seconds.
 
 Hooks in `packages/api/hooks/` are the local-first call. A mutation writes
-through the open `db`, calls that app's `api/functions/` function, then
-settles the outbox row. The screen reads the local result from the mutation
-result. Web simulators and synchronizers stay until a later issue switches
-Web onto these hooks.
+through the `client`, calls that app's `api/functions/` function, then
+settles the outbox row. `packages/api/hooks/react/` holds the shared shelf
+interaction state and calls those hooks. Web keeps its current provider,
+simulators, and synchronizers until the desktop path is confirmed. The web
+switch is one change: its SQLocal driver is passed to `client(driver)`, and
+the web shelf path moves onto these hooks together.
 
 `TransactionTable.status` is `pending`, `accepted`, `rejected`, or `unplaced`.
 `depends_on_sequence` ties a child operation to the local operation it needs.

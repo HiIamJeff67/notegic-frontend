@@ -4,6 +4,8 @@ import {
   SearchItemSortBy,
   SearchSortOrder,
 } from "@shared/api/graphql/generated/graphql";
+import toast from "@shared/components/toast/toast";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
 import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
@@ -13,7 +15,6 @@ import {
   AnalysisStatus,
   ShelfTreeSummary,
 } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -24,18 +25,17 @@ import {
   useState,
 } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
-import { useSearchItemsLazyQuery } from "@/api/hooks/graphql/useSearchItems";
 import {
   useCreateBlockPack,
   useDeleteMyBlockPackById,
   useUpdateMyBlockPackById,
 } from "@/api/hooks/blockPack.hook";
+import { useSearchItemsLazyQuery } from "@/api/hooks/graphql/useSearchItems";
 import {
   useCreateMyMaterial,
   useDeleteMyMaterialById,
   useUpdateMyMaterialById,
 } from "@/api/hooks/material.hook";
-import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseItemLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -56,13 +56,13 @@ export const useItemLogic = ({
 }: UseItemLogicProps) => {
   const apolloClient = useApolloClient();
   const { t } = useTranslation();
-  const createMaterialMutator = useCreateMyMaterial();
-  const updateMaterialMutator = useUpdateMyMaterialById();
-  const deleteMaterialMutator = useDeleteMyMaterialById();
+  const createMyMaterial = useCreateMyMaterial();
+  const updateMyMaterialById = useUpdateMyMaterialById();
+  const deleteMyMaterialById = useDeleteMyMaterialById();
 
-  const createBlockPackMutator = useCreateBlockPack();
-  const updateBlockPackMutator = useUpdateMyBlockPackById();
-  const deleteBlockPackMutator = useDeleteMyBlockPackById();
+  const createBlockPackManager = useCreateBlockPack();
+  const updateMyBlockPackById = useUpdateMyBlockPackById();
+  const deleteMyBlockPackById = useDeleteMyBlockPackById();
 
   const [searchItemsInput, setSearchItemsInput] = useState<SearchItemInput>({
     query: "",
@@ -166,18 +166,17 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      const responseOfCreatingMaterial =
-        await createMaterialMutator.mutateAsync({
-          header: getClientRequestHeaders(userAgent),
-          body: {
-            parentSubShelfId: parentSubShelfNode.id,
-            name: name,
-          },
-          affected: {
-            rootShelfId: rootShelfId,
-            parentSubShelfId: parentSubShelfNode.id,
-          },
-        });
+      const responseOfCreatingMaterial = await createMyMaterial.mutateAsync({
+        header: getClientRequestHeaders(userAgent),
+        body: {
+          parentSubShelfId: parentSubShelfNode.id,
+          name: name,
+        },
+        affected: {
+          rootShelfId: rootShelfId,
+          parentSubShelfId: parentSubShelfNode.id,
+        },
+      });
       shelfTreeSummary.hasChanged = true;
       shelfTreeSummary.root.itemCount++;
       if (parentSubShelfNode !== null) {
@@ -210,7 +209,7 @@ export const useItemLogic = ({
         forceUpdate();
       }
     },
-    [expandedShelvesRef, createMaterialMutator]
+    [expandedShelvesRef, createMyMaterial]
   );
 
   const renameEditingMaterial = useCallback(async (): Promise<void> => {
@@ -224,7 +223,7 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      await updateMaterialMutator.mutateAsync({
+      await updateMyMaterialById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           materialId: editingItemNode.id,
@@ -260,7 +259,7 @@ export const useItemLogic = ({
     setEditItemName,
     setOriginalItemName,
     t,
-    updateMaterialMutator,
+    updateMyMaterialById,
   ]);
 
   const renameMaterial = useCallback(
@@ -272,7 +271,7 @@ export const useItemLogic = ({
       material.name = nextName;
       forceUpdate();
       try {
-        await updateMaterialMutator.mutateAsync({
+        await updateMyMaterialById.mutateAsync({
           header: getClientRequestHeaders(navigator.userAgent),
           body: {
             materialId: material.id,
@@ -290,7 +289,7 @@ export const useItemLogic = ({
         throw error;
       }
     },
-    [forceUpdate, updateMaterialMutator]
+    [forceUpdate, updateMyMaterialById]
   );
 
   const deleteMaterial = useCallback(
@@ -308,7 +307,7 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      await deleteMaterialMutator.mutateAsync({
+      await deleteMyMaterialById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           materialId: materialNode.id,
@@ -329,7 +328,7 @@ export const useItemLogic = ({
       shelfTreeSummary.analysisStatus = AnalysisStatus.OnlySubShelves;
       forceUpdate();
     },
-    [expandedShelvesRef, deleteMaterialMutator, RootShelf]
+    [expandedShelvesRef, deleteMyMaterialById, RootShelf]
   );
 
   /* ==================== BlockPack ==================== */
@@ -358,7 +357,7 @@ export const useItemLogic = ({
 
       const userAgent = navigator.userAgent;
       const responseOfCreatingBlockPack =
-        await createBlockPackMutator.mutateAsync({
+        await createBlockPackManager.mutateAsync({
           header: getClientRequestHeaders(userAgent),
           body: {
             parentSubShelfId: parentSubShelfNode.id,
@@ -402,7 +401,7 @@ export const useItemLogic = ({
         forceUpdate();
       }
     },
-    [expandedShelvesRef, createBlockPackMutator]
+    [expandedShelvesRef, createBlockPackManager]
   );
 
   const renameEditingBlockPack = useCallback(async (): Promise<void> => {
@@ -416,7 +415,7 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      await updateBlockPackMutator.mutateAsync({
+      await updateMyBlockPackById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           blockPackId: editingItemNode.id,
@@ -451,7 +450,7 @@ export const useItemLogic = ({
     setEditItemName,
     setOriginalItemName,
     t,
-    updateBlockPackMutator,
+    updateMyBlockPackById,
   ]);
 
   const renameBlockPack = useCallback(
@@ -463,7 +462,7 @@ export const useItemLogic = ({
       blockPack.name = nextName;
       forceUpdate();
       try {
-        await updateBlockPackMutator.mutateAsync({
+        await updateMyBlockPackById.mutateAsync({
           header: getClientRequestHeaders(navigator.userAgent),
           body: {
             blockPackId: blockPack.id,
@@ -481,7 +480,7 @@ export const useItemLogic = ({
         throw error;
       }
     },
-    [forceUpdate, updateBlockPackMutator]
+    [forceUpdate, updateMyBlockPackById]
   );
 
   const removeBlockPackOptimistically = useCallback(
@@ -554,7 +553,7 @@ export const useItemLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      await deleteBlockPackMutator.mutateAsync({
+      await deleteMyBlockPackById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           blockPackId: blockPackNode.id,
@@ -567,7 +566,7 @@ export const useItemLogic = ({
 
       removeBlockPackOptimistically(blockPackNode.id);
     },
-    [deleteBlockPackMutator, expandedShelvesRef, removeBlockPackOptimistically]
+    [deleteMyBlockPackById, expandedShelvesRef, removeBlockPackOptimistically]
   );
 
   // trigger for listen and auto focus the input with ref of inputRef declared in the top

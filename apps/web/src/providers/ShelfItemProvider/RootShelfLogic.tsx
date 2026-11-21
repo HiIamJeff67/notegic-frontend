@@ -8,6 +8,8 @@ import {
 } from "@shared/api/graphql/generated/graphql";
 import { AccessControlPermission } from "@shared/api/interfaces/enums";
 import type { GetMySubShelvesByRootShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
+import toast from "@shared/components/toast/toast";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
@@ -18,7 +20,6 @@ import {
   AnalysisStatus,
   ShelfTreeSummary,
 } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import {
   Dispatch,
@@ -38,7 +39,6 @@ import {
   useTransferMyRootShelfOwnership,
   useUpdateMyRootShelfById,
 } from "@/api/hooks/rootShelf.hook";
-import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseRootShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -60,11 +60,11 @@ export const useRootShelfLogic = ({
   const { t } = useTranslation();
   const apolloClient = useApolloClient();
   const [searchSubShelves] = useSearchSubShelvesLazyQuery();
-  const createRootShelfMutator = useCreateRootShelf();
-  const updateRootShelfMutator = useUpdateMyRootShelfById();
-  const deleteRootShelfMutator = useDeleteMyRootShelfById();
-  const leaveRootShelfMutator = useLeaveMyRootShelf();
-  const transferRootShelfOwnershipMutator = useTransferMyRootShelfOwnership();
+  const createRootShelfManager = useCreateRootShelf();
+  const updateMyRootShelfById = useUpdateMyRootShelfById();
+  const deleteMyRootShelfById = useDeleteMyRootShelfById();
+  const leaveMyRootShelf = useLeaveMyRootShelf();
+  const transferMyRootShelfOwnership = useTransferMyRootShelfOwnership();
 
   const [searchInput, setSearchInput] = useState<{
     query: string;
@@ -232,7 +232,7 @@ export const useRootShelfLogic = ({
     async (name: string): Promise<void> => {
       const userAgent = navigator.userAgent;
       const responseOfCreatingRootShelf =
-        await createRootShelfMutator.mutateAsync({
+        await createRootShelfManager.mutateAsync({
           header: getClientRequestHeaders(userAgent),
           body: {
             name: name,
@@ -261,7 +261,7 @@ export const useRootShelfLogic = ({
       forceUpdate();
       await searchRootShelves();
     },
-    [createRootShelfMutator, RootShelf, expandedShelvesRef, searchRootShelves]
+    [createRootShelfManager, RootShelf, expandedShelvesRef, searchRootShelves]
   );
 
   const isNewRootShelfName = useCallback(() => {
@@ -331,7 +331,7 @@ export const useRootShelfLogic = ({
     forceUpdate();
 
     try {
-      const response = await updateRootShelfMutator.mutateAsync({
+      const response = await updateMyRootShelfById.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body: {
           rootShelfId: editingNode.id,
@@ -360,7 +360,7 @@ export const useRootShelfLogic = ({
     forceUpdate,
     originalRootShelfName,
     setEditingRootShelfNode,
-    updateRootShelfMutator,
+    updateMyRootShelfById,
   ]);
 
   const renameRootShelf = useCallback(
@@ -377,7 +377,7 @@ export const useRootShelfLogic = ({
         forceUpdate();
       }
       try {
-        const response = await updateRootShelfMutator.mutateAsync({
+        const response = await updateMyRootShelfById.mutateAsync({
           header: getClientRequestHeaders(navigator.userAgent),
           body: {
             rootShelfId,
@@ -395,7 +395,7 @@ export const useRootShelfLogic = ({
         throw error;
       }
     },
-    [expandedShelvesRef, forceUpdate, updateRootShelfMutator]
+    [expandedShelvesRef, forceUpdate, updateMyRootShelfById]
   );
 
   // trigger for listen and auto focus the input with ref of inputRef declared in the top
@@ -471,7 +471,7 @@ export const useRootShelfLogic = ({
       const materialIds = materialNodes.map(val => val.id);
 
       const userAgent = navigator.userAgent;
-      await deleteRootShelfMutator.mutateAsync({
+      await deleteMyRootShelfById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           rootShelfId: rootShelfNode.id,
@@ -484,7 +484,7 @@ export const useRootShelfLogic = ({
       removeRootShelfOptimistically(rootShelfNode.id);
     },
     [
-      deleteRootShelfMutator,
+      deleteMyRootShelfById,
       expandedShelvesRef,
       removeRootShelfOptimistically,
       RootShelf,
@@ -516,7 +516,7 @@ export const useRootShelfLogic = ({
 
   const transferRootShelfOwnership = useCallback(
     async (rootShelfId: UUID, targetUserPublicId: UUID) => {
-      await transferRootShelfOwnershipMutator.mutateAsync({
+      await transferMyRootShelfOwnership.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         param: { rootShelfId },
         body: { targetUserPublicId },
@@ -525,19 +525,19 @@ export const useRootShelfLogic = ({
       if (summary) summary.root.permission = AccessControlPermission.Admin;
       forceUpdate();
     },
-    [expandedShelvesRef, forceUpdate, transferRootShelfOwnershipMutator]
+    [expandedShelvesRef, forceUpdate, transferMyRootShelfOwnership]
   );
 
   const leaveRootShelf = useCallback(
     async (rootShelfId: UUID, targetUserPublicId?: UUID) => {
-      await leaveRootShelfMutator.mutateAsync({
+      await leaveMyRootShelf.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         param: { rootShelfId },
         body: targetUserPublicId ? { targetUserPublicId } : {},
       });
       removeRootShelfOptimistically(rootShelfId);
     },
-    [leaveRootShelfMutator, removeRootShelfOptimistically]
+    [leaveMyRootShelf, removeRootShelfOptimistically]
   );
 
   return {

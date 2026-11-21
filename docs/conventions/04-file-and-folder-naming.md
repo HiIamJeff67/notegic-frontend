@@ -55,6 +55,7 @@ below reflect the current repository and are the default for new files.
 | Providers | `BigCamelCaseProvider.tsx` or `BigCamelCaseProvider/` | `ThemeProvider.tsx`, `TransactionSynchronizerProvider/` |
 | Generic libraries/utilities | `someThing.ts` | `searchPage.ts`, `string/compare.ts`, `math/clamp.ts` |
 | API modules | `domain.role.ts` | `blockPack.hook.ts`, `userInfo.invoker.ts` |
+| Desktop Tauri IPC | `domain.invocation.ts` | `nativeAuth.invocation.ts`, `sidecar.invocation.ts` |
 | GraphQL query hooks | `useSearchSomething.ts` | `useSearchRoutineRecords.ts` |
 | UI hooks | `useSomething.ts` | `useDebounce.ts`, `useRealtime.ts` |
 | Types/interfaces | `domain.type.ts` or `domain.interface.ts` | `byte.type.ts`, `material.interface.ts` |

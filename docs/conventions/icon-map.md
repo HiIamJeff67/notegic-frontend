@@ -155,6 +155,7 @@ The source column gives a representative existing consumer, not every call site.
 | `Link2Icon` | Account bindings for backup contacts and external accounts | [AccountSettingsPage], [AppCommandItem] |
 | `LinkIcon` | Todo linked item | [TodoWidget] |
 | `LogIn` | Sign in when the desktop window has no session | [DesktopAppSidebar] |
+| `UserRoundPlus` | Create an account from the desktop window | [DesktopAppSidebar] |
 | `ListFilter` | Routine and record filter controls | [RecordFilters], [RoutineTable], [RoutineTaskTable] |
 | `Loader2Icon`, `LoaderCircle`, `LoaderCircleIcon` | Loading / pending work | [Spinner], [RoutineMenu], [HomePage] |
 | `LogOut`, `LogOutIcon` | Sign out / leave shared resource | [AppSidebar], [StationMenu], [RootShelfMenu] |

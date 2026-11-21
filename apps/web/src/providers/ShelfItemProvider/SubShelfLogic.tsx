@@ -8,6 +8,8 @@ import type { GetMyBlockPacksByParentSubShelfIdResponse } from "@shared/api/inte
 import { MaterialContentType } from "@shared/api/interfaces/enums";
 import type { GetMyMaterialsByParentSubShelfIdResponse } from "@shared/api/interfaces/material.interface";
 import type { GetMySubShelvesByPrevSubShelfIdResponse } from "@shared/api/interfaces/subShelf.interface";
+import toast from "@shared/components/toast/toast";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { LRUCache } from "@shared/lib/cache/LRUCache";
 import { MaxSearchLimit } from "@shared/lib/search/limits";
@@ -15,7 +17,6 @@ import { BlockPackNode, MaterialNode } from "@shared/lib/shelf/itemNodes.type";
 import { RootShelfNode, SubShelfNode } from "@shared/lib/shelf/shelfNodes.type";
 import { SubShelf } from "@shared/lib/shelf/subShelf";
 import { ShelfTreeSummary } from "@shared/lib/shelf/summary.type";
-import toast from "@shared/components/toast/toast";
 import type { UUID } from "crypto";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
@@ -27,7 +28,6 @@ import {
   useMoveMySubShelf,
   useUpdateMySubShelfById,
 } from "@/api/hooks/subShelf.hook";
-import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface UseSubShelfLogicProps {
   expandedShelvesRef: RefObject<LRUCache<string, ShelfTreeSummary>>;
@@ -50,10 +50,10 @@ export const useSubShelfLogic = ({
   forceUpdate,
 }: UseSubShelfLogicProps) => {
   const { t } = useTranslation();
-  const createSubShelfMutator = useCreateSubShelfByRootShelfId();
-  const updateSubShelfMutator = useUpdateMySubShelfById();
-  const deleteSubShelfMutator = useDeleteMySubShelfById();
-  const moveSubShelfMutator = useMoveMySubShelf();
+  const createSubShelfByRootShelfId = useCreateSubShelfByRootShelfId();
+  const updateMySubShelfById = useUpdateMySubShelfById();
+  const deleteMySubShelfById = useDeleteMySubShelfById();
+  const moveMySubShelf = useMoveMySubShelf();
   const [searchSubShelves] = useSearchSubShelvesLazyQuery();
   const [searchItems] = useSearchItemsLazyQuery();
 
@@ -198,7 +198,7 @@ export const useSubShelfLogic = ({
 
       const userAgent = navigator.userAgent;
       const responseOfCreatingSubShelf =
-        await createSubShelfMutator.mutateAsync({
+        await createSubShelfByRootShelfId.mutateAsync({
           header: getClientRequestHeaders(userAgent),
           body: {
             rootShelfId: rootShelfId,
@@ -265,7 +265,7 @@ export const useSubShelfLogic = ({
       }
       forceUpdate();
     },
-    [expandedShelvesRef, createSubShelfMutator]
+    [expandedShelvesRef, createSubShelfByRootShelfId]
   );
 
   const isNewSubShelfName = useCallback((): boolean => {
@@ -320,7 +320,7 @@ export const useSubShelfLogic = ({
     forceUpdate();
 
     try {
-      const response = await updateSubShelfMutator.mutateAsync({
+      const response = await updateMySubShelfById.mutateAsync({
         header: getClientRequestHeaders(navigator.userAgent),
         body: {
           subShelfId: editingNode.id,
@@ -351,7 +351,7 @@ export const useSubShelfLogic = ({
     forceUpdate,
     originalSubShelfName,
     setEditingSubShelfNode,
-    updateSubShelfMutator,
+    updateMySubShelfById,
   ]);
 
   const renameSubShelf = useCallback(
@@ -363,7 +363,7 @@ export const useSubShelfLogic = ({
       subShelf.name = nextName;
       forceUpdate();
       try {
-        const response = await updateSubShelfMutator.mutateAsync({
+        const response = await updateMySubShelfById.mutateAsync({
           header: getClientRequestHeaders(navigator.userAgent),
           body: {
             subShelfId: subShelf.id,
@@ -383,7 +383,7 @@ export const useSubShelfLogic = ({
         throw error;
       }
     },
-    [forceUpdate, updateSubShelfMutator]
+    [forceUpdate, updateMySubShelfById]
   );
 
   // trigger for listen and auto focus the input with ref of inputRef declared in the top
@@ -431,7 +431,7 @@ export const useSubShelfLogic = ({
       }
 
       const userAgent = navigator.userAgent;
-      await deleteSubShelfMutator.mutateAsync({
+      await deleteMySubShelfById.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           subShelfId: subShelfNode.id,
@@ -450,7 +450,7 @@ export const useSubShelfLogic = ({
       shelfTreeSummary.hasChanged = true;
       forceUpdate();
     },
-    [expandedShelvesRef, deleteSubShelfMutator]
+    [expandedShelvesRef, deleteMySubShelfById]
   );
 
   const moveSubShelf = useCallback(
@@ -499,7 +499,7 @@ export const useSubShelfLogic = ({
       const childSubShelfIds = childSubShelfNodes.map(val => val.id);
 
       const userAgent = navigator.userAgent;
-      await moveSubShelfMutator.mutateAsync({
+      await moveMySubShelf.mutateAsync({
         header: getClientRequestHeaders(userAgent),
         body: {
           sourceRootShelfId: sourceSubShelfNode.rootShelfId,
@@ -530,7 +530,7 @@ export const useSubShelfLogic = ({
       deletedSubShelfNode.prevSubShelfId = destinationSubShelfNode?.id ?? null;
       forceUpdate();
     },
-    [expandedShelvesRef, SubShelf, moveSubShelfMutator]
+    [expandedShelvesRef, SubShelf, moveMySubShelf]
   );
 
   return {

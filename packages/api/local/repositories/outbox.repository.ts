@@ -1,12 +1,16 @@
+import type { Client } from "@shared/api/local/client";
 import { Transaction } from "@shared/api/local/schemas";
 import { eq } from "drizzle-orm";
 import type { SettleOutboxInput } from "./inputs/outbox.input";
-import type { LocalDB } from "./localDB";
 import type { SettleOutboxOutput } from "./outputs/outbox.output";
 
 export class OutboxRepository {
-  static Settle(db: LocalDB, input: SettleOutboxInput): SettleOutboxOutput {
-    db.update(Transaction)
+  static async Settle(
+    client: Client,
+    input: SettleOutboxInput
+  ): Promise<SettleOutboxOutput> {
+    await client
+      .update(Transaction)
       .set({
         status: input.status,
         dependsOnSequence: input.dependsOnSequence ?? null,

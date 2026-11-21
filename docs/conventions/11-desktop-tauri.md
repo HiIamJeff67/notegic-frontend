@@ -18,6 +18,7 @@ and [Shared application boundaries](../designs/systems/shared-application-bounda
 | `apps/desktop/src/` | React entry and the code router | `main.tsx`, `router.tsx` |
 | `apps/desktop/src/pages/` | Desktop screens | Web `pages/` naming. No `routes/` file tree |
 | `apps/desktop/src/api/functions/` | PascalCase API functions in `domain.function.ts` | Same role as Web `api/functions/` |
+| `apps/desktop/src/invocations/` | Tauri `invoke` calls in `domain.invocation.ts` | This document. Do not put `invoke` in `api/functions/` |
 | `apps/desktop/src/api/local/` | Inert replacements for Web `api/local` | Not the native SQLite driver |
 | `apps/desktop/src/api/server/` | Inert Start server and `async_hooks` replacements | Delete when Web imports are gone |
 | `apps/desktop/src/api/tokens/` | Client-held tokens, including the in-memory access token | Same folder role as Web `api/tokens/` |
@@ -41,6 +42,8 @@ apps/desktop/
     router.tsx
     styles.css
     pages/
+    api/
+    invocations/
   test/
     boundary/
     e2e/
