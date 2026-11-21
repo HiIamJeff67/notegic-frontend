@@ -1,20 +1,21 @@
 import { WebURLPathDictionary } from "./web";
 
-const API_VERSION = import.meta.env.VITE_APPLICATION_VERSION;
+// Linked package source can run in SSR before Vite creates import.meta.env.
+const API_VERSION = import.meta.env?.VITE_APPLICATION_VERSION;
 
-const configuredAPIBaseURL = import.meta.env.VITE_API_BASE_PATH?.trim();
+const configuredAPIBaseURL = import.meta.env?.VITE_API_BASE_PATH?.trim();
 const configuredRealtimeBaseURL =
-  import.meta.env.VITE_REALTIME_BASE_PATH?.trim();
+  import.meta.env?.VITE_REALTIME_BASE_PATH?.trim();
 
 export const CurrentAPIBaseURL =
   configuredAPIBaseURL ||
-  (import.meta.env.PROD ? API_VERSION : `api/development/${API_VERSION}`);
+  (import.meta.env?.PROD ? API_VERSION : `api/development/${API_VERSION}`);
 export const CurrentRealtimeBaseURL =
   configuredRealtimeBaseURL ||
-  (import.meta.env.PROD ? API_VERSION : `realtime/development/${API_VERSION}`);
+  (import.meta.env?.PROD ? API_VERSION : `realtime/development/${API_VERSION}`);
 
 const notFoundURL = (): string => {
-  const base = (import.meta.env.VITE_APP_BASE_PATH ?? "/").replace(/\/+$/, "");
+  const base = (import.meta.env?.VITE_APP_BASE_PATH ?? "/").replace(/\/+$/, "");
   const path = WebURLPathDictionary.notFound;
   if (base === "" || base === "/") return `/${path}`;
   return `${base}/${path}`;
@@ -23,9 +24,9 @@ const notFoundURL = (): string => {
 export const APIURLPathDictionary = {
   notFound: notFoundURL,
   origin: (): string => {
-    const configured = import.meta.env.VITE_API_DOMAIN_URL?.trim();
+    const configured = import.meta.env?.VITE_API_DOMAIN_URL?.trim();
     if (!configured) return notFoundURL();
-    if (!import.meta.env.DEV || typeof window === "undefined")
+    if (!import.meta.env?.DEV || typeof window === "undefined")
       return configured;
     const host = window.location.hostname;
     if (host !== "localhost" && host !== "127.0.0.1") return configured;
@@ -196,9 +197,9 @@ export const APIURLPathDictionary = {
   },
   realtime: {
     webSocket: (endpoint: string): string => {
-      const configured = import.meta.env.VITE_REALTIME_WEBSOCKET_URL?.trim();
+      const configured = import.meta.env?.VITE_REALTIME_WEBSOCKET_URL?.trim();
       if (!configured || !endpoint.trim()) return notFoundURL();
-      if (!import.meta.env.DEV || typeof window === "undefined") {
+      if (!import.meta.env?.DEV || typeof window === "undefined") {
         return `${configured.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
       }
       const host = window.location.hostname;
