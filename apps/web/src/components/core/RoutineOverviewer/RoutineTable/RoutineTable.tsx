@@ -47,7 +47,7 @@ import { Transaction, User } from "@shared/api/local/schemas";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
 import DatePicker from "@shared/components/commons/DatePicker/DatePicker";
 import RoutineTaskStatusDot from "@/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot";
-import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { RoutineIcon } from "@shared/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useTransactionSynchronizer } from "@/hooks/useTransactionSynchronizer";

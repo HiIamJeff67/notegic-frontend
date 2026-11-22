@@ -14,6 +14,7 @@ import BlockPackPage from "./pages/app/block-packs/BlockPackPage";
 import DashboardLayout from "./pages/app/dashboard/DashboardLayout";
 import DashboardPage from "./pages/app/dashboard/DashboardPage";
 import MaterialPage from "./pages/app/materials/MaterialPage";
+import RoutineOverviewPage from "./pages/app/routines/RoutineOverviewPage";
 import RoutinePage from "./pages/app/routines/RoutinePage";
 import ShelfPage from "./pages/app/shelves/ShelfPage";
 import StationPage from "./pages/app/stations/StationPage";
@@ -92,6 +93,12 @@ const stationRoute = createRoute({
   component: StationPage,
 });
 
+const routineOverviewRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/routines",
+  component: RoutineOverviewPage,
+});
+
 const routineRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/routines/$routineId",
@@ -106,6 +113,7 @@ const routeTree = rootRoute.addChildren([
     materialRoute,
     blockPackRoute,
     stationRoute,
+    routineOverviewRoute,
     routineRoute,
   ]),
 ]);

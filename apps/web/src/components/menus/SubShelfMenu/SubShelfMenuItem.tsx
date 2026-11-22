@@ -49,7 +49,7 @@ import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHover
 import {
   BlockPackIcon,
   MaterialIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import BlockPackMenu from "@/components/menus/BlockPackMenu/BlockPackMenu";
 import BlockPackMenuItemSkeleton from "@/components/menus/BlockPackMenu/BlockPackMenuItemSkeleton";
 import MaterialMenu from "@/components/menus/MaterialMenu/MaterialMenu";

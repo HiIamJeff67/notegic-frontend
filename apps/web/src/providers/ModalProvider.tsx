@@ -16,7 +16,7 @@ const SelectBackgroundImageDialog = lazy(
 const CreateShelfItemDialog = lazy(
   () =>
     import(
-      "@/components/dialogs/ShelfItemDialogs/CreateShelfItemDialog/CreateShelfItemDialog"
+      "@shared/components/commons/CreateShelfItemDialog/CreateShelfItemDialog"
     )
 );
 const DeleteShelfItemDialog = lazy(

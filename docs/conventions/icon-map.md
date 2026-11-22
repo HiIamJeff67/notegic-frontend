@@ -61,7 +61,7 @@ content, user uploads and prose emoji are not separate reusable application icon
 
 ## Canonical workspace entities
 
-Import these names from `@/components/icons/WorkspaceEntityIcons` in the web app, or from `@shared/components/icons/WorkspaceEntityIcons` in shared and desktop code. The source
+Import these names from `@shared/components/icons/WorkspaceEntityIcons`. The source
 table below inventories raw Lucide names too; it does not override these aliases.
 
 | Meaning | Use | Implementation | Scope / variation |
@@ -85,7 +85,7 @@ by [RoutineTaskStatusDot], not a new Lucide status map.
 ## Lucide inventory
 
 Audit: 2026-11-03, current `apps/`, `packages/` and `scripts/` TypeScript/JavaScript
-imports and re-exports (excluding tests). There are **133 referenced export names / 108 distinct
+imports and re-exports (excluding tests). There are **134 referenced export names / 109 distinct
 glyphs**, including the entity re-exports above. Names in one row resolve to the
 same component in the installed package; this is not a rule that unrelated
 actions must share one icon. Recheck aliases when updating the dependency.
@@ -207,11 +207,11 @@ Inventory is not automatic approval to repurpose an icon or add a control.
 
 ## Custom components and wrappers
 
-All 9 files beside `WorkspaceEntityIcons.ts` in `components/icons/` are listed
-here (14 components, including the six OAuth exports). `ShelfCaseIcon`,
-`ShelfIcon`, `TrainStationIcon`, and `AvatarIcon` are implemented in
-`packages/ui/icons` and re-exported by the web files linked below. Reuse the
-canonical entity alias instead of its underlying custom file.
+The web `components/icons/` files listed here are the app-specific wrappers
+that remain beside that folder (14 components, including the six OAuth
+exports). `ShelfCaseIcon`, `ShelfIcon`, `TrainStationIcon`, `AvatarIcon`, and
+the entity aliases live in `packages/ui/icons`. Reuse the canonical entity
+alias instead of its underlying custom file.
 
 | Export / component | Meaning and current use | Source / status |
 | --- | --- | --- |
@@ -297,7 +297,7 @@ rerun passed all three cases, each in 7–15 seconds. No repository timeout or C
 configuration changed. Browser storage was isolated; no user data, brand
 assets or Docker services were removed. No commit or push was performed.
 
-[WorkspaceEntityIcons]: ../../apps/web/src/components/icons/WorkspaceEntityIcons.ts
+[WorkspaceEntityIcons]: ../../packages/ui/icons/WorkspaceEntityIcons.ts
 [RoutineTaskGraphNode]: ../../apps/web/src/components/core/RoutineTaskDependencyGraphEditor/RoutineTaskGraphNode.tsx
 [RoutineTaskStatusDot]: ../../apps/web/src/components/commons/RoutineTaskStatusDot/RoutineTaskStatusDot.tsx
 [SupportedIcon]: ../../packages/api/interfaces/enums/supportedIcon.enum.ts
@@ -381,16 +381,16 @@ assets or Docker services were removed. No commit or push was performed.
 [ShelfSharingDialog]: ../../apps/web/src/components/dialogs/ShelfItemDialogs/ShelfSharingOverviewDialog/ShelfSharingOverviewDialog.tsx
 [Closeable]: ../../packages/ui/commons/Closeable/Closeable.tsx
 [Dialog]: ../../packages/ui/shadcn/dialog.tsx
-[AvatarIcon]: ../../apps/web/src/components/icons/AvatarIcon.tsx
+[AvatarIcon]: ../../packages/ui/icons/AvatarIcon.tsx
 [LanguageIcon]: ../../apps/web/src/components/icons/LanguageIcon.tsx
 [NoteIcon]: ../../apps/web/src/components/icons/NoteIcon.tsx
 [OAuthIcon]: ../../apps/web/src/components/icons/OAuthIcon.tsx
 [AuthPanel]: ../../apps/web/src/components/panels/AuthPanel/AuthPanel.tsx
 [PublicAvatarImage]: ../../apps/web/src/components/icons/PublicAvatarImage.tsx
-[ShelfCaseIcon]: ../../apps/web/src/components/icons/ShelfCaseIcon.tsx
-[ShelfIcon]: ../../apps/web/src/components/icons/ShelfIcon.tsx
+[ShelfCaseIcon]: ../../packages/ui/icons/ShelfCaseIcon.tsx
+[ShelfIcon]: ../../packages/ui/icons/ShelfIcon.tsx
 [ThemeIcon]: ../../apps/web/src/components/icons/ThemeIcon.tsx
-[TrainStationIcon]: ../../apps/web/src/components/icons/TrainStationIcon.tsx
+[TrainStationIcon]: ../../packages/ui/icons/TrainStationIcon.tsx
 [LoadingIndicator]: ../../apps/web/src/components/covers/LoadingCover/LoadingIndicator.tsx
 [Ring]: ../../packages/ui/shadcn/ring.tsx
 [ClockWidget]: ../../apps/web/src/components/widgets/basic/ClockWidget/ClockWidget.tsx

@@ -23,7 +23,7 @@ import {
 import {
   RoutineTaskActionIcon,
   RoutineTaskStartIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import { useTranslation } from "@shared/hooks/useTranslation";
 
 interface RoutineTaskDependencyGraphToolbarProps {

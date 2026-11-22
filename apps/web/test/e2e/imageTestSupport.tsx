@@ -6,7 +6,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
-import AvatarIcon from "@/components/icons/AvatarIcon";
+import AvatarIcon from "@shared/components/icons/AvatarIcon";
 
 export const imageStatuses: ImageLoadingStatus[] = [];
 export const imageEvents: string[] = [];

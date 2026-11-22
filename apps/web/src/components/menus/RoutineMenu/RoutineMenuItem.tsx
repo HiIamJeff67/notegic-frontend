@@ -54,7 +54,7 @@ import {
   MaterialIcon,
   RoutineTagIcon,
   RoutineTaskIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import RoutineTaskMenu from "@/components/menus/RoutineTaskMenu/RoutineTaskMenu";
 import RoutineTaskMenuItemSkeleton from "@/components/menus/RoutineTaskMenu/RoutineTaskMenuItemSkeleton";
 import {

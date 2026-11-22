@@ -44,7 +44,7 @@ import {
   RoutineIcon,
   RoutineTaskIcon,
   StationIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
 import {

@@ -36,7 +36,7 @@ import {
   RoutineTaskIcon,
   StationIcon,
   SubShelfIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import type {
   AppCommandHint,

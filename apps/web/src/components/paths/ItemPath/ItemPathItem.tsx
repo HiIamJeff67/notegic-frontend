@@ -21,7 +21,7 @@ import {
   BlockPackIcon,
   MaterialIcon,
   SubShelfIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import { useAppRouter, useShelfItem } from "@/hooks";
 import { useTranslation } from "@shared/hooks/useTranslation";
 

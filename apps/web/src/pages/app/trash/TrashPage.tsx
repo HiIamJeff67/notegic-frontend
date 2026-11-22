@@ -33,7 +33,7 @@ import {
   RoutineIcon,
   StationIcon,
   SubShelfIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { usePageTitle } from "@shared/hooks/usePageTitle";
 import { useTranslation } from "@shared/hooks/useTranslation";

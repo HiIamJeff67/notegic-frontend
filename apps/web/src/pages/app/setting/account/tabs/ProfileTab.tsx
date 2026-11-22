@@ -47,7 +47,7 @@ import Image from "@shared/components/commons/Image/Image";
 import CropImageDialog from "@/components/dialogs/ImageDialog/CropImageDialog";
 import UploadImageDialog from "@/components/dialogs/ImageDialog/UploadImageDialog";
 import ModifyImageHover from "@/components/hovers/ModifyImageHover/ModifyImageHover";
-import AvatarIcon from "@/components/icons/AvatarIcon";
+import AvatarIcon from "@shared/components/icons/AvatarIcon";
 import SettingMenuItem from "@/components/menus/SettingMenu/SettingMenuItem";
 import { useLoading } from "@/hooks";
 import { useNetwork } from "@shared/hooks/useNetwork";

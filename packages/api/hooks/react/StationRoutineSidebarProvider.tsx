@@ -16,12 +16,15 @@ import { createContext, type ReactNode, useContext } from "react";
 export type SidebarStation = {
   id: string;
   name: string;
+  icon: string | null;
   routineCount: number;
 };
 
 export type SidebarRoutineTag = {
   id: string;
   name: string;
+  color: string;
+  icon: string | null;
 };
 
 type StationRoutineSidebarValue = {
@@ -71,11 +74,14 @@ export const StationRoutineSidebarProvider = ({
     .map(station => ({
       id: station.id,
       name: station.name,
+      icon: station.icon,
       routineCount: station.routineCount,
     }));
   const routineTags = (tagsQuery.data?.data ?? []).map(tag => ({
     id: tag.id,
     name: tag.name,
+    color: tag.color,
+    icon: tag.icon,
   }));
 
   return (

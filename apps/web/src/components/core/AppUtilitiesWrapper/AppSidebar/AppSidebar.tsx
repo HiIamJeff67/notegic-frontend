@@ -9,7 +9,7 @@ import {
 import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { BookOpenIcon } from "lucide-react";
 import { useEffect } from "react";
-import AvatarIcon from "@/components/icons/AvatarIcon";
+import AvatarIcon from "@shared/components/icons/AvatarIcon";
 import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";

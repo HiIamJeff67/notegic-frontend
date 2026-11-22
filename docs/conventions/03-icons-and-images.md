@@ -11,7 +11,7 @@ adding a second runtime icon registry or duplicating SVGs in feature code.
 
 ## Canonical workspace entity icons
 
-Use `apps/web/src/components/icons/WorkspaceEntityIcons.ts` for entity identity. The same base icon must appear in navigation, context menus, linked-item pickers, Trash, empty states and future search results.
+Use `packages/ui/icons/WorkspaceEntityIcons.ts` for entity identity. The same base icon must appear in navigation, context menus, linked-item pickers, Trash, empty states and future search results.
 
 | Entity | Canonical export | Notes |
 | --- | --- | --- |

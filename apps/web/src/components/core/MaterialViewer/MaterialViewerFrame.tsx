@@ -35,7 +35,7 @@ import { getClientRequestHeaders } from "@/api/functions/headers/clientHeaders";
 import { useSaveMyMaterialById } from "@/api/hooks/material.hook";
 import DropFileZone from "@shared/components/commons/DropFileZone/DropFileZone";
 import LoadingCover from "@/components/covers/LoadingCover/LoadingCover";
-import { MaterialIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { MaterialIcon } from "@shared/components/icons/WorkspaceEntityIcons";
 import ItemPath from "@/components/paths/ItemPath/ItemPath";
 import { useShelfItem } from "@/hooks";
 import { useRegisterLoadingDependencies } from "@/hooks/useLoading";

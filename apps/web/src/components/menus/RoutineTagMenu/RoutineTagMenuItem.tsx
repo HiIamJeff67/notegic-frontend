@@ -39,7 +39,7 @@ import {
 import { useCallback } from "react";
 import HoverDetailCard from "@/components/commons/HoverDetailCard/HoverDetailCard";
 import SidebarHoverCard from "@/components/core/AppUtilitiesWrapper/SidebarHoverCard/SidebarHoverCard";
-import { RoutineIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { RoutineIcon } from "@shared/components/icons/WorkspaceEntityIcons";
 import RoutineMenu from "@/components/menus/RoutineMenu/RoutineMenu";
 import RoutineMenuItemSkeleton from "@/components/menus/RoutineMenu/RoutineMenuItemSkeleton";
 import { useLoading, useMobile, useStationRoutine } from "@/hooks";

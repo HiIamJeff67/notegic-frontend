@@ -36,6 +36,7 @@ there only when the control does not exist yet.
 | Disclosure | `ui/accordion` | One column at the width of its parent. Do not give it a fixed width. |
 | Inline pending | `ui/spinner`, `ui/skeleton`, `ui/progress` | A screen that cannot be used yet uses `LoadingCover`, not a new overlay. |
 | Sidebar chrome | `ui/sidebar`, `commons/WorkspaceSidebar/WorkspaceSidebar.tsx` | App and article sidebars. Web and desktop share `WorkspaceSidebar` and pass their own menus. |
+| Name a new shelf item | `commons/CreateShelfItemDialog/CreateShelfItemDialog.tsx` | Web and desktop. Pass the create callback. |
 | Code | `ui/code-block` | Documentation pages compose it through `CodeExamplePanel`. |
 
 ## Shared compositions
@@ -97,5 +98,5 @@ inputs with a `rightButton`. Password reset says this in
 public panel. The panel also owns its Turnstile slot and OAuth buttons.
 
 Entity icons are imported from
-`components/icons/WorkspaceEntityIcons.ts`. Choose the glyph from the
+`packages/ui/icons/WorkspaceEntityIcons.ts`. Choose the glyph from the
 [Icon map](icon-map.md).

@@ -24,7 +24,7 @@ import {
   RoutineTaskIcon,
   StationIcon,
   SubShelfIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import APIKey, { apiKeyNavigation } from "./APIKey";
 import EndpointTable from "./EndpointTable";
 import {

@@ -1,5 +1,9 @@
+import CreateShelfItemDialog from "@shared/components/commons/CreateShelfItemDialog/CreateShelfItemDialog";
 import type { UUID } from "crypto";
 import React, { createContext, useEffect, useRef, useState } from "react";
+import CreateRoutineDialog from "../components/dialogs/CreateRoutineDialog";
+import CreateRoutineTagDialog from "../components/dialogs/CreateRoutineTagDialog";
+import CreateStationDialog from "../components/dialogs/CreateStationDialog";
 import SelectBackgroundImageDialog from "../components/dialogs/ImageDialog/SelectBackgroundImageDialog";
 
 export interface ModalProps {
@@ -11,9 +15,29 @@ export type ModalPropsMap = {
   SelectBackgroundImageDialog: {
     cropperAspectRatio: number;
   };
+  CreateShelfItemDialog: {
+    dialogHeader: React.ReactNode;
+    dialogDescription: React.ReactNode;
+    disableInput?: boolean;
+    inputPlaceholder?: string;
+    submitLabel?: string;
+    onCreate: (value: string) => void | Promise<void>;
+    onCancel: () => void;
+  };
+  CreateStationDialog: Record<string, never>;
+  CreateRoutineTagDialog: Record<string, never>;
+  CreateRoutineDialog: {
+    stationId: UUID;
+    stationName?: string;
+    onCreated?: (routineId: string) => void;
+  };
 };
 
 export type ModalType = keyof ModalPropsMap;
+
+type ActiveModal = {
+  [Type in ModalType]: { type: Type; props: ModalPropsMap[Type] };
+}[ModalType];
 
 interface ModalContextType {
   open: <T extends ModalType>(type: T, props: ModalPropsMap[T]) => void;
@@ -27,9 +51,7 @@ export const ModalContext = createContext<ModalContextType | undefined>(
 );
 
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeModals, setActiveModals] = useState<
-    { type: ModalType; props?: ModalPropsMap[ModalType] }[]
-  >([]);
+  const [activeModals, setActiveModals] = useState<ActiveModal[]>([]);
   const openTimerIdsRef = useRef<number[]>([]);
 
   useEffect(
@@ -44,7 +66,10 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
       openTimerIdsRef.current = openTimerIdsRef.current.filter(
         id => id !== timerId
       );
-      setActiveModals(previous => [...previous, { type, props }]);
+      setActiveModals(previous => [
+        ...previous,
+        { type, props } as ActiveModal,
+      ]);
     }, 0);
     openTimerIdsRef.current = [...openTimerIdsRef.current, timerId];
   };
@@ -57,16 +82,48 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ModalContext.Provider value={{ open, close, closeAll, isOpen }}>
       {children}
-      {activeModals.map((modal, index) =>
-        modal.type === "SelectBackgroundImageDialog" && modal.props ? (
-          <SelectBackgroundImageDialog
-            isOpen
-            key={`${modal.type}-${index}`}
-            onClose={close}
-            cropperAspectRatio={modal.props.cropperAspectRatio}
-          />
-        ) : null
-      )}
+      {activeModals.map((modal, index) => {
+        const key = `${modal.type}-${index}`;
+        if (modal.type === "SelectBackgroundImageDialog" && modal.props) {
+          return (
+            <SelectBackgroundImageDialog
+              isOpen
+              key={key}
+              onClose={close}
+              cropperAspectRatio={modal.props.cropperAspectRatio}
+            />
+          );
+        }
+        if (modal.type === "CreateShelfItemDialog" && modal.props) {
+          return (
+            <CreateShelfItemDialog
+              isOpen
+              key={key}
+              onClose={close}
+              {...modal.props}
+            />
+          );
+        }
+        if (modal.type === "CreateStationDialog") {
+          return <CreateStationDialog isOpen key={key} onClose={close} />;
+        }
+        if (modal.type === "CreateRoutineTagDialog") {
+          return <CreateRoutineTagDialog isOpen key={key} onClose={close} />;
+        }
+        if (modal.type === "CreateRoutineDialog" && modal.props) {
+          return (
+            <CreateRoutineDialog
+              isOpen
+              key={key}
+              onClose={close}
+              stationId={modal.props.stationId}
+              stationName={modal.props.stationName}
+              onCreated={modal.props.onCreated}
+            />
+          );
+        }
+        return null;
+      })}
     </ModalContext.Provider>
   );
 };

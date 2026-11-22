@@ -9,19 +9,20 @@ import {
 } from "@shared/components/shadcn/dialog";
 import { Input } from "@shared/components/shadcn/input";
 import { Spinner } from "@shared/components/shadcn/spinner";
-import React, { useState } from "react";
 import { useTranslation } from "@shared/hooks/useTranslation";
-import { ModalProps } from "@/providers/ModalProvider";
+import { type ReactNode, useState } from "react";
 
-interface CreateShelfItemDialogProps extends ModalProps {
-  dialogHeader: React.ReactNode;
-  dialogDescription: React.ReactNode;
+export type CreateShelfItemDialogProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  dialogHeader: ReactNode;
+  dialogDescription: ReactNode;
   disableInput?: boolean;
   inputPlaceholder?: string;
   submitLabel?: string;
   onCreate: (value: string) => void | Promise<void>;
   onCancel: () => void;
-}
+};
 
 const CreateShelfItemDialog = ({
   isOpen,
@@ -35,8 +36,8 @@ const CreateShelfItemDialog = ({
   onCancel,
 }: CreateShelfItemDialogProps) => {
   const { t } = useTranslation();
-  const [value, setValue] = useState<string>("");
-  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [value, setValue] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const createShelfItem = async () => {
     try {
@@ -61,11 +62,10 @@ const CreateShelfItemDialog = ({
             placeholder={inputPlaceholder}
             value={value}
             autoComplete="off"
-            onChange={e => setValue(e.target.value)}
+            onChange={event => setValue(event.target.value)}
             className="w-full"
           />
         )}
-
         <DialogFooter>
           <Button
             type="button"
@@ -82,7 +82,7 @@ const CreateShelfItemDialog = ({
             type="button"
             variant="default"
             disabled={isCreating}
-            onClick={createShelfItem}
+            onClick={() => void createShelfItem()}
           >
             {isCreating && <Spinner />}
             {submitLabel ?? t("common.create")}

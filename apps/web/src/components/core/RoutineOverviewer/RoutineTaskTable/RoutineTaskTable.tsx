@@ -33,7 +33,7 @@ import type { UUID } from "crypto";
 import { ListFilter, SquarePen } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchRoutineTasksQuery } from "@/api/hooks/graphql/useSearchRoutineTasks";
-import { RoutineTaskIcon } from "@/components/icons/WorkspaceEntityIcons";
+import { RoutineTaskIcon } from "@shared/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useDebounceValue } from "@shared/hooks/useDebounce";
 import { useTranslation } from "@shared/hooks/useTranslation";

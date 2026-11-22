@@ -1,13 +1,14 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import ShelfCaseIcon from "@shared/components/icons/ShelfCaseIcon";
+import ShelfIcon from "@shared/components/icons/ShelfIcon";
+import TrainStationIcon from "@shared/components/icons/TrainStationIcon";
+import * as entities from "@shared/components/icons/WorkspaceEntityIcons";
 import * as lucide from "lucide-react";
 import ts from "typescript";
-import ShelfCaseIcon from "@/components/icons/ShelfCaseIcon";
-import ShelfIcon from "@/components/icons/ShelfIcon";
-import TrainStationIcon from "@/components/icons/TrainStationIcon";
-import * as entities from "@/components/icons/WorkspaceEntityIcons";
 
 function readSources(directory: string): ts.SourceFile[] {
+  if (!existsSync(directory)) return [];
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
     const file = path.join(directory, entry.name);
     if (entry.isDirectory()) {
@@ -53,15 +54,9 @@ function getLucideNames(source: ts.SourceFile): string[] {
   });
 }
 
-const sources = ["apps", "shared", "scripts"].flatMap(readSources);
+const sources = ["apps", "packages", "scripts"].flatMap(readSources);
 const iconDirectory = "apps/web/src/components/icons";
-const entityIconOwners = new Set([
-  `${iconDirectory}/WorkspaceEntityIcons.ts`,
-  `${iconDirectory}/ShelfCaseIcon.tsx`,
-  `${iconDirectory}/ShelfIcon.tsx`,
-  `${iconDirectory}/TrainStationIcon.tsx`,
-  "packages/ui/icons/WorkspaceEntityIcons.ts",
-]);
+const entityIconOwners = new Set(["packages/ui/icons/WorkspaceEntityIcons.ts"]);
 const mapPath = "docs/conventions/icon-map.md";
 const iconMap = readFileSync(mapPath, "utf8");
 

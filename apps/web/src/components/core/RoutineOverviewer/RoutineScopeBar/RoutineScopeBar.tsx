@@ -30,7 +30,7 @@ import {
   RoutineIcon,
   RoutineTaskIcon,
   StationIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
+} from "@shared/components/icons/WorkspaceEntityIcons";
 import { useStationRoutine } from "@/hooks";
 import { useTranslation } from "@shared/hooks/useTranslation";
 
