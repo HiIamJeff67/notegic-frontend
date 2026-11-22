@@ -20,8 +20,13 @@ pub(crate) struct Sidecar {
 
 impl Sidecar {
     pub(crate) fn start(database_path: &str) -> Self {
-        let token = Self::token();
-        let port = Self::port();
+        let mut bytes = [0u8; 32];
+        getrandom::getrandom(&mut bytes).expect("sidecar token");
+        let token: String = bytes.iter().map(|byte| format!("{byte:02x}")).collect();
+        let port = {
+            let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("sidecar port");
+            listener.local_addr().expect("sidecar port").port()
+        };
         let child = Self::spawn(&token, port, database_path);
         Self {
             token,
@@ -35,17 +40,6 @@ impl Sidecar {
             let _ = child.kill();
             let _ = child.wait();
         }
-    }
-
-    fn token() -> String {
-        let mut bytes = [0u8; 32];
-        getrandom::getrandom(&mut bytes).expect("sidecar token");
-        bytes.iter().map(|byte| format!("{byte:02x}")).collect()
-    }
-
-    fn port() -> u16 {
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("sidecar port");
-        listener.local_addr().expect("sidecar port").port()
     }
 
     fn spawn(token: &str, port: u16, database_path: &str) -> Child {

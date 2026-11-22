@@ -61,7 +61,7 @@ content, user uploads and prose emoji are not separate reusable application icon
 
 ## Canonical workspace entities
 
-Import these names from `@/components/icons/WorkspaceEntityIcons`. The source
+Import these names from `@/components/icons/WorkspaceEntityIcons` in the web app, or from `@shared/components/icons/WorkspaceEntityIcons` in shared and desktop code. The source
 table below inventories raw Lucide names too; it does not override these aliases.
 
 | Meaning | Use | Implementation | Scope / variation |
@@ -208,8 +208,10 @@ Inventory is not automatic approval to repurpose an icon or add a control.
 ## Custom components and wrappers
 
 All 9 files beside `WorkspaceEntityIcons.ts` in `components/icons/` are listed
-here (14 components, including the six OAuth exports). Reuse the canonical
-entity alias instead of its underlying custom file.
+here (14 components, including the six OAuth exports). `ShelfCaseIcon`,
+`ShelfIcon`, `TrainStationIcon`, and `AvatarIcon` are implemented in
+`packages/ui/icons` and re-exported by the web files linked below. Reuse the
+canonical entity alias instead of its underlying custom file.
 
 | Export / component | Meaning and current use | Source / status |
 | --- | --- | --- |

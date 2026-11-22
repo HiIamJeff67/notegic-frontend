@@ -131,6 +131,7 @@ export const TraditionalChineseCommonTranslation: CommonTranslation = {
       invalidResponse: "目前無法完成這項操作，請稍後再試。",
     },
     login: "登入",
+    useAnotherAccount: "使用其他帳號登入",
     register: "註冊",
     resetPassword: "重設密碼",
     logout: "登出",

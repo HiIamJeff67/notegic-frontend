@@ -17,11 +17,13 @@ import type {
   DeleteManyRootShelvesInput,
   DeleteRootShelfInput,
   GetManyRootShelvesInput,
+  GetObservedRootShelfInput,
   GetRootShelfInput,
   RestoreManyRootShelvesInput,
   RestoreRootShelfInput,
   UpdateManyRootShelvesInput,
   UpdateRootShelfInput,
+  UpsertObservedRootShelfInput,
 } from "./inputs/rootShelf.input";
 import type {
   CreateManyRootShelvesOutput,
@@ -29,6 +31,7 @@ import type {
   DeleteManyRootShelvesOutput,
   DeleteRootShelfOutput,
   GetManyRootShelvesOutput,
+  GetObservedRootShelfOutput,
   GetRootShelfOutput,
   RestoreManyRootShelvesOutput,
   RestoreRootShelfOutput,
@@ -110,6 +113,36 @@ export class RootShelfRepository {
   ): Promise<GetRootShelfOutput> {
     const read = await RootShelfRepository.GetMany(client, { ids: [input.id] });
     return read.shelves[0];
+  }
+
+  static async GetObserved(
+    client: Client,
+    input: GetObservedRootShelfInput
+  ): Promise<GetObservedRootShelfOutput> {
+    const row = await client
+      .select({
+        id: RootShelf.id,
+        name: RootShelf.name,
+        subShelfCount: RootShelf.subShelfCount,
+        itemCount: RootShelf.itemCount,
+        lastAnalyzedAt: RootShelf.lastAnalyzedAt,
+        deletedAt: RootShelf.deletedAt,
+        updatedAt: RootShelf.updatedAt,
+        createdAt: RootShelf.createdAt,
+        permission: UsersToShelves.permission,
+      })
+      .from(RootShelf)
+      .innerJoin(
+        UsersToShelves,
+        and(
+          eq(UsersToShelves.rootShelfId, RootShelf.id),
+          eq(UsersToShelves.userPublicId, input.ownerPublicId)
+        )
+      )
+      .where(eq(RootShelf.id, input.id))
+      .get();
+    if (!row) return undefined;
+    return { ...row, deletedAt: row.deletedAt ?? null };
   }
 
   static async GetMany(
@@ -415,6 +448,58 @@ export class RootShelfRepository {
           sequence: outbox[index].sequence,
         })),
       };
+    });
+  }
+
+  static async UpsertObserved(
+    client: Client,
+    input: UpsertObservedRootShelfInput
+  ): Promise<boolean> {
+    return await client.transaction(async tx => {
+      const shelves = await tx
+        .insert(RootShelf)
+        .values({
+          id: input.id,
+          name: input.name,
+          subShelfCount: input.subShelfCount,
+          itemCount: input.itemCount,
+          lastAnalyzedAt: input.at,
+          deletedAt: null,
+          updatedAt: input.at,
+          createdAt: input.at,
+        })
+        .onConflictDoUpdate({
+          target: RootShelf.id,
+          set: {
+            name: input.name,
+            subShelfCount: input.subShelfCount,
+            itemCount: input.itemCount,
+            updatedAt: input.at,
+          },
+          setWhere: sql`name is not excluded.name or sub_shelf_count is not excluded.sub_shelf_count or item_count is not excluded.item_count or updated_at is not excluded.updated_at`,
+        })
+        .returning({ id: RootShelf.id })
+        .all();
+      const memberships = await tx
+        .insert(UsersToShelves)
+        .values({
+          userPublicId: input.ownerPublicId,
+          rootShelfId: input.id,
+          permission: input.permission,
+          updatedAt: input.at,
+          createdAt: input.at,
+        })
+        .onConflictDoUpdate({
+          target: [UsersToShelves.userPublicId, UsersToShelves.rootShelfId],
+          set: {
+            permission: input.permission,
+            updatedAt: input.at,
+          },
+          setWhere: sql`permission is not excluded.permission or updated_at is not excluded.updated_at`,
+        })
+        .returning({ rootShelfId: UsersToShelves.rootShelfId })
+        .all();
+      return shelves.length > 0 || memberships.length > 0;
     });
   }
 

@@ -1,3 +1,5 @@
+import type { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+
 export type CreateRootShelfInput = {
   id: string;
   name: string;
@@ -11,6 +13,21 @@ export type CreateManyRootShelvesInput = {
 
 export type GetRootShelfInput = {
   id: string;
+};
+
+export type GetObservedRootShelfInput = {
+  id: string;
+  ownerPublicId: string;
+};
+
+export type UpsertObservedRootShelfInput = {
+  id: string;
+  name: string;
+  ownerPublicId: string;
+  permission: AccessControlPermission;
+  subShelfCount: number;
+  itemCount: number;
+  at: Date;
 };
 
 export type GetManyRootShelvesInput = {

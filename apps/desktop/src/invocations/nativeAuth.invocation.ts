@@ -1,22 +1,30 @@
+import { APIURLPathDictionary } from "@shared/lib/url/api";
+import { WebURLPathDictionary } from "@shared/lib/url/web";
 import { invoke } from "@tauri-apps/api/core";
 
-const nativeApiBase = "https://client.notegic.com/v1";
-const nativeAuthorizeUrl = "https://www.notegic.com/native/authorize";
-
-const startNativeAuthorization = (start?: "register") =>
+export const startNativeLogin = () =>
   invoke("start_native_login", {
-    apiBase: nativeApiBase,
-    authorizeUrl:
-      start === "register"
-        ? `${nativeAuthorizeUrl}?start=register`
-        : nativeAuthorizeUrl,
+    apiBase: APIURLPathDictionary.base(),
+    authorizeUrl: WebURLPathDictionary.nativeLogin(),
   });
 
-export const startNativeLogin = () => startNativeAuthorization();
-
-export const startNativeRegister = () => startNativeAuthorization("register");
+export const startNativeRegister = () =>
+  invoke("start_native_login", {
+    apiBase: APIURLPathDictionary.base(),
+    authorizeUrl: WebURLPathDictionary.nativeRegister(),
+  });
 
 export const logoutNative = () =>
   invoke("logout_native", {
-    apiBase: nativeApiBase,
+    apiBase: APIURLPathDictionary.base(),
   });
+
+export const readNativeSession = () =>
+  invoke<{
+    signedIn: boolean;
+    accessToken: string;
+    publicId: string;
+    name: string;
+    displayName: string;
+    email: string;
+  }>("native_session");

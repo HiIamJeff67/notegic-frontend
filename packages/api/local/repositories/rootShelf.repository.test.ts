@@ -4,6 +4,7 @@ import path from "node:path";
 import { NotegicLocalDatabaseError } from "@shared/api/exceptions/errors/localDatabase.error";
 import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { client } from "@shared/api/local/client";
+import { getSQLiteDriver } from "@shared/api/local/driver";
 import { type MigrationEntry, Migrator } from "@shared/api/local/migrator";
 import { OutboxRepository } from "@shared/api/local/repositories/outbox.repository";
 import { RootShelfRepository } from "@shared/api/local/repositories/rootShelf.repository";
@@ -15,7 +16,6 @@ import {
   UsersToShelves,
 } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
-import { getSQLiteDriver } from "@shared/api/local/driver";
 import Database from "better-sqlite3";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
@@ -482,5 +482,61 @@ describe("root shelf repository", () => {
       ])
     );
     opened.close();
+  });
+
+  it("reports a stored change only when the observed shelf or membership differs", async () => {
+    const { opened } = await openFixture();
+    const observed = {
+      id: shelfId,
+      name: "Desk",
+      ownerPublicId,
+      permission: AccessControlPermission.Owner,
+      subShelfCount: 1,
+      itemCount: 2,
+      at: timestamp,
+    };
+    const inserted = await RootShelfRepository.UpsertObserved(
+      opened.client,
+      observed
+    );
+    const repeated = await RootShelfRepository.UpsertObserved(
+      opened.client,
+      observed
+    );
+    const renamed = await RootShelfRepository.UpsertObserved(opened.client, {
+      ...observed,
+      name: "Studio",
+    });
+    const repermissioned = await RootShelfRepository.UpsertObserved(
+      opened.client,
+      {
+        ...observed,
+        name: "Studio",
+        permission: AccessControlPermission.Read,
+      }
+    );
+    const shelf = readRootShelf(opened.db, shelfId);
+    const membership = opened.db
+      .select()
+      .from(UsersToShelves)
+      .where(eq(UsersToShelves.rootShelfId, shelfId))
+      .get();
+    const outbox = opened.db.select().from(Transaction).all();
+    opened.close();
+
+    expect(inserted).toBe(true);
+    expect(repeated).toBe(false);
+    expect(renamed).toBe(true);
+    expect(repermissioned).toBe(true);
+    expect(shelf).toMatchObject({
+      name: "Studio",
+      subShelfCount: 1,
+      itemCount: 2,
+    });
+    expect(membership).toMatchObject({
+      userPublicId: ownerPublicId,
+      permission: AccessControlPermission.Read,
+    });
+    expect(outbox).toEqual([]);
   });
 });

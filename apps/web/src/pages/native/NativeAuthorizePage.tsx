@@ -2,6 +2,7 @@ import { Button } from "@shared/components/shadcn/button";
 import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { fetchGetUserData } from "@/api/fetches/user.fetch";
 import { HasAuthCookies } from "@/api/functions/auth.serverFn";
@@ -23,6 +24,7 @@ type GrantedCode = {
 export default function NativeAuthorizePage() {
   const { t } = useTranslation();
   const router = useAppRouter();
+  const navigate = useNavigate();
   const [requestId, setRequestId] = useState<string | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [granted, setGranted] = useState<GrantedCode | null>(null);
@@ -122,6 +124,18 @@ export default function NativeAuthorizePage() {
           <p>Continue as {account}.</p>
           <Button disabled={pending} onClick={() => void confirm()}>
             {pending ? "Confirming" : "Continue"}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() =>
+              void navigate({
+                to: "/login",
+                search: { switchAccount: true },
+              })
+            }
+          >
+            {t("auth.useAnotherAccount")}
           </Button>
           <Button variant="outline" onClick={cancel}>
             Cancel

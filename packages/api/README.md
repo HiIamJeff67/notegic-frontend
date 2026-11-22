@@ -21,8 +21,8 @@ queryHookOptions.ts  staleTime presets for prefetch, useQuery, and queryAsync
 retryClient.ts       per-scope HTTP 429 deadline, including getRetryAt
 validation.ts        parse(schema, request) before transport or a draft write
 invokers/            request validation and error mapping; each call receives func
-hooks/               TanStack Query hooks; a local-first mutation uses the client, then the app function, then settles the outbox
-hooks/react/         shelf interaction state for Web, Desktop, and Mobile; it calls hooks/ and does not import an app
+hooks/               shared TanStack Query hooks. Each hook receives the app function as func. A mutation writes the client, calls func, then settles the outbox. A local query returns the stored row, writes the server row, and updates the cache when that write changes a row. Web keeps its own hooks until it moves onto these.
+hooks/react/         shared shelf and sidebar interaction state; it calls hooks/ and does not import an app. Web pages keep their own providers.
 local/               sqlite-core tables, ordered SQL migrations, migrator, migration catalog, client.ts, repositories/, schemaHead.ts, phase.ts, and result.ts
 ```
 

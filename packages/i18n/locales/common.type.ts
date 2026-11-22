@@ -128,6 +128,7 @@ export interface CommonTranslation {
       invalidResponse: string;
     };
     login: string;
+    useAnotherAccount: string;
     register: string;
     resetPassword: string;
     logout: string;

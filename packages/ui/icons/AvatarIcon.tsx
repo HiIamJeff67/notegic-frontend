@@ -1,0 +1,69 @@
+import Image from "@shared/components/commons/Image/Image";
+import { useEffect, useState } from "react";
+import type { IconProps } from "./iconProps.type";
+
+interface AvatarIconProps extends IconProps {
+  avatarURL: string | null;
+  alt?: string;
+  fallbackText?: string;
+}
+
+export const AvatarIcon = ({
+  size = 24,
+  className = "",
+  avatarURL,
+  alt = "",
+  fallbackText = "U",
+}: AvatarIconProps) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const fallbackValue = fallbackText.trim() || "U";
+  const firstEnglishLetter = fallbackValue.match(/[A-Za-z]/)?.[0];
+  const fallbackInitial =
+    firstEnglishLetter?.toUpperCase() ||
+    fallbackValue.charAt(0).toUpperCase() ||
+    "U";
+  const hasAvatar = Boolean(avatarURL) && !imageFailed;
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [avatarURL]);
+
+  return (
+    <div
+      className={
+        "inline-flex items-center justify-center overflow-hidden rounded-full bg-primary text-primary-foreground " +
+        className
+      }
+      style={{
+        width: size,
+        height: size,
+        minWidth: size,
+        minHeight: size,
+      }}
+    >
+      {hasAvatar ? (
+        <Image
+          src={avatarURL ?? ""}
+          alt={alt}
+          crossOrigin="anonymous"
+          width={80}
+          height={80}
+          loading="eager"
+          className="w-full h-full object-cover"
+          onLoadingStatusChange={status => {
+            if (status === "error") setImageFailed(true);
+          }}
+        />
+      ) : (
+        <span
+          className="text-primary-foreground font-medium"
+          style={{ fontSize: size * 0.4 }}
+        >
+          {fallbackInitial}
+        </span>
+      )}
+    </div>
+  );
+};
+
+export default AvatarIcon;

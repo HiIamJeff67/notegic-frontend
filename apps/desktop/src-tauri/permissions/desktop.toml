@@ -17,3 +17,8 @@ commands.allow = ["native_session"]
 identifier = "allow-logout-native"
 description = "Enables the logout_native command."
 commands.allow = ["logout_native"]
+
+[[permission]]
+identifier = "allow-network-status"
+description = "Enables the network_status command."
+commands.allow = ["network_status"]

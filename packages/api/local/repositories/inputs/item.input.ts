@@ -28,3 +28,26 @@ export type DeleteItemInput = {
 export type GetManyItemsInput = {
   parentSubShelfIds: string[];
 };
+
+export type GetObservedItemInput = {
+  id: string;
+};
+
+export type GetObservedManyItemsInput = {
+  parentSubShelfId?: string;
+  rootShelfId?: string;
+  type?: ItemType;
+};
+
+export type UpsertObservedManyItemsInput = {
+  items: UpsertObservedItemInput[];
+};
+
+export type UpsertObservedItemInput = {
+  id: string;
+  name: string;
+  rootShelfId: string;
+  parentSubShelfId: string;
+  type: ItemType;
+  at: Date;
+};

@@ -1,3 +1,5 @@
+import type { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
+
 export type CreateRootShelfOutput = {
   id: string;
   sequence: number;
@@ -18,6 +20,12 @@ export type GetRootShelfOutput =
       updatedAt: Date;
       createdAt: Date;
     }
+  | undefined;
+
+export type GetObservedRootShelfOutput =
+  | (Exclude<GetRootShelfOutput, undefined> & {
+      permission: AccessControlPermission;
+    })
   | undefined;
 
 export type GetManyRootShelvesOutput = {

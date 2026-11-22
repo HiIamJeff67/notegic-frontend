@@ -43,6 +43,10 @@ apps/desktop/
     styles.css
     pages/
     api/
+      functions/
+      local/
+      server/
+      tokens/
     invocations/
   test/
     boundary/
@@ -59,6 +63,7 @@ apps/desktop/
     src/main.rs
     src/sidecar.rs
     src/native_auth.rs
+    src/network.rs
     capabilities/
     permissions/
     icons/

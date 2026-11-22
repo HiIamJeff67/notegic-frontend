@@ -28,18 +28,15 @@ struct PendingAttempt {
     api_base: String,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct NativeSessionView {
     signed_in: bool,
-    display_name: String,
-}
-
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct NativeSignedIn {
     access_token: String,
+    public_id: String,
+    name: String,
     display_name: String,
+    email: String,
 }
 
 #[derive(Deserialize)]
@@ -61,14 +58,12 @@ struct ExchangedSession {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct Account {
-    #[serde(rename = "displayName")]
+    public_id: String,
+    name: String,
     display_name: String,
-}
-
-#[derive(Deserialize)]
-struct AccountEnvelope {
-    data: Option<Account>,
+    email: String,
 }
 
 pub(crate) struct NativeSession {
@@ -79,7 +74,10 @@ pub(crate) struct NativeSession {
 
 impl NativeSession {
     pub(crate) fn manage(app: &AppHandle) {
-        let pending = Self::read_pending();
+        let pending = Entry::new(SERVICE, PENDING_ACCOUNT)
+            .and_then(|entry| entry.get_password())
+            .ok()
+            .and_then(|json| serde_json::from_str(&json).ok());
         app.manage(NativeSession {
             access_token: Mutex::new(String::new()),
             pending: Mutex::new(pending),
@@ -89,6 +87,84 @@ impl NativeSession {
         tauri::async_runtime::spawn(async move {
             let _ = Self::restore(&handle).await;
         });
+        Self::ensure_dev_callback(app);
+    }
+
+    fn ensure_dev_callback(app: &AppHandle) {
+        #[cfg(all(debug_assertions, target_os = "macos"))]
+        {
+            let Ok(binary) = std::env::current_exe() else {
+                return;
+            };
+            let Ok(directory) = app.path().app_data_dir() else {
+                return;
+            };
+            let _ = std::fs::create_dir_all(&directory);
+            let marker = directory.join("dev-callback-binary");
+            let binary = binary.display().to_string();
+            let bundle = directory.join("Notegic Dev.app");
+            if marker.exists()
+                && std::fs::read_to_string(&marker).ok().as_deref() == Some(binary.as_str())
+                && bundle.exists()
+            {
+                return;
+            }
+            let script = directory.join("dev-callback.applescript");
+            let source = format!(
+                "on open location thisURL\n\tdo shell script quoted form of \"{}\" & \" \" & quoted form of thisURL & \" >/dev/null 2>&1 &\"\n\tquit\nend open location\n",
+                binary.replace('\\', "\\\\").replace('"', "\\\"")
+            );
+            if std::fs::write(&script, source).is_err() {
+                return;
+            }
+            let compiled = Command::new("osacompile")
+                .args(["-o"])
+                .arg(&bundle)
+                .arg(&script)
+                .status();
+            if !compiled.is_ok_and(|status| status.success()) {
+                return;
+            }
+            let info = bundle.join("Contents/Info.plist");
+            let _ = Command::new("/usr/libexec/PlistBuddy")
+                .args([
+                    "-c",
+                    "Add :CFBundleURLTypes array",
+                    info.to_str().unwrap_or(""),
+                ])
+                .status();
+            for command in [
+                "Add :CFBundleURLTypes:0 dict",
+                "Add :CFBundleURLTypes:0:CFBundleURLName string Notegic Desktop",
+                "Add :CFBundleURLTypes:0:CFBundleURLSchemes array",
+                "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string com.notegic.desktop",
+            ] {
+                let _ = Command::new("/usr/libexec/PlistBuddy")
+                    .args(["-c", command, info.to_str().unwrap_or("")])
+                    .status();
+            }
+            let _ = Command::new("plutil")
+                .args(["-convert", "xml1"])
+                .arg(&info)
+                .status();
+            let listed = std::fs::read_to_string(&info)
+                .ok()
+                .is_some_and(|xml| xml.contains("com.notegic.desktop"));
+            if !listed {
+                return;
+            }
+            let registered = Command::new("/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister")
+                .args(["-f"])
+                .arg(&bundle)
+                .status();
+            if registered.is_ok_and(|status| status.success()) {
+                let _ = std::fs::write(marker, binary);
+            }
+        }
+        #[cfg(not(all(debug_assertions, target_os = "macos")))]
+        {
+            let _ = app;
+        }
     }
 
     pub(crate) fn accept_callback(app: &AppHandle, url: &str) {
@@ -97,11 +173,7 @@ impl NativeSession {
         }
     }
 
-    async fn start_login(
-        &self,
-        api_base: String,
-        authorize_url: String,
-    ) -> Result<(), String> {
+    async fn start_login(&self, api_base: String, authorize_url: String) -> Result<(), String> {
         let verifier = Self::random_token();
         let challenge = Self::challenge(&verifier);
         let csrf_state = Self::random_token();
@@ -111,7 +183,11 @@ impl NativeSession {
             verifier,
             api_base,
         };
-        Self::store_pending(&pending)?;
+        let json = serde_json::to_string(&pending).map_err(|error| error.to_string())?;
+        Entry::new(SERVICE, PENDING_ACCOUNT)
+            .map_err(|error| error.to_string())?
+            .set_password(&json)
+            .map_err(|error| error.to_string())?;
         *self.pending.lock().map_err(|error| error.to_string())? = Some(pending);
         *self
             .exchange_state
@@ -121,21 +197,32 @@ impl NativeSession {
         Self::open_browser(&url)
     }
 
-    fn view(&self) -> Result<NativeSessionView, String> {
-        let signed_in = !self
+    async fn view(&self) -> Result<NativeSessionView, String> {
+        let access_token = self
             .access_token
             .lock()
             .map_err(|error| error.to_string())?
-            .is_empty();
-        Ok(NativeSessionView {
-            signed_in,
-            display_name: String::new(),
-        })
+            .clone();
+        if access_token.is_empty() {
+            return Ok(NativeSessionView {
+                signed_in: false,
+                ..Self::signed_in(access_token, None)
+            });
+        }
+        let api_base = Self::read_refresh()
+            .map(|stored| stored.api_base)
+            .unwrap_or_default();
+        let account = Self::account(&api_base, &access_token).await.ok();
+        Ok(Self::signed_in(access_token, account))
     }
 
     async fn logout(&self, api_base: String) -> Result<(), String> {
         if let Some(stored) = Self::read_refresh() {
-            let _ = Self::revoke(&api_base, &stored.refresh_token).await;
+            let _ = Self::post_json(
+                &format!("{api_base}/auth/native/revoke"),
+                serde_json::json!({ "refreshToken": stored.refresh_token }),
+            )
+            .await;
         }
         let _ = Entry::new(SERVICE, REFRESH_ACCOUNT).and_then(|entry| entry.delete_credential());
         *self
@@ -191,20 +278,14 @@ impl NativeSession {
             .access_token
             .lock()
             .map_err(|error| error.to_string())? = tokens.access_token.clone();
-        *session
-            .pending
-            .lock()
-            .map_err(|error| error.to_string())? = None;
+        *session.pending.lock().map_err(|error| error.to_string())? = None;
         let _ = Entry::new(SERVICE, PENDING_ACCOUNT).and_then(|entry| entry.delete_credential());
-        let display_name = Self::account_name(&pending.api_base, &tokens.access_token)
+        let account = Self::account(&pending.api_base, &tokens.access_token)
             .await
-            .unwrap_or_default();
+            .ok();
         app.emit(
             "native-session",
-            NativeSignedIn {
-                access_token: tokens.access_token,
-                display_name,
-            },
+            Self::signed_in(tokens.access_token, account),
         )
         .map_err(|error| error.to_string())
     }
@@ -322,15 +403,12 @@ impl NativeSession {
             .access_token
             .lock()
             .map_err(|error| error.to_string())? = tokens.access_token.clone();
-        let display_name = Self::account_name(&stored.api_base, &tokens.access_token)
+        let account = Self::account(&stored.api_base, &tokens.access_token)
             .await
-            .unwrap_or_default();
+            .ok();
         app.emit(
             "native-session",
-            NativeSignedIn {
-                access_token: tokens.access_token,
-                display_name,
-            },
+            Self::signed_in(tokens.access_token, account),
         )
         .map_err(|error| error.to_string())
     }
@@ -353,16 +431,27 @@ impl NativeSession {
             .ok_or("Desktop session refresh was refused".to_string())
     }
 
-    async fn revoke(api_base: &str, refresh_token: &str) -> Result<(), String> {
-        Self::post_json(
-            &format!("{api_base}/auth/native/revoke"),
-            serde_json::json!({ "refreshToken": refresh_token }),
-        )
-        .await
-        .map(|_| ())
+    fn signed_in(access_token: String, account: Option<Account>) -> NativeSessionView {
+        let (public_id, name, display_name, email) = match account {
+            Some(account) => (
+                account.public_id,
+                account.name,
+                account.display_name,
+                account.email,
+            ),
+            None => (String::new(), String::new(), String::new(), String::new()),
+        };
+        NativeSessionView {
+            signed_in: true,
+            access_token,
+            public_id,
+            name,
+            display_name,
+            email,
+        }
     }
 
-    async fn account_name(api_base: &str, access_token: &str) -> Result<String, String> {
+    async fn account(api_base: &str, access_token: &str) -> Result<Account, String> {
         let response = reqwest::Client::builder()
             .user_agent("NotegicDesktop/0.1")
             .build()
@@ -372,12 +461,9 @@ impl NativeSession {
             .send()
             .await
             .map_err(|error| error.to_string())?;
-        let envelope: AccountEnvelope =
+        let envelope: Envelope<Account> =
             response.json().await.map_err(|error| error.to_string())?;
-        envelope
-            .data
-            .map(|account| account.display_name)
-            .ok_or("Account was refused".to_string())
+        envelope.data.ok_or("Account was refused".to_string())
     }
 
     async fn post_json(url: &str, body: serde_json::Value) -> Result<reqwest::Response, String> {
@@ -408,21 +494,6 @@ impl NativeSession {
             .ok()?;
         serde_json::from_str(&json).ok()
     }
-
-    fn store_pending(pending: &PendingAttempt) -> Result<(), String> {
-        let json = serde_json::to_string(pending).map_err(|error| error.to_string())?;
-        Entry::new(SERVICE, PENDING_ACCOUNT)
-            .map_err(|error| error.to_string())?
-            .set_password(&json)
-            .map_err(|error| error.to_string())
-    }
-
-    fn read_pending() -> Option<PendingAttempt> {
-        let json = Entry::new(SERVICE, PENDING_ACCOUNT)
-            .and_then(|entry| entry.get_password())
-            .ok()?;
-        serde_json::from_str(&json).ok()
-    }
 }
 
 /* ============================== Commands ============================== */
@@ -437,8 +508,8 @@ pub async fn start_native_login(
 }
 
 #[tauri::command]
-pub fn native_session(state: State<'_, NativeSession>) -> Result<NativeSessionView, String> {
-    state.view()
+pub async fn native_session(state: State<'_, NativeSession>) -> Result<NativeSessionView, String> {
+    state.view().await
 }
 
 #[tauri::command]
@@ -472,10 +543,10 @@ mod tests {
                 .unwrap(),
             ("one".to_string(), "two".to_string())
         );
-        assert!(NativeSession::parse_callback(
-            "https://example.test/callback?code=one&state=two"
-        )
-        .is_err());
+        assert!(
+            NativeSession::parse_callback("https://example.test/callback?code=one&state=two")
+                .is_err()
+        );
         assert!(NativeSession::parse_callback(
             "com.notegic.desktop:/callback?code=one&state=two&extra=3"
         )

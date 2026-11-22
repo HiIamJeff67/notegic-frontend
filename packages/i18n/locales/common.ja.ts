@@ -146,6 +146,7 @@ export const JapaneseCommonTranslation: CommonTranslation = {
         "操作を完了できませんでした。しばらくしてからお試しください。",
     },
     login: "ログイン",
+    useAnotherAccount: "別のアカウントでログイン",
     register: "登録",
     resetPassword: "パスワード再設定",
     logout: "ログアウト",

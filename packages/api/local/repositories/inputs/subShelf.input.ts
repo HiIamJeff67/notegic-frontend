@@ -26,3 +26,25 @@ export type DeleteSubShelfInput = {
 export type GetManySubShelvesInput = {
   rootShelfIds: string[];
 };
+
+export type GetObservedSubShelfInput = {
+  id: string;
+};
+
+export type GetObservedManySubShelvesInput = {
+  rootShelfId?: string;
+  prevSubShelfId?: string;
+};
+
+export type UpsertObservedManySubShelvesInput = {
+  shelves: UpsertObservedSubShelfInput[];
+};
+
+export type UpsertObservedSubShelfInput = {
+  id: string;
+  name: string;
+  rootShelfId: string;
+  prevSubShelfId: string | null;
+  path: string[];
+  at: Date;
+};

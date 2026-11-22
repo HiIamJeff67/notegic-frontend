@@ -141,6 +141,7 @@ export const KoreanCommonTranslation: CommonTranslation = {
         "작업을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     },
     login: "로그인",
+    useAnotherAccount: "다른 계정으로 로그인",
     register: "회원가입",
     resetPassword: "비밀번호 재설정",
     logout: "로그아웃",

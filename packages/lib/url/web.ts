@@ -8,6 +8,13 @@ export const WebURLPathDictionary = {
   document: "document",
   privacyPolicy: "privacy-policy",
   nativeAuthorize: "native/authorize",
+  origin: (): string => {
+    const configured = import.meta.env?.VITE_PUBLIC_SITE_ORIGIN?.trim();
+    return (configured || "https://www.notegic.com").replace(/\/+$/, "");
+  },
+  nativeLogin: () =>
+    `${WebURLPathDictionary.origin()}/${WebURLPathDictionary.nativeAuthorize}`,
+  nativeRegister: () => `${WebURLPathDictionary.nativeLogin()}?start=register`,
   auth: {
     register: "register",
     login: "login",

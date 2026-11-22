@@ -23,6 +23,11 @@ const notFoundURL = (): string => {
 
 export const APIURLPathDictionary = {
   notFound: notFoundURL,
+  base: () => {
+    const origin = APIURLPathDictionary.origin().replace(/\/+$/, "");
+    const path = `${CurrentAPIBaseURL ?? ""}`.replace(/^\/+|\/+$/g, "");
+    return path === "" ? origin : `${origin}/${path}`;
+  },
   origin: (): string => {
     const configured = import.meta.env?.VITE_API_DOMAIN_URL?.trim();
     if (!configured) return notFoundURL();

@@ -2,11 +2,11 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { client } from "@shared/api/local/client";
+import { getSQLiteDriver } from "@shared/api/local/driver";
 import { type MigrationEntry, Migrator } from "@shared/api/local/migrator";
 import { UserRepository } from "@shared/api/local/repositories/user.repository";
 import { localSchemaHead } from "@shared/api/local/schemaHead";
 import { User } from "@shared/api/local/schemas";
-import { getSQLiteDriver } from "@shared/api/local/driver";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 
@@ -86,19 +86,25 @@ describe("user repository", () => {
     const { db, client: local, close } = await openFixture();
     const first = "33333333-3333-4333-8333-333333333333";
     const second = "44444444-4444-4444-8444-444444444444";
-    await UserRepository.UpsertLoggedIn(local, {
+    const inserted = await UserRepository.UpsertLoggedIn(local, {
       publicId: first,
       name: "ada",
       displayName: "Ada",
       email: "ada@example.invalid",
     });
-    await UserRepository.UpsertLoggedIn(local, {
+    const switched = await UserRepository.UpsertLoggedIn(local, {
       publicId: second,
       name: "bea",
       displayName: "Bea",
       email: "bea@example.invalid",
     });
-    await UserRepository.UpsertLoggedIn(local, {
+    const renamed = await UserRepository.UpsertLoggedIn(local, {
+      publicId: second,
+      name: "bea",
+      displayName: "Beatrice",
+      email: "bea@example.invalid",
+    });
+    const repeated = await UserRepository.UpsertLoggedIn(local, {
       publicId: second,
       name: "bea",
       displayName: "Beatrice",
@@ -107,6 +113,10 @@ describe("user repository", () => {
     const users = db.select().from(User).all();
     close();
 
+    expect(inserted.changed).toBe(true);
+    expect(switched.changed).toBe(true);
+    expect(renamed.changed).toBe(true);
+    expect(repeated.changed).toBe(false);
     expect(users).toHaveLength(2);
     expect(users).toEqual(
       expect.arrayContaining([

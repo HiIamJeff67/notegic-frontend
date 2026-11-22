@@ -18,6 +18,7 @@ import type {
   CreateBlockPackRequest,
   CreateBlockPackResponse,
 } from "@shared/api/interfaces/blockPack.interface";
+import { AccessControlPermission } from "@shared/api/interfaces/enums/accessControlPermission.enum";
 import { ItemType } from "@shared/api/interfaces/enums/itemType.enum";
 import type {
   CreateMyMaterialRequest,
@@ -43,6 +44,9 @@ import type {
   UpdateMySubShelfByIdRequest,
   UpdateMySubShelfByIdResponse,
 } from "@shared/api/interfaces/subShelf.interface";
+import { queryFnGetMyBlockPacksByRootShelfId } from "@shared/api/invokers/blockPack.invoker";
+import { queryFnGetMyMaterialsByRootShelfId } from "@shared/api/invokers/material.invoker";
+import { queryFnGetMySubShelvesByRootShelfId } from "@shared/api/invokers/subShelf.invoker";
 import type { Client } from "@shared/api/local/client";
 import { ItemRepository } from "@shared/api/local/repositories/item.repository";
 import { RootShelfRepository } from "@shared/api/local/repositories/rootShelf.repository";
@@ -118,6 +122,11 @@ export const ShelfItemProvider = ({
   updateMaterial,
   deleteMaterial,
   createBlockPack,
+  online,
+  searchRootShelves,
+  getSubShelves,
+  getMaterials,
+  getBlockPacks,
   children,
 }: {
   ownerPublicId: string;
@@ -152,6 +161,21 @@ export const ShelfItemProvider = ({
   createBlockPack: (
     request: CreateBlockPackRequest
   ) => Promise<CreateBlockPackResponse>;
+  online?: () => Promise<boolean>;
+  searchRootShelves?: () => Promise<
+    Array<{
+      id: string;
+      name: string;
+      permission: AccessControlPermission;
+      subShelfCount: number;
+      itemCount: number;
+      updatedAt: Date;
+      deletedAt: Date | null;
+    }>
+  >;
+  getSubShelves?: Parameters<typeof queryFnGetMySubShelvesByRootShelfId>[1];
+  getMaterials?: Parameters<typeof queryFnGetMyMaterialsByRootShelfId>[1];
+  getBlockPacks?: Parameters<typeof queryFnGetMyBlockPacksByRootShelfId>[1];
   children: ReactNode;
 }) => {
   const createRootShelfManager = useCreateRootShelf(
@@ -206,6 +230,7 @@ export const ShelfItemProvider = ({
   );
   const shelvesRef = useRef<RootShelfTree[]>([]);
   const [, setRevision] = useState(0);
+  const [observedRevision, setObservedRevision] = useState(0);
   const [editingId, setEditingId] = useState<string | undefined>();
   const [editName, setEditName] = useState("");
 
@@ -252,7 +277,104 @@ export const ShelfItemProvider = ({
     return () => {
       cancelled = true;
     };
-  }, [client, ownerPublicId]);
+  }, [client, observedRevision, ownerPublicId]);
+
+  useEffect(() => {
+    if (
+      !online ||
+      !searchRootShelves ||
+      !getSubShelves ||
+      !getMaterials ||
+      !getBlockPacks
+    )
+      return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        if (!(await online())) return;
+        const roots = await searchRootShelves();
+        let changed = false;
+        for (const shelf of roots) {
+          if (shelf.deletedAt) continue;
+          changed =
+            (await RootShelfRepository.UpsertObserved(client, {
+              id: shelf.id,
+              name: shelf.name,
+              ownerPublicId,
+              permission: shelf.permission,
+              subShelfCount: shelf.subShelfCount,
+              itemCount: shelf.itemCount,
+              at: shelf.updatedAt,
+            })) || changed;
+          const subs = await queryFnGetMySubShelvesByRootShelfId(
+            { param: { rootShelfId: shelf.id, areDeleted: false } },
+            getSubShelves
+          );
+          changed =
+            (await SubShelfRepository.UpsertObservedMany(client, {
+              shelves: subs.data
+                .filter(sub => sub.deletedAt === null)
+                .map(sub => ({
+                  id: sub.id,
+                  name: sub.name,
+                  rootShelfId: sub.rootShelfId,
+                  prevSubShelfId: sub.prevSubShelfId,
+                  path: sub.path,
+                  at: sub.updatedAt,
+                })),
+            })) || changed;
+          const materials = await queryFnGetMyMaterialsByRootShelfId(
+            { param: { rootShelfId: shelf.id, areDeleted: false } },
+            getMaterials
+          );
+          const packs = await queryFnGetMyBlockPacksByRootShelfId(
+            { param: { rootShelfId: shelf.id, areDeleted: false } },
+            getBlockPacks
+          );
+          changed =
+            (await ItemRepository.UpsertObservedMany(client, {
+              items: [
+                ...materials.data
+                  .filter(item => item.deletedAt === null)
+                  .map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    rootShelfId: shelf.id,
+                    parentSubShelfId: item.parentSubShelfId,
+                    type: ItemType.Material,
+                    at: item.updatedAt,
+                  })),
+                ...packs.data
+                  .filter(item => item.deletedAt === null)
+                  .map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    rootShelfId: shelf.id,
+                    parentSubShelfId: item.parentSubShelfId,
+                    type: ItemType.BlockPack,
+                    at: item.updatedAt,
+                  })),
+              ],
+            })) || changed;
+        }
+        if (!cancelled && changed)
+          setObservedRevision(revision => revision + 1);
+      } catch {
+        return;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    client,
+    getBlockPacks,
+    getMaterials,
+    getSubShelves,
+    online,
+    ownerPublicId,
+    searchRootShelves,
+  ]);
 
   const createRootShelf = async (name: string) => {
     const trimmed = name.trim();

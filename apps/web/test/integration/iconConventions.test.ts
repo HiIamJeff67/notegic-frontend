@@ -55,6 +55,13 @@ function getLucideNames(source: ts.SourceFile): string[] {
 
 const sources = ["apps", "shared", "scripts"].flatMap(readSources);
 const iconDirectory = "apps/web/src/components/icons";
+const entityIconOwners = new Set([
+  `${iconDirectory}/WorkspaceEntityIcons.ts`,
+  `${iconDirectory}/ShelfCaseIcon.tsx`,
+  `${iconDirectory}/ShelfIcon.tsx`,
+  `${iconDirectory}/TrainStationIcon.tsx`,
+  "packages/ui/icons/WorkspaceEntityIcons.ts",
+]);
 const mapPath = "docs/conventions/icon-map.md";
 const iconMap = readFileSync(mapPath, "utf8");
 
@@ -130,7 +137,7 @@ describe("application icon conventions", () => {
 
   test("entity consumers cannot bypass their semantic aliases", () => {
     const bypasses = sources.flatMap(source =>
-      source.fileName === `${iconDirectory}/WorkspaceEntityIcons.ts`
+      entityIconOwners.has(source.fileName)
         ? []
         : getLucideNames(source)
             .filter(name =>
@@ -142,8 +149,7 @@ describe("application icon conventions", () => {
     );
     expect(bypasses).toEqual([]);
     for (const source of sources) {
-      if (source.fileName === `${iconDirectory}/WorkspaceEntityIcons.ts`)
-        continue;
+      if (entityIconOwners.has(source.fileName)) continue;
       const directCustomImports = source.statements.filter(
         node =>
           (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&

@@ -1,5 +1,5 @@
-import { ScreenProvider } from "@shared/hooks/providers/ScreenProvider";
 import { Toaster } from "@shared/components/shadcn/toaster";
+import { ScreenProvider } from "@shared/hooks/providers/ScreenProvider";
 import {
   createRootRoute,
   createRoute,
@@ -10,8 +10,13 @@ import {
 import { useEffect } from "react";
 import { syncStoredLanguage } from "./i18n";
 import AppLayout from "./pages/app/AppLayout";
+import BlockPackPage from "./pages/app/block-packs/BlockPackPage";
 import DashboardLayout from "./pages/app/dashboard/DashboardLayout";
 import DashboardPage from "./pages/app/dashboard/DashboardPage";
+import MaterialPage from "./pages/app/materials/MaterialPage";
+import RoutinePage from "./pages/app/routines/RoutinePage";
+import ShelfPage from "./pages/app/shelves/ShelfPage";
+import StationPage from "./pages/app/stations/StationPage";
 import { RootNotFoundPage } from "./pages/RootNotFoundPage";
 
 const dashboardPath = "/app/dashboard";
@@ -63,9 +68,46 @@ const dashboardRoute = createRoute({
   component: DashboardScreen,
 });
 
+const shelfRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/shelves/$rootShelfId",
+  component: ShelfPage,
+});
+
+const materialRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/materials/$materialId",
+  component: MaterialPage,
+});
+
+const blockPackRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/block-packs/$blockPackId",
+  component: BlockPackPage,
+});
+
+const stationRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/stations/$stationId",
+  component: StationPage,
+});
+
+const routineRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/routines/$routineId",
+  component: RoutinePage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  appRoute.addChildren([dashboardRoute]),
+  appRoute.addChildren([
+    dashboardRoute,
+    shelfRoute,
+    materialRoute,
+    blockPackRoute,
+    stationRoute,
+    routineRoute,
+  ]),
 ]);
 
 export const router = createRouter({

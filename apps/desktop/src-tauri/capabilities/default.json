@@ -9,6 +9,7 @@
     "allow-start-native-login",
     "allow-native-session",
     "allow-logout-native",
+    "allow-network-status",
     "deep-link:default"
   ]
 }

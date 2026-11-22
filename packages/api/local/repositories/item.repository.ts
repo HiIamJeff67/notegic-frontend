@@ -6,18 +6,23 @@ import type { Client } from "@shared/api/local/client";
 import { Item, Transaction, UsersToShelves } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import type {
   CreateItemInput,
   DeleteItemInput,
   GetManyItemsInput,
+  GetObservedItemInput,
+  GetObservedManyItemsInput,
   UpdateItemInput,
+  UpsertObservedItemInput,
+  UpsertObservedManyItemsInput,
 } from "./inputs/item.input";
 import { OutboxStatus } from "./inputs/outbox.input";
 import type {
   CreateItemOutput,
   DeleteItemOutput,
   GetManyItemsOutput,
+  ItemRecord,
   UpdateItemOutput,
 } from "./outputs/item.output";
 
@@ -185,5 +190,108 @@ export class ItemRepository {
       )
       .all();
     return { items: rows };
+  }
+
+  static async GetObserved(
+    client: Client,
+    input: GetObservedItemInput
+  ): Promise<ItemRecord | undefined> {
+    const row = await client
+      .select({
+        id: Item.id,
+        name: Item.name,
+        rootShelfId: Item.rootShelfId,
+        parentSubShelfId: Item.parentSubShelfId,
+        type: Item.type,
+        updatedAt: Item.updatedAt,
+        createdAt: Item.createdAt,
+      })
+      .from(Item)
+      .where(and(eq(Item.id, input.id), isNull(Item.deletedAt)))
+      .get();
+    return row;
+  }
+
+  static async GetObservedMany(
+    client: Client,
+    input: GetObservedManyItemsInput
+  ): Promise<ItemRecord[]> {
+    if (
+      input.parentSubShelfId === undefined &&
+      input.rootShelfId === undefined &&
+      input.type === undefined
+    ) {
+      return [];
+    }
+    return await client
+      .select({
+        id: Item.id,
+        name: Item.name,
+        rootShelfId: Item.rootShelfId,
+        parentSubShelfId: Item.parentSubShelfId,
+        type: Item.type,
+        updatedAt: Item.updatedAt,
+        createdAt: Item.createdAt,
+      })
+      .from(Item)
+      .where(
+        and(
+          isNull(Item.deletedAt),
+          ...(input.parentSubShelfId === undefined
+            ? []
+            : [eq(Item.parentSubShelfId, input.parentSubShelfId)]),
+          ...(input.rootShelfId === undefined
+            ? []
+            : [eq(Item.rootShelfId, input.rootShelfId)]),
+          ...(input.type === undefined ? [] : [eq(Item.type, input.type)])
+        )
+      )
+      .all();
+  }
+
+  static async UpsertObserved(
+    client: Client,
+    input: UpsertObservedItemInput
+  ): Promise<boolean> {
+    return await ItemRepository.UpsertObservedMany(client, { items: [input] });
+  }
+
+  static async UpsertObservedMany(
+    client: Client,
+    input: UpsertObservedManyItemsInput
+  ): Promise<boolean> {
+    if (input.items.length === 0) return false;
+    return await client.transaction(async tx => {
+      let changed = false;
+      for (const item of input.items) {
+        const rows = await tx
+          .insert(Item)
+          .values({
+            id: item.id,
+            name: item.name,
+            rootShelfId: item.rootShelfId,
+            parentSubShelfId: item.parentSubShelfId,
+            type: item.type,
+            deletedAt: null,
+            updatedAt: item.at,
+            createdAt: item.at,
+          })
+          .onConflictDoUpdate({
+            target: Item.id,
+            set: {
+              name: item.name,
+              rootShelfId: item.rootShelfId,
+              parentSubShelfId: item.parentSubShelfId,
+              type: item.type,
+              updatedAt: item.at,
+            },
+            setWhere: sql`name is not excluded.name or root_shelf_id is not excluded.root_shelf_id or parent_sub_shelf_id is not excluded.parent_sub_shelf_id or type is not excluded.type or updated_at is not excluded.updated_at`,
+          })
+          .returning({ id: Item.id })
+          .all();
+        if (rows.length > 0) changed = true;
+      }
+      return changed;
+    });
   }
 }

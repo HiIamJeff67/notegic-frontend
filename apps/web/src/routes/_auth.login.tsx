@@ -7,12 +7,20 @@ import LoginPage from "@/pages/auth/LoginPage";
 import { pageTitle } from "@/seo/pageTitle";
 
 export const Route = createFileRoute("/_auth/login")({
-  validateSearch: search => ({
-    oauthFailed: search.oauthFailed === true ? true : undefined,
+  validateSearch: (
+    search: Record<string, unknown>
+  ): { oauthFailed?: true; switchAccount?: true } => {
+    const validated: { oauthFailed?: true; switchAccount?: true } = {};
+    if (search.oauthFailed === true) validated.oauthFailed = true;
+    if (search.switchAccount === true) validated.switchAccount = true;
+    return validated;
+  },
+  loaderDeps: ({ search }) => ({
+    oauthFailed: search.oauthFailed,
+    switchAccount: search.switchAccount,
   }),
-  loaderDeps: ({ search }) => ({ oauthFailed: search.oauthFailed }),
   loader: async ({ deps }) => {
-    if (deps.oauthFailed) return {};
+    if (deps.oauthFailed || deps.switchAccount) return {};
 
     try {
       if (!(await HasAuthCookies())) return {};

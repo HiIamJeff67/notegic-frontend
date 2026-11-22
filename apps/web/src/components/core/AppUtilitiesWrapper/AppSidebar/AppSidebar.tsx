@@ -1,74 +1,15 @@
-import TruncatedText from "@shared/components/commons/TruncatedText/TruncatedText";
-import { Button } from "@shared/components/shadcn/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@shared/components/shadcn/collapsible";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@shared/components/shadcn/dropdown-menu";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarGroup,
-  MenubarItem,
-  MenubarLabel,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@shared/components/shadcn/menubar";
-import {
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from "@shared/components/shadcn/sidebar";
+import { WorkspaceSidebar } from "@shared/components/commons/WorkspaceSidebar/WorkspaceSidebar";
+import toast from "@shared/components/toast/toast";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { tError } from "@shared/i18n/error";
 import {
   LocalStorage,
   LocalStorageKey,
 } from "@shared/lib/storage/localStorage";
-import toast from "@shared/components/toast/toast";
 import { WebURLPathDictionary } from "@shared/lib/url/web";
-import {
-  BookOpenIcon,
-  ChevronDown,
-  ChevronRight,
-  LayoutDashboardIcon,
-  LogOutIcon,
-  MessageSquareWarningIcon,
-  PlusIcon,
-  SettingsIcon,
-  SlidersHorizontalIcon,
-  Trash2Icon,
-  UserRoundIcon,
-} from "lucide-react";
+import { BookOpenIcon } from "lucide-react";
 import { useEffect } from "react";
 import AvatarIcon from "@/components/icons/AvatarIcon";
-import {
-  RootShelfIcon,
-  RoutineIcon,
-  RoutineTagIcon,
-  StationIcon,
-} from "@/components/icons/WorkspaceEntityIcons";
 import RootShelfMenu from "@/components/menus/RootShelfMenu/RootShelfMenu";
 import RoutineTagMenu from "@/components/menus/RoutineTagMenu/RoutineTagMenu";
 import StationMenu from "@/components/menus/StationMenu/StationMenu";
@@ -81,10 +22,8 @@ import {
   useStationRoutine,
 } from "@/hooks";
 import { useModal } from "@/hooks/useModal";
-import { useTranslation } from "@shared/hooks/useTranslation";
 import { useUser } from "@/hooks/useUser";
 import { type SettingsPage } from "@/providers/SettingsDisplayProvider";
-import ResizableSidebar from "../ResizableSidebar/ResizableSidebar";
 
 interface AppSidebarProps {
   disabled?: boolean;
@@ -96,9 +35,7 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
   const router = useAppRouterActions();
   const { t } = useTranslation();
   const modalManager = useModal();
-  const sidebarManager = useSidebar();
   const resizableSidebarManager = useResizeSidebar();
-  const isSidebarExpanded = sidebarManager.open || sidebarManager.isMobile;
   const stationRoutineManager = useStationRoutine();
   const userManager = useUser();
   const avatarURL =
@@ -143,419 +80,95 @@ export function AppSidebar({ disabled = false }: AppSidebarProps) {
     initiallySearchRootShelves();
   }, [userManager.userData?.publicId]);
 
+  const logout = async () => {
+    router.push(WebURLPathDictionary.home);
+    await userManager.logout();
+    toast.success(t("workspace.notifications.logoutSuccess"));
+  };
+
   return (
-    <ResizableSidebar
-      variant="sidebar"
-      collapsible="icon"
-      className="border-sidebar-border p-0 m-0 overflow-hidden"
-    >
-      <SidebarHeader className="flex min-h-[calc(var(--app-navigation-height)-1px)] flex-col justify-center items-center p-0">
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem
-                className={`${
-                  isSidebarExpanded ? "flex-row pr-1" : "flex-col-reverse"
-                } flex justify-between items-center gap-1 hover:bg-accent rounded-sm`}
-              >
-                <SidebarMenuButton
-                  className="w-19/20 bg-transparent hover:bg-primary flex justify-start items-center select-none"
-                  onClick={() =>
-                    router.push(WebURLPathDictionary.app.dashboard._)
-                  }
-                >
-                  <LayoutDashboardIcon />
-                  {isSidebarExpanded && (
-                    <span className="truncate">
-                      {t("workspace.navigation.dashboard")}
-                    </span>
-                  )}
-                </SidebarMenuButton>
-                <SidebarTrigger
-                  variant={"default"}
-                  className="select-none bg-transparent text-foreground hover:bg-primary"
-                />
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-sm">
-                <SidebarMenuButton
-                  className={`w-full flex ${
-                    isSidebarExpanded ? "justify-start" : "justify-center"
-                  } items-center select-none hover:bg-primary`}
-                  onClick={() =>
-                    router.push(WebURLPathDictionary.app.routines._)
-                  }
-                >
-                  <RoutineIcon />
-                  {isSidebarExpanded && (
-                    <span className="truncate">
-                      {t("workspace.navigation.routinesOverview")}
-                    </span>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarHeader>
-      <SidebarSeparator className="w-full m-0 p-0" />
-      <SidebarContent>
-        <SidebarGroup className="mb-0 pb-0">
-          <Collapsible defaultOpen className="group/collapsible">
-            <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="gap-2 [&[data-state=closed]:hover_.group-label-chevron-right]:block [&[data-state=open]:hover_.group-label-chevron-down]:block">
-                <RootShelfIcon size={16} />
-                <span>{t("workspace.navigation.shelves")}</span>
-                <ChevronRight className="group-label-chevron-right hidden size-3" />
-                <ChevronDown className="group-label-chevron-down hidden size-3" />
-              </SidebarGroupLabel>
-            </CollapsibleTrigger>
-            <SidebarGroupAction
-              className="sidebar-group-label-action opacity-0 transition-opacity text-muted-foreground"
-              aria-label={t("workspace.navigation.createRootShelf")}
-              title={t("workspace.navigation.createRootShelf")}
-              onClick={() =>
-                modalManager.open("CreateShelfItemDialog", {
-                  dialogHeader: t("workspace.navigation.createRootShelfDialog"),
-                  dialogDescription: t(
-                    "workspace.navigation.typeRootShelfName"
-                  ),
-                  disableInput: false,
-                  inputPlaceholder: t("workspace.navigation.typeNewName"),
-                  onCreate: async (newRootShelfName: string) => {
-                    try {
-                      await shelfItemManager.createRootShelf(newRootShelfName);
-                      toast.success(
-                        t("workspace.notifications.created", {
-                          name: newRootShelfName.trim(),
-                        })
-                      );
-                    } catch (error) {
-                      toast.error(tError(error, t));
-                    }
-                  },
-                  onCancel: modalManager.close,
+    <WorkspaceSidebar
+      dashboardLabel={t("workspace.navigation.dashboard")}
+      onDashboard={() => router.push(WebURLPathDictionary.app.dashboard._)}
+      routinesLabel={t("workspace.navigation.routinesOverview")}
+      onRoutines={() => router.push(WebURLPathDictionary.app.routines._)}
+      shelvesLabel={t("workspace.navigation.shelves")}
+      createShelfLabel={t("workspace.navigation.createRootShelf")}
+      onCreateShelf={() =>
+        modalManager.open("CreateShelfItemDialog", {
+          dialogHeader: t("workspace.navigation.createRootShelfDialog"),
+          dialogDescription: t("workspace.navigation.typeRootShelfName"),
+          disableInput: false,
+          inputPlaceholder: t("workspace.navigation.typeNewName"),
+          onCreate: async (newRootShelfName: string) => {
+            try {
+              await shelfItemManager.createRootShelf(newRootShelfName);
+              toast.success(
+                t("workspace.notifications.created", {
+                  name: newRootShelfName.trim(),
                 })
-              }
-            >
-              <PlusIcon />
-            </SidebarGroupAction>
-            <CollapsibleContent className="sidebar-group-collapsible-content overflow-hidden">
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuSub className="w-full pr-4">
-                      <SidebarMenuSubItem className="w-full">
-                        <RootShelfMenu />
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-        <SidebarGroup className="my-0 pb-0">
-          <Collapsible defaultOpen className="group/collapsible">
-            <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="gap-2 [&[data-state=closed]:hover_.group-label-chevron-right]:block [&[data-state=open]:hover_.group-label-chevron-down]:block">
-                <StationIcon size={16} />
-                <span>{t("workspace.navigation.stations")}</span>
-                <ChevronRight className="group-label-chevron-right hidden size-3" />
-                <ChevronDown className="group-label-chevron-down hidden size-3" />
-              </SidebarGroupLabel>
-            </CollapsibleTrigger>
-            <SidebarGroupAction
-              className="sidebar-group-label-action opacity-0 transition-opacity text-muted-foreground"
-              aria-label={t("workspace.navigation.createStation")}
-              title={t("workspace.navigation.createStation")}
-              onClick={() => modalManager.open("CreateStationDialog", {})}
-            >
-              <PlusIcon />
-            </SidebarGroupAction>
-            <CollapsibleContent className="sidebar-group-collapsible-content overflow-hidden">
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuSub className="w-full pr-4">
-                      <SidebarMenuSubItem className="w-full">
-                        <StationMenu />
-                        <div className="my-2 flex flex-col gap-1 border-t border-sidebar-border pt-2">
-                          <div className="group/routine-tags-label flex h-7 items-center justify-between px-2 text-xs text-muted-foreground">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <RoutineTagIcon className="size-3.5 shrink-0" />
-                              <span className="truncate">
-                                {t("workspace.navigation.routineTags")}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              className="flex size-5 shrink-0 items-center justify-center rounded-sm opacity-0 transition-opacity hover:bg-sidebar-accent hover:text-sidebar-accent-foreground group-hover/routine-tags-label:opacity-100 focus-visible:opacity-100"
-                              aria-label={t(
-                                "workspace.navigation.createRoutineTag"
-                              )}
-                              title={t("workspace.navigation.createRoutineTag")}
-                              onClick={() =>
-                                modalManager.open("CreateRoutineTagDialog", {
-                                  onCreated: async routineTagId => {
-                                    stationRoutineManager.selectRoutineTag(
-                                      routineTagId
-                                    );
-                                  },
-                                })
-                              }
-                            >
-                              <PlusIcon className="size-3.5" />
-                            </button>
-                          </div>
-                          <RoutineTagMenu />
-                        </div>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarGroup
-        className={
-          isSidebarExpanded
-            ? "mx-2 mb-0 w-auto rounded-t-md border border-b-0 border-sidebar-border bg-sidebar-accent/20 px-1 py-1"
-            : "m-0 mb-0 w-full rounded-none border-none bg-transparent p-0"
-        }
-      >
-        <SidebarGroupContent>
-          <SidebarMenu
-            className={isSidebarExpanded ? undefined : "items-center"}
-          >
-            <SidebarMenuItem className="rounded-sm">
-              <SidebarMenuButton
-                className={`w-full flex ${
-                  isSidebarExpanded ? "justify-start" : "justify-center"
-                } items-center select-none hover:bg-primary`}
-                onClick={() => router.push(WebURLPathDictionary.document)}
-              >
-                <BookOpenIcon />
-                {isSidebarExpanded && (
-                  <span className="truncate">
-                    {t("workspace.navigation.document")}
-                  </span>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem className="rounded-sm">
-              <SidebarMenuButton
-                className={`w-full flex ${
-                  isSidebarExpanded ? "justify-start" : "justify-center"
-                } items-center select-none hover:bg-primary`}
-                onClick={() => router.push(WebURLPathDictionary.app.trash)}
-              >
-                <Trash2Icon />
-                {isSidebarExpanded && (
-                  <span className="truncate">
-                    {t("workspace.navigation.trash")}
-                  </span>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem className="rounded-sm">
-              <SidebarMenuButton
-                className={`w-full flex ${
-                  isSidebarExpanded ? "justify-start" : "justify-center"
-                } items-center select-none hover:bg-primary`}
-                onClick={() => openSettings("preferences", "feedback")}
-              >
-                <MessageSquareWarningIcon />
-                {isSidebarExpanded && (
-                  <span className="truncate">
-                    {t("workspace.navigation.report")}
-                  </span>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-      <SidebarSeparator className="w-full m-0 p-0" />
-      <SidebarFooter className="w-full p-0 m-0">
-        {sidebarManager.isMobile ? (
-          <div className="flex w-full items-center gap-1 px-1 py-1">
-            <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1">
-              <AvatarIcon
-                avatarURL={avatarURL}
-                fallbackText={
-                  userManager.userData?.displayName ||
-                  userManager.userData?.name ||
-                  "U"
-                }
-                size={30}
-              />
-              <div className="flex min-w-0 flex-1 flex-col text-start">
-                <TruncatedText
-                  className="text-xs font-semibold text-foreground"
-                  width="100%"
-                >
-                  {userManager.userData?.name ||
-                    t("workspace.navigation.userName")}
-                </TruncatedText>
-                <TruncatedText
-                  className="text-xs font-light text-foreground"
-                  width="100%"
-                >
-                  {userManager.userData?.status ||
-                    t("workspace.navigation.offline")}
-                </TruncatedText>
-              </div>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 [&_svg]:size-5"
-                  aria-label={t("workspace.navigation.settings")}
-                  title={t("workspace.navigation.settings")}
-                >
-                  <SettingsIcon size={20} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="top" className="w-64">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>
-                    {t("workspace.navigation.settings")}
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem onSelect={() => openSettings("account")}>
-                    <UserRoundIcon />
-                    <span>{t("workspace.navigation.account")}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => openSettings("preferences")}
-                  >
-                    <SlidersHorizontalIcon />
-                    <span>{t("workspace.navigation.preferences")}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>
-                    {t("workspace.navigation.account")}
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onSelect={async () => {
-                      router.push(WebURLPathDictionary.home);
-                      await userManager.logout();
-                      toast.success(t("workspace.notifications.logoutSuccess"));
-                    }}
-                  >
-                    <LogOutIcon />
-                    <span>{t("auth.logout")}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <NotificationPopover mobile />
-          </div>
-        ) : (
-          <Menubar
-            className={`w-full h-full flex flex-row items-center rounded-none bg-transparent border-none ${
-              isSidebarExpanded ? "justify-start" : "justify-center"
-            }`}
-          >
-            <MenubarMenu>
-              <MenubarTrigger
-                className={`h-full my-1 flex min-w-0 flex-row bg-transparent hover:bg-transparent ${
-                  isSidebarExpanded
-                    ? "flex-1 justify-start gap-2"
-                    : "w-full justify-center px-0"
-                }`}
-              >
-                <AvatarIcon
-                  avatarURL={avatarURL}
-                  fallbackText={
-                    userManager.userData?.displayName ||
-                    userManager.userData?.name ||
-                    "U"
-                  }
-                  size={30}
-                />
-                {isSidebarExpanded && (
-                  <div className="flex min-w-0 flex-1 flex-col text-start">
-                    <TruncatedText
-                      className="text-xs font-semibold text-foreground transition-all"
-                      width={`${resizableSidebarManager.width - 120}px`}
-                    >
-                      {userManager.userData?.name ||
-                        t("workspace.navigation.userName")}
-                    </TruncatedText>
-                    <TruncatedText
-                      className="text-xs font-light text-foreground transition-all"
-                      width={`${resizableSidebarManager.width - 120}px`}
-                    >
-                      {userManager.userData?.status ||
-                        t("workspace.navigation.offline")}
-                    </TruncatedText>
-                  </div>
-                )}
-              </MenubarTrigger>
-            </MenubarMenu>
-            {isSidebarExpanded && (
-              <MenubarMenu>
-                <MenubarTrigger
-                  className="px-2 py-2 flex items-center justify-center"
-                  aria-label={t("workspace.navigation.settings")}
-                  title={t("workspace.navigation.settings")}
-                >
-                  <SettingsIcon size={20} />
-                </MenubarTrigger>
-                <MenubarContent className="w-64 bg-popover border-border">
-                  <MenubarGroup>
-                    <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
-                      {t("workspace.navigation.settings")}
-                    </MenubarLabel>
-                    <MenubarItem
-                      className="cursor-pointer"
-                      onSelect={() => openSettings("account")}
-                    >
-                      <UserRoundIcon />
-                      <span>{t("workspace.navigation.account")}</span>
-                    </MenubarItem>
-                    <MenubarItem
-                      className="cursor-pointer"
-                      onSelect={() => openSettings("preferences")}
-                    >
-                      <SlidersHorizontalIcon />
-                      <span>{t("workspace.navigation.preferences")}</span>
-                    </MenubarItem>
-                  </MenubarGroup>
-                  <MenubarSeparator />
-                  <MenubarGroup>
-                    <MenubarLabel className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
-                      {t("workspace.navigation.account")}
-                    </MenubarLabel>
-                    <MenubarItem
-                      className="cursor-pointer text-destructive focus:text-destructive"
-                      onSelect={async () => {
-                        router.push(WebURLPathDictionary.home);
-                        await userManager.logout();
-                        toast.success(
-                          t("workspace.notifications.logoutSuccess")
-                        );
-                      }}
-                    >
-                      <LogOutIcon />
-                      <span>{t("auth.logout")}</span>
-                    </MenubarItem>
-                  </MenubarGroup>
-                </MenubarContent>
-              </MenubarMenu>
-            )}
-            {isSidebarExpanded && <NotificationPopover />}
-          </Menubar>
-        )}
-      </SidebarFooter>
-    </ResizableSidebar>
+              );
+            } catch (error) {
+              toast.error(tError(error, t));
+            }
+          },
+          onCancel: modalManager.close,
+        })
+      }
+      shelfMenu={<RootShelfMenu />}
+      stationsLabel={t("workspace.navigation.stations")}
+      createStationLabel={t("workspace.navigation.createStation")}
+      onCreateStation={() => modalManager.open("CreateStationDialog", {})}
+      stationMenu={<StationMenu />}
+      routineTagsLabel={t("workspace.navigation.routineTags")}
+      createRoutineTagLabel={t("workspace.navigation.createRoutineTag")}
+      onCreateRoutineTag={() =>
+        modalManager.open("CreateRoutineTagDialog", {
+          onCreated: async routineTagId => {
+            stationRoutineManager.selectRoutineTag(routineTagId);
+          },
+        })
+      }
+      routineTagMenu={<RoutineTagMenu />}
+      documentLabel={t("workspace.navigation.document")}
+      documentIcon={<BookOpenIcon />}
+      onDocument={() => router.push(WebURLPathDictionary.document)}
+      trashLabel={t("workspace.navigation.trash")}
+      onTrash={() => router.push(WebURLPathDictionary.app.trash)}
+      reportLabel={t("workspace.navigation.report")}
+      onReport={() => openSettings("preferences", "feedback")}
+      account={{
+        name: userManager.userData?.name || t("workspace.navigation.userName"),
+        status:
+          userManager.userData?.status || t("workspace.navigation.offline"),
+        avatar: (
+          <AvatarIcon
+            avatarURL={avatarURL}
+            fallbackText={
+              userManager.userData?.displayName ||
+              userManager.userData?.name ||
+              "U"
+            }
+            size={30}
+          />
+        ),
+      }}
+      settingsLabel={t("workspace.navigation.settings")}
+      accountLabel={t("workspace.navigation.account")}
+      preferencesLabel={t("workspace.navigation.preferences")}
+      onAccount={() => openSettings("account")}
+      onPreferences={() => openSettings("preferences")}
+      logoutLabel={t("auth.logout")}
+      onLogout={logout}
+      notifications={mobile => <NotificationPopover mobile={mobile} />}
+      resize={{
+        style: resizableSidebarManager.sidebarStyle,
+        width: resizableSidebarManager.width,
+        onMouseDown: resizableSidebarManager.onMouseDown,
+        onDoubleClick: resizableSidebarManager.onDoubleClick,
+      }}
+    />
   );
 }
+
+export default AppSidebar;

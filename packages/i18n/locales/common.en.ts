@@ -142,6 +142,7 @@ export const EnglishCommonTranslation: CommonTranslation = {
         "Unable to complete this action. Please try again later.",
     },
     login: "Login",
+    useAnotherAccount: "Use another account",
     register: "Register",
     resetPassword: "Reset Password",
     logout: "Logout",

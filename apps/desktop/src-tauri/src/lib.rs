@@ -1,4 +1,5 @@
 mod native_auth;
+mod network;
 mod sidecar;
 
 use tauri::{Manager, RunEvent};
@@ -19,6 +20,7 @@ pub fn run() {
         }))
         .invoke_handler(tauri::generate_handler![
             sidecar::sidecar_session,
+            network::network_status,
             native_auth::start_native_login,
             native_auth::native_session,
             native_auth::logout_native

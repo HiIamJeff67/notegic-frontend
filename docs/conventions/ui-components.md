@@ -35,7 +35,7 @@ there only when the control does not exist yet.
 | Divider | `ui/separator`, `ui/marker` | `Marker` variants: `default`, `separator`, `border`. |
 | Disclosure | `ui/accordion` | One column at the width of its parent. Do not give it a fixed width. |
 | Inline pending | `ui/spinner`, `ui/skeleton`, `ui/progress` | A screen that cannot be used yet uses `LoadingCover`, not a new overlay. |
-| Sidebar chrome | `ui/sidebar` | App and article sidebars. |
+| Sidebar chrome | `ui/sidebar`, `commons/WorkspaceSidebar/WorkspaceSidebar.tsx` | App and article sidebars. Web and desktop share `WorkspaceSidebar` and pass their own menus. |
 | Code | `ui/code-block` | Documentation pages compose it through `CodeExamplePanel`. |
 
 ## Shared compositions

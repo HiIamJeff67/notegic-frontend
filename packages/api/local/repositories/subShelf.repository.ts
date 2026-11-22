@@ -9,18 +9,24 @@ import {
 } from "@shared/api/local/schemas";
 import { TransactionActionType } from "@shared/api/local/schemas/enums/transaction_action_type.enum";
 import { TransactionEntityType } from "@shared/api/local/schemas/enums/transaction_entity_type.enum";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import type { UUID } from "crypto";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { OutboxStatus } from "./inputs/outbox.input";
 import type {
   CreateSubShelfInput,
   DeleteSubShelfInput,
   GetManySubShelvesInput,
+  GetObservedManySubShelvesInput,
+  GetObservedSubShelfInput,
   UpdateSubShelfInput,
+  UpsertObservedManySubShelvesInput,
+  UpsertObservedSubShelfInput,
 } from "./inputs/subShelf.input";
 import type {
   CreateSubShelfOutput,
   DeleteSubShelfOutput,
   GetManySubShelvesOutput,
+  SubShelfRecord,
   UpdateSubShelfOutput,
 } from "./outputs/subShelf.output";
 
@@ -178,5 +184,115 @@ export class SubShelfRepository {
         path: row.path ?? [],
       })),
     };
+  }
+
+  static async GetObserved(
+    client: Client,
+    input: GetObservedSubShelfInput
+  ): Promise<SubShelfRecord | undefined> {
+    const row = await client
+      .select({
+        id: SubShelf.id,
+        name: SubShelf.name,
+        rootShelfId: SubShelf.rootShelfId,
+        prevSubShelfId: SubShelf.prevSubShelfId,
+        path: SubShelf.path,
+        updatedAt: SubShelf.updatedAt,
+        createdAt: SubShelf.createdAt,
+      })
+      .from(SubShelf)
+      .where(and(eq(SubShelf.id, input.id), isNull(SubShelf.deletedAt)))
+      .get();
+    if (!row) return undefined;
+    return {
+      ...row,
+      prevSubShelfId: row.prevSubShelfId ?? null,
+      path: row.path ?? [],
+    };
+  }
+
+  static async GetObservedMany(
+    client: Client,
+    input: GetObservedManySubShelvesInput
+  ): Promise<SubShelfRecord[]> {
+    if (input.rootShelfId === undefined && input.prevSubShelfId === undefined) {
+      return [];
+    }
+    const rows = await client
+      .select({
+        id: SubShelf.id,
+        name: SubShelf.name,
+        rootShelfId: SubShelf.rootShelfId,
+        prevSubShelfId: SubShelf.prevSubShelfId,
+        path: SubShelf.path,
+        updatedAt: SubShelf.updatedAt,
+        createdAt: SubShelf.createdAt,
+      })
+      .from(SubShelf)
+      .where(
+        and(
+          isNull(SubShelf.deletedAt),
+          ...(input.rootShelfId === undefined
+            ? []
+            : [eq(SubShelf.rootShelfId, input.rootShelfId)]),
+          ...(input.prevSubShelfId === undefined
+            ? []
+            : [eq(SubShelf.prevSubShelfId, input.prevSubShelfId)])
+        )
+      )
+      .all();
+    return rows.map(row => ({
+      ...row,
+      prevSubShelfId: row.prevSubShelfId ?? null,
+      path: row.path ?? [],
+    }));
+  }
+
+  static async UpsertObserved(
+    client: Client,
+    input: UpsertObservedSubShelfInput
+  ): Promise<boolean> {
+    return await SubShelfRepository.UpsertObservedMany(client, {
+      shelves: [input],
+    });
+  }
+
+  static async UpsertObservedMany(
+    client: Client,
+    input: UpsertObservedManySubShelvesInput
+  ): Promise<boolean> {
+    if (input.shelves.length === 0) return false;
+    return await client.transaction(async tx => {
+      let changed = false;
+      for (const shelf of input.shelves) {
+        const rows = await tx
+          .insert(SubShelf)
+          .values({
+            id: shelf.id,
+            name: shelf.name,
+            rootShelfId: shelf.rootShelfId,
+            prevSubShelfId: shelf.prevSubShelfId,
+            path: shelf.path as UUID[],
+            deletedAt: null,
+            updatedAt: shelf.at,
+            createdAt: shelf.at,
+          })
+          .onConflictDoUpdate({
+            target: SubShelf.id,
+            set: {
+              name: shelf.name,
+              rootShelfId: shelf.rootShelfId,
+              prevSubShelfId: shelf.prevSubShelfId,
+              path: shelf.path as UUID[],
+              updatedAt: shelf.at,
+            },
+            setWhere: sql`name is not excluded.name or root_shelf_id is not excluded.root_shelf_id or prev_sub_shelf_id is not excluded.prev_sub_shelf_id or path is not excluded.path or updated_at is not excluded.updated_at`,
+          })
+          .returning({ id: SubShelf.id })
+          .all();
+        if (rows.length > 0) changed = true;
+      }
+      return changed;
+    });
   }
 }

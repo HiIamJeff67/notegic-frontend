@@ -1,396 +1,363 @@
+import { useStationRoutineSidebar } from "@shared/api/hooks/react/StationRoutineSidebarProvider";
 import { useShelfItem } from "@shared/api/hooks/react/useShelfItem";
 import { ItemType } from "@shared/api/interfaces/enums/itemType.enum";
-import { type Client, connectDefaultClient } from "@shared/api/local/client";
-import { Button } from "@shared/components/shadcn/button";
-import { Input } from "@shared/components/shadcn/input";
+import { WorkspaceSidebar } from "@shared/components/commons/WorkspaceSidebar/WorkspaceSidebar";
+import AvatarIcon from "@shared/components/icons/AvatarIcon";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
+  BlockPackIcon,
+  MaterialIcon,
+  RootShelfIcon,
+  RoutineTagIcon,
+  StationIcon,
+  SubShelfIcon,
+} from "@shared/components/icons/WorkspaceEntityIcons";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@shared/components/shadcn/collapsible";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@shared/components/shadcn/context-menu";
+import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
+  SidebarMenuSub,
   useSidebar,
 } from "@shared/components/shadcn/sidebar";
-import { useTranslation as useSharedTranslation } from "@shared/hooks/useTranslation";
+import { useTranslation } from "@shared/hooks/useTranslation";
 import { useNavigate } from "@tanstack/react-router";
-import { listen } from "@tauri-apps/api/event";
 import {
-  ChevronDown,
-  ChevronRight,
+  ChevronDownIcon,
+  ChevronRightIcon,
   FolderPlus,
-  LayoutDashboardIcon,
   LogIn,
-  PlusIcon,
   Trash2,
   UserRoundPlus,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { GetMe } from "../../../../api/functions/user.function";
-import { sidecarDriver } from "../../../../api/local/driver";
+import { useState } from "react";
 import { setAccessToken } from "../../../../api/tokens/accessToken";
 import {
   logoutNative,
   startNativeLogin,
   startNativeRegister,
 } from "../../../../invocations/nativeAuth.invocation";
-import { sidecarSession } from "../../../../invocations/sidecar.invocation";
-import { ShelfItemProvider } from "../../../../providers/ShelfItemProvider";
+import { useDesktopSession } from "../../../../providers/DesktopSessionProvider";
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const sidebarManager = useSidebar();
-  const isSidebarExpanded = sidebarManager.open || sidebarManager.isMobile;
-  const loginLabel = t("auth.login");
-  const registerLabel = t("auth.register");
-  const [displayName, setDisplayName] = useState("");
-
-  useEffect(() => {
-    const subscription = listen<{ accessToken: string; displayName: string }>(
-      "native-session",
-      event => {
-        setAccessToken(event.payload.accessToken);
-        setDisplayName(event.payload.displayName);
-      }
-    );
-    return () => {
-      void subscription.then(unlisten => unlisten());
-    };
-  }, []);
-
-  const openLogin = () => {
-    void startNativeLogin();
-  };
+  const session = useDesktopSession();
+  const account = session.account;
+  const [creatingShelf, setCreatingShelf] = useState(false);
+  const [creatingStation, setCreatingStation] = useState(false);
+  const [creatingTag, setCreatingTag] = useState(false);
 
   return (
-    <Sidebar
-      variant="sidebar"
-      collapsible="icon"
-      className="m-0 h-auto overflow-hidden border-sidebar-border p-0"
-    >
-      <div className="relative flex h-full min-h-0 flex-col">
-        <SidebarHeader className="flex flex-col items-center justify-center p-0">
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem
-                  className={`${
-                    isSidebarExpanded ? "flex-row pr-1" : "flex-col-reverse"
-                  } flex items-center justify-between gap-1 rounded-sm hover:bg-accent`}
-                >
-                  <SidebarMenuButton
-                    className="flex w-19/20 items-center justify-start bg-transparent select-none hover:bg-primary"
-                    onClick={() => navigate({ to: "/app/dashboard" })}
-                  >
-                    <LayoutDashboardIcon />
-                    {isSidebarExpanded && (
-                      <span className="truncate">
-                        {t("workspace.navigation.dashboard")}
-                      </span>
-                    )}
-                  </SidebarMenuButton>
-                  <SidebarTrigger
-                    variant="default"
-                    className="bg-transparent text-foreground select-none hover:bg-primary"
-                  />
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarHeader>
-        <SidebarContent className="min-w-0">
-          {isSidebarExpanded && displayName !== "" && <ShelfSection />}
-        </SidebarContent>
-        <SidebarFooter className="m-0 w-full">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                className={`flex w-full items-center select-none hover:bg-primary ${
-                  isSidebarExpanded ? "justify-start" : "justify-center"
-                }`}
-                aria-label={displayName || loginLabel}
-                title={displayName || loginLabel}
-                onClick={() => {
-                  if (displayName)
-                    void logoutNative().then(() => {
-                      setAccessToken("");
-                      setDisplayName("");
-                    });
-                  else openLogin();
-                }}
-              >
-                <LogIn />
-                {isSidebarExpanded && (
-                  <span className="truncate">{displayName || loginLabel}</span>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            {displayName === "" && (
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={`flex w-full items-center select-none hover:bg-primary ${
-                    isSidebarExpanded ? "justify-start" : "justify-center"
-                  }`}
-                  aria-label={registerLabel}
-                  title={registerLabel}
-                  onClick={() => {
-                    void startNativeRegister();
-                  }}
-                >
-                  <UserRoundPlus />
-                  {isSidebarExpanded && (
-                    <span className="truncate">{registerLabel}</span>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
-          </SidebarMenu>
-        </SidebarFooter>
-      </div>
-    </Sidebar>
+    <WorkspaceSidebar
+      dashboardLabel={t("workspace.navigation.dashboard")}
+      onDashboard={() => void navigate({ to: "/app/dashboard" })}
+      shelvesLabel={t("workspace.navigation.shelves")}
+      createShelfLabel={t("workspace.navigation.createRootShelf")}
+      onCreateShelf={account ? () => setCreatingShelf(true) : undefined}
+      shelfMenu={
+        account ? (
+          <DesktopShelfMenu
+            creating={creatingShelf}
+            onFinishCreate={() => setCreatingShelf(false)}
+          />
+        ) : null
+      }
+      stationsLabel={t("workspace.navigation.stations")}
+      createStationLabel={t("workspace.navigation.createStation")}
+      onCreateStation={account ? () => setCreatingStation(true) : undefined}
+      stationMenu={
+        account ? (
+          <DesktopStationMenu
+            creating={creatingStation}
+            onFinishCreate={() => setCreatingStation(false)}
+          />
+        ) : null
+      }
+      routineTagsLabel={t("workspace.navigation.routineTags")}
+      createRoutineTagLabel={t("workspace.navigation.createRoutineTag")}
+      onCreateRoutineTag={account ? () => setCreatingTag(true) : undefined}
+      routineTagMenu={
+        account ? (
+          <DesktopRoutineTagMenu
+            creating={creatingTag}
+            onFinishCreate={() => setCreatingTag(false)}
+          />
+        ) : null
+      }
+      account={
+        account
+          ? {
+              name: account.displayName || account.name,
+              status: account.email,
+              avatar: (
+                <AvatarIcon
+                  avatarURL={null}
+                  fallbackText={account.displayName || account.name}
+                  size={30}
+                />
+              ),
+            }
+          : undefined
+      }
+      settingsLabel={t("workspace.navigation.settings")}
+      accountLabel={t("workspace.navigation.account")}
+      preferencesLabel={t("workspace.navigation.preferences")}
+      logoutLabel={t("auth.logout")}
+      onLogout={
+        account
+          ? async () => {
+              await logoutNative();
+              setAccessToken("");
+              session.setAccount(null);
+            }
+          : undefined
+      }
+      signedOut={account ? undefined : <SignedOutMenu />}
+    />
   );
 }
 
-const ShelfSection = () => {
-  const { t } = useSharedTranslation();
-  const [draft, setDraft] = useState("");
-  const [subDrafts, setSubDrafts] = useState<Record<string, string>>({});
-  const [itemDrafts, setItemDrafts] = useState<Record<string, string>>({});
-  const [connection, setConnection] = useState<
-    | {
-        client: Client;
-        owner: {
-          publicId: string;
-          name: string;
-          displayName: string;
-          email: string;
-        };
-      }
-    | undefined
-  >();
-
-  useEffect(() => {
-    let cancelled = false;
-    const connect = async () => {
-      const session = await sidecarSession();
-      const me = await GetMe({});
-      if (me.success === false || cancelled) return;
-      setConnection({
-        client: connectDefaultClient(sidecarDriver(session)),
-        owner: {
-          publicId: me.data.publicId,
-          name: me.data.name,
-          displayName: me.data.displayName,
-          email: me.data.email,
-        },
-      });
-    };
-    void connect().catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (connection === undefined) return null;
-
+const SignedOutMenu = () => {
+  const { t } = useTranslation();
+  const sidebar = useSidebar();
+  const expanded = sidebar.open || sidebar.isMobile;
   return (
-    <ShelfItemProvider client={connection.client} owner={connection.owner}>
-      <ShelfTree
-        draft={draft}
-        setDraft={setDraft}
-        subDrafts={subDrafts}
-        setSubDrafts={setSubDrafts}
-        itemDrafts={itemDrafts}
-        setItemDrafts={setItemDrafts}
-        label={t}
-      />
-    </ShelfItemProvider>
+    <SidebarMenu className={expanded ? "px-1 py-1" : "items-center px-1 py-1"}>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={`flex w-full items-center select-none hover:bg-primary ${
+            expanded ? "justify-start" : "justify-center"
+          }`}
+          onClick={() => void startNativeLogin()}
+        >
+          <LogIn />
+          {expanded ? (
+            <span className="truncate">{t("auth.login")}</span>
+          ) : null}
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={`flex w-full items-center select-none hover:bg-primary ${
+            expanded ? "justify-start" : "justify-center"
+          }`}
+          onClick={() => void startNativeRegister()}
+        >
+          <UserRoundPlus />
+          {expanded ? (
+            <span className="truncate">{t("auth.register")}</span>
+          ) : null}
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 };
 
-const ShelfTree = ({
-  draft,
-  setDraft,
-  subDrafts,
-  setSubDrafts,
-  itemDrafts,
-  setItemDrafts,
+const NameField = ({
   label,
+  value,
+  onChange,
+  onSubmit,
+  onCancel,
 }: {
-  draft: string;
-  setDraft: (value: string) => void;
-  subDrafts: Record<string, string>;
-  setSubDrafts: (value: Record<string, string>) => void;
-  itemDrafts: Record<string, string>;
-  setItemDrafts: (value: Record<string, string>) => void;
-  label: ReturnType<typeof useSharedTranslation>["t"];
-}) => {
-  const shelfItem = useShelfItem();
-  return (
-    <section className="min-w-0 px-2 py-2">
-      <h2 className="truncate px-2 text-sm font-medium">
-        {label("workspace.navigation.shelves")}
-      </h2>
-      <form
-        className="mt-2 flex min-w-0 gap-2"
-        onSubmit={event => {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) => (
+  <div className="relative flex items-center rounded-sm border border-foreground bg-muted px-2 py-1">
+    <input
+      autoFocus
+      type="text"
+      value={value}
+      aria-label={label}
+      className="h-6 min-w-0 flex-1 overflow-hidden bg-transparent outline-none"
+      onChange={event => onChange(event.target.value)}
+      onKeyDown={event => {
+        if (event.key === "Enter") {
           event.preventDefault();
-          const name = draft.trim();
-          if (name === "") return;
-          void shelfItem.createRootShelf(name).then(() => setDraft(""));
-        }}
-      >
-        <Input
+          onSubmit();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          onCancel();
+        }
+      }}
+    />
+  </div>
+);
+
+const DesktopShelfMenu = ({
+  creating,
+  onFinishCreate,
+}: {
+  creating: boolean;
+  onFinishCreate: () => void;
+}) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const shelfItem = useShelfItem();
+  const [draft, setDraft] = useState("");
+  const [creatingSubId, setCreatingSubId] = useState<string | null>(null);
+  const [creatingItemId, setCreatingItemId] = useState<string | null>(null);
+  const shelves = shelfItem.shelvesRef.current;
+
+  const submitRoot = () => {
+    const name = draft.trim();
+    if (name === "") {
+      onFinishCreate();
+      return;
+    }
+    void shelfItem.createRootShelf(name).then(() => {
+      setDraft("");
+      onFinishCreate();
+    });
+  };
+
+  return (
+    <SidebarMenu>
+      {creating ? (
+        <NameField
+          label={t("workspace.navigation.createRootShelf")}
           value={draft}
-          className="min-w-0"
-          placeholder={label("workspace.navigation.shelfNamePlaceholder")}
-          aria-label={label("workspace.navigation.createRootShelf")}
-          onChange={event => setDraft(event.target.value)}
+          onChange={setDraft}
+          onSubmit={submitRoot}
+          onCancel={() => {
+            setDraft("");
+            onFinishCreate();
+          }}
         />
-        <Button
-          type="submit"
-          size="icon"
-          aria-label={label("workspace.navigation.createRootShelf")}
-        >
-          <PlusIcon />
-        </Button>
-      </form>
-      <ul className="mt-2 flex min-w-0 flex-col gap-1">
-        {shelfItem.shelvesRef.current.map(shelf => (
-          <li key={shelf.id} className="min-w-0">
-            <div className="flex min-w-0 items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={shelf.name}
-                onClick={() => shelfItem.toggleRootShelf(shelf.id)}
-              >
-                {shelf.open ? <ChevronDown /> : <ChevronRight />}
-              </Button>
-              {shelfItem.editingId === shelf.id ? (
-                <Input
-                  value={shelfItem.editName}
-                  className="min-w-0"
-                  aria-label={label("workspace.navigation.typeNewName")}
-                  onChange={event => shelfItem.setEditName(event.target.value)}
-                  onBlur={() => void shelfItem.renameEditing()}
-                  onKeyDown={event => {
-                    if (event.key !== "Enter") return;
-                    event.preventDefault();
-                    void shelfItem.renameEditing();
-                  }}
-                />
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="min-w-0 flex-1 justify-start"
-                  onClick={() => shelfItem.startRenaming(shelf.id, shelf.name)}
-                >
-                  <span className="truncate">{shelf.name}</span>
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={label("workspace.navigation.trash")}
-                onClick={() => void shelfItem.deleteRootShelf(shelf.id)}
-              >
-                <Trash2 />
-              </Button>
-            </div>
-            {shelf.open && (
-              <div className="ml-4 min-w-0">
-                <form
-                  className="flex min-w-0 gap-2 py-1"
-                  onSubmit={event => {
-                    event.preventDefault();
-                    const name = (subDrafts[shelf.id] ?? "").trim();
-                    if (name === "") return;
-                    void shelfItem
-                      .createSubShelf(shelf.id, name)
-                      .then(() =>
-                        setSubDrafts({ ...subDrafts, [shelf.id]: "" })
-                      );
-                  }}
-                >
-                  <Input
-                    value={subDrafts[shelf.id] ?? ""}
-                    className="min-w-0"
-                    placeholder={label("workspace.navigation.typeNewName")}
-                    aria-label={label("workspace.navigation.shelves")}
-                    onChange={event =>
-                      setSubDrafts({
-                        ...subDrafts,
-                        [shelf.id]: event.target.value,
-                      })
+      ) : null}
+      {shelves.map(shelf => (
+        <Collapsible key={shelf.id} open={shelf.open}>
+          <SidebarMenuItem>
+            {shelfItem.editingId === shelf.id ? (
+              <NameField
+                label={t("workspace.navigation.typeNewName")}
+                value={shelfItem.editName}
+                onChange={shelfItem.setEditName}
+                onSubmit={() => void shelfItem.renameEditing()}
+                onCancel={shelfItem.cancelRenaming}
+              />
+            ) : (
+              <ContextMenu>
+                <ContextMenuTrigger asChild>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      className="w-full overflow-hidden rounded-sm text-ellipsis whitespace-nowrap"
+                      onClick={() => {
+                        shelfItem.toggleRootShelf(shelf.id);
+                        void navigate({
+                          to: "/app/shelves/$rootShelfId",
+                          params: { rootShelfId: shelf.id },
+                        });
+                      }}
+                    >
+                      {shelf.open ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                      <RootShelfIcon size={16} />
+                      <span className="min-w-0 truncate">{shelf.name}</span>
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem onSelect={() => setCreatingSubId(shelf.id)}>
+                    <FolderPlus />
+                    <span>{t("workspace.menu.newSubShelf")}</span>
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onSelect={() =>
+                      shelfItem.startRenaming(shelf.id, shelf.name)
+                    }
+                  >
+                    <span>{t("workspace.menu.rename")}</span>
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onSelect={() => void shelfItem.deleteRootShelf(shelf.id)}
+                  >
+                    <Trash2 />
+                    <span>{t("workspace.menu.delete")}</span>
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            )}
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {creatingSubId === shelf.id ? (
+                  <ShelfDraft
+                    label={t("workspace.menu.newSubShelf")}
+                    onCancel={() => setCreatingSubId(null)}
+                    onSubmit={name =>
+                      void shelfItem
+                        .createSubShelf(shelf.id, name)
+                        .then(() => setCreatingSubId(null))
                     }
                   />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    aria-label={label("workspace.navigation.createRootShelf")}
-                  >
-                    <FolderPlus />
-                  </Button>
-                </form>
-                <ul className="flex min-w-0 flex-col gap-1">
-                  {shelf.subShelves.map(subShelf => (
-                    <li key={subShelf.id} className="min-w-0">
-                      <div className="flex min-w-0 items-center gap-1">
-                        {shelfItem.editingId === subShelf.id ? (
-                          <Input
-                            value={shelfItem.editName}
-                            className="min-w-0 flex-1"
-                            aria-label={label(
-                              "workspace.navigation.typeNewName"
-                            )}
-                            onChange={event =>
-                              shelfItem.setEditName(event.target.value)
-                            }
-                            onBlur={() => void shelfItem.renameEditing()}
-                            onKeyDown={event => {
-                              if (event.key !== "Enter") return;
-                              event.preventDefault();
-                              void shelfItem.renameEditing();
-                            }}
-                          />
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            className="min-w-0 flex-1 justify-start"
-                            onClick={() =>
+                ) : null}
+                {shelf.subShelves.map(subShelf => (
+                  <SidebarMenuItem key={subShelf.id}>
+                    {shelfItem.editingId === subShelf.id ? (
+                      <NameField
+                        label={t("workspace.navigation.typeNewName")}
+                        value={shelfItem.editName}
+                        onChange={shelfItem.setEditName}
+                        onSubmit={() => void shelfItem.renameEditing()}
+                        onCancel={shelfItem.cancelRenaming}
+                      />
+                    ) : (
+                      <ContextMenu>
+                        <ContextMenuTrigger asChild>
+                          <SidebarMenuButton className="w-full overflow-hidden rounded-sm text-ellipsis whitespace-nowrap">
+                            <SubShelfIcon size={16} />
+                            <span className="min-w-0 truncate">
+                              {subShelf.name}
+                            </span>
+                          </SidebarMenuButton>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent>
+                          <ContextMenuItem
+                            onSelect={() => setCreatingItemId(subShelf.id)}
+                          >
+                            <span>{t("workspace.menu.newMaterial")}</span>
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onSelect={() =>
                               shelfItem.startRenaming(
                                 subShelf.id,
                                 subShelf.name
                               )
                             }
                           >
-                            <span className="truncate">{subShelf.name}</span>
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={label("workspace.navigation.trash")}
-                          onClick={() =>
-                            void shelfItem.deleteSubShelf(shelf.id, subShelf.id)
-                          }
-                        >
-                          <Trash2 />
-                        </Button>
-                      </div>
-                      <form
-                        className="flex min-w-0 gap-2 py-1"
-                        onSubmit={event => {
-                          event.preventDefault();
-                          const name = (itemDrafts[subShelf.id] ?? "").trim();
-                          if (name === "") return;
+                            <span>{t("workspace.menu.rename")}</span>
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onSelect={() =>
+                              void shelfItem.deleteSubShelf(
+                                shelf.id,
+                                subShelf.id
+                              )
+                            }
+                          >
+                            <Trash2 />
+                            <span>{t("workspace.menu.delete")}</span>
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
+                    )}
+                    {creatingItemId === subShelf.id ? (
+                      <ShelfDraft
+                        label={t("workspace.menu.newMaterial")}
+                        onCancel={() => setCreatingItemId(null)}
+                        onSubmit={name =>
                           void shelfItem
                             .createItem(
                               shelf.id,
@@ -398,98 +365,222 @@ const ShelfTree = ({
                               name,
                               ItemType.Material
                             )
-                            .then(() =>
-                              setItemDrafts({
-                                ...itemDrafts,
-                                [subShelf.id]: "",
-                              })
-                            );
-                        }}
-                      >
-                        <Input
-                          value={itemDrafts[subShelf.id] ?? ""}
-                          className="min-w-0"
-                          placeholder={label(
-                            "workspace.navigation.typeNewName"
-                          )}
-                          aria-label={label("workspace.navigation.typeNewName")}
-                          onChange={event =>
-                            setItemDrafts({
-                              ...itemDrafts,
-                              [subShelf.id]: event.target.value,
-                            })
-                          }
-                        />
-                        <Button
-                          type="submit"
-                          size="icon"
-                          aria-label={label(
-                            "workspace.navigation.createRootShelf"
-                          )}
-                        >
-                          <PlusIcon />
-                        </Button>
-                      </form>
-                      <ul className="ml-4 min-w-0">
-                        {subShelf.items.map(item => (
-                          <li
-                            key={item.id}
-                            className="flex min-w-0 items-center gap-1"
-                          >
-                            {shelfItem.editingId === item.id ? (
-                              <Input
-                                value={shelfItem.editName}
-                                className="min-w-0 flex-1"
-                                aria-label={label(
-                                  "workspace.navigation.typeNewName"
-                                )}
-                                onChange={event =>
-                                  shelfItem.setEditName(event.target.value)
-                                }
-                                onBlur={() => void shelfItem.renameEditing()}
-                                onKeyDown={event => {
-                                  if (event.key !== "Enter") return;
-                                  event.preventDefault();
-                                  void shelfItem.renameEditing();
-                                }}
-                              />
-                            ) : (
-                              <Button
-                                variant="ghost"
-                                className="min-w-0 flex-1 justify-start"
+                            .then(() => setCreatingItemId(null))
+                        }
+                      />
+                    ) : null}
+                    {subShelf.items.map(item => (
+                      <SidebarMenuItem key={item.id}>
+                        {shelfItem.editingId === item.id ? (
+                          <NameField
+                            label={t("workspace.navigation.typeNewName")}
+                            value={shelfItem.editName}
+                            onChange={shelfItem.setEditName}
+                            onSubmit={() => void shelfItem.renameEditing()}
+                            onCancel={shelfItem.cancelRenaming}
+                          />
+                        ) : (
+                          <ContextMenu>
+                            <ContextMenuTrigger asChild>
+                              <SidebarMenuButton
+                                className="w-full overflow-hidden rounded-sm text-ellipsis whitespace-nowrap"
                                 onClick={() =>
+                                  void navigate({
+                                    to:
+                                      item.type === ItemType.BlockPack
+                                        ? "/app/block-packs/$blockPackId"
+                                        : "/app/materials/$materialId",
+                                    params:
+                                      item.type === ItemType.BlockPack
+                                        ? { blockPackId: item.id }
+                                        : { materialId: item.id },
+                                  })
+                                }
+                              >
+                                {item.type === ItemType.BlockPack ? (
+                                  <BlockPackIcon className="size-4" />
+                                ) : (
+                                  <MaterialIcon className="size-4" />
+                                )}
+                                <span className="min-w-0 truncate">
+                                  {item.name}
+                                </span>
+                              </SidebarMenuButton>
+                            </ContextMenuTrigger>
+                            <ContextMenuContent>
+                              <ContextMenuItem
+                                onSelect={() =>
                                   shelfItem.startRenaming(item.id, item.name)
                                 }
                               >
-                                <span className="truncate">{item.name}</span>
-                              </Button>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={label("workspace.navigation.trash")}
-                              onClick={() =>
-                                void shelfItem.deleteItem(
-                                  shelf.id,
-                                  subShelf.id,
-                                  item.id
-                                )
-                              }
-                            >
-                              <Trash2 />
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </section>
+                                <span>{t("workspace.menu.rename")}</span>
+                              </ContextMenuItem>
+                              <ContextMenuItem
+                                onSelect={() =>
+                                  void shelfItem.deleteItem(
+                                    shelf.id,
+                                    subShelf.id,
+                                    item.id
+                                  )
+                                }
+                              >
+                                <Trash2 />
+                                <span>{t("workspace.menu.delete")}</span>
+                              </ContextMenuItem>
+                            </ContextMenuContent>
+                          </ContextMenu>
+                        )}
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
+      ))}
+    </SidebarMenu>
+  );
+};
+
+const ShelfDraft = ({
+  label,
+  onSubmit,
+  onCancel,
+}: {
+  label: string;
+  onSubmit: (name: string) => void;
+  onCancel: () => void;
+}) => {
+  const [draft, setDraft] = useState("");
+  return (
+    <NameField
+      label={label}
+      value={draft}
+      onChange={setDraft}
+      onCancel={onCancel}
+      onSubmit={() => {
+        const name = draft.trim();
+        if (name === "") {
+          onCancel();
+          return;
+        }
+        onSubmit(name);
+      }}
+    />
+  );
+};
+
+const DesktopStationMenu = ({
+  creating,
+  onFinishCreate,
+}: {
+  creating: boolean;
+  onFinishCreate: () => void;
+}) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const sidebar = useStationRoutineSidebar();
+  const [draft, setDraft] = useState("");
+  return (
+    <SidebarMenu>
+      {creating ? (
+        <NameField
+          label={t("workspace.navigation.createStation")}
+          value={draft}
+          onChange={setDraft}
+          onCancel={() => {
+            setDraft("");
+            onFinishCreate();
+          }}
+          onSubmit={() => {
+            const name = draft.trim();
+            if (name === "") {
+              onFinishCreate();
+              return;
+            }
+            void sidebar.createStation(name).then(() => {
+              setDraft("");
+              onFinishCreate();
+            });
+          }}
+        />
+      ) : null}
+      {sidebar.stations.map(station => (
+        <SidebarMenuItem key={station.id}>
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <SidebarMenuButton
+                className="w-full overflow-hidden rounded-sm text-ellipsis whitespace-nowrap"
+                onClick={() =>
+                  void navigate({
+                    to: "/app/stations/$stationId",
+                    params: { stationId: station.id },
+                  })
+                }
+              >
+                <StationIcon size={16} />
+                <span className="min-w-0 truncate">{station.name}</span>
+              </SidebarMenuButton>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem
+                onSelect={() => void sidebar.deleteStation(station.id)}
+              >
+                <Trash2 />
+                <span>{t("workspace.menu.delete")}</span>
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+};
+
+const DesktopRoutineTagMenu = ({
+  creating,
+  onFinishCreate,
+}: {
+  creating: boolean;
+  onFinishCreate: () => void;
+}) => {
+  const { t } = useTranslation();
+  const sidebar = useStationRoutineSidebar();
+  const [draft, setDraft] = useState("");
+  return (
+    <SidebarMenu>
+      {creating ? (
+        <NameField
+          label={t("workspace.navigation.createRoutineTag")}
+          value={draft}
+          onChange={setDraft}
+          onCancel={() => {
+            setDraft("");
+            onFinishCreate();
+          }}
+          onSubmit={() => {
+            const name = draft.trim();
+            if (name === "") {
+              onFinishCreate();
+              return;
+            }
+            void sidebar.createRoutineTag(name).then(() => {
+              setDraft("");
+              onFinishCreate();
+            });
+          }}
+        />
+      ) : null}
+      {sidebar.routineTags.map(tag => (
+        <SidebarMenuItem key={tag.id}>
+          <SidebarMenuButton className="w-full overflow-hidden rounded-sm text-ellipsis whitespace-nowrap">
+            <RoutineTagIcon className="size-4" />
+            <span className="min-w-0 truncate">{tag.name}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
   );
 };
 
